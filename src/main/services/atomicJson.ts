@@ -9,7 +9,8 @@ export async function readJson<T>(file: string, fallback: T): Promise<T> {
   for (const candidate of [file, `${file}.bak`]) {
     try {
       const raw = await fs.readFile(candidate, 'utf8')
-      return JSON.parse(raw) as T
+      // strip a UTF-8 BOM if an external editor added one
+      return JSON.parse(raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw) as T
     } catch {
       // try the next candidate
     }

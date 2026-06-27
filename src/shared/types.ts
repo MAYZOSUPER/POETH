@@ -219,8 +219,10 @@ export interface Settings {
 // ---------------------------------------------------------------------------
 
 export interface ZoneEvent {
-  areaName: string
-  level?: number
+  /** raw game areaId from the log (e.g. "g1_2"); matches Zone.xref.exileUiAreaId */
+  areaId?: string
+  /** display name fallback (from the [SCENE] log line) */
+  areaName?: string
   at: number
 }
 
@@ -228,6 +230,12 @@ export interface LevelEvent {
   character: string
   level: number
   at: number
+}
+
+export interface TailerStatus {
+  running: boolean
+  logPath: string | null
+  found: boolean
 }
 
 export type HotkeyAction = 'toggleVisible' | 'toggleLock' | 'prevStep' | 'nextStep'

@@ -9,6 +9,7 @@ import type {
   ProfileMeta,
   ProgressState,
   Settings,
+  TailerStatus,
   ZoneEvent
 } from './types'
 
@@ -38,6 +39,12 @@ export const IPC = {
   layout: {
     resolve: 'layout:resolve'
   },
+  tailer: {
+    start: 'tailer:start',
+    stop: 'tailer:stop',
+    status: 'tailer:status',
+    pickLogFile: 'tailer:pickLogFile'
+  },
   window: {
     setOpacity: 'window:setOpacity',
     setLocked: 'window:setLocked',
@@ -46,6 +53,7 @@ export const IPC = {
   events: {
     zoneChange: 'event:zoneChange',
     levelChange: 'event:levelChange',
+    tailerStatus: 'event:tailerStatus',
     hotkey: 'event:hotkey',
     activeProfileChanged: 'event:activeProfileChanged'
   }
@@ -83,6 +91,13 @@ export interface OverlayApi {
     /** Returns local file:// urls for an area's layout images (lazy-fetched + cached). */
     resolve(areaId: string): Promise<string[]>
   }
+  tailer: {
+    start(): Promise<TailerStatus>
+    stop(): Promise<TailerStatus>
+    status(): Promise<TailerStatus>
+    /** Open a file dialog to choose Client.txt; returns the chosen path or null. */
+    pickLogFile(): Promise<string | null>
+  }
   window: {
     setOpacity(value: number): void
     /** true = overlay ignores the mouse entirely (clicks pass through to the game) */
@@ -91,6 +106,7 @@ export interface OverlayApi {
   }
   onZoneChange(cb: (e: ZoneEvent) => void): () => void
   onLevelChange(cb: (e: LevelEvent) => void): () => void
+  onTailerStatus(cb: (status: TailerStatus) => void): () => void
   onHotkey(cb: (action: HotkeyAction) => void): () => void
   onActiveProfileChanged(cb: (profileId: string | null) => void): () => void
 }

@@ -35,6 +35,12 @@ const api: OverlayApi = {
   layout: {
     resolve: (areaId) => ipcRenderer.invoke(IPC.layout.resolve, areaId)
   },
+  tailer: {
+    start: () => ipcRenderer.invoke(IPC.tailer.start),
+    stop: () => ipcRenderer.invoke(IPC.tailer.stop),
+    status: () => ipcRenderer.invoke(IPC.tailer.status),
+    pickLogFile: () => ipcRenderer.invoke(IPC.tailer.pickLogFile)
+  },
   window: {
     setOpacity: (value) => ipcRenderer.send(IPC.window.setOpacity, value),
     setLocked: (locked) => ipcRenderer.send(IPC.window.setLocked, locked),
@@ -42,6 +48,7 @@ const api: OverlayApi = {
   },
   onZoneChange: (cb) => subscribe(IPC.events.zoneChange, cb),
   onLevelChange: (cb) => subscribe(IPC.events.levelChange, cb),
+  onTailerStatus: (cb) => subscribe(IPC.events.tailerStatus, cb),
   onHotkey: (cb) => subscribe(IPC.events.hotkey, cb),
   onActiveProfileChanged: (cb) => subscribe(IPC.events.activeProfileChanged, cb)
 }

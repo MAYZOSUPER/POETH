@@ -6,6 +6,7 @@ export function QuestChecklistPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const selectedActId = useAppStore((s) => s.selectedActId)
   const selectedZoneAreaId = useAppStore((s) => s.selectedZoneAreaId)
+  const detectedZoneAreaId = useAppStore((s) => s.detectedZoneAreaId)
   const progress = useAppStore((s) => s.progress)
   const toggleQuest = useAppStore((s) => s.toggleQuest)
   const selectZone = useAppStore((s) => s.selectZone)
@@ -39,8 +40,13 @@ export function QuestChecklistPanel() {
           if (quests.length === 0 && !hasLayout) return null
           return (
             <li key={zone.areaId} className="zone-group">
-              <div className={`zone-head ${selectedZoneAreaId === zone.areaId ? 'active' : ''}`}>
+              <div
+                className={`zone-head ${selectedZoneAreaId === zone.areaId ? 'active' : ''} ${
+                  detectedZoneAreaId === zone.areaId ? 'current' : ''
+                }`}
+              >
                 <span className="zone-name">
+                  {detectedZoneAreaId === zone.areaId ? '📍 ' : ''}
                   {zone.name}
                   {zone.isTown ? ' 🏠' : ''}
                 </span>

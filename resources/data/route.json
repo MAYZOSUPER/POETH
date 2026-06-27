@@ -455,6 +455,153 @@
       "areaId": "a4-heart-of-the-tribe",
       "text": "Enter Heart of the Tribe",
       "optional": false
+    },
+    {
+      "order": 65,
+      "actId": "interlude-1",
+      "areaId": "il1-scorched-farmlands",
+      "text": "Enter Scorched Farmlands",
+      "optional": false
+    },
+    {
+      "order": 66,
+      "actId": "interlude-1",
+      "areaId": "il1-stones-of-serle",
+      "text": "Enter Stones of Serle",
+      "optional": false
+    },
+    {
+      "order": 67,
+      "actId": "interlude-1",
+      "areaId": "il1-the-blackwood",
+      "text": "Enter The Blackwood",
+      "optional": false
+    },
+    {
+      "order": 68,
+      "actId": "interlude-1",
+      "areaId": "il1-holten",
+      "text": "Town: Holten",
+      "optional": false
+    },
+    {
+      "order": 69,
+      "actId": "interlude-1",
+      "areaId": "il1-wolvenhold",
+      "text": "Enter Wolvenhold",
+      "optional": false
+    },
+    {
+      "order": 70,
+      "actId": "interlude-1",
+      "areaId": "il1-holten-estate",
+      "text": "Enter Holten Estate",
+      "optional": false
+    },
+    {
+      "order": 71,
+      "actId": "interlude-2",
+      "areaId": "il2-the-khari-crossing",
+      "text": "Enter The Khari Crossing",
+      "optional": false
+    },
+    {
+      "order": 72,
+      "actId": "interlude-2",
+      "areaId": "il2-pools-of-khatal",
+      "text": "Enter Pools of Khatal",
+      "optional": false
+    },
+    {
+      "order": 73,
+      "actId": "interlude-2",
+      "areaId": "il2-sel-khari-sanctuary",
+      "text": "Enter Sel Khari Sanctuary",
+      "optional": false
+    },
+    {
+      "order": 74,
+      "actId": "interlude-2",
+      "areaId": "il2-the-galai-gates",
+      "text": "Enter The Galai Gates",
+      "optional": false
+    },
+    {
+      "order": 75,
+      "actId": "interlude-2",
+      "areaId": "il2-qimah",
+      "text": "Town: Qimah",
+      "optional": false
+    },
+    {
+      "order": 76,
+      "actId": "interlude-2",
+      "areaId": "il2-qimah-reservoir",
+      "text": "Enter Qimah Reservoir",
+      "optional": false
+    },
+    {
+      "order": 77,
+      "actId": "interlude-3",
+      "areaId": "il3-ashen-forest",
+      "text": "Enter Ashen Forest",
+      "optional": false
+    },
+    {
+      "order": 78,
+      "actId": "interlude-3",
+      "areaId": "il3-kriar-village",
+      "text": "Enter Kriar Village",
+      "optional": false
+    },
+    {
+      "order": 79,
+      "actId": "interlude-3",
+      "areaId": "il3-kriar-peaks",
+      "text": "Enter Kriar Peaks",
+      "optional": false
+    },
+    {
+      "order": 80,
+      "actId": "interlude-3",
+      "areaId": "il3-vaal-catacombs",
+      "text": "Enter Vaal Catacombs",
+      "optional": false
+    },
+    {
+      "order": 81,
+      "actId": "interlude-3",
+      "areaId": "il3-sanctified-archives",
+      "text": "Enter Sanctified Archives",
+      "optional": false
+    },
+    {
+      "order": 82,
+      "actId": "interlude-3",
+      "areaId": "il3-sealed-caverns",
+      "text": "Enter Sealed Caverns",
+      "optional": false
+    },
+    {
+      "order": 83,
+      "actId": "interlude-3",
+      "areaId": "il3-howling-caves",
+      "text": "Enter Howling Caves",
+      "optional": false
+    },
+    {
+      "order": 84,
+      "actId": "interlude-3",
+      "areaId": "il3-the-glade",
+      "text": "Town: The Glade",
+      "optional": false
+    },
+    {
+      "order": 85,
+      "actId": "interlude-3",
+      "areaId": "il3-kingsmarch",
+      "text": "Town: Kingsmarch",
+      "optional": false
     }
   ]
 }

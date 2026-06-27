@@ -27,6 +27,27 @@
       "actNumber": 4,
       "kind": "act",
       "actName": "Act 4 — Karui Archipelago"
+    },
+    {
+      "id": "interlude-1",
+      "file": "acts/interlude-1.json",
+      "actNumber": 5,
+      "kind": "interlude",
+      "actName": "Интерлюдия 1 — Проклятие Холтена"
+    },
+    {
+      "id": "interlude-2",
+      "file": "acts/interlude-2.json",
+      "actNumber": 6,
+      "kind": "interlude",
+      "actName": "Интерлюдия 2 — Украденная Барья"
+    },
+    {
+      "id": "interlude-3",
+      "file": "acts/interlude-3.json",
+      "actNumber": 7,
+      "kind": "interlude",
+      "actName": "Интерлюдия 3 — План Дориани"
     }
   ]
 }

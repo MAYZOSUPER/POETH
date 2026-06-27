@@ -1,0 +1,171 @@
+{
+  "id": "interlude-3",
+  "actNumber": 7,
+  "actName": "Интерлюдия 3 — План Дориани",
+  "kind": "interlude",
+  "zones": [
+    {
+      "areaId": "il3-ashen-forest",
+      "name": "Ashen Forest",
+      "layout": "il3-ashen-forest",
+      "xref": {
+        "exileUiAreaId": "p3_1"
+      }
+    },
+    {
+      "areaId": "il3-kriar-village",
+      "name": "Kriar Village",
+      "layout": "il3-kriar-village",
+      "xref": {
+        "exileUiAreaId": "p3_2"
+      }
+    },
+    {
+      "areaId": "il3-kriar-peaks",
+      "name": "Kriar Peaks",
+      "layout": "il3-kriar-peaks",
+      "xref": {
+        "exileUiAreaId": "p3_5"
+      }
+    },
+    {
+      "areaId": "il3-vaal-catacombs",
+      "name": "Vaal Catacombs",
+      "layout": null
+    },
+    {
+      "areaId": "il3-sanctified-archives",
+      "name": "Sanctified Archives",
+      "layout": null
+    },
+    {
+      "areaId": "il3-sealed-caverns",
+      "name": "Sealed Caverns",
+      "layout": null
+    },
+    {
+      "areaId": "il3-howling-caves",
+      "name": "Howling Caves",
+      "layout": null
+    },
+    {
+      "areaId": "il3-the-glade",
+      "name": "The Glade",
+      "isTown": true,
+      "layout": null,
+      "xref": {
+        "exileUiAreaId": "p3_town"
+      }
+    },
+    {
+      "areaId": "il3-kingsmarch",
+      "name": "Kingsmarch",
+      "isTown": true,
+      "layout": null,
+      "xref": {
+        "exileUiAreaId": "g4_town"
+      }
+    }
+  ],
+  "quests": [
+    {
+      "id": "interlude-3q-lythara-the-wayward-spear",
+      "name": "Lythara, the Wayward Spear",
+      "type": "optional",
+      "boss": true,
+      "zone": "il3-kriar-village",
+      "rewards": [
+        {
+          "kind": "spirit",
+          "value": "+40 Spirit",
+          "numeric": 40
+        }
+      ],
+      "layout": null,
+      "notes": "Постоянные +40 к максимуму Духа.",
+      "autoComplete": {
+        "onZoneEnter": "p3_2"
+      }
+    },
+    {
+      "id": "interlude-3q-elder-madox",
+      "name": "Elder Madox",
+      "type": "optional",
+      "zone": "il3-kriar-peaks",
+      "rewards": [
+        {
+          "kind": "unique_item",
+          "value": "Уникальный предмет на выбор",
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Дружелюбный НПС у каменного алтаря.",
+      "autoComplete": {
+        "onZoneEnter": "p3_5"
+      }
+    },
+    {
+      "id": "interlude-3q-architect-of-dominion",
+      "name": "Architect of Dominion",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "il3-sanctified-archives",
+      "rewards": [],
+      "layout": null,
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "interlude-3q-the-abominable-yeti",
+      "name": "The Abominable Yeti",
+      "type": "optional",
+      "boss": true,
+      "zone": "il3-howling-caves",
+      "rewards": [
+        {
+          "kind": "passive_point",
+          "value": "+2 Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Боковая зона от Sealed Caverns.",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "interlude-3q-stormgore-rakkar",
+      "name": "Stormgore & Rakkar",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "il3-sealed-caverns",
+      "rewards": [],
+      "layout": null,
+      "notes": "Финал Интерлюдии 3 (два босса подряд).",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "interlude-3q-the-hooded-one",
+      "name": "The Hooded One",
+      "type": "mandatory",
+      "zone": "il3-kingsmarch",
+      "rewards": [
+        {
+          "kind": "passive_point",
+          "value": "+2 Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "После всех 3 интерлюдий — поговори с Hooded One в Кингсмарче. Финальные +2 очка.",
+      "autoComplete": {
+        "onZoneEnter": "g4_town"
+      }
+    }
+  ]
+}

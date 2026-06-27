@@ -1,0 +1,104 @@
+{
+  "id": "interlude-1",
+  "actNumber": 5,
+  "actName": "Интерлюдия 1 — Проклятие Холтена",
+  "kind": "interlude",
+  "zones": [
+    {
+      "areaId": "il1-scorched-farmlands",
+      "name": "Scorched Farmlands",
+      "layout": "il1-scorched-farmlands",
+      "xref": {
+        "exileUiAreaId": "p1_1"
+      }
+    },
+    {
+      "areaId": "il1-stones-of-serle",
+      "name": "Stones of Serle",
+      "layout": "il1-stones-of-serle",
+      "xref": {
+        "exileUiAreaId": "p1_2"
+      }
+    },
+    {
+      "areaId": "il1-the-blackwood",
+      "name": "The Blackwood",
+      "layout": "il1-the-blackwood",
+      "xref": {
+        "exileUiAreaId": "p1_3"
+      }
+    },
+    {
+      "areaId": "il1-holten",
+      "name": "Holten",
+      "isTown": true,
+      "layout": "il1-holten",
+      "xref": {
+        "exileUiAreaId": "p1_4"
+      }
+    },
+    {
+      "areaId": "il1-wolvenhold",
+      "name": "Wolvenhold",
+      "layout": "il1-wolvenhold",
+      "xref": {
+        "exileUiAreaId": "p1_5"
+      }
+    },
+    {
+      "areaId": "il1-holten-estate",
+      "name": "Holten Estate",
+      "layout": "il1-holten-estate",
+      "xref": {
+        "exileUiAreaId": "p1_6"
+      }
+    }
+  ],
+  "quests": [
+    {
+      "id": "interlude-1q-siora-blade-of-the-mists",
+      "name": "Siora, Blade of the Mists",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "il1-the-blackwood",
+      "rewards": [],
+      "layout": null,
+      "notes": "Зона тумана (как King in the Mists в Акте 1).",
+      "autoComplete": {
+        "onZoneEnter": "p1_3"
+      }
+    },
+    {
+      "id": "interlude-1q-oswin-the-dread-warden",
+      "name": "Oswin, the Dread Warden",
+      "type": "optional",
+      "boss": true,
+      "zone": "il1-wolvenhold",
+      "rewards": [
+        {
+          "kind": "passive_point",
+          "value": "+2 Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Боковая зона от Holten. Постоянные +2 очка пассивок.",
+      "autoComplete": {
+        "onZoneEnter": "p1_5"
+      }
+    },
+    {
+      "id": "interlude-1q-lady-elswyth-thane-wulfric",
+      "name": "Lady Elswyth & Thane Wulfric",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "il1-holten-estate",
+      "rewards": [],
+      "layout": null,
+      "notes": "Финал Интерлюдии 1 (двойной босс).",
+      "autoComplete": {
+        "onZoneEnter": "p1_6"
+      }
+    }
+  ]
+}

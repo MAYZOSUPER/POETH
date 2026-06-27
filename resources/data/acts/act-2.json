@@ -7,82 +7,130 @@
     {
       "areaId": "a2-vastiri-outskirts",
       "name": "Vastiri Outskirts",
-      "layout": null
+      "layout": "a2-vastiri-outskirts",
+      "xref": {
+        "exileUiAreaId": "g2_1"
+      }
     },
     {
       "areaId": "a2-mawdun-quarry",
       "name": "Mawdun Quarry",
-      "layout": null
+      "layout": "a2-mawdun-quarry",
+      "xref": {
+        "exileUiAreaId": "g2_10_1"
+      }
     },
     {
       "areaId": "a2-mawdun-mine",
       "name": "Mawdun Mine",
-      "layout": null
+      "layout": "a2-mawdun-mine",
+      "xref": {
+        "exileUiAreaId": "g2_10_2"
+      }
     },
     {
       "areaId": "a2-traitor-s-passage",
       "name": "Traitor's Passage",
-      "layout": null
+      "layout": "a2-traitor-s-passage",
+      "xref": {
+        "exileUiAreaId": "g2_2"
+      }
     },
     {
       "areaId": "a2-the-halani-gates",
       "name": "The Halani Gates",
-      "layout": null
+      "layout": "a2-the-halani-gates",
+      "xref": {
+        "exileUiAreaId": "g2_3"
+      }
     },
     {
       "areaId": "a2-keth",
       "name": "Keth",
-      "layout": null
+      "layout": "a2-keth",
+      "xref": {
+        "exileUiAreaId": "g2_4_1"
+      }
     },
     {
       "areaId": "a2-the-lost-city",
       "name": "The Lost City",
-      "layout": null
+      "layout": "a2-the-lost-city",
+      "xref": {
+        "exileUiAreaId": "g2_4_2"
+      }
     },
     {
       "areaId": "a2-buried-shrines",
       "name": "Buried Shrines",
-      "layout": null
+      "layout": "a2-buried-shrines",
+      "xref": {
+        "exileUiAreaId": "g2_4_3"
+      }
     },
     {
       "areaId": "a2-mastodon-badlands",
       "name": "Mastodon Badlands",
-      "layout": null
+      "layout": "a2-mastodon-badlands",
+      "xref": {
+        "exileUiAreaId": "g2_5_1"
+      }
     },
     {
       "areaId": "a2-the-bone-pits",
       "name": "The Bone Pits",
-      "layout": null
+      "layout": "a2-the-bone-pits",
+      "xref": {
+        "exileUiAreaId": "g2_5_2"
+      }
     },
     {
       "areaId": "a2-valley-of-the-titans",
       "name": "Valley of the Titans",
-      "layout": null
+      "layout": "a2-valley-of-the-titans",
+      "xref": {
+        "exileUiAreaId": "g2_6"
+      }
     },
     {
       "areaId": "a2-the-titan-grotto",
       "name": "The Titan Grotto",
-      "layout": null
+      "layout": "a2-the-titan-grotto",
+      "xref": {
+        "exileUiAreaId": "g2_7"
+      }
     },
     {
       "areaId": "a2-deshar",
       "name": "Deshar",
-      "layout": null
+      "layout": "a2-deshar",
+      "xref": {
+        "exileUiAreaId": "g2_8"
+      }
     },
     {
       "areaId": "a2-path-of-mourning",
       "name": "Path of Mourning",
-      "layout": null
+      "layout": "a2-path-of-mourning",
+      "xref": {
+        "exileUiAreaId": "g2_9_1"
+      }
     },
     {
       "areaId": "a2-the-spires-of-deshar",
       "name": "The Spires of Deshar",
-      "layout": null
+      "layout": "a2-the-spires-of-deshar",
+      "xref": {
+        "exileUiAreaId": "g2_9_2"
+      }
     },
     {
       "areaId": "a2-the-dreadnought-vanguard",
       "name": "The Dreadnought Vanguard",
-      "layout": null
+      "layout": "a2-the-dreadnought-vanguard",
+      "xref": {
+        "exileUiAreaId": "g2_12_2"
+      }
     }
   ],
   "quests": [
@@ -105,7 +153,7 @@
       "layout": null,
       "notes": "Follow inside wall (Z-shape pattern) to narrow canyon leading to boss",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_1"
       }
     },
     {
@@ -122,7 +170,7 @@
       "layout": null,
       "notes": "Optional treasure cache in the quarry",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_10_1"
       }
     },
     {
@@ -144,7 +192,7 @@
       "layout": null,
       "notes": "Spawn at bottom, move continuously North - boss at top corner",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_10_2"
       }
     },
     {
@@ -161,7 +209,7 @@
       "layout": null,
       "notes": "Optional area within the mine",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_10_2"
       }
     },
     {
@@ -179,7 +227,7 @@
       "layout": null,
       "notes": "Follow yellow paper seals on walls - if you find paper, you are close",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_2"
       }
     },
     {
@@ -196,7 +244,7 @@
       "layout": null,
       "notes": "In a dead end with checkpoint, some monsters and dropped gold on ground",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_2"
       }
     },
     {
@@ -214,7 +262,7 @@
       "layout": null,
       "notes": "Keep close to canyon - cross canyon three times to find boss",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_3"
       }
     },
     {
@@ -231,7 +279,7 @@
       "layout": null,
       "notes": "Optional boss encounter",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_3"
       }
     },
     {
@@ -250,7 +298,7 @@
       "layout": null,
       "notes": "Somewhat in the middle of zone - run outside edges to find Venom Pit",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_4_1"
       }
     },
     {
@@ -267,7 +315,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_4_1"
       }
     },
     {
@@ -284,7 +332,7 @@
       "layout": null,
       "notes": "Optional treasure in the city",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_4_2"
       }
     },
     {
@@ -302,7 +350,7 @@
       "layout": null,
       "notes": "Event named 'The Galleria' on the map - big gilded beetle",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_4_2"
       }
     },
     {
@@ -320,7 +368,7 @@
       "layout": null,
       "notes": "Crown-shaped boss tile at most Northerly or East-facing point",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_4_3"
       }
     },
     {
@@ -338,7 +386,7 @@
       "layout": null,
       "notes": "Random resistance ring - Ruby suggested for upcoming boss fight",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_4_3"
       }
     },
     {
@@ -355,7 +403,7 @@
       "layout": null,
       "notes": "Guarded sarcophagus encounter",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_4_3"
       }
     },
     {
@@ -372,7 +420,7 @@
       "layout": null,
       "notes": "Rare effigy near a checkpoint - Shrine of Bones",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_5_1"
       }
     },
     {
@@ -390,7 +438,7 @@
       "layout": null,
       "notes": "Boss room almost directly in line with entrance after passing through bone arch",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_5_2"
       }
     },
     {
@@ -408,7 +456,7 @@
       "layout": null,
       "notes": "Waypoint at medallion location - choice of one of two permanent buffs (can be changed later)",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_6"
       }
     },
     {
@@ -426,7 +474,7 @@
       "layout": null,
       "notes": "Opposite side of rectangle - long staircase bridge leads to boss",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_7"
       }
     },
     {
@@ -443,7 +491,7 @@
       "layout": null,
       "notes": "Optional treasure in grotto",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_7"
       }
     },
     {
@@ -461,7 +509,7 @@
       "layout": null,
       "notes": "Base of large buildings - corpse on ground near big tower",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_8"
       }
     },
     {
@@ -478,7 +526,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_8"
       }
     },
     {
@@ -495,7 +543,7 @@
       "layout": null,
       "notes": "Rare mob drops",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_8"
       }
     },
     {
@@ -512,7 +560,7 @@
       "layout": null,
       "notes": "Optional treasure along the path",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_9_1"
       }
     },
     {
@@ -530,7 +578,7 @@
       "layout": null,
       "notes": "Spawns in straight line, directly opposite entrance",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_9_2"
       }
     },
     {
@@ -548,7 +596,7 @@
       "layout": null,
       "notes": "Found in the spires",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_9_2"
       }
     },
     {
@@ -570,7 +618,7 @@
       "layout": null,
       "notes": "Linear layout - continue opposite direction from entrance to final boss arena",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g2_12_2"
       }
     }
   ]

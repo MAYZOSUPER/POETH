@@ -8,87 +8,138 @@
       "areaId": "a4-kingsmarch-town",
       "name": "Kingsmarch (Town)",
       "isTown": true,
-      "layout": null
+      "layout": null,
+      "xref": {
+        "exileUiAreaId": "g4_town"
+      }
     },
     {
       "areaId": "a4-whakapanu-island",
       "name": "Whakapanu Island",
-      "layout": null
+      "layout": "a4-whakapanu-island",
+      "xref": {
+        "exileUiAreaId": "g4_3_1"
+      }
     },
     {
       "areaId": "a4-singing-caverns",
       "name": "Singing Caverns",
-      "layout": null
+      "layout": "a4-singing-caverns",
+      "xref": {
+        "exileUiAreaId": "g4_3_2"
+      }
     },
     {
       "areaId": "a4-shrike-island",
       "name": "Shrike Island",
-      "layout": null
+      "layout": "a4-shrike-island",
+      "xref": {
+        "exileUiAreaId": "g4_7"
+      }
     },
     {
       "areaId": "a4-abandoned-prison",
       "name": "Abandoned Prison",
-      "layout": null
+      "layout": "a4-abandoned-prison",
+      "xref": {
+        "exileUiAreaId": "g4_5_1"
+      }
     },
     {
       "areaId": "a4-solitary-confinement",
       "name": "Solitary Confinement",
-      "layout": null
+      "layout": "a4-solitary-confinement",
+      "xref": {
+        "exileUiAreaId": "g4_5_2"
+      }
     },
     {
       "areaId": "a4-isle-of-kin",
       "name": "Isle of Kin",
-      "layout": null
+      "layout": "a4-isle-of-kin",
+      "xref": {
+        "exileUiAreaId": "g4_1_1"
+      }
     },
     {
       "areaId": "a4-volcanic-warrens",
       "name": "Volcanic Warrens",
-      "layout": null
+      "layout": "a4-volcanic-warrens",
+      "xref": {
+        "exileUiAreaId": "g4_1_2"
+      }
     },
     {
       "areaId": "a4-kedge-bay",
       "name": "Kedge Bay",
-      "layout": null
+      "layout": "a4-kedge-bay",
+      "xref": {
+        "exileUiAreaId": "g4_2_1"
+      }
     },
     {
       "areaId": "a4-journey-s-end",
       "name": "Journey's End",
-      "layout": null
+      "layout": "a4-journey-s-end",
+      "xref": {
+        "exileUiAreaId": "g4_2_2"
+      }
     },
     {
       "areaId": "a4-arastas",
       "name": "Arastas",
-      "layout": null
+      "layout": "a4-arastas",
+      "xref": {
+        "exileUiAreaId": "g4_8b"
+      }
     },
     {
       "areaId": "a4-excavation",
       "name": "Excavation",
-      "layout": null
+      "layout": "a4-excavation",
+      "xref": {
+        "exileUiAreaId": "g4_10"
+      }
     },
     {
       "areaId": "a4-eye-of-hinekora",
       "name": "Eye of Hinekora",
-      "layout": null
+      "layout": "a4-eye-of-hinekora",
+      "xref": {
+        "exileUiAreaId": "g4_4_1"
+      }
     },
     {
       "areaId": "a4-halls-of-the-dead",
       "name": "Halls of the Dead",
-      "layout": null
+      "layout": "a4-halls-of-the-dead",
+      "xref": {
+        "exileUiAreaId": "g4_4_2"
+      }
     },
     {
       "areaId": "a4-trial-of-the-ancestors",
       "name": "Trial of the Ancestors",
-      "layout": null
+      "layout": null,
+      "xref": {
+        "exileUiAreaId": "g4_4_3"
+      }
     },
     {
       "areaId": "a4-ngakanu",
       "name": "Ngakanu",
-      "layout": null
+      "layout": "a4-ngakanu",
+      "xref": {
+        "exileUiAreaId": "g4_11_1b"
+      }
     },
     {
       "areaId": "a4-heart-of-the-tribe",
       "name": "Heart of the Tribe",
-      "layout": null
+      "layout": "a4-heart-of-the-tribe",
+      "xref": {
+        "exileUiAreaId": "g4_11_2"
+      }
     }
   ],
   "quests": [
@@ -106,7 +157,7 @@
       "layout": null,
       "notes": "Speak with Makoru to select island - islands can be done in almost any order",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_town"
       }
     },
     {
@@ -124,7 +175,7 @@
       "layout": null,
       "notes": "Across island on another beach - trigger fight by moving close to water at gaps in rock formation",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_3_1"
       }
     },
     {
@@ -141,7 +192,7 @@
       "layout": null,
       "notes": "Torn map piece for unlocking Plunder's Point (4 total needed)",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_3_1"
       }
     },
     {
@@ -158,7 +209,7 @@
       "layout": null,
       "notes": "Alongside the beach part of area - defeat the rare",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_3_1"
       }
     },
     {
@@ -180,7 +231,7 @@
       "layout": null,
       "notes": "Opposite side of square from entrance - circular or diamond shape layout",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_3_2"
       }
     },
     {
@@ -197,7 +248,7 @@
       "layout": null,
       "notes": "Complete counter to loot pearl - +8 all ele resistance rare amulet",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_3_2"
       }
     },
     {
@@ -215,7 +266,7 @@
       "layout": null,
       "notes": "End of long winding road - linear path",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_7"
       }
     },
     {
@@ -232,7 +283,7 @@
       "layout": null,
       "notes": "2 of 4 torn map pieces - unlocks Plunder's Point",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_7"
       }
     },
     {
@@ -250,7 +301,7 @@
       "layout": null,
       "notes": "Chapel Key drops from monsters - reward can be changed later by revisiting",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_5_1"
       }
     },
     {
@@ -268,7 +319,7 @@
       "layout": null,
       "notes": "Hug wall that waves are crashing into - linear path",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_5_2"
       }
     },
     {
@@ -285,7 +336,7 @@
       "layout": null,
       "notes": "Drops guaranteed unique (UNCONFIRMED)",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_5_2"
       }
     },
     {
@@ -304,7 +355,7 @@
       "layout": null,
       "notes": "Head opposite direction from dock",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_1_1"
       }
     },
     {
@@ -321,7 +372,7 @@
       "layout": null,
       "notes": "Find beast pen counter, free and kill Mimbok (UNCONFIRMED)",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_1_1"
       }
     },
     {
@@ -338,7 +389,7 @@
       "layout": null,
       "notes": "3 of 4 torn map pieces - unlocks Plunder's Point",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_1_1"
       }
     },
     {
@@ -351,7 +402,7 @@
       "layout": null,
       "notes": "Opposite side of where you enter - long winding area",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_1_2"
       }
     },
     {
@@ -368,7 +419,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_1_2"
       }
     },
     {
@@ -385,7 +436,7 @@
       "layout": null,
       "notes": "4 of 4 torn map pieces - unlocks Plunder's Point",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_2_1"
       }
     },
     {
@@ -404,7 +455,7 @@
       "layout": null,
       "notes": "Opposite side, furthest from entrance",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_2_2"
       }
     },
     {
@@ -417,7 +468,7 @@
       "layout": null,
       "notes": "Return to central path after finding bells - arena for Torvian",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_8b"
       }
     },
     {
@@ -434,7 +485,7 @@
       "layout": null,
       "notes": "Hug top wall (Coastal Ridge)",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_8b"
       }
     },
     {
@@ -451,7 +502,7 @@
       "layout": null,
       "notes": "Hug top wall (Coastal Ridge)",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_8b"
       }
     },
     {
@@ -469,7 +520,7 @@
       "layout": null,
       "notes": "Two blocks connected by small central square - hug wall to find boss/forge",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_10"
       }
     },
     {
@@ -486,7 +537,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_10"
       }
     },
     {
@@ -503,7 +554,7 @@
       "layout": null,
       "notes": "Room behind - talk to Navali for lore",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_4_1"
       }
     },
     {
@@ -522,7 +573,7 @@
       "layout": null,
       "notes": "Corners of imaginary rectangle - reward cannot be changed later (UNCONFIRMED)",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_4_2"
       }
     },
     {
@@ -540,7 +591,7 @@
       "layout": null,
       "notes": "Find after collecting three tattoos",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_4_2"
       }
     },
     {
@@ -558,7 +609,7 @@
       "layout": null,
       "notes": "Complete trial for 2 passive skill points - third ascendancy path not yet implemented",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_4_3"
       }
     },
     {
@@ -575,7 +626,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_11_1b"
       }
     },
     {
@@ -593,7 +644,7 @@
       "layout": null,
       "notes": "Head Northerly - opposite direction from nearest checkpoint",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_11_2"
       }
     },
     {
@@ -611,7 +662,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g4_11_2"
       }
     }
   ]

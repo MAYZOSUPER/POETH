@@ -1,0 +1,150 @@
+{
+  "id": "interlude-2",
+  "actNumber": 6,
+  "actName": "Интерлюдия 2 — Украденная Барья",
+  "kind": "interlude",
+  "zones": [
+    {
+      "areaId": "il2-the-khari-crossing",
+      "name": "The Khari Crossing",
+      "layout": "il2-the-khari-crossing",
+      "xref": {
+        "exileUiAreaId": "p2_1"
+      }
+    },
+    {
+      "areaId": "il2-pools-of-khatal",
+      "name": "Pools of Khatal",
+      "layout": "il2-pools-of-khatal",
+      "xref": {
+        "exileUiAreaId": "p2_2"
+      }
+    },
+    {
+      "areaId": "il2-sel-khari-sanctuary",
+      "name": "Sel Khari Sanctuary",
+      "layout": "il2-sel-khari-sanctuary",
+      "xref": {
+        "exileUiAreaId": "p2_3"
+      }
+    },
+    {
+      "areaId": "il2-the-galai-gates",
+      "name": "The Galai Gates",
+      "layout": "il2-the-galai-gates",
+      "xref": {
+        "exileUiAreaId": "p2_5"
+      }
+    },
+    {
+      "areaId": "il2-qimah",
+      "name": "Qimah",
+      "isTown": true,
+      "layout": "il2-qimah",
+      "xref": {
+        "exileUiAreaId": "p2_6"
+      }
+    },
+    {
+      "areaId": "il2-qimah-reservoir",
+      "name": "Qimah Reservoir",
+      "layout": "il2-qimah-reservoir",
+      "xref": {
+        "exileUiAreaId": "p2_7"
+      }
+    }
+  ],
+  "quests": [
+    {
+      "id": "interlude-2q-akthi-anundr",
+      "name": "Akthi & Anundr",
+      "type": "optional",
+      "boss": true,
+      "zone": "il2-the-khari-crossing",
+      "rewards": [
+        {
+          "kind": "passive_point",
+          "value": "+2 Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "autoComplete": {
+        "onZoneEnter": "p2_1"
+      }
+    },
+    {
+      "id": "interlude-2q-molten-one-s-gift",
+      "name": "Molten One's Gift",
+      "type": "optional",
+      "zone": "il2-the-khari-crossing",
+      "rewards": [
+        {
+          "kind": "life",
+          "value": "+5% Maximum Life",
+          "numeric": 5
+        }
+      ],
+      "layout": null,
+      "notes": "Алтарь у центральной переправы. Постоянный бонус.",
+      "autoComplete": {
+        "onZoneEnter": "p2_1"
+      }
+    },
+    {
+      "id": "interlude-2q-elzarah-the-cobra-lord",
+      "name": "Elzarah, the Cobra Lord",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "il2-sel-khari-sanctuary",
+      "rewards": [],
+      "layout": null,
+      "autoComplete": {
+        "onZoneEnter": "p2_3"
+      }
+    },
+    {
+      "id": "interlude-2q-vornas-the-fell-flame",
+      "name": "Vornas, the Fell Flame",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "il2-the-galai-gates",
+      "rewards": [],
+      "layout": null,
+      "autoComplete": {
+        "onZoneEnter": "p2_5"
+      }
+    },
+    {
+      "id": "interlude-2q-seven-pillars-of-qimah",
+      "name": "Seven Pillars of Qimah",
+      "type": "optional",
+      "zone": "il2-qimah",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Выбор 1 из 7 бонусов (атрибуты/сопротивления/восстановление и т.д.)",
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Круг из 7 столбов в центре города Qimah. Выбор постоянный.",
+      "autoComplete": {
+        "onZoneEnter": "p2_6"
+      }
+    },
+    {
+      "id": "interlude-2q-2",
+      "name": "Финал Интерлюдии 2",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "il2-qimah-reservoir",
+      "rewards": [],
+      "layout": null,
+      "notes": "Завершает Интерлюдию 2.",
+      "autoComplete": {
+        "onZoneEnter": "p2_7"
+      }
+    }
+  ]
+}

@@ -7,82 +7,130 @@
     {
       "areaId": "a3-sandswept-marsh",
       "name": "Sandswept Marsh",
-      "layout": null
+      "layout": "a3-sandswept-marsh",
+      "xref": {
+        "exileUiAreaId": "g3_1"
+      }
     },
     {
       "areaId": "a3-jungle-ruins",
       "name": "Jungle Ruins",
-      "layout": null
+      "layout": "a3-jungle-ruins",
+      "xref": {
+        "exileUiAreaId": "g3_3"
+      }
     },
     {
       "areaId": "a3-the-venom-crypts",
       "name": "The Venom Crypts",
-      "layout": null
+      "layout": "a3-the-venom-crypts",
+      "xref": {
+        "exileUiAreaId": "g3_4"
+      }
     },
     {
       "areaId": "a3-infested-barrens",
       "name": "Infested Barrens",
-      "layout": null
+      "layout": "a3-infested-barrens",
+      "xref": {
+        "exileUiAreaId": "g3_2_1"
+      }
     },
     {
       "areaId": "a3-the-azak-bog",
       "name": "The Azak Bog",
-      "layout": null
+      "layout": "a3-the-azak-bog",
+      "xref": {
+        "exileUiAreaId": "g3_7"
+      }
     },
     {
       "areaId": "a3-chimeral-wetlands",
       "name": "Chimeral Wetlands",
-      "layout": null
+      "layout": "a3-chimeral-wetlands",
+      "xref": {
+        "exileUiAreaId": "g3_5"
+      }
     },
     {
       "areaId": "a3-jiquani-s-machinarium",
       "name": "Jiquani's Machinarium",
-      "layout": null
+      "layout": "a3-jiquani-s-machinarium",
+      "xref": {
+        "exileUiAreaId": "g3_6_1"
+      }
     },
     {
       "areaId": "a3-jiquani-s-sanctum",
       "name": "Jiquani's Sanctum",
-      "layout": null
+      "layout": "a3-jiquani-s-sanctum",
+      "xref": {
+        "exileUiAreaId": "g3_6_2"
+      }
     },
     {
       "areaId": "a3-the-matlan-waterways",
       "name": "The Matlan Waterways",
-      "layout": null
+      "layout": null,
+      "xref": {
+        "exileUiAreaId": "g3_2_2"
+      }
     },
     {
       "areaId": "a3-the-drowned-city",
       "name": "The Drowned City",
-      "layout": null
+      "layout": "a3-the-drowned-city",
+      "xref": {
+        "exileUiAreaId": "g3_8"
+      }
     },
     {
       "areaId": "a3-the-molten-vault",
       "name": "The Molten Vault",
-      "layout": null
+      "layout": "a3-the-molten-vault",
+      "xref": {
+        "exileUiAreaId": "g3_9"
+      }
     },
     {
       "areaId": "a3-apex-of-filth",
       "name": "Apex of Filth",
-      "layout": null
+      "layout": "a3-apex-of-filth",
+      "xref": {
+        "exileUiAreaId": "g3_11"
+      }
     },
     {
       "areaId": "a3-temple-of-kopec",
       "name": "Temple of Kopec",
-      "layout": null
+      "layout": "a3-temple-of-kopec",
+      "xref": {
+        "exileUiAreaId": "g3_12"
+      }
     },
     {
       "areaId": "a3-utzaal",
       "name": "Utzaal",
-      "layout": null
+      "layout": "a3-utzaal",
+      "xref": {
+        "exileUiAreaId": "g3_14"
+      }
     },
     {
       "areaId": "a3-aggorat",
       "name": "Aggorat",
-      "layout": null
+      "layout": "a3-aggorat",
+      "xref": {
+        "exileUiAreaId": "g3_16"
+      }
     },
     {
       "areaId": "a3-the-black-chambers",
       "name": "The Black Chambers",
-      "layout": null
+      "layout": "a3-the-black-chambers",
+      "xref": {
+        "exileUiAreaId": "g3_17"
+      }
     }
   ],
   "quests": [
@@ -101,7 +149,7 @@
       "layout": null,
       "notes": "Foul Ritual encounter - optional boss",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_1"
       }
     },
     {
@@ -118,7 +166,7 @@
       "layout": null,
       "notes": "Near exit - kill the two rares - 'Azak Campfire'",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_1"
       }
     },
     {
@@ -135,7 +183,7 @@
       "layout": null,
       "notes": "Click corpse on hanging tree",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_1"
       }
     },
     {
@@ -154,7 +202,7 @@
       "layout": null,
       "notes": "Usually spawns in top third of area",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_3"
       }
     },
     {
@@ -172,7 +220,7 @@
       "layout": null,
       "notes": "Servi quest item",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_3"
       }
     },
     {
@@ -189,7 +237,7 @@
       "layout": null,
       "notes": "Secret vendor - Armour",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_3"
       }
     },
     {
@@ -207,7 +255,7 @@
       "layout": null,
       "notes": "Den of the Serpent Priestess - reward is permanent and cannot be changed later",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_4"
       }
     },
     {
@@ -228,7 +276,7 @@
       "layout": null,
       "notes": "Secret vendor - Weapons, guaranteed Rare Boots",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_2_1"
       }
     },
     {
@@ -245,7 +293,7 @@
       "layout": null,
       "notes": "Optional boss encounter",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_2_1"
       }
     },
     {
@@ -264,7 +312,7 @@
       "layout": null,
       "notes": "Top right quadrant - area imagined as square split into four blocks",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_7"
       }
     },
     {
@@ -281,7 +329,7 @@
       "layout": null,
       "notes": "If you find it before boss, don't skip. Don't search for it if you don't find it before boss.",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_7"
       }
     },
     {
@@ -303,7 +351,7 @@
       "layout": null,
       "notes": "Follow lefthand border of zone - arena/Machinarium entrance faces left/West",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_5"
       }
     },
     {
@@ -320,7 +368,7 @@
       "layout": null,
       "notes": "Optional encounter",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_5"
       }
     },
     {
@@ -337,7 +385,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_5"
       }
     },
     {
@@ -356,7 +404,7 @@
       "layout": null,
       "notes": "Spawns on far left or right",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_6_1"
       }
     },
     {
@@ -373,7 +421,7 @@
       "layout": null,
       "notes": "Third door - optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_6_1"
       }
     },
     {
@@ -391,7 +439,7 @@
       "layout": null,
       "notes": "Must wait for second soul core to arrive at Alva (red lines on ground)",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_6_2"
       }
     },
     {
@@ -408,7 +456,7 @@
       "layout": null,
       "notes": "Optional corruption altar",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_6_2"
       }
     },
     {
@@ -425,7 +473,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_6_2"
       }
     },
     {
@@ -442,7 +490,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_2_2"
       }
     },
     {
@@ -459,7 +507,7 @@
       "layout": null,
       "notes": "Ambush encounter between two blocks",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_8"
       }
     },
     {
@@ -485,7 +533,7 @@
       "layout": null,
       "notes": "Optional treasure rooms",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_8"
       }
     },
     {
@@ -511,7 +559,7 @@
       "layout": null,
       "notes": "Linear - kill quickly under 4 minutes before molten gold floods",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_9"
       }
     },
     {
@@ -524,7 +572,7 @@
       "layout": null,
       "notes": "Spiral pattern - boss at top wall of main area after traveling full 360°",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_11"
       }
     },
     {
@@ -541,7 +589,7 @@
       "layout": null,
       "notes": "Secret vendor",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_11"
       }
     },
     {
@@ -558,7 +606,7 @@
       "layout": null,
       "notes": "Optional treasure - requires 3 fungi",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_11"
       }
     },
     {
@@ -576,7 +624,7 @@
       "layout": null,
       "notes": "Go up stairs twice - stay in shade to not take damage",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_12"
       }
     },
     {
@@ -594,7 +642,7 @@
       "layout": null,
       "notes": "Towards right end of zone, facing North",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_14"
       }
     },
     {
@@ -611,7 +659,7 @@
       "layout": null,
       "notes": "Optional treasure - sellable for 500-1500 gold each",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_14"
       }
     },
     {
@@ -629,7 +677,7 @@
       "layout": null,
       "notes": "After big plaza, top right end of zone",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_16"
       }
     },
     {
@@ -646,7 +694,7 @@
       "layout": null,
       "notes": "Optional treasure",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_16"
       }
     },
     {
@@ -664,7 +712,7 @@
       "layout": null,
       "notes": "Opposite side from entrance along center - top left or top right depending on entry angle",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "g3_17"
       }
     }
   ]

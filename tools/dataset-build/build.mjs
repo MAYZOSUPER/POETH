@@ -4,18 +4,19 @@
 // read-only dataset under resources/data/. We ship only the DERIVED factual
 // dataset (boss names, reward values — game facts, re-expressed in our schema),
 // never the upstream source files. Re-run after a patch by refreshing the files
-// in tools/dataset-build/sources/ and the xref below, then `npm run build:data`.
+// in tools/dataset-build/sources/ and the maps below, then `npm run build:data`.
 //
 //   Sources (download into tools/dataset-build/sources/):
-//   - helper_zones.json        nicolasbagatello/poe2-helper  (schema/facts reference)
-//   - exile-ui-filelist.json   Lailloken/Exile-UI  file-list 2.json  (MIT, layout images)
-//
-// Layout images are pinned to a specific Exile-UI commit for reproducibility.
+//   - helper_zones.json        nicolasbagatello/poe2-helper  (acts 1-4 facts)
+//   - exile-ui-filelist.json   Lailloken/Exile-UI  file-list 2.json  (MIT, images)
+//   Plus: area-id-map.mjs (canonical areaId↔zone) and interludes.mjs (interludes).
 
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { gems as gemCatalog, recommendations as gemRecommendations } from './gem-recs.mjs'
+import { areaIdForZone } from './area-id-map.mjs'
+import { INTERLUDES } from './interludes.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..', '..')
@@ -25,27 +26,6 @@ const OUT = join(ROOT, 'resources', 'data')
 const EXILE_UI_COMMIT = 'ca0caec4f55ef1d684a5ee0b8e2aedab20deaa05'
 const LAYOUT_BASE_URL = `https://raw.githubusercontent.com/Lailloken/Exile-UI/${EXILE_UI_COMMIT}/img/GUI/act-decoder/zones%202/`
 const GAME_PATCH = '0.5'
-
-// --- zone name -> Exile-UI areaID (layout image key). Act 1 verified by image
-// inspection; other acts left for a future per-patch pass (quests still ship). ---
-const EXILE_UI_AREA = {
-  Clearfell: 'g1_2',
-  'Mud Burrow': 'g1_3',
-  'The Grelwood': 'g1_4',
-  'The Red Vale': 'g1_5',
-  'The Grim Tangle': 'g1_6',
-  'Cemetery of the Eternals': 'g1_7',
-  'Mausoleum of the Praetor': 'g1_8',
-  'Tomb of the Consort': 'g1_9',
-  'Hunting Grounds': 'g1_11',
-  Freythorn: 'g1_12',
-  'Ogham Farmlands': 'g1_13_1',
-  'Ogham Village': 'g1_13_2',
-  'The Manor Ramparts': 'g1_14',
-  'Ogham Manor: First Floor': 'g1_15',
-  'Ogham Manor: Second Floor': 'g1_15',
-  'Ogham Manor: Third Floor': 'g1_15'
-}
 
 // ---------------------------------------------------------------------------
 
@@ -61,7 +41,7 @@ function cap(s) {
 }
 
 function isTownName(name) {
-  return /\btown\b|encampment/i.test(name)
+  return /\btown\b|encampment|caravan/i.test(name)
 }
 
 function cleanBossName(name) {
@@ -88,7 +68,7 @@ function splitRewards(text) {
   return parts.map((p) => p.trim()).filter(Boolean)
 }
 
-/** Classify one reward fragment into our {kind, value, numeric?, swappable?, options?}. */
+/** Classify one reward fragment into our {kind, value, numeric?, swappable?}. */
 function classifyOne(raw) {
   const text = raw.replace(/^permanent buff:\s*/i, '').trim()
   if (!text) return null
@@ -108,30 +88,20 @@ function classifyOne(raw) {
   if (/uncut spirit gem/i.test(text)) {
     return { kind: 'uncut_gem', value: text.replace(/\s*\(.*?\)\s*$/, '').trim() || 'Uncut Spirit Gem' }
   }
-  if (/uncut support gem/i.test(text)) {
-    return { kind: 'support_gem', value: 'Uncut Support Gem' }
-  }
-  if (/uncut skill gem/i.test(text)) {
-    return { kind: 'uncut_gem', value: 'Uncut Skill Gem' }
-  }
+  if (/uncut support gem/i.test(text)) return { kind: 'support_gem', value: 'Uncut Support Gem' }
+  if (/uncut skill gem/i.test(text)) return { kind: 'uncut_gem', value: 'Uncut Skill Gem' }
   if ((m = text.match(/(\d+)\s*(?:to\s+)?(?:maximum\s+)?spirit/i))) {
     return { kind: 'spirit', value: `+${m[1]} Spirit`, numeric: +m[1], swappable }
   }
   if ((m = text.match(/(\d+)\s*(?:to\s+)?(?:maximum\s+)?life/i))) {
     return { kind: 'life', value: `+${m[1]} Maximum Life`, numeric: +m[1], swappable }
   }
-  if (/mana/i.test(text)) {
-    return { kind: 'mana', value: text, swappable }
-  }
-  if (/charm/i.test(text)) {
-    return { kind: 'charm_slot', value: text, swappable }
-  }
+  if (/mana/i.test(text)) return { kind: 'mana', value: text, swappable }
+  if (/charm/i.test(text)) return { kind: 'charm_slot', value: text, swappable }
   if ((m = text.match(/(\d+)\s*(strength|dexterity|intelligence|attribute)/i))) {
     return { kind: 'attribute', value: text, numeric: +m[1], swappable }
   }
-  if (/\bring\b|\bamulet\b|\bbelt\b/i.test(text)) {
-    return { kind: 'ring_or_amulet', value: text, swappable }
-  }
+  if (/\bring\b|\bamulet\b|\bbelt\b/i.test(text)) return { kind: 'ring_or_amulet', value: text, swappable }
   return { kind: 'other', value: text, swappable: swappable || undefined }
 }
 
@@ -140,7 +110,6 @@ function classifyRewards(rewardText) {
   return splitRewards(rewardText)
     .map(classifyOne)
     .filter(Boolean)
-    // drop swappable:false noise
     .map((r) => (r.swappable ? r : { ...r, swappable: undefined }))
 }
 
@@ -153,104 +122,122 @@ function filesForArea(exileAreaId) {
   return fileList.filter((f) => f.split(' ')[0] === exileAreaId)
 }
 
-rmSync(OUT, { recursive: true, force: true })
-mkdirSync(join(OUT, 'acts'), { recursive: true })
-mkdirSync(join(OUT, 'layouts'), { recursive: true })
+function makeZone(ourAreaId, name, isTown) {
+  const exileUiAreaId = areaIdForZone(name)
+  const files = exileUiAreaId ? filesForArea(exileUiAreaId) : []
+  const zone = { areaId: ourAreaId, name, isTown: isTown || undefined, layout: files.length ? ourAreaId : null }
+  if (exileUiAreaId) zone.xref = { exileUiAreaId }
+  return { zone, exileUiAreaId, files }
+}
 
-const layouts = {}
-const indexActs = []
-const routeSteps = []
-let routeOrder = 0
-let layoutCount = 0
-let questCount = 0
-
-for (const act of helper.acts) {
+function buildHelperAct(act) {
   const actNumber = act.act_number
   const actId = `act-${actNumber}`
-  const file = `acts/${actId}.json`
-  const actName = `Act ${actNumber} — ${act.act_name}`
-
   const zones = []
   const quests = []
   const usedIds = new Set()
 
   for (const z of act.zones) {
-    const areaId = `a${actNumber}-${slug(z.zone_name)}`
-    const exileUiAreaId = EXILE_UI_AREA[z.zone_name]
-    const isTown = isTownName(z.zone_name)
-
-    const zone = {
-      areaId,
-      name: z.zone_name,
-      isTown: isTown || undefined,
-      layout: exileUiAreaId ? areaId : null
-    }
-    if (exileUiAreaId) zone.xref = { exileUiAreaId }
+    const ourAreaId = `a${actNumber}-${slug(z.zone_name)}`
+    const { zone, exileUiAreaId } = makeZone(ourAreaId, z.zone_name, isTownName(z.zone_name))
     zones.push(zone)
-
-    if (exileUiAreaId) {
-      const files = filesForArea(exileUiAreaId)
-      if (files.length) {
-        layouts[areaId] = {
-          areaId,
-          files,
-          rotationLocked: false,
-          attribution: 'Exile-UI (MIT)'
-        }
-        layoutCount += files.length
-      }
-    }
-
-    routeSteps.push({
-      order: routeOrder++,
-      actId,
-      areaId,
-      text: isTown ? `Town: ${z.zone_name}` : `Enter ${z.zone_name}`,
-      optional: false
-    })
 
     for (const poi of z.points_of_interest || []) {
       const isBoss = /boss/i.test(poi.name)
       if (!poi.reward && !isBoss) continue
-
       const name = isBoss ? cleanBossName(poi.name) : poi.name.replace(/\s*\(.*?\)\s*$/, '').trim()
       let id = `${actId}q-${slug(name)}`
       let n = 2
       while (usedIds.has(id)) id = `${actId}q-${slug(name)}-${n++}`
       usedIds.add(id)
-
-      const rewards = classifyRewards(poi.reward || '')
       quests.push({
         id,
         name,
         type: poi.optional ? 'optional' : 'mandatory',
         boss: isBoss || undefined,
-        zone: areaId,
-        rewards,
+        zone: ourAreaId,
+        rewards: classifyRewards(poi.reward || ''),
         layout: null,
         notes: poi.location_hint || poi.tip || undefined,
         autoComplete: { onZoneEnter: exileUiAreaId || null }
       })
-      questCount++
     }
   }
+  return { id: actId, actNumber, actName: `Act ${actNumber} — ${act.act_name}`, kind: 'act', zones, quests }
+}
 
-  writeFileSync(
-    join(OUT, file),
-    JSON.stringify({ id: actId, actNumber, actName, kind: 'act', zones, quests }, null, 2)
-  )
-  indexActs.push({ id: actId, file, actNumber, kind: 'act', actName })
+function buildInterlude(il) {
+  const k = il.actNumber - 4
+  const zones = []
+  const nameToAreaId = {}
+  const exileByName = {}
+  for (const z of il.zones) {
+    const ourAreaId = `il${k}-${slug(z.name)}`
+    nameToAreaId[z.name] = ourAreaId
+    const { zone, exileUiAreaId } = makeZone(ourAreaId, z.name, z.isTown)
+    exileByName[z.name] = exileUiAreaId
+    zones.push(zone)
+  }
+  const usedIds = new Set()
+  const quests = il.quests.map((q) => {
+    let id = `${il.id}q-${slug(q.name)}`
+    let n = 2
+    while (usedIds.has(id)) id = `${il.id}q-${slug(q.name)}-${n++}`
+    usedIds.add(id)
+    return {
+      id,
+      name: q.name,
+      type: q.type,
+      boss: q.boss || undefined,
+      zone: nameToAreaId[q.zone],
+      rewards: q.rewards || [],
+      layout: null,
+      notes: q.notes,
+      autoComplete: { onZoneEnter: exileByName[q.zone] || null }
+    }
+  })
+  return { id: il.id, actNumber: il.actNumber, actName: il.actName, kind: 'interlude', zones, quests }
+}
+
+// ---------------------------------------------------------------------------
+
+rmSync(OUT, { recursive: true, force: true })
+mkdirSync(join(OUT, 'acts'), { recursive: true })
+mkdirSync(join(OUT, 'layouts'), { recursive: true })
+
+const acts = [...helper.acts.map(buildHelperAct), ...INTERLUDES.map(buildInterlude)]
+
+const layouts = {}
+const indexActs = []
+const routeSteps = []
+let routeOrder = 0
+let questCount = 0
+
+for (const act of acts) {
+  const file = `acts/${act.id}.json`
+  for (const zone of act.zones) {
+    if (zone.layout && zone.xref?.exileUiAreaId) {
+      const files = filesForArea(zone.xref.exileUiAreaId)
+      if (files.length) {
+        layouts[zone.areaId] = { areaId: zone.areaId, files, rotationLocked: false, attribution: 'Exile-UI (MIT)' }
+      }
+    }
+    routeSteps.push({
+      order: routeOrder++,
+      actId: act.id,
+      areaId: zone.areaId,
+      text: zone.isTown ? `Town: ${zone.name}` : `Enter ${zone.name}`,
+      optional: false
+    })
+  }
+  questCount += act.quests.length
+  writeFileSync(join(OUT, file), JSON.stringify(act, null, 2))
+  indexActs.push({ id: act.id, file, actNumber: act.actNumber, kind: act.kind, actName: act.actName })
 }
 
 writeFileSync(join(OUT, 'index.json'), JSON.stringify({ acts: indexActs }, null, 2))
-writeFileSync(
-  join(OUT, 'layouts', 'index.json'),
-  JSON.stringify(layouts, null, 2)
-)
-writeFileSync(
-  join(OUT, 'route.json'),
-  JSON.stringify({ patch: GAME_PATCH, steps: routeSteps }, null, 2)
-)
+writeFileSync(join(OUT, 'layouts', 'index.json'), JSON.stringify(layouts, null, 2))
+writeFileSync(join(OUT, 'route.json'), JSON.stringify({ patch: GAME_PATCH, steps: routeSteps }, null, 2))
 writeFileSync(
   join(OUT, 'gems.json'),
   JSON.stringify({ gems: gemCatalog, recommendations: gemRecommendations }, null, 2)
@@ -259,8 +246,7 @@ writeFileSync(
 const meta = {
   schemaVersion: '1.0.0',
   gamePatch: GAME_PATCH,
-  gameVersionLabel:
-    'Early Access 0.5 — community data (verify quest rewards against the live game)',
+  gameVersionLabel: 'Early Access 0.5 — community data (verify quest rewards against the live game)',
   generatedAt: new Date().toISOString(),
   actCount: indexActs.length,
   layoutRemoteBaseUrl: LAYOUT_BASE_URL,
@@ -277,6 +263,11 @@ const meta = {
       commit: EXILE_UI_COMMIT
     },
     {
+      name: 'Lechkolion/poe2-leveling-overlay (areaId map + interludes)',
+      url: 'https://github.com/Lechkolion/poe2-leveling-overlay',
+      license: 'MIT'
+    },
+    {
       name: 'maxroll.gg (reward validation reference)',
       url: 'https://maxroll.gg/poe2/getting-started/permanent-stats-from-campaign',
       license: 'proprietary — reference only'
@@ -285,6 +276,7 @@ const meta = {
 }
 writeFileSync(join(OUT, 'dataset.meta.json'), JSON.stringify(meta, null, 2))
 
+const mappedZones = Object.keys(layouts).length
 console.log(
-  `Built ${indexActs.length} acts, ${questCount} quests, ${Object.keys(layouts).length} mapped zones (${layoutCount} layout images). Output: ${OUT}`
+  `Built ${indexActs.length} acts/interludes, ${questCount} quests, ${mappedZones} zones with layouts. Output: ${OUT}`
 )

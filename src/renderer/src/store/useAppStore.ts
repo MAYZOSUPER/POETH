@@ -3,9 +3,12 @@ import type {
   Act,
   Dataset,
   HotkeyAction,
+  LevelEvent,
   ProfileMeta,
   ProgressState,
-  Settings
+  Settings,
+  TailerStatus,
+  ZoneEvent
 } from '@shared/types'
 
 interface AppState {
@@ -17,6 +20,9 @@ interface AppState {
   settings: Settings | null
   selectedActId: string | null
   selectedZoneAreaId: string | null
+  /** zone (our areaId) auto-detected from the game log; for highlighting */
+  detectedZoneAreaId: string | null
+  tailerStatus: TailerStatus | null
 
   init: () => Promise<void>
   selectAct: (actId: string) => void
@@ -30,12 +36,40 @@ interface AppState {
   deleteProfile: (id: string) => Promise<void>
   patchSettings: (patch: Partial<Settings>) => Promise<void>
   handleHotkey: (action: HotkeyAction) => Promise<void>
+  tailerStart: () => Promise<void>
+  tailerStop: () => Promise<void>
+  tailerPickFile: () => Promise<void>
 }
 
 const api = (): Window['overlayApi'] => window.overlayApi
 
 function actOf(dataset: Dataset | null, actId: string | null): Act | undefined {
   return dataset?.acts.find((a) => a.id === actId)
+}
+
+// Reverse indices: game areaId / display name -> our { actId, zoneAreaId }.
+type ZoneRef = { actId: string; zoneAreaId: string }
+let zoneByExileId: Record<string, ZoneRef> = {}
+let zoneByName: Record<string, ZoneRef> = {}
+
+function buildZoneIndex(dataset: Dataset): void {
+  zoneByExileId = {}
+  zoneByName = {}
+  for (const act of dataset.acts) {
+    for (const zone of act.zones) {
+      const ref: ZoneRef = { actId: act.id, zoneAreaId: zone.areaId }
+      const ex = zone.xref?.exileUiAreaId
+      if (ex && !(ex.toLowerCase() in zoneByExileId)) zoneByExileId[ex.toLowerCase()] = ref
+      const n = zone.name.toLowerCase()
+      if (!(n in zoneByName)) zoneByName[n] = ref
+    }
+  }
+}
+
+function resolveZone(e: ZoneEvent): ZoneRef | null {
+  if (e.areaId && zoneByExileId[e.areaId.toLowerCase()]) return zoneByExileId[e.areaId.toLowerCase()]
+  if (e.areaName && zoneByName[e.areaName.toLowerCase()]) return zoneByName[e.areaName.toLowerCase()]
+  return null
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -47,11 +81,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   settings: null,
   selectedActId: null,
   selectedZoneAreaId: null,
+  detectedZoneAreaId: null,
+  tailerStatus: null,
 
   async init() {
     const dataset = await api().dataset.get()
     const settings = await api().settings.get()
     let profiles = await api().profiles.list()
+    buildZoneIndex(dataset)
 
     let activeProfileId = settings.activeProfileId
     if (!activeProfileId || !profiles.some((p) => p.id === activeProfileId)) {
@@ -77,6 +114,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     })
     api().onHotkey((action) => void get().handleHotkey(action))
 
+    // Advisory auto-detection from the game log (zone + level). Never auto-checks quests.
+    api().onTailerStatus((status) => set({ tailerStatus: status }))
+    api().onZoneChange((e: ZoneEvent) => {
+      const ref = resolveZone(e)
+      if (!ref) return
+      const patch: Partial<AppState> = { detectedZoneAreaId: ref.zoneAreaId }
+      if (get().settings?.autoAdvanceZone) {
+        patch.selectedActId = ref.actId
+        patch.selectedZoneAreaId = ref.zoneAreaId
+      }
+      set(patch)
+    })
+    api().onLevelChange((e: LevelEvent) => void get().setLevel(e.level))
+
+    const tailerStatus = await api().tailer.status()
+
     set({
       dataset,
       settings,
@@ -85,6 +138,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       progress,
       selectedActId,
       selectedZoneAreaId: null,
+      tailerStatus,
       ready: true
     })
   },
@@ -176,5 +230,24 @@ export const useAppStore = create<AppState>((set, get) => ({
       const nextIdx = Math.max(0, Math.min(act.zones.length - 1, (idx < 0 ? 0 : idx) + dir))
       set({ selectedZoneAreaId: act.zones[nextIdx].areaId })
     }
+  },
+
+  async tailerStart() {
+    const status = await api().tailer.start()
+    const settings = await api().settings.get()
+    set({ tailerStatus: status, settings })
+  },
+
+  async tailerStop() {
+    const status = await api().tailer.stop()
+    const settings = await api().settings.get()
+    set({ tailerStatus: status, settings })
+  },
+
+  async tailerPickFile() {
+    await api().tailer.pickLogFile()
+    const status = await api().tailer.status()
+    const settings = await api().settings.get()
+    set({ tailerStatus: status, settings })
   }
 }))

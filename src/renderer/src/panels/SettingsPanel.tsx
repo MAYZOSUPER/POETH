@@ -3,6 +3,11 @@ import { useAppStore } from '../store/useAppStore'
 export function SettingsPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const settings = useAppStore((s) => s.settings)
+  const tailerStatus = useAppStore((s) => s.tailerStatus)
+  const patchSettings = useAppStore((s) => s.patchSettings)
+  const tailerStart = useAppStore((s) => s.tailerStart)
+  const tailerStop = useAppStore((s) => s.tailerStop)
+  const tailerPickFile = useAppStore((s) => s.tailerPickFile)
   const meta = dataset?.meta
 
   return (
@@ -39,11 +44,36 @@ export function SettingsPanel() {
       </div>
 
       <div className="block">
-        <div className="block-title">Автоопределение (скоро)</div>
+        <div className="block-title">Автоопределение зоны (Client.txt)</div>
+        <label className="row-toggle">
+          <input
+            type="checkbox"
+            checked={settings?.tailerEnabled ?? false}
+            onChange={(e) => void (e.target.checked ? tailerStart() : tailerStop())}
+          />
+          Читать лог игры (подсветка текущей зоны и уровня)
+        </label>
         <div className="small muted">
-          Чтение лог-файла игры (Client.txt) для авто-подсветки текущей зоны и уровня появится в
-          следующей версии. Завершение квестов всегда отмечается вручную — в логе/API игры нет
-          такого сигнала.
+          {tailerStatus?.running
+            ? tailerStatus.found
+              ? `✓ Лог найден: ${tailerStatus.logPath}`
+              : '⚠ Client.txt не найден — укажите файл вручную'
+            : 'Выключено'}
+        </div>
+        <button className="btn" onClick={() => void tailerPickFile()}>
+          Указать Client.txt…
+        </button>
+        <label className="row-toggle">
+          <input
+            type="checkbox"
+            checked={settings?.autoAdvanceZone ?? true}
+            onChange={(e) => void patchSettings({ autoAdvanceZone: e.target.checked })}
+          />
+          Авто-переход к текущей зоне
+        </label>
+        <div className="small muted">
+          Подсвечивает зону и уровень из лога (безопасно, только чтение). Завершение квестов всегда
+          отмечается вручную — в игре нет такого сигнала.
         </div>
       </div>
 

@@ -250,6 +250,10 @@ button.icon.danger:hover {
 .zone-head.active {
   background: rgba(111, 177, 214, 0.12);
 }
+.zone-head.current {
+  background: rgba(120, 200, 120, 0.16);
+  border-left: 3px solid #6fc46f;
+}
 .zone-name {
   font-weight: 600;
   color: #d8d2c4;
@@ -419,6 +423,28 @@ button.icon.danger:hover {
   font-weight: 600;
   color: var(--gold);
   margin-bottom: 4px;
+}
+.row-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+  cursor: pointer;
+}
+.row-toggle input {
+  cursor: pointer;
+}
+.btn {
+  background: var(--bg-soft);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 4px 8px;
+  cursor: pointer;
+  margin: 2px 0 6px;
+}
+.btn:hover {
+  border-color: var(--gold);
 }
 .kv {
   list-style: none;

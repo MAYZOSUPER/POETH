@@ -3,7 +3,13 @@ import { promises as fs } from 'fs'
 import { createOverlayWindow } from './overlayWindow'
 import { initClickThrough } from './clickThrough'
 import { registerHotkeys, unregisterHotkeys } from './hotkeys'
-import { registerIpcHandlers, dispatchHotkey, applySettingsToWindow } from './ipcHandlers'
+import {
+  registerIpcHandlers,
+  dispatchHotkey,
+  applySettingsToWindow,
+  wireTailer,
+  reconcileTailer
+} from './ipcHandlers'
 import { getSettings } from './services/settingsStore'
 import { resolveLayoutFile, contentTypeFor } from './services/layoutResolver'
 
@@ -52,12 +58,14 @@ async function bootstrap(): Promise<void> {
   })
 
   registerIpcHandlers()
+  wireTailer()
   createOverlayWindow()
 
   const settings = await getSettings()
   initClickThrough(settings.locked)
   applySettingsToWindow(settings)
   registerHotkeys(settings.hotkeys, dispatchHotkey)
+  await reconcileTailer(settings)
 }
 
 app.on('activate', () => {

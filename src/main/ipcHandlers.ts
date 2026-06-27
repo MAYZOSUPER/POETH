@@ -1,12 +1,40 @@
-import { ipcMain } from 'electron'
+import { ipcMain, dialog } from 'electron'
 import { IPC } from '@shared/ipc'
-import type { HotkeyAction, Settings } from '@shared/types'
+import type { HotkeyAction, LevelEvent, Settings, TailerStatus, ZoneEvent } from '@shared/types'
 import * as profiles from './services/profileStore'
 import { getSettings, updateSettings } from './services/settingsStore'
 import { loadDataset } from './services/questDataset'
 import { resolveLayout } from './services/layoutResolver'
+import { logTailer } from './services/logTailer'
 import { getOverlayWindow } from './overlayWindow'
 import { setLocked } from './clickThrough'
+
+function send(channel: string, payload: unknown): void {
+  getOverlayWindow()?.webContents.send(channel, payload)
+}
+
+/** Start/stop the log tailer to match the current settings. */
+export async function reconcileTailer(s: Settings): Promise<void> {
+  if (s.tailerEnabled) await logTailer.start(s.logPath)
+  else logTailer.stop()
+}
+
+/** Forward tailer events to the renderer (subscribe once at startup). */
+export function wireTailer(): void {
+  const dbg = process.env.OVERLAY_DEBUG === '1'
+  logTailer.on('zone', (e: ZoneEvent) => {
+    if (dbg) console.log('[tailer] zone', JSON.stringify(e))
+    send(IPC.events.zoneChange, e)
+  })
+  logTailer.on('level', (e: LevelEvent) => {
+    if (dbg) console.log('[tailer] level', JSON.stringify(e))
+    send(IPC.events.levelChange, e)
+  })
+  logTailer.on('status', (s: TailerStatus) => {
+    if (dbg) console.log('[tailer] status', JSON.stringify(s))
+    send(IPC.events.tailerStatus, s)
+  })
+}
 
 function clamp(v: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, v))
@@ -82,12 +110,44 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.settings.set, async (_e, patch: Partial<Settings>) => {
     const next = await updateSettings(patch)
     applySettingsToWindow(next)
+    if ('tailerEnabled' in patch || 'logPath' in patch) await reconcileTailer(next)
     return next
   })
 
   // ---- dataset + layouts ----
   ipcMain.handle(IPC.dataset.get, () => loadDataset())
   ipcMain.handle(IPC.layout.resolve, (_e, areaId: string) => resolveLayout(areaId))
+
+  // ---- log tailer (advisory zone/level auto-detect) ----
+  ipcMain.handle(IPC.tailer.start, async () => {
+    const next = await updateSettings({ tailerEnabled: true })
+    return logTailer.start(next.logPath)
+  })
+  ipcMain.handle(IPC.tailer.stop, async () => {
+    await updateSettings({ tailerEnabled: false })
+    logTailer.stop()
+    return logTailer.getStatus()
+  })
+  ipcMain.handle(IPC.tailer.status, () => logTailer.getStatus())
+  ipcMain.handle(IPC.tailer.pickLogFile, async () => {
+    const win = getOverlayWindow()
+    const result = win
+      ? await dialog.showOpenDialog(win, {
+          title: 'Выберите Client.txt',
+          properties: ['openFile'],
+          filters: [{ name: 'Client log', extensions: ['txt'] }]
+        })
+      : await dialog.showOpenDialog({
+          title: 'Выберите Client.txt',
+          properties: ['openFile'],
+          filters: [{ name: 'Client log', extensions: ['txt'] }]
+        })
+    if (result.canceled || result.filePaths.length === 0) return null
+    const path = result.filePaths[0]
+    const next = await updateSettings({ logPath: path, tailerEnabled: true })
+    await logTailer.start(next.logPath)
+    return path
+  })
 
   // ---- window controls (fire-and-forget) ----
   ipcMain.on(IPC.window.setOpacity, (_e, value: number) => {
