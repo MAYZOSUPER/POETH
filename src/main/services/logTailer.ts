@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import { existsSync, createReadStream } from 'fs'
+import { existsSync, createReadStream, readFileSync } from 'fs'
 import { stat } from 'fs/promises'
 import { createInterface } from 'readline'
 import type { LevelEvent, TailerStatus, ZoneEvent } from '@shared/types'
@@ -20,14 +20,40 @@ const LEVEL_UP = /:\s+(\S+)\s+is now level (\d+)/
 
 const SCAN_BYTES = 102400
 
+const POE2_SUBPATH = 'Path of Exile 2\\logs\\Client.txt'
+
 function defaultPaths(): string[] {
   const up = process.env.USERPROFILE ?? ''
   return [
-    'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Path of Exile 2\\logs\\Client.txt',
-    'C:\\Program Files (x86)\\Grinding Gear Games\\Path of Exile 2\\logs\\Client.txt',
+    `C:\\Program Files (x86)\\Steam\\steamapps\\common\\${POE2_SUBPATH}`,
+    `C:\\Program Files (x86)\\Grinding Gear Games\\${POE2_SUBPATH}`,
     'C:\\Program Files\\Epic Games\\PathOfExile2\\logs\\Client.txt',
-    `${up}\\Documents\\My Games\\Path of Exile 2\\logs\\Client.txt`
+    `${up}\\Documents\\My Games\\${POE2_SUBPATH}`,
+    `C:\\Daum Games\\Path of Exile2\\logs\\Client.txt`
   ]
+}
+
+/** Steam libraries can live on any drive — read libraryfolders.vdf to find them. */
+function steamLibraryClientPaths(): string[] {
+  const vdfs = [
+    'C:\\Program Files (x86)\\Steam\\steamapps\\libraryfolders.vdf',
+    'C:\\Program Files\\Steam\\steamapps\\libraryfolders.vdf'
+  ]
+  const out: string[] = []
+  for (const vdf of vdfs) {
+    try {
+      const text = readFileSync(vdf, 'utf8')
+      const re = /"path"\s*"([^"]+)"/g
+      let m: RegExpExecArray | null
+      while ((m = re.exec(text)) !== null) {
+        const lib = m[1].replace(/\\\\/g, '\\')
+        out.push(`${lib}\\steamapps\\common\\${POE2_SUBPATH}`)
+      }
+    } catch {
+      // no Steam vdf here
+    }
+  }
+  return out
 }
 
 interface Parsed {
@@ -75,7 +101,9 @@ export class LogTailer extends EventEmitter {
   }
 
   private findLogFile(): string | null {
-    for (const p of defaultPaths()) if (existsSync(p)) return p
+    for (const p of [...defaultPaths(), ...steamLibraryClientPaths()]) {
+      if (existsSync(p)) return p
+    }
     return null
   }
 
