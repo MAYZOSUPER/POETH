@@ -1,0 +1,208 @@
+{
+  "gems": {
+    "spark": {
+      "id": "spark",
+      "name": "Spark",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "frost-bolt": {
+      "id": "frost-bolt",
+      "name": "Frost Bolt",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "fireball": {
+      "id": "fireball",
+      "name": "Fireball",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "boneshatter": {
+      "id": "boneshatter",
+      "name": "Boneshatter",
+      "kind": "active",
+      "colour": "red",
+      "requiredLevel": 1
+    },
+    "mace-strike": {
+      "id": "mace-strike",
+      "name": "Mace Strike",
+      "kind": "active",
+      "colour": "red",
+      "requiredLevel": 1
+    },
+    "lightning-arrow": {
+      "id": "lightning-arrow",
+      "name": "Lightning Arrow",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "galvanic-shards": {
+      "id": "galvanic-shards",
+      "name": "Galvanic Shards",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "tempest-flurry": {
+      "id": "tempest-flurry",
+      "name": "Tempest Flurry",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "falling-thunder": {
+      "id": "falling-thunder",
+      "name": "Falling Thunder",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "explosive-shot": {
+      "id": "explosive-shot",
+      "name": "Explosive Shot",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "skeletal-warriors": {
+      "id": "skeletal-warriors",
+      "name": "Summon Skeletal Warriors",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "essence-drain": {
+      "id": "essence-drain",
+      "name": "Essence Drain",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "unleash": {
+      "id": "unleash",
+      "name": "Unleash",
+      "kind": "support",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "lightning-infusion": {
+      "id": "lightning-infusion",
+      "name": "Lightning Infusion",
+      "kind": "support",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "magnified-effect": {
+      "id": "magnified-effect",
+      "name": "Magnified Effect",
+      "kind": "support",
+      "colour": "red",
+      "requiredLevel": 1
+    },
+    "martial-tempo": {
+      "id": "martial-tempo",
+      "name": "Martial Tempo",
+      "kind": "support",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "scattershot": {
+      "id": "scattershot",
+      "name": "Scattershot",
+      "kind": "support",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "minion-mastery": {
+      "id": "minion-mastery",
+      "name": "Minion-related support",
+      "kind": "support",
+      "colour": "blue",
+      "requiredLevel": 1
+    }
+  },
+  "recommendations": [
+    {
+      "class": "Sorceress",
+      "actId": "act-1",
+      "primaryGemIds": [
+        "spark",
+        "frost-bolt"
+      ],
+      "supportGemIds": [
+        "unleash",
+        "lightning-infusion"
+      ],
+      "note": "Cut your first Uncut Skill Gem into Spark or Frost Bolt; add a support once you get the Lv1 Uncut Support Gem."
+    },
+    {
+      "class": "Witch",
+      "actId": "act-1",
+      "primaryGemIds": [
+        "skeletal-warriors",
+        "essence-drain"
+      ],
+      "supportGemIds": [
+        "minion-mastery",
+        "unleash"
+      ],
+      "note": "Minion start: Summon Skeletal Warriors as your main damage; Essence Drain as a single-target option."
+    },
+    {
+      "class": "Warrior",
+      "actId": "act-1",
+      "primaryGemIds": [
+        "boneshatter",
+        "mace-strike"
+      ],
+      "supportGemIds": [
+        "magnified-effect",
+        "martial-tempo"
+      ],
+      "note": "Boneshatter as the first gem; Mace Strike to build heavy-stun. Shield Charge from Tarkleigh for mobility."
+    },
+    {
+      "class": "Ranger",
+      "actId": "act-1",
+      "primaryGemIds": [
+        "lightning-arrow",
+        "galvanic-shards"
+      ],
+      "supportGemIds": [
+        "scattershot",
+        "martial-tempo"
+      ],
+      "note": "Lightning Arrow clears packs; Galvanic Shards for single target."
+    },
+    {
+      "class": "Monk",
+      "actId": "act-1",
+      "primaryGemIds": [
+        "falling-thunder",
+        "tempest-flurry"
+      ],
+      "supportGemIds": [
+        "martial-tempo"
+      ],
+      "note": "Tempest Flurry to build power charges, Falling Thunder to spend them."
+    },
+    {
+      "class": "Mercenary",
+      "actId": "act-1",
+      "primaryGemIds": [
+        "galvanic-shards",
+        "explosive-shot"
+      ],
+      "supportGemIds": [
+        "scattershot"
+      ],
+      "note": "Crossbow start: Galvanic Shards as your workhorse, Explosive Shot for groups."
+    }
+  ]
+}

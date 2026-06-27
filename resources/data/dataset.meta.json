@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0.0",
+  "gamePatch": "0.5",
+  "gameVersionLabel": "Early Access 0.5 — community data (verify quest rewards against the live game)",
+  "generatedAt": "2026-06-27T21:49:35.092Z",
+  "actCount": 4,
+  "layoutRemoteBaseUrl": "https://raw.githubusercontent.com/Lailloken/Exile-UI/ca0caec4f55ef1d684a5ee0b8e2aedab20deaa05/img/GUI/act-decoder/zones%202/",
+  "sources": [
+    {
+      "name": "nicolasbagatello/poe2-helper",
+      "url": "https://github.com/nicolasbagatello/poe2-helper",
+      "license": "educational/informational (facts re-derived, source not redistributed)"
+    },
+    {
+      "name": "Lailloken/Exile-UI (Act-Decoder layout images)",
+      "url": "https://github.com/Lailloken/Exile-UI",
+      "license": "MIT",
+      "commit": "ca0caec4f55ef1d684a5ee0b8e2aedab20deaa05"
+    },
+    {
+      "name": "maxroll.gg (reward validation reference)",
+      "url": "https://maxroll.gg/poe2/getting-started/permanent-stats-from-campaign",
+      "license": "proprietary — reference only"
+    }
+  ]
+}

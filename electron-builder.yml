@@ -1,0 +1,31 @@
+appId: com.poe2.questoverlay
+productName: PoE2 Quest Overlay
+copyright: Copyright © 2026 PoE2 Quest Overlay contributors
+
+directories:
+  output: dist-release
+  buildResources: build
+
+files:
+  - out/**/*
+  - package.json
+
+extraResources:
+  - from: resources
+    to: resources
+    filter:
+      - "**/*"
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.ico
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true

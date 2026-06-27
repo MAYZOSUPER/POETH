@@ -1,0 +1,671 @@
+{
+  "id": "act-3",
+  "actNumber": 3,
+  "actName": "Act 3 — Vaal / Jungle",
+  "kind": "act",
+  "zones": [
+    {
+      "areaId": "a3-sandswept-marsh",
+      "name": "Sandswept Marsh",
+      "layout": null
+    },
+    {
+      "areaId": "a3-jungle-ruins",
+      "name": "Jungle Ruins",
+      "layout": null
+    },
+    {
+      "areaId": "a3-the-venom-crypts",
+      "name": "The Venom Crypts",
+      "layout": null
+    },
+    {
+      "areaId": "a3-infested-barrens",
+      "name": "Infested Barrens",
+      "layout": null
+    },
+    {
+      "areaId": "a3-the-azak-bog",
+      "name": "The Azak Bog",
+      "layout": null
+    },
+    {
+      "areaId": "a3-chimeral-wetlands",
+      "name": "Chimeral Wetlands",
+      "layout": null
+    },
+    {
+      "areaId": "a3-jiquani-s-machinarium",
+      "name": "Jiquani's Machinarium",
+      "layout": null
+    },
+    {
+      "areaId": "a3-jiquani-s-sanctum",
+      "name": "Jiquani's Sanctum",
+      "layout": null
+    },
+    {
+      "areaId": "a3-the-matlan-waterways",
+      "name": "The Matlan Waterways",
+      "layout": null
+    },
+    {
+      "areaId": "a3-the-drowned-city",
+      "name": "The Drowned City",
+      "layout": null
+    },
+    {
+      "areaId": "a3-the-molten-vault",
+      "name": "The Molten Vault",
+      "layout": null
+    },
+    {
+      "areaId": "a3-apex-of-filth",
+      "name": "Apex of Filth",
+      "layout": null
+    },
+    {
+      "areaId": "a3-temple-of-kopec",
+      "name": "Temple of Kopec",
+      "layout": null
+    },
+    {
+      "areaId": "a3-utzaal",
+      "name": "Utzaal",
+      "layout": null
+    },
+    {
+      "areaId": "a3-aggorat",
+      "name": "Aggorat",
+      "layout": null
+    },
+    {
+      "areaId": "a3-the-black-chambers",
+      "name": "The Black Chambers",
+      "layout": null
+    }
+  ],
+  "quests": [
+    {
+      "id": "act-3q-rootdredge-foul-ritual",
+      "name": "Rootdredge (Foul Ritual)",
+      "type": "optional",
+      "boss": true,
+      "zone": "a3-sandswept-marsh",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Foul Ritual encounter - optional boss",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-azak-campfire",
+      "name": "Azak Campfire",
+      "type": "optional",
+      "zone": "a3-sandswept-marsh",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Lesser Jeweller's Orb"
+        }
+      ],
+      "layout": null,
+      "notes": "Near exit - kill the two rares - 'Azak Campfire'",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-hanging-tree",
+      "name": "Hanging Tree",
+      "type": "optional",
+      "zone": "a3-sandswept-marsh",
+      "rewards": [
+        {
+          "kind": "ring_or_amulet",
+          "value": "Magic Ring"
+        }
+      ],
+      "layout": null,
+      "notes": "Click corpse on hanging tree",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-mighty-silverfist",
+      "name": "Mighty Silverfist",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-jungle-ruins",
+      "rewards": [
+        {
+          "kind": "weapon_set_point",
+          "value": "+2 Weapon Set Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Usually spawns in top third of area",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-jungle-grave",
+      "name": "Jungle Grave",
+      "type": "optional",
+      "zone": "a3-jungle-ruins",
+      "rewards": [
+        {
+          "kind": "ring_or_amulet",
+          "value": "Rare Rawhide or Linen Belt",
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Servi quest item",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-troubled-camp",
+      "name": "Troubled Camp",
+      "type": "optional",
+      "zone": "a3-jungle-ruins",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Gwendolyn Albright (Secret Vendor: Armour)"
+        }
+      ],
+      "layout": null,
+      "notes": "Secret vendor - Armour",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-corpse-snake-venom-quest-reward",
+      "name": "Corpse Snake Venom Quest Reward",
+      "type": "mandatory",
+      "zone": "a3-the-venom-crypts",
+      "rewards": [
+        {
+          "kind": "mana",
+          "value": "Permanent Buff (Choice of +25% Stun Threshold, +30% Elemental Ailment Threshold, or +25% Mana Regeneration Rate); Artificer's Orb",
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Den of the Serpent Priestess - reward is permanent and cannot be changed later",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-troubled-camp-2",
+      "name": "Troubled Camp",
+      "type": "optional",
+      "zone": "a3-infested-barrens",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Sebastian Carroway (Secret Vendor: Weapons)"
+        },
+        {
+          "kind": "other",
+          "value": "guaranteed Rare Boots"
+        }
+      ],
+      "layout": null,
+      "notes": "Secret vendor - Weapons, guaranteed Rare Boots",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-larva-hollow",
+      "name": "Larva Hollow",
+      "type": "optional",
+      "zone": "a3-infested-barrens",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Random loot"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional boss encounter",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-ignagduk-the-bog-witch",
+      "name": "Ignagduk, the Bog Witch",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-the-azak-bog",
+      "rewards": [
+        {
+          "kind": "spirit",
+          "value": "+30 Spirit",
+          "numeric": 30
+        }
+      ],
+      "layout": null,
+      "notes": "Top right quadrant - area imagined as square split into four blocks",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-flameskin-ritual",
+      "name": "Flameskin Ritual",
+      "type": "optional",
+      "zone": "a3-the-azak-bog",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Temporary buff to Fire Resistance and Item Rarity"
+        }
+      ],
+      "layout": null,
+      "notes": "If you find it before boss, don't skip. Don't search for it if you don't find it before boss.",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-xyclucian-the-chimera",
+      "name": "Xyclucian, The Chimera",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-chimeral-wetlands",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Chimeral Inscribed Ultimatum (access to Trial of Chaos)"
+        },
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Follow lefthand border of zone - arena/Machinarium entrance faces left/West",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-toxic-bloom",
+      "name": "Toxic Bloom",
+      "type": "optional",
+      "zone": "a3-chimeral-wetlands",
+      "rewards": [
+        {
+          "kind": "ring_or_amulet",
+          "value": "Guaranteed Magic Amulet"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional encounter",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-ravaged-camp",
+      "name": "Ravaged Camp",
+      "type": "optional",
+      "zone": "a3-chimeral-wetlands",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Guaranteed Rare Armour"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-blackjaw-the-remnant",
+      "name": "Blackjaw, the Remnant",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-jiquani-s-machinarium",
+      "rewards": [
+        {
+          "kind": "resistance",
+          "value": "+10% Fire Resistance",
+          "numeric": 10
+        }
+      ],
+      "layout": null,
+      "notes": "Spawns on far left or right",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-unmarked-treasure-vaults",
+      "name": "Unmarked Treasure Vaults",
+      "type": "optional",
+      "zone": "a3-jiquani-s-machinarium",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Gold and Rare Chests"
+        }
+      ],
+      "layout": null,
+      "notes": "Third door - optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-zicoatl-warden-of-the-core",
+      "name": "Zicoatl, Warden of the Core",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-jiquani-s-sanctum",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Large Soul Core"
+        }
+      ],
+      "layout": null,
+      "notes": "Must wait for second soul core to arrive at Alva (red lines on ground)",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-paquate-s-mechanism",
+      "name": "Paquate's Mechanism",
+      "type": "optional",
+      "zone": "a3-jiquani-s-sanctum",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Optional free 'Vaal Orb' item corruption"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional corruption altar",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-grand-soul-core-nexus",
+      "name": "Grand Soul Core Nexus",
+      "type": "optional",
+      "zone": "a3-jiquani-s-sanctum",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Spirit Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-narag-s-hut",
+      "name": "Narag's Hut",
+      "type": "optional",
+      "zone": "a3-the-matlan-waterways",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Rare Weapon"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-crawler-ambush",
+      "name": "Crawler Ambush",
+      "type": "optional",
+      "zone": "a3-the-drowned-city",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Random loot"
+        }
+      ],
+      "layout": null,
+      "notes": "Ambush encounter between two blocks",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-foul-quarters",
+      "name": "Foul Quarters",
+      "type": "optional",
+      "zone": "a3-the-drowned-city",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Gold"
+        },
+        {
+          "kind": "other",
+          "value": "Chests"
+        },
+        {
+          "kind": "other",
+          "value": "Rare/Magic Monsters",
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure rooms",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-mektul-the-forgemaster",
+      "name": "Mektul, the Forgemaster",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-the-molten-vault",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        },
+        {
+          "kind": "other",
+          "value": "Unlocks Reforging Bench"
+        },
+        {
+          "kind": "other",
+          "value": "Artificer's Orb (Quest Reward)"
+        }
+      ],
+      "layout": null,
+      "notes": "Linear - kill quickly under 4 minutes before molten gold floods",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-queen-of-filth",
+      "name": "Queen of Filth",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-apex-of-filth",
+      "rewards": [],
+      "layout": null,
+      "notes": "Spiral pattern - boss at top wall of main area after traveling full 360°",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-the-gentle-crone",
+      "name": "The Gentle Crone",
+      "type": "optional",
+      "zone": "a3-apex-of-filth",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Sells higher quality Jewellery and Spellcaster gear"
+        }
+      ],
+      "layout": null,
+      "notes": "Secret vendor",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-the-crone-s-cauldron",
+      "name": "The Crone's Cauldron",
+      "type": "optional",
+      "zone": "a3-apex-of-filth",
+      "rewards": [
+        {
+          "kind": "mana",
+          "value": "Quality Life and Mana flasks"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure - requires 3 fungi",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-ketzuli-high-priest-of-the-sun",
+      "name": "Ketzuli, High Priest of the Sun",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-temple-of-kopec",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Go up stairs twice - stay in shade to not take damage",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-viper-napuatzi",
+      "name": "Viper Napuatzi",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-utzaal",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Towards right end of zone, facing North",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-perculiar-fortunes",
+      "name": "Perculiar Fortunes",
+      "type": "optional",
+      "zone": "a3-utzaal",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Various Idols that can be sold to Oswald for Gold (500-1500 Gold each)"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure - sellable for 500-1500 gold each",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-sacrificial-altar",
+      "name": "Sacrificial Altar",
+      "type": "mandatory",
+      "zone": "a3-aggorat",
+      "rewards": [
+        {
+          "kind": "weapon_set_point",
+          "value": "+2 Weapon Set Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "After big plaza, top right end of zone",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-peculiar-fortunes",
+      "name": "Peculiar Fortunes",
+      "type": "optional",
+      "zone": "a3-aggorat",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Idols sellable for Gold"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-3q-doryani-royal-thaumaturge",
+      "name": "Doryani, Royal Thaumaturge",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a3-the-black-chambers",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Completes Act 3"
+        }
+      ],
+      "layout": null,
+      "notes": "Opposite side from entrance along center - top left or top right depending on entry angle",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    }
+  ]
+}

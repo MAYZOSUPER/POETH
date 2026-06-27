@@ -1,0 +1,460 @@
+{
+  "patch": "0.5",
+  "steps": [
+    {
+      "order": 0,
+      "actId": "act-1",
+      "areaId": "a1-clearfell",
+      "text": "Enter Clearfell",
+      "optional": false
+    },
+    {
+      "order": 1,
+      "actId": "act-1",
+      "areaId": "a1-mud-burrow",
+      "text": "Enter Mud Burrow",
+      "optional": false
+    },
+    {
+      "order": 2,
+      "actId": "act-1",
+      "areaId": "a1-the-grelwood",
+      "text": "Enter The Grelwood",
+      "optional": false
+    },
+    {
+      "order": 3,
+      "actId": "act-1",
+      "areaId": "a1-the-red-vale",
+      "text": "Enter The Red Vale",
+      "optional": false
+    },
+    {
+      "order": 4,
+      "actId": "act-1",
+      "areaId": "a1-the-grim-tangle",
+      "text": "Enter The Grim Tangle",
+      "optional": false
+    },
+    {
+      "order": 5,
+      "actId": "act-1",
+      "areaId": "a1-cemetery-of-the-eternals",
+      "text": "Enter Cemetery of the Eternals",
+      "optional": false
+    },
+    {
+      "order": 6,
+      "actId": "act-1",
+      "areaId": "a1-mausoleum-of-the-praetor",
+      "text": "Enter Mausoleum of the Praetor",
+      "optional": false
+    },
+    {
+      "order": 7,
+      "actId": "act-1",
+      "areaId": "a1-tomb-of-the-consort",
+      "text": "Enter Tomb of the Consort",
+      "optional": false
+    },
+    {
+      "order": 8,
+      "actId": "act-1",
+      "areaId": "a1-hunting-grounds",
+      "text": "Enter Hunting Grounds",
+      "optional": false
+    },
+    {
+      "order": 9,
+      "actId": "act-1",
+      "areaId": "a1-freythorn",
+      "text": "Enter Freythorn",
+      "optional": false
+    },
+    {
+      "order": 10,
+      "actId": "act-1",
+      "areaId": "a1-ogham-farmlands",
+      "text": "Enter Ogham Farmlands",
+      "optional": false
+    },
+    {
+      "order": 11,
+      "actId": "act-1",
+      "areaId": "a1-ogham-village",
+      "text": "Enter Ogham Village",
+      "optional": false
+    },
+    {
+      "order": 12,
+      "actId": "act-1",
+      "areaId": "a1-the-manor-ramparts",
+      "text": "Enter The Manor Ramparts",
+      "optional": false
+    },
+    {
+      "order": 13,
+      "actId": "act-1",
+      "areaId": "a1-ogham-manor-first-floor",
+      "text": "Enter Ogham Manor: First Floor",
+      "optional": false
+    },
+    {
+      "order": 14,
+      "actId": "act-1",
+      "areaId": "a1-ogham-manor-second-floor",
+      "text": "Enter Ogham Manor: Second Floor",
+      "optional": false
+    },
+    {
+      "order": 15,
+      "actId": "act-1",
+      "areaId": "a1-ogham-manor-third-floor",
+      "text": "Enter Ogham Manor: Third Floor",
+      "optional": false
+    },
+    {
+      "order": 16,
+      "actId": "act-2",
+      "areaId": "a2-vastiri-outskirts",
+      "text": "Enter Vastiri Outskirts",
+      "optional": false
+    },
+    {
+      "order": 17,
+      "actId": "act-2",
+      "areaId": "a2-mawdun-quarry",
+      "text": "Enter Mawdun Quarry",
+      "optional": false
+    },
+    {
+      "order": 18,
+      "actId": "act-2",
+      "areaId": "a2-mawdun-mine",
+      "text": "Enter Mawdun Mine",
+      "optional": false
+    },
+    {
+      "order": 19,
+      "actId": "act-2",
+      "areaId": "a2-traitor-s-passage",
+      "text": "Enter Traitor's Passage",
+      "optional": false
+    },
+    {
+      "order": 20,
+      "actId": "act-2",
+      "areaId": "a2-the-halani-gates",
+      "text": "Enter The Halani Gates",
+      "optional": false
+    },
+    {
+      "order": 21,
+      "actId": "act-2",
+      "areaId": "a2-keth",
+      "text": "Enter Keth",
+      "optional": false
+    },
+    {
+      "order": 22,
+      "actId": "act-2",
+      "areaId": "a2-the-lost-city",
+      "text": "Enter The Lost City",
+      "optional": false
+    },
+    {
+      "order": 23,
+      "actId": "act-2",
+      "areaId": "a2-buried-shrines",
+      "text": "Enter Buried Shrines",
+      "optional": false
+    },
+    {
+      "order": 24,
+      "actId": "act-2",
+      "areaId": "a2-mastodon-badlands",
+      "text": "Enter Mastodon Badlands",
+      "optional": false
+    },
+    {
+      "order": 25,
+      "actId": "act-2",
+      "areaId": "a2-the-bone-pits",
+      "text": "Enter The Bone Pits",
+      "optional": false
+    },
+    {
+      "order": 26,
+      "actId": "act-2",
+      "areaId": "a2-valley-of-the-titans",
+      "text": "Enter Valley of the Titans",
+      "optional": false
+    },
+    {
+      "order": 27,
+      "actId": "act-2",
+      "areaId": "a2-the-titan-grotto",
+      "text": "Enter The Titan Grotto",
+      "optional": false
+    },
+    {
+      "order": 28,
+      "actId": "act-2",
+      "areaId": "a2-deshar",
+      "text": "Enter Deshar",
+      "optional": false
+    },
+    {
+      "order": 29,
+      "actId": "act-2",
+      "areaId": "a2-path-of-mourning",
+      "text": "Enter Path of Mourning",
+      "optional": false
+    },
+    {
+      "order": 30,
+      "actId": "act-2",
+      "areaId": "a2-the-spires-of-deshar",
+      "text": "Enter The Spires of Deshar",
+      "optional": false
+    },
+    {
+      "order": 31,
+      "actId": "act-2",
+      "areaId": "a2-the-dreadnought-vanguard",
+      "text": "Enter The Dreadnought Vanguard",
+      "optional": false
+    },
+    {
+      "order": 32,
+      "actId": "act-3",
+      "areaId": "a3-sandswept-marsh",
+      "text": "Enter Sandswept Marsh",
+      "optional": false
+    },
+    {
+      "order": 33,
+      "actId": "act-3",
+      "areaId": "a3-jungle-ruins",
+      "text": "Enter Jungle Ruins",
+      "optional": false
+    },
+    {
+      "order": 34,
+      "actId": "act-3",
+      "areaId": "a3-the-venom-crypts",
+      "text": "Enter The Venom Crypts",
+      "optional": false
+    },
+    {
+      "order": 35,
+      "actId": "act-3",
+      "areaId": "a3-infested-barrens",
+      "text": "Enter Infested Barrens",
+      "optional": false
+    },
+    {
+      "order": 36,
+      "actId": "act-3",
+      "areaId": "a3-the-azak-bog",
+      "text": "Enter The Azak Bog",
+      "optional": false
+    },
+    {
+      "order": 37,
+      "actId": "act-3",
+      "areaId": "a3-chimeral-wetlands",
+      "text": "Enter Chimeral Wetlands",
+      "optional": false
+    },
+    {
+      "order": 38,
+      "actId": "act-3",
+      "areaId": "a3-jiquani-s-machinarium",
+      "text": "Enter Jiquani's Machinarium",
+      "optional": false
+    },
+    {
+      "order": 39,
+      "actId": "act-3",
+      "areaId": "a3-jiquani-s-sanctum",
+      "text": "Enter Jiquani's Sanctum",
+      "optional": false
+    },
+    {
+      "order": 40,
+      "actId": "act-3",
+      "areaId": "a3-the-matlan-waterways",
+      "text": "Enter The Matlan Waterways",
+      "optional": false
+    },
+    {
+      "order": 41,
+      "actId": "act-3",
+      "areaId": "a3-the-drowned-city",
+      "text": "Enter The Drowned City",
+      "optional": false
+    },
+    {
+      "order": 42,
+      "actId": "act-3",
+      "areaId": "a3-the-molten-vault",
+      "text": "Enter The Molten Vault",
+      "optional": false
+    },
+    {
+      "order": 43,
+      "actId": "act-3",
+      "areaId": "a3-apex-of-filth",
+      "text": "Enter Apex of Filth",
+      "optional": false
+    },
+    {
+      "order": 44,
+      "actId": "act-3",
+      "areaId": "a3-temple-of-kopec",
+      "text": "Enter Temple of Kopec",
+      "optional": false
+    },
+    {
+      "order": 45,
+      "actId": "act-3",
+      "areaId": "a3-utzaal",
+      "text": "Enter Utzaal",
+      "optional": false
+    },
+    {
+      "order": 46,
+      "actId": "act-3",
+      "areaId": "a3-aggorat",
+      "text": "Enter Aggorat",
+      "optional": false
+    },
+    {
+      "order": 47,
+      "actId": "act-3",
+      "areaId": "a3-the-black-chambers",
+      "text": "Enter The Black Chambers",
+      "optional": false
+    },
+    {
+      "order": 48,
+      "actId": "act-4",
+      "areaId": "a4-kingsmarch-town",
+      "text": "Town: Kingsmarch (Town)",
+      "optional": false
+    },
+    {
+      "order": 49,
+      "actId": "act-4",
+      "areaId": "a4-whakapanu-island",
+      "text": "Enter Whakapanu Island",
+      "optional": false
+    },
+    {
+      "order": 50,
+      "actId": "act-4",
+      "areaId": "a4-singing-caverns",
+      "text": "Enter Singing Caverns",
+      "optional": false
+    },
+    {
+      "order": 51,
+      "actId": "act-4",
+      "areaId": "a4-shrike-island",
+      "text": "Enter Shrike Island",
+      "optional": false
+    },
+    {
+      "order": 52,
+      "actId": "act-4",
+      "areaId": "a4-abandoned-prison",
+      "text": "Enter Abandoned Prison",
+      "optional": false
+    },
+    {
+      "order": 53,
+      "actId": "act-4",
+      "areaId": "a4-solitary-confinement",
+      "text": "Enter Solitary Confinement",
+      "optional": false
+    },
+    {
+      "order": 54,
+      "actId": "act-4",
+      "areaId": "a4-isle-of-kin",
+      "text": "Enter Isle of Kin",
+      "optional": false
+    },
+    {
+      "order": 55,
+      "actId": "act-4",
+      "areaId": "a4-volcanic-warrens",
+      "text": "Enter Volcanic Warrens",
+      "optional": false
+    },
+    {
+      "order": 56,
+      "actId": "act-4",
+      "areaId": "a4-kedge-bay",
+      "text": "Enter Kedge Bay",
+      "optional": false
+    },
+    {
+      "order": 57,
+      "actId": "act-4",
+      "areaId": "a4-journey-s-end",
+      "text": "Enter Journey's End",
+      "optional": false
+    },
+    {
+      "order": 58,
+      "actId": "act-4",
+      "areaId": "a4-arastas",
+      "text": "Enter Arastas",
+      "optional": false
+    },
+    {
+      "order": 59,
+      "actId": "act-4",
+      "areaId": "a4-excavation",
+      "text": "Enter Excavation",
+      "optional": false
+    },
+    {
+      "order": 60,
+      "actId": "act-4",
+      "areaId": "a4-eye-of-hinekora",
+      "text": "Enter Eye of Hinekora",
+      "optional": false
+    },
+    {
+      "order": 61,
+      "actId": "act-4",
+      "areaId": "a4-halls-of-the-dead",
+      "text": "Enter Halls of the Dead",
+      "optional": false
+    },
+    {
+      "order": 62,
+      "actId": "act-4",
+      "areaId": "a4-trial-of-the-ancestors",
+      "text": "Enter Trial of the Ancestors",
+      "optional": false
+    },
+    {
+      "order": 63,
+      "actId": "act-4",
+      "areaId": "a4-ngakanu",
+      "text": "Enter Ngakanu",
+      "optional": false
+    },
+    {
+      "order": 64,
+      "actId": "act-4",
+      "areaId": "a4-heart-of-the-tribe",
+      "text": "Enter Heart of the Tribe",
+      "optional": false
+    }
+  ]
+}

@@ -1,0 +1,618 @@
+{
+  "id": "act-4",
+  "actNumber": 4,
+  "actName": "Act 4 — Karui Archipelago",
+  "kind": "act",
+  "zones": [
+    {
+      "areaId": "a4-kingsmarch-town",
+      "name": "Kingsmarch (Town)",
+      "isTown": true,
+      "layout": null
+    },
+    {
+      "areaId": "a4-whakapanu-island",
+      "name": "Whakapanu Island",
+      "layout": null
+    },
+    {
+      "areaId": "a4-singing-caverns",
+      "name": "Singing Caverns",
+      "layout": null
+    },
+    {
+      "areaId": "a4-shrike-island",
+      "name": "Shrike Island",
+      "layout": null
+    },
+    {
+      "areaId": "a4-abandoned-prison",
+      "name": "Abandoned Prison",
+      "layout": null
+    },
+    {
+      "areaId": "a4-solitary-confinement",
+      "name": "Solitary Confinement",
+      "layout": null
+    },
+    {
+      "areaId": "a4-isle-of-kin",
+      "name": "Isle of Kin",
+      "layout": null
+    },
+    {
+      "areaId": "a4-volcanic-warrens",
+      "name": "Volcanic Warrens",
+      "layout": null
+    },
+    {
+      "areaId": "a4-kedge-bay",
+      "name": "Kedge Bay",
+      "layout": null
+    },
+    {
+      "areaId": "a4-journey-s-end",
+      "name": "Journey's End",
+      "layout": null
+    },
+    {
+      "areaId": "a4-arastas",
+      "name": "Arastas",
+      "layout": null
+    },
+    {
+      "areaId": "a4-excavation",
+      "name": "Excavation",
+      "layout": null
+    },
+    {
+      "areaId": "a4-eye-of-hinekora",
+      "name": "Eye of Hinekora",
+      "layout": null
+    },
+    {
+      "areaId": "a4-halls-of-the-dead",
+      "name": "Halls of the Dead",
+      "layout": null
+    },
+    {
+      "areaId": "a4-trial-of-the-ancestors",
+      "name": "Trial of the Ancestors",
+      "layout": null
+    },
+    {
+      "areaId": "a4-ngakanu",
+      "name": "Ngakanu",
+      "layout": null
+    },
+    {
+      "areaId": "a4-heart-of-the-tribe",
+      "name": "Heart of the Tribe",
+      "layout": null
+    }
+  ],
+  "quests": [
+    {
+      "id": "act-4q-makoru",
+      "name": "Makoru",
+      "type": "mandatory",
+      "zone": "a4-kingsmarch-town",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Grants access to Karui Archipelago map"
+        }
+      ],
+      "layout": null,
+      "notes": "Speak with Makoru to select island - islands can be done in almost any order",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-the-great-white-one-shark-pit",
+      "name": "The Great White One (Shark Pit)",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-whakapanu-island",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Shark Fin quest item"
+        }
+      ],
+      "layout": null,
+      "notes": "Across island on another beach - trigger fight by moving close to water at gaps in rock formation",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-petrified-pirate",
+      "name": "Petrified Pirate",
+      "type": "mandatory",
+      "zone": "a4-whakapanu-island",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Torn Map Piece"
+        }
+      ],
+      "layout": null,
+      "notes": "Torn map piece for unlocking Plunder's Point (4 total needed)",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-crabshell-cavern",
+      "name": "Crabshell Cavern",
+      "type": "optional",
+      "zone": "a4-whakapanu-island",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Alongside the beach part of area - defeat the rare",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-diamora-song-of-death",
+      "name": "Diamora, Song of Death",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-singing-caverns",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Weapon Piece"
+        },
+        {
+          "kind": "other",
+          "value": "Shoreline Hideout (unlocks hideout after speaking to Ange)"
+        }
+      ],
+      "layout": null,
+      "notes": "Opposite side of square from entrance - circular or diamond shape layout",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-beckoning-clam",
+      "name": "Beckoning Clam",
+      "type": "optional",
+      "zone": "a4-singing-caverns",
+      "rewards": [
+        {
+          "kind": "ring_or_amulet",
+          "value": "Rare Pearlescent Amulet (Quest turn-in to Rog)"
+        }
+      ],
+      "layout": null,
+      "notes": "Complete counter to loot pearl - +8 all ele resistance rare amulet",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-scourge-of-the-skies",
+      "name": "Scourge of the Skies",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-shrike-island",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Weapon Piece"
+        }
+      ],
+      "layout": null,
+      "notes": "End of long winding road - linear path",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-corpse-nest",
+      "name": "Corpse Nest",
+      "type": "mandatory",
+      "zone": "a4-shrike-island",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Torn Map Piece"
+        }
+      ],
+      "layout": null,
+      "notes": "2 of 4 torn map pieces - unlocks Plunder's Point",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-goddess-of-justice",
+      "name": "Goddess of Justice",
+      "type": "mandatory",
+      "zone": "a4-abandoned-prison",
+      "rewards": [
+        {
+          "kind": "mana",
+          "value": "Permanent Buff (Choice: 30% increased Life or Mana Recovery from Flasks)",
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Chapel Key drops from monsters - reward can be changed later by revisiting",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-the-prisoner",
+      "name": "The Prisoner",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-solitary-confinement",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Weapon Piece"
+        }
+      ],
+      "layout": null,
+      "notes": "Hug wall that waves are crashing into - linear path",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-bronnach-the-manhunter",
+      "name": "Bronnach, the Manhunter",
+      "type": "optional",
+      "zone": "a4-solitary-confinement",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Guaranteed unique item and some rares"
+        }
+      ],
+      "layout": null,
+      "notes": "Drops guaranteed unique (UNCONFIRMED)",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-the-blind-beast-primal-arena",
+      "name": "The Blind Beast (Primal Arena)",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-isle-of-kin",
+      "rewards": [
+        {
+          "kind": "weapon_set_point",
+          "value": "+2 Weapon Set Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Head opposite direction from dock",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-beast-pen",
+      "name": "Beast Pen",
+      "type": "optional",
+      "zone": "a4-isle-of-kin",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Find beast pen counter, free and kill Mimbok (UNCONFIRMED)",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-wrecked-boat",
+      "name": "Wrecked Boat",
+      "type": "mandatory",
+      "zone": "a4-isle-of-kin",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Torn Map Piece"
+        }
+      ],
+      "layout": null,
+      "notes": "3 of 4 torn map pieces - unlocks Plunder's Point",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-krutog-lord-of-kin",
+      "name": "Krutog, Lord of Kin",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-volcanic-warrens",
+      "rewards": [],
+      "layout": null,
+      "notes": "Opposite side of where you enter - long winding area",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-volcanic-nest",
+      "name": "Volcanic Nest",
+      "type": "optional",
+      "zone": "a4-volcanic-warrens",
+      "rewards": [
+        {
+          "kind": "ring_or_amulet",
+          "value": "Possible Rare Ruby Ring"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-smuggler-s-stash",
+      "name": "Smuggler's Stash",
+      "type": "mandatory",
+      "zone": "a4-kedge-bay",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Torn Map Piece"
+        }
+      ],
+      "layout": null,
+      "notes": "4 of 4 torn map pieces - unlocks Plunder's Point",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-omniphobia-dark-mists-quest",
+      "name": "Omniphobia (Dark Mists Quest)",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-journey-s-end",
+      "rewards": [
+        {
+          "kind": "weapon_set_point",
+          "value": "+2 Weapon Set Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Opposite side, furthest from entrance",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-torvian-hand-of-the-savior",
+      "name": "Torvian, Hand of the Savior",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-arastas",
+      "rewards": [],
+      "layout": null,
+      "notes": "Return to central path after finding bells - arena for Torvian",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-morning-bell",
+      "name": "Morning Bell",
+      "type": "optional",
+      "zone": "a4-arastas",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "3 Regal Orbs"
+        }
+      ],
+      "layout": null,
+      "notes": "Hug top wall (Coastal Ridge)",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-evening-bell",
+      "name": "Evening Bell",
+      "type": "optional",
+      "zone": "a4-arastas",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "3 Exalted Orbs"
+        }
+      ],
+      "layout": null,
+      "notes": "Hug top wall (Coastal Ridge)",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-benedictus-first-herald-of-utopia",
+      "name": "Benedictus, First Herald of Utopia",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-excavation",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Precursor Forge (unlocked after witnessing lore)"
+        }
+      ],
+      "layout": null,
+      "notes": "Two blocks connected by small central square - hug wall to find boss/forge",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-excavated-cache",
+      "name": "Excavated Cache",
+      "type": "optional",
+      "zone": "a4-excavation",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-silent-hall",
+      "name": "Silent Hall",
+      "type": "mandatory",
+      "zone": "a4-eye-of-hinekora",
+      "rewards": [
+        {
+          "kind": "mana",
+          "value": "5% increased Maximum Mana"
+        }
+      ],
+      "layout": null,
+      "notes": "Room behind - talk to Navali for lore",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-hinekora-totems",
+      "name": "Hinekora Totems",
+      "type": "mandatory",
+      "zone": "a4-halls-of-the-dead",
+      "rewards": [
+        {
+          "kind": "attribute",
+          "value": "Choice of +5% Res or +5 Attribute (+5% Fire Res or +5 Str, +5% Cold Res or +5 Dex, +5% Lightning Res or +5 Int)",
+          "numeric": 5,
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Corners of imaginary rectangle - reward cannot be changed later (UNCONFIRMED)",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-yama-the-white",
+      "name": "Yama the White",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-halls-of-the-dead",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Access to Trial of the Ancestors"
+        }
+      ],
+      "layout": null,
+      "notes": "Find after collecting three tattoos",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-hinekora",
+      "name": "Hinekora",
+      "type": "mandatory",
+      "zone": "a4-trial-of-the-ancestors",
+      "rewards": [
+        {
+          "kind": "weapon_set_point",
+          "value": "+2 Weapon Set Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Complete trial for 2 passive skill points - third ascendancy path not yet implemented",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-abyss",
+      "name": "Abyss",
+      "type": "optional",
+      "zone": "a4-ngakanu",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Possible Greater Jeweller's Orb drop"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-tavakai-the-fallen-tavakai-the-consumed",
+      "name": "Tavakai the Fallen / Tavakai the Consumed",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a4-heart-of-the-tribe",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Completes Act 4"
+        }
+      ],
+      "layout": null,
+      "notes": "Head Northerly - opposite direction from nearest checkpoint",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-4q-meeting-house",
+      "name": "Meeting House",
+      "type": "optional",
+      "zone": "a4-heart-of-the-tribe",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Bonus objective/free loot",
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    }
+  ]
+}

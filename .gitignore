@@ -1,0 +1,12 @@
+node_modules/
+out/
+dist/
+dist-release/
+.cache/
+*.log
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+.vite/
+tools/dataset-build/.cache/
+tools/dataset-build/sources/

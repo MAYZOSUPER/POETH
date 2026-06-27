@@ -1,0 +1,577 @@
+{
+  "id": "act-2",
+  "actNumber": 2,
+  "actName": "Act 2 — Vastiri",
+  "kind": "act",
+  "zones": [
+    {
+      "areaId": "a2-vastiri-outskirts",
+      "name": "Vastiri Outskirts",
+      "layout": null
+    },
+    {
+      "areaId": "a2-mawdun-quarry",
+      "name": "Mawdun Quarry",
+      "layout": null
+    },
+    {
+      "areaId": "a2-mawdun-mine",
+      "name": "Mawdun Mine",
+      "layout": null
+    },
+    {
+      "areaId": "a2-traitor-s-passage",
+      "name": "Traitor's Passage",
+      "layout": null
+    },
+    {
+      "areaId": "a2-the-halani-gates",
+      "name": "The Halani Gates",
+      "layout": null
+    },
+    {
+      "areaId": "a2-keth",
+      "name": "Keth",
+      "layout": null
+    },
+    {
+      "areaId": "a2-the-lost-city",
+      "name": "The Lost City",
+      "layout": null
+    },
+    {
+      "areaId": "a2-buried-shrines",
+      "name": "Buried Shrines",
+      "layout": null
+    },
+    {
+      "areaId": "a2-mastodon-badlands",
+      "name": "Mastodon Badlands",
+      "layout": null
+    },
+    {
+      "areaId": "a2-the-bone-pits",
+      "name": "The Bone Pits",
+      "layout": null
+    },
+    {
+      "areaId": "a2-valley-of-the-titans",
+      "name": "Valley of the Titans",
+      "layout": null
+    },
+    {
+      "areaId": "a2-the-titan-grotto",
+      "name": "The Titan Grotto",
+      "layout": null
+    },
+    {
+      "areaId": "a2-deshar",
+      "name": "Deshar",
+      "layout": null
+    },
+    {
+      "areaId": "a2-path-of-mourning",
+      "name": "Path of Mourning",
+      "layout": null
+    },
+    {
+      "areaId": "a2-the-spires-of-deshar",
+      "name": "The Spires of Deshar",
+      "layout": null
+    },
+    {
+      "areaId": "a2-the-dreadnought-vanguard",
+      "name": "The Dreadnought Vanguard",
+      "layout": null
+    }
+  ],
+  "quests": [
+    {
+      "id": "act-2q-rathbreaker",
+      "name": "Rathbreaker",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-vastiri-outskirts",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        },
+        {
+          "kind": "other",
+          "value": "Progresses Earning Passage quest"
+        }
+      ],
+      "layout": null,
+      "notes": "Follow inside wall (Z-shape pattern) to narrow canyon leading to boss",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-faridun-war-cache",
+      "name": "Faridun War Cache",
+      "type": "optional",
+      "zone": "a2-mawdun-quarry",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Artificer's Orb"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure cache in the quarry",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-rudja-the-dread-engineer",
+      "name": "Rudja, the Dread Engineer",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-mawdun-mine",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        },
+        {
+          "kind": "other",
+          "value": "main storyline progression"
+        }
+      ],
+      "layout": null,
+      "notes": "Spawn at bottom, move continuously North - boss at top corner",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-munitions-bunker",
+      "name": "Munitions Bunker",
+      "type": "optional",
+      "zone": "a2-mawdun-mine",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional area within the mine",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-balbala-the-traitor",
+      "name": "Balbala, the Traitor",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-traitor-s-passage",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Djinn Barya (access to Trial of the Sekhema for Ascendancy)"
+        }
+      ],
+      "layout": null,
+      "notes": "Follow yellow paper seals on walls - if you find paper, you are close",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-bell-chest",
+      "name": "Bell Chest",
+      "type": "optional",
+      "zone": "a2-traitor-s-passage",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "In a dead end with checkpoint, some monsters and dropped gold on ground",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-jamanra-the-risen-king",
+      "name": "Jamanra, the Risen King",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-the-halani-gates",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Advances The Trail of Corruption quest"
+        }
+      ],
+      "layout": null,
+      "notes": "Keep close to canyon - cross canyon three times to find boss",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-l-im-the-impaler",
+      "name": "L'Im, the Impaler",
+      "type": "optional",
+      "zone": "a2-the-halani-gates",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Rare Items"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional boss encounter",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-kabala-constrictor-queen",
+      "name": "Kabala, Constrictor Queen",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-keth",
+      "rewards": [
+        {
+          "kind": "weapon_set_point",
+          "value": "+2 Weapon Set Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Somewhat in the middle of zone - run outside edges to find Venom Pit",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-abandoned-prayer",
+      "name": "Abandoned Prayer",
+      "type": "optional",
+      "zone": "a2-keth",
+      "rewards": [
+        {
+          "kind": "ring_or_amulet",
+          "value": "Magic Amulet"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-golden-tomb",
+      "name": "Golden Tomb",
+      "type": "optional",
+      "zone": "a2-the-lost-city",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Spirit Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure in the city",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-the-ninth-treasure-of-keth-optional-boss",
+      "name": "The Ninth Treasure of Keth (Optional Boss)",
+      "type": "optional",
+      "boss": true,
+      "zone": "a2-the-lost-city",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Magic Jewel"
+        }
+      ],
+      "layout": null,
+      "notes": "Event named 'The Galleria' on the map - big gilded beetle",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-azarian-the-forsaken-son",
+      "name": "Azarian, the Forsaken Son",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-buried-shrines",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "City of Seven Waters progression"
+        }
+      ],
+      "layout": null,
+      "notes": "Crown-shaped boss tile at most Northerly or East-facing point",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-elemental-offering",
+      "name": "Elemental Offering",
+      "type": "optional",
+      "zone": "a2-buried-shrines",
+      "rewards": [
+        {
+          "kind": "ring_or_amulet",
+          "value": "Choice of Magic Resistance Ring (Ruby/Sapphire/Topaz)",
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Random resistance ring - Ruby suggested for upcoming boss fight",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-suspicious-sarcophagus",
+      "name": "Suspicious Sarcophagus",
+      "type": "optional",
+      "zone": "a2-buried-shrines",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Guarded sarcophagus encounter",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-fossilised-memorial",
+      "name": "Fossilised Memorial",
+      "type": "optional",
+      "zone": "a2-mastodon-badlands",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Rare effigy near a checkpoint - Shrine of Bones",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-iktab-the-deathlord-and-ekbab-ancient-steed",
+      "name": "Iktab, the Deathlord and Ekbab, Ancient Steed",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-the-bone-pits",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Boss room almost directly in line with entrance after passing through bone arch",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-offering-to-amrit-quest",
+      "name": "Offering to Amrit Quest",
+      "type": "mandatory",
+      "zone": "a2-valley-of-the-titans",
+      "rewards": [
+        {
+          "kind": "mana",
+          "value": "+30% increased Charm Charges Gained or 15% increased Mana Recovery from Flasks",
+          "swappable": true
+        }
+      ],
+      "layout": null,
+      "notes": "Waypoint at medallion location - choice of one of two permanent buffs (can be changed later)",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-zalmarath-the-colossus",
+      "name": "Zalmarath, the Colossus",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-the-titan-grotto",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Opposite side of rectangle - long staircase bridge leads to boss",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-titan-s-sword",
+      "name": "Titan's Sword",
+      "type": "optional",
+      "zone": "a2-the-titan-grotto",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Random Lesser Rune"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure in grotto",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-tradition-s-toll-quest",
+      "name": "Tradition's Toll Quest",
+      "type": "mandatory",
+      "zone": "a2-deshar",
+      "rewards": [
+        {
+          "kind": "weapon_set_point",
+          "value": "+2 Weapon Set Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Base of large buildings - corpse on ground near big tower",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-the-unremembered",
+      "name": "The Unremembered",
+      "type": "optional",
+      "zone": "a2-deshar",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Artificer's Orb"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-rare-vulture-monsters",
+      "name": "Rare Vulture Monsters",
+      "type": "optional",
+      "zone": "a2-deshar",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Djinn Barya"
+        }
+      ],
+      "layout": null,
+      "notes": "Rare mob drops",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-hushed-urn",
+      "name": "Hushed Urn",
+      "type": "optional",
+      "zone": "a2-path-of-mourning",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure along the path",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-tor-gul-the-defiler",
+      "name": "Tor Gul, the Defiler",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-the-spires-of-deshar",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Unlocks Ascent to Power quest"
+        }
+      ],
+      "layout": null,
+      "notes": "Spawns in straight line, directly opposite entrance",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-sisters-of-garukhan",
+      "name": "Sisters of Garukhan",
+      "type": "mandatory",
+      "zone": "a2-the-spires-of-deshar",
+      "rewards": [
+        {
+          "kind": "resistance",
+          "value": "+10% Lightning Resistance",
+          "numeric": 10
+        }
+      ],
+      "layout": null,
+      "notes": "Found in the spires",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    },
+    {
+      "id": "act-2q-jamanra-the-abomination",
+      "name": "Jamanra, the Abomination",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a2-the-dreadnought-vanguard",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Completes The Trail of Corruption"
+        },
+        {
+          "kind": "other",
+          "value": "End of Act 2"
+        }
+      ],
+      "layout": null,
+      "notes": "Linear layout - continue opposite direction from entrance to final boss arena",
+      "autoComplete": {
+        "onZoneEnter": null
+      }
+    }
+  ]
+}

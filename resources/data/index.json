@@ -1,0 +1,32 @@
+{
+  "acts": [
+    {
+      "id": "act-1",
+      "file": "acts/act-1.json",
+      "actNumber": 1,
+      "kind": "act",
+      "actName": "Act 1 — Ogham"
+    },
+    {
+      "id": "act-2",
+      "file": "acts/act-2.json",
+      "actNumber": 2,
+      "kind": "act",
+      "actName": "Act 2 — Vastiri"
+    },
+    {
+      "id": "act-3",
+      "file": "acts/act-3.json",
+      "actNumber": 3,
+      "kind": "act",
+      "actName": "Act 3 — Vaal / Jungle"
+    },
+    {
+      "id": "act-4",
+      "file": "acts/act-4.json",
+      "actNumber": 4,
+      "kind": "act",
+      "actName": "Act 4 — Karui Archipelago"
+    }
+  ]
+}

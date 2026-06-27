@@ -1,0 +1,605 @@
+{
+  "id": "act-1",
+  "actNumber": 1,
+  "actName": "Act 1 — Ogham",
+  "kind": "act",
+  "zones": [
+    {
+      "areaId": "a1-clearfell",
+      "name": "Clearfell",
+      "layout": "a1-clearfell",
+      "xref": {
+        "exileUiAreaId": "g1_2"
+      }
+    },
+    {
+      "areaId": "a1-mud-burrow",
+      "name": "Mud Burrow",
+      "layout": "a1-mud-burrow",
+      "xref": {
+        "exileUiAreaId": "g1_3"
+      }
+    },
+    {
+      "areaId": "a1-the-grelwood",
+      "name": "The Grelwood",
+      "layout": "a1-the-grelwood",
+      "xref": {
+        "exileUiAreaId": "g1_4"
+      }
+    },
+    {
+      "areaId": "a1-the-red-vale",
+      "name": "The Red Vale",
+      "layout": "a1-the-red-vale",
+      "xref": {
+        "exileUiAreaId": "g1_5"
+      }
+    },
+    {
+      "areaId": "a1-the-grim-tangle",
+      "name": "The Grim Tangle",
+      "layout": "a1-the-grim-tangle",
+      "xref": {
+        "exileUiAreaId": "g1_6"
+      }
+    },
+    {
+      "areaId": "a1-cemetery-of-the-eternals",
+      "name": "Cemetery of the Eternals",
+      "layout": "a1-cemetery-of-the-eternals",
+      "xref": {
+        "exileUiAreaId": "g1_7"
+      }
+    },
+    {
+      "areaId": "a1-mausoleum-of-the-praetor",
+      "name": "Mausoleum of the Praetor",
+      "layout": "a1-mausoleum-of-the-praetor",
+      "xref": {
+        "exileUiAreaId": "g1_8"
+      }
+    },
+    {
+      "areaId": "a1-tomb-of-the-consort",
+      "name": "Tomb of the Consort",
+      "layout": "a1-tomb-of-the-consort",
+      "xref": {
+        "exileUiAreaId": "g1_9"
+      }
+    },
+    {
+      "areaId": "a1-hunting-grounds",
+      "name": "Hunting Grounds",
+      "layout": "a1-hunting-grounds",
+      "xref": {
+        "exileUiAreaId": "g1_11"
+      }
+    },
+    {
+      "areaId": "a1-freythorn",
+      "name": "Freythorn",
+      "layout": "a1-freythorn",
+      "xref": {
+        "exileUiAreaId": "g1_12"
+      }
+    },
+    {
+      "areaId": "a1-ogham-farmlands",
+      "name": "Ogham Farmlands",
+      "layout": "a1-ogham-farmlands",
+      "xref": {
+        "exileUiAreaId": "g1_13_1"
+      }
+    },
+    {
+      "areaId": "a1-ogham-village",
+      "name": "Ogham Village",
+      "layout": "a1-ogham-village",
+      "xref": {
+        "exileUiAreaId": "g1_13_2"
+      }
+    },
+    {
+      "areaId": "a1-the-manor-ramparts",
+      "name": "The Manor Ramparts",
+      "layout": "a1-the-manor-ramparts",
+      "xref": {
+        "exileUiAreaId": "g1_14"
+      }
+    },
+    {
+      "areaId": "a1-ogham-manor-first-floor",
+      "name": "Ogham Manor: First Floor",
+      "layout": "a1-ogham-manor-first-floor",
+      "xref": {
+        "exileUiAreaId": "g1_15"
+      }
+    },
+    {
+      "areaId": "a1-ogham-manor-second-floor",
+      "name": "Ogham Manor: Second Floor",
+      "layout": "a1-ogham-manor-second-floor",
+      "xref": {
+        "exileUiAreaId": "g1_15"
+      }
+    },
+    {
+      "areaId": "a1-ogham-manor-third-floor",
+      "name": "Ogham Manor: Third Floor",
+      "layout": "a1-ogham-manor-third-floor",
+      "xref": {
+        "exileUiAreaId": "g1_15"
+      }
+    }
+  ],
+  "quests": [
+    {
+      "id": "act-1q-beira-of-the-rotten-pack",
+      "name": "Beira of the Rotten Pack",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-clearfell",
+      "rewards": [
+        {
+          "kind": "resistance",
+          "value": "+10% Cold Resistance",
+          "numeric": 10
+        }
+      ],
+      "layout": null,
+      "notes": "Always north/northeast of waypoint",
+      "autoComplete": {
+        "onZoneEnter": "g1_2"
+      }
+    },
+    {
+      "id": "act-1q-mysterious-campsite",
+      "name": "Mysterious Campsite",
+      "type": "optional",
+      "zone": "a1-clearfell",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Spawns to the left or right of the starting zone",
+      "autoComplete": {
+        "onZoneEnter": "g1_2"
+      }
+    },
+    {
+      "id": "act-1q-the-devourer",
+      "name": "The Devourer",
+      "type": "optional",
+      "boss": true,
+      "zone": "a1-mud-burrow",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        },
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Boss is typically found within the area",
+      "autoComplete": {
+        "onZoneEnter": "g1_3"
+      }
+    },
+    {
+      "id": "act-1q-the-brambleghast",
+      "name": "The Brambleghast",
+      "type": "optional",
+      "boss": true,
+      "zone": "a1-the-grelwood",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Usually in same quadrant as Red Vale entrance",
+      "autoComplete": {
+        "onZoneEnter": "g1_4"
+      }
+    },
+    {
+      "id": "act-1q-aregane-s-hut",
+      "name": "Aregane's Hut",
+      "type": "optional",
+      "zone": "a1-the-grelwood",
+      "rewards": [
+        {
+          "kind": "mana",
+          "value": "Medium Life and Medium Mana Flask"
+        },
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Look for the Cauldron encounter - free medium life/mana flask",
+      "autoComplete": {
+        "onZoneEnter": "g1_4"
+      }
+    },
+    {
+      "id": "act-1q-the-rust-king",
+      "name": "The Rust King",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-the-red-vale",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Found after completing the Rust Altars quest",
+      "autoComplete": {
+        "onZoneEnter": "g1_5"
+      }
+    },
+    {
+      "id": "act-1q-weapon-piles",
+      "name": "Weapon Piles",
+      "type": "optional",
+      "zone": "a1-the-red-vale",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Guaranteed second tier weapon bases"
+        }
+      ],
+      "layout": null,
+      "notes": "Located throughout the zone",
+      "autoComplete": {
+        "onZoneEnter": "g1_5"
+      }
+    },
+    {
+      "id": "act-1q-the-rotten-druid",
+      "name": "The Rotten Druid",
+      "type": "optional",
+      "boss": true,
+      "zone": "a1-the-grim-tangle",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Found in the area where it 'opens up' opposite the entrance",
+      "autoComplete": {
+        "onZoneEnter": "g1_6"
+      }
+    },
+    {
+      "id": "act-1q-lachlann-of-endless-lament",
+      "name": "Lachlann of Endless Lament",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-cemetery-of-the-eternals",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Hug one wall - boss arena often on same wall as one tomb entrance",
+      "autoComplete": {
+        "onZoneEnter": "g1_7"
+      }
+    },
+    {
+      "id": "act-1q-ancient-ruin-sarcophagus",
+      "name": "Ancient Ruin Sarcophagus",
+      "type": "optional",
+      "zone": "a1-cemetery-of-the-eternals",
+      "rewards": [
+        {
+          "kind": "ring_or_amulet",
+          "value": "Normal Rarity Ring"
+        }
+      ],
+      "layout": null,
+      "notes": "Found beside Grieving Epitaph",
+      "autoComplete": {
+        "onZoneEnter": "g1_7"
+      }
+    },
+    {
+      "id": "act-1q-draven",
+      "name": "Draven",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-mausoleum-of-the-praetor",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Part of Sorrow Among Stones quest"
+        }
+      ],
+      "layout": null,
+      "notes": "Boss arena spawns in opposite quadrant from entrance - look for ribbed outer edge",
+      "autoComplete": {
+        "onZoneEnter": "g1_8"
+      }
+    },
+    {
+      "id": "act-1q-forgotten-riches",
+      "name": "Forgotten Riches",
+      "type": "optional",
+      "zone": "a1-mausoleum-of-the-praetor",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Repeatable Gold and Rare Chests"
+        }
+      ],
+      "layout": null,
+      "notes": "Optional treasure encounter",
+      "autoComplete": {
+        "onZoneEnter": "g1_8"
+      }
+    },
+    {
+      "id": "act-1q-asinia",
+      "name": "Asinia",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-tomb-of-the-consort",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Part of Sorrow Among Stones quest"
+        }
+      ],
+      "layout": null,
+      "notes": "Boss area typically found along the top of the area",
+      "autoComplete": {
+        "onZoneEnter": "g1_9"
+      }
+    },
+    {
+      "id": "act-1q-haunted-treasure",
+      "name": "Haunted Treasure",
+      "type": "optional",
+      "zone": "a1-tomb-of-the-consort",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Ambush encounter within the tomb",
+      "autoComplete": {
+        "onZoneEnter": "g1_9"
+      }
+    },
+    {
+      "id": "act-1q-the-crowbell",
+      "name": "The Crowbell",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-hunting-grounds",
+      "rewards": [
+        {
+          "kind": "weapon_set_point",
+          "value": "+2 Weapon Set Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Found in or close to corners - follow edges",
+      "autoComplete": {
+        "onZoneEnter": "g1_11"
+      }
+    },
+    {
+      "id": "act-1q-ritual-encounter",
+      "name": "Ritual Encounter",
+      "type": "optional",
+      "zone": "a1-hunting-grounds",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Large ritual altar in corners",
+      "autoComplete": {
+        "onZoneEnter": "g1_11"
+      }
+    },
+    {
+      "id": "act-1q-dryadic-ritual",
+      "name": "Dryadic Ritual",
+      "type": "optional",
+      "zone": "a1-hunting-grounds",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Dryad encounter in corners",
+      "autoComplete": {
+        "onZoneEnter": "g1_11"
+      }
+    },
+    {
+      "id": "act-1q-the-king-in-the-mists-after-4-rituals",
+      "name": "The King in the Mists (after 4 rituals)",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-freythorn",
+      "rewards": [
+        {
+          "kind": "spirit",
+          "value": "+30 Spirit",
+          "numeric": 30
+        },
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Spirit Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Complete all 4 rituals to spawn boss - watch for black magic swirls pointing to incomplete rituals",
+      "autoComplete": {
+        "onZoneEnter": "g1_12"
+      }
+    },
+    {
+      "id": "act-1q-una-s-lute",
+      "name": "Una's Lute",
+      "type": "mandatory",
+      "zone": "a1-ogham-farmlands",
+      "rewards": [
+        {
+          "kind": "weapon_set_point",
+          "value": "+2 Weapon Set Skill Points",
+          "numeric": 2
+        }
+      ],
+      "layout": null,
+      "notes": "Somewhat in center of zone - behind a hut/cart combo",
+      "autoComplete": {
+        "onZoneEnter": "g1_13_1"
+      }
+    },
+    {
+      "id": "act-1q-crop-circle",
+      "name": "Crop Circle",
+      "type": "optional",
+      "zone": "a1-ogham-farmlands",
+      "rewards": [
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Kill the rare dog in the crop circle",
+      "autoComplete": {
+        "onZoneEnter": "g1_13_1"
+      }
+    },
+    {
+      "id": "act-1q-the-executioner",
+      "name": "The Executioner",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-ogham-village",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        },
+        {
+          "kind": "uncut_gem",
+          "value": "Uncut Skill Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "Hug right-hand wall from entrance, head north to boss arena",
+      "autoComplete": {
+        "onZoneEnter": "g1_13_2"
+      }
+    },
+    {
+      "id": "act-1q-renly-s-workshop",
+      "name": "Renly's Workshop",
+      "type": "mandatory",
+      "zone": "a1-ogham-village",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Unlocks Salvage Bench"
+        },
+        {
+          "kind": "other",
+          "value": "Artificer's Orb"
+        },
+        {
+          "kind": "other",
+          "value": "Blank Lesser Rune"
+        }
+      ],
+      "layout": null,
+      "notes": "First character per league only - unlocks salvaging bench",
+      "autoComplete": {
+        "onZoneEnter": "g1_13_2"
+      }
+    },
+    {
+      "id": "act-1q-the-gallows",
+      "name": "The Gallows",
+      "type": "optional",
+      "zone": "a1-the-manor-ramparts",
+      "rewards": [
+        {
+          "kind": "support_gem",
+          "value": "Uncut Support Gem"
+        }
+      ],
+      "layout": null,
+      "notes": "The location from the character creation screen",
+      "autoComplete": {
+        "onZoneEnter": "g1_14"
+      }
+    },
+    {
+      "id": "act-1q-candlemass-the-living-rite",
+      "name": "Candlemass, the Living Rite",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-ogham-manor-first-floor",
+      "rewards": [
+        {
+          "kind": "life",
+          "value": "+20 Maximum Life",
+          "numeric": 20
+        }
+      ],
+      "layout": null,
+      "notes": "Head Northeast, cross bridge, proceed North",
+      "autoComplete": {
+        "onZoneEnter": "g1_15"
+      }
+    },
+    {
+      "id": "act-1q-count-of-ogham",
+      "name": "Count of Ogham",
+      "type": "mandatory",
+      "boss": true,
+      "zone": "a1-ogham-manor-third-floor",
+      "rewards": [
+        {
+          "kind": "other",
+          "value": "Completes Act 1"
+        }
+      ],
+      "layout": null,
+      "notes": "Head opposite direction from entrance to find bridge leading to boss elevator",
+      "autoComplete": {
+        "onZoneEnter": "g1_15"
+      }
+    }
+  ]
+}
