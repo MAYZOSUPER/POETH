@@ -9,10 +9,11 @@ export function getOverlayWindow(): BrowserWindow | null {
 
 export function createOverlayWindow(): BrowserWindow {
   win = new BrowserWindow({
-    width: 380,
-    height: 820,
-    minWidth: 280,
-    minHeight: 360,
+    title: 'Act Compass',
+    width: 820,
+    height: 720,
+    minWidth: 560,
+    minHeight: 460,
     frame: false,
     transparent: true,
     alwaysOnTop: true,

@@ -17,11 +17,13 @@ export function ActTabs() {
           return (
             <button
               key={a.id}
-              className={`act ${a.id === selectedActId ? 'active' : ''}`}
+              className={`act ${a.id === selectedActId ? 'active' : ''} ${a.kind}`}
               title={a.actName}
               onClick={() => selectAct(a.id)}
             >
-              <span className="act-n">A{a.actNumber}</span>
+              <span className="act-n">
+                {a.kind === 'interlude' ? `ИНТ ${a.actNumber - 4}` : `АКТ ${a.actNumber}`}
+              </span>
               <span className="act-prog">
                 {done}/{a.quests.length}
               </span>

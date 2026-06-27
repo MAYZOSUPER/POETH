@@ -44,7 +44,8 @@ const api: OverlayApi = {
   window: {
     setOpacity: (value) => ipcRenderer.send(IPC.window.setOpacity, value),
     setLocked: (locked) => ipcRenderer.send(IPC.window.setLocked, locked),
-    toggleVisible: () => ipcRenderer.send(IPC.window.toggleVisible)
+    toggleVisible: () => ipcRenderer.send(IPC.window.toggleVisible),
+    minimize: () => ipcRenderer.send(IPC.window.minimize)
   },
   onZoneChange: (cb) => subscribe(IPC.events.zoneChange, cb),
   onLevelChange: (cb) => subscribe(IPC.events.levelChange, cb),

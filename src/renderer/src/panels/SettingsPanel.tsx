@@ -16,6 +16,22 @@ export function SettingsPanel() {
         <span>Настройки</span>
       </div>
 
+      <div className="setting">
+        <label>Прозрачность</label>
+        <input
+          type="range"
+          min={0.3}
+          max={1}
+          step={0.05}
+          value={settings?.opacity ?? 0.95}
+          onChange={(e) => {
+            const v = Number(e.target.value)
+            void patchSettings({ opacity: v })
+            window.overlayApi.window.setOpacity(v)
+          }}
+        />
+      </div>
+
       <div className="hint small muted">
         Игра должна работать в режиме «Окно» или «Окно без рамки». В эксклюзивном полноэкранном
         режиме оверлей не отображается.

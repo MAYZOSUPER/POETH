@@ -65,6 +65,12 @@ export async function resolveLayoutFile(areaId: string, file: string): Promise<s
   }
 }
 
+/** Resolve a brand asset (logo, compass, icons) dropped into resources/brand/. */
+export async function resolveBrandFile(file: string): Promise<string | null> {
+  const p = path.join(resourcesDir(), 'brand', file)
+  return (await exists(p)) ? p : null
+}
+
 export function contentTypeFor(file: string): string {
   const ext = path.extname(file).toLowerCase()
   switch (ext) {

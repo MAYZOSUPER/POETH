@@ -11,7 +11,7 @@ import {
   reconcileTailer
 } from './ipcHandlers'
 import { getSettings } from './services/settingsStore'
-import { resolveLayoutFile, contentTypeFor } from './services/layoutResolver'
+import { resolveLayoutFile, resolveBrandFile, contentTypeFor } from './services/layoutResolver'
 
 // Privileged scheme for serving local/cached layout images to the renderer
 // (works in both the dev http origin and the packaged file origin, unlike
@@ -43,6 +43,20 @@ async function bootstrap(): Promise<void> {
     try {
       const url = new URL(request.url)
       const segments = url.pathname.split('/').filter(Boolean).map(decodeURIComponent)
+
+      // poe2img://brand/<file>  -> resources/brand/<file>
+      if (url.host === 'brand') {
+        const file = segments[0]
+        if (!file) return new Response('Bad request', { status: 400 })
+        const abs = await resolveBrandFile(file)
+        if (!abs) return new Response('Not found', { status: 404 })
+        const data = await fs.readFile(abs)
+        return new Response(new Uint8Array(data), {
+          headers: { 'Content-Type': contentTypeFor(file) }
+        })
+      }
+
+      // poe2img://img/<areaId>/<file>  -> layout image (bundled/cached/remote)
       const areaId = segments[0]
       const file = segments[1]
       if (!areaId || !file) return new Response('Bad request', { status: 400 })

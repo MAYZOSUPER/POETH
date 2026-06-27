@@ -1,4 +1,6 @@
-# PoE2 Quest Overlay
+# Act Compass
+
+> *Your path. Nothing missed.*
 
 Прозрачный оверлей-трекер кампании **Path of Exile 2**: чек-лист квестов по актам
 (обязательные / необязательные + награды), картинки лейаутов зон, подсказки по
@@ -63,7 +65,14 @@ npm run build:data     # пересобрать resources/data из источн
 npm run validate:data  # проверить датасет
 ```
 
-Прогресс и настройки хранятся в `%APPDATA%/PoE2 Quest Overlay/` (атомарная запись).
+Прогресс и настройки хранятся в `%APPDATA%/Act Compass/` (атомарная запись).
+
+## Брендовая графика
+
+Положи PNG-ассеты в `resources/brand/` (имена: `app_icon.png`, `big_compass.png`,
+`logo_ru.png`/`logo_en.png`, `divider.png`, `icon_skull_*.png`, `icon_point_*.png`,
+`icon_portal_*.png`, `icon_npc_*.png` и т.д.) — приложение подхватит их автоматически
+(шапка, правая панель-компас); без них показываются встроенные SVG-заглушки.
 
 ## Структура
 

@@ -4,10 +4,10 @@ import { Toolbar } from './panels/Toolbar'
 import { ProfileBar } from './panels/ProfileBar'
 import { ActTabs } from './panels/ActTabs'
 import { ZoneBanner } from './panels/ZoneBanner'
-import { LayoutViewerPanel } from './panels/LayoutViewerPanel'
 import { GemHintsPanel } from './panels/GemHintsPanel'
 import { QuestChecklistPanel } from './panels/QuestChecklistPanel'
 import { SettingsPanel } from './panels/SettingsPanel'
+import { RightPanel } from './panels/RightPanel'
 
 export default function App() {
   const ready = useAppStore((s) => s.ready)
@@ -24,22 +24,24 @@ export default function App() {
       {!ready ? (
         <div className="loading">Загрузка…</div>
       ) : (
-        <>
-          <ProfileBar />
-          <ActTabs />
-          <ZoneBanner />
-          <div className="scroll">
-            {showSettings ? (
-              <SettingsPanel />
-            ) : (
-              <>
-                <LayoutViewerPanel />
-                <GemHintsPanel />
-                <QuestChecklistPanel />
-              </>
-            )}
+        <div className="body">
+          <div className="left">
+            <ProfileBar />
+            <ActTabs />
+            <ZoneBanner />
+            <div className="scroll">
+              {showSettings ? (
+                <SettingsPanel />
+              ) : (
+                <>
+                  <GemHintsPanel />
+                  <QuestChecklistPanel />
+                </>
+              )}
+            </div>
           </div>
-        </>
+          <RightPanel />
+        </div>
       )}
     </div>
   )

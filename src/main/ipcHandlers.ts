@@ -157,4 +157,5 @@ export function registerIpcHandlers(): void {
   ipcMain.on(IPC.window.toggleVisible, () => {
     void toggleOverlayVisible()
   })
+  ipcMain.on(IPC.window.minimize, () => getOverlayWindow()?.minimize())
 }

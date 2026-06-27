@@ -48,7 +48,8 @@ export const IPC = {
   window: {
     setOpacity: 'window:setOpacity',
     setLocked: 'window:setLocked',
-    toggleVisible: 'window:toggleVisible'
+    toggleVisible: 'window:toggleVisible',
+    minimize: 'window:minimize'
   },
   events: {
     zoneChange: 'event:zoneChange',
@@ -103,6 +104,7 @@ export interface OverlayApi {
     /** true = overlay ignores the mouse entirely (clicks pass through to the game) */
     setLocked(locked: boolean): void
     toggleVisible(): void
+    minimize(): void
   }
   onZoneChange(cb: (e: ZoneEvent) => void): () => void
   onLevelChange(cb: (e: LevelEvent) => void): () => void
