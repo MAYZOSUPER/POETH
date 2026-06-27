@@ -52,13 +52,15 @@ export async function loadDataset(): Promise<Dataset> {
   const layouts = await readJson<LayoutManifest>(path.join(dir, 'layouts', 'index.json'), {})
   const gems = await readJson<GemCatalog | null>(path.join(dir, 'gems.json'), null)
   const route = await readJson<Route | null>(path.join(dir, 'route.json'), null)
+  const areas = await readJson<Record<string, string>>(path.join(dir, 'areas.json'), {})
 
   cache = {
     meta,
     acts,
     layouts,
     gems: gems ?? undefined,
-    route: route ?? undefined
+    route: route ?? undefined,
+    areas
   }
   return cache
 }

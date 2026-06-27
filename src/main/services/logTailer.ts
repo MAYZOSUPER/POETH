@@ -68,9 +68,18 @@ export class LogTailer extends EventEmitter {
   private timer: ReturnType<typeof setInterval> | null = null
   private reading = false
   private lastZoneKey: string | null = null
+  private lastZone: ZoneEvent | null = null
+  private lastLevelValue: number | null = null
 
   getStatus(): TailerStatus {
-    return { running: this.timer !== null, logPath: this.logPath, found: this.logPath !== null }
+    return {
+      running: this.timer !== null,
+      logPath: this.logPath,
+      found: this.logPath !== null,
+      areaId: this.lastZone?.areaId,
+      areaName: this.lastZone?.areaName,
+      level: this.lastLevelValue ?? undefined
+    }
   }
 
   async start(customPath?: string | null): Promise<TailerStatus> {
@@ -130,7 +139,13 @@ export class LogTailer extends EventEmitter {
     if (!key || key === this.lastZoneKey) return
     this.lastZoneKey = key
     const ev: ZoneEvent = { areaId, areaName, at: Date.now() }
+    this.lastZone = ev
     this.emit('zone', ev)
+  }
+
+  private emitLevel(ev: LevelEvent): void {
+    this.lastLevelValue = ev.level
+    this.emit('level', ev)
   }
 
   // On startup, scan the tail of the file to seed the current zone/level once.
@@ -150,7 +165,7 @@ export class LogTailer extends EventEmitter {
       if (p.level) lastLevel = p.level
     })
     if (lastZoneId || lastZoneName) this.emitZone(lastZoneId, lastZoneName)
-    if (lastLevel) this.emit('level', lastLevel)
+    if (lastLevel) this.emitLevel(lastLevel)
   }
 
   private async readNew(): Promise<void> {
@@ -165,7 +180,7 @@ export class LogTailer extends EventEmitter {
         this.lastSize = s.size
         await this.readRange(this.logPath, from, to, (p) => {
           if (p.areaId || p.areaName) this.emitZone(p.areaId, p.areaName)
-          if (p.level) this.emit('level', p.level)
+          if (p.level) this.emitLevel(p.level)
         })
       }
     } catch {

@@ -181,6 +181,32 @@ button.icon.danger:hover {
   padding: 3px 4px;
 }
 
+/* ---- detected-zone banner ---- */
+.zone-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(120, 200, 120, 0.14);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.zb-dot {
+  flex: none;
+}
+.zb-label {
+  flex: 1;
+  font-weight: 600;
+  color: #cfeccf;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.zb-level {
+  flex: none;
+  color: var(--muted);
+}
+
 /* ---- scroll + panels ---- */
 .scroll {
   flex: 1 1 auto;

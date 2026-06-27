@@ -22,6 +22,8 @@ interface AppState {
   selectedZoneAreaId: string | null
   /** zone (our areaId) auto-detected from the game log; for highlighting */
   detectedZoneAreaId: string | null
+  /** human label of the detected zone (shown even if it's not in the checklist) */
+  detectedZoneLabel: string | null
   tailerStatus: TailerStatus | null
 
   init: () => Promise<void>
@@ -51,10 +53,23 @@ function actOf(dataset: Dataset | null, actId: string | null): Act | undefined {
 type ZoneRef = { actId: string; zoneAreaId: string }
 let zoneByExileId: Record<string, ZoneRef> = {}
 let zoneByName: Record<string, ZoneRef> = {}
+// Full-area fallback (incl. towns/trials): areaId -> actId, display name -> areaId.
+let areaToActId: Record<string, string> = {}
+let nameToExileId: Record<string, string> = {}
+
+/** Map a game areaId prefix to our act id: g2_* -> act-2, p1_* -> interlude-1. */
+function actIdFromAreaId(areaId: string): string | null {
+  const m = areaId.toLowerCase().match(/^([gp])(\d+)/)
+  if (!m) return null
+  const n = Number(m[2])
+  return m[1] === 'g' ? `act-${n}` : `interlude-${n}`
+}
 
 function buildZoneIndex(dataset: Dataset): void {
   zoneByExileId = {}
   zoneByName = {}
+  areaToActId = {}
+  nameToExileId = {}
   for (const act of dataset.acts) {
     for (const zone of act.zones) {
       const ref: ZoneRef = { actId: act.id, zoneAreaId: zone.areaId }
@@ -64,12 +79,60 @@ function buildZoneIndex(dataset: Dataset): void {
       if (!(n in zoneByName)) zoneByName[n] = ref
     }
   }
+  for (const [areaId, name] of Object.entries(dataset.areas ?? {})) {
+    const act = actIdFromAreaId(areaId)
+    if (act) areaToActId[areaId.toLowerCase()] = act
+    const n = name.toLowerCase()
+    if (!(n in nameToExileId)) nameToExileId[n] = areaId
+  }
 }
 
 function resolveZone(e: ZoneEvent): ZoneRef | null {
   if (e.areaId && zoneByExileId[e.areaId.toLowerCase()]) return zoneByExileId[e.areaId.toLowerCase()]
   if (e.areaName && zoneByName[e.areaName.toLowerCase()]) return zoneByName[e.areaName.toLowerCase()]
   return null
+}
+
+type SetState = (partial: Partial<AppState>) => void
+
+// Apply a detected zone. Tracked checklist zones get highlighted + auto-advanced.
+// Towns/trials still identify the act (switch tab) and show their name in the
+// banner. Quest completion is never touched.
+function applyZoneEvent(get: () => AppState, set: SetState, e: ZoneEvent): void {
+  const dataset = get().dataset
+  const autoAdvance = get().settings?.autoAdvanceZone ?? true
+  const patch: Partial<AppState> = {}
+
+  const ref = resolveZone(e)
+  if (ref) {
+    const act = dataset?.acts.find((a) => a.id === ref.actId)
+    const zone = act?.zones.find((z) => z.areaId === ref.zoneAreaId)
+    patch.detectedZoneAreaId = ref.zoneAreaId
+    patch.detectedZoneLabel = zone ? `A${act?.actNumber}: ${zone.name}` : null
+    if (autoAdvance) {
+      patch.selectedActId = ref.actId
+      patch.selectedZoneAreaId = ref.zoneAreaId
+    }
+    set(patch)
+    return
+  }
+
+  // Not a tracked zone (town/trial/etc.) — still identify the act from the map.
+  const exileId = (
+    e.areaId ?? (e.areaName ? nameToExileId[e.areaName.toLowerCase()] : undefined)
+  )?.toLowerCase()
+  const actId = exileId ? areaToActId[exileId] : null
+  const canonical =
+    (exileId && dataset?.areas?.[exileId]) || e.areaName || e.areaId || null
+  patch.detectedZoneAreaId = null
+  if (actId) {
+    const act = dataset?.acts.find((a) => a.id === actId)
+    patch.detectedZoneLabel = canonical ? `A${act?.actNumber}: ${canonical}` : (act?.actName ?? null)
+    if (autoAdvance) patch.selectedActId = actId
+  } else {
+    patch.detectedZoneLabel = canonical ? `${canonical} — вне кампании` : null
+  }
+  set(patch)
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -82,6 +145,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   selectedActId: null,
   selectedZoneAreaId: null,
   detectedZoneAreaId: null,
+  detectedZoneLabel: null,
   tailerStatus: null,
 
   async init() {
@@ -116,16 +180,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     // Advisory auto-detection from the game log (zone + level). Never auto-checks quests.
     api().onTailerStatus((status) => set({ tailerStatus: status }))
-    api().onZoneChange((e: ZoneEvent) => {
-      const ref = resolveZone(e)
-      if (!ref) return
-      const patch: Partial<AppState> = { detectedZoneAreaId: ref.zoneAreaId }
-      if (get().settings?.autoAdvanceZone) {
-        patch.selectedActId = ref.actId
-        patch.selectedZoneAreaId = ref.zoneAreaId
-      }
-      set(patch)
-    })
+    api().onZoneChange((e: ZoneEvent) => applyZoneEvent(get, set, e))
     api().onLevelChange((e: LevelEvent) => void get().setLevel(e.level))
 
     const tailerStatus = await api().tailer.status()
@@ -141,6 +196,17 @@ export const useAppStore = create<AppState>((set, get) => ({
       tailerStatus,
       ready: true
     })
+
+    // Sync the current zone/level now that settings are loaded (the tailer may
+    // have detected them during startup, before the renderer was listening).
+    if (tailerStatus.areaId || tailerStatus.areaName) {
+      applyZoneEvent(get, set, {
+        areaId: tailerStatus.areaId,
+        areaName: tailerStatus.areaName,
+        at: Date.now()
+      })
+    }
+    if (tailerStatus.level) void get().setLevel(tailerStatus.level)
   },
 
   selectAct(actId) {
@@ -236,12 +302,16 @@ export const useAppStore = create<AppState>((set, get) => ({
     const status = await api().tailer.start()
     const settings = await api().settings.get()
     set({ tailerStatus: status, settings })
+    if (status.areaId || status.areaName) {
+      applyZoneEvent(get, set, { areaId: status.areaId, areaName: status.areaName, at: Date.now() })
+    }
+    if (status.level) void get().setLevel(status.level)
   },
 
   async tailerStop() {
     const status = await api().tailer.stop()
     const settings = await api().settings.get()
-    set({ tailerStatus: status, settings })
+    set({ tailerStatus: status, settings, detectedZoneAreaId: null, detectedZoneLabel: null })
   },
 
   async tailerPickFile() {
@@ -249,5 +319,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     const status = await api().tailer.status()
     const settings = await api().settings.get()
     set({ tailerStatus: status, settings })
+    if (status.areaId || status.areaName) {
+      applyZoneEvent(get, set, { areaId: status.areaId, areaName: status.areaName, at: Date.now() })
+    }
+    if (status.level) void get().setLevel(status.level)
   }
 }))

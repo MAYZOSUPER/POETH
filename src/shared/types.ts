@@ -161,6 +161,8 @@ export interface Dataset {
   layouts: LayoutManifest
   gems?: GemCatalog
   route?: Route
+  /** full game areaId -> display name (incl. towns/trials not in the checklist) */
+  areas?: Record<string, string>
 }
 
 // ---------------------------------------------------------------------------
@@ -236,6 +238,10 @@ export interface TailerStatus {
   running: boolean
   logPath: string | null
   found: boolean
+  /** last detected zone (so the UI can sync current state on startup) */
+  areaId?: string
+  areaName?: string
+  level?: number
 }
 
 export type HotkeyAction = 'toggleVisible' | 'toggleLock' | 'prevStep' | 'nextStep'

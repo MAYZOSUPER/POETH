@@ -3,6 +3,7 @@ import { useAppStore } from './store/useAppStore'
 import { Toolbar } from './panels/Toolbar'
 import { ProfileBar } from './panels/ProfileBar'
 import { ActTabs } from './panels/ActTabs'
+import { ZoneBanner } from './panels/ZoneBanner'
 import { LayoutViewerPanel } from './panels/LayoutViewerPanel'
 import { GemHintsPanel } from './panels/GemHintsPanel'
 import { QuestChecklistPanel } from './panels/QuestChecklistPanel'
@@ -26,6 +27,7 @@ export default function App() {
         <>
           <ProfileBar />
           <ActTabs />
+          <ZoneBanner />
           <div className="scroll">
             {showSettings ? (
               <SettingsPanel />
