@@ -3,24 +3,12 @@ import { useAppStore } from '../store/useAppStore'
 export function SettingsPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const settings = useAppStore((s) => s.settings)
-  const patchSettings = useAppStore((s) => s.patchSettings)
   const meta = dataset?.meta
 
   return (
     <section className="panel settings">
       <div className="panel-head">
         <span>Настройки</span>
-      </div>
-
-      <div className="setting">
-        <label>Частота опроса клик-сквозь (мс)</label>
-        <input
-          type="number"
-          min={16}
-          max={100}
-          value={settings?.clickThroughPollMs ?? 33}
-          onChange={(e) => void patchSettings({ clickThroughPollMs: Number(e.target.value) })}
-        />
       </div>
 
       <div className="hint small muted">

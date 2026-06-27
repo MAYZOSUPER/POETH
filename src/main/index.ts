@@ -1,12 +1,7 @@
 import { app, BrowserWindow, protocol } from 'electron'
 import { promises as fs } from 'fs'
 import { createOverlayWindow } from './overlayWindow'
-import {
-  start as startClickThrough,
-  stop as stopClickThrough,
-  setLocked,
-  setPollInterval
-} from './clickThrough'
+import { initClickThrough } from './clickThrough'
 import { registerHotkeys, unregisterHotkeys } from './hotkeys'
 import { registerIpcHandlers, dispatchHotkey, applySettingsToWindow } from './ipcHandlers'
 import { getSettings } from './services/settingsStore'
@@ -60,9 +55,7 @@ async function bootstrap(): Promise<void> {
   createOverlayWindow()
 
   const settings = await getSettings()
-  setPollInterval(settings.clickThroughPollMs)
-  setLocked(settings.locked)
-  startClickThrough()
+  initClickThrough(settings.locked)
   applySettingsToWindow(settings)
   registerHotkeys(settings.hotkeys, dispatchHotkey)
 }
@@ -77,5 +70,4 @@ app.on('window-all-closed', () => {
 
 app.on('will-quit', () => {
   unregisterHotkeys()
-  stopClickThrough()
 })

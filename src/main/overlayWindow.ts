@@ -35,10 +35,13 @@ export function createOverlayWindow(): BrowserWindow {
   // Stay above borderless-fullscreen games.
   win.setAlwaysOnTop(true, 'screen-saver')
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
-  // Start fully click-through; the cursor-poll loop enables interaction over panels.
-  win.setIgnoreMouseEvents(true, { forward: true })
+  // Mouse-ignore state is established by initClickThrough() from the lock setting.
 
   win.once('ready-to-show', () => win?.show())
+
+  if (process.env.OVERLAY_DEVTOOLS === '1') {
+    win.webContents.openDevTools({ mode: 'detach' })
+  }
 
   if (process.env.ELECTRON_RENDERER_URL) {
     void win.loadURL(process.env.ELECTRON_RENDERER_URL)

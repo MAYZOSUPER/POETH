@@ -1,12 +1,12 @@
 import { ipcMain } from 'electron'
 import { IPC } from '@shared/ipc'
-import type { HotkeyAction, InteractiveRect, Settings } from '@shared/types'
+import type { HotkeyAction, Settings } from '@shared/types'
 import * as profiles from './services/profileStore'
 import { getSettings, updateSettings } from './services/settingsStore'
 import { loadDataset } from './services/questDataset'
 import { resolveLayout } from './services/layoutResolver'
 import { getOverlayWindow } from './overlayWindow'
-import { setInteractiveRects, setLocked, setPollInterval } from './clickThrough'
+import { setLocked } from './clickThrough'
 
 function clamp(v: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, v))
@@ -16,10 +16,9 @@ function broadcastActiveProfile(id: string | null): void {
   getOverlayWindow()?.webContents.send(IPC.events.activeProfileChanged, id)
 }
 
-/** Push settings-derived window state (opacity, lock, poll rate, visibility). */
+/** Push settings-derived window state (opacity, lock, visibility). */
 export function applySettingsToWindow(s: Settings): void {
   const win = getOverlayWindow()
-  setPollInterval(s.clickThroughPollMs)
   setLocked(s.locked)
   if (!win || win.isDestroyed()) return
   win.setOpacity(clamp(s.opacity, 0.2, 1))
@@ -95,9 +94,6 @@ export function registerIpcHandlers(): void {
     getOverlayWindow()?.setOpacity(clamp(value, 0.2, 1))
   })
   ipcMain.on(IPC.window.setLocked, (_e, value: boolean) => setLocked(!!value))
-  ipcMain.on(IPC.window.updateInteractiveRects, (_e, rects: InteractiveRect[]) => {
-    setInteractiveRects(Array.isArray(rects) ? rects : [])
-  })
   ipcMain.on(IPC.window.toggleVisible, () => {
     void toggleOverlayVisible()
   })

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useAppStore } from './store/useAppStore'
-import { useInteractive } from './hooks/useInteractive'
 import { Toolbar } from './panels/Toolbar'
 import { ProfileBar } from './panels/ProfileBar'
 import { ActTabs } from './panels/ActTabs'
@@ -12,7 +11,6 @@ import { SettingsPanel } from './panels/SettingsPanel'
 export default function App() {
   const ready = useAppStore((s) => s.ready)
   const init = useAppStore((s) => s.init)
-  const panelRef = useInteractive<HTMLDivElement>()
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
@@ -20,7 +18,7 @@ export default function App() {
   }, [init])
 
   return (
-    <div className="app" ref={panelRef}>
+    <div className="app">
       <Toolbar showSettings={showSettings} onToggleSettings={() => setShowSettings((s) => !s)} />
       {!ready ? (
         <div className="loading">Загрузка…</div>

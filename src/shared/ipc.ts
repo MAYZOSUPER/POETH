@@ -5,7 +5,6 @@
 import type {
   Dataset,
   HotkeyAction,
-  InteractiveRect,
   LevelEvent,
   ProfileMeta,
   ProgressState,
@@ -42,7 +41,6 @@ export const IPC = {
   window: {
     setOpacity: 'window:setOpacity',
     setLocked: 'window:setLocked',
-    updateInteractiveRects: 'window:updateInteractiveRects',
     toggleVisible: 'window:toggleVisible'
   },
   events: {
@@ -87,8 +85,8 @@ export interface OverlayApi {
   }
   window: {
     setOpacity(value: number): void
+    /** true = overlay ignores the mouse entirely (clicks pass through to the game) */
     setLocked(locked: boolean): void
-    updateInteractiveRects(rects: InteractiveRect[]): void
     toggleVisible(): void
   }
   onZoneChange(cb: (e: ZoneEvent) => void): () => void
