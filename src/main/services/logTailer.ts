@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import { existsSync, createReadStream, readFileSync } from 'fs'
+import { existsSync, createReadStream, readFileSync, statSync } from 'fs'
 import { stat } from 'fs/promises'
 import { createInterface } from 'readline'
 import type { LevelEvent, TailerStatus, ZoneEvent } from '@shared/types'
@@ -16,7 +16,10 @@ import type { LevelEvent, TailerStatus, ZoneEvent } from '@shared/types'
 const GENERATING = /Generating level \d+ area "([^"]+)"/
 const SCENE = /\[SCENE\] Set Source \[(.+?)\]/
 const ACT_TITLE = /^Act \d+$/
-const LEVEL_UP = /:\s+(\S+)\s+is now level (\d+)/
+// Real format: `: <Name> (<Class>) is now level <N>` — the class (which may contain
+// spaces, e.g. "Spirit Walker") sits between the name and "is now level". The optional
+// group keeps backward compatibility with a bare `: <Name> is now level <N>`.
+const LEVEL_UP = /:\s+(\S+)(?:\s+\([^)]+\))?\s+is now level\s+(\d+)/
 
 const SCAN_BYTES = 102400
 
@@ -109,11 +112,29 @@ export class LogTailer extends EventEmitter {
     }
   }
 
+  // Several PoE2 installs (Steam on multiple drives, leftover logs) can coexist; the
+  // hard-coded order would return a stale one. Pick the most recently written Client.txt.
   private findLogFile(): string | null {
+    const seen = new Set<string>()
+    const candidates: string[] = []
     for (const p of [...defaultPaths(), ...steamLibraryClientPaths()]) {
-      if (existsSync(p)) return p
+      const key = p.toLowerCase()
+      if (existsSync(p) && !seen.has(key)) {
+        seen.add(key)
+        candidates.push(p)
+      }
     }
-    return null
+    if (candidates.length === 0) return null
+    let best: { path: string; mtime: number } | null = null
+    for (const p of candidates) {
+      try {
+        const m = statSync(p).mtimeMs
+        if (!best || m > best.mtime) best = { path: p, mtime: m }
+      } catch {
+        // unreadable candidate; skip
+      }
+    }
+    return best ? best.path : candidates[0]
   }
 
   private parse(line: string): Parsed {
