@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
-import { useT } from '../i18n'
+import { useLang, useT } from '../i18n'
 
 export function GemHintsPanel() {
   const dataset = useAppStore((s) => s.dataset)
@@ -8,13 +8,29 @@ export function GemHintsPanel() {
   const profiles = useAppStore((s) => s.profiles)
   const activeProfileId = useAppStore((s) => s.activeProfileId)
   const t = useT()
+  const lang = useLang()
   const [open, setOpen] = useState(false)
 
   const gems = dataset?.gems
-  if (!gems || !selectedActId) return null
+  if (!gems || !dataset || !selectedActId) return null
+
+  // Recs are authored per act. Interludes (and any act lacking recs) fall back
+  // to the most advanced act's set — by then the build is essentially formed.
+  let sourceActId = selectedActId
+  let recsForAct = gems.recommendations.filter((r) => r.actId === sourceActId)
+  if (recsForAct.length === 0) {
+    const latestAct = dataset.acts
+      .filter((a) => a.kind === 'act')
+      .sort((a, b) => b.actNumber - a.actNumber)[0]
+    if (latestAct) {
+      sourceActId = latestAct.id
+      recsForAct = gems.recommendations.filter((r) => r.actId === sourceActId)
+    }
+  }
+  const carriedOver = sourceActId !== selectedActId
 
   const cls = profiles.find((p) => p.id === activeProfileId)?.className
-  let recs = gems.recommendations.filter((r) => r.actId === selectedActId)
+  let recs = recsForAct
   if (cls) {
     const filtered = recs.filter((r) => r.class?.toLowerCase() === cls.toLowerCase())
     if (filtered.length) recs = filtered
@@ -30,20 +46,26 @@ export function GemHintsPanel() {
         <span className="muted">{open ? '▾' : '▸'}</span>
       </div>
       {open && (
-        <ul className="gem-recs">
-          {recs.map((r, i) => (
-            <li key={i}>
-              <div className="gem-class">{r.class}</div>
-              <div className="gem-line">
-                <b>{t('gem.skills')}</b> {r.primaryGemIds.map(gemName).join(', ')}
-              </div>
-              <div className="gem-line">
-                <b>{t('gem.supports')}</b> {r.supportGemIds.map(gemName).join(', ')}
-              </div>
-              {r.note && <div className="gem-note small muted">{r.note}</div>}
-            </li>
-          ))}
-        </ul>
+        <>
+          {carriedOver && <div className="gem-carry small muted">{t('gem.carryover')}</div>}
+          <ul className="gem-recs">
+            {recs.map((r, i) => {
+              const note = lang === 'ru' ? (r.noteRu ?? r.note) : r.note
+              return (
+                <li key={i}>
+                  <div className="gem-class">{r.class}</div>
+                  <div className="gem-line">
+                    <b>{t('gem.skills')}</b> {r.primaryGemIds.map(gemName).join(', ')}
+                  </div>
+                  <div className="gem-line">
+                    <b>{t('gem.supports')}</b> {r.supportGemIds.map(gemName).join(', ')}
+                  </div>
+                  {note && <div className="gem-note small muted">{note}</div>}
+                </li>
+              )
+            })}
+          </ul>
+        </>
       )}
     </section>
   )

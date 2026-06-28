@@ -21,6 +21,83 @@
       "colour": "blue",
       "requiredLevel": 1
     },
+    "flame-wall": {
+      "id": "flame-wall",
+      "name": "Flame Wall",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "orb-of-storms": {
+      "id": "orb-of-storms",
+      "name": "Orb of Storms",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "arc": {
+      "id": "arc",
+      "name": "Arc",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "comet": {
+      "id": "comet",
+      "name": "Comet",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "frost-bomb": {
+      "id": "frost-bomb",
+      "name": "Frost Bomb",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "skeletal-warriors": {
+      "id": "skeletal-warriors",
+      "name": "Summon Skeletal Warriors",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "skeletal-sniper": {
+      "id": "skeletal-sniper",
+      "name": "Summon Skeletal Snipers",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "unearth": {
+      "id": "unearth",
+      "name": "Unearth",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "contagion": {
+      "id": "contagion",
+      "name": "Contagion",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "essence-drain": {
+      "id": "essence-drain",
+      "name": "Essence Drain",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "detonate-dead": {
+      "id": "detonate-dead",
+      "name": "Detonate Dead",
+      "kind": "active",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
     "boneshatter": {
       "id": "boneshatter",
       "name": "Boneshatter",
@@ -35,6 +112,48 @@
       "colour": "red",
       "requiredLevel": 1
     },
+    "sunder": {
+      "id": "sunder",
+      "name": "Sunder",
+      "kind": "active",
+      "colour": "red",
+      "requiredLevel": 1
+    },
+    "shield-charge": {
+      "id": "shield-charge",
+      "name": "Shield Charge",
+      "kind": "active",
+      "colour": "red",
+      "requiredLevel": 1
+    },
+    "perfect-strike": {
+      "id": "perfect-strike",
+      "name": "Perfect Strike",
+      "kind": "active",
+      "colour": "red",
+      "requiredLevel": 1
+    },
+    "stampede": {
+      "id": "stampede",
+      "name": "Stampede",
+      "kind": "active",
+      "colour": "red",
+      "requiredLevel": 1
+    },
+    "hammer-of-the-gods": {
+      "id": "hammer-of-the-gods",
+      "name": "Hammer of the Gods",
+      "kind": "active",
+      "colour": "red",
+      "requiredLevel": 1
+    },
+    "seismic-cry": {
+      "id": "seismic-cry",
+      "name": "Seismic Cry",
+      "kind": "active",
+      "colour": "red",
+      "requiredLevel": 1
+    },
     "lightning-arrow": {
       "id": "lightning-arrow",
       "name": "Lightning Arrow",
@@ -42,9 +161,65 @@
       "colour": "green",
       "requiredLevel": 1
     },
+    "ice-shot": {
+      "id": "ice-shot",
+      "name": "Ice Shot",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "gas-arrow": {
+      "id": "gas-arrow",
+      "name": "Gas Arrow",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "rain-of-arrows": {
+      "id": "rain-of-arrows",
+      "name": "Rain of Arrows",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "lightning-rod": {
+      "id": "lightning-rod",
+      "name": "Lightning Rod",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
     "galvanic-shards": {
       "id": "galvanic-shards",
       "name": "Galvanic Shards",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "explosive-shot": {
+      "id": "explosive-shot",
+      "name": "Explosive Shot",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "fragmentation-rounds": {
+      "id": "fragmentation-rounds",
+      "name": "Fragmentation Rounds",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "armour-piercing-rounds": {
+      "id": "armour-piercing-rounds",
+      "name": "Armour Piercing Rounds",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "gas-grenade": {
+      "id": "gas-grenade",
+      "name": "Gas Grenade",
       "kind": "active",
       "colour": "green",
       "requiredLevel": 1
@@ -63,25 +238,25 @@
       "colour": "green",
       "requiredLevel": 1
     },
-    "explosive-shot": {
-      "id": "explosive-shot",
-      "name": "Explosive Shot",
+    "ice-strike": {
+      "id": "ice-strike",
+      "name": "Ice Strike",
       "kind": "active",
       "colour": "green",
       "requiredLevel": 1
     },
-    "skeletal-warriors": {
-      "id": "skeletal-warriors",
-      "name": "Summon Skeletal Warriors",
+    "charged-staff": {
+      "id": "charged-staff",
+      "name": "Charged Staff",
       "kind": "active",
-      "colour": "blue",
+      "colour": "green",
       "requiredLevel": 1
     },
-    "essence-drain": {
-      "id": "essence-drain",
-      "name": "Essence Drain",
+    "tempest-bell": {
+      "id": "tempest-bell",
+      "name": "Tempest Bell",
       "kind": "active",
-      "colour": "blue",
+      "colour": "green",
       "requiredLevel": 1
     },
     "unleash": {
@@ -94,6 +269,27 @@
     "lightning-infusion": {
       "id": "lightning-infusion",
       "name": "Lightning Infusion",
+      "kind": "support",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "cold-infusion": {
+      "id": "cold-infusion",
+      "name": "Cold Infusion",
+      "kind": "support",
+      "colour": "blue",
+      "requiredLevel": 1
+    },
+    "fire-infusion": {
+      "id": "fire-infusion",
+      "name": "Fire Infusion",
+      "kind": "support",
+      "colour": "red",
+      "requiredLevel": 1
+    },
+    "spell-cascade": {
+      "id": "spell-cascade",
+      "name": "Spell Cascade",
       "kind": "support",
       "colour": "blue",
       "requiredLevel": 1
@@ -139,7 +335,50 @@
         "unleash",
         "lightning-infusion"
       ],
-      "note": "Cut your first Uncut Skill Gem into Spark or Frost Bolt; add a support once you get the Lv1 Uncut Support Gem."
+      "note": "Cut your first Uncut Skill Gem into Spark or Frost Bolt; add a support once you get the Lv1 Uncut Support Gem.",
+      "noteRu": "Первый необработанный камень — в Spark или Frost Bolt; поддержку добавь, когда выпадет необработанный камень поддержки."
+    },
+    {
+      "class": "Sorceress",
+      "actId": "act-2",
+      "primaryGemIds": [
+        "spark",
+        "flame-wall"
+      ],
+      "supportGemIds": [
+        "unleash",
+        "lightning-infusion"
+      ],
+      "note": "Drop Flame Wall and fire Spark through it for a big damage boost; Unleash lets Spark build up.",
+      "noteRu": "Ставь Flame Wall и пускай Spark сквозь стену — заметный буст урона; Unleash копит заряды Spark."
+    },
+    {
+      "class": "Sorceress",
+      "actId": "act-3",
+      "primaryGemIds": [
+        "spark",
+        "orb-of-storms"
+      ],
+      "supportGemIds": [
+        "lightning-infusion",
+        "spell-cascade"
+      ],
+      "note": "Orb of Storms for single target and shock; keep Spark as your clear.",
+      "noteRu": "Orb of Storms — по одиночным целям и для шока; Spark остаётся зачисткой."
+    },
+    {
+      "class": "Sorceress",
+      "actId": "act-4",
+      "primaryGemIds": [
+        "spark",
+        "comet"
+      ],
+      "supportGemIds": [
+        "unleash",
+        "lightning-infusion"
+      ],
+      "note": "Comet as a heavy single-target nuke (great with Frost Bomb to expose cold). Spark still clears packs.",
+      "noteRu": "Comet — тяжёлый удар по одиночным целям (хорош с Frost Bomb для пробития холодом). Spark по-прежнему зачищает пачки."
     },
     {
       "class": "Witch",
@@ -152,7 +391,50 @@
         "minion-mastery",
         "unleash"
       ],
-      "note": "Minion start: Summon Skeletal Warriors as your main damage; Essence Drain as a single-target option."
+      "note": "Minion start: Summon Skeletal Warriors as your main damage; Essence Drain as a single-target option.",
+      "noteRu": "Старт на миньонах: Summon Skeletal Warriors — основной урон; Essence Drain — по одиночным целям."
+    },
+    {
+      "class": "Witch",
+      "actId": "act-2",
+      "primaryGemIds": [
+        "skeletal-warriors",
+        "skeletal-sniper"
+      ],
+      "supportGemIds": [
+        "minion-mastery",
+        "unleash"
+      ],
+      "note": "Add Skeletal Snipers for ranged minion damage; keep the warrior wall up front.",
+      "noteRu": "Добавь Skeletal Snipers для дальнего урона миньонов; воины держат фронт."
+    },
+    {
+      "class": "Witch",
+      "actId": "act-3",
+      "primaryGemIds": [
+        "skeletal-sniper",
+        "unearth"
+      ],
+      "supportGemIds": [
+        "minion-mastery",
+        "spell-cascade"
+      ],
+      "note": "Unearth makes corpses to fuel minions and Detonate Dead; Snipers carry the damage.",
+      "noteRu": "Unearth создаёт трупы для миньонов и Detonate Dead; основной урон — на Snipers."
+    },
+    {
+      "class": "Witch",
+      "actId": "act-4",
+      "primaryGemIds": [
+        "skeletal-warriors",
+        "detonate-dead"
+      ],
+      "supportGemIds": [
+        "minion-mastery",
+        "fire-infusion"
+      ],
+      "note": "Detonate Dead for burst on tough packs and bosses; refresh your skeleton army before fights.",
+      "noteRu": "Detonate Dead — всплеск урона по толстым пачкам и боссам; обновляй армию скелетов перед боями."
     },
     {
       "class": "Warrior",
@@ -165,7 +447,50 @@
         "magnified-effect",
         "martial-tempo"
       ],
-      "note": "Boneshatter as the first gem; Mace Strike to build heavy-stun. Shield Charge from Tarkleigh for mobility."
+      "note": "Boneshatter as the first gem; Mace Strike to build heavy-stun. Shield Charge from Tarkleigh for mobility.",
+      "noteRu": "Boneshatter первым камнем; Mace Strike набирает тяжёлый стан. Shield Charge от Tarkleigh — мобильность."
+    },
+    {
+      "class": "Warrior",
+      "actId": "act-2",
+      "primaryGemIds": [
+        "boneshatter",
+        "sunder"
+      ],
+      "supportGemIds": [
+        "magnified-effect",
+        "martial-tempo"
+      ],
+      "note": "Sunder for ranged AoE and to set up stuns; Boneshatter detonates the heavy-stun for big hits.",
+      "noteRu": "Sunder — дальняя зона и подготовка стана; Boneshatter детонирует тяжёлый стан в большой удар."
+    },
+    {
+      "class": "Warrior",
+      "actId": "act-3",
+      "primaryGemIds": [
+        "sunder",
+        "perfect-strike"
+      ],
+      "supportGemIds": [
+        "magnified-effect",
+        "martial-tempo"
+      ],
+      "note": "Perfect Strike for hard single-target hits — time the sweet spot. Sunder clears.",
+      "noteRu": "Perfect Strike — сильный одиночный удар, лови «окно» точного попадания. Sunder зачищает."
+    },
+    {
+      "class": "Warrior",
+      "actId": "act-4",
+      "primaryGemIds": [
+        "boneshatter",
+        "hammer-of-the-gods"
+      ],
+      "supportGemIds": [
+        "magnified-effect",
+        "martial-tempo"
+      ],
+      "note": "Hammer of the Gods as a boss nuke after stacking heavy-stun. Seismic Cry boosts your slams.",
+      "noteRu": "Hammer of the Gods — удар по боссу после накопления тяжёлого стана. Seismic Cry усиливает удары."
     },
     {
       "class": "Ranger",
@@ -178,7 +503,50 @@
         "scattershot",
         "martial-tempo"
       ],
-      "note": "Lightning Arrow clears packs; Galvanic Shards for single target."
+      "note": "Lightning Arrow clears packs; Galvanic Shards for single target.",
+      "noteRu": "Lightning Arrow зачищает пачки; Galvanic Shards — по одиночным целям."
+    },
+    {
+      "class": "Ranger",
+      "actId": "act-2",
+      "primaryGemIds": [
+        "lightning-arrow",
+        "ice-shot"
+      ],
+      "supportGemIds": [
+        "scattershot",
+        "martial-tempo"
+      ],
+      "note": "Ice Shot adds freeze and cold for safer single target; Lightning Arrow stays your clear.",
+      "noteRu": "Ice Shot добавляет заморозку и холод по одиночным целям; Lightning Arrow остаётся зачисткой."
+    },
+    {
+      "class": "Ranger",
+      "actId": "act-3",
+      "primaryGemIds": [
+        "lightning-arrow",
+        "lightning-rod"
+      ],
+      "supportGemIds": [
+        "scattershot",
+        "martial-tempo"
+      ],
+      "note": "Plant Lightning Rod then hit it with Lightning Arrow for a burst — strong on bosses.",
+      "noteRu": "Ставь Lightning Rod и бей по нему Lightning Arrow для всплеска — сильно по боссам."
+    },
+    {
+      "class": "Ranger",
+      "actId": "act-4",
+      "primaryGemIds": [
+        "lightning-arrow",
+        "rain-of-arrows"
+      ],
+      "supportGemIds": [
+        "scattershot",
+        "martial-tempo"
+      ],
+      "note": "Rain of Arrows for big AoE on packs; Gas Arrow is a good ignite-detonation option too.",
+      "noteRu": "Rain of Arrows — крупная зона по пачкам; Gas Arrow — хороший вариант с детонацией поджога."
     },
     {
       "class": "Monk",
@@ -190,7 +558,49 @@
       "supportGemIds": [
         "martial-tempo"
       ],
-      "note": "Tempest Flurry to build power charges, Falling Thunder to spend them."
+      "note": "Tempest Flurry to build power charges, Falling Thunder to spend them.",
+      "noteRu": "Tempest Flurry копит заряды силы, Falling Thunder их тратит."
+    },
+    {
+      "class": "Monk",
+      "actId": "act-2",
+      "primaryGemIds": [
+        "tempest-flurry",
+        "ice-strike"
+      ],
+      "supportGemIds": [
+        "martial-tempo",
+        "cold-infusion"
+      ],
+      "note": "Ice Strike freezes packs for safety; Tempest Flurry keeps power charges up.",
+      "noteRu": "Ice Strike замораживает пачки — безопаснее; Tempest Flurry держит заряды силы."
+    },
+    {
+      "class": "Monk",
+      "actId": "act-3",
+      "primaryGemIds": [
+        "ice-strike",
+        "charged-staff"
+      ],
+      "supportGemIds": [
+        "martial-tempo",
+        "cold-infusion"
+      ],
+      "note": "Charge your staff, then Ice Strike for a burst of hits; great single-target window.",
+      "noteRu": "Заряди посох (Charged Staff), затем Ice Strike — всплеск ударов; отличное окно по одиночным."
+    },
+    {
+      "class": "Monk",
+      "actId": "act-4",
+      "primaryGemIds": [
+        "falling-thunder",
+        "tempest-bell"
+      ],
+      "supportGemIds": [
+        "martial-tempo"
+      ],
+      "note": "Drop Tempest Bell and ring it with your hits for huge burst on bosses.",
+      "noteRu": "Ставь Tempest Bell и «звони» в него ударами — большой всплеск по боссам."
     },
     {
       "class": "Mercenary",
@@ -202,7 +612,50 @@
       "supportGemIds": [
         "scattershot"
       ],
-      "note": "Crossbow start: Galvanic Shards as your workhorse, Explosive Shot for groups."
+      "note": "Crossbow start: Galvanic Shards as your workhorse, Explosive Shot for groups.",
+      "noteRu": "Старт с арбалета: Galvanic Shards — рабочая лошадка, Explosive Shot — по группам."
+    },
+    {
+      "class": "Mercenary",
+      "actId": "act-2",
+      "primaryGemIds": [
+        "galvanic-shards",
+        "fragmentation-rounds"
+      ],
+      "supportGemIds": [
+        "scattershot",
+        "martial-tempo"
+      ],
+      "note": "Fragmentation Rounds shred packs; Galvanic Shards stays your reliable single target.",
+      "noteRu": "Fragmentation Rounds кромсают пачки; Galvanic Shards — надёжный одиночный урон."
+    },
+    {
+      "class": "Mercenary",
+      "actId": "act-3",
+      "primaryGemIds": [
+        "fragmentation-rounds",
+        "gas-grenade"
+      ],
+      "supportGemIds": [
+        "scattershot",
+        "fire-infusion"
+      ],
+      "note": "Gas Grenade + an ignite source detonates for big AoE; reload-swap between bolt types.",
+      "noteRu": "Gas Grenade + источник поджога даёт мощную детонацию по площади; чередуй типы болтов перезарядкой."
+    },
+    {
+      "class": "Mercenary",
+      "actId": "act-4",
+      "primaryGemIds": [
+        "galvanic-shards",
+        "armour-piercing-rounds"
+      ],
+      "supportGemIds": [
+        "scattershot",
+        "martial-tempo"
+      ],
+      "note": "Armour Piercing Rounds for armoured bosses; Galvanic Shards for everything else.",
+      "noteRu": "Armour Piercing Rounds — по бронированным боссам; Galvanic Shards — по всему остальному."
     }
   ]
 }

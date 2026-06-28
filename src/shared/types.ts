@@ -111,7 +111,10 @@ export interface GemRecommendation {
   actId: string
   primaryGemIds: string[]
   supportGemIds: string[]
+  /** English editorial note */
   note?: string
+  /** Russian editorial note (falls back to `note` when absent) */
+  noteRu?: string
 }
 
 export interface GemCatalog {

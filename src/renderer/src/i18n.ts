@@ -69,6 +69,7 @@ const RU: Dict = {
   'gem.headEarly': 'Камни умений — ранние умения',
   'gem.skills': 'Умения:',
   'gem.supports': 'Поддержки:',
+  'gem.carryover': 'Камни финального акта — билд к этому моменту уже сформирован.',
   // layout viewer
   'lv.title': 'Лейаут: {name}',
   'lv.close': 'Закрыть',
@@ -169,6 +170,7 @@ const EN: Dict = {
   'gem.headEarly': 'Skill gems — early skills',
   'gem.skills': 'Skills:',
   'gem.supports': 'Supports:',
+  'gem.carryover': 'Final-act gems — your build is essentially set by now.',
   'lv.title': 'Layout: {name}',
   'lv.close': 'Close',
   'lv.loading': 'Loading layout…',
