@@ -788,6 +788,70 @@ input[type='checkbox']:checked::after {
   font-variant-numeric: tabular-nums;
   justify-self: end;
 }
+.rw-row {
+  cursor: help;
+}
+.rw-row:hover .rw-label {
+  color: var(--gold-bright);
+}
+.rw-pop {
+  position: fixed;
+  z-index: 1000;
+  width: 250px;
+  max-height: 340px;
+  overflow-y: auto;
+  background: rgba(18, 15, 11, 0.98);
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  padding: 6px 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+  font-size: 11px;
+  pointer-events: none;
+}
+.rw-pop-head {
+  color: var(--gold-bright);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.rw-pop ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rw-pop li {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 1px 0;
+}
+.rw-pop li.done {
+  opacity: 0.5;
+}
+.rw-pop li.done .rw-pop-name {
+  text-decoration: line-through;
+}
+.rw-pop-mark {
+  flex: none;
+  width: 12px;
+  color: var(--gold);
+}
+.rw-pop li.done .rw-pop-mark {
+  color: var(--muted);
+}
+.rw-pop-val {
+  flex: none;
+  min-width: 26px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.rw-pop-name {
+  flex: 1;
+  color: var(--text);
+}
+.rw-pop-act {
+  flex: none;
+  color: var(--muted);
+}
 
 /* ---------- right pane: layout viewer ---------- */
 .rightpane .panel.layout {

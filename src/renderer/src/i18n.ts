@@ -50,6 +50,7 @@ const RU: Dict = {
   'rw.cold': '❄ Холод',
   'rw.fire': '🔥 Огонь',
   'rw.light': '⚡ Молния',
+  'rw.remaining': 'Осталось {n} из {m} · ✓ получено, ○ нет',
   // ascendancy
   'asc.head': 'Вознесение · {a}/{b} очк.',
   'asc.choose': 'Аскенданси',
@@ -164,6 +165,7 @@ const EN: Dict = {
   'rw.cold': '❄ Cold',
   'rw.fire': '🔥 Fire',
   'rw.light': '⚡ Lightning',
+  'rw.remaining': '{n} of {m} left · ✓ got, ○ not yet',
   'asc.head': 'Ascendancy · {a}/{b} pts',
   'asc.choose': 'Ascendancy',
   'asc.none': '— none —',
