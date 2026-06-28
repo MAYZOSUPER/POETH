@@ -220,6 +220,8 @@ export interface Settings {
   /** force full click-through (overlay never steals clicks) */
   locked: boolean
   overlayVisible: boolean
+  /** show the overlay window on the Windows taskbar */
+  showInTaskbar: boolean
   /** cursor poll interval for selective click-through, ms */
   clickThroughPollMs: number
   /** path to Client.txt; null = not configured */

@@ -28,6 +28,15 @@ export function SettingsPanel() {
         />
       </div>
 
+      <label className="row-toggle">
+        <input
+          type="checkbox"
+          checked={settings?.showInTaskbar ?? true}
+          onChange={(e) => void patchSettings({ showInTaskbar: e.target.checked })}
+        />
+        Показывать на панели задач
+      </label>
+
       <div className="hint small muted">
         Игра должна работать в режиме «Окно» или «Окно без рамки». В эксклюзивном полноэкранном
         режиме оверлей не отображается.

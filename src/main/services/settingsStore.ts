@@ -12,6 +12,7 @@ export function defaultSettings(): Settings {
     opacity: 0.95,
     locked: false,
     overlayVisible: true,
+    showInTaskbar: true,
     clickThroughPollMs: 33,
     logPath: null,
     tailerEnabled: false,

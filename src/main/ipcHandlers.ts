@@ -46,6 +46,7 @@ export function applySettingsToWindow(s: Settings): void {
   const win = getOverlayWindow()
   setLocked(s.locked)
   if (!win || win.isDestroyed()) return
+  win.setSkipTaskbar(!s.showInTaskbar)
   if (s.overlayVisible && !win.isVisible()) win.show()
   if (!s.overlayVisible && win.isVisible()) win.hide()
 }
