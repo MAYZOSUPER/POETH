@@ -6,12 +6,15 @@ import { ActTabs } from './panels/ActTabs'
 import { ZoneBanner } from './panels/ZoneBanner'
 import { GemHintsPanel } from './panels/GemHintsPanel'
 import { QuestChecklistPanel } from './panels/QuestChecklistPanel'
+import { WhatsNextPanel } from './panels/WhatsNextPanel'
 import { SettingsPanel } from './panels/SettingsPanel'
 import { RightPanel } from './panels/RightPanel'
+import { ViewToggle } from './components/ViewToggle'
 
 export default function App() {
   const ready = useAppStore((s) => s.ready)
   const init = useAppStore((s) => s.init)
+  const viewMode = useAppStore((s) => s.viewMode)
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
@@ -34,8 +37,15 @@ export default function App() {
                 <SettingsPanel />
               ) : (
                 <>
-                  <GemHintsPanel />
-                  <QuestChecklistPanel />
+                  <ViewToggle />
+                  {viewMode === 'whatsnext' ? (
+                    <WhatsNextPanel />
+                  ) : (
+                    <>
+                      <GemHintsPanel />
+                      <QuestChecklistPanel />
+                    </>
+                  )}
                 </>
               )}
             </div>

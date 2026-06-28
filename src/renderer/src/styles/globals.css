@@ -538,6 +538,101 @@ input[type='checkbox']:checked::after {
   font-weight: 600;
 }
 
+/* ---------- view toggle + what's next ---------- */
+.view-toggle {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.view-toggle button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 7px 0;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.view-toggle button.on {
+  background: rgba(194, 162, 90, 0.18);
+  color: var(--gold-bright);
+}
+.view-toggle button:hover:not(.on) {
+  color: var(--text);
+}
+
+.whatsnext .wn-nav {
+  display: flex;
+  gap: 4px;
+}
+.wn-current {
+  padding: 10px 12px;
+}
+.wn-act {
+  font-family: var(--font-serif);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.85;
+}
+.wn-zone-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 3px 0 8px;
+}
+.wn-zone {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--gold-bright);
+}
+.wn-empty {
+  padding: 6px 0;
+}
+.whatsnext .quest-list {
+  padding: 0;
+}
+.wn-next {
+  margin: 4px 10px 12px;
+  padding: 8px 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.18);
+}
+.wn-next:hover {
+  border-color: var(--gold);
+  background: rgba(194, 162, 90, 0.08);
+}
+.wn-next-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.wn-next-zone {
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 2px;
+}
+.wn-next-reward {
+  margin-top: 2px;
+}
+.wn-next-go {
+  display: inline-block;
+  margin-top: 5px;
+  color: var(--gold);
+  font-size: 11px;
+}
+
 /* ---------- right pane: layout viewer ---------- */
 .rightpane .panel.layout {
   margin: 0;

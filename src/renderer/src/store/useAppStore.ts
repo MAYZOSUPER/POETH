@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import type {
-  Act,
   Dataset,
   HotkeyAction,
   LevelEvent,
@@ -25,10 +24,18 @@ interface AppState {
   /** human label of the detected zone (shown even if it's not in the checklist) */
   detectedZoneLabel: string | null
   tailerStatus: TailerStatus | null
+  /** left-pane view: full checklist or the "What's Next" guided step */
+  viewMode: 'checklist' | 'whatsnext'
+  /** pointer into the linear route (getRoute()) for "What's Next" */
+  currentStepIndex: number
 
   init: () => Promise<void>
   selectAct: (actId: string) => void
   selectZone: (areaId: string | null) => void
+  setViewMode: (mode: 'checklist' | 'whatsnext') => void
+  goToStep: (index: number) => void
+  stepNext: () => void
+  stepPrev: () => void
   toggleQuest: (questId: string, done: boolean) => Promise<void>
   setLevel: (level: number) => Promise<void>
   setRewardChoice: (questId: string, optionIndex: number) => Promise<void>
@@ -45,10 +52,6 @@ interface AppState {
 
 const api = (): Window['overlayApi'] => window.overlayApi
 
-function actOf(dataset: Dataset | null, actId: string | null): Act | undefined {
-  return dataset?.acts.find((a) => a.id === actId)
-}
-
 // Reverse indices: game areaId / display name -> our { actId, zoneAreaId }.
 type ZoneRef = { actId: string; zoneAreaId: string }
 let zoneByExileId: Record<string, ZoneRef> = {}
@@ -56,6 +59,26 @@ let zoneByName: Record<string, ZoneRef> = {}
 // Full-area fallback (incl. towns/trials): areaId -> actId, display name -> areaId.
 let areaToActId: Record<string, string> = {}
 let nameToExileId: Record<string, string> = {}
+
+// Linear campaign route (ordered zones across all acts/interludes) for "What's Next".
+export type RouteStep = {
+  index: number
+  actId: string
+  actNumber: number
+  actName: string
+  kind: string
+  areaId: string
+  zoneName: string
+  isTown: boolean
+}
+let routeSteps: RouteStep[] = []
+let stepByZone: Record<string, number> = {}
+export function getRoute(): RouteStep[] {
+  return routeSteps
+}
+export function stepIndexOfZone(areaId: string | null): number {
+  return areaId != null && areaId in stepByZone ? stepByZone[areaId] : -1
+}
 
 /** Map a game areaId prefix to our act id: g2_* -> act-2, p1_* -> interlude-1. */
 function actIdFromAreaId(areaId: string): string | null {
@@ -70,6 +93,8 @@ function buildZoneIndex(dataset: Dataset): void {
   zoneByName = {}
   areaToActId = {}
   nameToExileId = {}
+  routeSteps = []
+  stepByZone = {}
   for (const act of dataset.acts) {
     for (const zone of act.zones) {
       const ref: ZoneRef = { actId: act.id, zoneAreaId: zone.areaId }
@@ -77,6 +102,19 @@ function buildZoneIndex(dataset: Dataset): void {
       if (ex && !(ex.toLowerCase() in zoneByExileId)) zoneByExileId[ex.toLowerCase()] = ref
       const n = zone.name.toLowerCase()
       if (!(n in zoneByName)) zoneByName[n] = ref
+
+      const index = routeSteps.length
+      routeSteps.push({
+        index,
+        actId: act.id,
+        actNumber: act.actNumber,
+        actName: act.actName,
+        kind: act.kind,
+        areaId: zone.areaId,
+        zoneName: zone.name,
+        isTown: !!zone.isTown
+      })
+      stepByZone[zone.areaId] = index
     }
   }
   for (const [areaId, name] of Object.entries(dataset.areas ?? {})) {
@@ -112,6 +150,8 @@ function applyZoneEvent(get: () => AppState, set: SetState, e: ZoneEvent): void 
     if (autoAdvance) {
       patch.selectedActId = ref.actId
       patch.selectedZoneAreaId = ref.zoneAreaId
+      const stepIdx = stepByZone[ref.zoneAreaId]
+      if (stepIdx !== undefined) patch.currentStepIndex = stepIdx
     }
     set(patch)
     return
@@ -147,6 +187,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   detectedZoneAreaId: null,
   detectedZoneLabel: null,
   tailerStatus: null,
+  viewMode: 'whatsnext',
+  currentStepIndex: 0,
 
   async init() {
     const dataset = await api().dataset.get()
@@ -169,6 +211,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       dataset.acts.find((a) => a.actNumber === progress.currentAct)?.id ??
       dataset.acts[0]?.id ??
       null
+    const initialStep = routeSteps.find((s) => s.actId === selectedActId)?.index ?? 0
 
     // keep renderer in sync with main-driven changes
     api().onActiveProfileChanged(async (id) => {
@@ -193,6 +236,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       progress,
       selectedActId,
       selectedZoneAreaId: null,
+      currentStepIndex: initialStep,
       tailerStatus,
       ready: true
     })
@@ -210,11 +254,35 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   selectAct(actId) {
-    set({ selectedActId: actId, selectedZoneAreaId: null })
+    const firstStep = routeSteps.find((s) => s.actId === actId)
+    set({
+      selectedActId: actId,
+      selectedZoneAreaId: null,
+      ...(firstStep ? { currentStepIndex: firstStep.index } : {})
+    })
   },
 
   selectZone(areaId) {
     set({ selectedZoneAreaId: areaId })
+  },
+
+  setViewMode(mode) {
+    set({ viewMode: mode })
+  },
+
+  goToStep(index) {
+    if (routeSteps.length === 0) return
+    const i = Math.max(0, Math.min(routeSteps.length - 1, index))
+    const s = routeSteps[i]
+    set({ currentStepIndex: i, selectedActId: s.actId, selectedZoneAreaId: s.areaId })
+  },
+
+  stepNext() {
+    get().goToStep(get().currentStepIndex + 1)
+  },
+
+  stepPrev() {
+    get().goToStep(get().currentStepIndex - 1)
   },
 
   async toggleQuest(questId, done) {
@@ -281,21 +349,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   async handleHotkey(action) {
-    const { dataset, selectedActId, selectedZoneAreaId } = get()
     if (action === 'toggleLock') {
       // main already flipped the lock; refresh settings to reflect it
       const settings = await api().settings.get()
       set({ settings })
       return
     }
-    if (action === 'prevStep' || action === 'nextStep') {
-      const act = actOf(dataset, selectedActId)
-      if (!act || act.zones.length === 0) return
-      const idx = act.zones.findIndex((z) => z.areaId === selectedZoneAreaId)
-      const dir = action === 'nextStep' ? 1 : -1
-      const nextIdx = Math.max(0, Math.min(act.zones.length - 1, (idx < 0 ? 0 : idx) + dir))
-      set({ selectedZoneAreaId: act.zones[nextIdx].areaId })
-    }
+    if (action === 'nextStep') get().stepNext()
+    else if (action === 'prevStep') get().stepPrev()
   },
 
   async tailerStart() {
