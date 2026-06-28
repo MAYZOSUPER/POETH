@@ -53,6 +53,10 @@ export async function loadDataset(): Promise<Dataset> {
   const gems = await readJson<GemCatalog | null>(path.join(dir, 'gems.json'), null)
   const route = await readJson<Route | null>(path.join(dir, 'route.json'), null)
   const areas = await readJson<Record<string, string>>(path.join(dir, 'areas.json'), {})
+  const hints = await readJson<Record<string, import('@shared/types').ZoneHint>>(
+    path.join(dir, 'hints.json'),
+    {}
+  )
 
   cache = {
     meta,
@@ -60,7 +64,8 @@ export async function loadDataset(): Promise<Dataset> {
     layouts,
     gems: gems ?? undefined,
     route: route ?? undefined,
-    areas
+    areas,
+    hints
   }
   return cache
 }

@@ -1,0 +1,835 @@
+{
+  "the riverbank": {
+    "layoutType": "linear",
+    "objective": "Single path — no branching at all",
+    "exit": "Follow the river bank northward to reach Clearfell",
+    "tips": [
+      "Kill enemies in your path only",
+      "Renly is just ahead — talk to him"
+    ]
+  },
+  "clearfell": {
+    "layoutType": "open",
+    "objective": "Encampment is in the north half — wooden walls with firelight",
+    "exit": "Look for the lit camp fence to the north",
+    "tips": [
+      "Beira roams the south/west — hunt her before heading north",
+      "Skip other combat"
+    ]
+  },
+  "the grelwood": {
+    "layoutType": "branching",
+    "objective": "Tree of Souls is in the northeast. Exits to Grim Tangle and Red Vale also in Grelwood.",
+    "exit": "After speaking to Una: use Red Vale waypoint to get there instantly",
+    "tips": [
+      "Grab Grim Tangle waypoint first (enter, tp out, come back)",
+      "Grab Red Vale waypoint (enter, tp out, come back)",
+      "Then find Tree of Souls and talk to Una"
+    ],
+    "cues": [
+      {
+        "icon": "🌿",
+        "cue": "Glowing magical roots",
+        "leadsTo": "Tree of Souls (Una)"
+      },
+      {
+        "icon": "🍄",
+        "cue": "Mushrooms on the ground",
+        "leadsTo": "Grim Tangle entrance"
+      },
+      {
+        "icon": "🌊",
+        "cue": "Follow river upstream",
+        "leadsTo": "Red Vale entrance"
+      }
+    ]
+  },
+  "the red vale": {
+    "layoutType": "open",
+    "objective": "Obelisks 1 and 2 are in the lower-east area. Follow the zone path northeast.",
+    "exit": "After 3rd obelisk: Rust King spawns in the northwest",
+    "tips": [
+      "Each obelisk: interact → fight waves → collect rune",
+      "Rust King spawns only at the 3rd obelisk"
+    ]
+  },
+  "the grim tangle": {
+    "layoutType": "maze",
+    "objective": "Cemetery entrance is in the northeast corner",
+    "exit": "Look for stone archways with grave carvings",
+    "tips": [
+      "Most maze-like zone in Act 1",
+      "Follow northeast consistently",
+      "Avoid large packs"
+    ]
+  },
+  "cemetery of the eternals": {
+    "layoutType": "open",
+    "objective": "Tomb entrance is in the center-north",
+    "exit": "Large ornate mausoleum building in the center",
+    "tips": [
+      "Undead heavy — move around packs",
+      "Lachlann boss fight is here LATER — skip for now",
+      "If you used the Tomb checkpoint to teleport, you're back at Cemetery entrance — re-scan"
+    ]
+  },
+  "tomb of the consort": {
+    "layoutType": "dungeon",
+    "objective": "Boss is at the end of the tomb (deepest room)",
+    "exit": "Linear dungeon — follow the crypt passages",
+    "tips": [
+      "After kill: go to Mausoleum of the Praetor next"
+    ]
+  },
+  "the mausoleum of the praetor": {
+    "layoutType": "dungeon",
+    "objective": "Boss at the end of the mausoleum",
+    "exit": "After kill: use checkpoint to teleport back to Cemetery entrance — faster than walking back",
+    "tips": [
+      "Phase 2: shield breaks at 50% — burst him down",
+      "Pick up the ring before leaving",
+      "Use checkpoint after kill to return to Cemetery entrance quickly"
+    ]
+  },
+  "the hunting grounds": {
+    "layoutType": "open",
+    "objective": "Crowbell patrols the northern half",
+    "exit": "After kill: continue east to Freythorn",
+    "tips": [
+      "Loud screech = incoming dive bomb — dodge sideways",
+      "He dies fast — burst damage works well"
+    ],
+    "cues": [
+      {
+        "icon": "🪧",
+        "cue": "Signpost in the middle of the path",
+        "leadsTo": "Ogham Farmlands"
+      },
+      {
+        "icon": "🐄",
+        "cue": "Pecked-at bovine corpse (farm-to-table trail)",
+        "leadsTo": "Crowbell's territory"
+      },
+      {
+        "icon": "🦗",
+        "cue": "Locust trail (after Freythorn ritual)",
+        "leadsTo": "Freythorn entrance"
+      }
+    ]
+  },
+  "freythorn": {
+    "layoutType": "open",
+    "objective": "Find all 4 ritual altars — King spawns only after the 4th ritual",
+    "exit": "After kill: exit east to Ogham Farmlands",
+    "tips": [
+      "Mist deals DoT — fight near the altar edges",
+      "King spawns immediately after 4th ritual — be ready",
+      "0.5: each ritual spawns locusts toward the next closest one — just follow them"
+    ],
+    "cues": [
+      {
+        "icon": "🦗",
+        "cue": "Trail of locusts after each ritual",
+        "leadsTo": "Next closest ritual altar"
+      }
+    ]
+  },
+  "ogham farmlands": {
+    "layoutType": "open",
+    "objective": "Lute is usually near abandoned farmhouses in center-south",
+    "exit": "After finding lute: continue to Ogham Village",
+    "tips": [
+      "Check near hay bales and ruined structures",
+      "Glowing golden shimmer on ground"
+    ]
+  },
+  "ogham village": {
+    "layoutType": "open",
+    "objective": "Hug right wall heading north — Executioner is at the opposite end of the village",
+    "exit": "After kill: free Leitis (interact with her cage nearby)",
+    "tips": [
+      "Kill Executioner → free Leitis → she gives you quest item"
+    ]
+  },
+  "the manor ramparts": {
+    "layoutType": "linear",
+    "objective": "Linear path through the outer walls to Manor entrance",
+    "exit": "Large manor gate at the end of the ramparts",
+    "tips": [
+      "Heavy enemy presence — dodge around packs",
+      "No optional content here"
+    ]
+  },
+  "ogham manor": {
+    "layoutType": "dungeon",
+    "objective": "Candlemass patrols the chapel area of Floor 1",
+    "exit": "Chapel room has candles and an altar",
+    "tips": [
+      "Fire AoE patches — stand in the gaps",
+      "Low HP for a boss — fast kill",
+      "Phase 2 transform: dodge the leap attack"
+    ]
+  },
+  "mawdun quarry": {
+    "layoutType": "open",
+    "objective": "Boss is at the caravan blockade in the center/north",
+    "exit": "After kill: proceed into Mawdun Mine",
+    "tips": [
+      "Rubble AoE attacks — dodge away from ground markers",
+      "After kill: continue into Mawdun Mine via the connected tunnel"
+    ]
+  },
+  "mawdun mine": {
+    "layoutType": "dungeon",
+    "objective": "Rudja is in the main chamber of the mine",
+    "exit": "After kill and Risu dialogue: proceed to Traitor's Passage",
+    "tips": [
+      "Talk to Risu after the kill — she continues the quest chain",
+      "Traitor's Passage is the next zone exit"
+    ]
+  },
+  "traitor's passage": {
+    "layoutType": "dungeon",
+    "objective": "If you find papers on walls, you are close. Stairs going up = right way.",
+    "exit": "After kill: find the exit to the Halani Gates",
+    "tips": [
+      "Balbala has mirror/illusion attacks — hit the real one (different glow)",
+      "After kill: pick up the Djinn Barya from the ground",
+      "After Balbala: find the exit stairs to the Halani Gates"
+    ],
+    "cues": [
+      {
+        "icon": "🍴",
+        "cue": "Guaranteed intersection (0.5)",
+        "leadsTo": "One path = Balbala, one path = exit"
+      },
+      {
+        "icon": "📜",
+        "cue": "Maraketh parchment (used to bind Djinns)",
+        "leadsTo": "Points the way to Djinn Balbala"
+      }
+    ]
+  },
+  "trial of the sekhemas": {
+    "layoutType": "dungeon",
+    "objective": "Single-floor trial with 10 rooms — boss at the end",
+    "exit": "Find the Sanctum door each floor segment",
+    "tips": [
+      "⚡ HONOUR = your protection. If it hits 0, trial fails.",
+      "Always pick Boons that restore or protect Honour",
+      "Avoid Afflictions that reduce maximum Honour"
+    ]
+  },
+  "the halani gates": {
+    "layoutType": "linear",
+    "objective": "Jamanra blocks the main gate path",
+    "exit": "After kill: interact with the gate to open it",
+    "tips": [
+      "Ranged attacks work well here — stay at max range",
+      "After kill: get Horn of Vastiri from the area"
+    ]
+  },
+  "mastodon badlands": {
+    "layoutType": "open",
+    "objective": "Boss pair patrols the center-north of the Badlands",
+    "exit": "After kill: take Mastodon Tusks to Bone Pits area",
+    "tips": [
+      "Ekbab charges — dodge sideways",
+      "Iktab uses curse aura — cleanse or resist it"
+    ]
+  },
+  "the bone pits": {
+    "layoutType": "open",
+    "objective": "Keth entrance is a side path off the Bone Pits (marked on minimap)",
+    "exit": "Stone archway leading to Keth settlement",
+    "tips": [
+      "Keth is a SHORT side detour for +2 skill points",
+      "Sun Relic is also in this area (for Ancient Vows)"
+    ]
+  },
+  "keth": {
+    "layoutType": "dungeon",
+    "objective": "Kabala is at the back of the Keth ruins",
+    "exit": "After kill: exit back to Bone Pits → continue northwest through Bone Pits to reach The Lost City entrance",
+    "tips": [
+      "Dodge the constriction — it deals heavy DoT",
+      "Ranged = easier fight",
+      "Lost City entrance is on the northwest/north end of Bone Pits (main path)"
+    ]
+  },
+  "the lost city": {
+    "layoutType": "maze",
+    "objective": "Buried Shrines exit is always bottom right after a big bridge",
+    "exit": "Look for the bridge leading to the buried zone entrance",
+    "tips": [
+      "Maze-like ruins — follow the water channel remnants",
+      "Exit is always bottom right of the zone after a big bridge"
+    ]
+  },
+  "buried shrines": {
+    "layoutType": "dungeon",
+    "objective": "Descend through the buried structure to reach Heart of Keth",
+    "exit": "Heart of Keth is at the deepest level",
+    "tips": [
+      "Optional Elemental Offering event here — gives a permanent +30% resistance ring"
+    ]
+  },
+  "heart of keth": {
+    "layoutType": "open",
+    "objective": "Boss is in the inner sanctum of the Heart of Keth",
+    "exit": "After kill: perform the ritual sequence",
+    "tips": [
+      "Azarian has water/ice attacks — dodge the wave slams"
+    ]
+  },
+  "valley of the titans": {
+    "layoutType": "open",
+    "objective": "Ancient altar is in the center of the valley",
+    "exit": "Large stone altar with carved runes",
+    "tips": [
+      "Only interactable after having both items",
+      "Choice cannot be changed — pick carefully",
+      "Activate seals first"
+    ],
+    "cues": [
+      {
+        "icon": "🗿",
+        "cue": "Giant Titan heads (visible on entry)",
+        "leadsTo": "Behind each = linear canyon to an Ancient Seal"
+      },
+      {
+        "icon": "🌀",
+        "cue": "Portal that spawns after activating a seal",
+        "leadsTo": "Returns you to Valley start (Titan heads)"
+      }
+    ]
+  },
+  "the titan grotto": {
+    "layoutType": "dungeon",
+    "objective": "Boss at Dais of Reckoning — opposite the entry point",
+    "exit": "After kill: continue to Deshar",
+    "tips": [
+      "Slow but devastating slams — dodge to the side",
+      "Earthquake AoE — wide telegraph",
+      "Bring strong physical/fire resistance"
+    ]
+  },
+  "deshar": {
+    "layoutType": "open",
+    "objective": "Rhoa is near the southern edge of Deshar; final letter corpse is near a big tower",
+    "exit": "Ardura Caravan hub is in the north — look for wagons and campfires",
+    "tips": [
+      "Talk to the Rhoa first",
+      "Final letter corpse is near a big tower landmark",
+      "After picking up letter: find exit to Path of Mourning (enter zone, take waypoint, backtrack to Deshar)"
+    ]
+  },
+  "the spires of deshar": {
+    "layoutType": "open",
+    "objective": "Sisters of Garukhan are in the center/upper area of the Spires",
+    "exit": "Glowing sisters between the large stone spires",
+    "tips": [
+      "Find the sisters first for the 10% lightning res",
+      "Then kill Tor Gul nearby",
+      "Heavy corruption attacks — keep moving"
+    ]
+  },
+  "path of mourning": {
+    "layoutType": "linear",
+    "objective": "Dreadnought looms ahead — single path",
+    "exit": "The Dreadnought structure is visible from the path",
+    "tips": [
+      "Strong corrupted enemies here — dodge around them"
+    ]
+  },
+  "the dreadnought": {
+    "layoutType": "dungeon",
+    "objective": "Jamanra arena is at the top/forward section of the Dreadnought",
+    "exit": "Massive door / open arena at the forward end",
+    "tips": [
+      "Linear — keep pushing forward",
+      "0.5: separate Vanguard zone removed — boss is inside The Dreadnought now",
+      "Use pillar obstacles to break line of sight on lightning beams"
+    ]
+  },
+  "sandswept marsh": {
+    "layoutType": "open",
+    "objective": "Encampment is northeast of the marsh entry",
+    "exit": "Stone ziggurats visible above the tree line — head toward them",
+    "tips": [
+      "Rootdredge optional boss here — skip (gem reward only)",
+      "0.5: jungle explorer camps now point to the next area when you talk to them"
+    ],
+    "cues": [
+      {
+        "icon": "🏕️",
+        "cue": "Explorer camp (tents + merchant NPC)",
+        "leadsTo": "Talk to explorer → next-area direction + minimap reveal"
+      }
+    ]
+  },
+  "jungle ruins": {
+    "layoutType": "open",
+    "objective": "Silverfist patrols the northwest section of Jungle Ruins",
+    "exit": "After kill: continue to find Canal Mechanism (main quest)",
+    "tips": [
+      "Ground slam AoE — dodge to the side",
+      "Fast kill with good DPS",
+      "Enter Venom Crypts via Jungle Ruins exit"
+    ],
+    "cues": [
+      {
+        "icon": "🏕️",
+        "cue": "Explorer camp — TALK to explorer",
+        "leadsTo": "Points to next area + reveals destination on minimap"
+      },
+      {
+        "icon": "🚪",
+        "cue": "0.5: Matlan Waterways entrance is HERE now",
+        "leadsTo": "Moved from Infested Barrens → Jungle Ruins"
+      }
+    ]
+  },
+  "the venom crypts": {
+    "layoutType": "dungeon",
+    "objective": "Venom phial corpse is near the end of the crypt",
+    "exit": "After looting: portal back to town and turn in at Servi",
+    "tips": [
+      "Poison-themed zone — bring life flasks",
+      "PERMANENT CHOICE at Servi — cannot be changed later",
+      "0.5: after looting phial, look for jungle-exit shortcut instead of backtracking"
+    ],
+    "cues": [
+      {
+        "icon": "🌿",
+        "cue": "0.5: Alternate escape route added",
+        "leadsTo": "Shortcut OUT through the jungle (skip retreading the crypt)"
+      }
+    ]
+  },
+  "infested barrens": {
+    "layoutType": "open",
+    "objective": "Altar is in the center of the Barrens",
+    "exit": "Large stone structure with glowing runes",
+    "tips": [
+      "Bug enemies swarm here — keep moving to altar, avoid getting surrounded",
+      "Exits at the perimeter: Chimeral Wetlands — tag waypoint before continuing",
+      "0.5: Matlan Waterways entrance is NO LONGER here — moved to Jungle Ruins"
+    ],
+    "cues": [
+      {
+        "icon": "🏕️",
+        "cue": "Explorer camp — TALK to explorer",
+        "leadsTo": "Points to next area + reveals it on minimap"
+      }
+    ]
+  },
+  "the azak bog": {
+    "layoutType": "maze",
+    "objective": "Flameskin Ritual flames are scattered throughout the bog",
+    "exit": "Activate all flames then proceed to Ignagduk",
+    "tips": [
+      "Only search for this BEFORE reaching Ignagduk",
+      "If you find the boss first — skip the ritual",
+      "Poison gas patches throughout — use flask on entry"
+    ]
+  },
+  "chimeral wetlands": {
+    "layoutType": "open",
+    "objective": "Xyclucian is in the far end of the wetlands",
+    "exit": "Large clear area with toxic pools",
+    "tips": [
+      "Multi-phase chimera — different attack types each phase",
+      "Phase 1: fire breath — sidestep",
+      "Phase 2: electricity — avoid ground charges"
+    ]
+  },
+  "temple of chaos": {
+    "layoutType": "open",
+    "objective": "Circular arena — stand inside the circle to progress each round",
+    "exit": "Complete all 10 rounds to get reward",
+    "tips": [
+      "Stay inside the shrinking ring — going outside fails the round",
+      "Round 10 is hardest — bring full flasks",
+      "Evasion/dodge builds have an easier time here vs Sekhemas"
+    ]
+  },
+  "jiquani's machinarium": {
+    "layoutType": "dungeon",
+    "objective": "Blackjaw is in the northwest wing of the Machinarium",
+    "exit": "After kill: place the Small Soul Core (main quest)",
+    "tips": [
+      "Mechanical AoE — dodge the spinning blades",
+      "He dies fast — burst damage"
+    ]
+  },
+  "jiquani's sanctum": {
+    "layoutType": "dungeon",
+    "objective": "Boss at the deepest level of the sanctum",
+    "exit": "Pick up Large Soul Core after kill",
+    "tips": [
+      "Energy/lightning attacks — cold/chaos immunity helps",
+      "Phase 2: adds spawn in the corners"
+    ]
+  },
+  "the matlan waterways": {
+    "layoutType": "branching",
+    "objective": "Pressure pads gate progression — just walk over each one",
+    "exit": "Final section is pre-drained — Drowned City entrance is straight through",
+    "tips": [
+      "0.5: levers replaced by pressure pads — walk over to activate",
+      "0.5: final water section is pre-drained — no big lever needed",
+      "Azak Bog entrance is inside the Waterways now (also new in 0.5)"
+    ],
+    "cues": [
+      {
+        "icon": "👣",
+        "cue": "0.5: Pressure pads on the floor (replaces levers)",
+        "leadsTo": "Walk over to open the next gate"
+      },
+      {
+        "icon": "🐊",
+        "cue": "0.5: Azak Bog entrance is now INSIDE Waterways",
+        "leadsTo": "Side-area entrance moved here from Infested Barrens"
+      }
+    ]
+  },
+  "the drowned city": {
+    "layoutType": "dungeon",
+    "objective": "Drowned City → Apex of Filth → Queen of Filth at the bottom",
+    "exit": "Descend through the flooded ruins to the Apex",
+    "tips": [
+      "Find both exits from Drowned City: Molten Vault (first char per league) + Apex of Filth (main)"
+    ]
+  },
+  "apex of filth": {
+    "layoutType": "spiral",
+    "objective": "Follow the spiral path (clockwise or counterclockwise) — boss is at the end after a full 360°",
+    "exit": "After kill: proceed to Temple of Kopec",
+    "tips": [
+      "Zone is a large spiral — do NOT cut across, follow the path",
+      "After one full 360° rotation, you reach the boss",
+      "Slime pools deal DoT — keep moving"
+    ]
+  },
+  "temple of kopec": {
+    "layoutType": "dungeon",
+    "objective": "Triangle-shaped zone — stairs are always in the corners. Go up twice to reach boss.",
+    "exit": "Proceed to Utzaal after kill",
+    "tips": [
+      "Zone is triangle-shaped — stairs always in the corners",
+      "Go up the stairs twice to reach Ketzuli",
+      "STAY IN THE SHADE — direct sunlight in this zone deals damage"
+    ]
+  },
+  "utzaal": {
+    "layoutType": "open",
+    "objective": "Vaal Goliaths patrol Utzaal and Aggorat — large golden armored giants",
+    "exit": "Altar is in Aggorat — look for stone pedestal in center",
+    "tips": [
+      "Goliaths have high HP — kill as many as you find while progressing",
+      "Heart glows gold when dropped",
+      "Snake empress boss — poison attacks, heavy damage"
+    ]
+  },
+  "aggorat": {
+    "layoutType": "open",
+    "objective": "Black Chambers entrance is in the northeast",
+    "exit": "Dark stone structure with cursed engravings",
+    "tips": [
+      "Elite Vaal enemies are heavy here — dodge around them"
+    ]
+  },
+  "the black chambers": {
+    "layoutType": "open",
+    "objective": "Throne room at the end of the Black Chambers",
+    "exit": "After kill: free Alva, get portal to Act 4",
+    "tips": [
+      "Phase 3 discharge: the safe spot is directly below/behind Doryani",
+      "Orbs: walk between them — they have gaps",
+      "Lightning columns: move between columns not along them"
+    ]
+  },
+  "kedge bay": {
+    "layoutType": "open",
+    "objective": "Journey's End portal is in the northeast of Kedge Bay",
+    "exit": "Misty arch with dark energy",
+    "tips": [
+      "Kedge Bay is foggy — use minimap",
+      "Dense enemy patrols near the portal"
+    ]
+  },
+  "journey's end": {
+    "layoutType": "open",
+    "objective": "Captain's Chair is in the main cabin/command area",
+    "exit": "Loot the Verisium from Hartlin's corpse",
+    "tips": [
+      "Captain Hartlin is a strong elite — burst him down",
+      "Impale totem first, then fight Omniphobia",
+      "Fear aura boss — look for safe zones at the arena edges"
+    ]
+  },
+  "whakapanu island": {
+    "layoutType": "open",
+    "objective": "Shark Pit is a sub-area on Whakapanu Island",
+    "exit": "Great White One is inside the Shark Pit",
+    "tips": [
+      "IMPORTANT: Do this before Arastas or only after full main quest",
+      "Turn in at Kaimana in Ngakanu later"
+    ]
+  },
+  "singing caverns": {
+    "layoutType": "dungeon",
+    "objective": "Diamora is in the Chamber of Echoes — deepest part of the caverns",
+    "exit": "After kill: Whakapanu island cleared",
+    "tips": [
+      "Diamora uses sonic AoE — move away from expanding rings",
+      "Water pools throughout — avoid getting cornered"
+    ]
+  },
+  "abandoned prison": {
+    "layoutType": "dungeon",
+    "objective": "Kill monsters anywhere in the prison for the Chapel Key drop, then find the Chapel Door",
+    "exit": "Chapel is in the deeper section of the prison",
+    "tips": [
+      "Chapel Key is a monster drop — keep killing until it appears",
+      "Open Chapel Door, kill the rare, get the buff choice",
+      "Choice CAN be changed later unlike some other permanent rewards"
+    ]
+  },
+  "solitary confinement": {
+    "layoutType": "dungeon",
+    "objective": "Deepest cell in Solitary Confinement",
+    "exit": "After kill: prison island cleared",
+    "tips": [
+      "Cursed prisoner — multiple curses applied, move fast to avoid stacking",
+      "High damage phase at low HP"
+    ]
+  },
+  "isle of kin": {
+    "layoutType": "open",
+    "objective": "Krutog in Volcanic Warrens below island surface. Matiki in a cage on the surface.",
+    "exit": "Warrens entrance is in the center of the isle",
+    "tips": [
+      "Kill Krutog first, then come back up to free Matiki",
+      "Blind creature = uses sound to locate you — move erratically",
+      "Silence effects help significantly"
+    ]
+  },
+  "volcanic warrens": {
+    "layoutType": "dungeon",
+    "objective": "Boss in the largest chamber at the base",
+    "exit": "Lava-bordered chamber with stone throne",
+    "tips": [
+      "Fire/lava zone — fire resistance essential",
+      "Krutog: molten slam attack — dodge to the side"
+    ]
+  },
+  "shrike island": {
+    "layoutType": "open",
+    "objective": "Boss in an open clearing at the island's center",
+    "exit": "After kill: Shrike cleared, Arastas unlocks",
+    "tips": [
+      "Aerial attacks — watch for shadow pattern on ground marking incoming dive",
+      "Keep moving at all times"
+    ]
+  },
+  "eye of hinekora": {
+    "layoutType": "open",
+    "objective": "Complete tests of mettle as you go, then find the Silent Hall for the mana bonus",
+    "exit": "Hall of the Dead exit is at the end of the zone",
+    "tips": [
+      "Complete each test of mettle encounter — do not skip",
+      "Find the Silent Hall — interact / pay respects for +5% max mana",
+      "Talk to Navali in the Silent Hall"
+    ]
+  },
+  "halls of the dead": {
+    "layoutType": "dungeon",
+    "objective": "Three test areas (Tawhoa/Tasalio/Ngamahu) spread through the halls; Yama is at the end",
+    "exit": "Exit to Trial of the Ancestors after Yama",
+    "tips": [
+      "Collect blank tattoos from each of the 3 tests",
+      "Kill Yama the White at the end — loot silver coin",
+      "Yama: powerful cold attacks — cold resistance critical"
+    ]
+  },
+  "arastas": {
+    "layoutType": "dungeon",
+    "objective": "Boss in the main chamber of Arastas",
+    "exit": "After kill: proceed to The Excavation",
+    "tips": [
+      "Crusader/paladin type boss — holy damage",
+      "Phase 2: arena shrinks with barriers"
+    ]
+  },
+  "the excavation": {
+    "layoutType": "dungeon",
+    "objective": "Benedictus is in the Excavated Site beneath The Excavation",
+    "exit": "Dig down — Excavated Site is the sub-level",
+    "tips": [
+      "Holy/celestial attacks — avoid standing in light columns"
+    ]
+  },
+  "ngakanu": {
+    "layoutType": "open",
+    "objective": "Medicine Circle (Kaimana) is in the outer area of Ngakanu; Heart of the Tribe is at the center",
+    "exit": "Massive ritual arena at the center",
+    "tips": [
+      "Turn in Shark Fin at Medicine Circle with Kaimana first if you have it",
+      "Then enter Heart of the Tribe"
+    ]
+  },
+  "heart of the tribe": {
+    "layoutType": "open",
+    "objective": "Circular ritual arena — boss in center",
+    "exit": "Portal to Interlude 1 after kill",
+    "tips": [
+      "Phase 2: chaos damage — chaos resistance helps",
+      "Phase 3: stay at the arena edge during the explosion",
+      "Adds spawn in Phase 2 — clear priority adds before focusing boss"
+    ]
+  },
+  "scorched farmlands": {
+    "layoutType": "open",
+    "objective": "Stones of Serle entrance is northeast",
+    "exit": "Stone circles visible on the hill",
+    "tips": [
+      "Same region as Act 1 but corrupted — familiar layout but harder enemies"
+    ]
+  },
+  "the blackwood": {
+    "layoutType": "maze",
+    "objective": "Siora is in the deepest part of the Blackwood",
+    "exit": "Twisted black tree marks Siora's location",
+    "tips": [
+      "Mist zone again — same mechanics as King in the Mists from Act 1",
+      "Keep DoT flask ready"
+    ]
+  },
+  "wolvenhold": {
+    "layoutType": "dungeon",
+    "objective": "Oswin is in the warden's hall at the back",
+    "exit": "After kill: return to Holten",
+    "tips": [
+      "Warden boss — heavy armor, slow but hits hard",
+      "Keep distance and dodge the stagger attack"
+    ]
+  },
+  "holten estate": {
+    "layoutType": "dungeon",
+    "objective": "Boss fight in the manor's great hall",
+    "exit": "Portal to Interlude 2 after kill",
+    "tips": [
+      "Dual boss — fight them one at a time if possible",
+      "Elswyth: caster — interrupt spells",
+      "Wulfric: melee — dodge charges"
+    ]
+  },
+  "the khari crossing": {
+    "layoutType": "linear",
+    "objective": "Akthi and Anundr are blocking the main crossing bridge",
+    "exit": "After kill: crossing is clear",
+    "tips": [
+      "Dual boss — they have combined attacks",
+      "Akthi: fire. Anundr: ice. Split them apart.",
+      "Just interact — no fight required"
+    ]
+  },
+  "sel khari sanctuary": {
+    "layoutType": "dungeon",
+    "objective": "Elzarah is in the inner sanctum",
+    "exit": "Cobra shrine marks the inner sanctum entrance",
+    "tips": [
+      "Poison-heavy boss — chaos/poison resistance essential here"
+    ]
+  },
+  "the galai gates": {
+    "layoutType": "linear",
+    "objective": "Vornas blocks the main gate",
+    "exit": "After kill: gates open",
+    "tips": [
+      "Fire-type boss — fire resistance important",
+      "Wide flame AoE — walk through the gaps"
+    ]
+  },
+  "qimah": {
+    "layoutType": "open",
+    "objective": "Seven stone pillars arranged in a circle in the center of Qimah",
+    "exit": "Each pillar has a different glowing symbol",
+    "tips": [
+      "Read each pillar description carefully",
+      "Can only choose once"
+    ]
+  },
+  "qimah reservoir": {
+    "layoutType": "open",
+    "objective": "Boss in the reservoir itself — large water arena",
+    "exit": "Portal to Interlude 3 after kill",
+    "tips": [
+      "Water-adjacent boss — cold or lightning damage likely"
+    ]
+  },
+  "ashen forest": {
+    "layoutType": "open",
+    "objective": "Kriar Village is northeast of the forest",
+    "exit": "Vaal architecture visible above tree line",
+    "tips": [
+      "Revisiting Vaal territory — harder version of Act 3 enemies"
+    ]
+  },
+  "kriar village": {
+    "layoutType": "open",
+    "objective": "Lythara patrols the village center",
+    "exit": "After kill: continue through village",
+    "tips": [
+      "Spear-throwing ranged boss — keep mobile",
+      "Dodge the spinning spear AoE"
+    ]
+  },
+  "kriar peaks": {
+    "layoutType": "open",
+    "objective": "Elder Madox stands near a stone altar in the Kriar Peaks",
+    "exit": "After choice: continue through Peaks",
+    "tips": [
+      "Read each unique item option carefully",
+      "Choose the one that benefits your build most"
+    ]
+  },
+  "vaal catacombs": {
+    "layoutType": "dungeon",
+    "objective": "Sanctified Archives is reached through the catacombs",
+    "exit": "Follow the main catacombs path",
+    "tips": [
+      "Undead Vaal enemies — cold damage is effective"
+    ]
+  },
+  "sanctified archives": {
+    "layoutType": "dungeon",
+    "objective": "Boss at the end of the main archive hall",
+    "exit": "Large lectern in the central hall marks boss location"
+  },
+  "howling caves": {
+    "layoutType": "dungeon",
+    "objective": "Yeti is in the deepest chamber",
+    "exit": "After kill: exit back to main path",
+    "tips": [
+      "Cold zone — fire resistance more important here",
+      "Yeti: ice slam + blizzard AoE — stay near him, not at range"
+    ]
+  },
+  "sealed caverns": {
+    "layoutType": "dungeon",
+    "objective": "Final bosses in the sealed chamber at the back",
+    "exit": "After kill: portal to Kingsmarch appears",
+    "tips": [
+      "Two sequential bosses — manage flasks for both",
+      "Stormgore: lightning. Rakkar: cold."
+    ]
+  },
+  "kingsmarch": {
+    "layoutType": "open",
+    "objective": "Hooded One is in Kingsmarch near the main docks",
+    "exit": "After this: Campaign DONE. Start Endgame (Maps)."
+  }
+}

@@ -691,6 +691,75 @@ input[type='checkbox']:checked::after {
   color: var(--muted);
 }
 
+/* navigation hint block */
+.wn-nav-hint {
+  margin: 0 0 8px;
+  padding: 7px 9px;
+  background: rgba(111, 177, 214, 0.08);
+  border: 1px solid rgba(111, 177, 214, 0.25);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.wn-layout {
+  display: inline-block;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gem);
+  border: 1px solid var(--gem);
+  border-radius: 3px;
+  padding: 0 5px;
+  margin-bottom: 4px;
+}
+.wn-hint {
+  color: #d6e8f2;
+  margin: 2px 0;
+}
+.wn-cue {
+  color: var(--gold-bright);
+  margin: 2px 0;
+}
+.wn-tip {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 1px 0;
+}
+
+/* rewards summary */
+.rw-grid {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rw-row {
+  display: grid;
+  grid-template-columns: 1fr 70px auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.rw-label {
+  color: var(--text);
+}
+.rw-bar {
+  height: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.rw-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--perm), var(--gold-bright));
+}
+.rw-val {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  justify-self: end;
+}
+
 /* ---------- right pane: layout viewer ---------- */
 .rightpane .panel.layout {
   margin: 0;

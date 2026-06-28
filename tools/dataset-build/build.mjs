@@ -17,6 +17,7 @@ import { fileURLToPath } from 'url'
 import { gems as gemCatalog, recommendations as gemRecommendations } from './gem-recs.mjs'
 import { areaIdForZone, AREA_ID_MAP } from './area-id-map.mjs'
 import { INTERLUDES } from './interludes.mjs'
+import { HINTS } from './hints.0.5.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..', '..')
@@ -245,6 +246,8 @@ writeFileSync(
 // Full areaId -> display name map (incl. towns/trials not in the quest checklist)
 // so the UI can identify the act/zone for any logged area.
 writeFileSync(join(OUT, 'areas.json'), JSON.stringify(AREA_ID_MAP, null, 2))
+// Per-zone navigation hints (keyed by zone display name, lowercase).
+writeFileSync(join(OUT, 'hints.json'), JSON.stringify(HINTS, null, 2))
 
 const meta = {
   schemaVersion: '1.0.0',

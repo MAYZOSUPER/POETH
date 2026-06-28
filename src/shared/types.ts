@@ -154,6 +154,20 @@ export interface DatasetMeta {
   layoutRemoteBaseUrl?: string
 }
 
+export interface ZoneCue {
+  icon?: string
+  cue: string
+  leadsTo?: string
+}
+
+export interface ZoneHint {
+  layoutType?: string
+  objective?: string
+  exit?: string
+  tips?: string[]
+  cues?: ZoneCue[]
+}
+
 /** The fully-assembled dataset the renderer consumes. */
 export interface Dataset {
   meta: DatasetMeta
@@ -163,6 +177,8 @@ export interface Dataset {
   route?: Route
   /** full game areaId -> display name (incl. towns/trials not in the checklist) */
   areas?: Record<string, string>
+  /** per-zone navigation hints, keyed by zone display name (lowercase) */
+  hints?: Record<string, ZoneHint>
 }
 
 // ---------------------------------------------------------------------------

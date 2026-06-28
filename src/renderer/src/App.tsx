@@ -7,6 +7,7 @@ import { ZoneBanner } from './panels/ZoneBanner'
 import { GemHintsPanel } from './panels/GemHintsPanel'
 import { QuestChecklistPanel } from './panels/QuestChecklistPanel'
 import { WhatsNextPanel } from './panels/WhatsNextPanel'
+import { RewardsSummary } from './panels/RewardsSummary'
 import { SettingsPanel } from './panels/SettingsPanel'
 import { RightPanel } from './panels/RightPanel'
 import { ViewToggle } from './components/ViewToggle'
@@ -38,6 +39,7 @@ export default function App() {
               ) : (
                 <>
                   <ViewToggle />
+                  <RewardsSummary />
                   {viewMode === 'whatsnext' ? (
                     <WhatsNextPanel />
                   ) : (

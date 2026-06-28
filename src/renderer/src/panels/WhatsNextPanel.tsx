@@ -14,6 +14,15 @@ const PERMANENT = new Set<RewardKind>([
   'charm_slot'
 ])
 
+const LAYOUT_LABEL: Record<string, string> = {
+  linear: 'Линейная',
+  open: 'Открытая',
+  branching: 'Ветвящаяся',
+  maze: 'Лабиринт',
+  spiral: 'Спираль',
+  dungeon: 'Подземелье'
+}
+
 /** Short reward teaser for a zone — prefer a permanent reward, else the first. */
 function rewardTeaser(act: Act, zoneAreaId: string): string | null {
   const qs = act.quests.filter((q) => q.zone === zoneAreaId)
@@ -47,6 +56,8 @@ export function WhatsNextPanel() {
   const mandatory = quests.filter((q) => q.type === 'mandatory')
   const optional = quests.filter((q) => q.type === 'optional')
   const hasLayout = !!zone.layout && !!dataset.layouts[zone.layout]
+  const hint = dataset.hints?.[step.zoneName.toLowerCase()]
+  const hasHint = !!hint && !!(hint.objective || hint.exit || hint.cues?.length || hint.tips?.length)
 
   const youAreHere = detectedZoneAreaId === step.areaId
   const detectedStep = detectedZoneAreaId ? stepIndexOfZone(detectedZoneAreaId) : -1
@@ -99,6 +110,28 @@ export function WhatsNextPanel() {
           <button className="wn-backtrack" onClick={() => goToStep(detectedStep)}>
             📍 Вернуться к вашей текущей зоне
           </button>
+        )}
+
+        {hasHint && hint && (
+          <div className="wn-nav-hint">
+            {hint.layoutType && (
+              <span className="wn-layout">{LAYOUT_LABEL[hint.layoutType] ?? hint.layoutType}</span>
+            )}
+            {hint.objective && <div className="wn-hint">🎯 {hint.objective}</div>}
+            {hint.exit && <div className="wn-hint">➡️ {hint.exit}</div>}
+            {hint.cues?.map((c, i) => (
+              <div key={i} className="wn-cue">
+                {c.icon ? `${c.icon} ` : ''}
+                {c.cue}
+                {c.leadsTo ? ` → ${c.leadsTo}` : ''}
+              </div>
+            ))}
+            {hint.tips?.map((t, i) => (
+              <div key={i} className="wn-tip">
+                • {t}
+              </div>
+            ))}
+          </div>
         )}
 
         {mandatory.length === 0 && optional.length === 0 ? (
