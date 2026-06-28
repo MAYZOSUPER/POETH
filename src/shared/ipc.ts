@@ -20,6 +20,7 @@ export const IPC = {
     list: 'profiles:list',
     create: 'profiles:create',
     rename: 'profiles:rename',
+    setClass: 'profiles:setClass',
     delete: 'profiles:delete',
     setActive: 'profiles:setActive',
     getActive: 'profiles:getActive',
@@ -73,6 +74,8 @@ export interface OverlayApi {
     list(): Promise<ProfileMeta[]>
     create(name: string, className?: string): Promise<ProfileMeta>
     rename(id: string, name: string): Promise<ProfileMeta[]>
+    /** Set (or clear, when empty) the character class of a profile. */
+    setClass(id: string, className: string): Promise<ProfileMeta[]>
     delete(id: string): Promise<ProfileMeta[]>
     setActive(id: string): Promise<void>
     getActive(): Promise<string | null>

@@ -12,6 +12,7 @@ const api: OverlayApi = {
     list: () => ipcRenderer.invoke(IPC.profiles.list),
     create: (name, className) => ipcRenderer.invoke(IPC.profiles.create, name, className),
     rename: (id, name) => ipcRenderer.invoke(IPC.profiles.rename, id, name),
+    setClass: (id, className) => ipcRenderer.invoke(IPC.profiles.setClass, id, className),
     delete: (id) => ipcRenderer.invoke(IPC.profiles.delete, id),
     setActive: (id) => ipcRenderer.invoke(IPC.profiles.setActive, id),
     getActive: () => ipcRenderer.invoke(IPC.profiles.getActive),

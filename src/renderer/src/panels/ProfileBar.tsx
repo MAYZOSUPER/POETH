@@ -2,12 +2,17 @@ import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import { useT } from '../i18n'
 
+// PoE2 0.5 base classes — kept in sync with the gem-recommendation keys so that
+// picking a class here filters the gem hints panel.
+const CLASSES = ['Warrior', 'Witch', 'Ranger', 'Monk', 'Mercenary', 'Sorceress']
+
 export function ProfileBar() {
   const profiles = useAppStore((s) => s.profiles)
   const activeProfileId = useAppStore((s) => s.activeProfileId)
   const switchProfile = useAppStore((s) => s.switchProfile)
   const createProfile = useAppStore((s) => s.createProfile)
   const renameProfile = useAppStore((s) => s.renameProfile)
+  const setProfileClass = useAppStore((s) => s.setProfileClass)
   const deleteProfile = useAppStore((s) => s.deleteProfile)
   const exportActiveProfile = useAppStore((s) => s.exportActiveProfile)
   const importProfile = useAppStore((s) => s.importProfile)
@@ -15,6 +20,7 @@ export function ProfileBar() {
 
   const [mode, setMode] = useState<'idle' | 'add' | 'rename' | 'confirm-del'>('idle')
   const [text, setText] = useState('')
+  const [cls, setCls] = useState('')
   const [note, setNote] = useState<{ key: string; danger?: boolean } | null>(null)
 
   const active = profiles.find((p) => p.id === activeProfileId)
@@ -35,11 +41,16 @@ export function ProfileBar() {
     else if (res.status === 'invalid') flash('pf.importInvalid', true)
   }
 
-  function submit() {
+  async function submit() {
     const name = text.trim()
-    if (mode === 'add' && name) void createProfile(name)
-    if (mode === 'rename' && name && activeProfileId) void renameProfile(activeProfileId, name)
+    if (mode === 'add') {
+      if (name) await createProfile(name, cls || undefined)
+    } else if (mode === 'rename' && activeProfileId) {
+      if (name && name !== active?.name) await renameProfile(activeProfileId, name)
+      if (cls !== (active?.className ?? '')) await setProfileClass(activeProfileId, cls)
+    }
     setText('')
+    setCls('')
     setMode('idle')
   }
 
@@ -53,11 +64,24 @@ export function ProfileBar() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') submit()
+            if (e.key === 'Enter') void submit()
             if (e.key === 'Escape') setMode('idle')
           }}
         />
-        <button className="icon" title={t('pf.ok')} onClick={submit}>
+        <select
+          className="class-select"
+          title={t('pf.class')}
+          value={cls}
+          onChange={(e) => setCls(e.target.value)}
+        >
+          <option value="">{t('pf.noClass')}</option>
+          {CLASSES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+        <button className="icon" title={t('pf.ok')} onClick={() => void submit()}>
           ✓
         </button>
         <button className="icon" title={t('pf.cancel')} onClick={() => setMode('idle')}>
@@ -102,7 +126,15 @@ export function ProfileBar() {
           </option>
         ))}
       </select>
-      <button className="icon" title={t('pf.add')} onClick={() => setMode('add')}>
+      <button
+        className="icon"
+        title={t('pf.add')}
+        onClick={() => {
+          setText('')
+          setCls('')
+          setMode('add')
+        }}
+      >
         ＋
       </button>
       <button
@@ -110,6 +142,7 @@ export function ProfileBar() {
         title={t('pf.rename')}
         onClick={() => {
           setText(active?.name ?? '')
+          setCls(active?.className ?? '')
           setMode('rename')
         }}
       >

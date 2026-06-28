@@ -84,6 +84,9 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.profiles.rename, (_e, id: string, name: string) =>
     profiles.renameProfile(id, name)
   )
+  ipcMain.handle(IPC.profiles.setClass, (_e, id: string, className: string) =>
+    profiles.setProfileClass(id, className)
+  )
   ipcMain.handle(IPC.profiles.delete, (_e, id: string) => profiles.deleteProfile(id))
   ipcMain.handle(IPC.profiles.setActive, async (_e, id: string) => {
     await updateSettings({ activeProfileId: id })

@@ -58,6 +58,17 @@ export async function renameProfile(id: string, name: string): Promise<ProfileMe
   return profiles
 }
 
+export async function setProfileClass(id: string, className: string): Promise<ProfileMeta[]> {
+  const profiles = await listProfiles()
+  const p = profiles.find((x) => x.id === id)
+  if (p) {
+    p.className = className.trim() || undefined
+    p.updatedAt = Date.now()
+    await writeJsonAtomic(profilesFile(), profiles)
+  }
+  return profiles
+}
+
 export async function deleteProfile(id: string): Promise<ProfileMeta[]> {
   const profiles = (await listProfiles()).filter((x) => x.id !== id)
   await writeJsonAtomic(profilesFile(), profiles)

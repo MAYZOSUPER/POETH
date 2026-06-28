@@ -46,6 +46,7 @@ interface AppState {
   createProfile: (name: string, className?: string) => Promise<void>
   switchProfile: (id: string) => Promise<void>
   renameProfile: (id: string, name: string) => Promise<void>
+  setProfileClass: (id: string, className: string) => Promise<void>
   deleteProfile: (id: string) => Promise<void>
   exportActiveProfile: () => Promise<ProfileExportResult>
   importProfile: () => Promise<ProfileImportResult>
@@ -334,6 +335,11 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   async renameProfile(id, name) {
     const profiles = await api().profiles.rename(id, name)
+    set({ profiles })
+  },
+
+  async setProfileClass(id, className) {
+    const profiles = await api().profiles.setClass(id, className)
     set({ profiles })
   },
 
