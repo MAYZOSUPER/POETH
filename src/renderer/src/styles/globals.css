@@ -570,6 +570,22 @@ input[type='checkbox']:checked::after {
   color: var(--muted);
   font-weight: 600;
 }
+.asc-body {
+  padding: 6px 10px 8px;
+}
+.asc-hint {
+  margin-bottom: 6px;
+}
+.ascendancy .setting {
+  margin-bottom: 6px;
+}
+.asc-pts {
+  margin-left: auto;
+  flex: none;
+  color: var(--gold-bright);
+  font-weight: 700;
+  font-size: 11px;
+}
 
 /* ---------- view toggle + what's next ---------- */
 .view-toggle {

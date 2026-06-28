@@ -41,6 +41,8 @@ interface AppState {
   stepNext: () => void
   stepPrev: () => void
   toggleQuest: (questId: string, done: boolean) => Promise<void>
+  toggleTrial: (trialId: string, done: boolean) => Promise<void>
+  setAscendancy: (ascendancyId: string | null) => Promise<void>
   setLevel: (level: number) => Promise<void>
   setRewardChoice: (questId: string, optionIndex: number) => Promise<void>
   createProfile: (name: string, className?: string) => Promise<void>
@@ -298,6 +300,25 @@ export const useAppStore = create<AppState>((set, get) => ({
     else delete completed[questId]
     set({ progress: { ...progress, completedQuestIds: completed } })
     const saved = await api().progress.setQuestDone(activeProfileId, questId, done)
+    set({ progress: saved })
+  },
+
+  async toggleTrial(trialId, done) {
+    const { progress, activeProfileId } = get()
+    if (!progress || !activeProfileId) return
+    const completed = { ...progress.completedTrialIds }
+    if (done) completed[trialId] = true
+    else delete completed[trialId]
+    set({ progress: { ...progress, completedTrialIds: completed } })
+    const saved = await api().progress.setTrialDone(activeProfileId, trialId, done)
+    set({ progress: saved })
+  },
+
+  async setAscendancy(ascendancyId) {
+    const { progress, activeProfileId } = get()
+    if (!progress || !activeProfileId) return
+    set({ progress: { ...progress, ascendancyId } })
+    const saved = await api().progress.setAscendancy(activeProfileId, ascendancyId)
     set({ progress: saved })
   },
 

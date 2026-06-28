@@ -8,6 +8,7 @@ import { GemHintsPanel } from './panels/GemHintsPanel'
 import { QuestChecklistPanel } from './panels/QuestChecklistPanel'
 import { WhatsNextPanel } from './panels/WhatsNextPanel'
 import { RewardsSummary } from './panels/RewardsSummary'
+import { AscendancyPanel } from './panels/AscendancyPanel'
 import { SettingsPanel } from './panels/SettingsPanel'
 import { RightPanel } from './panels/RightPanel'
 import { ViewToggle } from './components/ViewToggle'
@@ -41,6 +42,7 @@ export default function App() {
                 <>
                   <ViewToggle />
                   <RewardsSummary />
+                  <AscendancyPanel />
                   {viewMode === 'whatsnext' ? (
                     <WhatsNextPanel />
                   ) : (

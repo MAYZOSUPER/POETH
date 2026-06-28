@@ -1,0 +1,136 @@
+{
+  "trials": [
+    {
+      "id": "trial-sekhemas-1",
+      "name": "Trial of the Sekhemas",
+      "nameRu": "Испытание Сехема",
+      "actId": "act-2",
+      "points": 2,
+      "phase": "campaign",
+      "note": "Act 2 — enter with a Djinn Barya. Sanctum-style: survive 3 floors, guard your Honour (avoid hits, pick safe relics/boons).",
+      "noteRu": "Акт 2 — вход по предмету «Djinn Barya». Похоже на Святилище: пройди 3 этажа, береги Честь (не получай удары, выбирай безопасные реликвии/благословения)."
+    },
+    {
+      "id": "trial-chaos-1",
+      "name": "Trial of Chaos",
+      "nameRu": "Испытание Хаоса",
+      "actId": "act-3",
+      "points": 2,
+      "phase": "campaign",
+      "note": "Act 3 — enter with an Inscribed Ultimatum. Ultimatum-style rounds with escalating afflictions; clear the required number of trials.",
+      "noteRu": "Акт 3 — вход по предмету «Inscribed Ultimatum». Раунды в стиле Ультиматума с нарастающими карами; пройди нужное число испытаний."
+    },
+    {
+      "id": "trial-sekhemas-2",
+      "name": "Trial of the Sekhemas (higher)",
+      "nameRu": "Испытание Сехема (выше)",
+      "actId": "act-4",
+      "points": 2,
+      "phase": "endgame",
+      "note": "Higher-difficulty Sekhemas (more floors). Available later / in maps — grants the 3rd ascension.",
+      "noteRu": "Сложная версия Сехема (больше этажей). Доступна позже / на картах — даёт 3-е вознесение."
+    },
+    {
+      "id": "trial-chaos-2",
+      "name": "Trial of Chaos (higher)",
+      "nameRu": "Испытание Хаоса (выше)",
+      "actId": "act-4",
+      "points": 2,
+      "phase": "endgame",
+      "note": "Higher-difficulty Chaos (more trials). Available later / in maps — grants the 4th ascension.",
+      "noteRu": "Сложная версия Хаоса (больше испытаний). Доступна позже / на картах — даёт 4-е вознесение."
+    }
+  ],
+  "classes": [
+    {
+      "base": "Warrior",
+      "options": [
+        {
+          "id": "titan",
+          "name": "Titan",
+          "nameRu": "Титан"
+        },
+        {
+          "id": "warbringer",
+          "name": "Warbringer",
+          "nameRu": "Вестник войны"
+        }
+      ]
+    },
+    {
+      "base": "Witch",
+      "options": [
+        {
+          "id": "infernalist",
+          "name": "Infernalist",
+          "nameRu": "Инферналист"
+        },
+        {
+          "id": "blood-mage",
+          "name": "Blood Mage",
+          "nameRu": "Кровавый маг"
+        }
+      ]
+    },
+    {
+      "base": "Ranger",
+      "options": [
+        {
+          "id": "deadeye",
+          "name": "Deadeye",
+          "nameRu": "Меткий глаз"
+        },
+        {
+          "id": "pathfinder",
+          "name": "Pathfinder",
+          "nameRu": "Следопыт"
+        }
+      ]
+    },
+    {
+      "base": "Monk",
+      "options": [
+        {
+          "id": "invoker",
+          "name": "Invoker",
+          "nameRu": "Заклинатель"
+        },
+        {
+          "id": "acolyte-of-chayula",
+          "name": "Acolyte of Chayula",
+          "nameRu": "Послушник Чаюлы"
+        }
+      ]
+    },
+    {
+      "base": "Mercenary",
+      "options": [
+        {
+          "id": "witchhunter",
+          "name": "Witchhunter",
+          "nameRu": "Охотник на ведьм"
+        },
+        {
+          "id": "gemling-legionnaire",
+          "name": "Gemling Legionnaire",
+          "nameRu": "Самоцветный легионер"
+        }
+      ]
+    },
+    {
+      "base": "Sorceress",
+      "options": [
+        {
+          "id": "stormweaver",
+          "name": "Stormweaver",
+          "nameRu": "Ткач бурь"
+        },
+        {
+          "id": "chronomancer",
+          "name": "Chronomancer",
+          "nameRu": "Хрономант"
+        }
+      ]
+    }
+  ]
+}

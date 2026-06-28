@@ -27,6 +27,8 @@ function defaultProgress(profileId: string): ProgressState {
     level: 1,
     completedQuestIds: {},
     rewardChoices: {},
+    completedTrialIds: {},
+    ascendancyId: null,
     updatedAt: Date.now()
   }
 }
@@ -88,6 +90,8 @@ function migrateProgress(profileId: string, p: ProgressState): ProgressState {
     ...p,
     completedQuestIds: p.completedQuestIds ?? {},
     rewardChoices: p.rewardChoices ?? {},
+    completedTrialIds: p.completedTrialIds ?? {},
+    ascendancyId: p.ascendancyId ?? null,
     profileId,
     schemaVersion: PROGRESS_VERSION
   }
@@ -137,13 +141,33 @@ export async function setRewardChoice(
   return saveProgress(p)
 }
 
+export async function setTrialDone(
+  profileId: string,
+  trialId: string,
+  done: boolean
+): Promise<ProgressState> {
+  const p = await getProgress(profileId)
+  if (done) p.completedTrialIds[trialId] = true
+  else delete p.completedTrialIds[trialId]
+  return saveProgress(p)
+}
+
+export async function setAscendancy(
+  profileId: string,
+  ascendancyId: string | null
+): Promise<ProgressState> {
+  const p = await getProgress(profileId)
+  p.ascendancyId = ascendancyId || null
+  return saveProgress(p)
+}
+
 // ---------------------------------------------------------------------------
 // Import / export — a self-contained, portable profile bundle (meta + progress).
 // Progress is keyed by STABLE quest id, so a bundle survives dataset/patch drift.
 // ---------------------------------------------------------------------------
 
 const EXPORT_FORMAT = 'act-compass-profile'
-const EXPORT_VERSION = 1
+const EXPORT_VERSION = 2
 
 export interface ProfileBundle {
   format: string
@@ -157,6 +181,8 @@ export interface ProfileBundle {
     level: number
     completedQuestIds: Record<string, true>
     rewardChoices: Record<string, number>
+    completedTrialIds: Record<string, true>
+    ascendancyId: string | null
   }
 }
 
@@ -176,7 +202,9 @@ export async function getProfileBundle(id: string): Promise<ProfileBundle | null
       currentAct: progress.currentAct,
       level: progress.level,
       completedQuestIds: progress.completedQuestIds,
-      rewardChoices: progress.rewardChoices
+      rewardChoices: progress.rewardChoices,
+      completedTrialIds: progress.completedTrialIds,
+      ascendancyId: progress.ascendancyId
     }
   }
 }
@@ -209,6 +237,13 @@ function sanitizeBundle(raw: unknown): ProfileBundle | null {
       if (Number.isFinite(n)) rewardChoices[k] = n
     }
   }
+  const completedTrialIds: Record<string, true> = {}
+  if (p.completedTrialIds && typeof p.completedTrialIds === 'object') {
+    for (const [k, v] of Object.entries(p.completedTrialIds as Record<string, unknown>)) {
+      if (v) completedTrialIds[k] = true
+    }
+  }
+  const ascendancyId = typeof p.ascendancyId === 'string' ? p.ascendancyId : null
 
   return {
     format: EXPORT_FORMAT,
@@ -224,7 +259,9 @@ function sanitizeBundle(raw: unknown): ProfileBundle | null {
       currentAct: clampInt(p.currentAct, 1, 12, 1),
       level: clampInt(p.level, 1, 100, 1),
       completedQuestIds,
-      rewardChoices
+      rewardChoices,
+      completedTrialIds,
+      ascendancyId
     }
   }
 }
@@ -244,6 +281,8 @@ export async function importProfileBundle(raw: unknown): Promise<ProfileMeta | n
     level: bundle.progress.level,
     completedQuestIds: bundle.progress.completedQuestIds,
     rewardChoices: bundle.progress.rewardChoices,
+    completedTrialIds: bundle.progress.completedTrialIds,
+    ascendancyId: bundle.progress.ascendancyId,
     updatedAt: Date.now()
   }
   await writeJsonAtomic(progressFile(meta.id), progress)

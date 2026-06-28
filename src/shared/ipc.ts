@@ -32,7 +32,9 @@ export const IPC = {
     setQuestDone: 'progress:setQuestDone',
     setAct: 'progress:setAct',
     setLevel: 'progress:setLevel',
-    setRewardChoice: 'progress:setRewardChoice'
+    setRewardChoice: 'progress:setRewardChoice',
+    setTrialDone: 'progress:setTrialDone',
+    setAscendancy: 'progress:setAscendancy'
   },
   settings: {
     get: 'settings:get',
@@ -94,6 +96,8 @@ export interface OverlayApi {
       questId: string,
       optionIndex: number
     ): Promise<ProgressState>
+    setTrialDone(profileId: string, trialId: string, done: boolean): Promise<ProgressState>
+    setAscendancy(profileId: string, ascendancyId: string | null): Promise<ProgressState>
   }
   settings: {
     get(): Promise<Settings>

@@ -2,6 +2,7 @@ import { app } from 'electron'
 import path from 'path'
 import type {
   Act,
+  AscendancyData,
   Dataset,
   DatasetMeta,
   GemCatalog,
@@ -62,6 +63,7 @@ export async function loadDataset(): Promise<Dataset> {
     {}
   )
   const namesRu = await readJson<Record<string, string>>(path.join(dir, 'names.ru.json'), {})
+  const ascendancy = await readJson<AscendancyData | null>(path.join(dir, 'ascendancy.json'), null)
 
   cache = {
     meta,
@@ -72,7 +74,8 @@ export async function loadDataset(): Promise<Dataset> {
     areas,
     hints,
     hintsRu,
-    namesRu
+    namesRu,
+    ascendancy: ascendancy ?? undefined
   }
   return cache
 }

@@ -157,6 +157,36 @@ export interface DatasetMeta {
   layoutRemoteBaseUrl?: string
 }
 
+export interface Trial {
+  id: string
+  name: string
+  nameRu?: string
+  /** act this trial first becomes available in */
+  actId: string
+  /** ascendancy points granted on first completion */
+  points: number
+  phase: 'campaign' | 'endgame'
+  note?: string
+  noteRu?: string
+}
+
+export interface AscendancyOption {
+  id: string
+  name: string
+  nameRu?: string
+}
+
+export interface AscendancyClass {
+  /** base class name, matches ProfileMeta.className */
+  base: string
+  options: AscendancyOption[]
+}
+
+export interface AscendancyData {
+  trials: Trial[]
+  classes: AscendancyClass[]
+}
+
 export interface ZoneCue {
   icon?: string
   cue: string
@@ -186,6 +216,8 @@ export interface Dataset {
   hintsRu?: Record<string, ZoneHint>
   /** EN->RU display names, keyed by normalized English name */
   namesRu?: Record<string, string>
+  /** ascendancy classes + trials reference */
+  ascendancy?: AscendancyData
 }
 
 // ---------------------------------------------------------------------------
@@ -221,6 +253,10 @@ export interface ProgressState {
   completedQuestIds: Record<string, true>
   /** chosen option index for swappable rewards, keyed by quest id */
   rewardChoices: Record<string, number>
+  /** completed trials keyed by trial id (manual — completion isn't auto-detectable) */
+  completedTrialIds: Record<string, true>
+  /** chosen ascendancy option id, or null */
+  ascendancyId: string | null
   updatedAt: number
 }
 

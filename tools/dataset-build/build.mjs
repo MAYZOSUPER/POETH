@@ -15,6 +15,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { gems as gemCatalog, recommendations as gemRecommendations } from './gem-recs.mjs'
+import { trials as ascTrials, ascendancyClasses } from './ascendancy.mjs'
 import { areaIdForZone, AREA_ID_MAP } from './area-id-map.mjs'
 import { INTERLUDES } from './interludes.mjs'
 import { HINTS } from './hints.0.5.mjs'
@@ -244,6 +245,11 @@ writeFileSync(join(OUT, 'route.json'), JSON.stringify({ patch: GAME_PATCH, steps
 writeFileSync(
   join(OUT, 'gems.json'),
   JSON.stringify({ gems: gemCatalog, recommendations: gemRecommendations }, null, 2)
+)
+// Ascendancy / trial reference data (editorial, needs-validation).
+writeFileSync(
+  join(OUT, 'ascendancy.json'),
+  JSON.stringify({ trials: ascTrials, classes: ascendancyClasses }, null, 2)
 )
 // Full areaId -> display name map (incl. towns/trials not in the quest checklist)
 // so the UI can identify the act/zone for any logged area.

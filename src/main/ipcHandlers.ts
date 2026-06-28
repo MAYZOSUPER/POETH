@@ -145,6 +145,12 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.progress.setRewardChoice, (_e, pid: string, qid: string, idx: number) =>
     profiles.setRewardChoice(pid, qid, idx)
   )
+  ipcMain.handle(IPC.progress.setTrialDone, (_e, pid: string, tid: string, done: boolean) =>
+    profiles.setTrialDone(pid, tid, done)
+  )
+  ipcMain.handle(IPC.progress.setAscendancy, (_e, pid: string, ascId: string | null) =>
+    profiles.setAscendancy(pid, ascId)
+  )
 
   // ---- settings ----
   ipcMain.handle(IPC.settings.get, () => getSettings())
