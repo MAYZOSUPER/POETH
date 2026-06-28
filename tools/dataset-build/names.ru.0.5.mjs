@@ -3,6 +3,8 @@
 // official RU page stay English. Regenerate via tools/dataset-build/ (poe2db).
 
 export const NAMES_RU = {
+  "the king in the mists after 4 rituals": "Хозяин в Туманах",
+  "the king in the mists": "Хозяин в Туманах",
   "clearfell": "Клирфелл",
   "mud burrow": "Грязевая нора",
   "the grelwood": "Грельвуд",

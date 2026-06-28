@@ -177,8 +177,10 @@ export interface Dataset {
   route?: Route
   /** full game areaId -> display name (incl. towns/trials not in the checklist) */
   areas?: Record<string, string>
-  /** per-zone navigation hints, keyed by zone display name (lowercase) */
+  /** per-zone navigation hints (English), keyed by zone display name (lowercase) */
   hints?: Record<string, ZoneHint>
+  /** Russian navigation hints, same keys */
+  hintsRu?: Record<string, ZoneHint>
   /** EN->RU display names, keyed by normalized English name */
   namesRu?: Record<string, string>
 }

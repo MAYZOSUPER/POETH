@@ -51,7 +51,9 @@ export function WhatsNextPanel() {
   const mandatory = quests.filter((q) => q.type === 'mandatory')
   const optional = quests.filter((q) => q.type === 'optional')
   const hasLayout = !!zone.layout && !!dataset.layouts[zone.layout]
-  const hint = dataset.hints?.[step.zoneName.toLowerCase()]
+  const hintKey = step.zoneName.toLowerCase()
+  const hint =
+    (lang === 'ru' ? dataset.hintsRu?.[hintKey] : undefined) ?? dataset.hints?.[hintKey]
   const hasHint = !!hint && !!(hint.objective || hint.exit || hint.cues?.length || hint.tips?.length)
 
   const youAreHere = detectedZoneAreaId === step.areaId

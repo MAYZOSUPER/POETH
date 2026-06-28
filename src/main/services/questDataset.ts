@@ -57,6 +57,10 @@ export async function loadDataset(): Promise<Dataset> {
     path.join(dir, 'hints.json'),
     {}
   )
+  const hintsRu = await readJson<Record<string, import('@shared/types').ZoneHint>>(
+    path.join(dir, 'hints.ru.json'),
+    {}
+  )
   const namesRu = await readJson<Record<string, string>>(path.join(dir, 'names.ru.json'), {})
 
   cache = {
@@ -67,6 +71,7 @@ export async function loadDataset(): Promise<Dataset> {
     route: route ?? undefined,
     areas,
     hints,
+    hintsRu,
     namesRu
   }
   return cache
