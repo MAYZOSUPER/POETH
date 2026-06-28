@@ -1,10 +1,11 @@
 import type { Quest } from '@shared/types'
 import { useAppStore } from '../store/useAppStore'
-import { useT } from '../i18n'
+import { useT, useName } from '../i18n'
 import { QuestRow } from '../components/QuestRow'
 
 export function QuestChecklistPanel() {
   const t = useT()
+  const localName = useName()
   const dataset = useAppStore((s) => s.dataset)
   const selectedActId = useAppStore((s) => s.selectedActId)
   const selectedZoneAreaId = useAppStore((s) => s.selectedZoneAreaId)
@@ -49,7 +50,7 @@ export function QuestChecklistPanel() {
               >
                 <span className="zone-name">
                   {detectedZoneAreaId === zone.areaId ? '📍 ' : ''}
-                  {zone.name}
+                  {localName(zone.name)}
                   {zone.isTown ? ' 🏠' : ''}
                 </span>
                 {hasLayout && (

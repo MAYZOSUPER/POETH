@@ -73,6 +73,8 @@ const RU: Dict = {
   // settings
   'set.title': 'Настройки',
   'set.lang': 'Язык интерфейса',
+  'set.nameLang': 'Язык названий (зоны и боссы)',
+  'set.nameLang.note': 'Английские названия совпадают с EN-клиентом игры.',
   'set.opacity': 'Прозрачность',
   'set.taskbar': 'Показывать на панели задач',
   'set.windowedHint':
@@ -160,6 +162,8 @@ const EN: Dict = {
   'lv.rotateNote': 'Your instance may be rotated/mirrored — match the shape, not the orientation.',
   'set.title': 'Settings',
   'set.lang': 'Interface language',
+  'set.nameLang': 'Names language (zones & bosses)',
+  'set.nameLang.note': 'English names match the English game client.',
   'set.opacity': 'Opacity',
   'set.taskbar': 'Show on the taskbar',
   'set.windowedHint':
@@ -214,6 +218,28 @@ export function useT(): (key: string, params?: Record<string, string | number>) 
 
 export function layoutLabel(lang: UiLang, type: string): string {
   return translate(lang, `layout.${type}`)
+}
+
+/** Normalize an English name for the EN->RU name map lookup. */
+export function norm(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[’'`]/g, '')
+    .replace(/[^a-z0-9а-яё]+/gi, ' ')
+    .trim()
+}
+
+/** Returns a localizer for game zone/boss names based on the nameLang setting. */
+export function useName(): (en: string) => string {
+  const nameLang = useAppStore((s) => s.settings?.nameLang ?? 'en')
+  const namesRu = useAppStore((s) => s.dataset?.namesRu)
+  return (en: string) => {
+    if (nameLang === 'ru' && en) {
+      const ru = namesRu?.[norm(en)]
+      if (ru) return ru
+    }
+    return en
+  }
 }
 
 const RES_RU: Record<string, string> = {

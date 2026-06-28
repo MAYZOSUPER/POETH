@@ -21,8 +21,10 @@ interface AppState {
   selectedZoneAreaId: string | null
   /** zone (our areaId) auto-detected from the game log; for highlighting */
   detectedZoneAreaId: string | null
-  /** human label of the detected zone (shown even if it's not in the checklist) */
-  detectedZoneLabel: string | null
+  /** English name of the detected zone (localized at render); shown even if not in checklist */
+  detectedZoneNameEn: string | null
+  /** act id of the detected zone, for the banner prefix */
+  detectedActId: string | null
   tailerStatus: TailerStatus | null
   /** left-pane view: full checklist or the "What's Next" guided step */
   viewMode: 'checklist' | 'whatsnext'
@@ -146,7 +148,8 @@ function applyZoneEvent(get: () => AppState, set: SetState, e: ZoneEvent): void 
     const act = dataset?.acts.find((a) => a.id === ref.actId)
     const zone = act?.zones.find((z) => z.areaId === ref.zoneAreaId)
     patch.detectedZoneAreaId = ref.zoneAreaId
-    patch.detectedZoneLabel = zone ? `A${act?.actNumber}: ${zone.name}` : null
+    patch.detectedZoneNameEn = zone?.name ?? null
+    patch.detectedActId = ref.actId
     if (autoAdvance) {
       patch.selectedActId = ref.actId
       patch.selectedZoneAreaId = ref.zoneAreaId
@@ -162,16 +165,11 @@ function applyZoneEvent(get: () => AppState, set: SetState, e: ZoneEvent): void 
     e.areaId ?? (e.areaName ? nameToExileId[e.areaName.toLowerCase()] : undefined)
   )?.toLowerCase()
   const actId = exileId ? areaToActId[exileId] : null
-  const canonical =
-    (exileId && dataset?.areas?.[exileId]) || e.areaName || e.areaId || null
+  const canonical = (exileId && dataset?.areas?.[exileId]) || e.areaName || e.areaId || null
   patch.detectedZoneAreaId = null
-  if (actId) {
-    const act = dataset?.acts.find((a) => a.id === actId)
-    patch.detectedZoneLabel = canonical ? `A${act?.actNumber}: ${canonical}` : (act?.actName ?? null)
-    if (autoAdvance) patch.selectedActId = actId
-  } else {
-    patch.detectedZoneLabel = canonical ? `${canonical} — вне кампании` : null
-  }
+  patch.detectedZoneNameEn = canonical
+  patch.detectedActId = actId
+  if (actId && autoAdvance) patch.selectedActId = actId
   set(patch)
 }
 
@@ -185,7 +183,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   selectedActId: null,
   selectedZoneAreaId: null,
   detectedZoneAreaId: null,
-  detectedZoneLabel: null,
+  detectedZoneNameEn: null,
+  detectedActId: null,
   tailerStatus: null,
   viewMode: 'whatsnext',
   currentStepIndex: 0,
@@ -372,7 +371,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   async tailerStop() {
     const status = await api().tailer.stop()
     const settings = await api().settings.get()
-    set({ tailerStatus: status, settings, detectedZoneAreaId: null, detectedZoneLabel: null })
+    set({
+      tailerStatus: status,
+      settings,
+      detectedZoneAreaId: null,
+      detectedZoneNameEn: null,
+      detectedActId: null
+    })
   },
 
   async tailerPickFile() {

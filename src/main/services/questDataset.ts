@@ -57,6 +57,7 @@ export async function loadDataset(): Promise<Dataset> {
     path.join(dir, 'hints.json'),
     {}
   )
+  const namesRu = await readJson<Record<string, string>>(path.join(dir, 'names.ru.json'), {})
 
   cache = {
     meta,
@@ -65,7 +66,8 @@ export async function loadDataset(): Promise<Dataset> {
     gems: gems ?? undefined,
     route: route ?? undefined,
     areas,
-    hints
+    hints,
+    namesRu
   }
   return cache
 }

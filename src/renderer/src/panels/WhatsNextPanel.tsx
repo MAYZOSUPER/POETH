@@ -1,6 +1,6 @@
 import type { Act, Reward, RewardKind } from '@shared/types'
 import { useAppStore, getRoute, stepIndexOfZone } from '../store/useAppStore'
-import { useT, useLang, layoutLabel, formatReward } from '../i18n'
+import { useT, useLang, useName, layoutLabel, formatReward } from '../i18n'
 import { QuestRow } from '../components/QuestRow'
 
 const PERMANENT = new Set<RewardKind>([
@@ -35,6 +35,7 @@ export function WhatsNextPanel() {
   const toggleQuest = useAppStore((s) => s.toggleQuest)
   const t = useT()
   const lang = useLang()
+  const localName = useName()
 
   const route = getRoute()
   if (!dataset || route.length === 0) return null
@@ -87,7 +88,7 @@ export function WhatsNextPanel() {
         <div className="wn-act">{act.actName}</div>
         <div className="wn-zone-row">
           <span className="wn-zone">
-            {step.zoneName}
+            {localName(step.zoneName)}
             {step.isTown ? ' 🏠' : ''}
           </span>
           {hasLayout && (
@@ -151,7 +152,7 @@ export function WhatsNextPanel() {
             {nextAct.kind === 'interlude'
               ? t('int.short', { n: nextAct.actNumber - 4 })
               : t('act.short', { n: nextAct.actNumber })}{' '}
-            · {next.zoneName}
+            · {localName(next.zoneName)}
             {next.isTown ? ' 🏠' : ''}
           </div>
           {nextTeaser && (

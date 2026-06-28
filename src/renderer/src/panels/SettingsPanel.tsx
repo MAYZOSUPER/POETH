@@ -32,6 +32,19 @@ export function SettingsPanel() {
       </div>
 
       <div className="setting">
+        <label>{t('set.nameLang')}</label>
+        <select
+          className="lang-select"
+          value={settings?.nameLang ?? 'en'}
+          onChange={(e) => void patchSettings({ nameLang: e.target.value as UiLang })}
+        >
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+        </select>
+      </div>
+      <div className="hint small muted">{t('set.nameLang.note')}</div>
+
+      <div className="setting">
         <label>{t('set.opacity')}</label>
         <input
           type="range"

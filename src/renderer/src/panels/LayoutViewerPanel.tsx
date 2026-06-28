@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
-import { useT } from '../i18n'
+import { useT, useName } from '../i18n'
 
 export function LayoutViewerPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const selectedZoneAreaId = useAppStore((s) => s.selectedZoneAreaId)
   const selectZone = useAppStore((s) => s.selectZone)
   const t = useT()
+  const localName = useName()
 
   const [urls, setUrls] = useState<string[]>([])
   const [active, setActive] = useState(0)
@@ -39,7 +40,7 @@ export function LayoutViewerPanel() {
   return (
     <section className="panel layout">
       <div className="panel-head">
-        <span>{t('lv.title', { name: zone?.name ?? '' })}</span>
+        <span>{t('lv.title', { name: localName(zone?.name ?? '') })}</span>
         <button className="icon" title={t('lv.close')} onClick={() => selectZone(null)}>
           ✕
         </button>

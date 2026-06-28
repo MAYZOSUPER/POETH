@@ -179,6 +179,8 @@ export interface Dataset {
   areas?: Record<string, string>
   /** per-zone navigation hints, keyed by zone display name (lowercase) */
   hints?: Record<string, ZoneHint>
+  /** EN->RU display names, keyed by normalized English name */
+  namesRu?: Record<string, string>
 }
 
 // ---------------------------------------------------------------------------
@@ -217,8 +219,10 @@ export type UiLang = 'ru' | 'en'
 export interface Settings {
   schemaVersion: number
   activeProfileId: string | null
-  /** interface language; game zone/boss names always stay English */
+  /** interface language */
   uiLang: UiLang
+  /** language for game zone/boss names (independent of uiLang) */
+  nameLang: UiLang
   /** 0.2 .. 1.0 */
   opacity: number
   /** force full click-through (overlay never steals clicks) */

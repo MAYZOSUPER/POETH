@@ -1,6 +1,6 @@
 import type { Quest } from '@shared/types'
 import { RewardBadge } from './RewardBadge'
-import { useT } from '../i18n'
+import { useT, useName } from '../i18n'
 
 interface Props {
   quest: Quest
@@ -10,13 +10,14 @@ interface Props {
 
 export function QuestRow({ quest, done, onToggle }: Props) {
   const t = useT()
+  const localName = useName()
   return (
     <li className={`quest ${done ? 'done' : ''} ${quest.type}`}>
       <label className="quest-main">
         <input type="checkbox" checked={done} onChange={(e) => onToggle(e.target.checked)} />
         <span className="quest-name">
           {quest.boss ? '☠ ' : ''}
-          {quest.name}
+          {localName(quest.name)}
         </span>
         <span className={quest.type === 'mandatory' ? 'type-tag req' : 'type-tag opt'}>
           {quest.type === 'mandatory' ? t('q.req') : t('q.opt')}

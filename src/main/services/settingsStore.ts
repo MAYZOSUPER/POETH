@@ -10,6 +10,7 @@ export function defaultSettings(): Settings {
     schemaVersion: SETTINGS_VERSION,
     activeProfileId: null,
     uiLang: 'ru',
+    nameLang: 'en',
     opacity: 0.95,
     locked: false,
     overlayVisible: true,
