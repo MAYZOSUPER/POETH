@@ -3,15 +3,17 @@ import { existsSync, createReadStream, readFileSync } from 'fs'
 import { stat } from 'fs/promises'
 import { createInterface } from 'readline'
 import type { BossDefeatEvent, LevelEvent, TailerStatus, ZoneEvent } from '@shared/types'
-import { actIdFromGameArea, matchSpeaker, type BossIndex, type BossQuestRef } from './bossMatcher'
+import { actIdFromGameArea, matchSpeaker, type BossIndex } from './bossMatcher'
 
 // Advisory Client.txt tailer (TOS-safe plain-text log parsing — no memory reads).
 // Parsing format verified against Lechkolion/poe2-leveling-overlay (MIT) + the real log:
 //   - zone:  `Generating level N area "<areaId>"`   (language-agnostic id)
 //   - zone fallback: `[SCENE] Set Source [<Name>]`  (display name)
 //   - level: `: <Name> is now level <N>`
-//   - boss defeat (opt-in): boss-name dialogue `"<Boss>: ..."` then the scripted
-//     passive-point award `": You have received N Passive Skill Points."`.
+//   - boss (opt-in): a boss-name DIALOGUE line `"<Boss>: ..."` means the player is
+//     fighting that boss → auto-check its quest. (Passive-point awards were tried as
+//     a "defeat" confirm, but most bosses reward a gem, not points — so we trigger on
+//     the dialogue itself, debounced.)
 //
 // Emits: 'zone' (ZoneEvent), 'level' (LevelEvent), 'status' (TailerStatus), 'boss' (BossDefeatEvent).
 // NOTE: `: <X> has been slain.` is a PLAYER death (self/party), NOT a boss kill — never parsed.
@@ -20,13 +22,11 @@ const GENERATING = /Generating level \d+ area "([^"]+)"/
 const SCENE = /\[SCENE\] Set Source \[(.+?)\]/
 const ACT_TITLE = /^Act \d+$/
 const LEVEL_UP = /:\s+(\S+)\s+is now level (\d+)/
-// Scripted reward that fires right after a gating boss dies (English-only by nature).
-// Does NOT match the paired "... Weapon Set Passive Skill Points" line (no double-fire).
-const PASSIVE_AWARD = /You have received \d+ Passive Skill Points/
 // NPC/boss dialogue: after the "] " log prefix, "<Speaker>: <text>". System lines
 // ("] : You have...", "] : X has been slain") have an empty speaker and won't match.
 const DIALOGUE = /\]\s+([^:\][]+?):\s/
-const BOSS_WINDOW_MS = 30000
+// A boss speaks several times per fight — emit once, then ignore repeats this long.
+const BOSS_EMIT_DEBOUNCE_MS = 60000
 
 const SCAN_BYTES = 102400
 
@@ -72,8 +72,6 @@ interface Parsed {
   level?: LevelEvent
   /** dialogue speaker (raw, unmatched) — for boss detection */
   speaker?: string
-  /** a passive-skill-point award line was seen */
-  passiveAward?: boolean
 }
 
 export class LogTailer extends EventEmitter {
@@ -86,7 +84,7 @@ export class LogTailer extends EventEmitter {
   private lastLevelValue: number | null = null
   // boss detection (opt-in; index injected from main once the dataset is loaded)
   private bossIndex: BossIndex | null = null
-  private lastBossSeen: { ref: BossQuestRef; at: number } | null = null
+  private lastBossEmit: { questId: string; at: number } | null = null
 
   setBossIndex(index: BossIndex): void {
     this.bossIndex = index
@@ -152,7 +150,6 @@ export class LogTailer extends EventEmitter {
     }
     const lv = line.match(LEVEL_UP)
     if (lv) out.level = { character: lv[1], level: parseInt(lv[2], 10), at: Date.now() }
-    if (PASSIVE_AWARD.test(line)) out.passiveAward = true
     const d = line.match(DIALOGUE)
     if (d) {
       const speaker = d[1].trim()
@@ -162,27 +159,24 @@ export class LogTailer extends EventEmitter {
     return out
   }
 
-  // Boss-defeat correlation. Runs ONLY on live reads (never from scanTail), so a
-  // historical award in the file can't re-check quests on startup.
+  // Boss detection. Runs ONLY on live reads (never from scanTail), so historical
+  // dialogue in the file can't re-check quests on startup. A boss-name dialogue
+  // line means the player is fighting that boss → emit (debounced per boss).
   private handleBoss(p: Parsed): void {
-    if (!this.bossIndex) return
-    if (p.speaker) {
-      const ref = matchSpeaker(this.bossIndex, p.speaker, actIdFromGameArea(this.lastZone?.areaId))
-      if (ref) this.lastBossSeen = { ref, at: Date.now() }
+    if (!this.bossIndex || !p.speaker) return
+    const ref = matchSpeaker(this.bossIndex, p.speaker, actIdFromGameArea(this.lastZone?.areaId))
+    if (!ref) return
+    const now = Date.now()
+    if (
+      this.lastBossEmit &&
+      this.lastBossEmit.questId === ref.questId &&
+      now - this.lastBossEmit.at < BOSS_EMIT_DEBOUNCE_MS
+    ) {
+      return
     }
-    if (p.passiveAward) {
-      const seen = this.lastBossSeen
-      if (seen && Date.now() - seen.at <= BOSS_WINDOW_MS) {
-        const ev: BossDefeatEvent = {
-          questId: seen.ref.questId,
-          name: seen.ref.name,
-          phase: 'defeated',
-          at: Date.now()
-        }
-        this.emit('boss', ev)
-      }
-      this.lastBossSeen = null
-    }
+    this.lastBossEmit = { questId: ref.questId, at: now }
+    const ev: BossDefeatEvent = { questId: ref.questId, name: ref.name, phase: 'defeated', at: now }
+    this.emit('boss', ev)
   }
 
   private emitZone(areaId?: string, areaName?: string): void {

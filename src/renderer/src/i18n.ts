@@ -118,7 +118,7 @@ const RU: Dict = {
   'set.auto.check.note':
     'Отмечает обязательные квесты пройденных зон и убитых боссов (по логу игры). Никогда не снимает отметки — ручные в приоритете. Нужен включённый автодетект.',
   'set.auto.note':
-    'Подсвечивает зону и уровень из лога (безопасно, только чтение). Детект убийства босса — по награде очков пассивок (англ. клиент надёжнее).',
+    'Подсвечивает зону и уровень из лога (безопасно, только чтение). Боссы определяются по их репликам в логе.',
   'set.data': 'Данные',
   'set.data.version': 'Версия данных: {label}',
   'set.data.schema': 'Схема {schema} · актов: {acts}',
@@ -232,7 +232,7 @@ const EN: Dict = {
   'set.auto.check.note':
     "Ticks mandatory quests of zones you've passed and bosses you've killed (from the game log). Never unchecks — your manual ticks win. Requires auto-detect on.",
   'set.auto.note':
-    'Highlights the zone and level from the log (safe, read-only). Boss-kill detection uses the passive-point award (works best on an English client).',
+    "Highlights the zone and level from the log (safe, read-only). Bosses are detected from their dialogue lines in the log.",
   'set.data': 'Data',
   'set.data.version': 'Data version: {label}',
   'set.data.schema': 'Schema {schema} · acts: {acts}',
