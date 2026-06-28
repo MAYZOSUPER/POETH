@@ -253,6 +253,9 @@ export interface ProgressState {
   level: number
   /** completion keyed by STABLE quest id */
   completedQuestIds: Record<string, true>
+  /** subset of completedQuestIds that was set by auto-progression (for the "авто" badge);
+   * a manual toggle removes the id from here ("claims" the tick) */
+  autoCompletedQuestIds: Record<string, true>
   /** chosen option index for swappable rewards, keyed by quest id */
   rewardChoices: Record<string, number>
   /** completed trials keyed by trial id (manual — completion isn't auto-detectable) */
@@ -312,6 +315,16 @@ export interface ZoneEvent {
 export interface LevelEvent {
   character: string
   level: number
+  at: number
+}
+
+/** A campaign boss was defeated (inferred from the log: boss-name dialogue + passive-point award). */
+export interface BossDefeatEvent {
+  /** the matched quest id to auto-check */
+  questId: string
+  /** the boss display name that matched (for logging) */
+  name: string
+  phase: 'defeated'
   at: number
 }
 

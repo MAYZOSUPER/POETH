@@ -9,7 +9,8 @@ import {
   dispatchHotkey,
   applySettingsToWindow,
   wireTailer,
-  reconcileTailer
+  reconcileTailer,
+  setupBossMatcher
 } from './ipcHandlers'
 import { getSettings } from './services/settingsStore'
 import { resolveLayoutFile, resolveBrandFile, contentTypeFor } from './services/layoutResolver'
@@ -75,6 +76,7 @@ async function bootstrap(): Promise<void> {
 
   registerIpcHandlers()
   wireTailer()
+  void setupBossMatcher()
   createOverlayWindow()
 
   const settings = await getSettings()

@@ -47,6 +47,7 @@ export function WhatsNextPanel() {
   if (!act || !zone) return null
 
   const completed = progress?.completedQuestIds ?? {}
+  const auto = progress?.autoCompletedQuestIds ?? {}
   const quests = act.quests.filter((q) => q.zone === step.areaId)
   const mandatory = quests.filter((q) => q.type === 'mandatory')
   const optional = quests.filter((q) => q.type === 'optional')
@@ -65,6 +66,7 @@ export function WhatsNextPanel() {
       key={q.id}
       quest={q}
       done={!!completed[q.id]}
+      auto={!!auto[q.id]}
       onToggle={(d) => void toggleQuest(q.id, d)}
     />
   )

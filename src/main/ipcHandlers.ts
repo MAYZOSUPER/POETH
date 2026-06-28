@@ -1,10 +1,18 @@
 import { ipcMain, dialog } from 'electron'
 import { promises as fs } from 'fs'
 import { IPC } from '@shared/ipc'
-import type { HotkeyAction, LevelEvent, Settings, TailerStatus, ZoneEvent } from '@shared/types'
+import type {
+  BossDefeatEvent,
+  HotkeyAction,
+  LevelEvent,
+  Settings,
+  TailerStatus,
+  ZoneEvent
+} from '@shared/types'
 import * as profiles from './services/profileStore'
 import { getSettings, updateSettings } from './services/settingsStore'
 import { loadDataset } from './services/questDataset'
+import { buildBossIndex } from './services/bossMatcher'
 import { resolveLayout } from './services/layoutResolver'
 import { logTailer } from './services/logTailer'
 import { getOverlayWindow } from './overlayWindow'
@@ -36,6 +44,16 @@ export function wireTailer(): void {
     if (dbg) console.log('[tailer] status', JSON.stringify(s))
     send(IPC.events.tailerStatus, s)
   })
+  logTailer.on('boss', (e: BossDefeatEvent) => {
+    if (dbg) console.log('[tailer] boss', JSON.stringify(e))
+    send(IPC.events.bossDefeat, e)
+  })
+}
+
+/** Build the boss-name index (bilingual) from the dataset and inject it into the tailer. */
+export async function setupBossMatcher(): Promise<void> {
+  const ds = await loadDataset()
+  logTailer.setBossIndex(buildBossIndex(ds))
 }
 
 function broadcastActiveProfile(id: string | null): void {
@@ -137,6 +155,9 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.progress.get, (_e, pid: string) => profiles.getProgress(pid))
   ipcMain.handle(IPC.progress.setQuestDone, (_e, pid: string, qid: string, done: boolean) =>
     profiles.setQuestDone(pid, qid, done)
+  )
+  ipcMain.handle(IPC.progress.setQuestsDone, (_e, pid: string, qids: string[]) =>
+    profiles.setQuestsDone(pid, qids)
   )
   ipcMain.handle(IPC.progress.setAct, (_e, pid: string, act: number) => profiles.setAct(pid, act))
   ipcMain.handle(IPC.progress.setLevel, (_e, pid: string, level: number) =>

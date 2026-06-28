@@ -3,6 +3,7 @@
 // channel names and payload shapes can never drift apart.
 
 import type {
+  BossDefeatEvent,
   Dataset,
   HotkeyAction,
   LevelEvent,
@@ -30,6 +31,7 @@ export const IPC = {
   progress: {
     get: 'progress:get',
     setQuestDone: 'progress:setQuestDone',
+    setQuestsDone: 'progress:setQuestsDone',
     setAct: 'progress:setAct',
     setLevel: 'progress:setLevel',
     setRewardChoice: 'progress:setRewardChoice',
@@ -65,6 +67,7 @@ export const IPC = {
     zoneChange: 'event:zoneChange',
     levelChange: 'event:levelChange',
     tailerStatus: 'event:tailerStatus',
+    bossDefeat: 'event:bossDefeat',
     hotkey: 'event:hotkey',
     activeProfileChanged: 'event:activeProfileChanged'
   }
@@ -89,6 +92,8 @@ export interface OverlayApi {
   progress: {
     get(profileId: string): Promise<ProgressState>
     setQuestDone(profileId: string, questId: string, done: boolean): Promise<ProgressState>
+    /** Batch auto-check: marks each id done AND flags it auto-completed (never unchecks). */
+    setQuestsDone(profileId: string, questIds: string[]): Promise<ProgressState>
     setAct(profileId: string, act: number): Promise<ProgressState>
     setLevel(profileId: string, level: number): Promise<ProgressState>
     setRewardChoice(
@@ -132,6 +137,7 @@ export interface OverlayApi {
   onZoneChange(cb: (e: ZoneEvent) => void): () => void
   onLevelChange(cb: (e: LevelEvent) => void): () => void
   onTailerStatus(cb: (status: TailerStatus) => void): () => void
+  onBossDefeat(cb: (e: BossDefeatEvent) => void): () => void
   onHotkey(cb: (action: HotkeyAction) => void): () => void
   onActiveProfileChanged(cb: (profileId: string | null) => void): () => void
 }

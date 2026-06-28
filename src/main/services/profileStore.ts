@@ -26,6 +26,7 @@ function defaultProgress(profileId: string): ProgressState {
     currentAct: 1,
     level: 1,
     completedQuestIds: {},
+    autoCompletedQuestIds: {},
     rewardChoices: {},
     completedTrialIds: {},
     ascendancyId: null,
@@ -89,6 +90,7 @@ function migrateProgress(profileId: string, p: ProgressState): ProgressState {
     ...defaultProgress(profileId),
     ...p,
     completedQuestIds: p.completedQuestIds ?? {},
+    autoCompletedQuestIds: p.autoCompletedQuestIds ?? {},
     rewardChoices: p.rewardChoices ?? {},
     completedTrialIds: p.completedTrialIds ?? {},
     ascendancyId: p.ascendancyId ?? null,
@@ -116,6 +118,22 @@ export async function setQuestDone(
   const p = await getProgress(profileId)
   if (done) p.completedQuestIds[questId] = true
   else delete p.completedQuestIds[questId]
+  // A manual toggle "claims" the tick — drop any auto-progression flag on it.
+  delete p.autoCompletedQuestIds[questId]
+  return saveProgress(p)
+}
+
+/** Auto-progression batch: mark each id done AND flag it auto-completed. Add-only
+ * (never unchecks). Single atomic write. */
+export async function setQuestsDone(
+  profileId: string,
+  questIds: string[]
+): Promise<ProgressState> {
+  const p = await getProgress(profileId)
+  for (const id of questIds) {
+    p.completedQuestIds[id] = true
+    p.autoCompletedQuestIds[id] = true
+  }
   return saveProgress(p)
 }
 
@@ -167,7 +185,7 @@ export async function setAscendancy(
 // ---------------------------------------------------------------------------
 
 const EXPORT_FORMAT = 'act-compass-profile'
-const EXPORT_VERSION = 2
+const EXPORT_VERSION = 3
 
 export interface ProfileBundle {
   format: string
@@ -180,6 +198,7 @@ export interface ProfileBundle {
     currentAct: number
     level: number
     completedQuestIds: Record<string, true>
+    autoCompletedQuestIds: Record<string, true>
     rewardChoices: Record<string, number>
     completedTrialIds: Record<string, true>
     ascendancyId: string | null
@@ -202,6 +221,7 @@ export async function getProfileBundle(id: string): Promise<ProfileBundle | null
       currentAct: progress.currentAct,
       level: progress.level,
       completedQuestIds: progress.completedQuestIds,
+      autoCompletedQuestIds: progress.autoCompletedQuestIds,
       rewardChoices: progress.rewardChoices,
       completedTrialIds: progress.completedTrialIds,
       ascendancyId: progress.ascendancyId
@@ -228,6 +248,12 @@ function sanitizeBundle(raw: unknown): ProfileBundle | null {
   if (p.completedQuestIds && typeof p.completedQuestIds === 'object') {
     for (const [k, v] of Object.entries(p.completedQuestIds as Record<string, unknown>)) {
       if (v) completedQuestIds[k] = true
+    }
+  }
+  const autoCompletedQuestIds: Record<string, true> = {}
+  if (p.autoCompletedQuestIds && typeof p.autoCompletedQuestIds === 'object') {
+    for (const [k, v] of Object.entries(p.autoCompletedQuestIds as Record<string, unknown>)) {
+      if (v && completedQuestIds[k]) autoCompletedQuestIds[k] = true // keep only completed ones
     }
   }
   const rewardChoices: Record<string, number> = {}
@@ -259,6 +285,7 @@ function sanitizeBundle(raw: unknown): ProfileBundle | null {
       currentAct: clampInt(p.currentAct, 1, 12, 1),
       level: clampInt(p.level, 1, 100, 1),
       completedQuestIds,
+      autoCompletedQuestIds,
       rewardChoices,
       completedTrialIds,
       ascendancyId
@@ -280,6 +307,7 @@ export async function importProfileBundle(raw: unknown): Promise<ProfileMeta | n
     currentAct: bundle.progress.currentAct,
     level: bundle.progress.level,
     completedQuestIds: bundle.progress.completedQuestIds,
+    autoCompletedQuestIds: bundle.progress.autoCompletedQuestIds,
     rewardChoices: bundle.progress.rewardChoices,
     completedTrialIds: bundle.progress.completedTrialIds,
     ascendancyId: bundle.progress.ascendancyId,

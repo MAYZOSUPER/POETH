@@ -18,6 +18,7 @@ export function QuestChecklistPanel() {
   if (!act) return null
 
   const completed = progress?.completedQuestIds ?? {}
+  const auto = progress?.autoCompletedQuestIds ?? {}
   const byZone = new Map<string, Quest[]>()
   for (const q of act.quests) {
     const list = byZone.get(q.zone) ?? []
@@ -66,6 +67,7 @@ export function QuestChecklistPanel() {
                       key={q.id}
                       quest={q}
                       done={!!completed[q.id]}
+                      auto={!!auto[q.id]}
                       onToggle={(d) => void toggleQuest(q.id, d)}
                     />
                   ))}

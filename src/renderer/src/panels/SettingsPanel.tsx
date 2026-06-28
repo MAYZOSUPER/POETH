@@ -251,6 +251,15 @@ export function SettingsPanel() {
           />
           {t('set.auto.advance')}
         </label>
+        <label className="row-toggle">
+          <input
+            type="checkbox"
+            checked={settings?.autoCheckQuests ?? false}
+            onChange={(e) => void patchSettings({ autoCheckQuests: e.target.checked })}
+          />
+          {t('set.auto.check')}
+        </label>
+        <div className="small muted">{t('set.auto.check.note')}</div>
         <div className="small muted">{t('set.auto.note')}</div>
       </div>
 

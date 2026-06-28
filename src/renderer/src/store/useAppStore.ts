@@ -41,6 +41,10 @@ interface AppState {
   stepNext: () => void
   stepPrev: () => void
   toggleQuest: (questId: string, done: boolean) => Promise<void>
+  /** auto-progression: batch-mark quests done + flag them auto-completed (never unchecks) */
+  applyAutoChecks: (ids: string[]) => Promise<void>
+  /** re-run zone-based auto-check from the current detected zone (e.g. after enabling the setting) */
+  reapplyAutoCheck: () => Promise<void>
   toggleTrial: (trialId: string, done: boolean) => Promise<void>
   setAscendancy: (ascendancyId: string | null) => Promise<void>
   setLevel: (level: number) => Promise<void>
@@ -87,6 +91,25 @@ export function getRoute(): RouteStep[] {
 }
 export function stepIndexOfZone(areaId: string | null): number {
   return areaId != null && areaId in stepByZone ? stepByZone[areaId] : -1
+}
+
+/**
+ * Zone-based auto-progression: mandatory quests of zones STRICTLY BEFORE route
+ * index K that aren't already done. Strictly-before (not <= K) is the safe side —
+ * being IN a zone doesn't mean its boss is dead, so quests tick when you reach
+ * the NEXT checklist zone. Language-agnostic (keyed off areaId route order).
+ */
+function inferAutoCheck(dataset: Dataset, completed: Record<string, true>, K: number): string[] {
+  const ids: string[] = []
+  for (const act of dataset.acts) {
+    for (const q of act.quests) {
+      if (q.type !== 'mandatory') continue
+      if (completed[q.id]) continue
+      const zi = stepByZone[q.zone]
+      if (zi !== undefined && zi < K) ids.push(q.id)
+    }
+  }
+  return ids
 }
 
 /** Map a game areaId prefix to our act id: g2_* -> act-2, p1_* -> interlude-1. */
@@ -164,6 +187,14 @@ function applyZoneEvent(get: () => AppState, set: SetState, e: ZoneEvent): void 
       if (stepIdx !== undefined) patch.currentStepIndex = stepIdx
     }
     set(patch)
+    // Advisory auto-check of mandatory quests of zones we've passed (opt-in).
+    if (dataset && get().settings?.autoCheckQuests) {
+      const K = stepByZone[ref.zoneAreaId]
+      if (K !== undefined) {
+        const ids = inferAutoCheck(dataset, get().progress?.completedQuestIds ?? {}, K)
+        if (ids.length) void get().applyAutoChecks(ids)
+      }
+    }
     return
   }
 
@@ -231,6 +262,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     api().onTailerStatus((status) => set({ tailerStatus: status }))
     api().onZoneChange((e: ZoneEvent) => applyZoneEvent(get, set, e))
     api().onLevelChange((e: LevelEvent) => void get().setLevel(e.level))
+    api().onBossDefeat((e) => {
+      const st = get()
+      if (!st.settings?.autoCheckQuests) return
+      if (st.progress?.completedQuestIds[e.questId]) return
+      void st.applyAutoChecks([e.questId])
+    })
 
     const tailerStatus = await api().tailer.status()
 
@@ -301,6 +338,31 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ progress: { ...progress, completedQuestIds: completed } })
     const saved = await api().progress.setQuestDone(activeProfileId, questId, done)
     set({ progress: saved })
+  },
+
+  async applyAutoChecks(ids) {
+    const { progress, activeProfileId, settings } = get()
+    if (!progress || !activeProfileId || !settings?.autoCheckQuests) return
+    const fresh = ids.filter((id) => !progress.completedQuestIds[id])
+    if (!fresh.length) return
+    // optimistic: mark done + auto-flagged
+    const completedQuestIds = { ...progress.completedQuestIds }
+    const autoCompletedQuestIds = { ...progress.autoCompletedQuestIds }
+    for (const id of fresh) {
+      completedQuestIds[id] = true
+      autoCompletedQuestIds[id] = true
+    }
+    set({ progress: { ...progress, completedQuestIds, autoCompletedQuestIds } })
+    const saved = await api().progress.setQuestsDone(activeProfileId, fresh)
+    set({ progress: saved })
+  },
+
+  async reapplyAutoCheck() {
+    const { detectedZoneAreaId, dataset, progress } = get()
+    if (!dataset || !detectedZoneAreaId || !progress) return
+    const K = stepByZone[detectedZoneAreaId]
+    if (K === undefined) return
+    await get().applyAutoChecks(inferAutoCheck(dataset, progress.completedQuestIds, K))
   },
 
   async toggleTrial(trialId, done) {
@@ -391,6 +453,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   async patchSettings(patch) {
     const settings = await api().settings.set(patch)
     set({ settings })
+    // Enabling auto-check should immediately back-fill from the current zone.
+    if (patch.autoCheckQuests) void get().reapplyAutoCheck()
   },
 
   async handleHotkey(action) {

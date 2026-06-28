@@ -23,6 +23,7 @@ const api: OverlayApi = {
     get: (pid) => ipcRenderer.invoke(IPC.progress.get, pid),
     setQuestDone: (pid, qid, done) =>
       ipcRenderer.invoke(IPC.progress.setQuestDone, pid, qid, done),
+    setQuestsDone: (pid, qids) => ipcRenderer.invoke(IPC.progress.setQuestsDone, pid, qids),
     setAct: (pid, act) => ipcRenderer.invoke(IPC.progress.setAct, pid, act),
     setLevel: (pid, level) => ipcRenderer.invoke(IPC.progress.setLevel, pid, level),
     setRewardChoice: (pid, qid, idx) =>
@@ -58,6 +59,7 @@ const api: OverlayApi = {
   onZoneChange: (cb) => subscribe(IPC.events.zoneChange, cb),
   onLevelChange: (cb) => subscribe(IPC.events.levelChange, cb),
   onTailerStatus: (cb) => subscribe(IPC.events.tailerStatus, cb),
+  onBossDefeat: (cb) => subscribe(IPC.events.bossDefeat, cb),
   onHotkey: (cb) => subscribe(IPC.events.hotkey, cb),
   onActiveProfileChanged: (cb) => subscribe(IPC.events.activeProfileChanged, cb)
 }

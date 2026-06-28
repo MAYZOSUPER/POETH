@@ -75,6 +75,8 @@ const RU: Dict = {
   'q.map': '🗺 карта',
   'q.req': 'обяз',
   'q.opt': 'опц',
+  'q.auto': 'авто',
+  'q.auto.title': 'Отмечено автоматически по логу игры',
   // gems
   'gem.head': 'Камни умений',
   'gem.headEarly': 'Камни умений — ранние умения',
@@ -112,8 +114,11 @@ const RU: Dict = {
   'set.auto.off': 'Выключено',
   'set.auto.pick': 'Указать Client.txt…',
   'set.auto.advance': 'Авто-переход к текущей зоне',
+  'set.auto.check': 'Авто-отмечать пройденные квесты',
+  'set.auto.check.note':
+    'Отмечает обязательные квесты пройденных зон и убитых боссов (по логу игры). Никогда не снимает отметки — ручные в приоритете. Нужен включённый автодетект.',
   'set.auto.note':
-    'Подсвечивает зону и уровень из лога (безопасно, только чтение). Завершение квестов всегда отмечается вручную — в игре нет такого сигнала.',
+    'Подсвечивает зону и уровень из лога (безопасно, только чтение). Детект убийства босса — по награде очков пассивок (англ. клиент надёжнее).',
   'set.data': 'Данные',
   'set.data.version': 'Версия данных: {label}',
   'set.data.schema': 'Схема {schema} · актов: {acts}',
@@ -187,6 +192,8 @@ const EN: Dict = {
   'q.map': '🗺 map',
   'q.req': 'req',
   'q.opt': 'opt',
+  'q.auto': 'auto',
+  'q.auto.title': 'Auto-checked from the game log',
   'gem.head': 'Skill gems',
   'gem.headEarly': 'Skill gems — early skills',
   'gem.skills': 'Skills:',
@@ -221,8 +228,11 @@ const EN: Dict = {
   'set.auto.off': 'Off',
   'set.auto.pick': 'Choose Client.txt…',
   'set.auto.advance': 'Auto-jump to the current zone',
+  'set.auto.check': 'Auto-check completed quests',
+  'set.auto.check.note':
+    "Ticks mandatory quests of zones you've passed and bosses you've killed (from the game log). Never unchecks — your manual ticks win. Requires auto-detect on.",
   'set.auto.note':
-    'Highlights the zone and level from the log (safe, read-only). Quest completion is always marked manually — the game has no signal for it.',
+    'Highlights the zone and level from the log (safe, read-only). Boss-kill detection uses the passive-point award (works best on an English client).',
   'set.data': 'Data',
   'set.data.version': 'Data version: {label}',
   'set.data.schema': 'Schema {schema} · acts: {acts}',

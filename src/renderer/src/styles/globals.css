@@ -505,6 +505,11 @@ input[type='checkbox']:checked::after {
   color: var(--muted);
   border: 1px solid var(--line-strong);
 }
+.type-tag.auto {
+  color: var(--blue, #6da3c2);
+  border: 1px solid var(--blue, #6da3c2);
+  opacity: 0.85;
+}
 .quest.done .type-tag.req {
   opacity: 0.5;
 }
