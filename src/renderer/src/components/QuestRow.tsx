@@ -16,7 +16,9 @@ export function QuestRow({ quest, done, onToggle }: Props) {
           {quest.boss ? '☠ ' : ''}
           {quest.name}
         </span>
-        {quest.type === 'optional' && <span className="opt-tag">опц</span>}
+        <span className={quest.type === 'mandatory' ? 'type-tag req' : 'type-tag opt'}>
+          {quest.type === 'mandatory' ? 'обяз' : 'опц'}
+        </span>
       </label>
       {quest.rewards.length > 0 && (
         <div className="rewards">

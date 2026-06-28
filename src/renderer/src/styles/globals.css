@@ -479,6 +479,26 @@ input[type='checkbox']:checked::after {
   border-radius: 3px;
   padding: 0 4px;
 }
+.type-tag {
+  flex: none;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  padding: 0 4px;
+}
+.type-tag.req {
+  color: #1a1408;
+  background: var(--gold);
+  font-weight: 700;
+}
+.type-tag.opt {
+  color: var(--muted);
+  border: 1px solid var(--line-strong);
+}
+.quest.done .type-tag.req {
+  opacity: 0.5;
+}
 .rewards {
   display: flex;
   flex-wrap: wrap;
@@ -631,6 +651,44 @@ input[type='checkbox']:checked::after {
   margin-top: 5px;
   color: var(--gold);
   font-size: 11px;
+}
+.wn-here {
+  display: inline-block;
+  margin: 0 0 8px;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 600;
+}
+.wn-backtrack {
+  display: block;
+  width: 100%;
+  margin: 0 0 8px;
+  padding: 5px 8px;
+  background: rgba(121, 199, 121, 0.12);
+  border: 1px solid rgba(121, 199, 121, 0.4);
+  color: #cfeccf;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.wn-backtrack:hover {
+  border-color: var(--green);
+}
+.wn-group {
+  margin-bottom: 6px;
+}
+.wn-group-head {
+  font-family: var(--font-serif);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 0 2px;
+}
+.wn-group-head.req {
+  color: var(--gold-bright);
+}
+.wn-group-head.opt {
+  color: var(--muted);
 }
 
 /* ---------- right pane: layout viewer ---------- */

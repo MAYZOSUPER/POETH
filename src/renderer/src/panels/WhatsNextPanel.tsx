@@ -1,5 +1,5 @@
 import type { Act, RewardKind } from '@shared/types'
-import { useAppStore, getRoute } from '../store/useAppStore'
+import { useAppStore, getRoute, stepIndexOfZone } from '../store/useAppStore'
 import { QuestRow } from '../components/QuestRow'
 
 const PERMANENT = new Set<RewardKind>([
@@ -29,6 +29,7 @@ export function WhatsNextPanel() {
   const progress = useAppStore((s) => s.progress)
   const stepNext = useAppStore((s) => s.stepNext)
   const stepPrev = useAppStore((s) => s.stepPrev)
+  const goToStep = useAppStore((s) => s.goToStep)
   const selectZone = useAppStore((s) => s.selectZone)
   const toggleQuest = useAppStore((s) => s.toggleQuest)
 
@@ -43,11 +44,22 @@ export function WhatsNextPanel() {
 
   const completed = progress?.completedQuestIds ?? {}
   const quests = act.quests.filter((q) => q.zone === step.areaId)
-  const ordered = [
-    ...quests.filter((q) => q.type === 'mandatory'),
-    ...quests.filter((q) => q.type === 'optional')
-  ]
+  const mandatory = quests.filter((q) => q.type === 'mandatory')
+  const optional = quests.filter((q) => q.type === 'optional')
   const hasLayout = !!zone.layout && !!dataset.layouts[zone.layout]
+
+  const youAreHere = detectedZoneAreaId === step.areaId
+  const detectedStep = detectedZoneAreaId ? stepIndexOfZone(detectedZoneAreaId) : -1
+  const offTrack = !youAreHere && detectedStep >= 0
+
+  const renderRow = (q: (typeof quests)[number]) => (
+    <QuestRow
+      key={q.id}
+      quest={q}
+      done={!!completed[q.id]}
+      onToggle={(d) => void toggleQuest(q.id, d)}
+    />
+  )
   const next = idx + 1 < route.length ? route[idx + 1] : null
   const nextAct = next ? dataset.acts.find((a) => a.id === next.actId) : null
   const nextTeaser = next && nextAct ? rewardTeaser(nextAct, next.areaId) : null
@@ -72,7 +84,6 @@ export function WhatsNextPanel() {
         <div className="wn-act">{act.actName}</div>
         <div className="wn-zone-row">
           <span className="wn-zone">
-            {detectedZoneAreaId === step.areaId ? '📍 ' : ''}
             {step.zoneName}
             {step.isTown ? ' 🏠' : ''}
           </span>
@@ -83,19 +94,30 @@ export function WhatsNextPanel() {
           )}
         </div>
 
-        {ordered.length === 0 ? (
+        {youAreHere && <div className="wn-here">📍 Вы сейчас здесь</div>}
+        {offTrack && (
+          <button className="wn-backtrack" onClick={() => goToStep(detectedStep)}>
+            📍 Вернуться к вашей текущей зоне
+          </button>
+        )}
+
+        {mandatory.length === 0 && optional.length === 0 ? (
           <div className="wn-empty small muted">Проходная зона — просто двигайся дальше.</div>
         ) : (
-          <ul className="quest-list">
-            {ordered.map((q) => (
-              <QuestRow
-                key={q.id}
-                quest={q}
-                done={!!completed[q.id]}
-                onToggle={(d) => void toggleQuest(q.id, d)}
-              />
-            ))}
-          </ul>
+          <>
+            {mandatory.length > 0 && (
+              <div className="wn-group">
+                <div className="wn-group-head req">⚔ Обязательно</div>
+                <ul className="quest-list">{mandatory.map(renderRow)}</ul>
+              </div>
+            )}
+            {optional.length > 0 && (
+              <div className="wn-group">
+                <div className="wn-group-head opt">✦ Необязательно</div>
+                <ul className="quest-list">{optional.map(renderRow)}</ul>
+              </div>
+            )}
+          </>
         )}
       </div>
 
