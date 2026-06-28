@@ -14,7 +14,9 @@ const api: OverlayApi = {
     rename: (id, name) => ipcRenderer.invoke(IPC.profiles.rename, id, name),
     delete: (id) => ipcRenderer.invoke(IPC.profiles.delete, id),
     setActive: (id) => ipcRenderer.invoke(IPC.profiles.setActive, id),
-    getActive: () => ipcRenderer.invoke(IPC.profiles.getActive)
+    getActive: () => ipcRenderer.invoke(IPC.profiles.getActive),
+    export: (id) => ipcRenderer.invoke(IPC.profiles.export, id),
+    import: () => ipcRenderer.invoke(IPC.profiles.import)
   },
   progress: {
     get: (pid) => ipcRenderer.invoke(IPC.progress.get, pid),

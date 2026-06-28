@@ -6,6 +6,8 @@ import type {
   Dataset,
   HotkeyAction,
   LevelEvent,
+  ProfileExportResult,
+  ProfileImportResult,
   ProfileMeta,
   ProgressState,
   Settings,
@@ -20,7 +22,9 @@ export const IPC = {
     rename: 'profiles:rename',
     delete: 'profiles:delete',
     setActive: 'profiles:setActive',
-    getActive: 'profiles:getActive'
+    getActive: 'profiles:getActive',
+    export: 'profiles:export',
+    import: 'profiles:import'
   },
   progress: {
     get: 'progress:get',
@@ -68,6 +72,10 @@ export interface OverlayApi {
     delete(id: string): Promise<ProfileMeta[]>
     setActive(id: string): Promise<void>
     getActive(): Promise<string | null>
+    /** Save the given profile (meta + progress) to a user-chosen file. */
+    export(id: string): Promise<ProfileExportResult>
+    /** Pick a profile file and import it as a NEW profile (fresh id). */
+    import(): Promise<ProfileImportResult>
   }
   progress: {
     get(profileId: string): Promise<ProgressState>

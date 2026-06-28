@@ -9,12 +9,31 @@ export function ProfileBar() {
   const createProfile = useAppStore((s) => s.createProfile)
   const renameProfile = useAppStore((s) => s.renameProfile)
   const deleteProfile = useAppStore((s) => s.deleteProfile)
+  const exportActiveProfile = useAppStore((s) => s.exportActiveProfile)
+  const importProfile = useAppStore((s) => s.importProfile)
   const t = useT()
 
   const [mode, setMode] = useState<'idle' | 'add' | 'rename' | 'confirm-del'>('idle')
   const [text, setText] = useState('')
+  const [note, setNote] = useState<{ key: string; danger?: boolean } | null>(null)
 
   const active = profiles.find((p) => p.id === activeProfileId)
+
+  function flash(key: string, danger?: boolean) {
+    setNote({ key, danger })
+    window.setTimeout(() => setNote((n) => (n?.key === key ? null : n)), 2600)
+  }
+
+  async function onExport() {
+    const res = await exportActiveProfile()
+    if (res.status === 'saved') flash('pf.exported')
+  }
+
+  async function onImport() {
+    const res = await importProfile()
+    if (res.status === 'created') flash('pf.imported')
+    else if (res.status === 'invalid') flash('pf.importInvalid', true)
+  }
 
   function submit() {
     const name = text.trim()
@@ -99,6 +118,18 @@ export function ProfileBar() {
       <button className="icon" title={t('pf.delete')} onClick={() => setMode('confirm-del')}>
         🗑
       </button>
+      <button
+        className="icon"
+        title={t('pf.export')}
+        disabled={!active}
+        onClick={() => void onExport()}
+      >
+        ⤓
+      </button>
+      <button className="icon" title={t('pf.import')} onClick={() => void onImport()}>
+        ⤒
+      </button>
+      {note && <span className={note.danger ? 'small danger' : 'muted small'}>{t(note.key)}</span>}
     </div>
   )
 }

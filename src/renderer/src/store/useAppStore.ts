@@ -3,6 +3,8 @@ import type {
   Dataset,
   HotkeyAction,
   LevelEvent,
+  ProfileExportResult,
+  ProfileImportResult,
   ProfileMeta,
   ProgressState,
   Settings,
@@ -45,6 +47,8 @@ interface AppState {
   switchProfile: (id: string) => Promise<void>
   renameProfile: (id: string, name: string) => Promise<void>
   deleteProfile: (id: string) => Promise<void>
+  exportActiveProfile: () => Promise<ProfileExportResult>
+  importProfile: () => Promise<ProfileImportResult>
   patchSettings: (patch: Partial<Settings>) => Promise<void>
   handleHotkey: (action: HotkeyAction) => Promise<void>
   tailerStart: () => Promise<void>
@@ -340,6 +344,21 @@ export const useAppStore = create<AppState>((set, get) => ({
       if (remaining.length > 0) await get().switchProfile(remaining[0].id)
       else await get().createProfile('Персонаж 1')
     }
+  },
+
+  async exportActiveProfile() {
+    const id = get().activeProfileId
+    if (!id) return { status: 'error' as const }
+    return api().profiles.export(id)
+  },
+
+  async importProfile() {
+    const res = await api().profiles.import()
+    if (res.status === 'created') {
+      set({ profiles: res.profiles })
+      await get().switchProfile(res.profile.id)
+    }
+    return res
   },
 
   async patchSettings(patch) {

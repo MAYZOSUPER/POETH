@@ -1,4 +1,5 @@
 import { ipcMain, dialog } from 'electron'
+import { promises as fs } from 'fs'
 import { IPC } from '@shared/ipc'
 import type { HotkeyAction, LevelEvent, Settings, TailerStatus, ZoneEvent } from '@shared/types'
 import * as profiles from './services/profileStore'
@@ -88,6 +89,45 @@ export function registerIpcHandlers(): void {
     broadcastActiveProfile(id)
   })
   ipcMain.handle(IPC.profiles.getActive, async () => (await getSettings()).activeProfileId)
+  ipcMain.handle(IPC.profiles.export, async (_e, id: string) => {
+    const bundle = await profiles.getProfileBundle(id)
+    if (!bundle) return { status: 'error' as const }
+    const win = getOverlayWindow()
+    const safeName = bundle.profile.name.replace(/[^\p{L}\p{N} _-]+/gu, '').trim() || 'profile'
+    const opts = {
+      title: 'Экспорт профиля',
+      defaultPath: `${safeName}.actcompass.json`,
+      filters: [{ name: 'Act Compass profile', extensions: ['json'] }]
+    }
+    const result = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts)
+    if (result.canceled || !result.filePath) return { status: 'canceled' as const }
+    try {
+      await fs.writeFile(result.filePath, JSON.stringify(bundle, null, 2), 'utf8')
+    } catch {
+      return { status: 'error' as const }
+    }
+    return { status: 'saved' as const, path: result.filePath }
+  })
+  ipcMain.handle(IPC.profiles.import, async () => {
+    const win = getOverlayWindow()
+    const opts = {
+      title: 'Импорт профиля',
+      properties: ['openFile' as const],
+      filters: [{ name: 'Act Compass profile', extensions: ['json'] }]
+    }
+    const result = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
+    if (result.canceled || result.filePaths.length === 0) return { status: 'canceled' as const }
+    let raw: unknown
+    try {
+      const text = await fs.readFile(result.filePaths[0], 'utf8')
+      raw = JSON.parse(text.charCodeAt(0) === 0xfeff ? text.slice(1) : text)
+    } catch {
+      return { status: 'invalid' as const }
+    }
+    const meta = await profiles.importProfileBundle(raw)
+    if (!meta) return { status: 'invalid' as const }
+    return { status: 'created' as const, profile: meta, profiles: await profiles.listProfiles() }
+  })
 
   // ---- progress ----
   ipcMain.handle(IPC.progress.get, (_e, pid: string) => profiles.getProgress(pid))

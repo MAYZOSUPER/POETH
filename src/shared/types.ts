@@ -197,6 +197,18 @@ export interface ProfileMeta {
   updatedAt: number
 }
 
+/** Result of exporting the active profile to a user-chosen file. */
+export type ProfileExportResult =
+  | { status: 'saved'; path: string }
+  | { status: 'canceled' }
+  | { status: 'error' }
+
+/** Result of importing a profile bundle from a user-chosen file. */
+export type ProfileImportResult =
+  | { status: 'created'; profile: ProfileMeta; profiles: ProfileMeta[] }
+  | { status: 'canceled' }
+  | { status: 'invalid' }
+
 export interface ProgressState {
   profileId: string
   schemaVersion: number
