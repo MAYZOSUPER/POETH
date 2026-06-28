@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
+import { useT } from '../i18n'
 
 // Running totals of permanent campaign rewards: collected vs total available.
 // Only sums reward kinds with consistent units (points, spirit, resistances).
@@ -7,6 +8,7 @@ import { useAppStore } from '../store/useAppStore'
 export function RewardsSummary() {
   const dataset = useAppStore((s) => s.dataset)
   const progress = useAppStore((s) => s.progress)
+  const t = useT()
   const [open, setOpen] = useState(false)
   if (!dataset) return null
 
@@ -49,12 +51,12 @@ export function RewardsSummary() {
   }
 
   const rows = [
-    { label: 'Очки пассивок', got: c.passive, tot: c.passiveT, kind: 'plain' },
-    { label: 'Очки набора оружия', got: c.weapon, tot: c.weaponT, kind: 'plain' },
-    { label: 'Дух', got: c.spirit, tot: c.spiritT, kind: 'plus' },
-    { label: '❄ Холод', got: c.cold, tot: c.coldT, kind: 'pct' },
-    { label: '🔥 Огонь', got: c.fire, tot: c.fireT, kind: 'pct' },
-    { label: '⚡ Молния', got: c.light, tot: c.lightT, kind: 'pct' }
+    { label: t('rw.passive'), got: c.passive, tot: c.passiveT, kind: 'plain' },
+    { label: t('rw.weapon'), got: c.weapon, tot: c.weaponT, kind: 'plain' },
+    { label: t('rw.spirit'), got: c.spirit, tot: c.spiritT, kind: 'plus' },
+    { label: t('rw.cold'), got: c.cold, tot: c.coldT, kind: 'pct' },
+    { label: t('rw.fire'), got: c.fire, tot: c.fireT, kind: 'pct' },
+    { label: t('rw.light'), got: c.light, tot: c.lightT, kind: 'pct' }
   ].filter((r) => r.tot > 0)
 
   const fmt = (r: { got: number; tot: number; kind: string }): string =>
@@ -63,9 +65,7 @@ export function RewardsSummary() {
   return (
     <section className="panel rewards">
       <div className="panel-head clickable" onClick={() => setOpen((o) => !o)}>
-        <span>
-          Награды · пассивки {c.passive}/{c.passiveT}
-        </span>
+        <span>{t('rw.head', { a: c.passive, b: c.passiveT })}</span>
         <span className="muted">{open ? '▾' : '▸'}</span>
       </div>
       {open && (

@@ -1,4 +1,6 @@
+import type { UiLang } from '@shared/types'
 import { useAppStore } from '../store/useAppStore'
+import { useT } from '../i18n'
 
 export function SettingsPanel() {
   const dataset = useAppStore((s) => s.dataset)
@@ -8,16 +10,29 @@ export function SettingsPanel() {
   const tailerStart = useAppStore((s) => s.tailerStart)
   const tailerStop = useAppStore((s) => s.tailerStop)
   const tailerPickFile = useAppStore((s) => s.tailerPickFile)
+  const t = useT()
   const meta = dataset?.meta
 
   return (
     <section className="panel settings">
       <div className="panel-head">
-        <span>Настройки</span>
+        <span>{t('set.title')}</span>
       </div>
 
       <div className="setting">
-        <label>Прозрачность</label>
+        <label>{t('set.lang')}</label>
+        <select
+          className="lang-select"
+          value={settings?.uiLang ?? 'ru'}
+          onChange={(e) => void patchSettings({ uiLang: e.target.value as UiLang })}
+        >
+          <option value="ru">Русский</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div className="setting">
+        <label>{t('set.opacity')}</label>
         <input
           type="range"
           min={0.3}
@@ -34,55 +49,52 @@ export function SettingsPanel() {
           checked={settings?.showInTaskbar ?? true}
           onChange={(e) => void patchSettings({ showInTaskbar: e.target.checked })}
         />
-        Показывать на панели задач
+        {t('set.taskbar')}
       </label>
 
-      <div className="hint small muted">
-        Игра должна работать в режиме «Окно» или «Окно без рамки». В эксклюзивном полноэкранном
-        режиме оверлей не отображается.
-      </div>
+      <div className="hint small muted">{t('set.windowedHint')}</div>
 
       <div className="block">
-        <div className="block-title">Горячие клавиши</div>
+        <div className="block-title">{t('set.hotkeys')}</div>
         <ul className="kv">
           <li>
-            <span>Показать/скрыть</span>
+            <span>{t('set.hk.toggle')}</span>
             <code>{settings?.hotkeys.toggleVisible}</code>
           </li>
           <li>
-            <span>Блокировка кликов</span>
+            <span>{t('set.hk.lock')}</span>
             <code>{settings?.hotkeys.toggleLock}</code>
           </li>
           <li>
-            <span>Пред. зона</span>
+            <span>{t('set.hk.prev')}</span>
             <code>{settings?.hotkeys.prevStep}</code>
           </li>
           <li>
-            <span>След. зона</span>
+            <span>{t('set.hk.next')}</span>
             <code>{settings?.hotkeys.nextStep}</code>
           </li>
         </ul>
       </div>
 
       <div className="block">
-        <div className="block-title">Автоопределение зоны (Client.txt)</div>
+        <div className="block-title">{t('set.auto')}</div>
         <label className="row-toggle">
           <input
             type="checkbox"
             checked={settings?.tailerEnabled ?? false}
             onChange={(e) => void (e.target.checked ? tailerStart() : tailerStop())}
           />
-          Читать лог игры (подсветка текущей зоны и уровня)
+          {t('set.auto.read')}
         </label>
         <div className="small muted">
           {tailerStatus?.running
             ? tailerStatus.found
-              ? `✓ Лог найден: ${tailerStatus.logPath}`
-              : '⚠ Client.txt не найден — укажите файл вручную'
-            : 'Выключено'}
+              ? t('set.auto.found', { path: tailerStatus.logPath ?? '' })
+              : t('set.auto.notfound')
+            : t('set.auto.off')}
         </div>
         <button className="btn" onClick={() => void tailerPickFile()}>
-          Указать Client.txt…
+          {t('set.auto.pick')}
         </button>
         <label className="row-toggle">
           <input
@@ -90,19 +102,16 @@ export function SettingsPanel() {
             checked={settings?.autoAdvanceZone ?? true}
             onChange={(e) => void patchSettings({ autoAdvanceZone: e.target.checked })}
           />
-          Авто-переход к текущей зоне
+          {t('set.auto.advance')}
         </label>
-        <div className="small muted">
-          Подсвечивает зону и уровень из лога (безопасно, только чтение). Завершение квестов всегда
-          отмечается вручную — в игре нет такого сигнала.
-        </div>
+        <div className="small muted">{t('set.auto.note')}</div>
       </div>
 
       <div className="block">
-        <div className="block-title">Данные</div>
-        <div className="small muted">Версия данных: {meta?.gameVersionLabel}</div>
+        <div className="block-title">{t('set.data')}</div>
+        <div className="small muted">{t('set.data.version', { label: meta?.gameVersionLabel ?? '' })}</div>
         <div className="small muted">
-          Схема {meta?.schemaVersion} · актов: {meta?.actCount}
+          {t('set.data.schema', { schema: meta?.schemaVersion ?? '', acts: meta?.actCount ?? 0 })}
         </div>
         <ul className="sources small muted">
           {meta?.sources.map((s, i) => (
@@ -113,10 +122,7 @@ export function SettingsPanel() {
         </ul>
       </div>
 
-      <div className="disclaimer small muted">
-        Неофициальный фанатский инструмент. Не связан с Grinding Gear Games. Path of Exile 2 и все
-        ассеты © GGG.
-      </div>
+      <div className="disclaimer small muted">{t('set.disclaimer')}</div>
     </section>
   )
 }

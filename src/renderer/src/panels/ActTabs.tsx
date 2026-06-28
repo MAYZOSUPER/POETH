@@ -1,4 +1,5 @@
 import { useAppStore } from '../store/useAppStore'
+import { useT } from '../i18n'
 
 export function ActTabs() {
   const dataset = useAppStore((s) => s.dataset)
@@ -6,6 +7,7 @@ export function ActTabs() {
   const selectAct = useAppStore((s) => s.selectAct)
   const progress = useAppStore((s) => s.progress)
   const setLevel = useAppStore((s) => s.setLevel)
+  const t = useT()
   if (!dataset) return null
   const completed = progress?.completedQuestIds ?? {}
 
@@ -22,7 +24,9 @@ export function ActTabs() {
               onClick={() => selectAct(a.id)}
             >
               <span className="act-n">
-                {a.kind === 'interlude' ? `ИНТ ${a.actNumber - 4}` : `АКТ ${a.actNumber}`}
+                {a.kind === 'interlude'
+                  ? t('int.short', { n: a.actNumber - 4 })
+                  : t('act.short', { n: a.actNumber })}
               </span>
               <span className="act-prog">
                 {done}/{a.quests.length}
@@ -31,8 +35,8 @@ export function ActTabs() {
           )
         })}
       </div>
-      <label className="level" title="Уровень персонажа">
-        Ур.
+      <label className="level" title={t('act.levelTitle')}>
+        {t('act.level')}
         <input
           type="number"
           min={1}

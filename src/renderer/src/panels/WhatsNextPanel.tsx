@@ -1,5 +1,6 @@
-import type { Act, RewardKind } from '@shared/types'
+import type { Act, Reward, RewardKind } from '@shared/types'
 import { useAppStore, getRoute, stepIndexOfZone } from '../store/useAppStore'
+import { useT, useLang, layoutLabel, formatReward } from '../i18n'
 import { QuestRow } from '../components/QuestRow'
 
 const PERMANENT = new Set<RewardKind>([
@@ -14,20 +15,11 @@ const PERMANENT = new Set<RewardKind>([
   'charm_slot'
 ])
 
-const LAYOUT_LABEL: Record<string, string> = {
-  linear: 'Линейная',
-  open: 'Открытая',
-  branching: 'Ветвящаяся',
-  maze: 'Лабиринт',
-  spiral: 'Спираль',
-  dungeon: 'Подземелье'
-}
-
-/** Short reward teaser for a zone — prefer a permanent reward, else the first. */
-function rewardTeaser(act: Act, zoneAreaId: string): string | null {
+/** Best reward to tease for a zone — prefer a permanent reward, else the first. */
+function rewardTeaser(act: Act, zoneAreaId: string): Reward | null {
   const qs = act.quests.filter((q) => q.zone === zoneAreaId)
-  for (const q of qs) for (const r of q.rewards) if (PERMANENT.has(r.kind)) return r.value
-  for (const q of qs) if (q.rewards[0]) return q.rewards[0].value
+  for (const q of qs) for (const r of q.rewards) if (PERMANENT.has(r.kind)) return r
+  for (const q of qs) if (q.rewards[0]) return q.rewards[0]
   return null
 }
 
@@ -41,6 +33,8 @@ export function WhatsNextPanel() {
   const goToStep = useAppStore((s) => s.goToStep)
   const selectZone = useAppStore((s) => s.selectZone)
   const toggleQuest = useAppStore((s) => s.toggleQuest)
+  const t = useT()
+  const lang = useLang()
 
   const route = getRoute()
   if (!dataset || route.length === 0) return null
@@ -78,14 +72,12 @@ export function WhatsNextPanel() {
   return (
     <section className="panel whatsnext">
       <div className="panel-head">
-        <span>
-          Что дальше? · {idx + 1}/{route.length}
-        </span>
+        <span>{t('wn.head', { i: idx + 1, n: route.length })}</span>
         <span className="wn-nav">
-          <button className="icon" title="Назад (Ctrl+Shift+[)" onClick={stepPrev}>
+          <button className="icon" title={t('wn.prev')} onClick={stepPrev}>
             ◀
           </button>
-          <button className="icon" title="Вперёд (Ctrl+Shift+])" onClick={stepNext}>
+          <button className="icon" title={t('wn.next')} onClick={stepNext}>
             ▶
           </button>
         </span>
@@ -100,23 +92,21 @@ export function WhatsNextPanel() {
           </span>
           {hasLayout && (
             <button className="map-btn" onClick={() => selectZone(step.areaId)}>
-              🗺 карта
+              {t('q.map')}
             </button>
           )}
         </div>
 
-        {youAreHere && <div className="wn-here">📍 Вы сейчас здесь</div>}
+        {youAreHere && <div className="wn-here">{t('wn.here')}</div>}
         {offTrack && (
           <button className="wn-backtrack" onClick={() => goToStep(detectedStep)}>
-            📍 Вернуться к вашей текущей зоне
+            {t('wn.backtrack')}
           </button>
         )}
 
         {hasHint && hint && (
           <div className="wn-nav-hint">
-            {hint.layoutType && (
-              <span className="wn-layout">{LAYOUT_LABEL[hint.layoutType] ?? hint.layoutType}</span>
-            )}
+            {hint.layoutType && <span className="wn-layout">{layoutLabel(lang, hint.layoutType)}</span>}
             {hint.objective && <div className="wn-hint">🎯 {hint.objective}</div>}
             {hint.exit && <div className="wn-hint">➡️ {hint.exit}</div>}
             {hint.cues?.map((c, i) => (
@@ -126,27 +116,27 @@ export function WhatsNextPanel() {
                 {c.leadsTo ? ` → ${c.leadsTo}` : ''}
               </div>
             ))}
-            {hint.tips?.map((t, i) => (
+            {hint.tips?.map((tip, i) => (
               <div key={i} className="wn-tip">
-                • {t}
+                • {tip}
               </div>
             ))}
           </div>
         )}
 
         {mandatory.length === 0 && optional.length === 0 ? (
-          <div className="wn-empty small muted">Проходная зона — просто двигайся дальше.</div>
+          <div className="wn-empty small muted">{t('wn.passthrough')}</div>
         ) : (
           <>
             {mandatory.length > 0 && (
               <div className="wn-group">
-                <div className="wn-group-head req">⚔ Обязательно</div>
+                <div className="wn-group-head req">{t('wn.mandatory')}</div>
                 <ul className="quest-list">{mandatory.map(renderRow)}</ul>
               </div>
             )}
             {optional.length > 0 && (
               <div className="wn-group">
-                <div className="wn-group-head opt">✦ Необязательно</div>
+                <div className="wn-group-head opt">{t('wn.optional')}</div>
                 <ul className="quest-list">{optional.map(renderRow)}</ul>
               </div>
             )}
@@ -156,14 +146,18 @@ export function WhatsNextPanel() {
 
       {next && nextAct && (
         <div className="wn-next" onClick={stepNext}>
-          <div className="wn-next-label">Дальше</div>
+          <div className="wn-next-label">{t('wn.nextLabel')}</div>
           <div className="wn-next-zone">
-            {nextAct.kind === 'interlude' ? `ИНТ ${nextAct.actNumber - 4}` : `А${nextAct.actNumber}`} ·{' '}
-            {next.zoneName}
+            {nextAct.kind === 'interlude'
+              ? t('int.short', { n: nextAct.actNumber - 4 })
+              : t('act.short', { n: nextAct.actNumber })}{' '}
+            · {next.zoneName}
             {next.isTown ? ' 🏠' : ''}
           </div>
-          {nextTeaser && <div className="wn-next-reward small muted">🎁 {nextTeaser}</div>}
-          <span className="wn-next-go">Перейти →</span>
+          {nextTeaser && (
+            <div className="wn-next-reward small muted">🎁 {formatReward(nextTeaser, lang)}</div>
+          )}
+          <span className="wn-next-go">{t('wn.go')}</span>
         </div>
       )}
     </section>

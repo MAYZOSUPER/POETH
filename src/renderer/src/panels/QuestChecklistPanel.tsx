@@ -1,8 +1,10 @@
 import type { Quest } from '@shared/types'
 import { useAppStore } from '../store/useAppStore'
+import { useT } from '../i18n'
 import { QuestRow } from '../components/QuestRow'
 
 export function QuestChecklistPanel() {
+  const t = useT()
   const dataset = useAppStore((s) => s.dataset)
   const selectedActId = useAppStore((s) => s.selectedActId)
   const selectedZoneAreaId = useAppStore((s) => s.selectedZoneAreaId)
@@ -28,7 +30,7 @@ export function QuestChecklistPanel() {
   return (
     <section className="panel checklist">
       <div className="panel-head">
-        <span>Квесты — {act.actName}</span>
+        <span>{t('cl.head', { act: act.actName })}</span>
         <span className="muted">
           {doneCount}/{total}
         </span>
@@ -52,7 +54,7 @@ export function QuestChecklistPanel() {
                 </span>
                 {hasLayout && (
                   <button className="map-btn" onClick={() => selectZone(zone.areaId)}>
-                    🗺 карта
+                    {t('q.map')}
                   </button>
                 )}
               </div>

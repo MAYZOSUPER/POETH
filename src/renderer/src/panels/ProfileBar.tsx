@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
+import { useT } from '../i18n'
 
 export function ProfileBar() {
   const profiles = useAppStore((s) => s.profiles)
@@ -8,6 +9,7 @@ export function ProfileBar() {
   const createProfile = useAppStore((s) => s.createProfile)
   const renameProfile = useAppStore((s) => s.renameProfile)
   const deleteProfile = useAppStore((s) => s.deleteProfile)
+  const t = useT()
 
   const [mode, setMode] = useState<'idle' | 'add' | 'rename' | 'confirm-del'>('idle')
   const [text, setText] = useState('')
@@ -28,7 +30,7 @@ export function ProfileBar() {
         <input
           autoFocus
           className="profile-input"
-          placeholder={mode === 'add' ? 'Имя нового персонажа' : 'Новое имя'}
+          placeholder={mode === 'add' ? t('pf.addName') : t('pf.newName')}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
@@ -36,10 +38,10 @@ export function ProfileBar() {
             if (e.key === 'Escape') setMode('idle')
           }}
         />
-        <button className="icon" title="OK" onClick={submit}>
+        <button className="icon" title={t('pf.ok')} onClick={submit}>
           ✓
         </button>
-        <button className="icon" title="Отмена" onClick={() => setMode('idle')}>
+        <button className="icon" title={t('pf.cancel')} onClick={() => setMode('idle')}>
           ✕
         </button>
       </div>
@@ -49,10 +51,10 @@ export function ProfileBar() {
   if (mode === 'confirm-del') {
     return (
       <div className="profile-bar">
-        <span className="muted small">Удалить «{active?.name}»?</span>
+        <span className="muted small">{t('pf.confirmDelete', { name: active?.name ?? '' })}</span>
         <button
           className="icon danger"
-          title="Удалить"
+          title={t('pf.delete')}
           onClick={() => {
             if (activeProfileId) void deleteProfile(activeProfileId)
             setMode('idle')
@@ -60,7 +62,7 @@ export function ProfileBar() {
         >
           🗑
         </button>
-        <button className="icon" title="Отмена" onClick={() => setMode('idle')}>
+        <button className="icon" title={t('pf.cancel')} onClick={() => setMode('idle')}>
           ✕
         </button>
       </div>
@@ -81,12 +83,12 @@ export function ProfileBar() {
           </option>
         ))}
       </select>
-      <button className="icon" title="Новый персонаж" onClick={() => setMode('add')}>
+      <button className="icon" title={t('pf.add')} onClick={() => setMode('add')}>
         ＋
       </button>
       <button
         className="icon"
-        title="Переименовать"
+        title={t('pf.rename')}
         onClick={() => {
           setText(active?.name ?? '')
           setMode('rename')
@@ -94,7 +96,7 @@ export function ProfileBar() {
       >
         ✎
       </button>
-      <button className="icon" title="Удалить" onClick={() => setMode('confirm-del')}>
+      <button className="icon" title={t('pf.delete')} onClick={() => setMode('confirm-del')}>
         🗑
       </button>
     </div>

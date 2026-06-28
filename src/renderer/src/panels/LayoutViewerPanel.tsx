@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
+import { useT } from '../i18n'
 
 export function LayoutViewerPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const selectedZoneAreaId = useAppStore((s) => s.selectedZoneAreaId)
   const selectZone = useAppStore((s) => s.selectZone)
+  const t = useT()
 
   const [urls, setUrls] = useState<string[]>([])
   const [active, setActive] = useState(0)
@@ -37,15 +39,13 @@ export function LayoutViewerPanel() {
   return (
     <section className="panel layout">
       <div className="panel-head">
-        <span>Лейаут: {zone?.name}</span>
-        <button className="icon" title="Закрыть" onClick={() => selectZone(null)}>
+        <span>{t('lv.title', { name: zone?.name ?? '' })}</span>
+        <button className="icon" title={t('lv.close')} onClick={() => selectZone(null)}>
           ✕
         </button>
       </div>
       {urls.length === 0 ? (
-        <div className="muted small">
-          {loading ? 'Загрузка лейаута…' : 'Лейаут недоступен (нужен интернет при первом показе).'}
-        </div>
+        <div className="muted small">{loading ? t('lv.loading') : t('lv.unavailable')}</div>
       ) : (
         <>
           <div className="layout-main">
@@ -65,8 +65,7 @@ export function LayoutViewerPanel() {
             </div>
           )}
           <div className="muted small">
-            Инстанс может быть повёрнут/отзеркален — ориентируйся на форму. © Lailloken / Exile-UI
-            (MIT)
+            {t('lv.rotateNote')} © Lailloken / Exile-UI (MIT)
           </div>
         </>
       )}

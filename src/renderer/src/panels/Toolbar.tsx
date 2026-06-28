@@ -1,4 +1,5 @@
 import { useAppStore } from '../store/useAppStore'
+import { useT } from '../i18n'
 import { CompassMark } from '../components/CompassMark'
 import { BrandImg } from '../components/BrandImg'
 
@@ -13,6 +14,7 @@ export function Toolbar({ showSettings, onToggleSettings }: Props) {
   const tailerStatus = useAppStore((s) => s.tailerStatus)
   const tailerStart = useAppStore((s) => s.tailerStart)
   const tailerStop = useAppStore((s) => s.tailerStop)
+  const t = useT()
 
   const locked = settings?.locked ?? false
   const autoOn = tailerStatus?.running ?? false
@@ -28,15 +30,15 @@ export function Toolbar({ showSettings, onToggleSettings }: Props) {
       <div className="tools">
         <button
           className={`pill ${autoOn ? 'on' : ''}`}
-          title="Автоопределение зоны из лога игры (Client.txt)"
+          title={t('tb.auto.title')}
           onClick={() => void (autoOn ? tailerStop() : tailerStart())}
         >
           <span className="pill-knob" />
-          <span className="pill-label">Авто</span>
+          <span className="pill-label">{t('tb.auto')}</span>
         </button>
         <button
           className={`icon ${locked ? 'on' : ''}`}
-          title="Сквозной режим: все клики идут в игру (Ctrl+Shift+L)"
+          title={t('tb.lock.title')}
           onClick={() => {
             const v = !locked
             void patchSettings({ locked: v })
@@ -47,22 +49,18 @@ export function Toolbar({ showSettings, onToggleSettings }: Props) {
         </button>
         <button
           className={`icon ${showSettings ? 'on' : ''}`}
-          title="Настройки"
+          title={t('tb.settings.title')}
           onClick={onToggleSettings}
         >
           ⚙
         </button>
         <span className="tb-sep" />
-        <button
-          className="icon"
-          title="Свернуть"
-          onClick={() => window.overlayApi.window.minimize()}
-        >
+        <button className="icon" title={t('tb.min.title')} onClick={() => window.overlayApi.window.minimize()}>
           —
         </button>
         <button
           className="icon"
-          title="Скрыть оверлей (Ctrl+Shift+O чтобы вернуть)"
+          title={t('tb.hide.title')}
           onClick={() => window.overlayApi.window.toggleVisible()}
         >
           ✕

@@ -9,6 +9,7 @@ export function defaultSettings(): Settings {
   return {
     schemaVersion: SETTINGS_VERSION,
     activeProfileId: null,
+    uiLang: 'ru',
     opacity: 0.95,
     locked: false,
     overlayVisible: true,

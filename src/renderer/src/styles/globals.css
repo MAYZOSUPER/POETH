@@ -864,6 +864,14 @@ input[type='checkbox']:checked::after {
   border-radius: 6px;
   padding: 4px;
 }
+.setting select,
+.lang-select {
+  background: var(--panel-soft);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 6px;
+}
 .row-toggle {
   display: flex;
   align-items: center;

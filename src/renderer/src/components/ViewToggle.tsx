@@ -1,21 +1,23 @@
 import { useAppStore } from '../store/useAppStore'
+import { useT } from '../i18n'
 
 export function ViewToggle() {
   const viewMode = useAppStore((s) => s.viewMode)
   const setViewMode = useAppStore((s) => s.setViewMode)
+  const t = useT()
   return (
     <div className="view-toggle">
       <button
         className={viewMode === 'whatsnext' ? 'on' : ''}
         onClick={() => setViewMode('whatsnext')}
       >
-        Что дальше?
+        {t('vt.whatsnext')}
       </button>
       <button
         className={viewMode === 'checklist' ? 'on' : ''}
         onClick={() => setViewMode('checklist')}
       >
-        Чек-лист
+        {t('vt.checklist')}
       </button>
     </div>
   )

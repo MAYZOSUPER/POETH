@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
+import { useT } from '../i18n'
 
 export function GemHintsPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const selectedActId = useAppStore((s) => s.selectedActId)
   const profiles = useAppStore((s) => s.profiles)
   const activeProfileId = useAppStore((s) => s.activeProfileId)
+  const t = useT()
   const [open, setOpen] = useState(false)
 
   const gems = dataset?.gems
@@ -24,7 +26,7 @@ export function GemHintsPanel() {
   return (
     <section className="panel gems">
       <div className="panel-head clickable" onClick={() => setOpen((o) => !o)}>
-        <span>Камни умений {cls ? `(${cls})` : '— ранние умения'}</span>
+        <span>{cls ? `${t('gem.head')} (${cls})` : t('gem.headEarly')}</span>
         <span className="muted">{open ? '▾' : '▸'}</span>
       </div>
       {open && (
@@ -33,10 +35,10 @@ export function GemHintsPanel() {
             <li key={i}>
               <div className="gem-class">{r.class}</div>
               <div className="gem-line">
-                <b>Умения:</b> {r.primaryGemIds.map(gemName).join(', ')}
+                <b>{t('gem.skills')}</b> {r.primaryGemIds.map(gemName).join(', ')}
               </div>
               <div className="gem-line">
-                <b>Поддержки:</b> {r.supportGemIds.map(gemName).join(', ')}
+                <b>{t('gem.supports')}</b> {r.supportGemIds.map(gemName).join(', ')}
               </div>
               {r.note && <div className="gem-note small muted">{r.note}</div>}
             </li>

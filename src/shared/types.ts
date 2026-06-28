@@ -212,9 +212,13 @@ export interface HotkeyMap {
   nextStep: string
 }
 
+export type UiLang = 'ru' | 'en'
+
 export interface Settings {
   schemaVersion: number
   activeProfileId: string | null
+  /** interface language; game zone/boss names always stay English */
+  uiLang: UiLang
   /** 0.2 .. 1.0 */
   opacity: number
   /** force full click-through (overlay never steals clicks) */
