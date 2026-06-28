@@ -923,6 +923,43 @@ input[type='checkbox']:checked::after {
   padding: 0 6px;
   border-radius: 3px;
 }
+.hotkey {
+  font-family: monospace;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--line);
+  padding: 1px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 104px;
+  text-align: center;
+}
+.hotkey:hover {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+.hotkey.capturing {
+  border-style: dashed;
+  border-color: var(--gold);
+  color: var(--gold-bright);
+  animation: hk-pulse 1s ease-in-out infinite;
+}
+@keyframes hk-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+.hk-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn.small {
+  padding: 3px 7px;
+  font-size: 11px;
+}
 .sources {
   margin: 4px 0 0;
   padding-left: 16px;

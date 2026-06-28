@@ -54,6 +54,10 @@ export const IPC = {
     toggleVisible: 'window:toggleVisible',
     minimize: 'window:minimize'
   },
+  hotkeys: {
+    suspend: 'hotkeys:suspend',
+    resume: 'hotkeys:resume'
+  },
   events: {
     zoneChange: 'event:zoneChange',
     levelChange: 'event:levelChange',
@@ -111,6 +115,12 @@ export interface OverlayApi {
     setLocked(locked: boolean): void
     toggleVisible(): void
     minimize(): void
+  }
+  hotkeys: {
+    /** Temporarily unregister all global shortcuts (while the user rebinds one). */
+    suspend(): void
+    /** Re-register global shortcuts from the saved settings. */
+    resume(): void
   }
   onZoneChange(cb: (e: ZoneEvent) => void): () => void
   onLevelChange(cb: (e: LevelEvent) => void): () => void

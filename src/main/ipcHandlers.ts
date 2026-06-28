@@ -9,6 +9,7 @@ import { resolveLayout } from './services/layoutResolver'
 import { logTailer } from './services/logTailer'
 import { getOverlayWindow } from './overlayWindow'
 import { setLocked } from './clickThrough'
+import { registerHotkeys, unregisterHotkeys } from './hotkeys'
 
 function send(channel: string, payload: unknown): void {
   getOverlayWindow()?.webContents.send(channel, payload)
@@ -148,6 +149,7 @@ export function registerIpcHandlers(): void {
     const next = await updateSettings(patch)
     applySettingsToWindow(next)
     if ('tailerEnabled' in patch || 'logPath' in patch) await reconcileTailer(next)
+    if ('hotkeys' in patch) registerHotkeys(next.hotkeys, dispatchHotkey)
     return next
   })
 
@@ -192,4 +194,10 @@ export function registerIpcHandlers(): void {
     void toggleOverlayVisible()
   })
   ipcMain.on(IPC.window.minimize, () => getOverlayWindow()?.minimize())
+
+  // ---- hotkey rebinding: suspend globals while the user captures a combo ----
+  ipcMain.on(IPC.hotkeys.suspend, () => unregisterHotkeys())
+  ipcMain.on(IPC.hotkeys.resume, () => {
+    void getSettings().then((s) => registerHotkeys(s.hotkeys, dispatchHotkey))
+  })
 }

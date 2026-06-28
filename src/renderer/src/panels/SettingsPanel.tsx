@@ -1,6 +1,87 @@
-import type { UiLang } from '@shared/types'
+import { useEffect, useRef, useState } from 'react'
+import type { HotkeyAction, HotkeyMap, UiLang } from '@shared/types'
 import { useAppStore } from '../store/useAppStore'
 import { useT } from '../i18n'
+
+const DEFAULT_HOTKEYS: HotkeyMap = {
+  toggleVisible: 'Control+Shift+O',
+  toggleLock: 'Control+Shift+L',
+  prevStep: 'Control+Shift+[',
+  nextStep: 'Control+Shift+]'
+}
+
+const HK_ACTIONS: { action: HotkeyAction; labelKey: string }[] = [
+  { action: 'toggleVisible', labelKey: 'set.hk.toggle' },
+  { action: 'toggleLock', labelKey: 'set.hk.lock' },
+  { action: 'prevStep', labelKey: 'set.hk.prev' },
+  { action: 'nextStep', labelKey: 'set.hk.next' }
+]
+
+const CODE_KEY_MAP: Record<string, string> = {
+  BracketLeft: '[',
+  BracketRight: ']',
+  Semicolon: ';',
+  Quote: "'",
+  Comma: ',',
+  Period: '.',
+  Slash: '/',
+  Backslash: '\\',
+  Minus: '-',
+  Equal: '=',
+  Backquote: '`',
+  Space: 'Space',
+  Tab: 'Tab',
+  Enter: 'Return',
+  Backspace: 'Backspace',
+  Delete: 'Delete',
+  Insert: 'Insert',
+  Home: 'Home',
+  End: 'End',
+  PageUp: 'PageUp',
+  PageDown: 'PageDown',
+  ArrowUp: 'Up',
+  ArrowDown: 'Down',
+  ArrowLeft: 'Left',
+  ArrowRight: 'Right'
+}
+
+/** Map a physical key (KeyboardEvent.code) to an Electron accelerator key; null for a bare modifier. */
+function codeToKey(code: string, key: string): string | null {
+  if (/^(Control|Alt|Shift|Meta|OS)(Left|Right)?$/.test(code)) return null
+  if (code.startsWith('Key')) return code.slice(3)
+  if (code.startsWith('Digit')) return code.slice(5)
+  if (/^F\d{1,2}$/.test(key)) return key
+  if (code in CODE_KEY_MAP) return CODE_KEY_MAP[code]
+  if (code.startsWith('Numpad')) {
+    const n = code.slice(6)
+    if (/^\d$/.test(n)) return `num${n}`
+  }
+  return null
+}
+
+/** Build an Electron accelerator from a keydown, or null if it isn't a complete combo yet. */
+function eventToAccelerator(e: KeyboardEvent): string | null {
+  const key = codeToKey(e.code, e.key)
+  if (!key) return null
+  const mods: string[] = []
+  if (e.ctrlKey) mods.push('Control')
+  if (e.altKey) mods.push('Alt')
+  if (e.shiftKey) mods.push('Shift')
+  if (e.metaKey) mods.push('Super')
+  const isFn = /^F\d{1,2}$/.test(key)
+  // Require a modifier for ordinary keys so we never bind a bare letter/digit.
+  if (mods.length === 0 && !isFn) return null
+  return [...mods, key].join('+')
+}
+
+/** Pretty-print an accelerator for display. */
+function formatAccel(a?: string): string {
+  if (!a) return '—'
+  return a
+    .split('+')
+    .map((p) => (p === 'Control' ? 'Ctrl' : p === 'Super' ? 'Win' : p))
+    .join(' + ')
+}
 
 export function SettingsPanel() {
   const dataset = useAppStore((s) => s.dataset)
@@ -12,6 +93,46 @@ export function SettingsPanel() {
   const tailerPickFile = useAppStore((s) => s.tailerPickFile)
   const t = useT()
   const meta = dataset?.meta
+
+  const [capturing, setCapturing] = useState<HotkeyAction | null>(null)
+  const [hkNote, setHkNote] = useState<string | null>(null)
+  const settingsRef = useRef(settings)
+  settingsRef.current = settings
+
+  // While capturing a new combo, suspend global shortcuts (so pressing the
+  // existing one doesn't fire its action) and grab the next keydown.
+  useEffect(() => {
+    if (!capturing) return
+    const api = window.overlayApi
+    api.hotkeys.suspend()
+    const onKey = (e: KeyboardEvent): void => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (e.key === 'Escape') {
+        setCapturing(null)
+        return
+      }
+      const accel = eventToAccelerator(e)
+      if (!accel) return
+      const hk = settingsRef.current?.hotkeys
+      if (!hk) return
+      const conflict = (Object.entries(hk) as [HotkeyAction, string][]).some(
+        ([a, v]) => a !== capturing && v === accel
+      )
+      if (conflict) {
+        setHkNote('set.hk.conflict')
+        return
+      }
+      void patchSettings({ hotkeys: { ...hk, [capturing]: accel } })
+      setHkNote(null)
+      setCapturing(null)
+    }
+    window.addEventListener('keydown', onKey, true)
+    return () => {
+      window.removeEventListener('keydown', onKey, true)
+      api.hotkeys.resume()
+    }
+  }, [capturing, patchSettings])
 
   return (
     <section className="panel settings">
@@ -70,23 +191,36 @@ export function SettingsPanel() {
       <div className="block">
         <div className="block-title">{t('set.hotkeys')}</div>
         <ul className="kv">
-          <li>
-            <span>{t('set.hk.toggle')}</span>
-            <code>{settings?.hotkeys.toggleVisible}</code>
-          </li>
-          <li>
-            <span>{t('set.hk.lock')}</span>
-            <code>{settings?.hotkeys.toggleLock}</code>
-          </li>
-          <li>
-            <span>{t('set.hk.prev')}</span>
-            <code>{settings?.hotkeys.prevStep}</code>
-          </li>
-          <li>
-            <span>{t('set.hk.next')}</span>
-            <code>{settings?.hotkeys.nextStep}</code>
-          </li>
+          {HK_ACTIONS.map(({ action, labelKey }) => (
+            <li key={action}>
+              <span>{t(labelKey)}</span>
+              <button
+                className={'hotkey' + (capturing === action ? ' capturing' : '')}
+                title={t('set.hk.hint')}
+                onClick={() => {
+                  setHkNote(null)
+                  setCapturing((cur) => (cur === action ? null : action))
+                }}
+              >
+                {capturing === action ? t('set.hk.press') : formatAccel(settings?.hotkeys[action])}
+              </button>
+            </li>
+          ))}
         </ul>
+        {hkNote && <div className="small danger">{t(hkNote)}</div>}
+        <div className="hk-foot">
+          <span className="small muted">{t('set.hk.hint')}</span>
+          <button
+            className="btn small"
+            onClick={() => {
+              setCapturing(null)
+              setHkNote(null)
+              void patchSettings({ hotkeys: DEFAULT_HOTKEYS })
+            }}
+          >
+            {t('set.hk.reset')}
+          </button>
+        </div>
       </div>
 
       <div className="block">

@@ -48,6 +48,10 @@ const api: OverlayApi = {
     toggleVisible: () => ipcRenderer.send(IPC.window.toggleVisible),
     minimize: () => ipcRenderer.send(IPC.window.minimize)
   },
+  hotkeys: {
+    suspend: () => ipcRenderer.send(IPC.hotkeys.suspend),
+    resume: () => ipcRenderer.send(IPC.hotkeys.resume)
+  },
   onZoneChange: (cb) => subscribe(IPC.events.zoneChange, cb),
   onLevelChange: (cb) => subscribe(IPC.events.levelChange, cb),
   onTailerStatus: (cb) => subscribe(IPC.events.tailerStatus, cb),
