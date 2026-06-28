@@ -30,11 +30,11 @@ export function GemHintsPanel() {
   const carriedOver = sourceActId !== selectedActId
 
   const cls = profiles.find((p) => p.id === activeProfileId)?.className
-  let recs = recsForAct
-  if (cls) {
-    const filtered = recs.filter((r) => r.class?.toLowerCase() === cls.toLowerCase())
-    if (filtered.length) recs = filtered
-  }
+  // With a class chosen, show only that class's recs (none -> hide the panel,
+  // rather than confusingly listing every class). Without a class, show all.
+  const recs = cls
+    ? recsForAct.filter((r) => r.class?.toLowerCase() === cls.toLowerCase())
+    : recsForAct
   if (recs.length === 0) return null
 
   const gemName = (id: string): string => gems.gems[id]?.name ?? id

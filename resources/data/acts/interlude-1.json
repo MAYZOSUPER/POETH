@@ -66,7 +66,8 @@
       "notes": "Зона тумана (как King in the Mists в Акте 1).",
       "autoComplete": {
         "onZoneEnter": "p1_3"
-      }
+      },
+      "notesRu": "Зона тумана (как King in the Mists в Акте 1)."
     },
     {
       "id": "interlude-1q-oswin-the-dread-warden",
@@ -85,7 +86,8 @@
       "notes": "Боковая зона от Holten. Постоянные +2 очка пассивок.",
       "autoComplete": {
         "onZoneEnter": "p1_5"
-      }
+      },
+      "notesRu": "Боковая зона от Holten. Даёт постоянные +2 очка пассивных умений."
     },
     {
       "id": "interlude-1q-lady-elswyth-thane-wulfric",
@@ -98,7 +100,8 @@
       "notes": "Финал Интерлюдии 1 (двойной босс).",
       "autoComplete": {
         "onZoneEnter": "p1_6"
-      }
+      },
+      "notesRu": "Финал Интерлюдии 1 (двойной босс)."
     }
   ]
 }

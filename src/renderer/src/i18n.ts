@@ -55,6 +55,7 @@ const RU: Dict = {
   'asc.choose': 'Аскенданси',
   'asc.none': '— не выбрана —',
   'asc.pickClass': 'Укажите класс персонажа (✎ в профиле), чтобы выбрать аскенданси.',
+  'asc.noData': 'Данных по аскенданси для этого класса пока нет.',
   'asc.campaign': 'кампания',
   'asc.endgame': 'эндгейм',
   // what's next
@@ -167,6 +168,7 @@ const EN: Dict = {
   'asc.choose': 'Ascendancy',
   'asc.none': '— none —',
   'asc.pickClass': 'Set the character class (✎ in the profile) to choose an ascendancy.',
+  'asc.noData': 'No ascendancy data for this class yet.',
   'asc.campaign': 'campaign',
   'asc.endgame': 'endgame',
   'wn.head': "What's Next · {i}/{n}",

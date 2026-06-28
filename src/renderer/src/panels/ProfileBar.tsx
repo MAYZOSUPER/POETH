@@ -2,9 +2,18 @@ import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import { useT } from '../i18n'
 
-// PoE2 0.5 base classes — kept in sync with the gem-recommendation keys so that
-// picking a class here filters the gem hints panel.
-const CLASSES = ['Warrior', 'Witch', 'Ranger', 'Monk', 'Mercenary', 'Sorceress']
+// PoE2 base classes — kept in sync with the gem-recommendation / ascendancy keys
+// so that picking a class here filters those panels.
+const CLASSES = [
+  'Warrior',
+  'Witch',
+  'Ranger',
+  'Monk',
+  'Mercenary',
+  'Sorceress',
+  'Huntress',
+  'Druid'
+]
 
 export function ProfileBar() {
   const profiles = useAppStore((s) => s.profiles)

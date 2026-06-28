@@ -16,6 +16,7 @@ import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { gems as gemCatalog, recommendations as gemRecommendations } from './gem-recs.mjs'
 import { trials as ascTrials, ascendancyClasses } from './ascendancy.mjs'
+import { NOTES_RU } from './notes.ru.0.5.mjs'
 import { areaIdForZone, AREA_ID_MAP } from './area-id-map.mjs'
 import { INTERLUDES } from './interludes.mjs'
 import { HINTS } from './hints.0.5.mjs'
@@ -233,6 +234,11 @@ for (const act of acts) {
       text: zone.isTown ? `Town: ${zone.name}` : `Enter ${zone.name}`,
       optional: false
     })
+  }
+  // Attach Russian translations of quest notes (keyed by stable quest id).
+  for (const q of act.quests) {
+    const ru = NOTES_RU[q.id]
+    if (ru) q.notesRu = ru
   }
   questCount += act.quests.length
   writeFileSync(join(OUT, file), JSON.stringify(act, null, 2))

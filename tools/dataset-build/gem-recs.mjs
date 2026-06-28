@@ -52,6 +52,12 @@ export const gems = Object.fromEntries([
   gem('ice-strike', 'Ice Strike', 'active', 'green'),
   gem('charged-staff', 'Charged Staff', 'active', 'green'),
   gem('tempest-bell', 'Tempest Bell', 'active', 'green'),
+  // Huntress (spear)
+  gem('thrown-spear', 'Thrown Spear', 'active', 'green'),
+  gem('whirling-slash', 'Whirling Slash', 'active', 'green'),
+  gem('lightning-spear', 'Lightning Spear', 'active', 'green'),
+  gem('spearfield', 'Spearfield', 'active', 'green'),
+  gem('explosive-spear', 'Explosive Spear', 'active', 'green'),
   // ---- supports ----
   gem('unleash', 'Unleash', 'support', 'blue'),
   gem('lightning-infusion', 'Lightning Infusion', 'support', 'blue'),
@@ -276,5 +282,39 @@ export const recommendations = [
     ['scattershot', 'martial-tempo'],
     'Armour Piercing Rounds for armoured bosses; Galvanic Shards for everything else.',
     'Armour Piercing Rounds — по бронированным боссам; Galvanic Shards — по всему остальному.'
+  ),
+
+  // ============================ Huntress (spear) ============================
+  rec(
+    'Huntress',
+    'act-1',
+    ['thrown-spear', 'whirling-slash'],
+    ['martial-tempo'],
+    'Spear start: Whirling Slash to clear packs, Thrown Spear for ranged single target.',
+    'Старт с копья: Whirling Slash зачищает пачки, Thrown Spear — дальний урон по одиночным целям.'
+  ),
+  rec(
+    'Huntress',
+    'act-2',
+    ['lightning-spear', 'whirling-slash'],
+    ['martial-tempo', 'lightning-infusion'],
+    'Lightning Spear becomes your main damage; Whirling Slash stays for clear and mobility.',
+    'Lightning Spear становится основным уроном; Whirling Slash — для зачистки и мобильности.'
+  ),
+  rec(
+    'Huntress',
+    'act-3',
+    ['lightning-spear', 'spearfield'],
+    ['martial-tempo', 'lightning-infusion'],
+    'Spearfield seeds the ground; pop the spears with Lightning Spear for a burst.',
+    'Spearfield расставляет копья; «подрывай» их Lightning Spear для всплеска урона.'
+  ),
+  rec(
+    'Huntress',
+    'act-4',
+    ['lightning-spear', 'explosive-spear'],
+    ['martial-tempo', 'scattershot'],
+    'Explosive Spear for AoE on packs; Lightning Spear for everything else.',
+    'Explosive Spear — по площади/пачкам; Lightning Spear — по всему остальному.'
   )
 ]

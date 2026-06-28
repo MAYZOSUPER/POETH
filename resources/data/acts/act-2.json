@@ -154,7 +154,8 @@
       "notes": "Follow inside wall (Z-shape pattern) to narrow canyon leading to boss",
       "autoComplete": {
         "onZoneEnter": "g2_1"
-      }
+      },
+      "notesRu": "Двигайтесь вдоль внутренней стены (зигзагом) к узкому каньону, ведущему к боссу"
     },
     {
       "id": "act-2q-faridun-war-cache",
@@ -171,7 +172,8 @@
       "notes": "Optional treasure cache in the quarry",
       "autoComplete": {
         "onZoneEnter": "g2_10_1"
-      }
+      },
+      "notesRu": "Необязательный тайник с сокровищами в карьере"
     },
     {
       "id": "act-2q-rudja-the-dread-engineer",
@@ -193,7 +195,8 @@
       "notes": "Spawn at bottom, move continuously North - boss at top corner",
       "autoComplete": {
         "onZoneEnter": "g2_10_2"
-      }
+      },
+      "notesRu": "Появляетесь внизу, двигайтесь всё время на север — босс в верхнем углу"
     },
     {
       "id": "act-2q-munitions-bunker",
@@ -210,7 +213,8 @@
       "notes": "Optional area within the mine",
       "autoComplete": {
         "onZoneEnter": "g2_10_2"
-      }
+      },
+      "notesRu": "Необязательная зона внутри шахты"
     },
     {
       "id": "act-2q-balbala-the-traitor",
@@ -228,7 +232,8 @@
       "notes": "Follow yellow paper seals on walls - if you find paper, you are close",
       "autoComplete": {
         "onZoneEnter": "g2_2"
-      }
+      },
+      "notesRu": "Идите по жёлтым бумажным печатям на стенах — если видите бумагу, вы близко"
     },
     {
       "id": "act-2q-bell-chest",
@@ -245,7 +250,8 @@
       "notes": "In a dead end with checkpoint, some monsters and dropped gold on ground",
       "autoComplete": {
         "onZoneEnter": "g2_2"
-      }
+      },
+      "notesRu": "В тупике с чекпоинтом, рядом несколько монстров и выпавшее золото на земле"
     },
     {
       "id": "act-2q-jamanra-the-risen-king",
@@ -263,7 +269,8 @@
       "notes": "Keep close to canyon - cross canyon three times to find boss",
       "autoComplete": {
         "onZoneEnter": "g2_3"
-      }
+      },
+      "notesRu": "Держитесь ближе к каньону — пересеките его трижды, чтобы найти босса"
     },
     {
       "id": "act-2q-l-im-the-impaler",
@@ -280,7 +287,8 @@
       "notes": "Optional boss encounter",
       "autoComplete": {
         "onZoneEnter": "g2_3"
-      }
+      },
+      "notesRu": "Необязательный бой с боссом"
     },
     {
       "id": "act-2q-kabala-constrictor-queen",
@@ -299,7 +307,8 @@
       "notes": "Somewhat in the middle of zone - run outside edges to find Venom Pit",
       "autoComplete": {
         "onZoneEnter": "g2_4_1"
-      }
+      },
+      "notesRu": "Примерно в центре зоны — бегите вдоль внешних краёв, чтобы найти Venom Pit"
     },
     {
       "id": "act-2q-abandoned-prayer",
@@ -316,7 +325,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g2_4_1"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     },
     {
       "id": "act-2q-golden-tomb",
@@ -333,7 +343,8 @@
       "notes": "Optional treasure in the city",
       "autoComplete": {
         "onZoneEnter": "g2_4_2"
-      }
+      },
+      "notesRu": "Необязательное сокровище в городе"
     },
     {
       "id": "act-2q-the-ninth-treasure-of-keth-optional-boss",
@@ -351,7 +362,8 @@
       "notes": "Event named 'The Galleria' on the map - big gilded beetle",
       "autoComplete": {
         "onZoneEnter": "g2_4_2"
-      }
+      },
+      "notesRu": "Событие 'The Galleria' на карте — большой золочёный жук"
     },
     {
       "id": "act-2q-azarian-the-forsaken-son",
@@ -369,7 +381,8 @@
       "notes": "Crown-shaped boss tile at most Northerly or East-facing point",
       "autoComplete": {
         "onZoneEnter": "g2_4_3"
-      }
+      },
+      "notesRu": "Тайл с боссом в форме короны в самой северной или восточной точке"
     },
     {
       "id": "act-2q-elemental-offering",
@@ -387,7 +400,8 @@
       "notes": "Random resistance ring - Ruby suggested for upcoming boss fight",
       "autoComplete": {
         "onZoneEnter": "g2_4_3"
-      }
+      },
+      "notesRu": "Случайное кольцо сопротивления — для предстоящего боя советуют Ruby"
     },
     {
       "id": "act-2q-suspicious-sarcophagus",
@@ -404,7 +418,8 @@
       "notes": "Guarded sarcophagus encounter",
       "autoComplete": {
         "onZoneEnter": "g2_4_3"
-      }
+      },
+      "notesRu": "Охраняемый саркофаг"
     },
     {
       "id": "act-2q-fossilised-memorial",
@@ -421,7 +436,8 @@
       "notes": "Rare effigy near a checkpoint - Shrine of Bones",
       "autoComplete": {
         "onZoneEnter": "g2_5_1"
-      }
+      },
+      "notesRu": "Редкое изваяние рядом с чекпоинтом — Shrine of Bones"
     },
     {
       "id": "act-2q-iktab-the-deathlord-and-ekbab-ancient-steed",
@@ -439,7 +455,8 @@
       "notes": "Boss room almost directly in line with entrance after passing through bone arch",
       "autoComplete": {
         "onZoneEnter": "g2_5_2"
-      }
+      },
+      "notesRu": "Комната босса почти прямо напротив входа, за костяной аркой"
     },
     {
       "id": "act-2q-offering-to-amrit-quest",
@@ -457,7 +474,8 @@
       "notes": "Waypoint at medallion location - choice of one of two permanent buffs (can be changed later)",
       "autoComplete": {
         "onZoneEnter": "g2_6"
-      }
+      },
+      "notesRu": "Точка перехода у медальона — выбор одного из двух постоянных усилений (можно сменить позже)"
     },
     {
       "id": "act-2q-zalmarath-the-colossus",
@@ -475,7 +493,8 @@
       "notes": "Opposite side of rectangle - long staircase bridge leads to boss",
       "autoComplete": {
         "onZoneEnter": "g2_7"
-      }
+      },
+      "notesRu": "На противоположной стороне прямоугольника — к боссу ведёт длинный лестничный мост"
     },
     {
       "id": "act-2q-titan-s-sword",
@@ -492,7 +511,8 @@
       "notes": "Optional treasure in grotto",
       "autoComplete": {
         "onZoneEnter": "g2_7"
-      }
+      },
+      "notesRu": "Необязательное сокровище в гроте"
     },
     {
       "id": "act-2q-tradition-s-toll-quest",
@@ -510,7 +530,8 @@
       "notes": "Base of large buildings - corpse on ground near big tower",
       "autoComplete": {
         "onZoneEnter": "g2_8"
-      }
+      },
+      "notesRu": "У основания больших зданий — труп на земле рядом с большой башней"
     },
     {
       "id": "act-2q-the-unremembered",
@@ -527,7 +548,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g2_8"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     },
     {
       "id": "act-2q-rare-vulture-monsters",
@@ -544,7 +566,8 @@
       "notes": "Rare mob drops",
       "autoComplete": {
         "onZoneEnter": "g2_8"
-      }
+      },
+      "notesRu": "Выпадает с редких монстров"
     },
     {
       "id": "act-2q-hushed-urn",
@@ -561,7 +584,8 @@
       "notes": "Optional treasure along the path",
       "autoComplete": {
         "onZoneEnter": "g2_9_1"
-      }
+      },
+      "notesRu": "Необязательное сокровище вдоль пути"
     },
     {
       "id": "act-2q-tor-gul-the-defiler",
@@ -579,7 +603,8 @@
       "notes": "Spawns in straight line, directly opposite entrance",
       "autoComplete": {
         "onZoneEnter": "g2_9_2"
-      }
+      },
+      "notesRu": "Появляется по прямой, прямо напротив входа"
     },
     {
       "id": "act-2q-sisters-of-garukhan",
@@ -597,7 +622,8 @@
       "notes": "Found in the spires",
       "autoComplete": {
         "onZoneEnter": "g2_9_2"
-      }
+      },
+      "notesRu": "Находятся в шпилях"
     },
     {
       "id": "act-2q-jamanra-the-abomination",
@@ -619,7 +645,8 @@
       "notes": "Linear layout - continue opposite direction from entrance to final boss arena",
       "autoComplete": {
         "onZoneEnter": "g2_12_2"
-      }
+      },
+      "notesRu": "Линейная локация — двигайтесь от входа в противоположную сторону к финальной арене босса"
     }
   ]
 }

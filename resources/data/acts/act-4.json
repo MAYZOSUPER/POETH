@@ -158,7 +158,8 @@
       "notes": "Speak with Makoru to select island - islands can be done in almost any order",
       "autoComplete": {
         "onZoneEnter": "g4_town"
-      }
+      },
+      "notesRu": "Поговорите с Makoru, чтобы выбрать остров — острова можно проходить почти в любом порядке"
     },
     {
       "id": "act-4q-the-great-white-one-shark-pit",
@@ -176,7 +177,8 @@
       "notes": "Across island on another beach - trigger fight by moving close to water at gaps in rock formation",
       "autoComplete": {
         "onZoneEnter": "g4_3_1"
-      }
+      },
+      "notesRu": "На другом пляже на противоположной стороне острова — бой запускается, когда подходите к воде в разрывах скал"
     },
     {
       "id": "act-4q-petrified-pirate",
@@ -193,7 +195,8 @@
       "notes": "Torn map piece for unlocking Plunder's Point (4 total needed)",
       "autoComplete": {
         "onZoneEnter": "g4_3_1"
-      }
+      },
+      "notesRu": "Кусок порванной карты для открытия Plunder's Point (всего нужно 4)"
     },
     {
       "id": "act-4q-crabshell-cavern",
@@ -210,7 +213,8 @@
       "notes": "Alongside the beach part of area - defeat the rare",
       "autoComplete": {
         "onZoneEnter": "g4_3_1"
-      }
+      },
+      "notesRu": "Вдоль пляжной части локации — убейте редкого монстра"
     },
     {
       "id": "act-4q-diamora-song-of-death",
@@ -232,7 +236,8 @@
       "notes": "Opposite side of square from entrance - circular or diamond shape layout",
       "autoComplete": {
         "onZoneEnter": "g4_3_2"
-      }
+      },
+      "notesRu": "На противоположной от входа стороне площадки — локация круглой или ромбовидной формы"
     },
     {
       "id": "act-4q-beckoning-clam",
@@ -249,7 +254,8 @@
       "notes": "Complete counter to loot pearl - +8 all ele resistance rare amulet",
       "autoComplete": {
         "onZoneEnter": "g4_3_2"
-      }
+      },
+      "notesRu": "Заполните счётчик, чтобы получить жемчужину — редкий амулет с +8 ко всем стихийным сопротивлениям"
     },
     {
       "id": "act-4q-scourge-of-the-skies",
@@ -267,7 +273,8 @@
       "notes": "End of long winding road - linear path",
       "autoComplete": {
         "onZoneEnter": "g4_7"
-      }
+      },
+      "notesRu": "В конце длинной извилистой дороги — путь линейный"
     },
     {
       "id": "act-4q-corpse-nest",
@@ -284,7 +291,8 @@
       "notes": "2 of 4 torn map pieces - unlocks Plunder's Point",
       "autoComplete": {
         "onZoneEnter": "g4_7"
-      }
+      },
+      "notesRu": "2 из 4 кусков порванной карты — открывает Plunder's Point"
     },
     {
       "id": "act-4q-goddess-of-justice",
@@ -302,7 +310,8 @@
       "notes": "Chapel Key drops from monsters - reward can be changed later by revisiting",
       "autoComplete": {
         "onZoneEnter": "g4_5_1"
-      }
+      },
+      "notesRu": "Chapel Key выпадает с монстров — награду можно сменить позже, вернувшись сюда"
     },
     {
       "id": "act-4q-the-prisoner",
@@ -320,7 +329,8 @@
       "notes": "Hug wall that waves are crashing into - linear path",
       "autoComplete": {
         "onZoneEnter": "g4_5_2"
-      }
+      },
+      "notesRu": "Держитесь стены, в которую бьются волны — путь линейный"
     },
     {
       "id": "act-4q-bronnach-the-manhunter",
@@ -337,7 +347,8 @@
       "notes": "Drops guaranteed unique (UNCONFIRMED)",
       "autoComplete": {
         "onZoneEnter": "g4_5_2"
-      }
+      },
+      "notesRu": "Гарантированно роняет уникальный предмет (НЕ ПОДТВЕРЖДЕНО)"
     },
     {
       "id": "act-4q-the-blind-beast-primal-arena",
@@ -356,7 +367,8 @@
       "notes": "Head opposite direction from dock",
       "autoComplete": {
         "onZoneEnter": "g4_1_1"
-      }
+      },
+      "notesRu": "Идите в направлении, противоположном причалу"
     },
     {
       "id": "act-4q-beast-pen",
@@ -373,7 +385,8 @@
       "notes": "Find beast pen counter, free and kill Mimbok (UNCONFIRMED)",
       "autoComplete": {
         "onZoneEnter": "g4_1_1"
-      }
+      },
+      "notesRu": "Найдите счётчик загона для зверя, освободите и убейте Mimbok (НЕ ПОДТВЕРЖДЕНО)"
     },
     {
       "id": "act-4q-wrecked-boat",
@@ -390,7 +403,8 @@
       "notes": "3 of 4 torn map pieces - unlocks Plunder's Point",
       "autoComplete": {
         "onZoneEnter": "g4_1_1"
-      }
+      },
+      "notesRu": "3 из 4 кусков порванной карты — открывает Plunder's Point"
     },
     {
       "id": "act-4q-krutog-lord-of-kin",
@@ -403,7 +417,8 @@
       "notes": "Opposite side of where you enter - long winding area",
       "autoComplete": {
         "onZoneEnter": "g4_1_2"
-      }
+      },
+      "notesRu": "На противоположной от входа стороне — длинная извилистая локация"
     },
     {
       "id": "act-4q-volcanic-nest",
@@ -420,7 +435,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g4_1_2"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     },
     {
       "id": "act-4q-smuggler-s-stash",
@@ -437,7 +453,8 @@
       "notes": "4 of 4 torn map pieces - unlocks Plunder's Point",
       "autoComplete": {
         "onZoneEnter": "g4_2_1"
-      }
+      },
+      "notesRu": "4 из 4 кусков порванной карты — открывает Plunder's Point"
     },
     {
       "id": "act-4q-omniphobia-dark-mists-quest",
@@ -456,7 +473,8 @@
       "notes": "Opposite side, furthest from entrance",
       "autoComplete": {
         "onZoneEnter": "g4_2_2"
-      }
+      },
+      "notesRu": "На противоположной стороне, дальше всего от входа"
     },
     {
       "id": "act-4q-torvian-hand-of-the-savior",
@@ -469,7 +487,8 @@
       "notes": "Return to central path after finding bells - arena for Torvian",
       "autoComplete": {
         "onZoneEnter": "g4_8b"
-      }
+      },
+      "notesRu": "Вернитесь на центральную тропу после того, как найдёте колокола — арена для Torvian"
     },
     {
       "id": "act-4q-morning-bell",
@@ -486,7 +505,8 @@
       "notes": "Hug top wall (Coastal Ridge)",
       "autoComplete": {
         "onZoneEnter": "g4_8b"
-      }
+      },
+      "notesRu": "Держитесь верхней стены (Coastal Ridge)"
     },
     {
       "id": "act-4q-evening-bell",
@@ -503,7 +523,8 @@
       "notes": "Hug top wall (Coastal Ridge)",
       "autoComplete": {
         "onZoneEnter": "g4_8b"
-      }
+      },
+      "notesRu": "Держитесь верхней стены (Coastal Ridge)"
     },
     {
       "id": "act-4q-benedictus-first-herald-of-utopia",
@@ -521,7 +542,8 @@
       "notes": "Two blocks connected by small central square - hug wall to find boss/forge",
       "autoComplete": {
         "onZoneEnter": "g4_10"
-      }
+      },
+      "notesRu": "Два блока, соединённые небольшой центральной площадкой — держитесь стены, чтобы найти босса/кузницу"
     },
     {
       "id": "act-4q-excavated-cache",
@@ -538,7 +560,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g4_10"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     },
     {
       "id": "act-4q-silent-hall",
@@ -555,7 +578,8 @@
       "notes": "Room behind - talk to Navali for lore",
       "autoComplete": {
         "onZoneEnter": "g4_4_1"
-      }
+      },
+      "notesRu": "Комната позади — поговорите с Navali для получения лора"
     },
     {
       "id": "act-4q-hinekora-totems",
@@ -574,7 +598,8 @@
       "notes": "Corners of imaginary rectangle - reward cannot be changed later (UNCONFIRMED)",
       "autoComplete": {
         "onZoneEnter": "g4_4_2"
-      }
+      },
+      "notesRu": "По углам воображаемого прямоугольника — награду нельзя сменить позже (НЕ ПОДТВЕРЖДЕНО)"
     },
     {
       "id": "act-4q-yama-the-white",
@@ -592,7 +617,8 @@
       "notes": "Find after collecting three tattoos",
       "autoComplete": {
         "onZoneEnter": "g4_4_2"
-      }
+      },
+      "notesRu": "Появляется после сбора трёх татуировок"
     },
     {
       "id": "act-4q-hinekora",
@@ -610,7 +636,8 @@
       "notes": "Complete trial for 2 passive skill points - third ascendancy path not yet implemented",
       "autoComplete": {
         "onZoneEnter": "g4_4_3"
-      }
+      },
+      "notesRu": "Пройдите испытание ради 2 очков пассивных умений — путь третьего восхождения пока не реализован"
     },
     {
       "id": "act-4q-abyss",
@@ -627,7 +654,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g4_11_1b"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     },
     {
       "id": "act-4q-tavakai-the-fallen-tavakai-the-consumed",
@@ -645,7 +673,8 @@
       "notes": "Head Northerly - opposite direction from nearest checkpoint",
       "autoComplete": {
         "onZoneEnter": "g4_11_2"
-      }
+      },
+      "notesRu": "Двигайтесь на север — в направлении, противоположном ближайшему чекпоинту"
     },
     {
       "id": "act-4q-meeting-house",
@@ -663,7 +692,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g4_11_2"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     }
   ]
 }

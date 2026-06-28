@@ -85,7 +85,8 @@
       "notes": "Постоянные +40 к максимуму Духа.",
       "autoComplete": {
         "onZoneEnter": "p3_2"
-      }
+      },
+      "notesRu": "Постоянные +40 к максимуму Духа."
     },
     {
       "id": "interlude-3q-elder-madox",
@@ -103,7 +104,8 @@
       "notes": "Дружелюбный НПС у каменного алтаря.",
       "autoComplete": {
         "onZoneEnter": "p3_5"
-      }
+      },
+      "notesRu": "Дружелюбный NPC у каменного алтаря."
     },
     {
       "id": "interlude-3q-architect-of-dominion",
@@ -134,7 +136,8 @@
       "notes": "Боковая зона от Sealed Caverns.",
       "autoComplete": {
         "onZoneEnter": null
-      }
+      },
+      "notesRu": "Боковая зона от Sealed Caverns."
     },
     {
       "id": "interlude-3q-stormgore-rakkar",
@@ -147,7 +150,8 @@
       "notes": "Финал Интерлюдии 3 (два босса подряд).",
       "autoComplete": {
         "onZoneEnter": null
-      }
+      },
+      "notesRu": "Финал Интерлюдии 3 (два босса подряд)."
     },
     {
       "id": "interlude-3q-the-hooded-one",
@@ -165,7 +169,8 @@
       "notes": "После всех 3 интерлюдий — поговори с Hooded One в Кингсмарче. Финальные +2 очка.",
       "autoComplete": {
         "onZoneEnter": "g4_town"
-      }
+      },
+      "notesRu": "После всех 3 интерлюдий поговори с The Hooded One в Kingsmarch. Финальные +2 очка."
     }
   ]
 }

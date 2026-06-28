@@ -53,6 +53,8 @@ export interface Quest {
   /** gem ids (FK into GemCatalog.gems) suggested around this quest */
   gems?: string[]
   notes?: string
+  /** Russian translation of `notes` (falls back to `notes` when absent) */
+  notesRu?: string
   /** Advisory auto-detection: areaId whose entry hints this quest is active. null = manual only. */
   autoComplete?: { onZoneEnter: string | null } | null
 }

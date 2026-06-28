@@ -54,26 +54,43 @@ export const trials = [
 const cls = (base, options) => ({ base, options })
 const asc = (id, name, nameRu) => ({ id, name, nameRu })
 
+// Ascendancy options per base class — sourced from poe2db.tw/us + /ru
+// (authoritative). RU names as poe2db renders them.
 export const ascendancyClasses = [
-  cls('Warrior', [asc('titan', 'Titan', 'Титан'), asc('warbringer', 'Warbringer', 'Вестник войны')]),
+  cls('Warrior', [
+    asc('titan', 'Titan', 'Титан'),
+    asc('warbringer', 'Warbringer', 'Вестник войны'),
+    asc('smith-of-kitava', 'Smith of Kitava', 'Кузнец Китавы')
+  ]),
   cls('Witch', [
     asc('infernalist', 'Infernalist', 'Инферналист'),
-    asc('blood-mage', 'Blood Mage', 'Кровавый маг')
+    asc('blood-mage', 'Blood Mage', 'Маг крови'),
+    asc('lich', 'Lich', 'Лич'),
+    asc('abyssal-lich', 'Abyssal Lich', 'Лич Бездны')
   ]),
   cls('Ranger', [
-    asc('deadeye', 'Deadeye', 'Меткий глаз'),
+    asc('deadeye', 'Deadeye', 'Снайпер'),
     asc('pathfinder', 'Pathfinder', 'Следопыт')
   ]),
   cls('Monk', [
-    asc('invoker', 'Invoker', 'Заклинатель'),
-    asc('acolyte-of-chayula', 'Acolyte of Chayula', 'Послушник Чаюлы')
+    asc('invoker', 'Invoker', 'Заклинатель стихий'),
+    asc('acolyte-of-chayula', 'Acolyte of Chayula', 'Служитель Чаюлы'),
+    asc('martial-artist', 'Martial Artist', 'Мастер боевых искусств')
   ]),
   cls('Mercenary', [
     asc('witchhunter', 'Witchhunter', 'Охотник на ведьм'),
-    asc('gemling-legionnaire', 'Gemling Legionnaire', 'Самоцветный легионер')
+    asc('gemling-legionnaire', 'Gemling Legionnaire', 'Легионер каменитов'),
+    asc('tactician', 'Tactician', 'Тактик')
   ]),
   cls('Sorceress', [
     asc('stormweaver', 'Stormweaver', 'Ткач бурь'),
-    asc('chronomancer', 'Chronomancer', 'Хрономант')
-  ])
+    asc('chronomancer', 'Chronomancer', 'Хрономант'),
+    asc('disciple-of-varashta', 'Disciple of Varashta', 'Ученица Варашты')
+  ]),
+  cls('Huntress', [
+    asc('amazon', 'Amazon', 'Амазонка'),
+    asc('ritualist', 'Ritualist', 'Ритуалист'),
+    asc('spirit-walker', 'Spirit Walker', 'Ходящая среди духов')
+  ]),
+  cls('Druid', [asc('oracle', 'Oracle', 'Оракул'), asc('shaman', 'Shaman', 'Шаман')])
 ]

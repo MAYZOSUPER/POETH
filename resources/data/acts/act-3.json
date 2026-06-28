@@ -150,7 +150,8 @@
       "notes": "Foul Ritual encounter - optional boss",
       "autoComplete": {
         "onZoneEnter": "g3_1"
-      }
+      },
+      "notesRu": "Событие Foul Ritual — необязательный босс"
     },
     {
       "id": "act-3q-azak-campfire",
@@ -167,7 +168,8 @@
       "notes": "Near exit - kill the two rares - 'Azak Campfire'",
       "autoComplete": {
         "onZoneEnter": "g3_1"
-      }
+      },
+      "notesRu": "Рядом с выходом — убейте двух редких мобов — 'Azak Campfire'"
     },
     {
       "id": "act-3q-hanging-tree",
@@ -184,7 +186,8 @@
       "notes": "Click corpse on hanging tree",
       "autoComplete": {
         "onZoneEnter": "g3_1"
-      }
+      },
+      "notesRu": "Нажмите на труп на висящем дереве"
     },
     {
       "id": "act-3q-mighty-silverfist",
@@ -203,7 +206,8 @@
       "notes": "Usually spawns in top third of area",
       "autoComplete": {
         "onZoneEnter": "g3_3"
-      }
+      },
+      "notesRu": "Обычно появляется в верхней трети области"
     },
     {
       "id": "act-3q-jungle-grave",
@@ -221,7 +225,8 @@
       "notes": "Servi quest item",
       "autoComplete": {
         "onZoneEnter": "g3_3"
-      }
+      },
+      "notesRu": "Квестовый предмет для Servi"
     },
     {
       "id": "act-3q-troubled-camp",
@@ -238,7 +243,8 @@
       "notes": "Secret vendor - Armour",
       "autoComplete": {
         "onZoneEnter": "g3_3"
-      }
+      },
+      "notesRu": "Секретный торговец — броня"
     },
     {
       "id": "act-3q-corpse-snake-venom-quest-reward",
@@ -256,7 +262,8 @@
       "notes": "Den of the Serpent Priestess - reward is permanent and cannot be changed later",
       "autoComplete": {
         "onZoneEnter": "g3_4"
-      }
+      },
+      "notesRu": "Den of the Serpent Priestess — награда постоянная, изменить позже нельзя"
     },
     {
       "id": "act-3q-troubled-camp-2",
@@ -277,7 +284,8 @@
       "notes": "Secret vendor - Weapons, guaranteed Rare Boots",
       "autoComplete": {
         "onZoneEnter": "g3_2_1"
-      }
+      },
+      "notesRu": "Секретный торговец — оружие, гарантированные редкие ботинки"
     },
     {
       "id": "act-3q-larva-hollow",
@@ -294,7 +302,8 @@
       "notes": "Optional boss encounter",
       "autoComplete": {
         "onZoneEnter": "g3_2_1"
-      }
+      },
+      "notesRu": "Необязательный бой с боссом"
     },
     {
       "id": "act-3q-ignagduk-the-bog-witch",
@@ -313,7 +322,8 @@
       "notes": "Top right quadrant - area imagined as square split into four blocks",
       "autoComplete": {
         "onZoneEnter": "g3_7"
-      }
+      },
+      "notesRu": "Верхний правый квадрант — представьте область как квадрат, разделённый на четыре части"
     },
     {
       "id": "act-3q-flameskin-ritual",
@@ -330,7 +340,8 @@
       "notes": "If you find it before boss, don't skip. Don't search for it if you don't find it before boss.",
       "autoComplete": {
         "onZoneEnter": "g3_7"
-      }
+      },
+      "notesRu": "Если найдёте до босса — не пропускайте. Если не нашли до босса — не ищите специально."
     },
     {
       "id": "act-3q-xyclucian-the-chimera",
@@ -352,7 +363,8 @@
       "notes": "Follow lefthand border of zone - arena/Machinarium entrance faces left/West",
       "autoComplete": {
         "onZoneEnter": "g3_5"
-      }
+      },
+      "notesRu": "Держитесь левой границы зоны — вход на арену/в Machinarium смотрит влево, на запад"
     },
     {
       "id": "act-3q-toxic-bloom",
@@ -369,7 +381,8 @@
       "notes": "Optional encounter",
       "autoComplete": {
         "onZoneEnter": "g3_5"
-      }
+      },
+      "notesRu": "Необязательное событие"
     },
     {
       "id": "act-3q-ravaged-camp",
@@ -386,7 +399,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g3_5"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     },
     {
       "id": "act-3q-blackjaw-the-remnant",
@@ -405,7 +419,8 @@
       "notes": "Spawns on far left or right",
       "autoComplete": {
         "onZoneEnter": "g3_6_1"
-      }
+      },
+      "notesRu": "Появляется в крайней левой или правой части"
     },
     {
       "id": "act-3q-unmarked-treasure-vaults",
@@ -422,7 +437,8 @@
       "notes": "Third door - optional treasure",
       "autoComplete": {
         "onZoneEnter": "g3_6_1"
-      }
+      },
+      "notesRu": "Третья дверь — необязательное сокровище"
     },
     {
       "id": "act-3q-zicoatl-warden-of-the-core",
@@ -440,7 +456,8 @@
       "notes": "Must wait for second soul core to arrive at Alva (red lines on ground)",
       "autoComplete": {
         "onZoneEnter": "g3_6_2"
-      }
+      },
+      "notesRu": "Дождитесь, пока второе soul core прибудет к Alva (красные линии на полу)"
     },
     {
       "id": "act-3q-paquate-s-mechanism",
@@ -457,7 +474,8 @@
       "notes": "Optional corruption altar",
       "autoComplete": {
         "onZoneEnter": "g3_6_2"
-      }
+      },
+      "notesRu": "Необязательный алтарь порчи"
     },
     {
       "id": "act-3q-grand-soul-core-nexus",
@@ -474,7 +492,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g3_6_2"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     },
     {
       "id": "act-3q-narag-s-hut",
@@ -491,7 +510,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g3_2_2"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     },
     {
       "id": "act-3q-crawler-ambush",
@@ -508,7 +528,8 @@
       "notes": "Ambush encounter between two blocks",
       "autoComplete": {
         "onZoneEnter": "g3_8"
-      }
+      },
+      "notesRu": "Засада между двумя блоками"
     },
     {
       "id": "act-3q-foul-quarters",
@@ -534,7 +555,8 @@
       "notes": "Optional treasure rooms",
       "autoComplete": {
         "onZoneEnter": "g3_8"
-      }
+      },
+      "notesRu": "Необязательные комнаты с сокровищами"
     },
     {
       "id": "act-3q-mektul-the-forgemaster",
@@ -560,7 +582,8 @@
       "notes": "Linear - kill quickly under 4 minutes before molten gold floods",
       "autoComplete": {
         "onZoneEnter": "g3_9"
-      }
+      },
+      "notesRu": "Линейная зона — убейте быстро, менее чем за 4 минуты, пока не разлилось расплавленное золото"
     },
     {
       "id": "act-3q-queen-of-filth",
@@ -573,7 +596,8 @@
       "notes": "Spiral pattern - boss at top wall of main area after traveling full 360°",
       "autoComplete": {
         "onZoneEnter": "g3_11"
-      }
+      },
+      "notesRu": "Спиральный путь — босс у верхней стены основной области после полного обхода на 360°"
     },
     {
       "id": "act-3q-the-gentle-crone",
@@ -590,7 +614,8 @@
       "notes": "Secret vendor",
       "autoComplete": {
         "onZoneEnter": "g3_11"
-      }
+      },
+      "notesRu": "Секретный торговец"
     },
     {
       "id": "act-3q-the-crone-s-cauldron",
@@ -607,7 +632,8 @@
       "notes": "Optional treasure - requires 3 fungi",
       "autoComplete": {
         "onZoneEnter": "g3_11"
-      }
+      },
+      "notesRu": "Необязательное сокровище — требуется 3 гриба"
     },
     {
       "id": "act-3q-ketzuli-high-priest-of-the-sun",
@@ -625,7 +651,8 @@
       "notes": "Go up stairs twice - stay in shade to not take damage",
       "autoComplete": {
         "onZoneEnter": "g3_12"
-      }
+      },
+      "notesRu": "Поднимитесь по лестнице дважды — оставайтесь в тени, чтобы не получать урон"
     },
     {
       "id": "act-3q-viper-napuatzi",
@@ -643,7 +670,8 @@
       "notes": "Towards right end of zone, facing North",
       "autoComplete": {
         "onZoneEnter": "g3_14"
-      }
+      },
+      "notesRu": "Ближе к правому краю зоны, лицом на север"
     },
     {
       "id": "act-3q-perculiar-fortunes",
@@ -660,7 +688,8 @@
       "notes": "Optional treasure - sellable for 500-1500 gold each",
       "autoComplete": {
         "onZoneEnter": "g3_14"
-      }
+      },
+      "notesRu": "Необязательное сокровище — можно продать за 500–1500 золота за штуку"
     },
     {
       "id": "act-3q-sacrificial-altar",
@@ -678,7 +707,8 @@
       "notes": "After big plaza, top right end of zone",
       "autoComplete": {
         "onZoneEnter": "g3_16"
-      }
+      },
+      "notesRu": "После большой площади, в верхнем правом краю зоны"
     },
     {
       "id": "act-3q-peculiar-fortunes",
@@ -695,7 +725,8 @@
       "notes": "Optional treasure",
       "autoComplete": {
         "onZoneEnter": "g3_16"
-      }
+      },
+      "notesRu": "Необязательное сокровище"
     },
     {
       "id": "act-3q-doryani-royal-thaumaturge",
@@ -713,7 +744,8 @@
       "notes": "Opposite side from entrance along center - top left or top right depending on entry angle",
       "autoComplete": {
         "onZoneEnter": "g3_17"
-      }
+      },
+      "notesRu": "На противоположной от входа стороне по центру — сверху слева или сверху справа в зависимости от угла входа"
     }
   ]
 }

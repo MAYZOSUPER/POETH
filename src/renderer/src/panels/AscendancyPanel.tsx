@@ -41,7 +41,11 @@ export function AscendancyPanel() {
       </div>
       {open && (
         <div className="asc-body">
-          {className ? (
+          {!className ? (
+            <div className="small muted asc-hint">{t('asc.pickClass')}</div>
+          ) : options.length === 0 ? (
+            <div className="small muted asc-hint">{t('asc.noData')}</div>
+          ) : (
             <div className="setting">
               <label>{t('asc.choose')}</label>
               <select
@@ -57,8 +61,6 @@ export function AscendancyPanel() {
                 ))}
               </select>
             </div>
-          ) : (
-            <div className="small muted asc-hint">{t('asc.pickClass')}</div>
           )}
 
           <ul className="quest-list trials">

@@ -1,6 +1,6 @@
 import type { Quest } from '@shared/types'
 import { RewardBadge } from './RewardBadge'
-import { useT, useName } from '../i18n'
+import { useT, useName, useLang } from '../i18n'
 
 interface Props {
   quest: Quest
@@ -11,6 +11,8 @@ interface Props {
 export function QuestRow({ quest, done, onToggle }: Props) {
   const t = useT()
   const localName = useName()
+  const lang = useLang()
+  const notes = lang === 'ru' ? (quest.notesRu ?? quest.notes) : quest.notes
   return (
     <li className={`quest ${done ? 'done' : ''} ${quest.type}`}>
       <label className="quest-main">
@@ -30,7 +32,7 @@ export function QuestRow({ quest, done, onToggle }: Props) {
           ))}
         </div>
       )}
-      {quest.notes && <div className="quest-notes">{quest.notes}</div>}
+      {notes && <div className="quest-notes">{notes}</div>}
     </li>
   )
 }

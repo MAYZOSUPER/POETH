@@ -259,6 +259,41 @@
       "colour": "green",
       "requiredLevel": 1
     },
+    "thrown-spear": {
+      "id": "thrown-spear",
+      "name": "Thrown Spear",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "whirling-slash": {
+      "id": "whirling-slash",
+      "name": "Whirling Slash",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "lightning-spear": {
+      "id": "lightning-spear",
+      "name": "Lightning Spear",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "spearfield": {
+      "id": "spearfield",
+      "name": "Spearfield",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
+    "explosive-spear": {
+      "id": "explosive-spear",
+      "name": "Explosive Spear",
+      "kind": "active",
+      "colour": "green",
+      "requiredLevel": 1
+    },
     "unleash": {
       "id": "unleash",
       "name": "Unleash",
@@ -656,6 +691,61 @@
       ],
       "note": "Armour Piercing Rounds for armoured bosses; Galvanic Shards for everything else.",
       "noteRu": "Armour Piercing Rounds — по бронированным боссам; Galvanic Shards — по всему остальному."
+    },
+    {
+      "class": "Huntress",
+      "actId": "act-1",
+      "primaryGemIds": [
+        "thrown-spear",
+        "whirling-slash"
+      ],
+      "supportGemIds": [
+        "martial-tempo"
+      ],
+      "note": "Spear start: Whirling Slash to clear packs, Thrown Spear for ranged single target.",
+      "noteRu": "Старт с копья: Whirling Slash зачищает пачки, Thrown Spear — дальний урон по одиночным целям."
+    },
+    {
+      "class": "Huntress",
+      "actId": "act-2",
+      "primaryGemIds": [
+        "lightning-spear",
+        "whirling-slash"
+      ],
+      "supportGemIds": [
+        "martial-tempo",
+        "lightning-infusion"
+      ],
+      "note": "Lightning Spear becomes your main damage; Whirling Slash stays for clear and mobility.",
+      "noteRu": "Lightning Spear становится основным уроном; Whirling Slash — для зачистки и мобильности."
+    },
+    {
+      "class": "Huntress",
+      "actId": "act-3",
+      "primaryGemIds": [
+        "lightning-spear",
+        "spearfield"
+      ],
+      "supportGemIds": [
+        "martial-tempo",
+        "lightning-infusion"
+      ],
+      "note": "Spearfield seeds the ground; pop the spears with Lightning Spear for a burst.",
+      "noteRu": "Spearfield расставляет копья; «подрывай» их Lightning Spear для всплеска урона."
+    },
+    {
+      "class": "Huntress",
+      "actId": "act-4",
+      "primaryGemIds": [
+        "lightning-spear",
+        "explosive-spear"
+      ],
+      "supportGemIds": [
+        "martial-tempo",
+        "scattershot"
+      ],
+      "note": "Explosive Spear for AoE on packs; Lightning Spear for everything else.",
+      "noteRu": "Explosive Spear — по площади/пачкам; Lightning Spear — по всему остальному."
     }
   ]
 }

@@ -54,6 +54,11 @@
           "id": "warbringer",
           "name": "Warbringer",
           "nameRu": "Вестник войны"
+        },
+        {
+          "id": "smith-of-kitava",
+          "name": "Smith of Kitava",
+          "nameRu": "Кузнец Китавы"
         }
       ]
     },
@@ -68,7 +73,17 @@
         {
           "id": "blood-mage",
           "name": "Blood Mage",
-          "nameRu": "Кровавый маг"
+          "nameRu": "Маг крови"
+        },
+        {
+          "id": "lich",
+          "name": "Lich",
+          "nameRu": "Лич"
+        },
+        {
+          "id": "abyssal-lich",
+          "name": "Abyssal Lich",
+          "nameRu": "Лич Бездны"
         }
       ]
     },
@@ -78,7 +93,7 @@
         {
           "id": "deadeye",
           "name": "Deadeye",
-          "nameRu": "Меткий глаз"
+          "nameRu": "Снайпер"
         },
         {
           "id": "pathfinder",
@@ -93,12 +108,17 @@
         {
           "id": "invoker",
           "name": "Invoker",
-          "nameRu": "Заклинатель"
+          "nameRu": "Заклинатель стихий"
         },
         {
           "id": "acolyte-of-chayula",
           "name": "Acolyte of Chayula",
-          "nameRu": "Послушник Чаюлы"
+          "nameRu": "Служитель Чаюлы"
+        },
+        {
+          "id": "martial-artist",
+          "name": "Martial Artist",
+          "nameRu": "Мастер боевых искусств"
         }
       ]
     },
@@ -113,7 +133,12 @@
         {
           "id": "gemling-legionnaire",
           "name": "Gemling Legionnaire",
-          "nameRu": "Самоцветный легионер"
+          "nameRu": "Легионер каменитов"
+        },
+        {
+          "id": "tactician",
+          "name": "Tactician",
+          "nameRu": "Тактик"
         }
       ]
     },
@@ -129,6 +154,46 @@
           "id": "chronomancer",
           "name": "Chronomancer",
           "nameRu": "Хрономант"
+        },
+        {
+          "id": "disciple-of-varashta",
+          "name": "Disciple of Varashta",
+          "nameRu": "Ученица Варашты"
+        }
+      ]
+    },
+    {
+      "base": "Huntress",
+      "options": [
+        {
+          "id": "amazon",
+          "name": "Amazon",
+          "nameRu": "Амазонка"
+        },
+        {
+          "id": "ritualist",
+          "name": "Ritualist",
+          "nameRu": "Ритуалист"
+        },
+        {
+          "id": "spirit-walker",
+          "name": "Spirit Walker",
+          "nameRu": "Ходящая среди духов"
+        }
+      ]
+    },
+    {
+      "base": "Druid",
+      "options": [
+        {
+          "id": "oracle",
+          "name": "Oracle",
+          "nameRu": "Оракул"
+        },
+        {
+          "id": "shaman",
+          "name": "Shaman",
+          "nameRu": "Шаман"
         }
       ]
     }
