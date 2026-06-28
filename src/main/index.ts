@@ -3,6 +3,7 @@ import { promises as fs } from 'fs'
 import { createOverlayWindow } from './overlayWindow'
 import { initClickThrough } from './clickThrough'
 import { registerHotkeys, unregisterHotkeys } from './hotkeys'
+import { createTray, destroyTray } from './tray'
 import {
   registerIpcHandlers,
   dispatchHotkey,
@@ -25,6 +26,7 @@ protocol.registerSchemesAsPrivileged([
 
 // Single-instance lock — a second launch just focuses the existing overlay.
 if (!app.requestSingleInstanceLock()) {
+  console.log('[main] another instance holds the single-instance lock — quitting')
   app.quit()
 } else {
   app.on('second-instance', () => {
@@ -80,6 +82,7 @@ async function bootstrap(): Promise<void> {
   applySettingsToWindow(settings)
   registerHotkeys(settings.hotkeys, dispatchHotkey)
   await reconcileTailer(settings)
+  void createTray()
 }
 
 app.on('activate', () => {
@@ -92,4 +95,5 @@ app.on('window-all-closed', () => {
 
 app.on('will-quit', () => {
   unregisterHotkeys()
+  destroyTray()
 })

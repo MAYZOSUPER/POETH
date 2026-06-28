@@ -14,6 +14,7 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "build:data": "node tools/dataset-build/build.mjs",
+    "build:tray-icon": "node tools/make-tray-icon.mjs",
     "validate:data": "node scripts/validate-dataset.mjs",
     "package": "npm run build && electron-builder --win nsis",
     "package:dir": "npm run build && electron-builder --dir"
