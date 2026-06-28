@@ -24,11 +24,7 @@ export function SettingsPanel() {
           max={1}
           step={0.05}
           value={settings?.opacity ?? 0.95}
-          onChange={(e) => {
-            const v = Number(e.target.value)
-            void patchSettings({ opacity: v })
-            window.overlayApi.window.setOpacity(v)
-          }}
+          onChange={(e) => void patchSettings({ opacity: Number(e.target.value) })}
         />
       </div>
 

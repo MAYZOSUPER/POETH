@@ -42,7 +42,6 @@ const api: OverlayApi = {
     pickLogFile: () => ipcRenderer.invoke(IPC.tailer.pickLogFile)
   },
   window: {
-    setOpacity: (value) => ipcRenderer.send(IPC.window.setOpacity, value),
     setLocked: (locked) => ipcRenderer.send(IPC.window.setLocked, locked),
     toggleVisible: () => ipcRenderer.send(IPC.window.toggleVisible),
     minimize: () => ipcRenderer.send(IPC.window.minimize)

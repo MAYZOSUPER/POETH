@@ -36,20 +36,16 @@ export function wireTailer(): void {
   })
 }
 
-function clamp(v: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, v))
-}
-
 function broadcastActiveProfile(id: string | null): void {
   getOverlayWindow()?.webContents.send(IPC.events.activeProfileChanged, id)
 }
 
-/** Push settings-derived window state (opacity, lock, visibility). */
+/** Push settings-derived window state (lock, visibility). Opacity is applied in
+ * the renderer via CSS — native setOpacity is unstable on transparent windows. */
 export function applySettingsToWindow(s: Settings): void {
   const win = getOverlayWindow()
   setLocked(s.locked)
   if (!win || win.isDestroyed()) return
-  win.setOpacity(clamp(s.opacity, 0.2, 1))
   if (s.overlayVisible && !win.isVisible()) win.show()
   if (!s.overlayVisible && win.isVisible()) win.hide()
 }
@@ -150,9 +146,6 @@ export function registerIpcHandlers(): void {
   })
 
   // ---- window controls (fire-and-forget) ----
-  ipcMain.on(IPC.window.setOpacity, (_e, value: number) => {
-    getOverlayWindow()?.setOpacity(clamp(value, 0.2, 1))
-  })
   ipcMain.on(IPC.window.setLocked, (_e, value: boolean) => setLocked(!!value))
   ipcMain.on(IPC.window.toggleVisible, () => {
     void toggleOverlayVisible()

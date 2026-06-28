@@ -16,6 +16,7 @@ export default function App() {
   const ready = useAppStore((s) => s.ready)
   const init = useAppStore((s) => s.init)
   const viewMode = useAppStore((s) => s.viewMode)
+  const opacity = useAppStore((s) => s.settings?.opacity ?? 1)
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function App() {
   }, [init])
 
   return (
-    <div className="app">
+    <div className="app" style={{ opacity }}>
       <Toolbar showSettings={showSettings} onToggleSettings={() => setShowSettings((s) => !s)} />
       {!ready ? (
         <div className="loading">Загрузка…</div>

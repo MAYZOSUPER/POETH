@@ -46,7 +46,6 @@ export const IPC = {
     pickLogFile: 'tailer:pickLogFile'
   },
   window: {
-    setOpacity: 'window:setOpacity',
     setLocked: 'window:setLocked',
     toggleVisible: 'window:toggleVisible',
     minimize: 'window:minimize'
@@ -100,7 +99,6 @@ export interface OverlayApi {
     pickLogFile(): Promise<string | null>
   }
   window: {
-    setOpacity(value: number): void
     /** true = overlay ignores the mouse entirely (clicks pass through to the game) */
     setLocked(locked: boolean): void
     toggleVisible(): void
