@@ -1,73 +1,65 @@
-// Editorial skill-gem hints — our own content (NOT scraped). These are common
-// campaign picks per class; they are SUGGESTIONS, not a build guide, and are
-// flagged needs-validation: verify against the live game / your build of choice.
-// Keyed by class + actId so the UI can show "skills for <class> in <act>".
-// Interludes have no entries on purpose — the UI falls back to the final act's
-// set (the build is essentially formed by then).
+// Editorial gem progression — SUGGESTIONS, not a build guide (needs-validation).
+// Active skill gems sourced from poe2db.tw class pages; per-act leveling picks +
+// supports authored per class. Keyed by class + actId so the UI shows recs for
+// <class> in <act>. Verify against the live game / your build of choice.
 
-const gem = (id, name, kind, colour, requiredLevel = 1) => [
-  id,
-  { id, name, kind, colour, requiredLevel }
-]
+const gem = (id, name, kind) => [id, { id, name, kind }]
 
 export const gems = Object.fromEntries([
   // ---- active skills ----
-  // INT (caster / minion)
-  gem('spark', 'Spark', 'active', 'blue'),
-  gem('frost-bolt', 'Frost Bolt', 'active', 'blue'),
-  gem('fireball', 'Fireball', 'active', 'blue'),
-  gem('flame-wall', 'Flame Wall', 'active', 'blue'),
-  gem('orb-of-storms', 'Orb of Storms', 'active', 'blue'),
-  gem('arc', 'Arc', 'active', 'blue'),
-  gem('comet', 'Comet', 'active', 'blue'),
-  gem('frost-bomb', 'Frost Bomb', 'active', 'blue'),
-  gem('skeletal-warriors', 'Summon Skeletal Warriors', 'active', 'blue'),
-  gem('skeletal-sniper', 'Summon Skeletal Snipers', 'active', 'blue'),
-  gem('unearth', 'Unearth', 'active', 'blue'),
-  gem('contagion', 'Contagion', 'active', 'blue'),
-  gem('essence-drain', 'Essence Drain', 'active', 'blue'),
-  gem('detonate-dead', 'Detonate Dead', 'active', 'blue'),
-  // STR (warrior, mace)
-  gem('boneshatter', 'Boneshatter', 'active', 'red'),
-  gem('mace-strike', 'Mace Strike', 'active', 'red'),
-  gem('sunder', 'Sunder', 'active', 'red'),
-  gem('shield-charge', 'Shield Charge', 'active', 'red'),
-  gem('perfect-strike', 'Perfect Strike', 'active', 'red'),
-  gem('stampede', 'Stampede', 'active', 'red'),
-  gem('hammer-of-the-gods', 'Hammer of the Gods', 'active', 'red'),
-  gem('seismic-cry', 'Seismic Cry', 'active', 'red'),
-  // DEX (bow / crossbow / quarterstaff)
-  gem('lightning-arrow', 'Lightning Arrow', 'active', 'green'),
-  gem('ice-shot', 'Ice Shot', 'active', 'green'),
-  gem('gas-arrow', 'Gas Arrow', 'active', 'green'),
-  gem('rain-of-arrows', 'Rain of Arrows', 'active', 'green'),
-  gem('lightning-rod', 'Lightning Rod', 'active', 'green'),
-  gem('galvanic-shards', 'Galvanic Shards', 'active', 'green'),
-  gem('explosive-shot', 'Explosive Shot', 'active', 'green'),
-  gem('fragmentation-rounds', 'Fragmentation Rounds', 'active', 'green'),
-  gem('armour-piercing-rounds', 'Armour Piercing Rounds', 'active', 'green'),
-  gem('gas-grenade', 'Gas Grenade', 'active', 'green'),
-  gem('tempest-flurry', 'Tempest Flurry', 'active', 'green'),
-  gem('falling-thunder', 'Falling Thunder', 'active', 'green'),
-  gem('ice-strike', 'Ice Strike', 'active', 'green'),
-  gem('charged-staff', 'Charged Staff', 'active', 'green'),
-  gem('tempest-bell', 'Tempest Bell', 'active', 'green'),
-  // Huntress (spear)
-  gem('thrown-spear', 'Thrown Spear', 'active', 'green'),
-  gem('whirling-slash', 'Whirling Slash', 'active', 'green'),
-  gem('lightning-spear', 'Lightning Spear', 'active', 'green'),
-  gem('spearfield', 'Spearfield', 'active', 'green'),
-  gem('explosive-spear', 'Explosive Spear', 'active', 'green'),
+  gem("boneshatter", "Boneshatter", 'active'),
+  gem("armour-breaker", "Armour Breaker", 'active'),
+  gem("earthshatter", "Earthshatter", 'active'),
+  gem("hammer-of-the-gods", "Hammer of the Gods", 'active'),
+  gem("skeletal-sniper", "Skeletal Sniper", 'active'),
+  gem("contagion", "Contagion", 'active'),
+  gem("skeletal-arsonist", "Skeletal Arsonist", 'active'),
+  gem("essence-drain", "Essence Drain", 'active'),
+  gem("skeletal-frost-mage", "Skeletal Frost Mage", 'active'),
+  gem("pain-offering", "Pain Offering", 'active'),
+  gem("bind-spectre", "Bind Spectre", 'active'),
+  gem("detonate-dead", "Detonate Dead", 'active'),
+  gem("lightning-arrow", "Lightning Arrow", 'active'),
+  gem("electrocuting-arrow", "Electrocuting Arrow", 'active'),
+  gem("tornado-shot", "Tornado Shot", 'active'),
+  gem("falling-thunder", "Falling Thunder", 'active'),
+  gem("killing-palm", "Killing Palm", 'active'),
+  gem("tempest-flurry", "Tempest Flurry", 'active'),
+  gem("ice-strike", "Ice Strike", 'active'),
+  gem("storm-wave", "Storm Wave", 'active'),
+  gem("charged-staff", "Charged Staff", 'active'),
+  gem("explosive-grenade", "Explosive Grenade", 'active'),
+  gem("fragmentation-rounds", "Fragmentation Rounds", 'active'),
+  gem("gas-grenade", "Gas Grenade", 'active'),
+  gem("voltaic-grenade", "Voltaic Grenade", 'active'),
+  gem("frost-bomb", "Frost Bomb", 'active'),
+  gem("ice-nova", "Ice Nova", 'active'),
+  gem("frostbolt", "Frostbolt", 'active'),
+  gem("comet", "Comet", 'active'),
+  gem("eye-of-winter", "Eye of Winter", 'active'),
+  gem("explosive-spear", "Explosive Spear", 'active'),
+  gem("lightning-spear", "Lightning Spear", 'active'),
+  gem("storm-lance", "Storm Lance", 'active'),
+  gem("spearfield", "Spearfield", 'active'),
+  gem("thunderous-leap", "Thunderous Leap", 'active'),
+  gem("volcano", "Volcano", 'active'),
+  gem("rolling-magma", "Rolling Magma", 'active'),
+  gem("fury-of-the-mountain", "Fury of the Mountain", 'active'),
+  gem("flame-breath", "Flame Breath", 'active'),
   // ---- supports ----
-  gem('unleash', 'Unleash', 'support', 'blue'),
-  gem('lightning-infusion', 'Lightning Infusion', 'support', 'blue'),
-  gem('cold-infusion', 'Cold Infusion', 'support', 'blue'),
-  gem('fire-infusion', 'Fire Infusion', 'support', 'red'),
-  gem('spell-cascade', 'Spell Cascade', 'support', 'blue'),
-  gem('magnified-effect', 'Magnified Effect', 'support', 'red'),
-  gem('martial-tempo', 'Martial Tempo', 'support', 'green'),
-  gem('scattershot', 'Scattershot', 'support', 'green'),
-  gem('minion-mastery', 'Minion-related support', 'support', 'blue')
+  gem("martial-tempo", "Martial Tempo", 'support'),
+  gem("magnified-effect", "Magnified Effect", 'support'),
+  gem("rage", "Rage", 'support'),
+  gem("fire-infusion", "Fire Infusion", 'support'),
+  gem("minion-mastery", "Minion Mastery", 'support'),
+  gem("cold-infusion", "Cold Infusion", 'support'),
+  gem("scattershot", "Scattershot", 'support'),
+  gem("spell-cascade", "Spell Cascade", 'support'),
+  gem("lightning-infusion", "Lightning Infusion", 'support'),
+  gem("pierce", "Pierce", 'support'),
+  gem("snipers-mark", "Sniper's Mark", 'support'),
+  gem("unleash", "Unleash", 'support'),
+  gem("ignite", "Ignite", 'support'),
 ])
 
 const rec = (cls, actId, primaryGemIds, supportGemIds, note, noteRu) => ({
@@ -80,241 +72,44 @@ const rec = (cls, actId, primaryGemIds, supportGemIds, note, noteRu) => ({
 })
 
 export const recommendations = [
-  // ===================== Sorceress (lightning/cold caster) =====================
-  rec(
-    'Sorceress',
-    'act-1',
-    ['spark', 'frost-bolt'],
-    ['unleash', 'lightning-infusion'],
-    'Cut your first Uncut Skill Gem into Spark or Frost Bolt; add a support once you get the Lv1 Uncut Support Gem.',
-    'Первый необработанный камень — в Spark или Frost Bolt; поддержку добавь, когда выпадет необработанный камень поддержки.'
-  ),
-  rec(
-    'Sorceress',
-    'act-2',
-    ['spark', 'flame-wall'],
-    ['unleash', 'lightning-infusion'],
-    'Drop Flame Wall and fire Spark through it for a big damage boost; Unleash lets Spark build up.',
-    'Ставь Flame Wall и пускай Spark сквозь стену — заметный буст урона; Unleash копит заряды Spark.'
-  ),
-  rec(
-    'Sorceress',
-    'act-3',
-    ['spark', 'orb-of-storms'],
-    ['lightning-infusion', 'spell-cascade'],
-    'Orb of Storms for single target and shock; keep Spark as your clear.',
-    'Orb of Storms — по одиночным целям и для шока; Spark остаётся зачисткой.'
-  ),
-  rec(
-    'Sorceress',
-    'act-4',
-    ['spark', 'comet'],
-    ['unleash', 'lightning-infusion'],
-    'Comet as a heavy single-target nuke (great with Frost Bomb to expose cold). Spark still clears packs.',
-    'Comet — тяжёлый удар по одиночным целям (хорош с Frost Bomb для пробития холодом). Spark по-прежнему зачищает пачки.'
-  ),
-
-  // ============================ Witch (minions) ============================
-  rec(
-    'Witch',
-    'act-1',
-    ['skeletal-warriors', 'essence-drain'],
-    ['minion-mastery', 'unleash'],
-    'Minion start: Summon Skeletal Warriors as your main damage; Essence Drain as a single-target option.',
-    'Старт на миньонах: Summon Skeletal Warriors — основной урон; Essence Drain — по одиночным целям.'
-  ),
-  rec(
-    'Witch',
-    'act-2',
-    ['skeletal-warriors', 'skeletal-sniper'],
-    ['minion-mastery', 'unleash'],
-    'Add Skeletal Snipers for ranged minion damage; keep the warrior wall up front.',
-    'Добавь Skeletal Snipers для дальнего урона миньонов; воины держат фронт.'
-  ),
-  rec(
-    'Witch',
-    'act-3',
-    ['skeletal-sniper', 'unearth'],
-    ['minion-mastery', 'spell-cascade'],
-    'Unearth makes corpses to fuel minions and Detonate Dead; Snipers carry the damage.',
-    'Unearth создаёт трупы для миньонов и Detonate Dead; основной урон — на Snipers.'
-  ),
-  rec(
-    'Witch',
-    'act-4',
-    ['skeletal-warriors', 'detonate-dead'],
-    ['minion-mastery', 'fire-infusion'],
-    'Detonate Dead for burst on tough packs and bosses; refresh your skeleton army before fights.',
-    'Detonate Dead — всплеск урона по толстым пачкам и боссам; обновляй армию скелетов перед боями.'
-  ),
-
-  // ============================ Warrior (mace) ============================
-  rec(
-    'Warrior',
-    'act-1',
-    ['boneshatter', 'mace-strike'],
-    ['magnified-effect', 'martial-tempo'],
-    'Boneshatter as the first gem; Mace Strike to build heavy-stun. Shield Charge from Tarkleigh for mobility.',
-    'Boneshatter первым камнем; Mace Strike набирает тяжёлый стан. Shield Charge от Tarkleigh — мобильность.'
-  ),
-  rec(
-    'Warrior',
-    'act-2',
-    ['boneshatter', 'sunder'],
-    ['magnified-effect', 'martial-tempo'],
-    'Sunder for ranged AoE and to set up stuns; Boneshatter detonates the heavy-stun for big hits.',
-    'Sunder — дальняя зона и подготовка стана; Boneshatter детонирует тяжёлый стан в большой удар.'
-  ),
-  rec(
-    'Warrior',
-    'act-3',
-    ['sunder', 'perfect-strike'],
-    ['magnified-effect', 'martial-tempo'],
-    'Perfect Strike for hard single-target hits — time the sweet spot. Sunder clears.',
-    'Perfect Strike — сильный одиночный удар, лови «окно» точного попадания. Sunder зачищает.'
-  ),
-  rec(
-    'Warrior',
-    'act-4',
-    ['boneshatter', 'hammer-of-the-gods'],
-    ['magnified-effect', 'martial-tempo'],
-    'Hammer of the Gods as a boss nuke after stacking heavy-stun. Seismic Cry boosts your slams.',
-    'Hammer of the Gods — удар по боссу после накопления тяжёлого стана. Seismic Cry усиливает удары.'
-  ),
-
-  // ============================ Ranger (bow) ============================
-  rec(
-    'Ranger',
-    'act-1',
-    ['lightning-arrow', 'galvanic-shards'],
-    ['scattershot', 'martial-tempo'],
-    'Lightning Arrow clears packs; Galvanic Shards for single target.',
-    'Lightning Arrow зачищает пачки; Galvanic Shards — по одиночным целям.'
-  ),
-  rec(
-    'Ranger',
-    'act-2',
-    ['lightning-arrow', 'ice-shot'],
-    ['scattershot', 'martial-tempo'],
-    'Ice Shot adds freeze and cold for safer single target; Lightning Arrow stays your clear.',
-    'Ice Shot добавляет заморозку и холод по одиночным целям; Lightning Arrow остаётся зачисткой.'
-  ),
-  rec(
-    'Ranger',
-    'act-3',
-    ['lightning-arrow', 'lightning-rod'],
-    ['scattershot', 'martial-tempo'],
-    'Plant Lightning Rod then hit it with Lightning Arrow for a burst — strong on bosses.',
-    'Ставь Lightning Rod и бей по нему Lightning Arrow для всплеска — сильно по боссам.'
-  ),
-  rec(
-    'Ranger',
-    'act-4',
-    ['lightning-arrow', 'rain-of-arrows'],
-    ['scattershot', 'martial-tempo'],
-    'Rain of Arrows for big AoE on packs; Gas Arrow is a good ignite-detonation option too.',
-    'Rain of Arrows — крупная зона по пачкам; Gas Arrow — хороший вариант с детонацией поджога.'
-  ),
-
-  // ============================ Monk (quarterstaff) ============================
-  rec(
-    'Monk',
-    'act-1',
-    ['falling-thunder', 'tempest-flurry'],
-    ['martial-tempo'],
-    'Tempest Flurry to build power charges, Falling Thunder to spend them.',
-    'Tempest Flurry копит заряды силы, Falling Thunder их тратит.'
-  ),
-  rec(
-    'Monk',
-    'act-2',
-    ['tempest-flurry', 'ice-strike'],
-    ['martial-tempo', 'cold-infusion'],
-    'Ice Strike freezes packs for safety; Tempest Flurry keeps power charges up.',
-    'Ice Strike замораживает пачки — безопаснее; Tempest Flurry держит заряды силы.'
-  ),
-  rec(
-    'Monk',
-    'act-3',
-    ['ice-strike', 'charged-staff'],
-    ['martial-tempo', 'cold-infusion'],
-    'Charge your staff, then Ice Strike for a burst of hits; great single-target window.',
-    'Заряди посох (Charged Staff), затем Ice Strike — всплеск ударов; отличное окно по одиночным.'
-  ),
-  rec(
-    'Monk',
-    'act-4',
-    ['falling-thunder', 'tempest-bell'],
-    ['martial-tempo'],
-    'Drop Tempest Bell and ring it with your hits for huge burst on bosses.',
-    'Ставь Tempest Bell и «звони» в него ударами — большой всплеск по боссам.'
-  ),
-
-  // ============================ Mercenary (crossbow) ============================
-  rec(
-    'Mercenary',
-    'act-1',
-    ['galvanic-shards', 'explosive-shot'],
-    ['scattershot'],
-    'Crossbow start: Galvanic Shards as your workhorse, Explosive Shot for groups.',
-    'Старт с арбалета: Galvanic Shards — рабочая лошадка, Explosive Shot — по группам.'
-  ),
-  rec(
-    'Mercenary',
-    'act-2',
-    ['galvanic-shards', 'fragmentation-rounds'],
-    ['scattershot', 'martial-tempo'],
-    'Fragmentation Rounds shred packs; Galvanic Shards stays your reliable single target.',
-    'Fragmentation Rounds кромсают пачки; Galvanic Shards — надёжный одиночный урон.'
-  ),
-  rec(
-    'Mercenary',
-    'act-3',
-    ['fragmentation-rounds', 'gas-grenade'],
-    ['scattershot', 'fire-infusion'],
-    'Gas Grenade + an ignite source detonates for big AoE; reload-swap between bolt types.',
-    'Gas Grenade + источник поджога даёт мощную детонацию по площади; чередуй типы болтов перезарядкой.'
-  ),
-  rec(
-    'Mercenary',
-    'act-4',
-    ['galvanic-shards', 'armour-piercing-rounds'],
-    ['scattershot', 'martial-tempo'],
-    'Armour Piercing Rounds for armoured bosses; Galvanic Shards for everything else.',
-    'Armour Piercing Rounds — по бронированным боссам; Galvanic Shards — по всему остальному.'
-  ),
-
-  // ============================ Huntress (spear) ============================
-  rec(
-    'Huntress',
-    'act-1',
-    ['thrown-spear', 'whirling-slash'],
-    ['martial-tempo'],
-    'Spear start: Whirling Slash to clear packs, Thrown Spear for ranged single target.',
-    'Старт с копья: Whirling Slash зачищает пачки, Thrown Spear — дальний урон по одиночным целям.'
-  ),
-  rec(
-    'Huntress',
-    'act-2',
-    ['lightning-spear', 'whirling-slash'],
-    ['martial-tempo', 'lightning-infusion'],
-    'Lightning Spear becomes your main damage; Whirling Slash stays for clear and mobility.',
-    'Lightning Spear становится основным уроном; Whirling Slash — для зачистки и мобильности.'
-  ),
-  rec(
-    'Huntress',
-    'act-3',
-    ['lightning-spear', 'spearfield'],
-    ['martial-tempo', 'lightning-infusion'],
-    'Spearfield seeds the ground; pop the spears with Lightning Spear for a burst.',
-    'Spearfield расставляет копья; «подрывай» их Lightning Spear для всплеска урона.'
-  ),
-  rec(
-    'Huntress',
-    'act-4',
-    ['lightning-spear', 'explosive-spear'],
-    ['martial-tempo', 'scattershot'],
-    'Explosive Spear for AoE on packs; Lightning Spear for everything else.',
-    'Explosive Spear — по площади/пачкам; Lightning Spear — по всему остальному.'
-  )
+  // ===== Warrior =====
+  rec("Warrior", "act-1", ["boneshatter"], ["martial-tempo","magnified-effect"], "Open with Boneshatter as your single-target/early clear hammer. It builds and detonates heavy stun, which carries Act 1. Add Martial Tempo for faster attacks (smoother stun stacking) and Magnified Effect to widen the area. Keep Rolling Slam on your bar as a cheap filler vs trash if mana is tight.", "Начинай с Boneshatter как основной молот по одиночным целям и раннему очищению. Он копит и взрывает тяжёлый оглушение (stun), на чём держится весь 1 акт. Добавь Martial Tempo для более быстрых атак (стабильнее набираются стаки stun) и Magnified Effect для увеличения области. Держи Rolling Slam на панели как дешёвый филлер против мобов, если не хватает маны."),
+  rec("Warrior", "act-2", ["boneshatter","armour-breaker"], ["martial-tempo","magnified-effect","rage"], "Keep Boneshatter as the main damage and slot in Armour Breaker to shred enemy armour before big hits — huge against tanky Act 2 packs and bosses. Add Shield Charge to your bar for mobility if you run a shield. Rage support keeps your attacks fed for sustained tempo.", "Оставляй Boneshatter основным уроном и добавь Armour Breaker, чтобы сбивать броню врагов перед сильными ударами — очень помогает против толстых пачек и боссов 2 акта. Закинь Shield Charge на панель для мобильности, если играешь со щитом. Support Rage поддерживает темп твоих атак."),
+  rec("Warrior", "act-3", ["earthshatter","boneshatter"], ["magnified-effect","martial-tempo","fire-infusion"], "Transition your main clear to Earthshatter (Tier 7): it plants spikes you detonate for big AoE — excellent for Act 3 jungle packs. Keep Boneshatter as your single-target/boss finisher. Fire Infusion adds fire damage to scale your hits; Magnified Effect widens the spike spread.", "Переводи основное очищение на Earthshatter (Tier 7): он ставит шипы, которые ты подрываешь для большого AoE — отлично против джунглевых пачек 3 акта. Держи Boneshatter как добивание по одиночным целям и боссам. Fire Infusion добавляет урон огнём для масштабирования ударов; Magnified Effect увеличивает разброс шипов."),
+  rec("Warrior", "act-4", ["earthshatter","hammer-of-the-gods"], ["magnified-effect","fire-infusion","martial-tempo"], "Earthshatter stays your bread-and-butter clear, now well-scaled. Add Hammer of the Gods (Tier 13) as a slow, devastating boss/finisher slam — open packs and elites with it, then mop up with Earthshatter. Pair Seismic Cry as a warcry on your bar to buff slam damage before the big hit. Keep Fire Infusion and Magnified Effect on Earthshatter.", "Earthshatter остаётся основным очищением, теперь хорошо прокачанным. Добавь Hammer of the Gods (Tier 13) как медленный, разрушительный слэм-добивание по боссам — открывай пачки и элиток им, затем дочищай через Earthshatter. Держи Seismic Cry как warcry на панели, чтобы усилить урон слэмов перед сильным ударом. Оставь Fire Infusion и Magnified Effect на Earthshatter."),
+  // ===== Witch =====
+  rec("Witch", "act-1", ["skeletal-sniper","contagion"], ["minion-mastery","martial-tempo"], "Start as a summoner: Skeletal Sniper minions do your damage from range while you stay safe. Link Minion Mastery for extra minion damage and Martial Tempo so they attack faster. Use Contagion to spread chaos damage-over-time on packs and soften early bosses. Keep an Unearth or Bone Cage on hand for corpses and crowd control if you find the gems.", "Начинаем как призыватель: миньоны Skeletal Sniper наносят урон с дистанции, пока вы в безопасности. Свяжите Minion Mastery для дополнительного урона миньонов и Martial Tempo для скорости их атаки. Используйте Contagion, чтобы распространять хаос-урон по времени на пачки и ослаблять ранних боссов. Держите Unearth или Bone Cage наготове для трупов и контроля толпы, если найдёте гемы."),
+  rec("Witch", "act-2", ["skeletal-arsonist","essence-drain"], ["minion-mastery","fire-infusion","martial-tempo"], "Upgrade your army to Skeletal Arsonist (Tier 3) for fire AoE that clears packs fast; link Fire Infusion and Minion Mastery to boost their burning damage, plus Martial Tempo for cast speed. Self-cast Essence Drain as your single-target chaos DoT for tough rares and bosses, pairing it with Contagion from Act 1 for the classic ED/Contagion spread combo.", "Улучшаем армию до Skeletal Arsonist (Tier 3) — это огненный AoE, быстро зачищающий пачки; свяжите Fire Infusion и Minion Mastery для усиления горения, плюс Martial Tempo для скорости. Сами кастуете Essence Drain как одиночный хаос-DoT по жирным рарам и боссам, комбинируя его с Contagion из 1 акта для классической связки ED/Contagion."),
+  rec("Witch", "act-3", ["skeletal-frost-mage","pain-offering"], ["minion-mastery","cold-infusion","scattershot"], "Add Skeletal Frost Mage (Tier 5) for cold damage and chilling that slows enemies, making the whole army safer; support with Cold Infusion and Minion Mastery, and Scattershot for extra projectiles. Cast Pain Offering on a corpse to give all your minions a big burst of damage before tough fights. Keep Raise Zombie as a tanky front-line meat shield to body-block for you.", "Добавляем Skeletal Frost Mage (Tier 5) ради холодного урона и заморозки, которая замедляет врагов и делает армию безопаснее; поддержка — Cold Infusion и Minion Mastery, а Scattershot для лишних снарядов. Кастуйте Pain Offering на труп, чтобы дать всем миньонам мощный всплеск урона перед сложными боями. Держите Raise Zombie как танкующий фронт-лайн, который блокирует врагов телом."),
+  rec("Witch", "act-4", ["bind-spectre","detonate-dead"], ["minion-mastery","fire-infusion","spell-cascade"], "Bind Spectre (Tier 7) lets you capture a powerful monster as a permanent minion — grab a strong caster or AoE spectre to anchor your army, supported by Minion Mastery and Fire Infusion. Add Detonate Dead with Spell Cascade to blow up corpses your skeletons leave behind for huge burst AoE, which clears screens and chunks bosses. Layer Despair as a curse later if you pick it up to amplify all your chaos and minion damage.", "Bind Spectre (Tier 7) позволяет захватить сильного монстра как постоянного миньона — возьмите мощного кастера или AoE-спектра как опору армии, поддержка Minion Mastery и Fire Infusion. Добавьте Detonate Dead со Spell Cascade, чтобы взрывать трупы, которые оставляют ваши скелеты, ради огромного всплеска AoE — это чистит экран и выгрызает боссов. Позже наложите Despair как проклятие, если возьмёте его, чтобы усилить весь хаос- и миньон-урон."),
+  // ===== Ranger =====
+  rec("Ranger", "act-1", ["lightning-arrow"], ["martial-tempo","lightning-infusion"], "Open with Lightning Arrow as your main clear and single-target skill. Martial Tempo boosts attack speed so you fire faster, and Lightning Infusion adds extra lightning damage. Lightning Arrow chains to nearby enemies, giving great early pack clear. Keep Poisonburst Arrow on a second slot as a backup for tougher single targets if you find the gem.", "Начинайте с Lightning Arrow как основного навыка для зачистки и одиночных целей. Martial Tempo увеличивает скорость атаки, а Lightning Infusion добавляет урон молнией. Lightning Arrow перескакивает на ближних врагов, что отлично чистит ранние паки. Держите Poisonburst Arrow во втором слоте как запасной вариант против крепких одиночных целей, если найдёте гем."),
+  rec("Ranger", "act-2", ["lightning-arrow","electrocuting-arrow"], ["martial-tempo","lightning-infusion","scattershot"], "Keep Lightning Arrow as your main clear and add Scattershot so each shot fires multiple projectiles for much wider coverage. Pick up Electrocuting Arrow (Tier 5) as a dedicated single-target tool against rares and bosses, since it builds up a strong shock and burst. Continue stacking Martial Tempo and Lightning Infusion on your clear skill.", "Оставьте Lightning Arrow основным навыком зачистки и добавьте Scattershot, чтобы каждый выстрел выпускал несколько снарядов и покрывал больше площади. Возьмите Electrocuting Arrow (Tier 5) как отдельный инструмент по одиночным целям против раров и боссов — он накапливает сильный шок и взрыв. Продолжайте усиливать навык зачистки через Martial Tempo и Lightning Infusion."),
+  rec("Ranger", "act-3", ["lightning-arrow","electrocuting-arrow"], ["scattershot","lightning-infusion","pierce","snipers-mark"], "Add Pierce to Lightning Arrow so projectiles punch through enemies and the chains spread further across packs. Use Sniper's Mark on bosses and rares to mark them, then dump Electrocuting Arrow into the marked target for extra single-target damage. Your Lightning Arrow + Scattershot + Pierce + Lightning Infusion setup is now your core clearing engine.", "Добавьте Pierce к Lightning Arrow, чтобы снаряды пробивали врагов, а цепочки расходились дальше по пакам. Используйте Sniper's Mark на боссах и рарах, чтобы пометить их, и затем вливайте Electrocuting Arrow в помеченную цель для дополнительного урона по одиночным целям. Связка Lightning Arrow + Scattershot + Pierce + Lightning Infusion — теперь ваш основной механизм зачистки."),
+  rec("Ranger", "act-4", ["tornado-shot","electrocuting-arrow"], ["scattershot","lightning-infusion","pierce","snipers-mark"], "Transition your main clear to Tornado Shot (Tier 11): it fires a primary projectile that splits into secondary arrows on hit, giving massive AoE coverage when paired with Scattershot and Pierce. Keep Lightning Infusion to scale lightning damage. Electrocuting Arrow plus Sniper's Mark remains your single-target burst for bosses. This bow setup carries you cleanly into endgame mapping.", "Переведите основную зачистку на Tornado Shot (Tier 11): он выпускает основной снаряд, который при попадании разделяется на дополнительные стрелы, давая огромное покрытие AoE в связке со Scattershot и Pierce. Сохраняйте Lightning Infusion для масштабирования урона молнией. Electrocuting Arrow вместе со Sniper's Mark остаётся вашим бурстом по одиночным целям против боссов. Эта лучная связка плавно переносит вас в эндгейм-мапинг."),
+  // ===== Monk =====
+  rec("Monk", "act-1", ["falling-thunder","killing-palm"], ["martial-tempo","lightning-infusion"], "Open with Falling Thunder as your main clear and single-target opener; it builds Power Charges off the staff. Use Killing Palm to instantly execute low-life trash and generate charges for free. Add Martial Tempo for attack speed and Lightning Infusion to lean into shock. Keep moving and weave the two skills.", "Начинай с Falling Thunder как основного скилла для зачистки и открытия по одиночным целям, он копит Power Charges. Killing Palm используй, чтобы мгновенно добивать слабых врагов и бесплатно генерировать заряды. Добавь Martial Tempo на скорость атаки и Lightning Infusion ради шока. Постоянно двигайся и чередуй оба скилла."),
+  rec("Monk", "act-2", ["tempest-flurry","ice-strike"], ["martial-tempo","cold-infusion","scattershot"], "Switch your main attack to Tempest Flurry (single-target, builds Power Charges fast) and pick up Ice Strike at level 5 as your bread-and-butter clear that applies chill/freeze. Support Ice Strike with Cold Infusion and Scattershot for extra projectiles/coverage; keep Martial Tempo on Tempest Flurry for ramp. Freeze packs, then dump charges.", "Переключи основную атаку на Tempest Flurry (одиночные цели, быстро копит Power Charges), а на 5 уровне возьми Ice Strike как главный скилл для зачистки с заморозкой и охлаждением. На Ice Strike поставь Cold Infusion и Scattershot для лишних проджектайлов и покрытия, а Martial Tempo держи на Tempest Flurry для разгона. Замораживай пачки и сливай заряды."),
+  rec("Monk", "act-3", ["ice-strike","storm-wave"], ["martial-tempo","cold-infusion","magnified-effect"], "Ice Strike is now your core single-target and freeze engine. Add Storm Wave (level 7) for a wider ranged clear that pairs with your chill. Run Martial Tempo + Cold Infusion on Ice Strike for sustained freeze, and Magnified Effect to widen your AoE on clear. Freeze with Ice Strike, sweep packs with Storm Wave.", "Теперь Ice Strike — твой основной скилл по одиночным целям и движок заморозки. Добавь Storm Wave (7 уровень) для более широкой дальней зачистки, которая хорошо сочетается с охлаждением. На Ice Strike держи Martial Tempo и Cold Infusion ради стабильной заморозки, а Magnified Effect расширит зону зачистки. Замораживай через Ice Strike, выкашивай пачки через Storm Wave."),
+  rec("Monk", "act-4", ["ice-strike","charged-staff"], ["martial-tempo","cold-infusion","lightning-infusion"], "Keep Ice Strike as your main hands-on skill but now activate Charged Staff (level 9) — spend your Power Charges to massively buff your staff hits, turning Ice Strike into a melee blender. Stack Martial Tempo for speed plus Cold Infusion and Lightning Infusion to scale both freeze and shock. Build charges, pop Charged Staff, then melt everything with Ice Strike.", "Оставь Ice Strike как основной рабочий скилл, но теперь активируй Charged Staff (9 уровень) — трать накопленные Power Charges, чтобы сильно усилить удары посохом и превратить Ice Strike в мясорубку. Сложи Martial Tempo на скорость плюс Cold Infusion и Lightning Infusion, чтобы качать и заморозку, и шок. Копи заряды, активируй Charged Staff и растворяй всё через Ice Strike."),
+  // ===== Mercenary =====
+  rec("Mercenary", "act-1", ["explosive-grenade","fragmentation-rounds"], ["scattershot","fire-infusion"], "Start with Explosive Grenade as your main AoE clear and Fragmentation Rounds as a reliable single-target/filler crossbow attack. Add Scattershot to throw extra grenades for faster pack clear, and Fire Infusion to scale Explosive Grenade's fire damage. Slot a Frost Wall or use Permafrost Bolts situationally to block dangerous melee.", "Начинай с Explosive Grenade как основного AoE-скила для зачистки и Fragmentation Rounds как надёжной атаки по одиночным целям. Добавь Scattershot, чтобы кидать больше гранат и быстрее чистить паки, и Fire Infusion для усиления огненного урона Explosive Grenade. Permafrost Bolts держи ситуативно, чтобы сдерживать опасных мобов в ближнем бою."),
+  rec("Mercenary", "act-2", ["gas-grenade","explosive-grenade"], ["scattershot","fire-infusion","martial-tempo"], "Pick up Gas Grenade (level 5) and ignite the cloud with Explosive Grenade for huge AoE damage — this combo carries the whole midgame. Keep Scattershot and Fire Infusion on Explosive Grenade; add Martial Tempo to your crossbow attack for faster reloads and grenade throws.", "Возьми Gas Grenade (уровень 5) и поджигай облако газа через Explosive Grenade — эта связка даёт огромный AoE-урон и тащит весь мидгейм. Оставь Scattershot и Fire Infusion на Explosive Grenade; добавь Martial Tempo к атаке арбалета для ускорения перезарядки и броска гранат."),
+  rec("Mercenary", "act-3", ["voltaic-grenade","gas-grenade"], ["scattershot","fire-infusion","magnified-effect"], "Add Voltaic Grenade (level 7) for shock and added lightning hits while Gas Grenade + Explosive Grenade ignite remains your detonation core. Use Magnified Effect to widen grenade blast radius so packs are caught more easily, and keep Scattershot for grenade count. Fire Infusion still boosts your ignite damage.", "Добавь Voltaic Grenade (уровень 7) для шока и дополнительного урона молнией, а связка Gas Grenade + поджог через Explosive Grenade остаётся твоим ядром детонации. Используй Magnified Effect, чтобы увеличить радиус взрыва гранат и легче накрывать паки, и держи Scattershot ради количества гранат. Fire Infusion всё ещё усиливает урон от поджога."),
+  rec("Mercenary", "act-4", ["voltaic-grenade","gas-grenade"], ["scattershot","magnified-effect","lightning-infusion"], "By Act 4 lean into the grenade detonation engine: Gas Grenade cloud ignited by Explosive Grenade, plus Voltaic Grenade for shock. Swap to Lightning Infusion on Voltaic Grenade to scale its shock and lightning damage, keep Magnified Effect for coverage and Scattershot for output. Siege Ballista (level 9) is a strong optional setup for tougher rares and bosses.", "К 4 акту полностью раскручивай гранатный движок: облако Gas Grenade, поджигаемое Explosive Grenade, плюс Voltaic Grenade для шока. Поставь Lightning Infusion на Voltaic Grenade, чтобы усилить шок и урон молнией, оставь Magnified Effect для покрытия и Scattershot для урона. Siege Ballista (уровень 9) — хороший опциональный сетап против сложных рейров и боссов."),
+  // ===== Sorceress =====
+  rec("Sorceress", "act-1", ["frost-bomb","ice-nova"], ["magnified-effect","cold-infusion"], "Start with Frostbolt-style cold control: drop Frost Bomb on packs to apply Cold Exposure, then clear with Ice Nova. Magnified Effect widens Ice Nova's burst; Cold Infusion boosts cold damage. Keep mana up and don't melee.", "Начинай с контроля холодом: кидай Frost Bomb в пачку, чтобы наложить Cold Exposure, и добивай через Ice Nova. Magnified Effect расширяет взрыв Ice Nova, а Cold Infusion повышает урон холодом. Следи за маной и не лезь в ближний бой."),
+  rec("Sorceress", "act-2", ["frostbolt","frost-bomb"], ["scattershot","cold-infusion","magnified-effect"], "Frostbolt becomes your main single-target and pack damage at Tier 5. Add Scattershot for extra projectiles, keep Cold Infusion for damage, and Frost Bomb stays as your armor/resist shred opener on tough rares. Pre-place Frost Bomb before big fights.", "Frostbolt (Tier 5) становится основным уроном по одиночке и пачкам. Добавь Scattershot для лишних снарядов, держи Cold Infusion на урон, а Frost Bomb остаётся открывашкой для брони/сопротивлений на жирных рарах. Ставь Frost Bomb заранее перед боссами."),
+  rec("Sorceress", "act-3", ["comet","frostbolt"], ["unleash","cold-infusion","magnified-effect"], "Comet (Tier 11) is your nuke against rares and bosses. Use Unleash so it stores casts and drops multiple comets, and Magnified Effect for a bigger impact zone. Keep Frostbolt as filler clear and to proc Cold Exposure between Comet casts.", "Comet (Tier 11) — твой нюк по рарам и боссам. Бери Unleash, чтобы он копил касты и падал по нескольку раз, и Magnified Effect для большей зоны удара. Frostbolt оставь как филлер для зачистки и прока Cold Exposure между кастами Comet."),
+  rec("Sorceress", "act-4", ["comet","eye-of-winter"], ["unleash","scattershot","cold-infusion"], "Lead with Comet for burst on bosses (Unleash banks extra casts) and use Eye of Winter (Tier 13) with Scattershot as a piercing clear and single-target shotgun. Cold Infusion keeps cold scaling high. Frost Bomb is still worth a slot for Cold Exposure on bosses if you have room.", "Открывай Comet для бурста по боссам (Unleash копит лишние касты), а Eye of Winter (Tier 13) со Scattershot используй как пробивающую зачистку и шотган по одиночке. Cold Infusion держит масштабирование холода высоким. Frost Bomb всё ещё стоит слота ради Cold Exposure на боссах, если есть место."),
+  // ===== Huntress =====
+  rec("Huntress", "act-1", ["explosive-spear"], ["martial-tempo","fire-infusion"], "Start with Explosive Spear as your main attack — throw a spear that you detonate for an AoE burst, great for clearing early packs. Link Martial Tempo for faster throws and Fire Infusion to add fire damage to the explosions. Keep Whirling Slash on your bar as a melee panic button when enemies close in, and use Disengage to leap out of danger.", "Начинай с Explosive Spear как основной атаки — бросаешь копьё и детонируешь его ради AoE-взрыва, отлично чистит ранние пачки. Линкуй Martial Tempo для более быстрых бросков и Fire Infusion, чтобы добавить взрывам урон огнём. Держи Whirling Slash на панели как ближний 'панический' удар, когда враги подходят вплотную, и используй Disengage, чтобы выпрыгнуть из опасности."),
+  rec("Huntress", "act-2", ["lightning-spear","storm-lance"], ["martial-tempo","lightning-infusion","scattershot"], "Lightning Spear unlocks at Tier 3 and becomes your main clear skill — fast, bouncing lightning throws. Link Martial Tempo and Lightning Infusion for raw lightning damage, and add Scattershot to throw multiple spears for wider coverage. Use Storm Lance as your single-target/electrocute tool against tougher rares and bosses.", "Lightning Spear открывается на Tier 3 и становится твоим основным скиллом для зачистки — быстрые, отскакивающие молниевые броски. Линкуй Martial Tempo и Lightning Infusion ради чистого урона молнией и добавь Scattershot, чтобы бросать несколько копий для большего покрытия. Используй Storm Lance как инструмент по одиночной цели и для electrocute против тяжёлых рарников и боссов."),
+  rec("Huntress", "act-3", ["lightning-spear","spearfield"], ["martial-tempo","lightning-infusion","scattershot"], "Keep Lightning Spear as your main carry, now with the same Martial Tempo + Lightning Infusion + Scattershot setup for strong pack clear. Add Spearfield (Tier 5) to drop a zone of spears that controls chokepoints and shreds bosses standing in it — great for the denser Act 3 fights. Rapid Assault is a solid alternative for a mobility/burst gem if you want extra single-target.", "Оставляй Lightning Spear как основной скилл, теперь с той же связкой Martial Tempo + Lightning Infusion + Scattershot для сильной зачистки пачек. Добавь Spearfield (Tier 5) — он создаёт зону копий, контролирует узкие проходы и режет боссов, стоящих в ней, отлично подходит для плотных боёв Акта 3. Rapid Assault — хорошая альтернатива как скилл на мобильность/бёрст, если хочешь больше урона по одиночной цели."),
+  rec("Huntress", "act-4", ["lightning-spear","thunderous-leap"], ["martial-tempo","lightning-infusion","scattershot","magnified-effect"], "Finish the campaign with Lightning Spear fully linked — Martial Tempo + Lightning Infusion + Scattershot for clear, and swap toward Magnified Effect to widen the spread/AoE as packs get bigger. Add Thunderous Leap (Tier 9) as a gap-closer and burst finisher: leap in with lightning, then keep throwing spears. This carries you cleanly into endgame mapping.", "Заканчивай кампанию с полностью прокачанным Lightning Spear — Martial Tempo + Lightning Infusion + Scattershot для зачистки, и переходи на Magnified Effect, чтобы расширить разлёт/AoE, когда пачки становятся больше. Добавь Thunderous Leap (Tier 9) как разрыв дистанции и бёрст-добивание: прыгаешь с молнией, а затем продолжаешь бросать копья. Это спокойно доведёт тебя до эндгейм-маппинга."),
+  // ===== Druid =====
+  rec("Druid", "act-1", ["volcano"], ["fire-infusion","martial-tempo"], "Open with Volcano as your main fire spell — it covers packs and bosses while you have few gem slots. Fire Infusion pumps its base fire damage; once you can fit a second support, Martial Tempo (cast speed) keeps casts flowing. Hold Furious Slam as a melee panic button on tough rares and grab Entangle to lock single targets.", "Стартуй с Volcano как основным огненным спеллом — он чистит паки и бьёт боссов, пока слотов под камни мало. Fire Infusion поднимает базовый огненный урон, а когда появится второй слот — Martial Tempo (скорость каста) держит темп. Держи Furious Slam как ближний резерв против жирных рарников и возьми Entangle, чтобы стопать одиночные цели."),
+  rec("Druid", "act-2", ["rolling-magma","volcano"], ["fire-infusion","unleash","magnified-effect"], "Bring in Rolling Magma (T3) as your bouncing clear spell and keep Volcano for burst on bosses. Unleash on Rolling Magma stores casts for big openers, Magnified Effect widens Volcano's eruption AoE, and Fire Infusion stays on whichever you fire most. This is the act where fire-spell scaling on the tree and a wand/sceptre with +fire really pays off.", "Добавляй Rolling Magma (T3) как прыгающий спелл для зачистки, а Volcano оставь для бёрста по боссам. Unleash на Rolling Magma копит касты для мощного открытия, Magnified Effect расширяет AoE извержения Volcano, а Fire Infusion ставь на то, чем чаще стреляешь. Это акт, где прокачка fire-spell на дереве и wand/sceptre с +fire реально окупаются."),
+  rec("Druid", "act-3", ["fury-of-the-mountain","rolling-magma"], ["fire-infusion","scattershot","spell-cascade"], "Fury of the Mountain (T5) becomes your heavy-hitting fire finisher; Rolling Magma stays as fast trash clear. Add Spell Cascade to Rolling Magma so it covers a wide strip in corridors, and Scattershot for extra projectiles/coverage on your main hit. Pick up Ferocious Roar around now as a damage buff before fights.", "Fury of the Mountain (T5) становится твоим тяжёлым огненным финишером, а Rolling Magma остаётся для быстрой зачистки мусора. Поставь Spell Cascade на Rolling Magma, чтобы он покрывал широкую полосу в коридорах, и Scattershot для лишних снарядов/охвата на основном ударе. Заодно возьми Ferocious Roar как баф урона перед боями."),
+  rec("Druid", "act-4", ["flame-breath","fury-of-the-mountain"], ["fire-infusion","magnified-effect","ignite"], "Flame Breath (T13) is your new bread-and-butter cone clear with strong sustained fire damage; Fury of the Mountain remains the single-target nuke. Magnified Effect grows the cone, Ignite turns your fire hits into burning damage-over-time, and Fire Infusion keeps the base scaling high. Keep Ferocious Roar up before tough packs and bosses.", "Flame Breath (T13) — твой новый основной конус для зачистки с сильным стабильным огненным уроном, а Fury of the Mountain остаётся нюком по одиночным целям. Magnified Effect увеличивает конус, Ignite превращает огненные удары в горящий урон по времени, а Fire Infusion держит высокий базовый скейл. Перед жирными паками и боссами не забывай Ferocious Roar."),
 ]
