@@ -41,6 +41,8 @@ interface AppState {
   stepNext: () => void
   stepPrev: () => void
   toggleQuest: (questId: string, done: boolean) => Promise<void>
+  /** manually mark/clear all quests of an act (catch-up for already-played characters) */
+  markActQuests: (actId: string, done: boolean) => Promise<void>
   /** auto-progression: batch-mark quests done + flag them auto-completed (never unchecks) */
   applyAutoChecks: (ids: string[]) => Promise<void>
   /** re-run zone-based auto-check from the current detected zone (e.g. after enabling the setting) */
@@ -337,6 +339,25 @@ export const useAppStore = create<AppState>((set, get) => ({
     else delete completed[questId]
     set({ progress: { ...progress, completedQuestIds: completed } })
     const saved = await api().progress.setQuestDone(activeProfileId, questId, done)
+    set({ progress: saved })
+  },
+
+  async markActQuests(actId, done) {
+    const { progress, activeProfileId, dataset } = get()
+    if (!progress || !activeProfileId || !dataset) return
+    const act = dataset.acts.find((a) => a.id === actId)
+    if (!act) return
+    const ids = act.quests.map((q) => q.id)
+    // optimistic
+    const completedQuestIds = { ...progress.completedQuestIds }
+    const autoCompletedQuestIds = { ...progress.autoCompletedQuestIds }
+    for (const id of ids) {
+      if (done) completedQuestIds[id] = true
+      else delete completedQuestIds[id]
+      delete autoCompletedQuestIds[id]
+    }
+    set({ progress: { ...progress, completedQuestIds, autoCompletedQuestIds } })
+    const saved = await api().progress.setManyQuests(activeProfileId, ids, done)
     set({ progress: saved })
   },
 

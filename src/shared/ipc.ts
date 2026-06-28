@@ -32,6 +32,7 @@ export const IPC = {
     get: 'progress:get',
     setQuestDone: 'progress:setQuestDone',
     setQuestsDone: 'progress:setQuestsDone',
+    setManyQuests: 'progress:setManyQuests',
     setAct: 'progress:setAct',
     setLevel: 'progress:setLevel',
     setRewardChoice: 'progress:setRewardChoice',
@@ -94,6 +95,8 @@ export interface OverlayApi {
     setQuestDone(profileId: string, questId: string, done: boolean): Promise<ProgressState>
     /** Batch auto-check: marks each id done AND flags it auto-completed (never unchecks). */
     setQuestsDone(profileId: string, questIds: string[]): Promise<ProgressState>
+    /** Manual batch set/clear (e.g. "mark act done"); clears the auto flag. */
+    setManyQuests(profileId: string, questIds: string[], done: boolean): Promise<ProgressState>
     setAct(profileId: string, act: number): Promise<ProgressState>
     setLevel(profileId: string, level: number): Promise<ProgressState>
     setRewardChoice(

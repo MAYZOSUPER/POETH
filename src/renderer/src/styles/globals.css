@@ -510,6 +510,11 @@ input[type='checkbox']:checked::after {
   border: 1px solid var(--blue, #6da3c2);
   opacity: 0.85;
 }
+.head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 .quest.done .type-tag.req {
   opacity: 0.5;
 }

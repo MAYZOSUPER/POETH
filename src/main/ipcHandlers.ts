@@ -159,6 +159,9 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.progress.setQuestsDone, (_e, pid: string, qids: string[]) =>
     profiles.setQuestsDone(pid, qids)
   )
+  ipcMain.handle(IPC.progress.setManyQuests, (_e, pid: string, qids: string[], done: boolean) =>
+    profiles.setManyQuests(pid, qids, done)
+  )
   ipcMain.handle(IPC.progress.setAct, (_e, pid: string, act: number) => profiles.setAct(pid, act))
   ipcMain.handle(IPC.progress.setLevel, (_e, pid: string, level: number) =>
     profiles.setLevel(pid, level)

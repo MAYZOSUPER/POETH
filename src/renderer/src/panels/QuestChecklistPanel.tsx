@@ -12,6 +12,7 @@ export function QuestChecklistPanel() {
   const detectedZoneAreaId = useAppStore((s) => s.detectedZoneAreaId)
   const progress = useAppStore((s) => s.progress)
   const toggleQuest = useAppStore((s) => s.toggleQuest)
+  const markActQuests = useAppStore((s) => s.markActQuests)
   const selectZone = useAppStore((s) => s.selectZone)
 
   const act = dataset?.acts.find((a) => a.id === selectedActId)
@@ -28,13 +29,23 @@ export function QuestChecklistPanel() {
 
   const total = act.quests.length
   const doneCount = act.quests.filter((q) => completed[q.id]).length
+  const allDone = total > 0 && doneCount === total
 
   return (
     <section className="panel checklist">
       <div className="panel-head">
         <span>{t('cl.head', { act: act.actName })}</span>
-        <span className="muted">
-          {doneCount}/{total}
+        <span className="head-actions">
+          <button
+            className="btn small"
+            title={t('cl.markAll.title')}
+            onClick={() => void markActQuests(act.id, !allDone)}
+          >
+            {allDone ? t('cl.clearAll') : t('cl.markAll')}
+          </button>
+          <span className="muted">
+            {doneCount}/{total}
+          </span>
         </span>
       </div>
       <ul className="zones">

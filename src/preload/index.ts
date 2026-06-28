@@ -24,6 +24,8 @@ const api: OverlayApi = {
     setQuestDone: (pid, qid, done) =>
       ipcRenderer.invoke(IPC.progress.setQuestDone, pid, qid, done),
     setQuestsDone: (pid, qids) => ipcRenderer.invoke(IPC.progress.setQuestsDone, pid, qids),
+    setManyQuests: (pid, qids, done) =>
+      ipcRenderer.invoke(IPC.progress.setManyQuests, pid, qids, done),
     setAct: (pid, act) => ipcRenderer.invoke(IPC.progress.setAct, pid, act),
     setLevel: (pid, level) => ipcRenderer.invoke(IPC.progress.setLevel, pid, level),
     setRewardChoice: (pid, qid, idx) =>

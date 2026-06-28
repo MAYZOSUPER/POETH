@@ -137,6 +137,22 @@ export async function setQuestsDone(
   return saveProgress(p)
 }
 
+/** Manual batch set/clear (e.g. "mark act done/clear"). Treated as manual — clears
+ * the auto-completed flag either way. Single atomic write. */
+export async function setManyQuests(
+  profileId: string,
+  questIds: string[],
+  done: boolean
+): Promise<ProgressState> {
+  const p = await getProgress(profileId)
+  for (const id of questIds) {
+    if (done) p.completedQuestIds[id] = true
+    else delete p.completedQuestIds[id]
+    delete p.autoCompletedQuestIds[id]
+  }
+  return saveProgress(p)
+}
+
 export async function setAct(profileId: string, act: number): Promise<ProgressState> {
   const p = await getProgress(profileId)
   p.currentAct = act
