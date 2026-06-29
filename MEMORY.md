@@ -187,7 +187,7 @@ poe2-leveling-overlay (areaId/интерлюдии/подсказки), exile-le
 ## Changelog
 > Новые изменения добавляй сверху: `<коммит> — что сделано`.
 
-- _(не закоммичено)_ — **Exile Companion: ребрендинг + каркас прайс-чека (фаза 1, чекпойнт)**:
+- `2324f54` — **Exile Companion: ребрендинг + каркас прайс-чека (фаза 1, чекпойнт)**:
   переименование Act Compass→Exile Companion (productName/builder/заголовки/трей/тулбар), миграция
   userData, типы вкладок (`AppTab`,`lastAppTab`,`league`) и прайс-чека (`HotkeyMap.priceCheck`,
   trade-типы), дефолты настроек. Вкладки/IPC/tradeClient/PriceCheckTab — впереди (см. «🚧 В работе»
