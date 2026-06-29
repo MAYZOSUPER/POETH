@@ -8,55 +8,56 @@
 (что сделано + хэш коммита) и при необходимости обновляй разделы «Что сделано» / «TODO».
 Это рабочая память проекта — держи её в актуальном состоянии.
 
-## 🚧 В работе: ребрендинг → «Exile Companion» + прайс-чек (фаза 1)
-Полный план — `.claude/plans/groovy-finding-engelbart.md`. Приложение расширяется из трекера
-кампании в **companion** (кампания + **прайс-чек предметов**; **оценка стэша** — фаза 2).
-Решения: делаем **фазами** (прайс-чек → стэш); авторизация **POESESSID** (через Electron
-`safeStorage`); захват предмета — **пользователь сам жмёт Ctrl+C**, затем хоткей читает буфер
-(без нативных либ); новое имя — **Exile Companion**. Опора по технике: **Exiled Exchange 2**
-(kvan7, MIT, PoE2-парсер предметов) и **Awakened PoE Trade** (SnosMe, MIT, `net.request`+session+rate-limit).
-Trade API: `POST /api/trade2/search/poe2/<league>` → ids → `GET /api/trade2/fetch/<ids>?query=<id>&realm=poe2`,
-из **main** через Electron `net.request` (Cloudflare обходится сессией+UA; не renderer fetch).
+## ✅ Фаза 1 готова: ребрендинг «Exile Companion» + вкладки + прайс-чек (коммит a4b3af1)
+Полный план — `.claude/plans/groovy-finding-engelbart.md`. Спека trade2 API (из исследования
+исходников **Exiled Exchange 2** kvan7 + **Awakened PoE Trade** SnosMe, MIT) встроена в код.
+Приложение из трекера кампании стало **companion** (кампания + **прайс-чек предметов**; **оценка
+стэша** — фаза 2). Авторизация **POESESSID**; захват предмета — пользователь жмёт **Ctrl+C**, затем
+хоткей читает буфер (без нативных либ).
 
-### Сделано (этот чекпойнт, typecheck+build зелёные)
-- **Ребрендинг** Act Compass → Exile Companion: `package.json` (productName/description),
-  `electron-builder.yml` (productName; **appId оставлен** `com.actcompass.app`), заголовок окна
-  (`overlayWindow.ts`), `<title>` HTML, трей (`tray.ts`), тулбар (`Toolbar.tsx`), имя в bundle
-  профиля (`profileStore.ts`) + фильтрах диалогов (`ipcHandlers.ts`).
-- **Миграция userData**: `migrateUserData()` в `src/main/index.ts` — один раз копирует
-  `%APPDATA%/Act Compass` → `%APPDATA%/Exile Companion` (профили/прогресс/настройки целы).
-  ⚠️ упакованный процесс теперь **`Exile Companion.exe`** (учесть в подводных камнях/single-instance).
-- **Типы** в `src/shared/types.ts`: `AppTab`, `Settings.lastAppTab`+`league`, `HotkeyMap.priceCheck`,
-  трейд-типы (`TradeListing`, `PriceResult`, `PriceCheckResult`). Дефолты в `settingsStore.ts`
-  (`lastAppTab='campaign'`, `league='Standard'`, hotkey `priceCheck='Alt+D'`); `DEFAULT_HOTKEYS`
-  в `SettingsPanel.tsx` дополнен `priceCheck`.
+**Ключевая находка (важно для фазы 2):** на API-путях trade2 **НЕТ `?realm=poe2`** — сегмент
+`trade2` уже = PoE2. `POST /api/trade2/search/<league>` → ids → `GET /api/trade2/fetch/<ids,до10>?query=<id>`.
+POESESSID шлётся **явным заголовком `Cookie: POESESSID=...`** (не `useSessionCookies` — cookie-jar
+пуст), `User-Agent`=`app.userAgentFallback`, всё из **main** через `net.request`.
 
-### Осталось (TODO фазы 1)
-- [ ] **Вкладки**: store `appTab`+`setAppTab` (персист в `lastAppTab`); `App.tsx` — панель вкладок
-      между `Toolbar` и `body`, свитч Campaign↔Price Check; CSS `.app-tabs` (образец `.act-tabs`);
-      i18n `app.campaign`/`app.priceCheck`.
-- [ ] **Main прайс-чек**: новый `secretStore.ts` (POESESSID через `safeStorage` → шифр-файл);
-      новый `tradeClient.ts` (парс предмета из текста → trade2 search/fetch через `net.request`
-      +session+UA, **rate-limit по заголовкам**; уники по имени, валюта по типу, рарки по базе/ilvl
-      приблизительно с пометкой). Опора — парсер/данные **Exiled Exchange 2** (MIT).
-- [ ] **IPC** namespace `trade` (`priceCheck`/`setSession`/`hasSession`/`getLeagues`/`setLeague`) +
-      событие `events.priceResult`; preload + `ipcHandlers`.
-- [ ] **Хоткей** `priceCheck` (Alt+D): регистрация в `hotkeys.ts`; в main по нажатию
-      `clipboard.readText()` → детект предмета (`Item Class:`/`Класс предмета:`) →
-      `tradeClient.priceCheck` → `events.priceResult` в renderer + автопереход на вкладку.
-      Добавить priceCheck в перенастройку хоткеев (`HK_ACTIONS` + i18n `set.hk.priceCheck`).
-- [ ] **`PriceCheckTab.tsx`**: поле POESESSID (password) + выбор лиги + подсказка «Ctrl+C → хоткей»;
-      показ предмета, сводки цен (мин/медиана) и листингов; ручная вставка текста как фолбэк; i18n RU/EN.
-- [ ] **Тесты**: юнит парсера предмета + rate-limiter; end-to-end с реальным POESESSID/лигой.
+### Реализовано (коммит a4b3af1; typecheck+build+`npm run test:trade` зелёные)
+- **Вкладки**: `AppTabs.tsx` (Кампания/Прайс-чек), store `appTab`+`setAppTab` (персист `lastAppTab`),
+  свитч в `App.tsx`, стили `.app-tabs`, i18n.
+- **Движок (main):** `tradeCore.ts` — **чистое тестируемое ядро** (без electron): парсер предмета
+  (EN+RU client_strings, секции `--------`, нейм-плейт класс/рарность/имя/база, ilvl/уровень камня),
+  построение trade2-запроса по типу (уник→name+type; рарка/мэджик→база+rarity+ilvl≈; камень→type+
+  category+gem_level; валюта→type), сводка по **модальной валюте** (мин/медиана), rate-limiter
+  (синк по `x-rate-limit-*` + 429/Retry-After), фильтр лиг. `tradeClient.ts` — IO: `net.request` из
+  main, search→fetch, маппинг 401/403/Cloudflare/empty/протухшей сессии → `PriceCheckResult`,
+  локализованные ошибки RU/EN. `secretStore.ts` — POESESSID через `safeStorage` (DPAPI) в `secret.json`.
+- **IPC** namespace `trade` (`priceCheck`/`setSession`/`hasSession`/`getLeagues`) + событие
+  `events.priceResult`; `window.openExternal` (только https + хост pathofexile.com).
+- **Хоткей** `priceCheck` (`Alt+D`): main читает буфер → `tradeClient` → событие → автопереход на
+  вкладку; настраивается в Настройках (`HK_ACTIONS` + `set.hk.priceCheck`).
+- **`PriceCheckTab.tsx`**: поле POESESSID (с инструкцией), выбор лиги, подсказка «Ctrl+C → хоткей»,
+  ручная вставка текста, показ предмета + мин/медиана + листинги + «открыть на сайте». i18n RU/EN.
+- **Тесты + ревью**: `scripts/test-trade.mjs` (`npm run test:trade`, 31 проверка). Прошло
+  состязательное ревью (14 фиксов: host-allowlist openExternal, serialize-цепочка, кламп Retry-After,
+  `encodeURIComponent(id)`, first-match ilvl, детерминир. tie-break валюты, сброс устаревшей лиги,
+  гард слушателей StrictMode, спиннер всегда снимается).
+
+### Осталось проверить / доработать (фаза 1)
+- [ ] **Живой end-to-end** с реальным POESESSID+лигой (нельзя проверить без аккаунта; парсер/логика
+      покрыты юнит-тестами, сетевой путь — нет). Запуск `npm run dev`, диагностика `OVERLAY_DEBUG=1`.
+- [ ] **RU-клиент**: торговый API ждёт английские названия → RU-имена предмета не матчатся (помечается
+      note «возможно неточно»). Маппинг RU→EN баз/уников — позже.
+- [ ] **magic-предметы**: ищутся по полному магическому имени (нет отдельной строки базы) → часто
+      пусто. Извлечение базы — позже (словарь баз, как в EE2).
 
 ### Фаза 2 (отложено): оценка стэша
 По POESESSID: `/api/account/stashes` → вкладки/предметы → оценка (poe.ninja PoE2 economy для
 валюты/уников; рарки **приблизительно**), новая вкладка «Stash» с итогами **по вкладке + общим**.
 
 ## Что это
-**Act Compass** (*"Your path. Nothing missed."*) — десктоп-**оверлей** для **Path of Exile 2**:
+**Exile Companion** (бывш. Act Compass) — десктоп-**оверлей** для **Path of Exile 2**:
 трекер кампании по актам (обязательные/необязательные квесты с наградами), лейауты карт зон,
-гид «Что дальше?», автоопределение текущей зоны/уровня по логу игры, полная локализация RU/EN.
+гид «Что дальше?», автоопределение текущей зоны/уровня по логу игры, **прайс-чек предметов**
+(trade2 API по POESESSID, хоткей `Alt+D`), полная локализация RU/EN.
 Прозрачное окно поверх игры, несколько профилей персонажей. Цель — личное использование + публичный релиз.
 
 - **GitHub:** https://github.com/MAYZOSUPER/POE-2-ACT-Compas (ветка `main`, логин MAYZOSUPER)
@@ -113,6 +114,10 @@ Electron + TypeScript + React + Vite (**electron-vite**). Main/preload — **Com
 - **Оверлей:** прозрачное always-on-top окно, **сквозной режим** (🔒/`Ctrl+Shift+L`), прозрачность (CSS),
   сворачивание, перетаскивание, **показ на панели задач** (настройка). Двухпанельный вид (трекер + карта/компас).
 - **Системный трей**: клик — показать/скрыть; меню — показать/скрыть, сквозной режим, автоопределение, выход.
+- **Прайс-чек предметов (вкладка «Прайс-чек»)** — POESESSID (зашифрован `safeStorage`) + выбор лиги;
+  скопируй предмет (`Ctrl+C`) и нажми `Alt+D` → запрос к официальному **trade2 API** из main
+  (`net.request`, без `realm=poe2`), показ мин/медианы и листингов + кнопка «открыть на сайте».
+  Уники по имени, рарки/камни/валюта по базе+фильтрам (рарки — приблизительно). См. фазу 1 выше.
 - **Бренд Act Compass** + тёмно-золотая готическая тема.
 
 ## Настройки (`%APPDATA%/Act Compass/settings.json`)
@@ -187,6 +192,12 @@ poe2-leveling-overlay (areaId/интерлюдии/подсказки), exile-le
 ## Changelog
 > Новые изменения добавляй сверху: `<коммит> — что сделано`.
 
+- `a4b3af1` — **прайс-чек предметов: фаза 1 завершена**: вкладки Кампания/Прайс-чек; движок
+  `tradeCore.ts` (чистое ядро, 31 тест `npm run test:trade`) + `tradeClient.ts` (electron
+  `net.request` из main, `Cookie: POESESSID`, **без `realm=poe2`**, 429/Cloudflare/протухшая сессия);
+  `secretStore.ts` (safeStorage); IPC `trade` + `events.priceResult` + `window.openExternal`
+  (host-allowlist); хоткей `Alt+D`; UI `PriceCheckTab` (POESESSID/лига/листинги, RU/EN). Прошло
+  состязательное ревью (14 фиксов). typecheck+build+тесты зелёные.
 - `2324f54` — **Exile Companion: ребрендинг + каркас прайс-чека (фаза 1, чекпойнт)**:
   переименование Act Compass→Exile Companion (productName/builder/заголовки/трей/тулбар), миграция
   userData, типы вкладок (`AppTab`,`lastAppTab`,`league`) и прайс-чека (`HotkeyMap.priceCheck`,
