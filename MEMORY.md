@@ -1,15 +1,39 @@
 # Exile Companion (бывш. Act Compass) — память проекта (handoff)
 
 > Прочитай это первым в новой сессии. Здесь — что это, что готово, как запускать,
-> где что лежит, подводные камни и журнал изменений. Детальный план — в [PLAN.md](PLAN.md).
+> где что лежит, подводные камни и журнал изменений. Планы: кампания — [PLAN.md](PLAN.md);
+> companion (прайс-чек/стэш) + справка по trade2 API — [docs/plan-companion.md](docs/plan-companion.md).
+
+## 🧭 Для следующего Claude (на ЛЮБОМ ПК — прочти первым)
+**Между машинами едет ТОЛЬКО git-репозиторий** (GitHub `MAYZOSUPER/POE-2-ACT-Compas`). Полный
+переносимый handoff = **этот `MEMORY.md` + [docs/plan-companion.md](docs/plan-companion.md) + [PLAN.md](PLAN.md) + код**.
+Они самодостаточны — этого хватит, чтобы понять «что/как/на чём остановились».
+
+**НЕ едет на другой ПК (не полагайся на это):** авто-память Claude (`~/.claude/projects/.../memory/`),
+планы в `~/.claude/plans/`, `node_modules/`, `dist-release/`, `secret.json` (**POESESSID вводится заново
+на каждом ПК** в приложении), сырьё датасета `tools/dataset-build/sources/`. Собранный датасет
+`resources/data/` **закоммичен** — пересборка не нужна.
+
+**Поднять на новом ПК:** `git clone` → `npm install` (если бинарь Electron не докачался:
+`node node_modules/electron/install.js`) → `npm run dev`. Тесты прайс-чека: `npm run test:trade`.
+
+**Стиль работы (пожелания владельца):** общаться **по-русски**; Claude **пишет весь код** сам
+(не «обучай меня»), сам выбирает стек; цель — **законченное приложение** + публичный релиз позже.
+Платформа — Windows 11.
+
+**На чём остановились (2026-06-29):** фаза 1 (прайс-чек) **готова** (коммит `a4b3af1`). Дальше на
+выбор: (а) живой end-to-end тест прайс-чека с реальным POESESSID; (б) маппинг RU→EN названий; (в)
+**фаза 2 — оценка стэша** (спроектирована в [docs/plan-companion.md](docs/plan-companion.md)). Детали — секция «✅ Фаза 1 готова» ниже.
 
 ## ⚠️ Соглашение по ведению этого файла
 **После КАЖДОГО изменения дописывай строку в раздел [«Changelog»](#changelog) внизу**
 (что сделано + хэш коммита) и при необходимости обновляй разделы «Что сделано» / «TODO».
-Это рабочая память проекта — держи её в актуальном состоянии.
+Это рабочая память проекта — держи её в актуальном состоянии. Если правишь логику прайс-чека/стэша —
+обновляй и [docs/plan-companion.md](docs/plan-companion.md).
 
 ## ✅ Фаза 1 готова: ребрендинг «Exile Companion» + вкладки + прайс-чек (коммит a4b3af1)
-Полный план — `.claude/plans/groovy-finding-engelbart.md`. Спека trade2 API (из исследования
+Полный план + проверенная справка по trade2 API — **в репозитории**: [docs/plan-companion.md](docs/plan-companion.md)
+(на другом ПК будет доступен). Спека trade2 API (из исследования
 исходников **Exiled Exchange 2** kvan7 + **Awakened PoE Trade** SnosMe, MIT) встроена в код.
 Приложение из трекера кампании стало **companion** (кампания + **прайс-чек предметов**; **оценка
 стэша** — фаза 2). Авторизация **POESESSID**; захват предмета — пользователь жмёт **Ctrl+C**, затем
@@ -120,7 +144,7 @@ Electron + TypeScript + React + Vite (**electron-vite**). Main/preload — **Com
   Уники по имени, рарки/камни/валюта по базе+фильтрам (рарки — приблизительно). См. фазу 1 выше.
 - **Бренд Act Compass** + тёмно-золотая готическая тема.
 
-## Настройки (`%APPDATA%/Act Compass/settings.json`)
+## Настройки (`%APPDATA%/Exile Companion/settings.json`)
 `uiLang`, `nameLang`, `opacity` (CSS), `locked` (сквозной), `showInTaskbar`, `overlayVisible`,
 `tailerEnabled`+`logPath`+`autoAdvanceZone` (автодетект), `activeProfileId`, `hotkeys`.
 
@@ -161,17 +185,18 @@ npm run start          # запуск собранной версии
 npm run build          # сборка main/preload/renderer
 npm run package        # NSIS-инсталлятор + портативный .exe в dist-release/ (gitignored)
 ```
-Итог: `dist-release/win-unpacked/Act Compass.exe` (портативный) и `dist-release/Act Compass Setup 0.1.0.exe`.
+Итог: `dist-release/win-unpacked/Exile Companion.exe` (портативный) и `dist-release/Exile Companion Setup 0.1.0.exe`.
 Подписи нет → SmartScreen ругается (ок для своей сборки).
 
 ## Подводные камни (важно!)
 - **Игра в режиме «Окно»/«Окно без рамки»** — в эксклюзивном fullscreen оверлей не виден.
-- **Один экземпляр:** упакованный процесс — **`Act Compass.exe`** (не `electron`), держит single-instance lock.
+- **Один экземпляр:** упакованный процесс — **`Exile Companion.exe`** (не `electron`), держит single-instance lock.
   Если dev `npm run start` молча выходит (exit 0, лог «another instance holds the single-instance lock») —
-  закрой `Get-Process "Act Compass" | Stop-Process`. Пересборка `.exe` тоже требует закрыть запущенный.
+  закрой `Get-Process "Exile Companion" | Stop-Process`. Пересборка `.exe` тоже требует закрыть запущенный.
 - **Прозрачность — только через CSS** (`.app` opacity). Нативный `win.setOpacity()` на прозрачном окне валит
   приложение — НЕ возвращать.
-- **Данные/настройки** в `%APPDATA%/Act Compass/`. Запись атомарная, `readJson` срезает BOM.
+- **Данные/настройки** в `%APPDATA%/Exile Companion/` (миграция с `Act Compass` — один раз при старте).
+  Запись атомарная, `readJson` срезает BOM. POESESSID — зашифрован в `secret.json` (per-ПК, не в git).
 - **Автоопределение по умолчанию ВЫКЛ** (opt-in).
 
 ## Лицензии
@@ -192,6 +217,9 @@ poe2-leveling-overlay (areaId/интерлюдии/подсказки), exile-le
 ## Changelog
 > Новые изменения добавляй сверху: `<коммит> — что сделано`.
 
+- _(docs)_ — **портируемый handoff**: вынес companion-план + проверенную справку по trade2 API в репо
+  ([docs/plan-companion.md](docs/plan-companion.md)), добавил раздел «🧭 Для следующего Claude (на любом ПК)»,
+  починил ссылки на план и устаревшие пути/имя процесса (`Act Compass`→`Exile Companion`).
 - `a4b3af1` — **прайс-чек предметов: фаза 1 завершена**: вкладки Кампания/Прайс-чек; движок
   `tradeCore.ts` (чистое ядро, 31 тест `npm run test:trade`) + `tradeClient.ts` (electron
   `net.request` из main, `Cookie: POESESSID`, **без `realm=poe2`**, 429/Cloudflare/протухшая сессия);
@@ -213,7 +241,7 @@ poe2-leveling-overlay (areaId/интерлюдии/подсказки), exile-le
   (A) по зонам — `inferAutoCheck` отмечает обязательные квесты строго-предыдущих зон в `applyZoneEvent`;
   (B) детект боссов — новый `src/main/services/bossMatcher.ts` (двуязычный индекс EN+RU, containment),
   `logTailer` парсит реплику босса + награду пассивок → событие `bossDefeat`. Батч IPC `progress.setQuestsDone`,
-  поле `progress.autoCompletedQuestIds` (bundle v3). **Исследование по логу — в `.claude/plans/groovy-finding-engelbart.md`.**
+  поле `progress.autoCompletedQuestIds` (bundle v3). **Исследование по логу — в [docs/plan-companion.md](docs/plan-companion.md) (приложение).**
   Тесты: bossMatcher 17/17, парсинг+корреляция 11/11, зональная инференция OK; typecheck+build зелёные.
 - `6739a36` — **раскладка наград по квестам**: наведение на строку счётчика наград (напр. «Очки
   пассивок») показывает popover со всеми квестами этой награды — ✓ получено / ○ осталось (акт+значение).
