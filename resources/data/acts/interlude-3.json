@@ -46,7 +46,10 @@
     {
       "areaId": "il3-howling-caves",
       "name": "Howling Caves",
-      "layout": null
+      "layout": "il3-howling-caves",
+      "xref": {
+        "exileUiAreaId": "p3_4"
+      }
     },
     {
       "areaId": "il3-the-glade",
@@ -135,7 +138,7 @@
       "layout": null,
       "notes": "Боковая зона от Sealed Caverns.",
       "autoComplete": {
-        "onZoneEnter": null
+        "onZoneEnter": "p3_4"
       },
       "notesRu": "Боковая зона от Sealed Caverns."
     },

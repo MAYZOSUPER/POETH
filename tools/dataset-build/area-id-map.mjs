@@ -26,6 +26,7 @@ export const AREA_ID_MAP = {
   g2_town: 'The Ardura Caravan',
   g2_2: "Traitor's Passage",
   g2_3: 'The Halani Gates',
+  g2_3a: 'The Halani Gates',
   g2_4_1: 'Keth',
   g2_4_2: 'The Lost City',
   g2_4_3: 'Buried Shrines',
@@ -40,6 +41,7 @@ export const AREA_ID_MAP = {
   g2_10_2: 'Mawdun Mine',
   g2_12_1: 'The Dreadnought',
   g2_12_2: 'The Dreadnought Vanguard',
+  g2_12: 'The Dreadnought',
   g2_13: 'Trial of the Sekhemas',
   // Act 3
   g3_1: 'Sandswept Marsh',
@@ -54,6 +56,8 @@ export const AREA_ID_MAP = {
   g3_7: 'The Azak Bog',
   g3_8: 'The Drowned City',
   g3_9: 'The Molten Vault',
+  g3_10: 'The Trial of Chaos',
+  g3_10_airlock: 'The Trial of Chaos',
   g3_11: 'Apex of Filth',
   g3_12: 'Temple of Kopec',
   g3_14: 'Utzaal',
@@ -77,6 +81,7 @@ export const AREA_ID_MAP = {
   g4_10: 'The Excavation',
   g4_11_1b: 'Ngakanu',
   g4_11_2: 'Heart of the Tribe',
+  g4_13: "Plunder's Point",
   // Interludes (p = interlude "part")
   p1_1: 'Scorched Farmlands',
   p1_2: 'Stones of Serle',
@@ -84,16 +89,22 @@ export const AREA_ID_MAP = {
   p1_4: 'Holten',
   p1_5: 'Wolvenhold',
   p1_6: 'Holten Estate',
+  p1_town: 'The Refuge',
   p2_1: 'The Khari Crossing',
   p2_2: 'Pools of Khatal',
   p2_3: 'Sel Khari Sanctuary',
   p2_5: 'The Galai Gates',
   p2_6: 'Qimah',
   p2_7: 'Qimah Reservoir',
+  p2_town: 'The Khari Bazaar',
   p3_town: 'The Glade',
   p3_1: 'Ashen Forest',
   p3_2: 'Kriar Village',
-  p3_5: 'Kriar Peaks'
+  p3_3: 'Glacial Tarn',
+  p3_4: 'Howling Caves',
+  p3_5: 'Kriar Peaks',
+  p3_6: 'Etched Ravine',
+  p3_7: 'The Cuachic Vault'
 }
 
 /** Normalize a zone name for matching (lowercase, drop leading "the", parens, punctuation). */

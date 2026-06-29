@@ -888,5 +888,13 @@
     ],
     "rotationLocked": false,
     "attribution": "Exile-UI (MIT)"
+  },
+  "il3-howling-caves": {
+    "areaId": "il3-howling-caves",
+    "files": [
+      "p3_4 1.jpg"
+    ],
+    "rotationLocked": false,
+    "attribution": "Exile-UI (MIT)"
   }
 }

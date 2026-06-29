@@ -102,7 +102,8 @@ Electron + TypeScript + React + Vite (**electron-vite**). Main/preload — **Com
 - **Лейауты карт для всех актов и интерлюдий** (77 зон) — картинки Exile-UI (MIT), ленивая загрузка
   с GitHub raw + кэш в `%APPDATA%`, через кастомный протокол `poe2img://`.
 - **Автоопределение (опц., пилюля «Авто»)** — чтение `Client.txt`: текущая зона + уровень. Сам находит
-  лог в любых Steam-библиотеках (читает `libraryfolders.vdf`).
+  лог в любых Steam-библиотеках (читает `libraryfolders.vdf`) и берёт **самый свежий по mtime**
+  (несколько установок/протухшие логи — реальный кейс). Парсит уровень формата `Name (Class) is now level N`.
 - **Автопрогрессия (opt-in, `autoCheckQuests`)** — авто-отметка квестов по логу, **никогда не снимает**
   ручные галочки, бейдж «авто». Два механизма: (A) **по зонам** — обязательные квесты строго-предыдущих
   зон маршрута (язык-независимо, areaId); (B) **детект боссов** — `bossMatcher` ловит имя босса в реплике
@@ -226,6 +227,9 @@ poe2-leveling-overlay (areaId/интерлюдии/подсказки), exile-le
   `secretStore.ts` (safeStorage); IPC `trade` + `events.priceResult` + `window.openExternal`
   (host-allowlist); хоткей `Alt+D`; UI `PriceCheckTab` (POESESSID/лига/листинги, RU/EN). Прошло
   состязательное ревью (14 фиксов). typecheck+build+тесты зелёные.
+- `3df9bee` — **лог-тейлер: сверка с живым логом 0.5** (с другого ПК): фикс регэкспа уровня
+  (формат `Name (Class) is now level N`); выбор самого свежего `Client.txt` по mtime (брал протухший
+  C:-лог вместо активного); +11 имён зон 0.5 в `area-id-map.mjs` → `areas.json`. build:data+validate ОК.
 - `2324f54` — **Exile Companion: ребрендинг + каркас прайс-чека (фаза 1, чекпойнт)**:
   переименование Act Compass→Exile Companion (productName/builder/заголовки/трей/тулбар), миграция
   userData, типы вкладок (`AppTab`,`lastAppTab`,`league`) и прайс-чека (`HotkeyMap.priceCheck`,
