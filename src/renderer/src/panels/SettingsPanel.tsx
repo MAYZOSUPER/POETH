@@ -15,7 +15,8 @@ const HK_ACTIONS: { action: HotkeyAction; labelKey: string }[] = [
   { action: 'toggleVisible', labelKey: 'set.hk.toggle' },
   { action: 'toggleLock', labelKey: 'set.hk.lock' },
   { action: 'prevStep', labelKey: 'set.hk.prev' },
-  { action: 'nextStep', labelKey: 'set.hk.next' }
+  { action: 'nextStep', labelKey: 'set.hk.next' },
+  { action: 'priceCheck', labelKey: 'set.hk.priceCheck' }
 ]
 
 const CODE_KEY_MAP: Record<string, string> = {

@@ -1,8 +1,10 @@
 import { create } from 'zustand'
 import type {
+  AppTab,
   Dataset,
   HotkeyAction,
   LevelEvent,
+  PriceCheckResult,
   ProfileExportResult,
   ProfileImportResult,
   ProfileMeta,
@@ -28,12 +30,28 @@ interface AppState {
   /** act id of the detected zone, for the banner prefix */
   detectedActId: string | null
   tailerStatus: TailerStatus | null
+  /** top-level tab: campaign tracker or price-check */
+  appTab: AppTab
   /** left-pane view: full checklist or the "What's Next" guided step */
   viewMode: 'checklist' | 'whatsnext'
   /** pointer into the linear route (getRoute()) for "What's Next" */
   currentStepIndex: number
+  // ---- price check ----
+  /** whether a POESESSID is stored in main */
+  sessionSet: boolean
+  /** available PoE2 trade leagues */
+  leagues: string[]
+  /** last price-check result (null = none yet) */
+  priceResult: PriceCheckResult | null
+  /** a price-check is in flight */
+  priceLoading: boolean
 
   init: () => Promise<void>
+  setAppTab: (tab: AppTab) => void
+  /** store the POESESSID (encrypted in main); refreshes sessionSet */
+  setSession: (poesessid: string) => Promise<void>
+  /** price-check pasted item text (manual fallback for the hotkey) */
+  runPriceCheck: (itemText: string) => Promise<void>
   selectAct: (actId: string) => void
   selectZone: (areaId: string | null) => void
   setViewMode: (mode: 'checklist' | 'whatsnext') => void
@@ -74,6 +92,10 @@ let zoneByName: Record<string, ZoneRef> = {}
 // Full-area fallback (incl. towns/trials): areaId -> actId, display name -> areaId.
 let areaToActId: Record<string, string> = {}
 let nameToExileId: Record<string, string> = {}
+
+// Guard so the main->renderer IPC listeners are registered exactly once, even if
+// init() runs twice (React 18 StrictMode double-invokes effects in development).
+let listenersWired = false
 
 // Linear campaign route (ordered zones across all acts/interludes) for "What's Next".
 export type RouteStep = {
@@ -226,8 +248,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   detectedZoneNameEn: null,
   detectedActId: null,
   tailerStatus: null,
+  appTab: 'campaign',
   viewMode: 'whatsnext',
   currentStepIndex: 0,
+  sessionSet: false,
+  leagues: [],
+  priceResult: null,
+  priceLoading: false,
 
   async init() {
     const dataset = await api().dataset.get()
@@ -252,24 +279,29 @@ export const useAppStore = create<AppState>((set, get) => ({
       null
     const initialStep = routeSteps.find((s) => s.actId === selectedActId)?.index ?? 0
 
-    // keep renderer in sync with main-driven changes
-    api().onActiveProfileChanged(async (id) => {
-      if (!id) return
-      const prog = await api().progress.get(id)
-      set({ activeProfileId: id, progress: prog })
-    })
-    api().onHotkey((action) => void get().handleHotkey(action))
+    // keep renderer in sync with main-driven changes (register exactly once)
+    if (!listenersWired) {
+      listenersWired = true
+      api().onActiveProfileChanged(async (id) => {
+        if (!id) return
+        const prog = await api().progress.get(id)
+        set({ activeProfileId: id, progress: prog })
+      })
+      api().onHotkey((action) => void get().handleHotkey(action))
 
-    // Advisory auto-detection from the game log (zone + level). Never auto-checks quests.
-    api().onTailerStatus((status) => set({ tailerStatus: status }))
-    api().onZoneChange((e: ZoneEvent) => applyZoneEvent(get, set, e))
-    api().onLevelChange((e: LevelEvent) => void get().setLevel(e.level))
-    api().onBossDefeat((e) => {
-      const st = get()
-      if (!st.settings?.autoCheckQuests) return
-      if (st.progress?.completedQuestIds[e.questId]) return
-      void st.applyAutoChecks([e.questId])
-    })
+      // Advisory auto-detection from the game log (zone + level). Never auto-checks quests.
+      api().onTailerStatus((status) => set({ tailerStatus: status }))
+      api().onZoneChange((e: ZoneEvent) => applyZoneEvent(get, set, e))
+      api().onLevelChange((e: LevelEvent) => void get().setLevel(e.level))
+      api().onBossDefeat((e) => {
+        const st = get()
+        if (!st.settings?.autoCheckQuests) return
+        if (st.progress?.completedQuestIds[e.questId]) return
+        void st.applyAutoChecks([e.questId])
+      })
+      // Hotkey-triggered price-check result arrives from main; surface it.
+      api().onPriceResult((result) => set({ priceResult: result, priceLoading: false }))
+    }
 
     const tailerStatus = await api().tailer.status()
 
@@ -283,6 +315,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       selectedZoneAreaId: null,
       currentStepIndex: initialStep,
       tailerStatus,
+      appTab: settings.lastAppTab ?? 'campaign',
       ready: true
     })
 
@@ -296,6 +329,44 @@ export const useAppStore = create<AppState>((set, get) => ({
       })
     }
     if (tailerStatus.level) void get().setLevel(tailerStatus.level)
+
+    // Load price-check metadata in the background (network for leagues).
+    void api()
+      .trade.hasSession()
+      .then((sessionSet) => set({ sessionSet }))
+    void api()
+      .trade.getLeagues()
+      .then((leagues) => {
+        set({ leagues })
+        // If the saved league no longer exists (temp leagues rotate), pick a valid one
+        // so price-checks don't fail on a stale league.
+        const cur = get().settings?.league
+        if (leagues.length && cur && !leagues.includes(cur)) {
+          void get().patchSettings({ league: leagues.includes('Standard') ? 'Standard' : leagues[0] })
+        }
+      })
+  },
+
+  setAppTab(tab) {
+    set({ appTab: tab })
+    void api().settings.set({ lastAppTab: tab })
+  },
+
+  async setSession(poesessid) {
+    const sessionSet = await api().trade.setSession(poesessid)
+    set({ sessionSet })
+  },
+
+  async runPriceCheck(itemText) {
+    if (get().priceLoading) return
+    set({ appTab: 'priceCheck', priceLoading: true })
+    void api().settings.set({ lastAppTab: 'priceCheck' })
+    try {
+      const result = await api().trade.priceCheck(itemText)
+      set({ priceResult: result, priceLoading: false })
+    } catch {
+      set({ priceResult: { status: 'error', message: 'unexpected error' }, priceLoading: false })
+    }
   },
 
   selectAct(actId) {
@@ -483,6 +554,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       // main already flipped the lock; refresh settings to reflect it
       const settings = await api().settings.get()
       set({ settings })
+      return
+    }
+    if (action === 'priceCheck') {
+      // main is reading the clipboard + querying; show the tab + spinner now.
+      // The result arrives via onPriceResult.
+      set({ appTab: 'priceCheck', priceLoading: true })
+      void api().settings.set({ lastAppTab: 'priceCheck' })
       return
     }
     if (action === 'nextStep') get().stepNext()

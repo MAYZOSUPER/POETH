@@ -7,6 +7,7 @@ import type {
   Dataset,
   HotkeyAction,
   LevelEvent,
+  PriceCheckResult,
   ProfileExportResult,
   ProfileImportResult,
   ProfileMeta,
@@ -55,10 +56,17 @@ export const IPC = {
     status: 'tailer:status',
     pickLogFile: 'tailer:pickLogFile'
   },
+  trade: {
+    priceCheck: 'trade:priceCheck',
+    setSession: 'trade:setSession',
+    hasSession: 'trade:hasSession',
+    getLeagues: 'trade:getLeagues'
+  },
   window: {
     setLocked: 'window:setLocked',
     toggleVisible: 'window:toggleVisible',
-    minimize: 'window:minimize'
+    minimize: 'window:minimize',
+    openExternal: 'window:openExternal'
   },
   hotkeys: {
     suspend: 'hotkeys:suspend',
@@ -70,7 +78,8 @@ export const IPC = {
     tailerStatus: 'event:tailerStatus',
     bossDefeat: 'event:bossDefeat',
     hotkey: 'event:hotkey',
-    activeProfileChanged: 'event:activeProfileChanged'
+    activeProfileChanged: 'event:activeProfileChanged',
+    priceResult: 'event:priceResult'
   }
 } as const
 
@@ -125,11 +134,23 @@ export interface OverlayApi {
     /** Open a file dialog to choose Client.txt; returns the chosen path or null. */
     pickLogFile(): Promise<string | null>
   }
+  trade: {
+    /** Price-check the given item clipboard text against the trade2 API. */
+    priceCheck(itemText: string): Promise<PriceCheckResult>
+    /** Store the POESESSID (encrypted at rest). Returns true once a session is set. */
+    setSession(poesessid: string): Promise<boolean>
+    /** Whether a POESESSID is currently stored. */
+    hasSession(): Promise<boolean>
+    /** Current PoE2 trade leagues (ids); falls back to a static list when offline. */
+    getLeagues(): Promise<string[]>
+  }
   window: {
     /** true = overlay ignores the mouse entirely (clicks pass through to the game) */
     setLocked(locked: boolean): void
     toggleVisible(): void
     minimize(): void
+    /** open an https URL in the user's default browser */
+    openExternal(url: string): void
   }
   hotkeys: {
     /** Temporarily unregister all global shortcuts (while the user rebinds one). */
@@ -143,4 +164,6 @@ export interface OverlayApi {
   onBossDefeat(cb: (e: BossDefeatEvent) => void): () => void
   onHotkey(cb: (action: HotkeyAction) => void): () => void
   onActiveProfileChanged(cb: (profileId: string | null) => void): () => void
+  /** A hotkey-triggered price-check finished (main read the clipboard for us). */
+  onPriceResult(cb: (result: PriceCheckResult) => void): () => void
 }

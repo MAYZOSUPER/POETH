@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAppStore } from './store/useAppStore'
 import { Toolbar } from './panels/Toolbar'
+import { AppTabs } from './panels/AppTabs'
 import { ProfileBar } from './panels/ProfileBar'
 import { ActTabs } from './panels/ActTabs'
 import { ZoneBanner } from './panels/ZoneBanner'
@@ -11,11 +12,13 @@ import { RewardsSummary } from './panels/RewardsSummary'
 import { AscendancyPanel } from './panels/AscendancyPanel'
 import { SettingsPanel } from './panels/SettingsPanel'
 import { RightPanel } from './panels/RightPanel'
+import { PriceCheckTab } from './panels/PriceCheckTab'
 import { ViewToggle } from './components/ViewToggle'
 
 export default function App() {
   const ready = useAppStore((s) => s.ready)
   const init = useAppStore((s) => s.init)
+  const appTab = useAppStore((s) => s.appTab)
   const viewMode = useAppStore((s) => s.viewMode)
   const opacity = useAppStore((s) => s.settings?.opacity ?? 1)
   const [showSettings, setShowSettings] = useState(false)
@@ -30,33 +33,42 @@ export default function App() {
       {!ready ? (
         <div className="loading">Загрузка…</div>
       ) : (
-        <div className="body">
-          <div className="left">
-            <ProfileBar />
-            <ActTabs />
-            <ZoneBanner />
-            <div className="scroll">
-              {showSettings ? (
-                <SettingsPanel />
-              ) : (
-                <>
-                  <ViewToggle />
-                  <RewardsSummary />
-                  <AscendancyPanel />
-                  {viewMode === 'whatsnext' ? (
-                    <WhatsNextPanel />
+        <>
+          <AppTabs />
+          {appTab === 'priceCheck' ? (
+            <div className="body">
+              <PriceCheckTab />
+            </div>
+          ) : (
+            <div className="body">
+              <div className="left">
+                <ProfileBar />
+                <ActTabs />
+                <ZoneBanner />
+                <div className="scroll">
+                  {showSettings ? (
+                    <SettingsPanel />
                   ) : (
                     <>
-                      <GemHintsPanel />
-                      <QuestChecklistPanel />
+                      <ViewToggle />
+                      <RewardsSummary />
+                      <AscendancyPanel />
+                      {viewMode === 'whatsnext' ? (
+                        <WhatsNextPanel />
+                      ) : (
+                        <>
+                          <GemHintsPanel />
+                          <QuestChecklistPanel />
+                        </>
+                      )}
                     </>
                   )}
-                </>
-              )}
+                </div>
+              </div>
+              <RightPanel />
             </div>
-          </div>
-          <RightPanel />
-        </div>
+          )}
+        </>
       )}
     </div>
   )

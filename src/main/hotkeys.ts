@@ -15,6 +15,7 @@ export function registerHotkeys(map: HotkeyMap, onAction: (action: HotkeyAction)
   bind(map.toggleLock, 'toggleLock')
   bind(map.prevStep, 'prevStep')
   bind(map.nextStep, 'nextStep')
+  bind(map.priceCheck, 'priceCheck')
 }
 
 export function unregisterHotkeys(): void {

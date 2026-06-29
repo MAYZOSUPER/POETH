@@ -383,7 +383,12 @@ export interface TailerStatus {
   level?: number
 }
 
-export type HotkeyAction = 'toggleVisible' | 'toggleLock' | 'prevStep' | 'nextStep'
+export type HotkeyAction =
+  | 'toggleVisible'
+  | 'toggleLock'
+  | 'prevStep'
+  | 'nextStep'
+  | 'priceCheck'
 
 /** Window-space rectangle reported by the renderer for selective click-through. */
 export interface InteractiveRect {

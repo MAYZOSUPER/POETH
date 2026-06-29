@@ -1,4 +1,4 @@
-import { ipcMain, dialog } from 'electron'
+import { ipcMain, dialog, clipboard, shell } from 'electron'
 import { promises as fs } from 'fs'
 import { IPC } from '@shared/ipc'
 import type {
@@ -15,6 +15,8 @@ import { loadDataset } from './services/questDataset'
 import { buildBossIndex } from './services/bossMatcher'
 import { resolveLayout } from './services/layoutResolver'
 import { logTailer } from './services/logTailer'
+import * as trade from './services/tradeClient'
+import * as secret from './services/secretStore'
 import { getOverlayWindow } from './overlayWindow'
 import { setLocked } from './clickThrough'
 import { registerHotkeys, unregisterHotkeys } from './hotkeys'
@@ -88,9 +90,27 @@ export async function dispatchHotkey(action: HotkeyAction): Promise<void> {
     const s = await getSettings()
     const next = await updateSettings({ locked: !s.locked })
     setLocked(next.locked)
+  } else if (action === 'priceCheck') {
+    // Read the item the user just copied (Ctrl+C) and price-check it. The result
+    // is pushed to the renderer, which surfaces the Price Check tab.
+    void priceCheckClipboard()
   }
-  // Always forward so the renderer can update UI (step navigation, lock badge).
+  // Always forward so the renderer can update UI (step navigation, lock badge,
+  // switch to the Price Check tab + show a spinner).
   getOverlayWindow()?.webContents.send(IPC.events.hotkey, action)
+}
+
+/** Price-check whatever is currently on the clipboard, push the result to the UI. */
+async function priceCheckClipboard(): Promise<void> {
+  const text = clipboard.readText()
+  try {
+    const result = await trade.priceCheck(text)
+    send(IPC.events.priceResult, result)
+  } catch (e) {
+    // Always settle the renderer's spinner, even on an unexpected throw.
+    console.error('[hotkey] price-check error:', e)
+    send(IPC.events.priceResult, { status: 'error', message: 'unexpected error' })
+  }
 }
 
 export function registerIpcHandlers(): void {
@@ -221,12 +241,33 @@ export function registerIpcHandlers(): void {
     return path
   })
 
+  // ---- price-check (PoE2 trade2 API) ----
+  ipcMain.handle(IPC.trade.priceCheck, (_e, text: string) => trade.priceCheck(text))
+  ipcMain.handle(IPC.trade.setSession, async (_e, poesessid: string) => {
+    await secret.setSession(poesessid)
+    return secret.hasSession()
+  })
+  ipcMain.handle(IPC.trade.hasSession, () => secret.hasSession())
+  ipcMain.handle(IPC.trade.getLeagues, () => trade.getLeagues())
+
   // ---- window controls (fire-and-forget) ----
   ipcMain.on(IPC.window.setLocked, (_e, value: boolean) => setLocked(!!value))
   ipcMain.on(IPC.window.toggleVisible, () => {
     void toggleOverlayVisible()
   })
   ipcMain.on(IPC.window.minimize, () => getOverlayWindow()?.minimize())
+  ipcMain.on(IPC.window.openExternal, (_e, url: string) => {
+    // Only ever open https links to the official trade host.
+    if (typeof url !== 'string') return
+    try {
+      const parsed = new URL(url)
+      if (parsed.protocol !== 'https:') return
+      if (parsed.hostname !== 'www.pathofexile.com' && parsed.hostname !== 'pathofexile.com') return
+      void shell.openExternal(url)
+    } catch {
+      // malformed URL — ignore
+    }
+  })
 
   // ---- hotkey rebinding: suspend globals while the user captures a combo ----
   ipcMain.on(IPC.hotkeys.suspend, () => unregisterHotkeys())

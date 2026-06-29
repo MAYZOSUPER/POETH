@@ -49,10 +49,17 @@ const api: OverlayApi = {
     status: () => ipcRenderer.invoke(IPC.tailer.status),
     pickLogFile: () => ipcRenderer.invoke(IPC.tailer.pickLogFile)
   },
+  trade: {
+    priceCheck: (text) => ipcRenderer.invoke(IPC.trade.priceCheck, text),
+    setSession: (poesessid) => ipcRenderer.invoke(IPC.trade.setSession, poesessid),
+    hasSession: () => ipcRenderer.invoke(IPC.trade.hasSession),
+    getLeagues: () => ipcRenderer.invoke(IPC.trade.getLeagues)
+  },
   window: {
     setLocked: (locked) => ipcRenderer.send(IPC.window.setLocked, locked),
     toggleVisible: () => ipcRenderer.send(IPC.window.toggleVisible),
-    minimize: () => ipcRenderer.send(IPC.window.minimize)
+    minimize: () => ipcRenderer.send(IPC.window.minimize),
+    openExternal: (url) => ipcRenderer.send(IPC.window.openExternal, url)
   },
   hotkeys: {
     suspend: () => ipcRenderer.send(IPC.hotkeys.suspend),
@@ -63,7 +70,8 @@ const api: OverlayApi = {
   onTailerStatus: (cb) => subscribe(IPC.events.tailerStatus, cb),
   onBossDefeat: (cb) => subscribe(IPC.events.bossDefeat, cb),
   onHotkey: (cb) => subscribe(IPC.events.hotkey, cb),
-  onActiveProfileChanged: (cb) => subscribe(IPC.events.activeProfileChanged, cb)
+  onActiveProfileChanged: (cb) => subscribe(IPC.events.activeProfileChanged, cb),
+  onPriceResult: (cb) => subscribe(IPC.events.priceResult, cb)
 }
 
 contextBridge.exposeInMainWorld('overlayApi', api)
