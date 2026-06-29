@@ -119,7 +119,7 @@ export function registerIpcHandlers(): void {
     const opts = {
       title: 'Экспорт профиля',
       defaultPath: `${safeName}.actcompass.json`,
-      filters: [{ name: 'Act Compass profile', extensions: ['json'] }]
+      filters: [{ name: 'Exile Companion profile', extensions: ['json'] }]
     }
     const result = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts)
     if (result.canceled || !result.filePath) return { status: 'canceled' as const }
@@ -135,7 +135,7 @@ export function registerIpcHandlers(): void {
     const opts = {
       title: 'Импорт профиля',
       properties: ['openFile' as const],
-      filters: [{ name: 'Act Compass profile', extensions: ['json'] }]
+      filters: [{ name: 'Exile Companion profile', extensions: ['json'] }]
     }
     const result = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
     if (result.canceled || result.filePaths.length === 0) return { status: 'canceled' as const }

@@ -25,7 +25,7 @@ export function Toolbar({ showSettings, onToggleSettings }: Props) {
         <span className="brand-mark">
           <BrandImg file="app_icon.png" className="brand-img" fallback={<CompassMark size={24} />} />
         </span>
-        <span className="brand-title">Act Compass</span>
+        <span className="brand-title">Exile Companion</span>
       </div>
       <div className="tools">
         <button

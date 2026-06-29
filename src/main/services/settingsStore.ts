@@ -20,11 +20,14 @@ export function defaultSettings(): Settings {
     tailerEnabled: false,
     autoAdvanceZone: true,
     autoCheckQuests: false,
+    lastAppTab: 'campaign',
+    league: 'Standard',
     hotkeys: {
       toggleVisible: 'Control+Shift+O',
       toggleLock: 'Control+Shift+L',
       prevStep: 'Control+Shift+[',
-      nextStep: 'Control+Shift+]'
+      nextStep: 'Control+Shift+]',
+      priceCheck: 'Alt+D'
     }
   }
 }

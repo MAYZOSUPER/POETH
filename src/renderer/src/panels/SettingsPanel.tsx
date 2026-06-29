@@ -7,7 +7,8 @@ const DEFAULT_HOTKEYS: HotkeyMap = {
   toggleVisible: 'Control+Shift+O',
   toggleLock: 'Control+Shift+L',
   prevStep: 'Control+Shift+[',
-  nextStep: 'Control+Shift+]'
+  nextStep: 'Control+Shift+]',
+  priceCheck: 'Alt+D'
 }
 
 const HK_ACTIONS: { action: HotkeyAction; labelKey: string }[] = [

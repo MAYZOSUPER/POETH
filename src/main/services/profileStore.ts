@@ -230,7 +230,7 @@ export async function getProfileBundle(id: string): Promise<ProfileBundle | null
     format: EXPORT_FORMAT,
     formatVersion: EXPORT_VERSION,
     exportedAt: Date.now(),
-    app: { name: 'Act Compass', version: app.getVersion() },
+    app: { name: 'Exile Companion', version: app.getVersion() },
     profile: { name: meta.name, className: meta.className },
     progress: {
       schemaVersion: progress.schemaVersion,
@@ -291,7 +291,7 @@ function sanitizeBundle(raw: unknown): ProfileBundle | null {
     format: EXPORT_FORMAT,
     formatVersion: clampInt(b.formatVersion, 1, 9999, 1),
     exportedAt: Number(b.exportedAt) || 0,
-    app: { name: 'Act Compass', version: app.getVersion() },
+    app: { name: 'Exile Companion', version: app.getVersion() },
     profile: {
       name: profile.name.trim() || 'Импортированный',
       className: typeof profile.className === 'string' ? profile.className : undefined

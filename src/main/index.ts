@@ -1,5 +1,6 @@
 import { app, BrowserWindow, protocol } from 'electron'
-import { promises as fs } from 'fs'
+import { promises as fs, existsSync, cpSync } from 'fs'
+import { join, dirname } from 'path'
 import { createOverlayWindow } from './overlayWindow'
 import { initClickThrough } from './clickThrough'
 import { registerHotkeys, unregisterHotkeys } from './hotkeys'
@@ -41,7 +42,24 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(bootstrap)
 }
 
+// One-time rename migration: the product was renamed Act Compass -> Exile Companion,
+// which moves userData to %APPDATA%/Exile Companion. Copy the old folder once so
+// existing profiles/progress/settings are preserved.
+function migrateUserData(): void {
+  try {
+    const current = app.getPath('userData') // %APPDATA%/Exile Companion
+    const legacy = join(dirname(current), 'Act Compass')
+    if (legacy !== current && existsSync(legacy) && !existsSync(current)) {
+      cpSync(legacy, current, { recursive: true })
+      console.log('[migrate] userData copied from "Act Compass" to "Exile Companion"')
+    }
+  } catch (e) {
+    console.error('[migrate] userData migration failed:', e)
+  }
+}
+
 async function bootstrap(): Promise<void> {
+  migrateUserData()
   protocol.handle('poe2img', async (request) => {
     try {
       const url = new URL(request.url)

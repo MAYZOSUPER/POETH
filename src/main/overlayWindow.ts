@@ -9,7 +9,7 @@ export function getOverlayWindow(): BrowserWindow | null {
 
 export function createOverlayWindow(): BrowserWindow {
   win = new BrowserWindow({
-    title: 'Act Compass',
+    title: 'Exile Companion',
     width: 820,
     height: 720,
     minWidth: 560,

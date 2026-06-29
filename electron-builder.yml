@@ -1,6 +1,6 @@
 appId: com.actcompass.app
-productName: Act Compass
-copyright: Copyright © 2026 PoE2 Quest Overlay contributors
+productName: Exile Companion
+copyright: Copyright © 2026 Exile Companion contributors
 
 directories:
   output: dist-release

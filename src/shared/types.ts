@@ -270,9 +270,14 @@ export interface HotkeyMap {
   toggleLock: string
   prevStep: string
   nextStep: string
+  /** price-check the item currently in the clipboard */
+  priceCheck: string
 }
 
 export type UiLang = 'ru' | 'en'
+
+/** top-level app view */
+export type AppTab = 'campaign' | 'priceCheck'
 
 export interface Settings {
   schemaVersion: number
@@ -298,7 +303,47 @@ export interface Settings {
   /** default OFF — quest completion can never be reliably auto-detected */
   autoCheckQuests: boolean
   hotkeys: HotkeyMap
+  /** last opened top-level tab */
+  lastAppTab: AppTab
+  /** PoE2 trade league for price-check, e.g. "Standard" */
+  league: string
 }
+
+// ---------------------------------------------------------------------------
+// Price check (PoE2 trade API)
+// ---------------------------------------------------------------------------
+
+export interface TradeListing {
+  amount: number
+  currency: string
+  account?: string
+  /** ready-made @whisper string from the trade API */
+  whisper?: string
+  indexed?: string
+}
+
+export interface PriceResult {
+  /** human label of what we searched (item/base name) */
+  query: string
+  league: string
+  /** total listings the API reported */
+  total: number
+  /** top listings (cheapest first) */
+  listings: TradeListing[]
+  min?: { amount: number; currency: string }
+  median?: { amount: number; currency: string }
+  /** caveat, e.g. "rare matched by base only (approx)" */
+  note?: string
+  /** pathofexile.com/trade2 URL to open the search in a browser */
+  searchUrl?: string
+}
+
+export type PriceCheckResult =
+  | { status: 'ok'; item: { name: string; rarity: string }; result: PriceResult }
+  | { status: 'no-session' }
+  | { status: 'not-an-item' }
+  | { status: 'empty'; item: { name: string; rarity: string } }
+  | { status: 'error'; message: string }
 
 // ---------------------------------------------------------------------------
 // Events (main -> renderer)

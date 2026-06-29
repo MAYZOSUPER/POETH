@@ -1,4 +1,4 @@
-# Act Compass — память проекта (handoff)
+# Exile Companion (бывш. Act Compass) — память проекта (handoff)
 
 > Прочитай это первым в новой сессии. Здесь — что это, что готово, как запускать,
 > где что лежит, подводные камни и журнал изменений. Детальный план — в [PLAN.md](PLAN.md).
@@ -7,6 +7,51 @@
 **После КАЖДОГО изменения дописывай строку в раздел [«Changelog»](#changelog) внизу**
 (что сделано + хэш коммита) и при необходимости обновляй разделы «Что сделано» / «TODO».
 Это рабочая память проекта — держи её в актуальном состоянии.
+
+## 🚧 В работе: ребрендинг → «Exile Companion» + прайс-чек (фаза 1)
+Полный план — `.claude/plans/groovy-finding-engelbart.md`. Приложение расширяется из трекера
+кампании в **companion** (кампания + **прайс-чек предметов**; **оценка стэша** — фаза 2).
+Решения: делаем **фазами** (прайс-чек → стэш); авторизация **POESESSID** (через Electron
+`safeStorage`); захват предмета — **пользователь сам жмёт Ctrl+C**, затем хоткей читает буфер
+(без нативных либ); новое имя — **Exile Companion**. Опора по технике: **Exiled Exchange 2**
+(kvan7, MIT, PoE2-парсер предметов) и **Awakened PoE Trade** (SnosMe, MIT, `net.request`+session+rate-limit).
+Trade API: `POST /api/trade2/search/poe2/<league>` → ids → `GET /api/trade2/fetch/<ids>?query=<id>&realm=poe2`,
+из **main** через Electron `net.request` (Cloudflare обходится сессией+UA; не renderer fetch).
+
+### Сделано (этот чекпойнт, typecheck+build зелёные)
+- **Ребрендинг** Act Compass → Exile Companion: `package.json` (productName/description),
+  `electron-builder.yml` (productName; **appId оставлен** `com.actcompass.app`), заголовок окна
+  (`overlayWindow.ts`), `<title>` HTML, трей (`tray.ts`), тулбар (`Toolbar.tsx`), имя в bundle
+  профиля (`profileStore.ts`) + фильтрах диалогов (`ipcHandlers.ts`).
+- **Миграция userData**: `migrateUserData()` в `src/main/index.ts` — один раз копирует
+  `%APPDATA%/Act Compass` → `%APPDATA%/Exile Companion` (профили/прогресс/настройки целы).
+  ⚠️ упакованный процесс теперь **`Exile Companion.exe`** (учесть в подводных камнях/single-instance).
+- **Типы** в `src/shared/types.ts`: `AppTab`, `Settings.lastAppTab`+`league`, `HotkeyMap.priceCheck`,
+  трейд-типы (`TradeListing`, `PriceResult`, `PriceCheckResult`). Дефолты в `settingsStore.ts`
+  (`lastAppTab='campaign'`, `league='Standard'`, hotkey `priceCheck='Alt+D'`); `DEFAULT_HOTKEYS`
+  в `SettingsPanel.tsx` дополнен `priceCheck`.
+
+### Осталось (TODO фазы 1)
+- [ ] **Вкладки**: store `appTab`+`setAppTab` (персист в `lastAppTab`); `App.tsx` — панель вкладок
+      между `Toolbar` и `body`, свитч Campaign↔Price Check; CSS `.app-tabs` (образец `.act-tabs`);
+      i18n `app.campaign`/`app.priceCheck`.
+- [ ] **Main прайс-чек**: новый `secretStore.ts` (POESESSID через `safeStorage` → шифр-файл);
+      новый `tradeClient.ts` (парс предмета из текста → trade2 search/fetch через `net.request`
+      +session+UA, **rate-limit по заголовкам**; уники по имени, валюта по типу, рарки по базе/ilvl
+      приблизительно с пометкой). Опора — парсер/данные **Exiled Exchange 2** (MIT).
+- [ ] **IPC** namespace `trade` (`priceCheck`/`setSession`/`hasSession`/`getLeagues`/`setLeague`) +
+      событие `events.priceResult`; preload + `ipcHandlers`.
+- [ ] **Хоткей** `priceCheck` (Alt+D): регистрация в `hotkeys.ts`; в main по нажатию
+      `clipboard.readText()` → детект предмета (`Item Class:`/`Класс предмета:`) →
+      `tradeClient.priceCheck` → `events.priceResult` в renderer + автопереход на вкладку.
+      Добавить priceCheck в перенастройку хоткеев (`HK_ACTIONS` + i18n `set.hk.priceCheck`).
+- [ ] **`PriceCheckTab.tsx`**: поле POESESSID (password) + выбор лиги + подсказка «Ctrl+C → хоткей»;
+      показ предмета, сводки цен (мин/медиана) и листингов; ручная вставка текста как фолбэк; i18n RU/EN.
+- [ ] **Тесты**: юнит парсера предмета + rate-limiter; end-to-end с реальным POESESSID/лигой.
+
+### Фаза 2 (отложено): оценка стэша
+По POESESSID: `/api/account/stashes` → вкладки/предметы → оценка (poe.ninja PoE2 economy для
+валюты/уников; рарки **приблизительно**), новая вкладка «Stash» с итогами **по вкладке + общим**.
 
 ## Что это
 **Act Compass** (*"Your path. Nothing missed."*) — десктоп-**оверлей** для **Path of Exile 2**:
@@ -142,6 +187,11 @@ poe2-leveling-overlay (areaId/интерлюдии/подсказки), exile-le
 ## Changelog
 > Новые изменения добавляй сверху: `<коммит> — что сделано`.
 
+- _(не закоммичено)_ — **Exile Companion: ребрендинг + каркас прайс-чека (фаза 1, чекпойнт)**:
+  переименование Act Compass→Exile Companion (productName/builder/заголовки/трей/тулбар), миграция
+  userData, типы вкладок (`AppTab`,`lastAppTab`,`league`) и прайс-чека (`HotkeyMap.priceCheck`,
+  trade-типы), дефолты настроек. Вкладки/IPC/tradeClient/PriceCheckTab — впереди (см. «🚧 В работе»
+  вверху). typecheck+build зелёные.
 - `83488da` — **ручная «догонялка» прогресса**: кнопка «✓ всё / ✕ всё» в шапке чек-листа отмечает/
   снимает все квесты акта (`markActQuests` → батч `progress.setManyQuests`, manual, без бейджа «авто»). Решает
   кейс «зашёл на пройденного персонажа — ничего не обновилось» (автопрогрессия — только live, историю не берёт).
