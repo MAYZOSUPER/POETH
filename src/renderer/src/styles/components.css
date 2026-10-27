@@ -671,6 +671,53 @@
   background: var(--accent);
 }
 
+/* ================= благодарности (О программе) ================= */
+/* Имена подписчиков уровня «Печать» из resources/supporters.json ([{name, since?}]), без сети.
+   <section class="ui-credits"><div class="ui-credits__head"><svg class="ui-ico">#i-seal</svg>
+   <span class="ui-credits__title">Благодарности</span><span class="ui-count">24</span></div>
+   <p class="ui-credits__lead">…</p><ul class="ui-credits__list ui-scroll"><li class="ui-credits__name" title="с 10.2026"><span>Ник</span></li>…</ul></section> */
+.ui-credits {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-6) var(--sp-6) var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  background: var(--sunken);
+}
+.ui-credits__head { display: flex; align-items: center; gap: var(--sp-4); }
+.ui-credits__head > .ui-ico { color: var(--accent); }
+.ui-credits__title { font: 700 var(--fs-lg) / 1.2 var(--font-display); letter-spacing: 0.04em; color: var(--accent-hi); }
+.ui-credits__lead { margin: 0; color: var(--fg-muted); font: 400 var(--fs-sm) / 1.45 var(--font-ui); }
+.ui-credits__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--sp-2) var(--sp-6);
+  max-height: 168px; /* ~7 строк, дальше прокрутка внутри блока */
+  margin: 0;
+  padding: 0 var(--sp-2) 0 0;
+  list-style: none;
+}
+.ui-credits__name {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+  min-height: 22px;
+  color: var(--fg);
+  font: 500 var(--fs-md) / 1.2 var(--font-ui);
+}
+.ui-credits__name::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  transform: rotate(45deg);
+  background: var(--accent);
+}
+.ui-credits__name > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ui-credits__empty { color: var(--fg-faint); font: 400 var(--fs-sm) / 1.45 var(--font-ui); }
+.ui-credits__note { color: var(--fg-faint); font: 400 var(--fs-xs) / 1.4 var(--font-ui); }
+
 /* ================= пустое состояние, загрузка ================= */
 .ui-empty { display: grid; justify-items: center; gap: var(--sp-4); padding: var(--sp-8) var(--sp-6); color: var(--fg-muted); text-align: center; }
 .ui-empty__title { color: var(--fg); font: 700 var(--fs-lg) / 1.2 var(--font-display); letter-spacing: 0.04em; }

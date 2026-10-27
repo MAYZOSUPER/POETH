@@ -64,15 +64,24 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 | `.ui-stash-hit` | подсветка ячейки тайника, `position: absolute` |
 | `.ui-meter` (`data-level="warn|over"`, `style="--v:35%"`) + `__row`, `__bar` | счётчик 250 символов, лимит live |
 | `.ui-menu` + `__item` (`--danger`), `__hint`, `__sep` | меню «⋯», контекстные меню |
+| `.ui-credits` + `__head`, `__title`, `__lead`, `__list` (+ `.ui-scroll`), `__name` (имя в `<span>`, `since` — в `title`), `__empty`, `__note` | «Благодарности» в «О программе»: подписчики «Печать» из `resources/supporters.json` |
 | `.ui-divider`, `.ui-empty` + `__title`, `.ui-skeleton`, `.ui-scroll` | орнамент, пустые состояния, загрузка, прокрутка |
 
 Иконки: `resources/brand/icons/<имя>.svg` или спрайт `icons-sprite.svg` (`<use href="#i-<имя>"/>`), класс `.ui-ico`
 (`--sm` 13 px, `--lg` 18 px). Список: check, cross, dash, close, min, max, search, star, bolt, external, chat, invite,
 trade, kick, heart, sold, ask, home, grid, help, warn, copy, refresh, support, gear, folder, archive, chev-r, chev-d,
 dots, plus, import, export, pin, lock, shield, logout, keyboard, layers, volume, info, game, pause, trash, edit, map,
-book, coins, compass, history.
+book, coins, compass, seal, history.
 
 ## Кнопка «Поддержать проект»
 Иконка `support` (монета с сердцем, своя, без логотипа Boosty). Места: «О программе» в настройках, пункт меню
 настроек, меню трея, последний шаг мастера. Кнопка обычная или `--ghost`, никогда не `--primary`, без всплывающих
 окон и напоминаний. Ссылка — `BOOSTY_URL` из `@shared/links`, открывается в системном браузере.
+
+## «Благодарности»
+Блок `.ui-credits` в «О программе» сразу под кнопкой поддержки (образец — макет «Настройки», переключатель
+«С именами / Пока пусто»). Иконка `seal` («Печать»). Имена в сетке колонок по 150 px, после 7 строк — прокрутка
+внутри блока; длинный ник обрезается, полный вместе с «с 10.2026» — в `title`. Без аватаров, сумм и сети.
+В тексте прямо сказано, что подписка не открывает функций (все версии POETH открыты всем — правило GGG).
+Пустой список — `.ui-credits__empty` вместо `__list`. Ссылку на лицензии в этом окне называть
+«Лицензии открытого кода», чтобы она не путалась с благодарностями.
