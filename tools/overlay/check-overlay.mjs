@@ -15,7 +15,7 @@
 // нажатием проверяет по WinAPI, что на переднем плане нужное тестовое окно, иначе не жмёт.
 // Буфер обмена пользователя сохраняется и возвращается.
 
-import { spawn } from 'node:child_process'
+import { execFileSync, spawn } from 'node:child_process'
 import { createRequire } from 'node:module'
 import { mkdtempSync, readdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -225,7 +225,7 @@ async function main() {
   poeth.stderr.on('data', (d) => poethLog.push(String(d)))
 
   await connectOverlay()
-  await sleep(1500) // компаньон открылся
+  await sleep(DEV ? 3000 : 1500) // компаньон открылся
   check('тестовое окно на переднем плане', await activate('game'))
   const st0 = await waitFor(async () => {
     const s = await overlayState()
@@ -414,7 +414,14 @@ try {
   }
   fake.kill()
   cdp?.close()
-  poeth?.kill()
+  // electron-vite dev запускает Electron дочерним процессом — гасим всё дерево
+  if (poeth?.pid) {
+    try {
+      execFileSync('taskkill', ['/pid', String(poeth.pid), '/T', '/F'], { stdio: 'ignore' })
+    } catch {
+      poeth.kill()
+    }
+  }
   ps.stdin.end()
   ps.kill()
   try {
