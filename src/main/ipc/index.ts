@@ -13,6 +13,7 @@ import { favDomain } from './fav'
 import { regexDomain } from './regex'
 import { authDomain } from './auth'
 import { dealsDomain } from './deals'
+import { updatesDomain } from './updates'
 
 // Реестр доменов main-IPC. ЗАМОРОЖЕН после S0: новый домен подключает лид.
 const DOMAINS: IpcDomain[] = [
@@ -24,7 +25,8 @@ const DOMAINS: IpcDomain[] = [
   favDomain,
   regexDomain,
   authDomain,
-  dealsDomain
+  dealsDomain,
+  updatesDomain
 ]
 
 /** Register every domain's ipcMain handlers (once, at startup). */

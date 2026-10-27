@@ -72,7 +72,9 @@ export function defaultSettings(): Settings {
     regex: {},
     ui: { simpleMode: true },
     overlay: { pricePosition: 'cursor' },
-    chatCommands: defaultChatCommands()
+    chatCommands: defaultChatCommands(),
+    startup: { withWindows: false, minimized: true, firstRunDone: false },
+    updates: { check: true }
   }
 }
 
@@ -180,6 +182,8 @@ function normalize(src: Obj): Settings {
   s.overlay = mergeSection(def.overlay, src.overlay)
   // нет списка (v1, ранний v2) — пресеты; пустой список — игрок удалил всё сам
   s.chatCommands = normalizeChatCommands(src.chatCommands) ?? def.chatCommands
+  s.startup = mergeSection(def.startup, src.startup)
+  s.updates = mergeSection(def.updates, src.updates)
   s.hotkeys = normalizeHotkeys(src.hotkeys)
 
   // перечисления и диапазоны
@@ -208,6 +212,8 @@ function normalize(src: Obj): Settings {
 export function migrateSettings(raw: unknown): Settings {
   if (!isObj(raw)) return defaultSettings()
   const version = typeof raw.schemaVersion === 'number' ? raw.schemaVersion : 1
+  // startup.firstRunDone без значения → false: мастер первого запуска (S9) покажется один раз
+  // и существующим профилям (компас, ранний POETH)
   return normalize(version < 2 ? upgradeV1(raw as SettingsV1) : raw)
 }
 

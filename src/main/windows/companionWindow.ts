@@ -17,7 +17,8 @@ export function sendToCompanion(channel: string, payload?: unknown): void {
   if (win && !win.isDestroyed()) win.webContents.send(channel, payload)
 }
 
-export function createCompanionWindow(): BrowserWindow {
+/** show:false — окно создаётся скрытым (запуск в трей, S10a); открыть — из трея или хоткеем. */
+export function createCompanionWindow(opts: { show?: boolean } = {}): BrowserWindow {
   win = new BrowserWindow({
     title: 'POE Trade Helper',
     width: 820,
@@ -48,7 +49,7 @@ export function createCompanionWindow(): BrowserWindow {
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
   // Mouse-ignore state is established by initClickThrough() from the lock setting.
 
-  win.once('ready-to-show', () => win?.show())
+  if (opts.show !== false) win.once('ready-to-show', () => win?.show())
 
   if (process.env.OVERLAY_DEVTOOLS === '1') {
     win.webContents.openDevTools({ mode: 'detach' })

@@ -7,6 +7,26 @@ export const BOOSTY_URL = 'https://boosty.to/twistedthreadstudios'
 // Ссылку на репозиторий/issues в интерфейс не выводим: MAYZOSUPER/POETH пока приватный.
 // Когда станет публичным — добавить сюда REPO_URL/ISSUES_URL и хост github.com в allowlist.
 
+/**
+ * Манифест пакета данных (обновление данных без переустановки, S10a): ветка data публичного
+ * репозитория. Рядом лежат файлы: <game>/<путь> относительно этого адреса.
+ */
+export const DATA_MANIFEST_URL = 'https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json'
+
+/** Хосты, с которых main качает публичные данные (сессия без cookies, только https). */
+export const PUBLIC_DATA_HOSTS: readonly string[] = ['raw.githubusercontent.com']
+
+/** Можно ли качать данные с этого адреса: https + хост из PUBLIC_DATA_HOSTS. */
+export function isAllowedDataUrl(url: unknown): url is string {
+  if (typeof url !== 'string') return false
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'https:' && PUBLIC_DATA_HOSTS.includes(parsed.hostname)
+  } catch {
+    return false
+  }
+}
+
 /** Хосты, которые renderer может открыть в системном браузере (только https). */
 export const EXTERNAL_HOSTS: readonly string[] = [
   'www.pathofexile.com',

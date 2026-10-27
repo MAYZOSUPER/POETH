@@ -8,6 +8,7 @@ import { fav } from './dict/fav'
 import { regex } from './dict/regex'
 import { auth } from './dict/auth'
 import { deals } from './dict/deals'
+import { updates } from './dict/updates'
 
 // Строки интерфейса по доменам: этап добавляет ключи только в свой ./dict/<домен>.ts.
 // Этот список ЗАМОРОЖЕН после S0 (новый домен подключает лид). Полнота RU/EN и
@@ -21,5 +22,6 @@ export const DOMAIN_DICTS: Record<string, DomainDict> = {
   fav,
   regex,
   auth,
-  deals
+  deals,
+  updates
 }

@@ -15,6 +15,7 @@ import { favChannels, favEvents, type FavIpcApi } from './ipc/fav'
 import { regexChannels, regexEvents, type RegexIpcApi } from './ipc/regex'
 import { authChannels, authEvents, type AuthIpcApi } from './ipc/auth'
 import { dealsChannels, dealsEvents, type DealsIpcApi } from './ipc/deals'
+import { updatesChannels, updatesEvents, type UpdatesIpcApi } from './ipc/updates'
 
 /** Каналы и события по доменам — для проверки уникальности в тестах. */
 export const IPC_DOMAINS = {
@@ -26,7 +27,8 @@ export const IPC_DOMAINS = {
   fav: { channels: favChannels, events: favEvents },
   regex: { channels: regexChannels, events: regexEvents },
   auth: { channels: authChannels, events: authEvents },
-  deals: { channels: dealsChannels, events: dealsEvents }
+  deals: { channels: dealsChannels, events: dealsEvents },
+  updates: { channels: updatesChannels, events: updatesEvents }
 } as const
 
 export const IPC = {
@@ -39,6 +41,7 @@ export const IPC = {
   ...regexChannels,
   ...authChannels,
   ...dealsChannels,
+  ...updatesChannels,
   events: {
     ...campaignEvents,
     ...tradeEvents,
@@ -48,7 +51,8 @@ export const IPC = {
     ...favEvents,
     ...regexEvents,
     ...authEvents,
-    ...dealsEvents
+    ...dealsEvents,
+    ...updatesEvents
   }
 } as const
 
@@ -62,7 +66,8 @@ export interface OverlayApi
     FavIpcApi,
     RegexIpcApi,
     AuthIpcApi,
-    DealsIpcApi {}
+    DealsIpcApi,
+    UpdatesIpcApi {}
 
 export type {
   CampaignIpcApi,
@@ -73,5 +78,6 @@ export type {
   FavIpcApi,
   RegexIpcApi,
   AuthIpcApi,
-  DealsIpcApi
+  DealsIpcApi,
+  UpdatesIpcApi
 }

@@ -8,6 +8,7 @@ import { resourcesDir } from './services/questDataset'
 import { reconcileTailer } from './ipc/campaign'
 import { toggleCompanionVisible, toggleLock } from './ipc/app'
 import { getRunningGameDef } from './gameContext'
+import { checkForAppUpdates } from './services/appUpdater'
 
 let tray: Tray | null = null
 
@@ -42,6 +43,7 @@ const LABELS = {
     lock: 'Сквозной режим (клики в игру)',
     auto: 'Автоопределение зоны',
     support: '♥ Поддержать проект',
+    updates: 'Проверить обновления',
     quit: 'Выход'
   },
   en: {
@@ -50,6 +52,7 @@ const LABELS = {
     lock: 'Click-through (clicks go to the game)',
     auto: 'Zone auto-detect',
     support: '♥ Support the project',
+    updates: 'Check for updates',
     quit: 'Quit'
   }
 }
@@ -76,6 +79,7 @@ async function buildMenu(): Promise<Menu> {
         ]
       : []),
     { type: 'separator' },
+    { label: `${L.updates} · v${app.getVersion()}`, click: () => void checkForAppUpdates(true) },
     // Boosty: voluntary support, never a popup — just a menu item
     { label: L.support, click: () => void shell.openExternal(BOOSTY_URL) },
     { label: L.quit, click: () => app.quit() }

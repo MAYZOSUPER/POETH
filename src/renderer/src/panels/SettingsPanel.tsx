@@ -9,6 +9,7 @@ import { useAppStore } from '../store/useAppStore'
 import { useT } from '../i18n'
 import { AccountPanel } from './account/AccountPanel'
 import { ChatCommandsPanel } from './chat/ChatCommandsPanel'
+import { UpdatesSettings } from '../updates/UpdatesSettings'
 
 const BOTH: GameId[] = ['poe1', 'poe2']
 
@@ -349,6 +350,8 @@ export function SettingsPanel() {
           </div>
         </>
       )}
+
+      <UpdatesSettings />
 
       <div className="block support">
         <div className="block-title">{t('set.support')}</div>
