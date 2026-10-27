@@ -6,6 +6,8 @@ import { GAMES, type GameId } from '@shared/games'
 import { HOTKEY_ACTIONS, defaultHotkeys } from '@shared/settings'
 import { BOOSTY_URL } from '@shared/links'
 import { useAppStore } from '../store/useAppStore'
+import { useShellStore } from '../store/useShellStore'
+import { Ico } from './regex/Ico'
 import { useT } from '../i18n'
 import { AccountPanel } from './account/AccountPanel'
 import { ChatCommandsPanel } from './chat/ChatCommandsPanel'
@@ -352,6 +354,18 @@ export function SettingsPanel() {
       )}
 
       <UpdatesSettings />
+      <div className="block">
+        <div className="onb-settings-links">
+          <button type="button" className="ui-btn ui-btn--sm" onClick={() => useShellStore.getState().setPage('about')}>
+            <Ico name="info" />
+            {t('set.about')}
+          </button>
+          <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" onClick={() => useShellStore.getState().openWizard()}>
+            <Ico name="compass" />
+            {t('set.wizard')}
+          </button>
+        </div>
+      </div>
 
       <div className="block support">
         <div className="block-title">{t('set.support')}</div>

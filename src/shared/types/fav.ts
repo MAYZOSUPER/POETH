@@ -133,8 +133,12 @@ export interface TradeSiteState {
   activeSearchId: string | null
 }
 
-/** Состояние live search одного поиска (присылает адаптер S6). */
-export type FavLiveState = 'off' | 'connecting' | 'on' | 'paused' | 'error'
+/**
+ * Состояние live search одного поиска (присылает адаптер S6): off — выключен; connecting — подключение
+ * или переподключение; on — подключено; paused — пауза (лимит 429); auth — нужен вход (подключится сам
+ * после входа); error — поиска больше нет на сайте и т. п.
+ */
+export type FavLiveState = 'off' | 'connecting' | 'on' | 'paused' | 'auth' | 'error'
 
 export interface FavLiveSnapshot {
   /** адаптер S6 подключён */

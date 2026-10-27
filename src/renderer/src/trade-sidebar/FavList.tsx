@@ -167,6 +167,7 @@ const LIVE_TITLE: Record<FavLiveState, string> = {
   on: 'fav.live.on',
   connecting: 'fav.live.connecting',
   paused: 'fav.live.paused',
+  auth: 'fav.live.needAuth',
   error: 'fav.live.error',
   off: 'fav.live.off'
 }

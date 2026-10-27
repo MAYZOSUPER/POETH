@@ -20,8 +20,10 @@ export function appBridge(): AppIpcApi {
     },
     app: {
       info: () => ipcRenderer.invoke(IPC.app.info),
-      switchGame: (game) => ipcRenderer.invoke(IPC.app.switchGame, game)
+      switchGame: (game) => ipcRenderer.invoke(IPC.app.switchGame, game),
+      supporters: () => ipcRenderer.invoke(IPC.app.supporters)
     },
-    onHotkey: (cb) => subscribe(IPC.events.hotkey, cb)
+    onHotkey: (cb) => subscribe(IPC.events.hotkey, cb),
+    onShowPage: (cb) => subscribe(IPC.events.showPage, cb)
   }
 }

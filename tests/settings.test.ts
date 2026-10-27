@@ -267,8 +267,9 @@ describe('startup / updates (S10a)', () => {
     })
     expect(s.startup).toEqual({ withWindows: true, minimized: false, firstRunDone: true })
     expect(s.updates).toEqual({ check: false })
-    const bad = migrateSettings({ ...defaultSettings(), startup: { withWindows: 'yes' }, updates: 1 })
+    const bad = migrateSettings({ ...defaultSettings(), startup: { withWindows: 'yes', firstRunDone: 'yes' }, updates: 1 })
     expect(bad.startup.withWindows).toBe(false)
+    expect(bad.startup.firstRunDone).toBe(false)
     expect(bad.updates).toEqual({ check: true })
   })
 

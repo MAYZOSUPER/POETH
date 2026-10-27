@@ -1,13 +1,17 @@
 import { app, ipcMain, shell } from 'electron'
+import path from 'path'
 import { IPC } from '@shared/ipc'
 import { isGameId, type GameId } from '@shared/games'
 import { isAllowedExternalUrl } from '@shared/links'
-import type { AppInfo, Settings, SettingsPatch } from '@shared/types'
+import type { AppInfo, CompanionPage, Settings, SettingsPatch } from '@shared/types'
 import { getSettings, updateSettings } from '../services/settingsStore'
 import { getCompanionWindow } from '../windows/companionWindow'
 import { setLocked } from '../clickThrough'
 import { onHotkeyAction, registerHotkeys, unregisterHotkeys } from '../hotkeys'
 import { getRunningGame, isDevServer } from '../gameContext'
+import { parseSupporters } from '@shared/credits'
+import { readJson } from '../services/atomicJson'
+import { resourcesDir } from '../services/questDataset'
 import { reconcileTailer } from './campaign'
 import type { IpcDomain } from './types'
 
@@ -31,6 +35,21 @@ export async function toggleCompanionVisible(): Promise<void> {
   if (next) win.show()
   else win.hide()
   await updateSettings({ overlayVisible: next })
+}
+
+/**
+ * Показать компаньон и открыть в нём страницу (S9). Для трея (S10a): «О программе» →
+ * showCompanionPage('about'), «Настройки» → showCompanionPage('settings').
+ */
+export function showCompanionPage(page: CompanionPage): void {
+  const win = getCompanionWindow()
+  if (!win || win.isDestroyed()) return
+  if (!win.isVisible()) {
+    win.show()
+    void updateSettings({ overlayVisible: true })
+  }
+  win.focus()
+  win.webContents.send(IPC.events.showPage, page)
 }
 
 export async function toggleLock(): Promise<void> {
@@ -76,6 +95,10 @@ function register(): void {
   ipcMain.handle(
     IPC.app.info,
     (): AppInfo => ({ game: getRunningGame(), version: app.getVersion(), isDev: isDevServer() })
+  )
+  // «Благодарности»: файл из сборки (обновляется к релизу вручную), без сетевых запросов
+  ipcMain.handle(IPC.app.supporters, async () =>
+    parseSupporters(await readJson<unknown>(path.join(resourcesDir(), 'supporters.json'), []))
   )
   ipcMain.handle(IPC.app.switchGame, async (_e, game: unknown) => {
     if (isGameId(game)) await switchGame(game)
