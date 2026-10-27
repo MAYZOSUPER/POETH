@@ -1,4 +1,4 @@
-import { getDefaultPoe1DataStore } from '@shared/poe1/data'
+import { getDefaultPoe1DataStore, type Poe1DataStore } from '@shared/poe1/data'
 import { parseItemText, type ParsedItem } from '@shared/poe1/parser'
 
 // Факты о предмете находки по тексту item.extended.text — парсер S2 (EN/RU).
@@ -13,7 +13,7 @@ export interface ItemFact {
 
 const cache = new Map<string, Promise<ItemFact[]>>()
 
-function facts(item: ParsedItem): ItemFact[] {
+export function factsOf(item: ParsedItem): ItemFact[] {
   const out: ItemFact[] = []
   if (item.mapTier) out.push({ key: 'live.fact.mapTier', params: { n: item.mapTier } })
   if (item.gemLevel) out.push({ key: 'live.fact.gem', params: { n: item.gemLevel, q: item.quality ?? 0 } })
@@ -26,14 +26,22 @@ function facts(item: ParsedItem): ItemFact[] {
   return out
 }
 
-/** Разобрать текст предмета (один раз на текст); не разобрался — пустой список. */
+/** Разобрать текст предмета и вернуть факты; не разобрался — пустой список. */
+export async function factsFromText(text: string, store: Poe1DataStore): Promise<ItemFact[]> {
+  try {
+    const res = await parseItemText(text, store)
+    return res.ok ? factsOf(res.value) : []
+  } catch {
+    return []
+  }
+}
+
+/** То же с данными приложения (poeth://data/poe1) и кэшем на текст. */
 export function itemFacts(text: string | undefined): Promise<ItemFact[]> {
   if (!text) return Promise.resolve([])
   let p = cache.get(text)
   if (!p) {
-    p = parseItemText(text, getDefaultPoe1DataStore())
-      .then((res) => (res.ok ? facts(res.value) : []))
-      .catch(() => [])
+    p = factsFromText(text, getDefaultPoe1DataStore())
     cache.set(text, p)
     if (cache.size > 100) cache.delete(cache.keys().next().value as string)
   }

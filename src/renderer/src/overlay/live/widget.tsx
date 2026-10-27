@@ -85,8 +85,11 @@ function Toast({ toast }: { toast: LiveToast }) {
             <span className={`ui-toast__kind${done ? ' lv-kind--done' : ''}`}>
               {t(done ? 'live.toast.done' : 'live.toast.kind')}
             </span>
-            <span className="lv-meta-search" title={hit.searchTitle}>
-              {hit.searchTitle} · {ago(t, hit.at, now)}
+            <span className="lv-meta-where">
+              <span className="lv-meta-search" title={hit.searchTitle}>
+                {hit.searchTitle}
+              </span>
+              <span className="lv-meta-ago">· {ago(t, hit.at, now)}</span>
             </span>
           </div>
           <div className="ui-toast__item" style={{ color: rarityColor(hit.rarity) }} title={hitName(hit)}>

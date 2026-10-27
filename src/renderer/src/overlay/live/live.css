@@ -7,11 +7,22 @@
   /* ширина — var(--w-toast) из .ui-toast */
   pointer-events: auto;
 }
+/* «поиск · когда» — одной строкой: длинное название обрезается, время — никогда */
+.lv-meta-where {
+  display: inline-flex;
+  flex: 1 1 0;
+  gap: var(--sp-2);
+  min-width: 0;
+}
 .lv-meta-search {
   overflow: hidden;
-  max-width: calc(var(--w-toast) / 2);
+  min-width: 0;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.lv-meta-ago {
+  flex: none;
+  white-space: nowrap;
 }
 .lv-kind--done {
   color: var(--fg-muted);
