@@ -109,12 +109,7 @@ export interface Settings {
   overlay: OverlaySettings
   /** команды чата по хоткеям (F5 → /hideout и др.), см. src/shared/chatCommands.ts */
   chatCommands: ChatCommand[]
-  /**
-   * Мастер первого запуска пройден или пропущен (S9). false — при старте показать компаньон
-   * (даже при «запуске в трее», S10a) и мастер поверх него.
-   */
-  firstRunDone: boolean
-  /** запуск: вместе с Windows, свёрнутым, первый запуск (S10a) */
+  /** запуск: вместе с Windows, свёрнутым; firstRunDone — мастер первого запуска пройден (S10a, S9) */
   startup: StartupSettings
   /** проверка обновлений приложения и данных (S10a) */
   updates: UpdatesSettings

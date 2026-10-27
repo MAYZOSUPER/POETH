@@ -78,7 +78,7 @@ export default function App() {
   const init = useAppStore((s) => s.init)
   const appTab = useAppStore((s) => s.appTab)
   const opacity = useAppStore((s) => s.settings?.opacity ?? 1)
-  const firstRunDone = useAppStore((s) => s.settings?.firstRunDone ?? true)
+  const firstRunDone = useAppStore((s) => s.settings?.startup.firstRunDone ?? true)
   // S9: служебные страницы (настройки, «О программе») и мастер первого запуска
   const page = useShellStore((s) => s.page)
   const setPage = useShellStore((s) => s.setPage)

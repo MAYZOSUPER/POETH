@@ -241,23 +241,6 @@ describe('chatCommands («Команды чата»)', () => {
   })
 })
 
-describe('firstRunDone («Мастер первого запуска», S9)', () => {
-  it('новый профиль, v1 компаса и v2 без поля → мастер покажется (false)', () => {
-    expect(defaultSettings().firstRunDone).toBe(false)
-    expect(migrateSettings(fixture('v1-exile-companion.json')).firstRunDone).toBe(false)
-    const v2old: Record<string, unknown> = { ...defaultSettings() }
-    delete v2old.firstRunDone
-    expect(migrateSettings(v2old).firstRunDone).toBe(false)
-  })
-
-  it('пройден — сохраняется; мусор → false', () => {
-    const done = applySettingsPatch(defaultSettings(), { firstRunDone: true })
-    expect(done.firstRunDone).toBe(true)
-    expect(migrateSettings(JSON.parse(JSON.stringify(done))).firstRunDone).toBe(true)
-    expect(migrateSettings({ ...defaultSettings(), firstRunDone: 'yes' }).firstRunDone).toBe(false)
-  })
-})
-
 describe('startup / updates (S10a)', () => {
   it('профили без флага (компас, ранний POETH) получают мастер первого запуска один раз', () => {
     expect(migrateSettings(fixture('v1-exile-companion.json')).startup.firstRunDone).toBe(false)
@@ -284,8 +267,9 @@ describe('startup / updates (S10a)', () => {
     })
     expect(s.startup).toEqual({ withWindows: true, minimized: false, firstRunDone: true })
     expect(s.updates).toEqual({ check: false })
-    const bad = migrateSettings({ ...defaultSettings(), startup: { withWindows: 'yes' }, updates: 1 })
+    const bad = migrateSettings({ ...defaultSettings(), startup: { withWindows: 'yes', firstRunDone: 'yes' }, updates: 1 })
     expect(bad.startup.withWindows).toBe(false)
+    expect(bad.startup.firstRunDone).toBe(false)
     expect(bad.updates).toEqual({ check: true })
   })
 

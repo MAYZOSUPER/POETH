@@ -73,7 +73,6 @@ export function defaultSettings(): Settings {
     ui: { simpleMode: true },
     overlay: { pricePosition: 'cursor' },
     chatCommands: defaultChatCommands(),
-    firstRunDone: false,
     startup: { withWindows: false, minimized: true, firstRunDone: false },
     updates: { check: true }
   }

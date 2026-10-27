@@ -12,7 +12,7 @@ import './onboarding.css'
 
 // Мастер первого запуска (S9) по утверждённому макету «последний шаг мастера»: модальная панель
 // поверх компаньона, 4–5 шагов простым языком. Язык интерфейса и сайт применяются сразу,
-// смена игры — после «Начать» (перезапуск). «Пропустить» и «Начать» ставят firstRunDone.
+// смена игры — после «Начать» (перезапуск). «Пропустить» и «Начать» ставят startup.firstRunDone.
 
 type StepId = 'lang' | 'client' | 'howto' | 'account' | 'done'
 
@@ -58,7 +58,7 @@ export function Wizard({ onClose }: { onClose: () => void }) {
       const regex = useRegexStore.getState()
       if (regex.ready) regex.setPrefs({ gameLang: clientLang })
       else await window.overlayApi.regex.setPrefs({ gameLang: clientLang })
-      await patchSettings({ firstRunDone: true })
+      await patchSettings({ startup: { firstRunDone: true } })
       onClose()
       if (game !== running) await window.overlayApi.app.switchGame(game)
     } finally {
@@ -66,7 +66,7 @@ export function Wizard({ onClose }: { onClose: () => void }) {
     }
   }
   const skip = async (): Promise<void> => {
-    await patchSettings({ firstRunDone: true })
+    await patchSettings({ startup: { firstRunDone: true } })
     onClose()
   }
   const pickClient = (lang: UiLang): void => {
