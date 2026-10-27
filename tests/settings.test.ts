@@ -27,6 +27,7 @@ describe('defaultSettings', () => {
     expect(s.deals).toEqual({ enabled: true, stashGrid: 'auto', calibration: null })
     expect(s.regex).toEqual({})
     expect(s.ui).toEqual({ simpleMode: true })
+    expect(s.overlay).toEqual({ pricePosition: 'cursor' })
   })
 
   it('хоткеи v2: действия, сочетания и области', () => {
@@ -181,5 +182,33 @@ describe('applySettingsPatch', () => {
     const copy = JSON.parse(JSON.stringify(cur))
     applySettingsPatch(cur, { poe2: { league: 'X' }, locked: true })
     expect(cur).toEqual(copy)
+  })
+})
+
+describe('overlay.pricePosition («Позиция окна цены»)', () => {
+  it('v1 компаса и v2 без раздела overlay → «у курсора»', () => {
+    expect(migrateSettings(fixture('v1-exile-companion.json')).overlay).toEqual({ pricePosition: 'cursor' })
+    const v2old: Record<string, unknown> = { ...defaultSettings() }
+    delete v2old.overlay
+    expect(migrateSettings(v2old).overlay).toEqual({ pricePosition: 'cursor' })
+  })
+
+  it('сохранённое значение переживает миграцию', () => {
+    for (const p of ['cursor', 'left', 'right'] as const) {
+      expect(migrateSettings({ ...defaultSettings(), overlay: { pricePosition: p } }).overlay.pricePosition).toBe(p)
+    }
+  })
+
+  it('мусор → «у курсора»', () => {
+    for (const bad of [{ pricePosition: 'top' }, { pricePosition: 3 }, 'left', null, []]) {
+      expect(migrateSettings({ ...defaultSettings(), overlay: bad }).overlay).toEqual({ pricePosition: 'cursor' })
+    }
+  })
+
+  it('патч меняет позицию, неизвестное значение откатывается к дефолту', () => {
+    const a = applySettingsPatch(defaultSettings(), { overlay: { pricePosition: 'left' } })
+    expect(a.overlay.pricePosition).toBe('left')
+    const b = applySettingsPatch(a, { overlay: { pricePosition: 'middle' as 'left' } })
+    expect(b.overlay.pricePosition).toBe('cursor')
   })
 })

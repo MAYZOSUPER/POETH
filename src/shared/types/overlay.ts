@@ -39,10 +39,7 @@ export type PricePopupPosition = 'cursor' | 'left' | 'right'
 
 export const PRICE_POPUP_POSITIONS: readonly PricePopupPosition[] = ['cursor', 'left', 'right']
 
-/**
- * Раздел настроек оверлея — предложение лиду для Settings v2 (`Settings.overlay`,
- * дефолт `{ pricePosition: 'cursor' }`). Пока поля нет, renderer берёт значение по умолчанию.
- */
+/** Раздел настроек оверлея (`Settings.overlay`, дефолт `{ pricePosition: 'cursor' }`). */
 export interface OverlaySettings {
   /** «Позиция окна цены»: у курсора / у левого края / у правого края */
   pricePosition: PricePopupPosition
