@@ -62,7 +62,7 @@ function normalizeMapQuery(raw: unknown): MapQuery {
   if (!isObj(raw)) return q
   q.want = strList(raw.want)
   q.avoid = strList(raw.avoid)
-  q.wantMode = raw.wantMode === 'all' ? 'all' : 'any'
+  q.wantMode = raw.wantMode === 'any' ? 'any' : 'all'
   if (isObj(raw.thresholds)) {
     for (const k of MAP_LABEL_KEYS) {
       const n = num(raw.thresholds[k], 999)

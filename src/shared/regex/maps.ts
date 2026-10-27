@@ -24,7 +24,8 @@ export const MAP_LABEL_KEYS: readonly MapLabelKey[] = [
 ]
 
 export function emptyMapQuery(): MapQuery {
-  return { want: [], avoid: [], wantMode: 'any', thresholds: {}, corrupted: 'any', unidentified: 'any' }
+  // «хочу» по умолчанию — отдельными термами (макет): подсветить карту, где есть все желаемые моды
+  return { want: [], avoid: [], wantMode: 'all', thresholds: {}, corrupted: 'any', unidentified: 'any' }
 }
 
 /** Терм порога «свойство ≥ n %». */

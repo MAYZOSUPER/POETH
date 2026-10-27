@@ -57,7 +57,12 @@ describe.each(LANGS)('движок карт %s', (lang) => {
       const avoid = pick(data.mods, 1 + Math.floor(rand() * 12), rand)
       const rest = data.mods.filter((m) => !avoid.includes(m))
       const want = pick(rest, Math.floor(rand() * 5), rand)
-      const q: MapQuery = { ...emptyMapQuery(), avoid: avoid.map((m) => m.id), want: want.map((m) => m.id) }
+      const q: MapQuery = {
+        ...emptyMapQuery(),
+        avoid: avoid.map((m) => m.id),
+        want: want.map((m) => m.id),
+        wantMode: 'any'
+      }
       const r = buildMapRegex(data, q)
       if (!r.ok) continue
       const match = compileSearch(r.text)

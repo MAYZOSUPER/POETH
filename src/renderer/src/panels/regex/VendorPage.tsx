@@ -3,16 +3,17 @@ import type { SocketColor, VendorQuery } from '@shared/types'
 import { buildVendorRegex, emptyVendorQuery } from '@shared/regex'
 import { useT } from '../../i18n'
 import { useRegexStore } from '../../store/useRegexStore'
-import { ResultBox, Seg, useGameLang } from './common'
+import { Box, Hint, NumberRow, ResultBox, Seg, Switch, useGameLang, useSimple } from './common'
 
-// Страница «Торговец»: связи и цвета гнёзд, скорость, качество, «+ к уровню камней», уровень камня.
+// Страница «Торговец» (макет: связи, R-G-B, скорость; в экспертном режиме — гнёзда, цвета,
+// качество, «+ к уровню камней», уровень камня).
 
 const LINKS: VendorQuery['links'][] = [0, 3, 4, 5, 6]
 const COLORS: SocketColor[] = ['r', 'g', 'b', 'w']
-const SPEEDS = [0, 10, 15, 20, 25, 30]
 
 export function VendorPage() {
   const t = useT()
+  const simple = useSimple()
   const lang = useGameLang()
   const q = useRegexStore((s) => s.prefs.vendor)
   const setPrefs = useRegexStore((s) => s.setPrefs)
@@ -36,20 +37,75 @@ export function VendorPage() {
     : undefined
 
   return (
-    <div className="rx-page">
-      <ResultBox
-        result={result}
-        defaultName={t('regex.vendor.genName', { summary: summarize(q, labels) })}
-        onReset={() => setPrefs({ vendor: emptyVendorQuery() })}
-        overflowText={overflowText}
-      />
-      <div className="rx-cols">
-        <div className="rx-col-main rx-vendor">
-          <div className="rx-field">
-            <div className="rx-field-label">{t('regex.vendor.mode')}</div>
+    <div className="rx-two">
+      <div className="rx-stack">
+        <Box title={t('regex.vendor.title')}>
+          <div className="rx-row">
+            <span>{t('regex.vendor.links')}</span>
             <Seg
-              small
+              value={q.links}
+              label={t('regex.vendor.links')}
+              onChange={(v) => setQuery({ links: v })}
+              options={LINKS.map((n) => ({ value: n, label: n === 0 ? '—' : `${n}L` }))}
+            />
+          </div>
+          <Switch on={q.rgb} onChange={(v) => setQuery({ rgb: v })}>
+            {t('regex.vendor.rgb')}
+          </Switch>
+          <NumberRow
+            id="rx-ms"
+            label={t('regex.vendor.moveAtLeast')}
+            value={q.movementSpeed}
+            max={99}
+            onChange={(n) => setQuery({ movementSpeed: n })}
+          />
+          <Switch on={q.plusGemLevel} onChange={(v) => setQuery({ plusGemLevel: v })}>
+            {t('regex.vendor.plusGem')}
+          </Switch>
+          {!simple && (
+            <>
+              <Switch on={q.sixSockets} onChange={(v) => setQuery({ sixSockets: v })}>
+                {t('regex.vendor.sixSockets')}
+              </Switch>
+              <div className="rx-row">
+                <span>{t('regex.vendor.color')}</span>
+                <span className="rx-inline">
+                  <Seg
+                    value={q.colorCount}
+                    label={t('regex.vendor.color')}
+                    onChange={(v) => setQuery({ colorCount: v })}
+                    options={[0, 2, 3, 4].map((n) => ({ value: n, label: n === 0 ? '—' : String(n) }))}
+                  />
+                  <Seg<SocketColor>
+                    value={q.color}
+                    label={t('regex.vendor.colorWhich')}
+                    onChange={(v) => setQuery({ color: v, colorCount: q.colorCount || 2 })}
+                    options={COLORS.map((c) => ({ value: c, label: c.toUpperCase(), title: t(`regex.vendor.color.${c}`) }))}
+                  />
+                </span>
+              </div>
+              <NumberRow
+                id="rx-quality"
+                label={t('regex.vendor.qualityAtLeast')}
+                value={q.quality}
+                max={30}
+                onChange={(n) => setQuery({ quality: n })}
+              />
+              <NumberRow
+                id="rx-gem"
+                label={t('regex.vendor.gemLevel')}
+                value={q.gemLevel}
+                max={40}
+                onChange={(n) => setQuery({ gemLevel: n })}
+              />
+              <div className="ui-field__help">{t('regex.vendor.gemLevelHint')}</div>
+            </>
+          )}
+          <div className="rx-row">
+            <span>{t('regex.vendor.mode')}</span>
+            <Seg
               value={q.mode}
+              label={t('regex.vendor.mode')}
               onChange={(v) => setQuery({ mode: v })}
               options={[
                 { value: 'any', label: t('regex.vendor.any') },
@@ -57,123 +113,18 @@ export function VendorPage() {
               ]}
             />
           </div>
-          <div className="rx-field">
-            <div className="rx-field-label">{t('regex.vendor.links')}</div>
-            <Seg
-              small
-              value={q.links}
-              onChange={(v) => setQuery({ links: v })}
-              options={LINKS.map((n) => ({
-                value: n,
-                label: n === 0 ? t('regex.vendor.linksAny') : t('regex.vendor.linksN', { n })
-              }))}
-            />
-          </div>
-          <label className="row-toggle">
-            <input type="checkbox" checked={q.rgb} onChange={(e) => setQuery({ rgb: e.target.checked })} />
-            <span>{t('regex.vendor.rgb')}</span>
-          </label>
-          <label className="row-toggle">
-            <input
-              type="checkbox"
-              checked={q.sixSockets}
-              onChange={(e) => setQuery({ sixSockets: e.target.checked })}
-            />
-            <span>{t('regex.vendor.sixSockets')}</span>
-          </label>
-          <div className="rx-field">
-            <div className="rx-field-label">{t('regex.vendor.color')}</div>
-            <div className="rx-inline">
-              <Seg
-                small
-                value={q.colorCount}
-                onChange={(v) => setQuery({ colorCount: v })}
-                options={[0, 2, 3, 4].map((n) => ({ value: n, label: n === 0 ? t('regex.vendor.linksAny') : String(n) }))}
-              />
-              <Seg<SocketColor>
-                small
-                value={q.color}
-                onChange={(v) => setQuery({ color: v, colorCount: q.colorCount || 2 })}
-                options={COLORS.map((c) => ({ value: c, label: t(`regex.vendor.color.${c}`) }))}
-              />
-            </div>
-          </div>
-          <div className="rx-field">
-            <div className="rx-field-label">{t('regex.vendor.move')}</div>
-            <Seg
-              small
-              value={q.movementSpeed}
-              onChange={(v) => setQuery({ movementSpeed: v })}
-              options={SPEEDS.map((n) => ({ value: n, label: n === 0 ? t('regex.vendor.linksAny') : `${n}%+` }))}
-            />
-          </div>
-          <NumberField
-            label={t('regex.vendor.quality')}
-            value={q.quality}
-            max={30}
-            suffix="%"
-            off={t('regex.off')}
-            onChange={(n) => setQuery({ quality: n })}
-          />
-          <label className="row-toggle">
-            <input
-              type="checkbox"
-              checked={q.plusGemLevel}
-              onChange={(e) => setQuery({ plusGemLevel: e.target.checked })}
-            />
-            <span>{t('regex.vendor.plusGem')}</span>
-          </label>
-          <NumberField
-            label={t('regex.vendor.gemLevel')}
-            value={q.gemLevel}
-            max={40}
-            off={t('regex.off')}
-            onChange={(n) => setQuery({ gemLevel: n })}
-          />
-          <p className="muted small">{t('regex.vendor.gemLevelHint')}</p>
-        </div>
-        <div className="rx-col-side">
-          <p className="rx-hint">{t('regex.vendor.hint')}</p>
-          <p className="rx-hint small">{t('regex.howto')}</p>
-        </div>
+          {simple && <Hint>{t('regex.vendor.hint')}</Hint>}
+        </Box>
       </div>
-    </div>
-  )
-}
-
-function NumberField({
-  label,
-  value,
-  max,
-  suffix = '',
-  off,
-  onChange
-}: {
-  label: string
-  value: number
-  max: number
-  suffix?: string
-  off: string
-  onChange: (n: number) => void
-}) {
-  return (
-    <div className="rx-field rx-number">
-      <div className="rx-field-label">{label}</div>
-      <span className="rx-threshold-val">
-        {value > 0 ? '≥ ' : ''}
-        <input
-          type="number"
-          min={0}
-          max={max}
-          value={value || ''}
-          placeholder={off}
-          onChange={(e) => {
-            const n = Math.round(Number(e.target.value))
-            onChange(Number.isFinite(n) ? Math.max(0, Math.min(max, n)) : 0)
-          }}
+      <div className="rx-stack rx-sticky">
+        <ResultBox
+          result={result}
+          defaultName={t('regex.vendor.genName', { summary: summarize(q, labels) })}
+          onReset={() => setPrefs({ vendor: emptyVendorQuery() })}
+          overflowText={overflowText}
+          hint={t('regex.vendor.howto')}
         />
-        {value > 0 ? suffix : ''}
-      </span>
+      </div>
     </div>
   )
 }
