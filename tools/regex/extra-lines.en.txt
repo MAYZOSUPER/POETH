@@ -1,0 +1,31 @@
+# Строки подсказки карты PoE 1 (EN-клиент), которые НЕ являются модами.
+# Токен мода не должен встречаться ни в одной из них (иначе ложные срабатывания в поиске игры).
+# Числа пишем как #. Регистр не важен. Строки, начинающиеся с #, — комментарии.
+# Названия баз карт ("<база> (Tier #)", "Blighted <база>"), влияния и осквернённые имплиситы
+# генератор добавляет сам из RePoE (base_items, mods, stat_translations).
+Item Class: Maps
+Rarity: Normal
+Rarity: Magic
+Rarity: Rare
+Rarity: Unique
+Map Tier: #
+Item Quantity: +#% (augmented)
+Item Rarity: +#% (augmented)
+Monster Pack Size: +#% (augmented)
+More Maps: +#% (augmented)
+More Scarabs: +#% (augmented)
+More Currency: +#% (augmented)
+More Divination Cards: +#% (augmented)
+Quality: +#% (augmented)
+Item Level: #
+Area Level: #
+Monster Level: #
+Corrupted
+Unidentified
+Mirrored
+Split
+Unmodifiable
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+Blighted
+Blight-ravaged
+Reward: Foil
