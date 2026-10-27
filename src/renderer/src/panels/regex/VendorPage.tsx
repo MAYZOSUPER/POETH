@@ -52,6 +52,7 @@ export function VendorPage() {
           <Switch on={q.rgb} onChange={(v) => setQuery({ rgb: v })}>
             {t('regex.vendor.rgb')}
           </Switch>
+          {simple && <div className="ui-field__help">{t('regex.vendor.colorHint')}</div>}
           <NumberRow
             id="rx-ms"
             label={t('regex.vendor.moveAtLeast')}

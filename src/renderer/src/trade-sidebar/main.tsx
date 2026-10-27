@@ -1,12 +1,10 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import '../styles/globals.css'
+import './trade-sidebar.css'
+import { TradeSidebarApp } from './App'
 
-// Сайдбар трейд-окна (sidebarView рядом с siteView pathofexile.com).
-// TODO S5: папки избранного, сохранить текущий поиск, импорт/экспорт Better Trading.
-function TradeSidebarApp() {
-  return <div className="stub-page">POETH trade sidebar — TODO S5</div>
-}
+// Сайдбар трейд-окна (sidebarView рядом с siteView pathofexile.com), этап S5.
 
 const container = document.getElementById('root')
 if (container) {

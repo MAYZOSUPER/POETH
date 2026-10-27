@@ -92,6 +92,8 @@ export const regex: DomainDict = {
     'regex.vendor.title': 'Что ищем у торговца',
     'regex.vendor.links': 'Связанные гнёзда',
     'regex.vendor.rgb': 'Красное, зелёное и синее рядом (R-G-B)',
+    'regex.vendor.colorHint':
+      'С 3.29 гнёзда по умолчанию белые. Цветные выпадают реже и дают камню того же цвета +10% качества — такие предметы стоит забрать.',
     'regex.vendor.move': 'Скорость передвижения',
     'regex.vendor.moveAtLeast': 'Скорость передвижения ≥ %',
     'regex.vendor.plusGem': '«+ к уровню камней» на оружии и щитах',
@@ -260,6 +262,8 @@ export const regex: DomainDict = {
     'regex.vendor.title': 'What to find at the vendor',
     'regex.vendor.links': 'Linked sockets',
     'regex.vendor.rgb': 'Red, green and blue linked (R-G-B)',
+    'regex.vendor.colorHint':
+      'Since 3.29 sockets are white by default. Coloured ones drop less often and give a gem of the same colour +10% quality — worth picking up.',
     'regex.vendor.move': 'Movement speed',
     'regex.vendor.moveAtLeast': 'Movement speed ≥ %',
     'regex.vendor.plusGem': '“+ to Level of Gems” on weapons and shields',
