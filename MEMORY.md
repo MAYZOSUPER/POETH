@@ -127,6 +127,11 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- `0ec6eb2` — _(лид, 28.10)_ слиты команды чата (S1 `d343ecb`…`005e685`): F5 → `/hideout` + 11 пресетов,
+  Settings v2 `chatCommands`, подстановки `@last`/`<char>` из лога (тост, если неизвестно), динамические хоткеи,
+  раздел «Команды чата», общий тейлер `services/gameLog.ts` (`subscribeGameLog`). 959 тестов.
+  С 28.10 коммиты в репо — от `MAYZOSUPER <291924623+MAYZOSUPER@users.noreply.github.com>` (перед открытием репо
+  история будет переписана на этот адрес — см. PLAN «Новая лига и обновления»).
 - `d642004` — _(лид, 28.10)_ слит `integration-1` (`05886dd`…`4d805a5`, сессия S1): `initNetIdentity` + fuses-хук
   `afterPack` + `npmRebuild:false`; `Settings.overlay.pricePosition`; в настройках — запрет занятых игрой сочетаний,
   позиция окна цены, `AccountPanel` (PoE1), дисклеймер GGG RU/EN; `logTailer` под `GameDef.logSubdirs` + событие
