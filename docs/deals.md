@@ -20,9 +20,10 @@
 - Подсветка ячейки — по геометрии/калибровке в **физических** пикселях клиентской области (`innerWidth ×
   devicePixelRatio`), рамка — в CSS px оверлея. Калибровка: «Калибровать поверх игры» (компаньон) или ✎ на
   карточке → два клика по углам сетки → `settings.deals.calibration`; Esc — отмена.
-- Client.txt PoE1: `LogTailer({ logSubdirs: GameDef.logSubdirs })` + событие `'lines'`; включается, когда в main
-  есть патч (`candidateLogPaths` экспортирован). Путь, выбранный вручную, — в `deals.json` (`config.logPath`),
-  не `Settings.logPath` (это лог PoE2 для кампании).
+- Client.txt PoE1: общий тейлер процесса `services/gameLog.ts` (`subscribeGameLog`, его же читают команды чата
+  с `@last`). Файл, выбранный во вкладке, — «свой путь» игры (`setGameLogPath`, хранится в `deals.json`
+  `config.logPath`, не `Settings.logPath` — это лог PoE2 для кампании); он же работает и для команд чата.
+  Статус во вкладке — `getGameLogStatus()` / `onGameLogStatus()`.
 
 ## Код
 | Что | Где |

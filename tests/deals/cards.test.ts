@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { EventEmitter } from 'events'
 import { promises as fs, readFileSync } from 'fs'
 import os from 'os'
 import path from 'path'
 import type { Deal, DealCardAction } from '@shared/types'
 import { CARD_TTL_MS, activeCards, ageParts, cardActions, cardEffect, cardsFit, topCard } from '@shared/deals/cards'
 import { defaultDealsConfig } from '@shared/deals/history'
-import { DealsStore, attachLogSource } from '../../src/main/services/dealsStore'
+import { GAMES, type GameDef } from '@shared/games'
+import { DealsStore } from '../../src/main/services/dealsStore'
+import { setGameLogPath, subscribeGameLog } from '../../src/main/services/gameLog'
 
 const T0 = new Date(2026, 9, 28, 21, 41, 0).getTime()
 const cfg = defaultDealsConfig()
@@ -111,27 +112,41 @@ afterEach(async () => {
 const fixture = (name: string): string[] =>
   readFileSync(path.join(__dirname, 'fixtures', name), 'utf8').split(/\r?\n/).filter(Boolean)
 
-/** Фейковый LogTailer после патча: событие 'lines' пачками за опрос. */
-class FakeTailer extends EventEmitter {
-  push(lines: string[]): void {
-    this.emit('lines', lines)
+// Строки идут через общий тейлер процесса (services/gameLog.ts), как в ipc/deals.ts: свой путь
+// игры = временный Client.txt, подписка → store.ingestLines. Тейлер опрашивает файл раз в секунду.
+const POE1: GameDef = { ...GAMES.poe1, logSubdirs: ['POETH test nowhere/logs'] }
+
+async function until(pred: () => boolean, ms = 3500): Promise<boolean> {
+  const end = Date.now() + ms
+  while (!pred()) {
+    if (Date.now() > end) return false
+    await new Promise((r) => setTimeout(r, 50))
   }
+  return true
 }
 
-async function flush(): Promise<void> {
-  for (let i = 0; i < 20; i++) await new Promise((r) => setTimeout(r, 5))
+/** Подписать стор на лог (как reconcileLog в ipc/deals.ts) и вернуть «дописать строки» и отписку. */
+async function storeOnGameLog(store: DealsStore): Promise<{ write: (lines: string[]) => Promise<void>; off: () => void }> {
+  const file = path.join(dir, 'Client.txt')
+  await fs.writeFile(file, '', 'utf8')
+  await setGameLogPath('poe1', file)
+  const sub = await subscribeGameLog(POE1, (lines) => void store.ingestLines(lines))
+  return { write: (lines) => fs.appendFile(file, lines.map((l) => `${l}\n`).join(''), 'utf8'), off: sub.off }
 }
 
-describe("attachLogSource — подписка на 'lines' (фикстуры)", () => {
-  it('EN: сделки, карточки, Trade accepted закрывает приглашённую', async () => {
+describe('сделки на общем тейлере gameLog (фикстуры Client.txt)', () => {
+  afterEach(async () => {
+    await setGameLogPath('poe1', null)
+  })
+
+  it('EN: сделки и карточки, Trade accepted закрывает приглашённую, после отписки строк нет', async () => {
     const store = new DealsStore(path.join(dir, 'd.json'), () => T0)
-    const tail = new FakeTailer()
-    const off = attachLogSource(tail, store)
+    const log = await storeOnGameLog(store)
     const lines = fixture('client-en.txt')
     const newDeals: string[] = []
     store.on('deal', (x: Deal) => newDeals.push(x.player))
-    tail.push(lines.slice(0, 7)) // до «joined»
-    await flush()
+    await log.write(lines.slice(0, 7)) // до «joined»
+    expect(await until(() => newDeals.length === 4)).toBe(true)
     expect(newDeals).toEqual(['MarshWitch', 'GemBuyer', 'BulkGuy', 'MoonWarden'])
     let st = store.getState()
     // исходящая скрыта (showOutgoing выключен), свежие сверху
@@ -139,22 +154,22 @@ describe("attachLogSource — подписка на 'lines' (фикстуры)",
     // игрок пригласил покупателя кнопкой → обмен в логе → сделка traded
     const witch = st.deals.find((x) => x.player === 'MarshWitch')!
     await store.cardAction(witch.id, 'invite', () => 'ok')
-    tail.push(lines.slice(7))
-    await flush()
+    await log.write(lines.slice(7))
+    expect(await until(() => store.getState().deals.find((x) => x.id === witch.id)?.status === 'traded')).toBe(true)
+    log.off()
+    await log.write([lines[2].replace('MarshWitch', 'AfterOff')])
+    await new Promise((r) => setTimeout(r, 1300))
     st = store.getState()
-    expect(st.deals.find((x) => x.id === witch.id)?.status).toBe('traded')
-    off()
-    tail.push(lines.slice(2, 3))
-    await flush()
-    expect(store.getState().deals).toHaveLength(4)
+    expect(st.deals.some((x) => x.player === 'AfterOff')).toBe(false)
+    expect(st.deals).toHaveLength(4)
   })
 
   it('RU: те же сделки, камень quad-вкладки, ответ на RU', async () => {
     const store = new DealsStore(path.join(dir, 'd.json'), () => T0)
-    const tail = new FakeTailer()
-    attachLogSource(tail, store)
-    tail.push(fixture('client-ru.txt'))
-    await flush()
+    const log = await storeOnGameLog(store)
+    await log.write(fixture('client-ru.txt'))
+    expect(await until(() => store.getState().deals.length === 4)).toBe(true)
+    log.off()
     const st = store.getState()
     expect(st.deals.map((x) => x.player).sort()).toEqual(['Ведьма_Ладоги', 'Камнелюб', 'ЛунныйСтраж', 'Оптовик'].sort())
     const gem = st.deals.find((x) => x.player === 'Камнелюб')!

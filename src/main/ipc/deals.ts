@@ -1,8 +1,8 @@
 import { app, dialog, ipcMain, net } from 'electron'
-import { existsSync, promises as fs } from 'fs'
+import { promises as fs } from 'fs'
 import path from 'path'
 import { IPC } from '@shared/ipc'
-import type { GameDef } from '@shared/games'
+import type { GameDef, GameId } from '@shared/games'
 import type {
   DealCardAction,
   DealLang,
@@ -11,14 +11,13 @@ import type {
   DealsConfigPatch,
   DealsExportResult,
   DealsLogStatus,
-  HotkeyAction,
-  TailerStatus
+  HotkeyAction
 } from '@shared/types'
 import { DEAL_ACTIONS } from '@shared/deals/commands'
 import { activeCards, topCard } from '@shared/deals/cards'
-import { DealsStore, attachLogSource, type RawLineSource } from '../services/dealsStore'
+import { DealsStore } from '../services/dealsStore'
 import { BlacklistService, type TextFetcher } from '../services/dealsBlacklist'
-import * as tailerModule from '../services/logTailer'
+import { getGameLogStatus, onGameLogStatus, setGameLogPath, subscribeGameLog } from '../services/gameLog'
 import { typeInChat } from '../input/gameInput'
 import { onHotkeyAction } from '../hotkeys'
 import {
@@ -33,7 +32,7 @@ import type { IpcDomain } from './types'
 // Домен «менеджер сделок» (main, этап S8).
 // Фаза 1: история (userData/deals.json), настройки менеджера, экспорт, чёрный список PoE Hub
 // (кэш userData/cache/poehub-blacklist.json), примеры.
-// Фаза 2: строки Client.txt PoE1 (LogTailer с GameDef.logSubdirs, событие 'lines') → история;
+// Фаза 2: строки Client.txt PoE1 (общий тейлер services/gameLog.ts) → история;
 // карточки поверх игры (оверлей S1, overlay/deals/) — кнопки и хоткеи верхней карточки дают
 // РОВНО ОДНУ команду в чат через typeInChat; калибровка стэша кликами поверх игры.
 // Никаких автоответов и таймеров: каждая команда — по нажатию игрока.
@@ -102,57 +101,46 @@ function start(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// Client.txt PoE1: LogTailer({ logSubdirs }) + событие 'lines' (патч logTailer, через лида)
+// Client.txt PoE1: общий тейлер процесса (services/gameLog.ts, его же читают команды чата).
+// Файл, выбранный во вкладке «Сделки» (deals.json config.logPath), — «свой путь» для игры.
 // ---------------------------------------------------------------------------
 
-interface LinesTailer extends RawLineSource {
-  start(customPath?: string | null): Promise<TailerStatus>
-  stop(): void
-  getStatus(): TailerStatus
-}
-
-/**
- * Патч logTailer (S8-logTailer.patch: опции конструктора + 'lines') распознаётся по экспорту
- * candidateLogPaths. Без него тейлер искал бы лог PoE2 и не отдавал строки — не запускаем.
- */
-const TAILER_SUPPORTED = 'candidateLogPaths' in tailerModule
-type TailerCtor = new (opts: { logSubdirs: string[] }) => LinesTailer
-
-let tailer: LinesTailer | null = null
-let tailerDef: GameDef | null = null
+let logDef: GameDef | null = null
+let logOff: (() => void) | null = null
+let logGame: GameId | null = null
 
 function logStatus(): DealsLogStatus {
-  const st = tailer?.getStatus()
-  return {
-    supported: TAILER_SUPPORTED,
-    connected: !!st?.running && !!st.found,
-    logPath: st?.logPath ?? null,
-    custom: !!store?.getState().config.logPath
-  }
-}
-
-/** Запустить/перезапустить чтение Client.txt PoE1 (менеджер включён и игра — с deals). */
-async function reconcileLog(): Promise<void> {
-  const def = tailerDef
-  const s = getStore()
-  await s.load()
-  if (!TAILER_SUPPORTED || !def?.features.deals) {
-    stopLog()
-    return
-  }
-  if (!tailer) {
-    const Ctor = tailerModule.LogTailer as unknown as TailerCtor
-    tailer = new Ctor({ logSubdirs: def.logSubdirs })
-    attachLogSource(tailer, s) // тейлер живёт до выхода — отписка не нужна
-  }
-  const custom = s.getState().config.logPath
-  await tailer.start(custom && existsSync(custom) ? custom : null)
-  broadcast(IPC.events.dealsLog, logStatus())
+  const st = getGameLogStatus()
+  return { connected: st.running && !!st.logPath, logPath: st.logPath, custom: st.custom }
 }
 
 function stopLog(): void {
-  tailer?.stop()
-  broadcast(IPC.events.dealsLog, logStatus())
+  logOff?.()
+  logOff = null
+  logGame = null
+}
+
+/** Подписать историю на строки лога игры (если у неё есть менеджер сделок), свой путь — из настроек. */
+async function reconcileLog(): Promise<void> {
+  const def = logDef
+  const s = getStore()
+  await s.load()
+  if (!def?.features.deals) {
+    stopLog()
+    return
+  }
+  await setGameLogPath(def.id, s.getState().config.logPath)
+  if (logOff && logGame === def.id) return
+  stopLog()
+  logGame = def.id
+  const sub = await subscribeGameLog(def, (lines) => {
+    s.ingestLines(lines).catch((e) => console.error('[deals] строки лога:', e))
+  })
+  if (logGame !== def.id) {
+    sub.off() // игру сменили, пока открывали лог
+    return
+  }
+  logOff = sub.off
 }
 
 async function pickLog(reset: boolean): Promise<DealsLogStatus> {
@@ -260,6 +248,8 @@ async function exportHistory(): Promise<DealsExportResult> {
 }
 
 function register(): void {
+  // статус лога меняется и от команд чата (тот же тейлер) — вкладке «Сделки» сообщаем всегда
+  onGameLogStatus(() => broadcast(IPC.events.dealsLog, logStatus()))
   ipcMain.handle(IPC.deals.state, async () => {
     await start()
     return getStore().getState()
@@ -320,7 +310,7 @@ function register(): void {
 }
 
 async function setupForGame(def: GameDef): Promise<void> {
-  tailerDef = def
+  logDef = def
   if (!def.features.deals) {
     stopLog()
     return

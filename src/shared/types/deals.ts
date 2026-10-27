@@ -167,11 +167,9 @@ export interface DealsExportResult {
   path?: string
 }
 
-/** Источник строк Client.txt для менеджера сделок. */
+/** Client.txt для менеджера сделок (общий тейлер процесса, services/gameLog.ts). */
 export interface DealsLogStatus {
-  /** тейлер умеет отдавать сырые строки (патч logTailer слит) */
-  supported: boolean
-  /** читаем лог прямо сейчас */
+  /** читаем лог прямо сейчас (файл найден) */
   connected: boolean
   /** файл найден/выбран */
   logPath: string | null
