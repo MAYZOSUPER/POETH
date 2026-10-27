@@ -1,23 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
-import type { HotkeyAction, HotkeyMap, UiLang } from '@shared/types'
+import type { HotkeyAction, UiLang } from '@shared/types'
+import type { GameId } from '@shared/games'
+import { HOTKEY_ACTIONS, defaultHotkeys } from '@shared/settings'
 import { useAppStore } from '../store/useAppStore'
 import { useT } from '../i18n'
 
-const DEFAULT_HOTKEYS: HotkeyMap = {
-  toggleVisible: 'Control+Shift+O',
-  toggleLock: 'Control+Shift+L',
-  prevStep: 'Control+Shift+[',
-  nextStep: 'Control+Shift+]',
-  priceCheck: 'Alt+D'
-}
+const BOTH: GameId[] = ['poe1', 'poe2']
 
-const HK_ACTIONS: { action: HotkeyAction; labelKey: string }[] = [
-  { action: 'toggleVisible', labelKey: 'set.hk.toggle' },
-  { action: 'toggleLock', labelKey: 'set.hk.lock' },
-  { action: 'prevStep', labelKey: 'set.hk.prev' },
-  { action: 'nextStep', labelKey: 'set.hk.next' },
-  { action: 'priceCheck', labelKey: 'set.hk.priceCheck' }
-]
+/** Подпись действия и в каких играх оно показывается в настройках. */
+const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameId[] }> = {
+  priceCheck: { labelKey: 'set.hk.priceCheck', games: BOTH },
+  overlayToggle: { labelKey: 'set.hk.overlayToggle', games: ['poe1'] },
+  whisperLastHit: { labelKey: 'set.hk.whisperLastHit', games: ['poe1'] },
+  pasteSearch1: { labelKey: 'set.hk.pasteSearch', n: 1, games: ['poe1'] },
+  pasteSearch2: { labelKey: 'set.hk.pasteSearch', n: 2, games: ['poe1'] },
+  pasteSearch3: { labelKey: 'set.hk.pasteSearch', n: 3, games: ['poe1'] },
+  pasteSearch4: { labelKey: 'set.hk.pasteSearch', n: 4, games: ['poe1'] },
+  pasteSearch5: { labelKey: 'set.hk.pasteSearch', n: 5, games: ['poe1'] },
+  toggleCompanion: { labelKey: 'set.hk.toggle', games: BOTH },
+  toggleLock: { labelKey: 'set.hk.lock', games: BOTH },
+  toggleTradeWindow: { labelKey: 'set.hk.tradeWindow', games: ['poe1'] },
+  prevStep: { labelKey: 'set.hk.prev', games: ['poe2'] },
+  nextStep: { labelKey: 'set.hk.next', games: ['poe2'] }
+}
 
 const CODE_KEY_MAP: Record<string, string> = {
   BracketLeft: '[',
@@ -95,6 +100,8 @@ export function SettingsPanel() {
   const tailerPickFile = useAppStore((s) => s.tailerPickFile)
   const t = useT()
   const meta = dataset?.meta
+  const game = settings?.game ?? 'poe1'
+  const hkActions = HOTKEY_ACTIONS.filter((a) => HK_META[a].games.includes(game))
 
   const [capturing, setCapturing] = useState<HotkeyAction | null>(null)
   const [hkNote, setHkNote] = useState<string | null>(null)
@@ -118,14 +125,12 @@ export function SettingsPanel() {
       if (!accel) return
       const hk = settingsRef.current?.hotkeys
       if (!hk) return
-      const conflict = (Object.entries(hk) as [HotkeyAction, string][]).some(
-        ([a, v]) => a !== capturing && v === accel
-      )
+      const conflict = HOTKEY_ACTIONS.some((a) => a !== capturing && hk[a].accel === accel)
       if (conflict) {
         setHkNote('set.hk.conflict')
         return
       }
-      void patchSettings({ hotkeys: { ...hk, [capturing]: accel } })
+      void patchSettings({ hotkeys: { [capturing]: { ...hk[capturing], accel } } })
       setHkNote(null)
       setCapturing(null)
     }
@@ -193,21 +198,44 @@ export function SettingsPanel() {
       <div className="block">
         <div className="block-title">{t('set.hotkeys')}</div>
         <ul className="kv">
-          {HK_ACTIONS.map(({ action, labelKey }) => (
-            <li key={action}>
-              <span>{t(labelKey)}</span>
-              <button
-                className={'hotkey' + (capturing === action ? ' capturing' : '')}
-                title={t('set.hk.hint')}
-                onClick={() => {
-                  setHkNote(null)
-                  setCapturing((cur) => (cur === action ? null : action))
-                }}
-              >
-                {capturing === action ? t('set.hk.press') : formatAccel(settings?.hotkeys[action])}
-              </button>
-            </li>
-          ))}
+          {hkActions.map((action) => {
+            const { labelKey, n } = HK_META[action]
+            const binding = settings?.hotkeys[action]
+            return (
+              <li key={action}>
+                <span>
+                  {t(labelKey, n ? { n } : undefined)}{' '}
+                  <span className="small muted">
+                    · {t(binding?.scope === 'game' ? 'set.hk.scope.game' : 'set.hk.scope.always')}
+                  </span>
+                </span>
+                <span className="hk-cell">
+                  <button
+                    className={'hotkey' + (capturing === action ? ' capturing' : '')}
+                    title={t('set.hk.hint')}
+                    onClick={() => {
+                      setHkNote(null)
+                      setCapturing((cur) => (cur === action ? null : action))
+                    }}
+                  >
+                    {capturing === action ? t('set.hk.press') : formatAccel(binding?.accel)}
+                  </button>
+                  {binding?.accel && capturing !== action && (
+                    <button
+                      className="icon hk-clear"
+                      title={t('set.hk.clear')}
+                      onClick={() => {
+                        if (!binding) return
+                        void patchSettings({ hotkeys: { [action]: { ...binding, accel: '' } } })
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </span>
+              </li>
+            )
+          })}
         </ul>
         {hkNote && <div className="small danger">{t(hkNote)}</div>}
         <div className="hk-foot">
@@ -217,7 +245,7 @@ export function SettingsPanel() {
             onClick={() => {
               setCapturing(null)
               setHkNote(null)
-              void patchSettings({ hotkeys: DEFAULT_HOTKEYS })
+              void patchSettings({ hotkeys: defaultHotkeys() })
             }}
           >
             {t('set.hk.reset')}

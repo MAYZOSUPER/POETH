@@ -1,16 +1,9 @@
 import { app, BrowserWindow } from 'electron'
-import { createOverlayWindow } from './overlayWindow'
+import { createCompanionWindow, getCompanionWindow } from './windows/companionWindow'
 import { initClickThrough } from './clickThrough'
-import { registerHotkeys, unregisterHotkeys } from './hotkeys'
+import { unregisterHotkeys } from './hotkeys'
 import { createTray, destroyTray } from './tray'
-import {
-  registerIpcHandlers,
-  dispatchHotkey,
-  applySettingsToWindow,
-  wireTailer,
-  reconcileTailer,
-  setupBossMatcher
-} from './ipcHandlers'
+import { registerIpcHandlers, setupGame, applySettingsToWindow } from './ipc'
 import { getSettings } from './services/settingsStore'
 import { registerPoethScheme, handlePoethProtocol } from './protocol'
 import { migrateUserData } from './services/userDataMigration'
@@ -20,13 +13,13 @@ import { migrateUserData } from './services/userDataMigration'
 registerPoethScheme()
 migrateUserData()
 
-// Single-instance lock — a second launch just focuses the existing overlay.
+// Single-instance lock — a second launch just focuses the existing companion window.
 if (!app.requestSingleInstanceLock()) {
   console.log('[main] another instance holds the single-instance lock — quitting')
   app.quit()
 } else {
   app.on('second-instance', () => {
-    const win = BrowserWindow.getAllWindows()[0]
+    const win = getCompanionWindow()
     if (win) {
       if (!win.isVisible()) win.show()
       win.focus()
@@ -39,21 +32,19 @@ if (!app.requestSingleInstanceLock()) {
 async function bootstrap(): Promise<void> {
   handlePoethProtocol()
 
-  registerIpcHandlers()
-  wireTailer()
-  void setupBossMatcher()
-  createOverlayWindow()
-
   const settings = await getSettings()
+  registerIpcHandlers()
+  createCompanionWindow()
+
   initClickThrough(settings.locked)
   applySettingsToWindow(settings)
-  registerHotkeys(settings.hotkeys, dispatchHotkey)
-  await reconcileTailer(settings)
+  // The game is fixed for the lifetime of the process (switching = relaunch).
+  await setupGame(settings.game)
   void createTray()
 }
 
 app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createOverlayWindow()
+  if (BrowserWindow.getAllWindows().length === 0) createCompanionWindow()
 })
 
 app.on('window-all-closed', () => {

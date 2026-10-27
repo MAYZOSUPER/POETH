@@ -1,13 +1,23 @@
 import { BrowserWindow } from 'electron'
 import path from 'path'
+import { loadRendererPage } from './rendererPage'
+
+// Companion window (бывш. «оверлей» компаса): прозрачное always-on-top окно с
+// вкладками (кампания PoE2 / прайс-чек / live / regex / сделки / настройки).
+// Не путать с игровым оверлеем S1 (windows/gameOverlay.ts), который цепляется к окну игры.
 
 let win: BrowserWindow | null = null
 
-export function getOverlayWindow(): BrowserWindow | null {
+export function getCompanionWindow(): BrowserWindow | null {
   return win
 }
 
-export function createOverlayWindow(): BrowserWindow {
+/** Send an event to the companion renderer (no-op when the window is gone). */
+export function sendToCompanion(channel: string, payload?: unknown): void {
+  if (win && !win.isDestroyed()) win.webContents.send(channel, payload)
+}
+
+export function createCompanionWindow(): BrowserWindow {
   win = new BrowserWindow({
     title: 'POE Trade Helper',
     width: 820,
@@ -44,11 +54,7 @@ export function createOverlayWindow(): BrowserWindow {
     win.webContents.openDevTools({ mode: 'detach' })
   }
 
-  if (process.env.ELECTRON_RENDERER_URL) {
-    void win.loadURL(process.env.ELECTRON_RENDERER_URL)
-  } else {
-    void win.loadFile(path.join(__dirname, '../renderer/index.html'))
-  }
+  loadRendererPage(win, 'index')
 
   win.on('closed', () => {
     win = null

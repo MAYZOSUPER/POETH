@@ -10,6 +10,7 @@ import type {
   ProfileMeta,
   ProgressState,
   Settings,
+  SettingsPatch,
   TailerStatus,
   ZoneEvent
 } from '@shared/types'
@@ -76,7 +77,7 @@ interface AppState {
   deleteProfile: (id: string) => Promise<void>
   exportActiveProfile: () => Promise<ProfileExportResult>
   importProfile: () => Promise<ProfileImportResult>
-  patchSettings: (patch: Partial<Settings>) => Promise<void>
+  patchSettings: (patch: SettingsPatch) => Promise<void>
   handleHotkey: (action: HotkeyAction) => Promise<void>
   tailerStart: () => Promise<void>
   tailerStop: () => Promise<void>
@@ -340,9 +341,11 @@ export const useAppStore = create<AppState>((set, get) => ({
         set({ leagues })
         // If the saved league no longer exists (temp leagues rotate), pick a valid one
         // so price-checks don't fail on a stale league.
-        const cur = get().settings?.league
+        const cur = get().settings?.poe2.league
         if (leagues.length && cur && !leagues.includes(cur)) {
-          void get().patchSettings({ league: leagues.includes('Standard') ? 'Standard' : leagues[0] })
+          void get().patchSettings({
+            poe2: { league: leagues.includes('Standard') ? 'Standard' : leagues[0] }
+          })
         }
       })
   },

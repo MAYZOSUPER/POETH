@@ -1,5 +1,6 @@
 import { app, net } from 'electron'
 import type { PriceCheckResult, PriceResult, TradeListing, UiLang } from '@shared/types'
+import { GAMES, apiUrl, siteUrl, type SiteHost } from '@shared/games'
 import { getSession } from './secretStore'
 import { getSettings } from './settingsStore'
 import {
@@ -19,7 +20,9 @@ import {
 // not the Electron cookie jar). API paths carry NO ?realm=poe2 — the `trade2`
 // path segment already targets PoE2. See the verified spec in the price-check plan.
 
-const HOST = 'https://www.pathofexile.com'
+// PoE2 trade2 lives on the international host (POESESSID is issued for it).
+const POE2 = GAMES.poe2
+const HOST: SiteHost = 'www.pathofexile.com'
 const FALLBACK_LEAGUES = ['Standard', 'Hardcore']
 const FETCH_BATCH = 10
 const MAX_FETCH = 20 // two pages — enough for a min/median, polite on the API
@@ -211,7 +214,7 @@ export async function getLeagues(): Promise<string[]> {
   try {
     const poesessid = await getSession()
     const res = await request({
-      url: `${HOST}/api/trade2/data/leagues`,
+      url: apiUrl(POE2, HOST, 'data/leagues'),
       method: 'GET',
       poesessid
     })
@@ -234,7 +237,7 @@ export async function priceCheck(itemText: string): Promise<PriceCheckResult> {
 
   const settings = await getSettings()
   const lang = settings.uiLang
-  const league = settings.league
+  const league = settings.poe2.league
   const label = { name: item.name || item.baseType || '?', rarity: item.rarity }
   if (!league) return { status: 'error', message: errMsg(lang, 'no-league') }
 
@@ -244,7 +247,7 @@ export async function priceCheck(itemText: string): Promise<PriceCheckResult> {
       if (DBG) console.log('[trade] search', league, JSON.stringify(body.query))
       const searchRes = await apiCall(
         {
-          url: `${HOST}/api/trade2/search/${encodeURIComponent(league)}`,
+          url: apiUrl(POE2, HOST, 'search', encodeURIComponent(league)),
           method: 'POST',
           poesessid,
           jsonBody: body
@@ -259,14 +262,19 @@ export async function priceCheck(itemText: string): Promise<PriceCheckResult> {
       const ids = search.result ?? []
       if (!ids.length) return { status: 'empty', item: label }
 
-      const searchUrl = `${HOST}/trade2/search/poe2/${encodeURIComponent(league)}/${encodeURIComponent(search.id)}`
+      const searchUrl = siteUrl(POE2, HOST, league, search.id)
       const wanted = ids.slice(0, MAX_FETCH)
       const listings: TradeListing[] = []
       for (let i = 0; i < wanted.length; i += FETCH_BATCH) {
         const chunk = wanted.slice(i, i + FETCH_BATCH)
         const fetchRes = await apiCall(
           {
-            url: `${HOST}/api/trade2/fetch/${chunk.join(',')}?query=${encodeURIComponent(search.id)}`,
+            url: apiUrl(
+              POE2,
+              HOST,
+              'fetch',
+              `${chunk.join(',')}?query=${encodeURIComponent(search.id)}`
+            ),
             method: 'GET',
             poesessid
           },

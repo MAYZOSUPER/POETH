@@ -1242,6 +1242,16 @@ input[type='checkbox']:checked::after {
     opacity: 0.55;
   }
 }
+.hk-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+button.icon.hk-clear {
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
 .hk-foot {
   display: flex;
   align-items: center;

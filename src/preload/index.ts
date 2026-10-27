@@ -1,77 +1,27 @@
-import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
-import { IPC, type OverlayApi } from '@shared/ipc'
+import { contextBridge } from 'electron'
+import type { OverlayApi } from '@shared/ipc'
+import { campaignBridge } from './domains/campaign'
+import { tradeBridge } from './domains/trade'
+import { appBridge } from './domains/app'
+import { overlayBridge } from './domains/overlay'
+import { liveBridge } from './domains/live'
+import { favBridge } from './domains/fav'
+import { regexBridge } from './domains/regex'
+import { authBridge } from './domains/auth'
+import { dealsBridge } from './domains/deals'
 
-function subscribe<T>(channel: string, cb: (payload: T) => void): () => void {
-  const listener = (_event: IpcRendererEvent, payload: T): void => cb(payload)
-  ipcRenderer.on(channel, listener)
-  return () => ipcRenderer.removeListener(channel, listener)
-}
-
+// window.overlayApi — мост contextBridge. Куски по доменам: src/preload/domains/*.ts
+// (этап меняет только свой файл). Этот файл ЗАМОРОЖЕН после S0.
 const api: OverlayApi = {
-  profiles: {
-    list: () => ipcRenderer.invoke(IPC.profiles.list),
-    create: (name, className) => ipcRenderer.invoke(IPC.profiles.create, name, className),
-    rename: (id, name) => ipcRenderer.invoke(IPC.profiles.rename, id, name),
-    setClass: (id, className) => ipcRenderer.invoke(IPC.profiles.setClass, id, className),
-    delete: (id) => ipcRenderer.invoke(IPC.profiles.delete, id),
-    setActive: (id) => ipcRenderer.invoke(IPC.profiles.setActive, id),
-    getActive: () => ipcRenderer.invoke(IPC.profiles.getActive),
-    export: (id) => ipcRenderer.invoke(IPC.profiles.export, id),
-    import: () => ipcRenderer.invoke(IPC.profiles.import)
-  },
-  progress: {
-    get: (pid) => ipcRenderer.invoke(IPC.progress.get, pid),
-    setQuestDone: (pid, qid, done) =>
-      ipcRenderer.invoke(IPC.progress.setQuestDone, pid, qid, done),
-    setQuestsDone: (pid, qids) => ipcRenderer.invoke(IPC.progress.setQuestsDone, pid, qids),
-    setManyQuests: (pid, qids, done) =>
-      ipcRenderer.invoke(IPC.progress.setManyQuests, pid, qids, done),
-    setAct: (pid, act) => ipcRenderer.invoke(IPC.progress.setAct, pid, act),
-    setLevel: (pid, level) => ipcRenderer.invoke(IPC.progress.setLevel, pid, level),
-    setRewardChoice: (pid, qid, idx) =>
-      ipcRenderer.invoke(IPC.progress.setRewardChoice, pid, qid, idx),
-    setTrialDone: (pid, tid, done) => ipcRenderer.invoke(IPC.progress.setTrialDone, pid, tid, done),
-    setAscendancy: (pid, ascId) => ipcRenderer.invoke(IPC.progress.setAscendancy, pid, ascId)
-  },
-  settings: {
-    get: () => ipcRenderer.invoke(IPC.settings.get),
-    set: (patch) => ipcRenderer.invoke(IPC.settings.set, patch)
-  },
-  dataset: {
-    get: () => ipcRenderer.invoke(IPC.dataset.get)
-  },
-  layout: {
-    resolve: (areaId) => ipcRenderer.invoke(IPC.layout.resolve, areaId)
-  },
-  tailer: {
-    start: () => ipcRenderer.invoke(IPC.tailer.start),
-    stop: () => ipcRenderer.invoke(IPC.tailer.stop),
-    status: () => ipcRenderer.invoke(IPC.tailer.status),
-    pickLogFile: () => ipcRenderer.invoke(IPC.tailer.pickLogFile)
-  },
-  trade: {
-    priceCheck: (text) => ipcRenderer.invoke(IPC.trade.priceCheck, text),
-    setSession: (poesessid) => ipcRenderer.invoke(IPC.trade.setSession, poesessid),
-    hasSession: () => ipcRenderer.invoke(IPC.trade.hasSession),
-    getLeagues: () => ipcRenderer.invoke(IPC.trade.getLeagues)
-  },
-  window: {
-    setLocked: (locked) => ipcRenderer.send(IPC.window.setLocked, locked),
-    toggleVisible: () => ipcRenderer.send(IPC.window.toggleVisible),
-    minimize: () => ipcRenderer.send(IPC.window.minimize),
-    openExternal: (url) => ipcRenderer.send(IPC.window.openExternal, url)
-  },
-  hotkeys: {
-    suspend: () => ipcRenderer.send(IPC.hotkeys.suspend),
-    resume: () => ipcRenderer.send(IPC.hotkeys.resume)
-  },
-  onZoneChange: (cb) => subscribe(IPC.events.zoneChange, cb),
-  onLevelChange: (cb) => subscribe(IPC.events.levelChange, cb),
-  onTailerStatus: (cb) => subscribe(IPC.events.tailerStatus, cb),
-  onBossDefeat: (cb) => subscribe(IPC.events.bossDefeat, cb),
-  onHotkey: (cb) => subscribe(IPC.events.hotkey, cb),
-  onActiveProfileChanged: (cb) => subscribe(IPC.events.activeProfileChanged, cb),
-  onPriceResult: (cb) => subscribe(IPC.events.priceResult, cb)
+  ...campaignBridge(),
+  ...tradeBridge(),
+  ...appBridge(),
+  ...overlayBridge(),
+  ...liveBridge(),
+  ...favBridge(),
+  ...regexBridge(),
+  ...authBridge(),
+  ...dealsBridge()
 }
 
 contextBridge.exposeInMainWorld('overlayApi', api)

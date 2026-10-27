@@ -31,7 +31,7 @@ export function PriceCheckTab() {
   const [poeInput, setPoeInput] = useState('')
   const [pasteInput, setPasteInput] = useState('')
 
-  const hotkey = formatAccel(settings?.hotkeys.priceCheck)
+  const hotkey = formatAccel(settings?.hotkeys.priceCheck.accel)
 
   return (
     <div className="price-check">
@@ -75,11 +75,11 @@ export function PriceCheckTab() {
           {leagues.length > 0 ? (
             <select
               className="lang-select"
-              value={settings?.league ?? ''}
-              onChange={(e) => void patchSettings({ league: e.target.value })}
+              value={settings?.poe2.league ?? ''}
+              onChange={(e) => void patchSettings({ poe2: { league: e.target.value } })}
             >
-              {!leagues.includes(settings?.league ?? '') && (
-                <option value={settings?.league ?? ''}>{settings?.league ?? ''}</option>
+              {!leagues.includes(settings?.poe2.league ?? '') && (
+                <option value={settings?.poe2.league ?? ''}>{settings?.poe2.league ?? ''}</option>
               )}
               {leagues.map((l) => (
                 <option key={l} value={l}>
@@ -91,8 +91,8 @@ export function PriceCheckTab() {
             <input
               className="pc-input"
               placeholder={t('pc.league.placeholder')}
-              value={settings?.league ?? ''}
-              onChange={(e) => void patchSettings({ league: e.target.value })}
+              value={settings?.poe2.league ?? ''}
+              onChange={(e) => void patchSettings({ poe2: { league: e.target.value } })}
             />
           )}
         </div>
