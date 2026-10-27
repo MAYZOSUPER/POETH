@@ -1,7 +1,8 @@
 // IPC домена «приложение»: настройки, управление окном компаньона, хоткеи, смена игры.
 // ЗАМОРОЖЕН после S0 (меняет только лид).
 
-import type { AppInfo, HotkeyAction, Settings, SettingsPatch } from '../types'
+import type { AppInfo, CompanionPage, HotkeyAction, Settings, SettingsPatch } from '../types'
+import type { Supporter } from '../credits'
 import type { GameId } from '../games'
 
 export const appChannels = {
@@ -21,12 +22,15 @@ export const appChannels = {
   },
   app: {
     info: 'app:info',
-    switchGame: 'app:switchGame'
+    switchGame: 'app:switchGame',
+    supporters: 'app:supporters'
   }
 } as const
 
 export const appEvents = {
-  hotkey: 'event:hotkey'
+  hotkey: 'event:hotkey',
+  /** S9: открыть страницу компаньона (трей: «О программе», «Настройки») */
+  showPage: 'event:app.showPage'
 } as const
 
 export interface AppIpcApi {
@@ -54,6 +58,10 @@ export interface AppIpcApi {
     info(): Promise<AppInfo>
     /** Сохранить выбор игры и перезапустить приложение (в dev — мягкий перезапуск окон). */
     switchGame(game: GameId): Promise<void>
+    /** «Благодарности» (S9): resources/supporters.json, без сети */
+    supporters(): Promise<Supporter[]>
   }
   onHotkey(cb: (action: HotkeyAction) => void): () => void
+  /** main просит открыть страницу компаньона (showCompanionPage в src/main/ipc/app.ts) */
+  onShowPage(cb: (page: CompanionPage) => void): () => void
 }

@@ -1,0 +1,222 @@
+// POETH: результаты поиска трейда PoE1 — нормализация ответа /api/trade/fetch и «честная цена».
+//
+// «Честная цена» (для новичков): лоты мгновенного выкупа (мерчант, `listing.fee` — комиссия в золоте, без
+// whisper) и лоты «лично» (whisper, продавец может не ответить) считаются отдельно: минимум и медиана по каждой
+// группе. Одиночные выбросы-приманки в начале списка отсеиваются: цена ниже 0.5× медианы следующих 5 лотов.
+// Сайт сортирует по цене в своей нормализации валют, поэтому медиана берётся по позиции; сравнение цен для
+// выбросов — в одной валюте или по курсам `rates` (chaos-эквивалент), если они известны.
+
+import type { NetError } from '../../types/auth'
+
+export type Poe1ListingKind = 'instant' | 'person'
+
+export interface Poe1Price {
+  amount: number
+  currency: string
+}
+
+export interface Poe1Listing {
+  id: string
+  /** instant — мерчант-листинг (покупка на сайте за золото), person — продавец в игре (whisper) */
+  kind: Poe1ListingKind
+  price: Poe1Price | null
+  /** ISO-время выставления */
+  indexed?: string
+  /** комиссия мерчанта в золоте */
+  fee?: number
+  accountName: string
+  characterName?: string
+  online: 'online' | 'afk' | 'offline'
+  /** готовый текст whisper от сайта (у in-person) — игрок копирует его сам */
+  whisper?: string
+  itemLevel?: number
+  corrupted?: boolean
+  /** имя и база предмета на языке сайта — «Купить» открывает этот лот в трейд-окне (S5, {lot}) */
+  itemName?: string
+  baseType?: string
+}
+
+/** Сырой элемент ответа /api/trade/fetch (только используемые поля). */
+export interface TradeFetchItem {
+  id: string
+  listing?: {
+    indexed?: string
+    price?: { amount?: number; currency?: string; type?: string } | null
+    fee?: number | null
+    whisper?: string | null
+    account?: { name?: string; lastCharacterName?: string; online?: { status?: string } | null } | null
+  }
+  item?: { ilvl?: number; corrupted?: boolean; name?: string; typeLine?: string; baseType?: string }
+}
+
+/** Текст предмета от сайта без разметки вида <<set:MS>>; пусто — undefined. */
+function siteText(s: unknown): string | undefined {
+  if (typeof s !== 'string') return undefined
+  const v = s.replace(/<<[^>]*>>/g, '').trim()
+  return v || undefined
+}
+
+export function normalizeListing(r: TradeFetchItem): Poe1Listing {
+  const l = r.listing ?? {}
+  const fee = typeof l.fee === 'number' ? l.fee : undefined
+  const price =
+    l.price && typeof l.price.amount === 'number' && typeof l.price.currency === 'string'
+      ? { amount: l.price.amount, currency: l.price.currency }
+      : null
+  const status = l.account?.online ? (l.account.online.status === 'afk' ? 'afk' : 'online') : 'offline'
+  return {
+    id: r.id,
+    kind: fee != null ? 'instant' : 'person',
+    price,
+    indexed: l.indexed,
+    fee,
+    accountName: l.account?.name ?? '',
+    characterName: l.account?.lastCharacterName,
+    // мерчант-листинг доступен всегда (как у APT)
+    online: fee != null ? 'online' : status,
+    whisper: typeof l.whisper === 'string' && l.whisper ? l.whisper : undefined,
+    itemLevel: r.item?.ilvl,
+    corrupted: r.item?.corrupted,
+    itemName: siteText(r.item?.name),
+    // у магических typeLine с аффиксами — для запроса лота нужна база
+    baseType: siteText(r.item?.baseType) ?? siteText(r.item?.typeLine)
+  }
+}
+
+export interface PriceGroupSummary {
+  /** лотов с ценой (без выбросов) */
+  count: number
+  min?: Poe1Price
+  median?: Poe1Price
+  /** id отброшенных лотов-приманок */
+  outliers: string[]
+}
+
+export interface HonestPrice {
+  instant: PriceGroupSummary
+  person: PriceGroupSummary
+  /** 0…4 — насколько можно верить цене (по числу похожих лотов) */
+  confidence: number
+}
+
+export const OUTLIER_RATIO = 0.5
+export const OUTLIER_WINDOW = 5
+
+function median(values: number[]): number {
+  const s = [...values].sort((a, b) => a - b)
+  const m = s.length >> 1
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2
+}
+
+/** Цена в сравнимых единицах: по курсу (chaos-эквивалент) или «как есть» в базовой валюте. */
+function comparable(p: Poe1Price, base: string, rates?: Readonly<Record<string, number>>): number | undefined {
+  const rate = rates?.[p.currency]
+  if (rate != null && rates?.[base] != null) return p.amount * rate
+  return p.currency === base ? p.amount : undefined
+}
+
+export function summarizeGroup(
+  listings: readonly Poe1Listing[],
+  rates?: Readonly<Record<string, number>>
+): PriceGroupSummary {
+  const priced = listings.filter((l): l is Poe1Listing & { price: Poe1Price } => l.price != null && l.price.amount > 0)
+  const outliers: string[] = []
+  let start = 0
+  // отсеиваем только ведущие лоты: дальше по сортировке сайта цены и так не ниже
+  while (start < priced.length) {
+    const next = priced.slice(start + 1, start + 1 + OUTLIER_WINDOW)
+    if (next.length < 3) break
+    const base = priced[start].price.currency
+    const values = next.map((l) => comparable(l.price, base, rates))
+    if (values.some((v) => v === undefined)) break
+    const own = comparable(priced[start].price, base, rates)!
+    if (own < OUTLIER_RATIO * median(values as number[])) {
+      outliers.push(priced[start].id)
+      start++
+    } else {
+      break
+    }
+  }
+  const kept = priced.slice(start)
+  return {
+    count: kept.length,
+    min: kept[0]?.price,
+    median: kept.length ? kept[(kept.length - 1) >> 1].price : undefined,
+    outliers
+  }
+}
+
+export function confidenceOf(similar: number): number {
+  if (similar >= 20) return 4
+  if (similar >= 10) return 3
+  if (similar >= 5) return 2
+  if (similar >= 1) return 1
+  return 0
+}
+
+/** Сводка по двум группам; `total` — сколько всего нашёл сайт (для точности). */
+export function honestPrice(
+  listings: readonly Poe1Listing[],
+  total = listings.length,
+  rates?: Readonly<Record<string, number>>
+): HonestPrice {
+  const instant = summarizeGroup(
+    listings.filter((l) => l.kind === 'instant'),
+    rates
+  )
+  const person = summarizeGroup(
+    listings.filter((l) => l.kind === 'person'),
+    rates
+  )
+  return { instant, person, confidence: confidenceOf(Math.max(total, instant.count + person.count)) }
+}
+
+// ---------------------------------------------------------------- IPC (renderer ↔ main)
+
+export interface Poe1SearchArgs {
+  league: string
+  /** тело POST /api/trade/search (createTradeRequest) */
+  body: unknown
+  /** сколько лотов загрузить (по 10 за запрос fetch, максимум 20) */
+  fetch?: number
+}
+
+export type Poe1SearchResult =
+  | {
+      ok: true
+      searchId: string
+      total: number
+      inexact: boolean
+      listings: Poe1Listing[]
+      cached: boolean
+      /** страница этого поиска на сайте трейда */
+      siteUrl: string
+    }
+  | { ok: false; error: NetError }
+
+export interface Poe1ExchangeArgs {
+  league: string
+  /** тело POST /api/trade/exchange (createBulkRequest) */
+  body: unknown
+}
+
+export interface Poe1ExchangeOffer {
+  id: string
+  indexed?: string
+  /** сколько валюты `currency` за `itemAmount` предметов */
+  exchangeAmount: number
+  currency: string
+  itemAmount: number
+  stock: number
+  accountName: string
+  characterName?: string
+  online: 'online' | 'afk' | 'offline'
+  whisper?: string
+}
+
+export type Poe1ExchangeResult =
+  | { ok: true; queryId: string; total: number; offers: Poe1ExchangeOffer[]; cached: boolean; siteUrl: string }
+  | { ok: false; error: NetError }
+
+export const MAX_FETCH = 20
+export const FETCH_PAGE = 10

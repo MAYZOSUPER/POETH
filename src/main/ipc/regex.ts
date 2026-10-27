@@ -16,8 +16,8 @@ import { getCompanionWindow } from '../windows/companionWindow'
 import type { IpcDomain } from './types'
 
 // Домен «regex-строки» (main): данные карт для движка, библиотека строк, буфер обмена.
-// Хоткеи pasteSearch1..5: текст слота даёт getPasteString(slot) — лид подключит его к
-// stashSearch() из S1 (Ctrl+F → вставить в поле поиска игры) после слияния S1.
+// Хоткеи pasteSearch1..5: текст слота даёт getPasteString(slot), вставку в поле поиска игры
+// (Ctrl+F → вставить) делает stashSearch() S1 в ipc/overlay.ts.
 
 export { getPasteString } from '../services/regexLibraryStore'
 

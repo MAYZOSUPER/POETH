@@ -13,15 +13,12 @@ export const deals: DomainDict = {
     'deals.page.blacklist': 'Чёрный список',
     'deals.off.banner':
       '<b>Менеджер сделок выключен.</b> Карточки входящих сделок не появятся, звука не будет. История сохраняется.',
-    'deals.log.banner.pending':
-      '<b>Чтение Client.txt подключится в следующем обновлении.</b> Карточки поверх игры уже работают — проверить их можно строкой лога в экспертном режиме.',
     'deals.log.banner.notFound':
       '<b>Журнал игры (Client.txt) не найден</b> — карточки сделок не появятся. Укажите файл в блоке «Карточки сделок».',
     'deals.log.title': 'Журнал игры (Client.txt)',
     'deals.log.auto': 'найден сам',
     'deals.log.custom': 'выбран вручную',
     'deals.log.notFound': 'не найден',
-    'deals.log.pending': 'подключится в следующем обновлении',
     'deals.log.pick': 'Выбрать файл…',
     'deals.log.reset': 'Искать сам',
     'deals.log.help': 'Обычно: «Path of Exile/logs/Client.txt» в папке игры (Steam или клиент GGG).',
@@ -232,15 +229,12 @@ export const deals: DomainDict = {
     'deals.page.stash': 'Stash',
     'deals.page.blacklist': 'Blacklist',
     'deals.off.banner': '<b>The trade manager is off.</b> No incoming trade cards and no sound. History is kept.',
-    'deals.log.banner.pending':
-      '<b>Reading Client.txt arrives in the next update.</b> Cards over the game already work — try them with a log line in expert mode.',
     'deals.log.banner.notFound':
       '<b>The game log (Client.txt) was not found</b> — trade cards will not appear. Choose the file in the Trade cards box.',
     'deals.log.title': 'Game log (Client.txt)',
     'deals.log.auto': 'found automatically',
     'deals.log.custom': 'chosen manually',
     'deals.log.notFound': 'not found',
-    'deals.log.pending': 'arrives in the next update',
     'deals.log.pick': 'Choose file…',
     'deals.log.reset': 'Find automatically',
     'deals.log.help': 'Usually "Path of Exile/logs/Client.txt" in the game folder (Steam or the GGG client).',

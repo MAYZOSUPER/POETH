@@ -38,10 +38,12 @@ export function createBulkRequest(
 ): BulkRequest {
   const want = tradeTag(item)
   if (!want) throw new Error(`Предмет не торгуется через обмен: ${item.info.refName}`)
+  // за саму себя валюту не покупают (Сфера хаоса → платим только divine)
+  const pay = have.filter((h) => h !== want)
   return {
     engine: 'new',
     query: {
-      have: [...have],
+      have: pay.length ? pay : ['chaos'],
       want: [want],
       status: { option: bulkStatus(filters.trade.status, filters.trade.onlineInLeague) },
       minimum: filters.stackSize && !filters.stackSize.disabled ? filters.stackSize.value : undefined

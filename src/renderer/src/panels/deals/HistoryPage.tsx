@@ -257,11 +257,9 @@ function LogRow() {
   const log = useDealsStore((s) => s.log)
   const pickLog = useDealsStore((s) => s.pickLog)
   if (!log) return null
-  const tag = !log.supported
-    ? { cls: '', text: t('deals.log.pending') }
-    : log.connected
-      ? { cls: 'ui-tag--good', text: t(log.custom ? 'deals.log.custom' : 'deals.log.auto') }
-      : { cls: 'ui-tag--warn', text: t('deals.log.notFound') }
+  const tag = log.connected
+    ? { cls: 'ui-tag--good', text: t(log.custom ? 'deals.log.custom' : 'deals.log.auto') }
+    : { cls: 'ui-tag--warn', text: t('deals.log.notFound') }
   return (
     <div className="dl-field">
       <span className="ui-field__label">{t('deals.log.title')}</span>

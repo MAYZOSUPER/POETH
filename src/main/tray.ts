@@ -6,8 +6,9 @@ import { getCompanionWindow } from './windows/companionWindow'
 import { getSettings, updateSettings } from './services/settingsStore'
 import { resourcesDir } from './services/questDataset'
 import { reconcileTailer } from './ipc/campaign'
-import { toggleCompanionVisible, toggleLock } from './ipc/app'
+import { showCompanionPage, toggleCompanionVisible, toggleLock } from './ipc/app'
 import { getRunningGameDef } from './gameContext'
+import { checkForAppUpdates } from './services/appUpdater'
 
 let tray: Tray | null = null
 
@@ -41,7 +42,10 @@ const LABELS = {
     show: 'Показать окно',
     lock: 'Сквозной режим (клики в игру)',
     auto: 'Автоопределение зоны',
+    settings: 'Настройки',
+    about: 'О программе',
     support: '♥ Поддержать проект',
+    updates: 'Проверить обновления',
     quit: 'Выход'
   },
   en: {
@@ -49,7 +53,10 @@ const LABELS = {
     show: 'Show window',
     lock: 'Click-through (clicks go to the game)',
     auto: 'Zone auto-detect',
+    settings: 'Settings',
+    about: 'About',
     support: '♥ Support the project',
+    updates: 'Check for updates',
     quit: 'Quit'
   }
 }
@@ -76,6 +83,10 @@ async function buildMenu(): Promise<Menu> {
         ]
       : []),
     { type: 'separator' },
+    // S9: open the companion right on that page (event:app.showPage)
+    { label: L.settings, click: () => showCompanionPage('settings') },
+    { label: L.about, click: () => showCompanionPage('about') },
+    { label: `${L.updates} · v${app.getVersion()}`, click: () => void checkForAppUpdates(true) },
     // Boosty: voluntary support, never a popup — just a menu item
     { label: L.support, click: () => void shell.openExternal(BOOSTY_URL) },
     { label: L.quit, click: () => app.quit() }

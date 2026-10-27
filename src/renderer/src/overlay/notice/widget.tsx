@@ -17,7 +17,7 @@ function NoticeWidget() {
         <OverlayWidget key={id} interactive={false}>
           <div className={`ui-panel ov-notice ov-notice--${notice.kind}`} role="status">
             <Icon name={notice.kind === 'warn' ? 'warn' : 'info'} />
-            <span>{t(notice.key, notice.params)}</span>
+            <span>{notice.text ?? t(notice.key, notice.params)}</span>
           </div>
         </OverlayWidget>
       ))}

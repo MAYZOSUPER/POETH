@@ -242,7 +242,8 @@ body {
   color: var(--live);
 }
 .ts-live[aria-pressed='true'][data-state='connecting'],
-.ts-live[aria-pressed='true'][data-state='paused'] {
+.ts-live[aria-pressed='true'][data-state='paused'],
+.ts-live[aria-pressed='true'][data-state='auth'] {
   color: var(--warn);
 }
 .ts-live[aria-pressed='true'][data-state='error'] {

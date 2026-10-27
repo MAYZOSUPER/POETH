@@ -1,0 +1,173 @@
+/* Вкладка Live компаньона (S6) — по макету «Компаньон: live search». Только токены и ui-*. */
+
+.live-tab {
+  display: grid;
+  gap: var(--sp-5);
+  align-content: start;
+  height: 100%;
+  padding: var(--sp-6) var(--sp-7);
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.live-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-5) var(--sp-8);
+  align-items: center;
+}
+.live-meter {
+  min-width: 180px;
+  margin-left: auto;
+}
+.live-banner {
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+  border-radius: var(--r-panel);
+}
+.live-banner > .ui-btn {
+  align-self: center;
+}
+
+.live-box {
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  background: var(--sunken);
+}
+.live-add {
+  padding: var(--sp-5) var(--sp-6);
+}
+.live-add-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+}
+.live-add-row .ui-input {
+  flex: 3 1 260px;
+  width: auto;
+  min-width: 0;
+}
+.live-add-row .live-add-title {
+  flex: 1 1 140px;
+}
+
+/* строка поиска: точка · название и статус · переключатель и действия */
+.live-row {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  gap: var(--sp-6);
+  align-items: center;
+  padding: var(--sp-5) var(--sp-6);
+}
+.live-row + .live-row {
+  border-top: 1px solid var(--border);
+}
+.live-t {
+  display: grid;
+  min-width: 0;
+}
+.live-t b {
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.live-league {
+  color: var(--fg-faint);
+  font-weight: 400;
+}
+.live-fav {
+  margin-left: var(--sp-3);
+}
+.live-t > span {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.live-t > span.st-warn {
+  color: var(--warn);
+}
+.live-t > span.st-bad {
+  color: var(--bad);
+}
+.live-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+}
+.live-on {
+  display: inline-flex;
+  color: var(--accent-hi);
+}
+.live-off {
+  display: inline-flex;
+  color: var(--fg-faint);
+}
+
+.live-hint {
+  padding: 0;
+  color: var(--fg-muted);
+}
+.live-label {
+  margin-top: var(--sp-3);
+}
+
+/* последние находки — как .tbl в макете */
+.live-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-md);
+}
+.live-tbl th {
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-faint);
+  font: 600 var(--fs-2xs) / 1.2 var(--font-ui);
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+}
+.live-tbl td {
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.live-tbl tr:last-child td {
+  border-bottom: 0;
+}
+.live-tbl .it {
+  display: block;
+  font-weight: 600;
+}
+.live-tbl .price {
+  color: var(--accent-hi);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.live-hit-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}
+.live-hit-note {
+  display: block;
+  color: var(--good);
+  font-size: var(--fs-xs);
+}
+.live-when {
+  color: var(--fg-muted);
+  white-space: nowrap;
+}
+.live-hit-acts {
+  text-align: right;
+  white-space: nowrap;
+}
+.live-hit-acts .ui-btn + .ui-btn {
+  margin-left: var(--sp-2);
+}
+.live-recent-empty {
+  padding: var(--sp-5) var(--sp-6);
+  color: var(--fg-faint);
+}

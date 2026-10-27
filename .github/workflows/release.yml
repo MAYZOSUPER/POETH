@@ -1,0 +1,41 @@
+# Релиз по тегу v* (S10a): проверки → NSIS-установщик + latest.yml в GitHub Releases
+# (electron-builder.yml → publish: github MAYZOSUPER/POETH). Приложения пользователей видят
+# новую версию через electron-updater. Токен — встроенный GITHUB_TOKEN этого запуска, в
+# сборку он не попадает (только переменная окружения шага публикации).
+#
+# Выпуск: поднять "version" в package.json → commit → git tag v<версия> → git push --tags.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Тег совпадает с версией package.json
+        shell: bash
+        run: |
+          v="v$(node -p "require('./package.json').version")"
+          if [ "$v" != "$GITHUB_REF_NAME" ]; then echo "тег $GITHUB_REF_NAME, а в package.json $v"; exit 1; fi
+      - name: Поиск секретов
+        run: node tools/ci/scan-secrets.mjs
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:trade
+      - run: npm run build
+      - name: Сборка и публикация (NSIS + latest.yml)
+        run: npx electron-builder --win nsis --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useAppStore } from './store/useAppStore'
+import { useShellStore } from './store/useShellStore'
 import { Toolbar } from './panels/Toolbar'
 import { AppTabs } from './panels/AppTabs'
 import { ProfileBar } from './panels/ProfileBar'
@@ -18,6 +19,8 @@ import { LiveTab } from './panels/LiveTab'
 import { RegexTab } from './panels/RegexTab'
 import { DealsTab } from './panels/DealsTab'
 import { ViewToggle } from './components/ViewToggle'
+import { Wizard } from './panels/onboarding/Wizard'
+import { AboutPanel } from './panels/onboarding/AboutPanel'
 
 /** PoE2 campaign tracker (compass) — settings open inside its left column. */
 function CampaignTab({ showSettings }: { showSettings: boolean }) {
@@ -75,21 +78,37 @@ export default function App() {
   const init = useAppStore((s) => s.init)
   const appTab = useAppStore((s) => s.appTab)
   const opacity = useAppStore((s) => s.settings?.opacity ?? 1)
-  const [showSettings, setShowSettings] = useState(false)
+  const firstRunDone = useAppStore((s) => s.settings?.startup.firstRunDone ?? true)
+  // S9: служебные страницы (настройки, «О программе») и мастер первого запуска
+  const page = useShellStore((s) => s.page)
+  const setPage = useShellStore((s) => s.setPage)
+  const wizard = useShellStore((s) => s.wizard)
+  const closeWizard = useShellStore((s) => s.closeWizard)
+  const showSettings = page === 'settings'
 
   useEffect(() => {
     void init()
   }, [init])
 
+  // трей (S10a) и др.: main просит открыть «О программе» / настройки / мастер
+  useEffect(() => window.overlayApi.onShowPage((p) => useShellStore.getState().show(p)), [])
+
   return (
     <div className="app" style={{ opacity }}>
-      <Toolbar showSettings={showSettings} onToggleSettings={() => setShowSettings((s) => !s)} />
+      <Toolbar showSettings={page !== null} onToggleSettings={() => setPage(page ? null : 'settings')} />
       {!ready ? (
-        <div className="loading">Загрузка…</div>
+        // язык интерфейса ещё неизвестен (настройки грузятся) — без текста
+        <div className="loading" aria-busy="true">
+          <span className="ui-skeleton" style={{ width: 180, margin: '0 auto' }} />
+        </div>
       ) : (
         <>
           <AppTabs />
-          {appTab === 'campaign' ? (
+          {page === 'about' ? (
+            <div className="body">
+              <AboutPanel />
+            </div>
+          ) : appTab === 'campaign' ? (
             <CampaignTab showSettings={showSettings} />
           ) : showSettings ? (
             <div className="body">
@@ -102,6 +121,7 @@ export default function App() {
               <TabBody />
             </div>
           )}
+          {(!firstRunDone || wizard) && <Wizard onClose={closeWizard} />}
         </>
       )}
     </div>
