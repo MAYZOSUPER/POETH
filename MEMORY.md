@@ -125,7 +125,7 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
-- _(docs, S0)_ — документация POETH: этот `MEMORY.md`, `docs/{PLAN-POETH,ARCHITECTURE,stages,poe1-trade-api,regex}.md`;
+- `31a688c` — документация POETH: этот `MEMORY.md`, `docs/{PLAN-POETH,ARCHITECTURE,stages,poe1-trade-api,regex}.md`;
   `PLAN.md` и старый `MEMORY.md` компаса → `docs/compass/` (архив).
 - `144e5a9` — **Electron 33 → 40.10.6** (как у APT); кода менять не пришлось; проверены dev, собранная версия и
   `electron-builder --dir`.
