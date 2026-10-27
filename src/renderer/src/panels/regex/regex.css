@@ -1,0 +1,305 @@
+/* Вкладка Regex (S7) по макету «Золото компаса». Только токены из tokens.css и компоненты ui-*;
+   здесь — раскладка страницы (две колонки, карточки, строки библиотеки). */
+
+.rx {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--page);
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.rx-tabs {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-4);
+  padding: 0 var(--sp-7);
+}
+.rx-grow {
+  flex: 1;
+}
+.rx-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.rx-lang .ui-select {
+  width: auto;
+  min-width: 150px;
+}
+.rx-body {
+  flex: 1;
+  min-height: 0;
+  padding: 14px var(--sp-7);
+}
+
+/* ---- раскладка ---- */
+.rx-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-7);
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .rx-two {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.rx-stack {
+  display: grid;
+  gap: var(--sp-5);
+  align-content: start;
+  min-width: 0;
+}
+.rx-sticky {
+  position: sticky;
+  top: 0;
+}
+.rx-box {
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  background: var(--sunken);
+}
+.rx-box__h {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: 9px var(--sp-6);
+  border-bottom: 1px solid var(--border);
+}
+.rx-box__b {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6);
+}
+.rx-box__b > .ui-switch,
+.rx-box__b > .ui-seg {
+  justify-self: start;
+}
+.rx-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-5);
+}
+.rx-inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.rx-num {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 70px;
+  gap: var(--sp-3) var(--sp-5);
+  align-items: center;
+}
+.rx-btns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.rx-grow.ui-input {
+  flex: 1;
+  width: auto;
+  min-width: 160px;
+}
+.rx-hint {
+  padding: 0;
+}
+.rx-banner {
+  border-radius: var(--r-panel);
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+}
+.rx-banner.ui-banner--info {
+  border-color: color-mix(in srgb, var(--info) 30%, transparent);
+}
+.rx-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--good);
+  font-size: var(--fs-sm);
+}
+.rx-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* ---- готовая строка ---- */
+.rx-string {
+  min-height: 44px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: var(--sp-5) var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--sunken);
+  color: var(--fg);
+  font: 500 var(--fs-md) / 1.5 var(--font-mono);
+  overflow-wrap: anywhere;
+  user-select: all;
+  cursor: text;
+}
+.rx-string.is-empty {
+  color: var(--fg-faint);
+  font-family: var(--font-ui);
+  user-select: none;
+  cursor: default;
+}
+
+/* ---- моды в трёх состояниях ---- */
+.rx-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.rx-search .ui-input {
+  flex: 1 1 200px;
+  width: auto;
+}
+.rx-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-6);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.rx-legend .ui-tri {
+  min-height: 22px;
+  pointer-events: none;
+}
+.rx-trilist {
+  display: grid;
+  gap: var(--sp-2);
+}
+.rx-tri {
+  width: 100%;
+  align-items: flex-start;
+  padding-top: var(--sp-2);
+  padding-bottom: var(--sp-2);
+}
+.rx-tri .ui-tri__box {
+  margin-top: 1px;
+}
+.rx-tri:hover {
+  border-color: var(--border-strong);
+}
+.rx-tri__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.rx-tri[data-state='any'] .rx-tri__text {
+  color: var(--fg);
+}
+.rx-tri__line {
+  overflow-wrap: anywhere;
+}
+.rx-tri__alt {
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+}
+.rx-tri__tags {
+  display: inline-flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--sp-2);
+  max-width: 45%;
+}
+.rx-tri__tags .ui-tag {
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+.rx-tri__word {
+  color: inherit;
+  font-style: normal;
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+.rx-token {
+  color: var(--fg-faint);
+  font: 500 var(--fs-xs) / 1.2 var(--font-mono);
+  white-space: nowrap;
+}
+
+/* ---- библиотека ---- */
+.rx-lib-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  gap: var(--sp-6);
+  align-items: center;
+  padding: var(--sp-5) var(--sp-6);
+}
+.rx-lib-row + .rx-lib-row {
+  border-top: 1px solid var(--border);
+}
+.rx-lib-row--preset {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.rx-lib-slot {
+  color: var(--fg-faint);
+  font-size: var(--fs-sm);
+}
+.rx-lib-t {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.rx-lib-t b {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  font-weight: 600;
+}
+.rx-lib-t code {
+  overflow: hidden;
+  color: var(--fg-muted);
+  font: 500 var(--fs-sm) / 1.4 var(--font-mono);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  user-select: all;
+}
+.rx-lib-t.is-empty {
+  color: var(--fg-faint);
+}
+.rx-lib-desc {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.rx-slot-select.ui-select {
+  width: auto;
+  height: var(--h-btn-sm);
+}
+.rx-textarea.ui-input {
+  height: auto;
+  min-height: 64px;
+  padding: var(--sp-3) var(--sp-4);
+  line-height: 1.45;
+  resize: vertical;
+  user-select: text;
+}
+
+/* Лигатуры JetBrains Mono превращают «-|», «->», «!=» в стрелки — в regex важен каждый символ.
+   В конце файла: шорткат font: выше сбрасывает font-variant-ligatures и font-feature-settings. */
+.rx-string,
+.rx-token,
+.rx-lib-t code,
+.rx-textarea {
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+}
