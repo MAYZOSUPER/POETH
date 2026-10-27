@@ -4,6 +4,7 @@ import type {
   BlacklistStatus,
   Deal,
   DealLang,
+  DealsCalibrateResult,
   DealStatus,
   DealsConfigPatch,
   DealsExportResult,
@@ -25,8 +26,6 @@ interface DealsUi {
   page: DealsPage
   filter: DealsFilter
   query: string
-  /** последняя новая сделка (для звука) */
-  lastNew: Deal | null
 
   init: () => Promise<void>
   setPage: (p: DealsPage) => void
@@ -41,6 +40,10 @@ interface DealsUi {
   simulate: (lines: string[]) => Promise<Deal[]>
   refreshBlacklist: () => Promise<void>
   checkPlayer: (name: string) => Promise<BlacklistHit | null>
+  /** выбрать Client.txt PoE1 (диалог) или вернуть автопоиск */
+  pickLog: (reset?: boolean) => Promise<void>
+  /** калибровка стэша кликами поверх игры */
+  calibrate: () => Promise<DealsCalibrateResult>
 }
 
 const api = () => window.overlayApi.deals
@@ -55,14 +58,13 @@ export const useDealsStore = create<DealsUi>((set, get) => ({
   page: 'history',
   filter: 'all',
   query: '',
-  lastNew: null,
 
   async init() {
     if (!subscribed) {
       subscribed = true
       window.overlayApi.onDealsChanged((state) => set({ state }))
-      window.overlayApi.onDealsNew((deal) => set({ lastNew: deal }))
       window.overlayApi.onDealsBlacklist((blacklist) => set({ blacklist }))
+      window.overlayApi.onDealsLog((log) => set({ log }))
     }
     if (get().ready) return
     const [state, blacklist, log] = await Promise.all([api().state(), api().blacklist.status(), api().logStatus()])
@@ -91,5 +93,9 @@ export const useDealsStore = create<DealsUi>((set, get) => ({
   async refreshBlacklist() {
     set({ blacklist: await api().blacklist.refresh() })
   },
-  checkPlayer: (name) => api().blacklist.check(name)
+  checkPlayer: (name) => api().blacklist.check(name),
+  async pickLog(reset) {
+    set({ log: await api().pickLog(reset) })
+  },
+  calibrate: () => api().calibrate()
 }))

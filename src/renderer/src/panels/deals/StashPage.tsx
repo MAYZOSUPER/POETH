@@ -12,7 +12,7 @@ import {
 import { useT } from '../../i18n'
 import { useAppStore } from '../../store/useAppStore'
 import { useDealsStore } from '../../store/useDealsStore'
-import { Box, Hint, Seg, Switch, useSimple } from './common'
+import { Box, Hint, Ico, Seg, Switch, useSimple } from './common'
 
 // «Тайник»: сетка 12×12 / 24×24, вкладка в папке, предпросмотр ячейки для размера окна игры
 // и ручная калибровка (два угла сетки → Settings.deals.calibration). Клики по углам поверх
@@ -204,6 +204,8 @@ function StashPreview({
 function CalibrationBox({ client, calibration }: { client: ClientSize; calibration: StashCalibration | null }) {
   const t = useT()
   const patchSettings = useAppStore((s) => s.patchSettings)
+  const calibrate = useDealsStore((s) => s.calibrate)
+  const [overlayMsg, setOverlayMsg] = useState<string | null>(null)
   const start = calibration ?? null
   const [tl, setTl] = useState({ x: start?.left ?? 17, y: start?.top ?? 157 })
   const [br, setBr] = useState({
@@ -271,6 +273,19 @@ function CalibrationBox({ client, calibration }: { client: ClientSize; calibrati
             />
           </span>
         </label>
+      </div>
+      <div className="dl-row">
+        <button
+          type="button"
+          className="ui-btn ui-btn--sm"
+          onClick={() =>
+            void calibrate().then((r) => setOverlayMsg(r === 'ok' ? null : t('deals.stash.calib.noGame')))
+          }
+        >
+          <Ico name="grid" />
+          {t('deals.stash.calib.overlay')}
+        </button>
+        {overlayMsg && <span className="ui-field__error">{overlayMsg}</span>}
       </div>
       <span className="ui-field__help">
         {t('deals.stash.res')}: {client.width}×{client.height}

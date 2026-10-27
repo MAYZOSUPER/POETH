@@ -14,6 +14,10 @@ export function dealsBridge(): DealsIpcApi {
       demo: (lang) => ipcRenderer.invoke(IPC.deals.demo, lang),
       simulate: (lines) => ipcRenderer.invoke(IPC.deals.simulate, lines),
       logStatus: () => ipcRenderer.invoke(IPC.deals.logStatus),
+      pickLog: (reset) => ipcRenderer.invoke(IPC.deals.pickLog, reset === true),
+      action: (id, action) => ipcRenderer.invoke(IPC.deals.action, id, action),
+      hideCard: (id, hidden) => ipcRenderer.invoke(IPC.deals.hideCard, id, hidden !== false),
+      calibrate: () => ipcRenderer.invoke(IPC.deals.calibrate),
       blacklist: {
         status: () => ipcRenderer.invoke(IPC.deals.blacklist.status),
         refresh: () => ipcRenderer.invoke(IPC.deals.blacklist.refresh),
@@ -22,6 +26,8 @@ export function dealsBridge(): DealsIpcApi {
     },
     onDealsChanged: (cb) => subscribe(IPC.events.dealsChanged, cb),
     onDealsNew: (cb) => subscribe(IPC.events.dealsNew, cb),
-    onDealsBlacklist: (cb) => subscribe(IPC.events.dealsBlacklist, cb)
+    onDealsBlacklist: (cb) => subscribe(IPC.events.dealsBlacklist, cb),
+    onDealsLog: (cb) => subscribe(IPC.events.dealsLog, cb),
+    onDealsCalibrate: (cb) => subscribe(IPC.events.dealsCalibrate, () => cb())
   }
 }

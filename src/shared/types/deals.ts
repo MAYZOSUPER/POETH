@@ -85,6 +85,8 @@ export interface Deal {
   blacklist?: BlacklistHit
   /** пример для знакомства с вкладкой (кнопка «Показать пример») */
   demo?: boolean
+  /** карточка поверх игры закрыта (✕, «Кик», после «Продано») — сделка остаётся в истории */
+  cardHidden?: boolean
 }
 
 /** Шаблоны ответов одного языка. Подстановки: {player} {item} {price} {league}. */
@@ -116,6 +118,11 @@ export interface DealsConfig {
   /** язык ответов: auto — язык сообщения собеседника */
   replyLang: 'auto' | DealLang
   templates: Record<DealLang, ReplyTemplates>
+  /**
+   * Client.txt PoE1, выбранный вручную; null — автопоиск по GameDef.logSubdirs.
+   * Свой, а не Settings.logPath: тот путь — лог PoE2 для кампании.
+   */
+  logPath: string | null
 }
 
 export type DealsConfigPatch = Partial<Omit<DealsConfig, 'templates'>> & {
@@ -162,10 +169,39 @@ export interface DealsExportResult {
 
 /** Источник строк Client.txt для менеджера сделок. */
 export interface DealsLogStatus {
-  /** строки лога PoE1 подключены (нужен патч logTailer — через лида) */
+  /** тейлер умеет отдавать сырые строки (патч logTailer слит) */
+  supported: boolean
+  /** читаем лог прямо сейчас */
   connected: boolean
+  /** файл найден/выбран */
   logPath: string | null
+  /** путь выбран вручную (иначе — автопоиск) */
+  custom: boolean
 }
+
+/** Кнопка карточки сделки → одна команда в чат (см. @shared/deals/commands). */
+export type DealCardAction =
+  | 'invite'
+  | 'trade'
+  | 'kick'
+  | 'whois'
+  | 'hideout'
+  | 'thanks'
+  | 'sold'
+  | 'still'
+  | 'wait'
+
+/** Результат кнопки карточки: что ответил ввод в игру и новое состояние. */
+export interface DealActionResult {
+  /** ok — команда напечатана в чат; no-deal — сделки нет (карточка устарела) */
+  result: 'ok' | 'no-game' | 'no-input' | 'busy' | 'no-deal'
+  /** напечатанная команда (для подсказки) */
+  command?: string
+  state: DealsState
+}
+
+/** Запуск калибровки поверх игры. */
+export type DealsCalibrateResult = 'ok' | 'no-game'
 
 // ---------------------------------------------------------------------------
 // Settings.deals (Settings v2, раздел домена)

@@ -3,18 +3,21 @@
 // Слэш-команды PoE не локализуются (одинаковы в RU и EN клиенте); обращение «@ник текст»
 // работает в любом клиенте.
 
-import type { Deal, DealLang, DealsConfig, ReplyKind } from '../types/deals'
+import type { Deal, DealCardAction, DealLang, DealsConfig, ReplyKind } from '../types/deals'
 
-export type DealAction =
-  | 'invite'
-  | 'trade'
-  | 'kick'
-  | 'whois'
-  | 'hideout'
-  | 'thanks'
-  | 'sold'
-  | 'still'
-  | 'wait'
+export type DealAction = DealCardAction
+
+export const DEAL_ACTIONS: readonly DealAction[] = [
+  'invite',
+  'trade',
+  'kick',
+  'whois',
+  'hideout',
+  'thanks',
+  'sold',
+  'still',
+  'wait'
+]
 
 export const REPLY_KINDS: ReplyKind[] = ['thanks', 'sold', 'still', 'wait']
 

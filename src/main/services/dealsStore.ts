@@ -3,10 +3,13 @@ import { randomUUID } from 'crypto'
 import type {
   BlacklistHit,
   Deal,
+  DealActionResult,
+  DealCardAction,
   DealLang,
   DealStatus,
   DealsConfigPatch,
-  DealsState
+  DealsState,
+  GameInputResult
 } from '@shared/types'
 import {
   addDeal,
@@ -18,10 +21,13 @@ import {
   emptyDealsFile,
   normalizeDealsFile,
   removeDeal,
+  setCardHidden,
   setDealStatus,
   withConfig,
   type DealsFileData
 } from '@shared/deals/history'
+import { cardEffect } from '@shared/deals/cards'
+import { chatCommand } from '@shared/deals/commands'
 import { parseLogLine, type LogEvent } from '@shared/deals/whisperParse'
 import { readJson, writeJsonAtomic } from './atomicJson'
 
@@ -33,6 +39,26 @@ import { readJson, writeJsonAtomic } from './atomicJson'
 // (для карточки поверх игры и звука, S8 фаза 2).
 
 export type BlacklistChecker = (who: { account?: string; character?: string }) => BlacklistHit | null
+
+/** Ввод одной команды в чат игры (S1: typeInChat(text, { send: true })). */
+export type ChatSender = (command: string) => GameInputResult | Promise<GameInputResult>
+
+/** Источник сырых строк Client.txt (LogTailer после патча: событие 'lines'). */
+export interface RawLineSource {
+  on(event: 'lines', cb: (lines: string[]) => void): unknown
+  off(event: 'lines', cb: (lines: string[]) => void): unknown
+}
+
+/** Подписать стор на строки лога; возвращает отписку. Ошибка разбора не роняет тейлер. */
+export function attachLogSource(source: RawLineSource, store: DealsStore): () => void {
+  const onLines = (lines: string[]): void => {
+    store.ingestLines(lines).catch((e) => console.error('[deals] строки лога:', e))
+  }
+  source.on('lines', onLines)
+  return () => {
+    source.off('lines', onLines)
+  }
+}
 
 export class DealsStore extends EventEmitter {
   private data: DealsFileData = emptyDealsFile()
@@ -115,6 +141,33 @@ export class DealsStore extends EventEmitter {
     this.data = setDealStatus(this.data, id, status, this.now())
     await this.commit()
     return this.getState()
+  }
+
+  /** Закрыть карточку поверх игры (✕). */
+  async hideCard(id: string, hidden = true): Promise<DealsState> {
+    await this.load()
+    this.data = setCardHidden(this.data, id, hidden)
+    await this.commit()
+    return this.getState()
+  }
+
+  /**
+   * Кнопка карточки: ровно одна команда в чат через `send`, затем — смена статуса/закрытие
+   * карточки по @shared/deals/cards.cardEffect (только если команда ушла).
+   */
+  async cardAction(id: string, action: DealCardAction, send: ChatSender): Promise<DealActionResult> {
+    await this.load()
+    const deal = this.getDeal(id)
+    if (!deal) return { result: 'no-deal', state: this.getState() }
+    const command = chatCommand(action, deal, this.data.config)
+    const result = await send(command)
+    if (result !== 'ok') return { result, command, state: this.getState() }
+    const eff = cardEffect(action, deal, this.data.config)
+    const now = this.now()
+    if (eff.status && eff.status !== deal.status) this.data = setDealStatus(this.data, id, eff.status, now)
+    if (eff.hide) this.data = setCardHidden(this.data, id, true)
+    if (eff.status || eff.hide) await this.commit()
+    return { result, command, state: this.getState() }
   }
 
   async remove(id: string): Promise<DealsState> {
