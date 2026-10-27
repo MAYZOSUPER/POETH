@@ -72,7 +72,8 @@ export function defaultSettings(): Settings {
     regex: {},
     ui: { simpleMode: true },
     overlay: { pricePosition: 'cursor' },
-    chatCommands: defaultChatCommands()
+    chatCommands: defaultChatCommands(),
+    firstRunDone: false
   }
 }
 

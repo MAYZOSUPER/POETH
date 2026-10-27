@@ -238,3 +238,20 @@ describe('chatCommands («Команды чата»)', () => {
     expect(next.hotkeys).toEqual(defaultSettings().hotkeys)
   })
 })
+
+describe('firstRunDone («Мастер первого запуска», S9)', () => {
+  it('новый профиль, v1 компаса и v2 без поля → мастер покажется (false)', () => {
+    expect(defaultSettings().firstRunDone).toBe(false)
+    expect(migrateSettings(fixture('v1-exile-companion.json')).firstRunDone).toBe(false)
+    const v2old: Record<string, unknown> = { ...defaultSettings() }
+    delete v2old.firstRunDone
+    expect(migrateSettings(v2old).firstRunDone).toBe(false)
+  })
+
+  it('пройден — сохраняется; мусор → false', () => {
+    const done = applySettingsPatch(defaultSettings(), { firstRunDone: true })
+    expect(done.firstRunDone).toBe(true)
+    expect(migrateSettings(JSON.parse(JSON.stringify(done))).firstRunDone).toBe(true)
+    expect(migrateSettings({ ...defaultSettings(), firstRunDone: 'yes' }).firstRunDone).toBe(false)
+  })
+})

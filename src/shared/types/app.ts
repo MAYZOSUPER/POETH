@@ -2,6 +2,9 @@
 
 import type { GameId } from '../games'
 
+/** Страница компаньона, которую можно открыть снаружи (трей, мастер): S9. */
+export type CompanionPage = 'about' | 'settings' | 'wizard'
+
 export interface AppInfo {
   /** игра, с которой запущен процесс (меняется только перезапуском) */
   game: GameId
