@@ -9,6 +9,7 @@ import type {
   GameInputResult,
   InteractiveRect,
   OverlayFocusState,
+  OverlayNotice,
   OverlayPoint,
   OverlayState,
   OverlayStatus
@@ -31,7 +32,8 @@ export const overlayEvents = {
   overlayStatus: 'event:overlay.status',
   overlayItemCaptured: 'event:overlay.itemCaptured',
   overlayAutoHide: 'event:overlay.autoHide',
-  overlayDismiss: 'event:overlay.dismiss'
+  overlayDismiss: 'event:overlay.dismiss',
+  overlayNotice: 'event:overlay.notice'
 } as const
 
 export interface OverlayIpcApi {
@@ -68,4 +70,6 @@ export interface OverlayIpcApi {
   onOverlayAutoHide(cb: () => void): () => void
   /** Esc в активном оверлее: закрыть всплывающие окна (фокус уже уходит в игру). */
   onOverlayDismiss(cb: () => void): () => void
+  /** Короткое уведомление поверх игры (тост на несколько секунд). */
+  onOverlayNotice(cb: (notice: OverlayNotice) => void): () => void
 }

@@ -11,6 +11,18 @@ export { defaultSettings }
 
 let cache: Settings | null = null
 
+type SettingsListener = (next: Settings, patch: SettingsPatch) => void
+const listeners = new Set<SettingsListener>()
+
+/**
+ * Подписка на сохранённые изменения настроек (например, команды чата перерегистрируют свои
+ * хоткеи). Вызывается после записи файла; возвращает отписку.
+ */
+export function onSettingsChange(cb: SettingsListener): () => void {
+  listeners.add(cb)
+  return () => listeners.delete(cb)
+}
+
 function settingsFile(): string {
   return path.join(app.getPath('userData'), 'settings.json')
 }
@@ -36,5 +48,13 @@ export async function updateSettings(patch: SettingsPatch): Promise<Settings> {
   const current = await getSettings()
   cache = applySettingsPatch(current, patch)
   await writeJsonAtomic(settingsFile(), cache)
-  return cache
+  const next = cache
+  for (const cb of [...listeners]) {
+    try {
+      cb(next, patch)
+    } catch (e) {
+      console.error('[settings] change listener failed:', e)
+    }
+  }
+  return next
 }

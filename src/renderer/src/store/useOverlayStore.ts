@@ -1,5 +1,17 @@
 import { create } from 'zustand'
-import type { CapturedItem, OverlayFocusState, OverlayStatus, PricePopupPosition, UiLang } from '@shared/types'
+import type {
+  CapturedItem,
+  OverlayFocusState,
+  OverlayNotice,
+  OverlayStatus,
+  PricePopupPosition,
+  UiLang
+} from '@shared/types'
+
+/** Сколько висит уведомление поверх игры. */
+const NOTICE_MS = 3500
+
+let noticeSeq = 0
 
 // Состояние страницы игрового оверлея (overlay.html, S1). Компаньон сюда не ходит —
 // у него свой useAppStore. Виджеты этапов (S4/S6/S8) держат свои данные в своих сторах,
@@ -23,6 +35,8 @@ interface OverlayStore {
    * курсор ушёл от предмета. Виджеты этапов подписываются на смену значения.
    */
   popupDismissSeq: number
+  /** короткие уведомления (слой toasts), исчезают сами через NOTICE_MS */
+  notices: { id: number; notice: OverlayNotice }[]
 
   /** Загрузить состояние и подписаться на события main; возвращает отписку. */
   init: () => Promise<() => void>
@@ -43,6 +57,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
   status: null,
   item: null,
   popupDismissSeq: 0,
+  notices: [],
 
   init: async () => {
     const offs = [
@@ -59,7 +74,12 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
         void get().refreshSettings()
       }),
       api().onOverlayAutoHide(() => get().dismissPopups()),
-      api().onOverlayDismiss(() => get().dismissPopups())
+      api().onOverlayDismiss(() => get().dismissPopups()),
+      api().onOverlayNotice((notice) => {
+        const id = ++noticeSeq
+        set({ notices: [...get().notices.slice(-2), { id, notice }] })
+        window.setTimeout(() => set({ notices: get().notices.filter((n) => n.id !== id) }), NOTICE_MS)
+      })
     ]
     const [state] = await Promise.all([api().overlay.getState(), get().refreshSettings()])
     set({ ready: true, focus: state.focus, status: state.status, item: get().item ?? state.lastItem })

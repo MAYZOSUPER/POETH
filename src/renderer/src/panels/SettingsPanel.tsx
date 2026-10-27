@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import type { HotkeyAction, PricePopupPosition, UiLang } from '@shared/types'
 import { PRICE_POPUP_POSITIONS } from '@shared/types'
-import { reservedReason } from '@shared/accelerators'
+import { findHotkeyConflict } from '@shared/chatCommands'
 import { GAMES, type GameId } from '@shared/games'
 import { HOTKEY_ACTIONS, defaultHotkeys } from '@shared/settings'
 import { BOOSTY_URL } from '@shared/links'
 import { useAppStore } from '../store/useAppStore'
 import { useT } from '../i18n'
 import { AccountPanel } from './account/AccountPanel'
+import { ChatCommandsPanel } from './chat/ChatCommandsPanel'
 
 const BOTH: GameId[] = ['poe1', 'poe2']
 
@@ -128,17 +129,14 @@ export function SettingsPanel() {
       }
       const accel = eventToAccelerator(e)
       if (!accel) return
-      // занятые игрой и нашим вводом в игру сочетания (Ctrl+C/V/F/A, Enter, стрелки…) — нельзя
-      const reserved = reservedReason(accel)
-      if (reserved) {
-        setHkNote(`overlay.hotkey.reserved.${reserved}`)
-        return
-      }
-      const hk = settingsRef.current?.hotkeys
-      if (!hk) return
-      const conflict = HOTKEY_ACTIONS.some((a) => a !== capturing && hk[a].accel === accel)
+      const s = settingsRef.current
+      if (!s) return
+      const hk = s.hotkeys
+      // занятые игрой и нашим вводом в игру сочетания (Ctrl+C/V/F/A, Enter, стрелки…) и повторы
+      // (в т.ч. с командами чата) — нельзя
+      const conflict = findHotkeyConflict(accel, s, { action: capturing })
       if (conflict) {
-        setHkNote('set.hk.conflict')
+        setHkNote(conflict.kind === 'reserved' ? `overlay.hotkey.reserved.${conflict.reason}` : 'set.hk.conflict')
         return
       }
       void patchSettings({ hotkeys: { [capturing]: { ...hk[capturing], accel } } })
@@ -287,6 +285,8 @@ export function SettingsPanel() {
           </button>
         </div>
       </div>
+
+      {game === 'poe1' && <ChatCommandsPanel />}
 
       {hasCampaign && (
         <>
