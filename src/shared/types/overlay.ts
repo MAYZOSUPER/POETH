@@ -81,3 +81,27 @@ export interface OverlayState {
 
 /** Результат действий ввода в игру (typeInChat / stashSearch). */
 export type GameInputResult = 'ok' | 'no-game' | 'no-input' | 'busy'
+
+/**
+ * Команда чата по хоткею (как в APT: F5 → /hideout). Нажатие = ровно одна команда в чат
+ * через typeInChat (src/main/input/chatCommands.ts). Список — Settings.chatCommands.
+ */
+export interface ChatCommand {
+  /** стабильный id: у пресетов — имя пресета ('hideout'), у своих — 'custom-…' */
+  id: string
+  /** текст; подстановки: @last — последний, кто вам писал в whisper; <char> — ваш персонаж */
+  text: string
+  /** акселератор Electron ('F5'); '' — без хоткея */
+  hotkey: string
+  /** сразу отправить (Enter); false — только вставить в чат */
+  send: boolean
+  enabled: boolean
+}
+
+/** Короткое уведомление поверх игры (например, «нет последнего собеседника»). */
+export interface OverlayNotice {
+  /** ключ строки i18n (dict/overlay.ts) */
+  key: string
+  params?: Record<string, string | number>
+  kind: 'info' | 'warn'
+}

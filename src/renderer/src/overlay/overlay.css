@@ -157,3 +157,20 @@
   border-top: 1px solid var(--border);
   color: var(--fg-muted);
 }
+
+/* ---- короткие уведомления (слой toasts) ---- */
+
+.ov-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  max-width: var(--w-toast);
+  padding: var(--sp-4) var(--sp-6);
+  font-size: var(--fs-sm);
+}
+.ov-notice--warn > .ui-ico {
+  color: var(--warn);
+}
+.ov-notice--info > .ui-ico {
+  color: var(--info);
+}

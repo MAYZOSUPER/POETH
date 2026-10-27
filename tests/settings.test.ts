@@ -9,6 +9,7 @@ import {
   defaultSettings,
   migrateSettings
 } from '@shared/settings'
+import { defaultChatCommands } from '@shared/chatCommands'
 
 function fixture(name: string): unknown {
   return JSON.parse(readFileSync(resolve(__dirname, 'fixtures/settings', name), 'utf8'))
@@ -28,6 +29,7 @@ describe('defaultSettings', () => {
     expect(s.regex).toEqual({})
     expect(s.ui).toEqual({ simpleMode: true })
     expect(s.overlay).toEqual({ pricePosition: 'cursor' })
+    expect(s.chatCommands.find((c) => c.id === 'hideout')).toMatchObject({ text: '/hideout', hotkey: 'F5', send: true })
   })
 
   it('хоткеи v2: действия, сочетания и области', () => {
@@ -210,5 +212,29 @@ describe('overlay.pricePosition («Позиция окна цены»)', () => {
     expect(a.overlay.pricePosition).toBe('left')
     const b = applySettingsPatch(a, { overlay: { pricePosition: 'middle' as 'left' } })
     expect(b.overlay.pricePosition).toBe('cursor')
+  })
+})
+
+describe('chatCommands («Команды чата»)', () => {
+  it('v1 компаса и v2 без поля → пресеты (F5 → /hideout)', () => {
+    expect(migrateSettings(fixture('v1-exile-companion.json')).chatCommands).toEqual(defaultChatCommands())
+    const v2old: Record<string, unknown> = { ...defaultSettings() }
+    delete v2old.chatCommands
+    expect(migrateSettings(v2old).chatCommands).toEqual(defaultChatCommands())
+  })
+
+  it('пустой список сохраняется (игрок удалил всё сам), мусор чинится', () => {
+    expect(migrateSettings({ ...defaultSettings(), chatCommands: [] }).chatCommands).toEqual([])
+    expect(migrateSettings({ ...defaultSettings(), chatCommands: 'x' }).chatCommands).toEqual(defaultChatCommands())
+    const s = migrateSettings({ ...defaultSettings(), chatCommands: [{ id: 'my', text: ' /afk ', hotkey: 'f7' }, { text: '' }] })
+    expect(s.chatCommands).toEqual([{ id: 'my', text: '/afk', hotkey: 'F7', send: true, enabled: true }])
+  })
+
+  it('патч заменяет список целиком', () => {
+    const next = applySettingsPatch(defaultSettings(), {
+      chatCommands: [{ id: 'hideout', text: '/hideout', hotkey: 'F6', send: false, enabled: true }]
+    })
+    expect(next.chatCommands).toEqual([{ id: 'hideout', text: '/hideout', hotkey: 'F6', send: false, enabled: true }])
+    expect(next.hotkeys).toEqual(defaultSettings().hotkeys)
   })
 })

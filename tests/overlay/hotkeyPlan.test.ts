@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { planHotkeys } from '../../src/main/input/hotkeyPlan'
+import { planHotkeys, type HotkeyId } from '../../src/main/input/hotkeyPlan'
 import { defaultHotkeys } from '@shared/settings'
-import type { HotkeyAction } from '@shared/types'
 
 const all = (): boolean => true
 
@@ -21,7 +20,7 @@ describe('planHotkeys', () => {
   })
 
   it('регистрируются только действия с обработчиком', () => {
-    const handled = new Set<HotkeyAction>(['priceCheck', 'toggleCompanion'])
+    const handled = new Set<HotkeyId>(['priceCheck', 'toggleCompanion'])
     const plan = planHotkeys(defaultHotkeys(), (a) => handled.has(a))
     expect([...plan.game, ...plan.always].map((h) => h.action)).toEqual(['priceCheck', 'toggleCompanion'])
   })
@@ -48,5 +47,21 @@ describe('planHotkeys', () => {
     const map = defaultHotkeys()
     map.priceCheck = { accel: 'ctrl+alt+d', scope: 'game' }
     expect(planHotkeys(map, all).game[0].accel).toBe('Control+Alt+D')
+  })
+
+  it('команды чата: тот же план, обычные хоткеи побеждают при совпадении', () => {
+    const map = defaultHotkeys()
+    const plan = planHotkeys(map, all, [
+      { action: 'chat:hideout', accel: 'F5', scope: 'game' },
+      { action: 'chat:dup', accel: 'control+d', scope: 'game' }, // = priceCheck
+      { action: 'chat:bad', accel: 'Enter', scope: 'game' },
+      { action: 'chat:dup2', accel: 'F5', scope: 'game' }
+    ])
+    expect(plan.game.map((h) => h.action)).toEqual(['priceCheck', 'overlayToggle', 'chat:hideout'])
+    expect(plan.skipped).toEqual([
+      { action: 'chat:dup', accel: 'Control+D', reason: 'duplicate' },
+      { action: 'chat:bad', accel: 'Enter', reason: 'game' },
+      { action: 'chat:dup2', accel: 'F5', reason: 'duplicate' }
+    ])
   })
 })

@@ -1,0 +1,97 @@
+/* Раздел «Команды чата» в настройках. Только токены и компоненты ui-* (docs/design-system.md). */
+
+.chat-cmds__hint {
+  padding-inline: 0;
+}
+.chat-cmds__i {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  border: 1px solid var(--info);
+  border-radius: 50%;
+  color: var(--info);
+  font: 700 var(--fs-2xs) / 1 var(--font-ui);
+}
+.chat-cmds__vars {
+  color: var(--fg-muted);
+}
+
+.chat-cmds__list {
+  display: grid;
+  gap: var(--sp-2);
+  margin: var(--sp-4) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chat-cmd {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: var(--sp-4) var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--sunken);
+}
+.chat-cmd.is-off .chat-cmd__main,
+.chat-cmd.is-off .chat-cmd__hk {
+  opacity: 0.5;
+}
+
+/* ui-check ждёт svg-иконку; здесь символ ✓ — видимый только у отмеченной */
+.chat-cmd__on > span {
+  font: 700 var(--fs-xs) / 1 var(--font-ui);
+  opacity: 0;
+}
+.chat-cmd__on[aria-checked='true'] > span {
+  opacity: 1;
+}
+
+.chat-cmd__main {
+  display: grid;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+.chat-cmd__label {
+  overflow: hidden;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chat-cmd__text {
+  min-width: 0;
+}
+
+.chat-cmd__hk {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.chat-cmd__key {
+  min-width: 64px;
+}
+.chat-cmd__key.is-capturing {
+  border-color: var(--accent);
+  color: var(--accent-hi);
+}
+
+.chat-cmds__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+/* узкое окно: хоткей, «отправить» и «удалить» — второй строкой */
+@media (max-width: 640px) {
+  .chat-cmd {
+    grid-template-columns: 16px minmax(0, 1fr);
+  }
+  .chat-cmd > :nth-child(n + 3) {
+    grid-column: 2;
+    justify-self: start;
+  }
+}

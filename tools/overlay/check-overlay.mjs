@@ -10,6 +10,10 @@
 //   node tools/overlay/check-overlay.mjs --chromium=--disable-gpu   # доп. флаги Chromium для POETH
 //   node tools/overlay/check-overlay.mjs --shot=<file.png> # снимок игры с виджетом (прозрачность)
 //   node tools/overlay/check-overlay.mjs --dev            # dev-сервер (electron-vite dev) вместо out/
+//   node tools/overlay/check-overlay.mjs --force          # не ждать, пока за ПК никого не будет
+//
+// Не запускается, если последние 2 минуты за ПК был ввод (клавиатура/мышь), — чтобы не
+// перехватить фокус у работающего человека (--force — запустить всё равно).
 //
 // ВНИМАНИЕ: шлёт настоящие нажатия (Ctrl+D, Shift+Space, Esc), забирает фокус, а с --mouse
 // двигает курсор и кликает — запускать, когда за ПК никто не работает. Перед каждым
@@ -18,7 +22,7 @@
 
 import { execFileSync, spawn } from 'node:child_process'
 import { createRequire } from 'node:module'
-import { mkdtempSync, readdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { appendFileSync, mkdtempSync, readdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import readline from 'node:readline'
@@ -41,8 +45,12 @@ const MOUSE = !!opt('mouse')
 const CHROMIUM = typeof opt('chromium') === 'string' ? String(opt('chromium')).split(',') : []
 const SHOT = opt('shot')
 const DEV = !!opt('dev')
+const FORCE = !!opt('force')
+const IDLE_REQUIRED_MS = 120000
 const CDP_PORT = 9333 + Math.floor(Math.random() * 500)
 const PROFILE = mkdtempSync(path.join(tmpdir(), 'poeth-s1-check-'))
+const GAME_LOG = path.join(PROFILE, 'Client.txt')
+const LOGP = '2026/10/28 21:40:00 123456 abcd [INFO Client 4242]'
 const TITLE = { game: 'Path of Exile', other: 'POETH test - other app', overlay: 'POETH — overlay' }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -74,26 +82,29 @@ const foreground = () => psCmd('fg')
 // тестовое окно
 // ---------------------------------------------------------------------------
 
-const fake = spawn(electronPath, [path.join(ROOT, 'tools/overlay/fake-game.cjs'), '--other'], {
-  stdio: ['ignore', 'pipe', 'ignore']
-})
+let fake = null
 const fakeEvents = []
 const waiters = []
-readline.createInterface({ input: fake.stdout }).on('line', (line) => {
-  let e
-  try {
-    e = JSON.parse(line)
-  } catch {
-    return
-  }
-  fakeEvents.push(e)
-  for (const w of [...waiters]) {
-    if (w.pred(e)) {
-      waiters.splice(waiters.indexOf(w), 1)
-      w.resolve(e)
+function startFake() {
+  fake = spawn(electronPath, [path.join(ROOT, 'tools/overlay/fake-game.cjs'), '--other'], {
+    stdio: ['ignore', 'pipe', 'ignore']
+  })
+  readline.createInterface({ input: fake.stdout }).on('line', (line) => {
+    let e
+    try {
+      e = JSON.parse(line)
+    } catch {
+      return
     }
-  }
-})
+    fakeEvents.push(e)
+    for (const w of [...waiters]) {
+      if (w.pred(e)) {
+        waiters.splice(waiters.indexOf(w), 1)
+        w.resolve(e)
+      }
+    }
+  })
+}
 function waitFake(pred, ms = 3000) {
   return new Promise((resolve, reject) => {
     const w = { pred, resolve }
@@ -204,12 +215,32 @@ async function waitFor(fn, ms = 1500, step = 50) {
 // ---------------------------------------------------------------------------
 
 async function main() {
+  // до любых окон: если за ПК работают — не начинать (окна и нажатия забрали бы фокус)
+  const idle = Number(await psCmd('idle'))
+  if (!FORCE && !(idle >= IDLE_REQUIRED_MS)) {
+    throw new Error(`за ПК работают (ввод ${Math.round(idle / 1000)} с назад) — запустите позже или с --force`)
+  }
+  startFake()
   fakePort = (await waitFake((e) => e.evt === 'ready', 15000)).port
   await fakeCmd({ cmd: 'clipboard-save' })
 
+  // команды чата: F5 → /hideout (по умолчанию) и F6 → /invite @last; лог игры — свой файл
+  writeFileSync(
+    path.join(PROFILE, 'settings.json'),
+    JSON.stringify({
+      schemaVersion: 2,
+      chatCommands: [
+        { id: 'hideout', text: '/hideout', hotkey: 'F5', send: true, enabled: true },
+        { id: 'invite', text: '/invite @last', hotkey: 'F6', send: true, enabled: true }
+      ]
+    })
+  )
+  writeFileSync(GAME_LOG, `${LOGP} : You have entered Lioneye's Watch.
+`)
+
   const appArgs = [`--remote-debugging-port=${CDP_PORT}`, ...CHROMIUM]
   if (SCALE) appArgs.push(`--force-device-scale-factor=${SCALE}`)
-  const env = { ...process.env, POETH_USER_DATA_DIR: PROFILE, POETH_SAVE_CAPTURES: '1' }
+  const env = { ...process.env, POETH_USER_DATA_DIR: PROFILE, POETH_SAVE_CAPTURES: '1', POETH_GAME_LOG: GAME_LOG }
   if (DEV) {
     // electron-vite dev: dev-сервер renderer + hot reload; аргументы для Electron — после «--»
     poeth = spawn(process.execPath, [path.join(ROOT, 'node_modules/electron-vite/bin/electron-vite.js'), 'dev', '--', ...appArgs], {
@@ -354,6 +385,26 @@ async function main() {
   await sleep(150)
   check('stashSearch: буфер восстановлен', (await clipboardText()) === MARK)
 
+  // ---- команды чата по хоткеям ----
+  await sleep(300)
+  await press(K.F5)
+  await sleep(500)
+  gst = (await fakeState()).state
+  check('F5 → /hideout отправлен в чат', gst.chatLog[0] === '/hideout' && !gst.chatOpen, JSON.stringify(gst.chatLog.slice(0, 2)))
+  check('команда чата: буфер восстановлен', (await clipboardText()) === MARK)
+  await sleep(200)
+  await press(K.F6)
+  const noticeShown = await waitFor(async () => evaluate("document.querySelector('.ov-notice')?.textContent ?? null"))
+  gst = (await fakeState()).state
+  check('F6 /invite @last без собеседника — не отправлено, тост', !!noticeShown && gst.chatLog[0] === '/hideout', noticeShown ?? 'нет тоста')
+  appendFileSync(GAME_LOG, `${LOGP} @From <GLD> Buyer_One: Hi, I would like to buy your Chaos Orb
+`)
+  await sleep(1600)
+  await press(K.F6)
+  await sleep(500)
+  gst = (await fakeState()).state
+  check('F6 после whisper → /invite Buyer_One', gst.chatLog[0] === '/invite Buyer_One', JSON.stringify(gst.chatLog.slice(0, 2)))
+
   // ---- клик по виджету без активации (двигает курсор) ----
   if (MOUSE) {
     const cursor0 = await psCmd('cursor')
@@ -459,7 +510,7 @@ try {
   } catch {
     /* окно уже закрыто */
   }
-  fake.kill()
+  fake?.kill()
   cdp?.close()
   // electron-vite dev запускает Electron дочерним процессом — гасим всё дерево
   if (poeth?.pid) {
