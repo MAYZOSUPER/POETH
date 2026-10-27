@@ -1,6 +1,22 @@
-import type { AuthIpcApi } from '@shared/ipc'
+import { ipcRenderer } from 'electron'
+import { IPC, type AuthIpcApi } from '@shared/ipc'
+import { subscribe } from '../subscribe'
 
-// TODO S3: мост каналов домена (ipcRenderer.invoke / send / subscribe).
+// Мост домена «вход в аккаунт и сеть». Только статус — cookies сюда не приходят.
 export function authBridge(): AuthIpcApi {
-  return {}
+  return {
+    auth: {
+      status: () => ipcRenderer.invoke(IPC.auth.status),
+      login: () => ipcRenderer.invoke(IPC.auth.login),
+      logout: () => ipcRenderer.invoke(IPC.auth.logout),
+      recheck: () => ipcRenderer.invoke(IPC.auth.recheck),
+      pasteSession: (poesessid) => ipcRenderer.invoke(IPC.auth.pasteSession, poesessid)
+    },
+    leagues: {
+      get: () => ipcRenderer.invoke(IPC.leagues.get),
+      refresh: () => ipcRenderer.invoke(IPC.leagues.refresh)
+    },
+    onAuthStatus: (cb) => subscribe(IPC.events.authStatus, cb),
+    onLeagues: (cb) => subscribe(IPC.events.authLeagues, cb)
+  }
 }
