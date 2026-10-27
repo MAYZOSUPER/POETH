@@ -83,6 +83,8 @@ export function initAccount(d: AccountDeps): void {
   if (deps) return
   deps = d
   getAccountSession().cookies.on('changed', (_event, cookie, _cause, removed) => {
+    // проверку Cloudflare прошли в окне сайта — перепроверить вход без кнопки
+    if (cookie.name === 'cf_clearance' && !removed && status.problem === 'blocked') scheduleVerify()
     if (!isSessionCookie(cookie)) return
     if (!removed && cookie.session) void makePersistent(cookie)
     scheduleVerify()

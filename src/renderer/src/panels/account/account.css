@@ -1,67 +1,117 @@
-/* Блок «Аккаунт pathofexile.com» (S3). Токены — из globals.css. */
+/* Раздел «Аккаунт» (S3) — по макету «Настройки → Аккаунт». Только токены из tokens.css;
+   кнопки, поля, баннеры, подсказки — компоненты ui-* из components.css. */
 
-.account-status {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: 2px 0 4px;
+.account {
+  display: grid;
+  gap: var(--sp-6);
+  min-width: 0;
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
 }
-.account-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex: none;
-  background: var(--muted);
-}
-.account-dot.on {
-  background: var(--green);
-}
-.account-dot.wait {
-  background: var(--gold);
-  animation: hk-pulse 1s ease-in-out infinite;
-}
-.account-actions {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.account-notes {
-  margin: 4px 0 6px;
-  padding-left: 16px;
-}
-.account-notes li {
-  margin: 2px 0;
-}
-.account-paste {
-  margin-top: 4px;
-}
-.account-paste summary {
-  cursor: pointer;
-  color: var(--gold);
-  margin-bottom: 5px;
-}
-.account-paste summary:hover {
-  color: var(--gold-bright);
-}
-.account-warn {
-  color: var(--danger);
-  border: 1px solid var(--danger);
-  border-radius: 6px;
-  padding: 6px 8px;
-  margin: 4px 0 6px;
-}
-.account-paste-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-top: 6px;
-}
-.account-paste-row .btn {
+.account-title {
   margin: 0;
+  font: 700 var(--fs-title) / 1.2 var(--font-display);
+  letter-spacing: 0.04em;
+  color: var(--accent-hi);
 }
-.account-ok {
-  color: var(--green);
+
+/* карточка статуса: вошли — зелёная, не вошли — нейтральная (цвет дублирован иконкой и заголовком) */
+.account-card {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr); /* колонка и иконка 26 px — как в макете */
+  gap: var(--sp-6);
+  padding: var(--sp-6) var(--sp-7);
+  border: 1px solid color-mix(in srgb, var(--good) 35%, transparent);
+  border-radius: var(--r-panel);
+  background: color-mix(in srgb, var(--good) 6%, transparent);
 }
-.account-danger {
-  color: var(--danger);
+.account-card--out {
+  border-color: var(--border);
+  background: var(--sunken);
+}
+.account-card .account-card__ico {
+  width: 26px;
+  height: 26px;
+  color: var(--good);
+}
+.account-card--out .account-card__ico {
+  color: var(--fg-muted);
+}
+.account-card__body {
+  display: grid;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.account-card__title {
+  margin: 0;
+  font: 600 var(--fs-lg) / 1.25 var(--font-ui);
+}
+.account-card__who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.account-card__name {
+  overflow: hidden;
+  color: var(--fg);
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.account-card__list {
+  display: grid;
+  gap: var(--sp-1);
+  margin: var(--sp-2) 0 0;
+  padding-left: var(--sp-7);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.account-card__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+
+/* «проверка сайта» (Cloudflare) */
+.account-check {
+  display: grid;
+  gap: var(--sp-5);
+}
+/* в окне прайс-чека баннер во всю ширину (как в макете), в настройках — со скруглением */
+.account .ui-banner {
+  border-radius: var(--r-sm);
+}
+.account-check__act {
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--sp-5) var(--sp-5);
+}
+.account .account-check__act {
+  padding: 0;
+}
+
+/* вставка POESESSID */
+.account-paste {
+  display: grid;
+  gap: var(--sp-5);
+}
+.account-paste__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+}
+.account-paste__row .ui-input {
+  flex: 1 1 220px;
+  width: auto;
+  min-width: 0;
+}
+
+.account-hint {
+  padding: 0;
+  color: var(--fg-muted);
 }
