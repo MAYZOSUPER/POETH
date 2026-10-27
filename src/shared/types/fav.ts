@@ -82,9 +82,26 @@ export interface FavSearchInput {
   notes?: string
 }
 
-/** Что открыть в трейд-окне: адрес сайта или поиск (slug + тип). */
+/** Лот, который надо показать игроку на сайте (live S6, прайс-чек S4): продавец + предмет. */
+export interface TradeLot {
+  /** аккаунт продавца (публичное имя на сайте трейда) */
+  account?: string
+  /** имя предмета (уники, редкие); у магических/обычных — нет */
+  name?: string
+  /** база предмета («Leather Boots») — на языке сайта, с которого пришёл лот */
+  typeLine: string
+  ilvl?: number
+}
+
+/**
+ * Что открыть в трейд-окне (по приоритету): адрес сайта; запрос трейда (сайт выполнит его сам по
+ * адресу …/search/<лига>?q=<JSON>); лот (запрос строится из продавца и предмета); поиск (slug + тип).
+ */
 export interface TradeWindowTarget {
   url?: string
+  /** тело запроса сайта трейда ({query, sort}) — как в POST /api/trade/search */
+  query?: Record<string, unknown>
+  lot?: TradeLot
   slug?: string
   type?: TradeSiteKind
   league?: string

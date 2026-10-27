@@ -14,7 +14,8 @@ import type {
   TradeWindowTarget
 } from '@shared/types'
 import * as model from '@shared/favorites/model'
-import { buildTradeUrl, parseTradeUrl } from '@shared/favorites/tradeUrl'
+import { buildQueryUrl, buildTradeUrl, parseTradeUrl } from '@shared/favorites/tradeUrl'
+import { lotQuery, queryParam } from '@shared/favorites/lot'
 import { getFavorites, newFavId, onFavoritesChanged, updateFavorites } from '../services/favoritesStore'
 import { getSettings } from '../services/settingsStore'
 import { getRunningGame } from '../gameContext'
@@ -27,7 +28,8 @@ import * as tw from '../windows/tradeWindow'
 import type { IpcDomain } from './types'
 
 // Домен «избранное и трейд-окно» (S5). Для других этапов (только main):
-//   openTradeWindow({url} | {slug, type, league?, game?}) — S4 прайс-чек, S6 live вместо openExternal;
+//   openTradeWindow({url} | {query} | {lot} | {slug, type}) [+ league?, game?] — S4 прайс-чек, S6 live
+//                                 вместо openExternal; {lot:{account,name,typeLine,ilvl}} — «Открыть лот»;
 //   addFavorite(input)            — кнопка «В избранное» из прайс-чека;
 //   openTradeLogin()              — вход (S3: auth.login открывает трейд-окно на /login);
 //   registerFavLiveAdapter(a)     — S6: live search поисков избранного (молния в сайдбаре).
@@ -135,16 +137,24 @@ async function windowTitle(): Promise<string> {
 
 async function resolveTarget(target: TradeWindowTarget): Promise<string | undefined> {
   if (typeof target.url === 'string' && target.url) return target.url
+  const game = target.game === 'poe2' || target.game === 'poe1' ? target.game : getRunningGame()
+  const type = target.type === 'exchange' ? 'exchange' : 'search'
+  const league = typeof target.league === 'string' && target.league ? target.league : await currentLeague(game)
+  // запрос (или лот → запрос) сайт выполнит сам: …/search/<лига>?q=<JSON>
+  const lot = target.lot && typeof target.lot === 'object' ? lotQuery(target.lot) : null
+  const json = queryParam(target.query ?? lot)
+  if (json) return buildQueryUrl(await siteHost(), game, 'search', league, json)
   if (typeof target.slug === 'string' && /^[A-Za-z0-9]+$/.test(target.slug)) {
-    const game = target.game === 'poe2' || target.game === 'poe1' ? target.game : getRunningGame()
-    const type = target.type === 'exchange' ? 'exchange' : 'search'
-    const league = typeof target.league === 'string' && target.league ? target.league : await currentLeague(game)
     return buildTradeUrl(await siteHost(), game, type, league, target.slug)
   }
   return undefined
 }
 
-/** Показать трейд-окно; target — адрес сайта или поиск (slug + тип [+ лига, игра]). */
+/**
+ * Показать трейд-окно; target — адрес сайта, запрос трейда, лот (продавец + предмет) или поиск
+ * (slug + тип [+ лига, игра]). «Открыть лот»: сайт сразу показывает этот предмет — «Travel to
+ * Hideout»/«Direct whisper» игрок жмёт сам на странице сайта (мы не кликаем и не шлём запросы).
+ */
 export async function openTradeWindow(target: TradeWindowTarget = {}): Promise<void> {
   const title = await windowTitle()
   tw.setTradeWindowTitle(title)

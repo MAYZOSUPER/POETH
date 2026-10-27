@@ -14,6 +14,9 @@ import { loadRendererPage } from './rendererPage'
 // Сайдбар занимает всё окно, siteView лежит поверх него правее колонки избранного и ниже
 // адресной строки (её рисует сайдбар). Закрытие крестиком прячет окно; размер, позиция и
 // «поверх игры» запоминаются в %APPDATA%/POETH/trade-window.json.
+// ПРАВИЛО (docs/PLAN-POETH.md, риск бана): «Travel to Hideout» и «Direct whisper» — только родные
+// кнопки сайта, которые жмёт игрок. В siteView никаких executeJavaScript, инъекций, программных кликов
+// (sendInputEvent) и своих запросов к эндпоинтам телепорта/whisper. Сторож — tests/fav/siteGuard.test.ts.
 
 /** ширина колонки избранного и высота адресной строки — те же числа в trade-sidebar.css */
 export const SIDEBAR_WIDTH = 300

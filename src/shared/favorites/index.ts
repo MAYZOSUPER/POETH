@@ -1,6 +1,7 @@
 // Избранное и трейд-окно (S5): чистый TS без electron — main, renderer и тесты.
 
-export { parseTradeUrl, buildTradeUrl } from './tradeUrl'
+export { parseTradeUrl, buildTradeUrl, buildQueryUrl } from './tradeUrl'
+export { QUERY_JSON_MAX, lotQuery, queryParam } from './lot'
 export {
   BT_PREFIX,
   decodeBtFolder,

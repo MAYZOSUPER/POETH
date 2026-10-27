@@ -57,6 +57,14 @@ export function parseTradeUrl(url: unknown): TradeUrlInfo | null {
   return { host: u.hostname.toLowerCase(), game, type, league, slug }
 }
 
+/**
+ * Страница поиска, которую сайт откроет сразу с результатами запроса: …/search/<лига>?q=<JSON>.
+ * json — уже сериализованный запрос (см. queryParam в ./lot).
+ */
+export function buildQueryUrl(host: SiteHost, game: GameId, type: TradeSiteKind, league: string, json: string): string {
+  return `${buildTradeUrl(host, game, type, league)}?q=${encodeURIComponent(json)}`
+}
+
 /** Адрес поиска на сайте (обратная операция). */
 export function buildTradeUrl(
   host: SiteHost,
