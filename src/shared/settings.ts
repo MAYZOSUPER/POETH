@@ -68,7 +68,9 @@ export function defaultSettings(): Settings {
     regex: {},
     ui: { simpleMode: true },
     overlay: { pricePosition: 'cursor' },
-    chatCommands: defaultChatCommands()
+    chatCommands: defaultChatCommands(),
+    startup: { withWindows: false, minimized: true, firstRunDone: false },
+    updates: { check: true }
   }
 }
 
@@ -176,6 +178,8 @@ function normalize(src: Obj): Settings {
   s.overlay = mergeSection(def.overlay, src.overlay)
   // нет списка (v1, ранний v2) — пресеты; пустой список — игрок удалил всё сам
   s.chatCommands = normalizeChatCommands(src.chatCommands) ?? def.chatCommands
+  s.startup = mergeSection(def.startup, src.startup)
+  s.updates = mergeSection(def.updates, src.updates)
   s.hotkeys = normalizeHotkeys(src.hotkeys)
 
   // перечисления и диапазоны
@@ -204,7 +208,11 @@ function normalize(src: Obj): Settings {
 export function migrateSettings(raw: unknown): Settings {
   if (!isObj(raw)) return defaultSettings()
   const version = typeof raw.schemaVersion === 'number' ? raw.schemaVersion : 1
-  return normalize(version < 2 ? upgradeV1(raw as SettingsV1) : raw)
+  const s = normalize(version < 2 ? upgradeV1(raw as SettingsV1) : raw)
+  // файл настроек уже был (компас, ранний POETH) — это не первый запуск
+  const startup = isObj(raw.startup) ? raw.startup : null
+  if (!startup || typeof startup.firstRunDone !== 'boolean') s.startup.firstRunDone = true
+  return s
 }
 
 /**
