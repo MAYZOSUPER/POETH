@@ -127,6 +127,7 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ слиты S5 (`a85fbbc`…`8bc7b62`): трейд-окно `BaseWindow` (сайдбар избранного + официальный сайт на`n  partition аккаунта, без preload), `openTradeWindow`/`addFavorite`/`openTradeLogin`, «Открыть лот» через `?q=`,`n  импорт/экспорт Better Trading, сторож `tests/fav/siteGuard.test.ts` (никаких программных кликов/инъекций/whisper-`n  hideout-запросов); подсказка про цветные гнёзда в regex «Торговец». И S8 фаза 2 (`1546124`, `01cff1a`): карточки`n  сделок поверх игры, кнопки = одна команда в чат, игнор проданного, чёрный список на карточке, подсветка и калибровка`n  тайника, звук; хоткеи сделок Alt+1/2/3 (патч S8). 1002 теста. Долг: сделки держат свой `LogTailer` — перевести на`n  общий `subscribeGameLog`.
 - `0ec6eb2` — _(лид, 28.10)_ слиты команды чата (S1 `d343ecb`…`005e685`): F5 → `/hideout` + 11 пресетов,
   Settings v2 `chatCommands`, подстановки `@last`/`<char>` из лога (тост, если неизвестно), динамические хоткеи,
   раздел «Команды чата», общий тейлер `services/gameLog.ts` (`subscribeGameLog`). 959 тестов.
