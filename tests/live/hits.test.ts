@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { decodeItemText, toLiveHit } from '../../src/main/games/poe1/live/hits'
 
-const ctx = { searchId: 's1', searchTitle: 'Пояса', siteUrl: 'https://www.pathofexile.com/trade/search/Standard/abc', now: 1000 }
+const ctx = { searchId: 's1', searchTitle: 'Пояса', league: 'Standard', siteUrl: 'https://www.pathofexile.com/trade/search/Standard/abc', now: 1000 }
 const b64 = (s: string) => Buffer.from(s, 'utf8').toString('base64')
 const ITEM_EN = 'Item Class: Belts\r\nRarity: Unique\r\nPyroshock Clasp\r\nLeather Belt\r\n--------\r\nItem Level: 84'
 const ITEM_RU = 'Класс предмета: Пояса\r\nРедкость: Уникальный\r\nЗастёжка пироманта\r\nКожаный пояс'
@@ -22,6 +22,7 @@ describe('находка из ответа fetch', () => {
     )
     expect(hit).toMatchObject({
       key: `s1:${'a'.repeat(64)}`,
+      league: 'Standard',
       rarity: 'unique',
       merchant: false,
       seller: 'online',

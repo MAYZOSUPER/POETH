@@ -306,7 +306,7 @@ export class LiveManager {
     const now = Date.now()
     const url = siteUrl(GAMES.poe1, this.host, e.def.league, e.def.slug)
     for (const raw of res.data.result ?? []) {
-      const hit = toLiveHit(raw, { searchId, searchTitle: e.def.title, siteUrl: url, now })
+      const hit = toLiveHit(raw, { searchId, searchTitle: e.def.title, league: e.def.league, siteUrl: url, now })
       if (hit) this.onHit(e, hit)
     }
   }
@@ -505,7 +505,11 @@ export class LiveManager {
     return true
   }
 
-  /** «Открыть лот»: до трейд-окна (S5) — страница поиска на сайте в системном браузере. */
+  /**
+   * «Открыть лот»: до трейд-окна (S5) — страница поиска на сайте в системном браузере.
+   * После слияния S5: openTradeWindow({ lot: { account, name, typeLine, ilvl }, league: hit.league })
+   * из src/main/ipc/fav.ts — сайт сам покажет этот лот продавца.
+   */
   openHit(key: unknown): boolean {
     const hit = this.findHit(key)
     const url = hit?.siteUrl

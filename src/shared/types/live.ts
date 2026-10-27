@@ -70,6 +70,8 @@ export interface LiveHit {
   itemId: string
   searchId: string
   searchTitle: string
+  /** лига поиска — для «Открыть лот» в трейд-окне S5 (openTradeWindow({lot, league})) */
+  league: string
   at: number
   name: string
   typeLine: string

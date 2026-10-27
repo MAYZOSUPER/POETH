@@ -21,6 +21,7 @@ const MAX_TEXT = 20_000
 export interface HitContext {
   searchId: string
   searchTitle: string
+  league: string
   siteUrl: string
   now: number
 }
@@ -87,6 +88,7 @@ export function toLiveHit(raw: unknown, ctx: HitContext): LiveHit | null {
     itemId,
     searchId: ctx.searchId,
     searchTitle: ctx.searchTitle,
+    league: ctx.league,
     at: ctx.now,
     name: str(item.name, 120) ?? '',
     typeLine: str(item.typeLine, 120) ?? '',
