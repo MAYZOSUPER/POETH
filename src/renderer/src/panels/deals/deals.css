@@ -1,0 +1,366 @@
+/* Вкладка «Сделки» (S8) по макету «Золото компаса». Только токены из tokens.css и компоненты ui-*;
+   здесь — раскладка страницы, таблица истории, предпросмотр тайника. */
+
+.dl {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--page);
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.dl-tabs {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-5);
+  padding: 0 var(--sp-7);
+}
+.dl-tabs > .ui-switch {
+  padding-block: var(--sp-3);
+}
+.dl-body {
+  flex: 1;
+  min-height: 0;
+  padding: 14px var(--sp-7);
+}
+.dl-grow {
+  flex: 1;
+}
+.dl-muted {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.dl-faint {
+  color: var(--fg-faint);
+  font-weight: 400;
+}
+.dl-p {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+.dl-path {
+  font: 500 var(--fs-xs) / 1.4 var(--font-mono);
+  color: var(--fg-muted);
+  overflow-wrap: anywhere;
+}
+
+/* ---- раскладка ---- */
+.dl-stack {
+  display: grid;
+  gap: var(--sp-5);
+  align-content: start;
+  min-width: 0;
+}
+.dl-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-5) var(--sp-7);
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .dl-two {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.dl-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-4);
+}
+.dl-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.dl-search {
+  width: 220px;
+  max-width: 100%;
+}
+.dl-field {
+  display: grid;
+  gap: var(--sp-2);
+  justify-items: start;
+  min-width: 0;
+}
+.dl-field > .ui-select,
+.dl-field > .ui-input {
+  justify-self: stretch;
+}
+.dl-select {
+  max-width: 220px;
+}
+.dl-grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4);
+}
+.dl-grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-4);
+}
+.dl-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+  width: 100%;
+}
+.dl-hint {
+  padding: var(--sp-4) var(--sp-5);
+  border: 1px solid color-mix(in srgb, var(--info) 25%, transparent);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--info) 6%, transparent);
+}
+.dl-banner {
+  border-inline: 0;
+  border-radius: var(--r-sm);
+}
+.dl-textarea {
+  height: auto;
+  min-height: 52px;
+  padding: var(--sp-3);
+  resize: vertical;
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+}
+.dl-code {
+  font: 500 var(--fs-xs) / 1.4 var(--font-mono);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+.dl-ok {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--good);
+  font-size: var(--fs-sm);
+}
+.dl-ok b {
+  color: var(--fg);
+}
+
+/* ---- карточка-блок («box» макета) ---- */
+.dl-box {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  background: var(--sunken);
+}
+.dl-box__h {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: 36px;
+  padding: var(--sp-3) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+}
+.dl-box__h > .ui-ico {
+  color: var(--accent);
+}
+.dl-box__b {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6);
+}
+.dl-box__b > .ui-switch {
+  justify-self: start;
+  text-align: left;
+}
+.dl-box.ui-empty {
+  padding: var(--sp-8) var(--sp-6);
+}
+.dl-box.ui-empty > .ui-ico {
+  color: var(--accent);
+}
+.dl-empty-text {
+  max-width: 52ch;
+  margin: 0;
+}
+
+/* ---- таблица истории ---- */
+.dl-tablewrap {
+  max-height: 46vh;
+  overflow: auto;
+}
+.dl-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-md);
+  font-variant-numeric: tabular-nums;
+}
+.dl-tbl th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-solid);
+  color: var(--fg-faint);
+  font: 600 var(--fs-2xs) / 1.2 var(--font-ui);
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+}
+.dl-tbl td {
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.dl-tbl tr:last-child td {
+  border-bottom: 0;
+}
+.dl-tbl tbody tr:hover td {
+  background: var(--hover);
+}
+.dl-row--bad td:first-child {
+  box-shadow: inset 3px 0 0 var(--bad);
+}
+.dl-time {
+  color: var(--fg-muted);
+  white-space: nowrap;
+}
+.dl-who {
+  min-width: 140px;
+}
+.dl-player {
+  font-weight: 700;
+  overflow-wrap: break-word;
+}
+.dl-demo {
+  margin-left: var(--sp-3);
+  color: var(--fg-faint);
+}
+.dl-bl {
+  margin-top: var(--sp-2);
+  color: var(--bad);
+  font-size: var(--fs-xs);
+  line-height: 1.35;
+}
+.dl-item {
+  min-width: 140px;
+}
+.dl-it {
+  color: var(--fg);
+  font-weight: 600;
+}
+.dl-it--gem {
+  color: var(--rarity-gem);
+}
+.dl-it--cur {
+  color: var(--rarity-currency);
+}
+.dl-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+  margin-top: var(--sp-1);
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.dl-where {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.dl-msg {
+  color: var(--info);
+}
+.dl-raw {
+  display: -webkit-box;
+  margin-top: var(--sp-2);
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--fg-faint);
+  font: 400 var(--fs-2xs) / 1.4 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+.dl-price {
+  color: var(--accent-hi);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.dl-acts__in {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-1);
+}
+
+/* ---- ответы и кнопки карточки ---- */
+.dl-cmds {
+  display: grid;
+  gap: var(--sp-2);
+}
+.dl-cmds + .dl-cmds {
+  margin-top: var(--sp-4);
+}
+.dl-cmd {
+  display: grid;
+  grid-template-columns: minmax(120px, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: 26px;
+}
+.dl-cmd__name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-weight: 600;
+}
+.dl-cmd__name .ui-ico {
+  color: var(--accent);
+}
+.dl-cmd__text {
+  overflow: hidden;
+  color: var(--fg-muted);
+  font: 500 var(--fs-xs) / 1.4 var(--font-mono);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---- предпросмотр тайника ---- */
+.dl-preview {
+  display: grid;
+  gap: var(--sp-3);
+}
+.dl-svg {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+.dl-svg__screen {
+  fill: var(--surface-solid);
+}
+.dl-svg__bars {
+  fill: var(--page);
+}
+.dl-svg__panel {
+  fill: var(--raised);
+  stroke: var(--border);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.dl-svg__grid {
+  fill: var(--sunken);
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.dl-svg__line line {
+  stroke: var(--border);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.dl-svg__hit {
+  fill: var(--accent-soft);
+  stroke: var(--accent-hi);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}

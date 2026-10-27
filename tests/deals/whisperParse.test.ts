@@ -37,6 +37,8 @@ describe('splitLogLine — префикс строки', () => {
     const b = splitLogLine('2019/12/16 22:13:41 1218703 [INFO Client 9472] : Trade accepted.')!
     expect(b.pid).toBe(9472)
     expect(b.text).toBe(': Trade accepted.')
+    const c = splitLogLine('2026/10/28 21:40:00 1000 0000demo [INFO Client 1] @From A: b')!
+    expect(c.ts).toBe(new Date(2026, 9, 28, 21, 40, 0).getTime())
   })
 
   it('незнакомый префикс — текст после первой «] », без времени', () => {

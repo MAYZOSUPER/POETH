@@ -149,6 +149,13 @@ describe('статусы и системные события', () => {
     let data = addDeal(emptyDealsFile(), deal(IN_EN), T0).data
     data = addDeal(data, { ...deal(IN_RU), demo: true }, T0).data
     expect(clearDeals(data, true).deals).toHaveLength(1)
+    // проданный пример уходит из игнора вместе с примерами, настоящий — остаётся
+    const demoId = data.deals.find((d) => d.demo)!.id
+    const realId = data.deals.find((d) => !d.demo)!.id
+    const sold = setDealStatus(setDealStatus(data, demoId, 'sold', T0), realId, 'sold', T0)
+    expect(sold.ignored).toHaveLength(2)
+    expect(clearDeals(sold, true).ignored.map((x) => x.item)).toEqual(['Storm Stride Two-Toned Boots'])
+    expect(clearDeals(sold).ignored).toHaveLength(2)
     expect(clearDeals(data).deals).toHaveLength(0)
     expect(removeDeal(data, data.deals[0].id).deals).toHaveLength(1)
     expect(setDealStatus(data, 'нет-такой', 'sold', T0)).toBe(data)

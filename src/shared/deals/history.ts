@@ -28,8 +28,8 @@ const DEFAULT_HISTORY_LIMIT = 500
 export const DEFAULT_TEMPLATES: Record<DealLang, ReplyTemplates> = {
   ru: {
     thanks: 'Спасибо за сделку, удачи!',
-    sold: 'Извините, {item} уже продан.',
-    still: 'Здравствуйте! {item} за {price} ещё актуален?',
+    sold: 'Извините, уже продано: {item}.',
+    still: 'Здравствуйте! Ещё продаёте {item} за {price}?',
     wait: 'Минуту, скоро приглашу.'
   },
   en: {
@@ -275,9 +275,19 @@ export function removeDeal(data: DealsFileData, id: string): DealsFileData {
   return { ...data, deals: data.deals.filter((d) => d.id !== id) }
 }
 
-/** Очистить историю (только примеры, если demoOnly). Игнор проданного сохраняется. */
+/**
+ * Очистить историю. demoOnly — убрать только примеры (и их «проданные» из игнора);
+ * при полной очистке игнор проданного сохраняется: сообщения про проданное ещё придут.
+ */
 export function clearDeals(data: DealsFileData, demoOnly = false): DealsFileData {
-  return { ...data, deals: demoOnly ? data.deals.filter((d) => !d.demo) : [] }
+  if (!demoOnly) return { ...data, deals: [] }
+  const demoKeys = new Set(data.deals.filter((d) => d.demo).map(ignoreKey))
+  const realKeys = new Set(data.deals.filter((d) => !d.demo).map(ignoreKey))
+  return {
+    ...data,
+    deals: data.deals.filter((d) => !d.demo),
+    ignored: data.ignored.filter((x) => !demoKeys.has(x.key) || realKeys.has(x.key))
+  }
 }
 
 /** Новый лимит истории применяется сразу. */

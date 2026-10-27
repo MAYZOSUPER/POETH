@@ -29,7 +29,8 @@ describe('chatCommand — одна команда на кнопку', () => {
   it('ответы — на языке сообщения собеседника', () => {
     expect(chatCommand('thanks', base, cfg)).toBe('@Ведьма_Ладоги Спасибо за сделку, удачи!')
     expect(chatCommand('sold', { ...base, lang: 'en', item: 'Doom Loop' }, cfg)).toBe('@Ведьма_Ладоги Sorry, Doom Loop is already sold.')
-    expect(chatCommand('still', base, cfg)).toBe('@Ведьма_Ладоги Здравствуйте! Петля Рока за 2 divine ещё актуален?')
+    expect(chatCommand('still', base, cfg)).toBe('@Ведьма_Ладоги Здравствуйте! Ещё продаёте Петля Рока за 2 divine?')
+    expect(chatCommand('sold', base, cfg)).toBe('@Ведьма_Ладоги Извините, уже продано: Петля Рока.')
   })
 
   it('язык ответа из настройки', () => {

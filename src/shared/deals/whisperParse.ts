@@ -39,8 +39,8 @@ export interface LogLine {
   text: string
 }
 
-const PREFIX =
-  /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2}) (\d+)(?: [0-9a-fA-F]+)? \[(\w+) Client (\d+)\] (.*)$/
+// Хэш после счётчика обычно 8 hex-символов, но формат не документирован — берём любое слово.
+const PREFIX = /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2}) (\d+)(?: \S+)? \[(\w+) Client (\d+)\] (.*)$/
 
 /** Отрезать дату, время, счётчик, хэш и «[INFO Client N]». */
 export function splitLogLine(line: string): LogLine | null {
