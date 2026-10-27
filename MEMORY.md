@@ -127,6 +127,17 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- `81bf07f` — _(лид, 28.10)_ слиты без конфликтов (927 тестов зелёные):
+  - S3 `1990117` — сеть: изолированная сессия `persist:poe-account`, `http`/allowlist, лимитер по политикам + fail-fast,
+    `tradeGateway` с кэшем, лиги с авто-выбором, вход/выход/вставка POESESSID, `AccountPanel`, `SiteCheckBanner`, fuses-хук.
+  - S1 `8f0de38` — игровой оверлей (`electron-overlay-window`), Ctrl+D → `captureItemText` с восстановлением буфера, окно
+    цены у курсора (`overlay/placement.ts`), закрытие Esc/клик мимо/повторный Ctrl+D, гейтинг хоткеев по фокусу игры,
+    `typeInChat`/`stashSearch`, тестовое окно «Path of Exile» и `tools/overlay/check-overlay.mjs`.
+  - S7 `195c3b9` — regex: генератор данных карт EN/RU из RePoE, движок (`atLeast`, покрытие, эмулятор поиска игры, 250),
+    вкладка Regex (Карты/Торговец/Библиотека), стор библиотеки.
+  - S8 (фаза 1) `5861e89` — whisper-парсер EN/RU, история сделок, чёрный список PoE Hub, геометрия стэша, вкладка «Сделки».
+  - S4 (фаза 1) `f033a29` — порт фильтров/пресетов/pseudo APT, запросы trade/bulk, timeless (legacy + Abyss).
+  Патчи замороженных файлов (S1, S3, S8 logTailer, вставка regex, `Settings.overlay`) — в ветке `integration-1`.
 - _(лид, 28.10)_ — слит `design/system` `938c5cc`: блок «Благодарности» для «О программе», иконка «Печать».
 - `cdcc57b` — S2: данные APT en/ru (`tools/data/sync-apt-data.mjs` → `resources/data/poe1`, `data.meta.json`, пин
   `3188208957…`), загрузчик `src/shared/poe1/data` и порт парсера `src/shared/poe1/parser` (EN/RU, расширенный и
