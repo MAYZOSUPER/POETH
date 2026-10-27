@@ -1,5 +1,5 @@
 // Строки прайс-чека PoE2 (trade2).
-// TODO S4: строки прайс-чека PoE1 (оверлей) — сюда или в отдельный dict/pricecheck.ts.
+// Строки прайс-чека PoE1 — ключи pc1.* (S4).
 
 import type { DomainDict } from '../types'
 
@@ -34,7 +34,22 @@ export const trade: DomainDict = {
     'pc.result.total': 'Всего листингов: {n}',
     'pc.result.listings': 'Листинги',
     'pc.result.open': 'Открыть на сайте торговли',
-    'pc.result.anon': 'аноним'
+    'pc.result.anon': 'аноним',
+    // --- прайс-чек PoE1 (S4): статусы листингов и timeless
+    'pc1.status.available': 'Купить сразу',
+    'pc1.status.available.hint': 'Мгновенный выкуп у торговцев и продавцы в игре',
+    'pc1.status.securable': 'Только мгновенный выкуп',
+    'pc1.status.securable.hint': 'Покупка на сайте за золото, без whisper',
+    'pc1.status.online': 'Продавцы в игре',
+    'pc1.status.online.hint': 'Классический трейд: whisper и обмен лично',
+    'pc1.status.any': 'Все',
+    'pc1.status.any.hint': 'Включая продавцов не в сети',
+    'pc1.timeless.any': 'Любой завоеватель',
+    'pc1.timeless.exact': 'Точный завоеватель',
+    'pc1.timeless.legacy': 'Старый (legacy) завоеватель',
+    'pc1.timeless.vilsol': 'Открыть в калькуляторе Timeless Jewels',
+    'pc1.timeless.abyssPob': 'Для этого джуэла калькулятора нет — проверьте сид в Path of Building',
+    'pc1.timeless.noExact': 'Нет точных листингов с этим сидом. Попробуйте «Любой завоеватель» или оцените джуэл в калькуляторе.'
   },
   en: {
     'soon.priceCheck':
@@ -66,6 +81,21 @@ export const trade: DomainDict = {
     'pc.result.total': 'Total listings: {n}',
     'pc.result.listings': 'Listings',
     'pc.result.open': 'Open in trade site',
-    'pc.result.anon': 'anonymous'
+    'pc.result.anon': 'anonymous',
+    // --- PoE1 price check (S4): listing status and timeless
+    'pc1.status.available': 'Buy now',
+    'pc1.status.available.hint': 'Instant buyout from merchants and in-game sellers',
+    'pc1.status.securable': 'Instant buyout only',
+    'pc1.status.securable.hint': 'Buy on the website for gold, no whisper',
+    'pc1.status.online': 'In-game sellers',
+    'pc1.status.online.hint': 'Classic trade: whisper and trade in person',
+    'pc1.status.any': 'All',
+    'pc1.status.any.hint': 'Including offline sellers',
+    'pc1.timeless.any': 'Any conqueror',
+    'pc1.timeless.exact': 'Exact conqueror',
+    'pc1.timeless.legacy': 'Legacy conqueror',
+    'pc1.timeless.vilsol': 'Open in Timeless Jewels calculator',
+    'pc1.timeless.abyssPob': 'No calculator for this jewel — check the seed in Path of Building',
+    'pc1.timeless.noExact': 'No exact listings with this seed. Try “Any conqueror” or evaluate the jewel in the calculator.'
   }
 }

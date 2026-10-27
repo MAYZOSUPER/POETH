@@ -1,0 +1,540 @@
+// Порт из Awakened PoE Trade — https://github.com/SnosMe/awakened-poe-trade
+// Copyright (c) Alexander Drozdov (SnosMe) and contributors, MIT License.
+// Исходник: renderer/src/web/price-check/filters/create-item-filters.ts @ 3188208957422b21b69b12083a03edf3d1bac187
+// Изменения POETH: в поля *Trade всегда идёт английское `refName` (запрос одинаков для EN и RU клиента,
+// локализованное имя — только для показа); статус листингов `status` (по умолчанию available) вместо
+// merchantOnly/offline; данные языка параметром; PERMANENT_SC — своя константа.
+
+import type { Poe1Data } from '../../data/Poe1Data'
+import type { BaseType } from '../../data/interfaces'
+import { type ParsedItem, ItemCategory, ItemRarity } from '../../parser'
+import { MAGIC_ONLY_OR_UNIQUE_ITEM, CONSUMABLE_CRAFTABLE_ITEM, JEWELLERY } from '../../parser/meta'
+import { getPropQuality } from '../../parser/calc-q20'
+import { ModifierType } from '../../parser/modifiers'
+import { tradeTag } from '../query/common'
+import { CATEGORY_TO_TRADE_ID } from '../query/trade'
+import type { ItemFilters, TradeStatus } from './interfaces'
+
+/** Постоянные лиги софткора (в них раздвоенные предметы не отсекаются по умолчанию). */
+export const PERMANENT_SC = ['Standard']
+
+export const SPECIAL_SUPPORT_GEM = ['Empower Support', 'Enlighten Support', 'Enhance Support']
+
+export interface CreateOptions {
+  league: string
+  /** статус листингов (по умолчанию available) */
+  status: TradeStatus
+  currency: string | null
+  collapseListings: 'app' | 'api'
+  activateStockFilter: boolean
+  exact: boolean
+}
+
+export function createFilters(item: ParsedItem, d: Poe1Data, opts: CreateOptions): ItemFilters {
+  const filters: ItemFilters = {
+    searchExact: {},
+    trade: {
+      status:
+        opts.status === 'securable' &&
+        // these are Divination Cards, and some items at start of league
+        // that are on Currency Exchange but was not added to Bulk section of site yet
+        item.info.exchangeable &&
+        !item.info.tradeTag
+          ? 'available'
+          : opts.status,
+      onlineInLeague: false,
+      listed: null,
+      currency: opts.currency,
+      league: opts.league,
+      collapseListings: opts.collapseListings,
+      collapseMerchant: false
+    }
+  }
+
+  if (
+    (!item.info.craftable || CONSUMABLE_CRAFTABLE_ITEM.has(item.category!)) &&
+    item.rarity !== ItemRarity.Unique
+  ) {
+    if (!opts.currency) {
+      filters.trade.currency = 'chaos_divine'
+    }
+    if (item.info.refName !== 'Mercenary Warrant') {
+      filters.trade.collapseMerchant = true
+    }
+  }
+
+  if (item.category === ItemCategory.Gem) {
+    return createGemFilters(item, filters, d)
+  }
+  if (item.category === ItemCategory.CapturedBeast) {
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(item.info)
+    }
+    return filters
+  }
+  if (item.stackSize || tradeTag(item) || item.info.exchangeable) {
+    filters.stackSize = {
+      value: item.stackSize?.value || 1,
+      disabled: !(item.stackSize && item.stackSize.value > 1 && opts.activateStockFilter)
+    }
+  }
+  if (item.category === ItemCategory.Invitation) {
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(item.info)
+    }
+    return filters
+  }
+  if (item.category === ItemCategory.MetamorphSample) {
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(item.info)
+    }
+    filters.itemLevel = {
+      value: item.itemLevel!,
+      disabled: false
+    }
+    return filters
+  }
+  if (item.info.refName === 'Scrying Orb') {
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(item.info),
+      sub: {
+        baseType: item.mapArea!.name,
+        baseTypeTrade: item.mapArea!.tradeDisc!,
+        discriminatorTrade: item.info.tradeDisc!,
+        disabled: false
+      }
+    }
+    return filters
+  }
+  if (
+    item.category === ItemCategory.DivinationCard ||
+    item.category === ItemCategory.Currency ||
+    item.info.refName === 'Charged Compass'
+  ) {
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(item.info)
+    }
+    if (item.info.refName === 'Chronicle of Atzoatl') {
+      filters.areaLevel = {
+        value: floorToBracket(item.areaLevel!, [1, 68, 73, 75, 78, 80]),
+        disabled: false
+      }
+    } else if (item.info.refName === 'Mirrored Tablet') {
+      filters.areaLevel = {
+        value: item.areaLevel!,
+        disabled: false
+      }
+    } else if (item.info.refName === 'Forbidden Tome') {
+      filters.areaLevel = {
+        value: item.areaLevel!,
+        disabled: false
+      }
+      if (item.areaLevel! < 83) {
+        filters.areaLevel.max = item.areaLevel!
+      }
+    } else if (item.itemLevel) {
+      // Incubators, Wombgifts
+      filters.itemLevel = {
+        value: item.itemLevel,
+        disabled: false
+      }
+    }
+    return filters
+  }
+
+  if (item.category === ItemCategory.Map) {
+    if (item.info.area?.blighted) {
+      filters.searchExact = {
+        baseType: item.info.name,
+        baseTypeTrade: t(d.itemByRef('ITEM', 'Map')![0]),
+        discriminatorTrade: 'map',
+        sub: {
+          baseType: item.mapArea!.name,
+          baseTypeTrade: item.mapArea!.tradeDisc!,
+          discriminatorTrade: item.info.tradeDisc!,
+          disabled: false
+        }
+      }
+    } else if (item.rarity === ItemRarity.Unique && item.uniqueBase) {
+      filters.searchExact = {
+        name: item.info.name,
+        nameTrade: t(item.info),
+        baseTypeTrade: t(item.uniqueBase)
+      }
+    } else {
+      filters.searchExact = {
+        baseType: item.info.name,
+        baseTypeTrade: t(item.info)
+      }
+    }
+
+    if (item.info.refName === 'Map' || item.uniqueBase?.refName === 'Map') {
+      filters.searchExact.discriminatorTrade = 'map'
+    }
+
+    if (item.info.refName === 'Blighted Map') {
+      filters.mapBlighted = { value: 'Blighted' }
+    } else if (item.info.refName === 'Blight-ravaged Map') {
+      filters.mapBlighted = { value: 'Blight-ravaged' }
+    } else if (item.info.refName === 'Map') {
+      filters.mapBlighted = { value: false }
+    }
+
+    if (item.mapCompletionReward) {
+      filters.mapCompletionReward = {
+        name: item.mapCompletionReward.name,
+        nameTrade: t(item.mapCompletionReward)
+      }
+    }
+
+    if (item.mapTier) {
+      filters.mapTier = {
+        value: item.mapTier,
+        disabled: false
+      }
+    }
+  } else if (item.info.refName === 'Expedition Logbook') {
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(item.info)
+    }
+    filters.areaLevel = {
+      value: floorToBracket(item.areaLevel!, [1, 68, 73, 78, 81, 83]),
+      disabled: false
+    }
+  } else if (item.category === ItemCategory.Chart) {
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(item.info)
+    }
+    filters.searchRelaxed = {
+      category: item.category,
+      disabled: false,
+      sub: {
+        baseType: item.mapArea!.name,
+        baseTypeTrade: item.mapArea!.tradeDisc!,
+        discriminatorTrade: item.info.tradeDisc!,
+        disabled: false
+      }
+    }
+  } else if (item.rarity === ItemRarity.Unique && item.uniqueBase) {
+    filters.searchExact = {
+      name: item.info.name,
+      nameTrade: t(item.info),
+      baseTypeTrade: t(item.uniqueBase)
+    }
+  } else {
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(item.info)
+    }
+    if (item.category && CATEGORY_TO_TRADE_ID.has(item.category)) {
+      let disabled = opts.exact
+      if (
+        item.category === ItemCategory.ClusterJewel ||
+        item.category === ItemCategory.Idol ||
+        item.category === ItemCategory.Graft ||
+        item.category === ItemCategory.HeistBlueprint
+      ) {
+        disabled = true
+      } else if (
+        item.category === ItemCategory.SanctumRelic ||
+        item.category === ItemCategory.Charm ||
+        item.category === ItemCategory.HeistContract
+      ) {
+        disabled = false
+      }
+      filters.searchRelaxed = {
+        category: item.category,
+        disabled: disabled
+      }
+    }
+  }
+
+  if (item.sentinelCharge != null) {
+    filters.sentinelCharge = {
+      value: item.sentinelCharge,
+      disabled: false
+    }
+  }
+
+  if (item.quality && item.quality >= 20 && !JEWELLERY.has(item.category!)) {
+    if (
+      item.category === ItemCategory.Flask || item.category === ItemCategory.Tincture ||
+      (getPropQuality(item) === 0) || opts.exact // for Weapons & Armour
+    ) {
+      filters.quality = {
+        value: item.quality,
+        disabled: (item.quality <= 20)
+      }
+    }
+  }
+
+  if (item.sockets?.linked) {
+    filters.linkedSockets = {
+      value: item.sockets.linked,
+      disabled: false
+    }
+  }
+
+  const forAdornedJewel = (
+    item.rarity === ItemRarity.Magic &&
+    // item.isCorrupted && -- let the buyer corrupt
+    (item.category === ItemCategory.Jewel || item.category === ItemCategory.AbyssJewel))
+
+  if (!item.isUnmodifiable && (item.info.craftable || item.rarity === ItemRarity.Unique)) {
+    filters.corrupted = {
+      value: item.isCorrupted,
+      exact: forAdornedJewel
+    }
+  }
+
+  if (forAdornedJewel) {
+    filters.rarity = {
+      value: 'magic',
+      disabled: false
+    }
+  } else if (
+    opts.exact &&
+    item.rarity === ItemRarity.Magic &&
+    !CONSUMABLE_CRAFTABLE_ITEM.has(item.category!) &&
+    !MAGIC_ONLY_OR_UNIQUE_ITEM.has(item.category!)
+  ) {
+    filters.rarity = {
+      value: 'magic',
+      disabled: true
+    }
+  } else if (item.info.craftable && (
+    item.rarity === ItemRarity.Normal ||
+    item.rarity === ItemRarity.Magic ||
+    item.rarity === ItemRarity.Rare
+  )) {
+    filters.rarity = {
+      value: 'nonunique',
+      disabled: false
+    }
+  }
+
+  if (item.isMirrored) {
+    filters.mirrored = { disabled: false, hidden: false }
+  } else if (
+    item.info.craftable && !item.isCorrupted
+  ) {
+    filters.mirrored = { disabled: true, hidden: true }
+  }
+
+  if (item.isSplit) {
+    filters.split = { disabled: false, hidden: false }
+  } else if (
+    (!PERMANENT_SC.includes(opts.league) || opts.exact) &&
+    item.info.craftable && !item.isCorrupted && !item.isMirrored &&
+    !item.isSynthesised && !item.isFractured && !item.influences.length
+  ) {
+    filters.split = { disabled: true, hidden: true }
+  }
+
+  if (!item.isFractured &&
+    (item.info.craftable && !item.isCorrupted && !item.isMirrored)
+  ) {
+    filters.fractured = { value: false }
+  }
+
+  if (item.isFoil) {
+    filters.foil = { disabled: false }
+  }
+
+  if (item.influences.length && item.influences.length <= 2) {
+    filters.influences = item.influences.map(influence => ({
+      value: influence,
+      disabled: !opts.exact
+    }))
+  }
+
+  if (item.itemLevel) {
+    if (
+      item.rarity !== ItemRarity.Unique &&
+      item.category !== ItemCategory.Map &&
+      item.category !== ItemCategory.Jewel && /* https://pathofexile.gamepedia.com/Jewel#Affixes */
+      item.category !== ItemCategory.HeistBlueprint &&
+      item.category !== ItemCategory.HeistContract &&
+      item.category !== ItemCategory.Chart &&
+      item.category !== ItemCategory.MemoryLine &&
+      item.category !== ItemCategory.SanctumRelic &&
+      item.category !== ItemCategory.Charm &&
+      item.category !== ItemCategory.Idol &&
+      item.info.refName !== 'Expedition Logbook'
+    ) {
+      if (item.category === ItemCategory.ClusterJewel) {
+        filters.itemLevel = {
+          value: floorToBracket(item.itemLevel, [1, 50, 68, 75, 84]),
+          max: ceilToBracket(item.itemLevel, [100, 74, 67, 49]),
+          disabled: !opts.exact
+        }
+      } else {
+        // TODO limit level by item type
+        filters.itemLevel = {
+          value: Math.min(item.itemLevel, 86),
+          disabled: (!opts.exact || item.category === ItemCategory.Flask || item.category === ItemCategory.Tincture)
+        }
+      }
+    }
+
+    if (item.rarity === ItemRarity.Unique) {
+      if (item.isUnidentified && item.info.refName === "Watcher's Eye") {
+        filters.itemLevel = {
+          value: item.itemLevel,
+          disabled: false
+        }
+      }
+
+      if (item.itemLevel >= 75 && [
+        'Agnerod', 'Agnerod East', 'Agnerod North', 'Agnerod South', 'Agnerod West'
+      ].includes(item.info.refName)) {
+        // https://pathofexile.gamepedia.com/The_Vinktar_Square
+        const normalizedLvl =
+          item.itemLevel >= 82 ? 82
+            : item.itemLevel >= 80 ? 80
+              : item.itemLevel >= 78 ? 78
+                : 75
+
+        filters.itemLevel = {
+          value: normalizedLvl,
+          disabled: false
+        }
+      }
+    }
+  }
+
+  if (item.isUnidentified) {
+    filters.unidentified = {
+      value: true,
+      disabled: (item.rarity !== ItemRarity.Unique)
+    }
+  }
+
+  if (item.isVeiled) {
+    filters.veiled = {
+      statRefs: item.statsByType
+        .filter(calc => calc.type === ModifierType.Veiled)
+        .map(calc => calc.stat.ref),
+      disabled: false
+    }
+
+    if (item.rarity !== ItemRarity.Unique) {
+      if (filters.itemLevel) {
+        filters.itemLevel.disabled = false
+      }
+    }
+  }
+
+  if (item.rarity === ItemRarity.Unique) {
+    filters.foulborn = {
+      value: Boolean(item.isFoulborn)
+    }
+
+    filters.vestigial = {
+      value: Boolean(item.isVestigial)
+    }
+  }
+
+  if (
+    item.category === ItemCategory.HeistContract ||
+    item.category === ItemCategory.HeistBlueprint ||
+    item.category === ItemCategory.Chart
+  ) {
+    if (item.rarity !== ItemRarity.Unique) {
+      filters.areaLevel = {
+        value: item.areaLevel!,
+        disabled: false
+      }
+    }
+  }
+
+  return filters
+}
+
+function createGemFilters(item: ParsedItem, filters: ItemFilters, d: Poe1Data) {
+  if (!item.info.gem!.transfigured) {
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(item.info)
+    }
+  } else {
+    const normalGem = d.itemByRef('GEM', item.info.gem!.normalVariant!)![0]
+    filters.searchExact = {
+      baseType: item.info.name,
+      baseTypeTrade: t(normalGem),
+      discriminatorTrade: item.info.tradeDisc!
+    }
+  }
+
+  if (item.vaalGem) {
+    filters.searchExact.sub = {
+      baseType: item.vaalGem.name,
+      baseTypeTrade: t(item.vaalGem),
+      discriminatorTrade: item.info.tradeDisc,
+      disabled: false
+    }
+  }
+
+  filters.corrupted = {
+    value: item.isCorrupted
+  }
+
+  if (!item.imbuedGem && item.isCorrupted && item.gemLevel! >= 20) {
+    filters.imbuedGem = {
+      disabled: true
+    }
+  }
+
+  filters.gemLevel = {
+    value: item.gemLevel!,
+    disabled: (item.gemLevel! < item.info.gem!.maxLevel)
+  }
+
+  if (item.quality) {
+    filters.quality = {
+      value: item.quality,
+      disabled: (item.info.gem!.maxLevel === 1) ? false
+        : (item.info.gem!.maxLevel === 20 && !item.info.gem!.transfigured)
+            ? (item.quality < 16)
+            : (item.quality < 20)
+    }
+  }
+
+  return filters
+}
+
+/** POETH: в запрос — всегда английское имя */
+function t(info: BaseType) {
+  return info.refName
+}
+
+export function floorToBracket(value: number, brackets: readonly number[]) {
+  let prev = brackets[0]
+  for (const num of brackets) {
+    if (num > value) {
+      return prev
+    } else {
+      prev = num
+    }
+  }
+  return prev
+}
+
+function ceilToBracket(value: number, brackets: readonly number[]) {
+  let prev = brackets[0]
+  for (const num of brackets) {
+    if (num < value) {
+      return prev
+    } else {
+      prev = num
+    }
+  }
+  return prev
+}
