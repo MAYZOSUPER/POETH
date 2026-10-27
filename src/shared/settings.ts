@@ -3,6 +3,7 @@
 // ЗАМОРОЖЕН после S0: новые поля/дефолты добавляет только лид.
 
 import { isGameId, isSiteHost } from './games'
+import { PRICE_POPUP_POSITIONS } from './types/overlay'
 import type {
   HotkeyAction,
   HotkeyBinding,
@@ -64,7 +65,8 @@ export function defaultSettings(): Settings {
     live: { maxSearches: 10 },
     deals: { enabled: true, stashGrid: 'auto', calibration: null },
     regex: {},
-    ui: { simpleMode: true }
+    ui: { simpleMode: true },
+    overlay: { pricePosition: 'cursor' }
   }
 }
 
@@ -169,6 +171,7 @@ function normalize(src: Obj): Settings {
   s.deals = mergeSection(def.deals, src.deals)
   s.regex = isObj(src.regex) ? { ...src.regex } : {}
   s.ui = mergeSection(def.ui, src.ui)
+  s.overlay = mergeSection(def.overlay, src.overlay)
   s.hotkeys = normalizeHotkeys(src.hotkeys)
 
   // перечисления и диапазоны
@@ -178,6 +181,7 @@ function normalize(src: Obj): Settings {
   if (!UI_LANGS.includes(s.nameLang)) s.nameLang = def.nameLang
   if (!APP_TABS.includes(s.lastAppTab)) s.lastAppTab = def.lastAppTab
   if (!STASH_GRIDS.includes(s.deals.stashGrid)) s.deals.stashGrid = def.deals.stashGrid
+  if (!PRICE_POPUP_POSITIONS.includes(s.overlay.pricePosition)) s.overlay.pricePosition = def.overlay.pricePosition
   if (s.activeProfileId !== null && typeof s.activeProfileId !== 'string') s.activeProfileId = null
   if (s.logPath !== null && typeof s.logPath !== 'string') s.logPath = null
   if (!s.poe1.league) s.poe1.league = def.poe1.league

@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import type { HotkeyAction, UiLang } from '@shared/types'
+import type { HotkeyAction, PricePopupPosition, UiLang } from '@shared/types'
+import { PRICE_POPUP_POSITIONS } from '@shared/types'
+import { reservedReason } from '@shared/accelerators'
 import { GAMES, type GameId } from '@shared/games'
 import { HOTKEY_ACTIONS, defaultHotkeys } from '@shared/settings'
 import { BOOSTY_URL } from '@shared/links'
 import { useAppStore } from '../store/useAppStore'
 import { useT } from '../i18n'
+import { AccountPanel } from './account/AccountPanel'
 
 const BOTH: GameId[] = ['poe1', 'poe2']
 
@@ -125,6 +128,12 @@ export function SettingsPanel() {
       }
       const accel = eventToAccelerator(e)
       if (!accel) return
+      // занятые игрой и нашим вводом в игру сочетания (Ctrl+C/V/F/A, Enter, стрелки…) — нельзя
+      const reserved = reservedReason(accel)
+      if (reserved) {
+        setHkNote(`overlay.hotkey.reserved.${reserved}`)
+        return
+      }
       const hk = settingsRef.current?.hotkeys
       if (!hk) return
       const conflict = HOTKEY_ACTIONS.some((a) => a !== capturing && hk[a].accel === accel)
@@ -200,6 +209,27 @@ export function SettingsPanel() {
       </label>
 
       <div className="hint small muted">{t('set.windowedHint')}</div>
+
+      {game === 'poe1' && (
+        <div className="setting">
+          <label>{t('overlay.set.pricePosition')}</label>
+          <select
+            className="lang-select"
+            value={settings?.overlay?.pricePosition ?? 'cursor'}
+            onChange={(e) =>
+              void patchSettings({ overlay: { pricePosition: e.target.value as PricePopupPosition } })
+            }
+          >
+            {PRICE_POPUP_POSITIONS.map((p) => (
+              <option key={p} value={p}>
+                {t(`overlay.set.pricePosition.${p}`)}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {game === 'poe1' && <AccountPanel />}
 
       <div className="block">
         <div className="block-title">{t('set.hotkeys')}</div>

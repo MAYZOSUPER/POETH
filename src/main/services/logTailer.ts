@@ -15,7 +15,9 @@ import { actIdFromGameArea, matchSpeaker, type BossIndex } from './bossMatcher'
 //     a "defeat" confirm, but most bosses reward a gem, not points — so we trigger on
 //     the dialogue itself, debounced.)
 //
-// Emits: 'zone' (ZoneEvent), 'level' (LevelEvent), 'status' (TailerStatus), 'boss' (BossDefeatEvent).
+// Emits: 'zone' (ZoneEvent), 'level' (LevelEvent), 'status' (TailerStatus), 'boss' (BossDefeatEvent),
+// 'lines' (string[]) — сырые новые строки за один опрос (только живое чтение, не scanTail; для
+// менеджера сделок PoE1, S8). Подпапки логов — GameDef.logSubdirs (по умолчанию PoE2, как было).
 // NOTE: `: <X> has been slain.` is a PLAYER death (self/party), NOT a boss kill — never parsed.
 
 const GENERATING = /Generating level \d+ area "([^"]+)"/
@@ -33,21 +35,33 @@ const BOSS_EMIT_DEBOUNCE_MS = 60000
 
 const SCAN_BYTES = 102400
 
-const POE2_SUBPATH = 'Path of Exile 2\\logs\\Client.txt'
+/** = GAMES.poe2.logSubdirs: по умолчанию тейлер ищет лог PoE2, как в компасе. */
+const POE2_LOG_SUBDIRS = ['Path of Exile 2/logs', 'PathOfExile2/logs']
+/** Пути вне схемы «корень × подпапка» (Daum — корейский PoE2): только у PoE2 по умолчанию. */
+const POE2_EXTRA_PATHS = ['C:\\Daum Games\\Path of Exile2\\logs\\Client.txt']
 
-function defaultPaths(): string[] {
+const winPath = (p: string): string => p.replace(/\//g, '\\')
+
+function installRoots(): string[] {
   const up = process.env.USERPROFILE ?? ''
   return [
-    `C:\\Program Files (x86)\\Steam\\steamapps\\common\\${POE2_SUBPATH}`,
-    `C:\\Program Files (x86)\\Grinding Gear Games\\${POE2_SUBPATH}`,
-    'C:\\Program Files\\Epic Games\\PathOfExile2\\logs\\Client.txt',
-    `${up}\\Documents\\My Games\\${POE2_SUBPATH}`,
-    `C:\\Daum Games\\Path of Exile2\\logs\\Client.txt`
+    'C:\\Program Files (x86)\\Steam\\steamapps\\common',
+    'C:\\Program Files (x86)\\Grinding Gear Games',
+    'C:\\Program Files\\Epic Games',
+    `${up}\\Documents\\My Games`
   ]
 }
 
+function defaultPaths(subdirs: string[], extra: string[]): string[] {
+  const out: string[] = []
+  for (const root of installRoots()) {
+    for (const sub of subdirs) out.push(`${root}\\${winPath(sub)}\\Client.txt`)
+  }
+  return [...out, ...extra]
+}
+
 /** Steam libraries can live on any drive — read libraryfolders.vdf to find them. */
-function steamLibraryClientPaths(): string[] {
+function steamLibraryClientPaths(subdirs: string[]): string[] {
   const vdfs = [
     'C:\\Program Files (x86)\\Steam\\steamapps\\libraryfolders.vdf',
     'C:\\Program Files\\Steam\\steamapps\\libraryfolders.vdf'
@@ -60,13 +74,25 @@ function steamLibraryClientPaths(): string[] {
       let m: RegExpExecArray | null
       while ((m = re.exec(text)) !== null) {
         const lib = m[1].replace(/\\\\/g, '\\')
-        out.push(`${lib}\\steamapps\\common\\${POE2_SUBPATH}`)
+        for (const sub of subdirs) out.push(`${lib}\\steamapps\\common\\${winPath(sub)}\\Client.txt`)
       }
     } catch {
       // no Steam vdf here
     }
   }
   return out
+}
+
+/** Все пути-кандидаты Client.txt для подпапок игры (экспорт — для тестов). */
+export function candidateLogPaths(subdirs: string[], extra: string[] = []): string[] {
+  return [...defaultPaths(subdirs, extra), ...steamLibraryClientPaths(subdirs)]
+}
+
+export interface LogTailerOptions {
+  /** GameDef.logSubdirs; по умолчанию PoE2 */
+  logSubdirs?: string[]
+  /** доп. пути вне схемы «корень × подпапка»; по умолчанию — только у PoE2 */
+  extraPaths?: string[]
 }
 
 interface Parsed {
@@ -88,6 +114,14 @@ export class LogTailer extends EventEmitter {
   // boss detection (opt-in; index injected from main once the dataset is loaded)
   private bossIndex: BossIndex | null = null
   private lastBossEmit: { questId: string; at: number } | null = null
+  private readonly logSubdirs: string[]
+  private readonly extraPaths: string[]
+
+  constructor(opts: LogTailerOptions = {}) {
+    super()
+    this.logSubdirs = opts.logSubdirs ?? POE2_LOG_SUBDIRS
+    this.extraPaths = opts.extraPaths ?? (opts.logSubdirs ? [] : POE2_EXTRA_PATHS)
+  }
 
   setBossIndex(index: BossIndex): void {
     this.bossIndex = index
@@ -136,7 +170,7 @@ export class LogTailer extends EventEmitter {
   private findLogFile(): string | null {
     const seen = new Set<string>()
     const candidates: string[] = []
-    for (const p of [...defaultPaths(), ...steamLibraryClientPaths()]) {
+    for (const p of candidateLogPaths(this.logSubdirs, this.extraPaths)) {
       const key = p.toLowerCase()
       if (existsSync(p) && !seen.has(key)) {
         seen.add(key)
@@ -244,11 +278,20 @@ export class LogTailer extends EventEmitter {
         const from = this.lastSize
         const to = s.size - 1
         this.lastSize = s.size
-        await this.readRange(this.logPath, from, to, (p) => {
-          if (p.areaId || p.areaName) this.emitZone(p.areaId, p.areaName)
-          if (p.level) this.emitLevel(p.level)
-          this.handleBoss(p)
-        })
+        // сырые строки собираем, только если на них подписались (менеджер сделок)
+        const raw: string[] | null = this.listenerCount('lines') > 0 ? [] : null
+        await this.readRange(
+          this.logPath,
+          from,
+          to,
+          (p) => {
+            if (p.areaId || p.areaName) this.emitZone(p.areaId, p.areaName)
+            if (p.level) this.emitLevel(p.level)
+            this.handleBoss(p)
+          },
+          raw ? (line) => raw.push(line) : undefined
+        )
+        if (raw && raw.length > 0) this.emit('lines', raw)
       }
     } catch {
       // file temporarily unavailable; try again next tick
@@ -261,7 +304,8 @@ export class LogTailer extends EventEmitter {
     path: string,
     start: number,
     end: number,
-    onParsed: (p: Parsed) => void
+    onParsed: (p: Parsed) => void,
+    onRaw?: (line: string) => void
   ): Promise<void> {
     return new Promise((resolve) => {
       if (end < start) {
@@ -271,7 +315,10 @@ export class LogTailer extends EventEmitter {
       try {
         const stream = createReadStream(path, { start, end, encoding: 'utf8' })
         const rl = createInterface({ input: stream })
-        rl.on('line', (line) => onParsed(this.parse(line)))
+        rl.on('line', (line) => {
+          onRaw?.(line)
+          onParsed(this.parse(line))
+        })
         rl.on('close', () => resolve())
         rl.on('error', () => resolve())
       } catch {

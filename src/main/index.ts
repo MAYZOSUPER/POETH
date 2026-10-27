@@ -7,10 +7,15 @@ import { registerIpcHandlers, setupGame, applySettingsToWindow } from './ipc'
 import { getSettings } from './services/settingsStore'
 import { registerPoethScheme, handlePoethProtocol } from './protocol'
 import { migrateUserData } from './services/userDataMigration'
+import { initNetIdentity } from './net/session'
 
 // dev/test: isolated profile (migration tests, parallel `npm run dev` from several
 // worktrees — the single-instance lock is per userData dir).
 if (process.env.POETH_USER_DATA_DIR) app.setPath('userData', process.env.POETH_USER_DATA_DIR)
+
+// Сеть (S3): один UA у окон и API (cf_clearance привязан к UA) и
+// disable-blink-features=AutomationControlled — до ready и до создания окон.
+initNetIdentity()
 
 // Must happen before `ready` (scheme) and before the single-instance lock
 // (userData copy from the old product names, before Chromium writes there).
@@ -43,6 +48,8 @@ async function bootstrap(): Promise<void> {
   initClickThrough(settings.locked)
   applySettingsToWindow(settings)
   // The game is fixed for the lifetime of the process (switching = relaunch).
+  // Здесь же поднимается игровой оверлей и отслеживание фокуса игры (S1):
+  // overlayDomain.setupForGame → initGameOverlay(def) — attach к окну GameDef.windowTitle.
   await setupGame(settings.game)
   void createTray()
 }
