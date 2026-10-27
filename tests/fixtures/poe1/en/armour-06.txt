@@ -1,0 +1,21 @@
+Item Class: Helmets
+Rarity: Rare
+Entropy Halo
+Reaver Helmet
+--------
+Armour: 198
+--------
+Requirements:
+Level: 40
+Str: 85
+--------
+Sockets: G R 
+--------
+Item Level: 48
+--------
++22 to Intelligence
+Regenerate 6.6 Life per second
+9% increased Rarity of Items found
+Reflects 6 Physical Damage to Melee Attackers
+--------
+Note: ~price 0.5 alch

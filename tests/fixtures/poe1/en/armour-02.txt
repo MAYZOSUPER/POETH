@@ -1,0 +1,16 @@
+Item Class: Body Armours
+Rarity: Rare
+Dragonscale Doublet
+--------
+Armour: 313
+Evasion Rating: 313
+--------
+Requirements:
+Str: 83
+Dex: 83
+--------
+Sockets: R-R-G-G 
+--------
+Item Level: 70
+--------
+Unidentified

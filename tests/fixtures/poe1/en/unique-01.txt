@@ -1,0 +1,16 @@
+Item Class: Amulets
+Rarity: Unique
+Sidhebreath
+Paua Amulet
+--------
+Item Level: 71
+--------
+29% increased Mana Regeneration Rate
+--------
++25% to Cold Resistance
+0.2% of Physical Attack Damage Leeched as Mana
+Minions have 11% increased maximum Life
+Minions have 11% increased Movement Speed
+Minions deal 11% increased Damage
+--------
+The breath of life is yours to give.

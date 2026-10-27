@@ -1,0 +1,17 @@
+Item Class: Jewels
+Rarity: Unique
+Elegant Hubris
+Timeless Jewel
+--------
+Limited to: 1 Historic
+Radius: Large
+--------
+Item Level: 86
+--------
+Commissioned 132960 coins to commemorate Victario
+Passives in radius are Conquered by the Eternal Empire
+Historic
+--------
+They believed themselves better than the past, but that confidence brought about nightmare.
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

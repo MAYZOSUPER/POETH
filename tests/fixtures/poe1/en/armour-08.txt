@@ -1,0 +1,14 @@
+Item Class: Boots
+Rarity: Rare
+Goliath Greaves
+--------
+Armour: 177
+--------
+Requirements:
+Strength: 95
+--------
+Sockets: R-R R 
+--------
+Item Level: 74
+--------
+Unidentified

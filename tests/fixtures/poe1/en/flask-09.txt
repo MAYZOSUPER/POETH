@@ -1,0 +1,18 @@
+Item Class: Life Flasks
+Rarity: Magic
+Eternal Life Flask of the Crystal
+--------
+Recovers 2080 Life over 2 Seconds
+Consumes 15 of 45 Charges on use
+Currently has 0 Charges
+--------
+Requirements:
+Level: 65
+--------
+Item Level: 68
+--------
+30% additional Elemental Resistances during Effect
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+--------
+Note: ~price 1 alch

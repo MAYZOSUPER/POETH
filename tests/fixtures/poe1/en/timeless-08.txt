@@ -1,0 +1,17 @@
+Item Class: Jewels
+Rarity: Unique
+Lethal Pride
+Timeless Jewel
+--------
+Limited to: 1 Historic
+Radius: Large
+--------
+Item Level: 86
+--------
+Commanded leadership over 12810 warriors under Rakiata
+Passives in radius are Conquered by the Karui
+Historic
+--------
+They believed themselves the greatest warriors, but that savagery turned upon their own.
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

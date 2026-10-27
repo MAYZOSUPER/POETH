@@ -1,0 +1,29 @@
+Item Class: One Hand Maces
+Rarity: Rare
+Rune Mangler
+Bladed Mace
+--------
+One Handed Mace
+Physical Damage: 19-32
+Elemental Damage: 1-6 (augmented)
+Critical Strike Chance: 5.00%
+Attacks per Second: 1.40
+Weapon Range: 1.1 metres
+--------
+Requirements:
+Level: 24
+Str: 83
+--------
+Sockets: B 
+--------
+Item Level: 32
+--------
+10% reduced Enemy Stun Threshold
+--------
+Adds 1 to 6 Lightning Damage
++1 to Level of Socketed Melee Gems
++8 to Strength
+13% increased Stun Duration on Enemies
++101 to Accuracy Rating
+--------
+Fractured Item

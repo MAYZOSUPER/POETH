@@ -1,0 +1,14 @@
+Item Class: Body Armours
+Rarity: Rare
+Golden Plate
+--------
+Armour: 559
+--------
+Requirements:
+Strength: 152
+--------
+Sockets: R-R 
+--------
+Item Level: 71
+--------
+Unidentified

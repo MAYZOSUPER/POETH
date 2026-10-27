@@ -1,0 +1,11 @@
+Item Class: Divination Cards
+Rarity: Divination Card
+The Ruthless Ceinture
+--------
+Stack Size: 1/7
+--------
+Meginord's Girdle
+Corrupted
+--------
+In combat, a warrior must first be resourceful,
+and second, decisive.

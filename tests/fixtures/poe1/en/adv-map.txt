@@ -1,0 +1,23 @@
+Item Class: Maps
+Rarity: Rare
+Twisted Haven
+Map (Tier 16)
+--------
+Map Area: Geode
+Item Quantity: +62% (augmented)
+Item Rarity: +35% (augmented)
+Monster Pack Size: +22% (augmented)
+More Maps: +40% (augmented)
+--------
+Item Level: 84
+--------
+Monster Level: 83
+--------
+{ Prefix Modifier "Fecund" (Tier: 1) }
+39(35-39)% more Monster Life
+{ Prefix Modifier "Searing" (Tier: 1) }
+Monsters deal 92(90-110)% extra Physical Damage as Fire
+{ Suffix Modifier "of Giants" (Tier: 1) }
+Monsters have 100% increased Area of Effect
+--------
+Travel to a Map of this tier or lower by using this in a personal Map Device. Maps can only be used once.

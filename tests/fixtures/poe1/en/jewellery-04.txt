@@ -1,0 +1,20 @@
+Item Class: Rings
+Rarity: Rare
+Carrion Knuckle
+Amethyst Ring
+--------
+Requirements:
+Level: 65
+--------
+Item Level: 86
+--------
++22% to Chaos Resistance
+--------
+7% increased Fire Damage
+Adds 4 to 75 Lightning Damage to Attacks
++36 to maximum Energy Shield
++11% to all Elemental Resistances
+Adds 4 to 85 Lightning Damage against Shocked Enemies
++24% to Cold Resistance
+--------
+Shaper Item

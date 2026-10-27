@@ -1,0 +1,14 @@
+Item Class: Jewels
+Rarity: Rare
+Hypnotic Cut
+Crimson Jewel
+--------
+Item Level: 69
+--------
++15 to Strength
+11% increased Damage over Time
+16% increased Damage with Maces or Sceptres
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.
+--------
+Note: ~price 1 alch

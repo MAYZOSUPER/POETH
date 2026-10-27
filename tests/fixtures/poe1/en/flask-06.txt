@@ -1,0 +1,18 @@
+Item Class: Utility Flasks
+Rarity: Magic
+Avenger's Topaz Flask
+--------
+Lasts 8 Seconds
+Consumes 20 of 50 Charges on use
+Currently has 0 Charges
++5% to maximum Lightning Resistance
++40% to Lightning Resistance
+--------
+Requirements:
+Level: 18
+--------
+Item Level: 73
+--------
+Recharges 3 Charges when you take a Critical Strike
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.

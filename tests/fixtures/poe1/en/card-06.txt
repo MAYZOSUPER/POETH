@@ -1,0 +1,12 @@
+Item Class: Divination Cards
+Rarity: Divination Card
+The Lunaris Priestess
+--------
+Stack Size: 1/5
+--------
+Sire of Shards
+--------
+Embrace the Light,
+Await the Morrow,
+No more Spite,
+And no more Sorrow.

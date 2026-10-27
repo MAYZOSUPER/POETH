@@ -1,0 +1,16 @@
+Item Class: Helmets
+Rarity: Rare
+Magistrate Crown
+--------
+Armour: 160
+Energy Shield: 33
+--------
+Requirements:
+Str: 64
+Int: 64
+--------
+Sockets: R-B-B B 
+--------
+Item Level: 72
+--------
+Unidentified

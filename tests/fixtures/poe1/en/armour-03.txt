@@ -1,0 +1,15 @@
+Item Class: Helmets
+Rarity: Rare
+Superior Eternal Burgonet
+--------
+Quality: +6% (augmented)
+Armour: 395 (augmented)
+--------
+Requirements:
+Strength: 138
+--------
+Sockets: R-R B 
+--------
+Item Level: 73
+--------
+Unidentified

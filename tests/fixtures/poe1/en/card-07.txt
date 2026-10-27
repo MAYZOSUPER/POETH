@@ -1,0 +1,11 @@
+Item Class: Divination Cards
+Rarity: Divination Card
+Prosperity
+--------
+Stack Size: 4/10
+--------
+Perandus' Gold Ring
+--------
+Accumulating wealth has its own costs.
+--------
+Shift click to unstack.

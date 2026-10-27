@@ -1,0 +1,17 @@
+Item Class: Mana Flasks
+Rarity: Magic
+Constant Divine Mana Flask of the Gazelle
+--------
+Recovers 1400 Mana over 5 Seconds
+Consumes 8 of 42 Charges on use
+Currently has 0 Charges
+--------
+Requirements:
+Level: 60
+--------
+Item Level: 64
+--------
+32% increased Charge Recovery
+75% increased Evasion Rating during Effect
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.

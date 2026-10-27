@@ -1,0 +1,27 @@
+Item Class: Wands
+Rarity: Rare
+Sol Thirst
+Convoking Wand
+--------
+Wand
+Physical Damage: 28-52
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 72
+Int: 242
+--------
+Sockets: B 
+--------
+Item Level: 83
+--------
+Minions deal 30% increased Damage
+--------
++120 to maximum Mana
++24 to maximum Mana
+Minions deal 40% increased Damage
+Minions have 8% increased Attack and Cast Speed
+Minions have 19% increased Critical Strike Chance
+--------
+Fractured Item

@@ -1,0 +1,18 @@
+Item Class: Amulets
+Rarity: Rare
+Behemoth Beads
+Lapis Amulet
+--------
+Requirements:
+Level: 64
+--------
+Item Level: 85
+--------
++30 to Intelligence
+--------
++37 to Intelligence
+Adds 13 to 23 Physical Damage to Attacks
+16% increased maximum Energy Shield
+1% increased Damage per 15 Strength
+--------
+Elder Item

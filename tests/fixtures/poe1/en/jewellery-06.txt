@@ -1,0 +1,19 @@
+Item Class: Rings
+Rarity: Rare
+Blight Gyre
+Paua Ring
+--------
+Requirements:
+Level: 54
+--------
+Item Level: 78
+--------
++23 to maximum Mana
+--------
++163 to Accuracy Rating
+11% increased Global Critical Strike Chance
++7% to Lightning Resistance
+4% chance to Freeze
+Adds 9 to 29 Cold Damage against Chilled or Frozen Enemies
+--------
+Shaper Item

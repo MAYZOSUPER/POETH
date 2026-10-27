@@ -1,0 +1,26 @@
+Item Class: Helmets
+Rarity: Unique
+Mindspiral
+Aventail Helmet
+--------
+Armour: 101
+Energy Shield: 21
+--------
+Requirements:
+Level: 37
+Str: 42
+Int: 42
+--------
+Sockets: R-B-B-B 
+--------
+Item Level: 66
+--------
+15% increased Cold Damage
+14% increased Lightning Damage
++118 to maximum Mana
+Gain 6% of Maximum Mana as Extra Maximum Energy Shield
+Enemies Cannot Leech Mana From you
+10% of Damage taken Recouped as Mana
+Cannot Leech Mana
+--------
+Where top is bottom and weak is strong.

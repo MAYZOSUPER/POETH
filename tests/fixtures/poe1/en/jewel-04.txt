@@ -1,0 +1,16 @@
+Item Class: Jewels
+Rarity: Rare
+Phoenix Stone
+Crimson Jewel
+--------
+Item Level: 77
+--------
+10% increased Damage
+14% increased Attack Damage while holding a Shield
+17% increased Critical Strike Chance with Lightning Skills
+14% increased Shock Duration on Enemies
+3% chance to Shock
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.
+--------
+Note: ~b/o 1 alch

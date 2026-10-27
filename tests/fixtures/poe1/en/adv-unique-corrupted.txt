@@ -1,0 +1,27 @@
+Item Class: Amulets
+Rarity: Unique
+Sidhebreath
+Paua Amulet
+--------
+Requirements:
+Level: 20
+--------
+Item Level: 71
+--------
+{ Corruption Implicit Modifier — Attribute }
++12(10-16) to all Attributes (implicit)
+--------
+{ Unique Modifier — Elemental, Cold, Resistance }
++25(20-30)% to Cold Resistance
+{ Unique Modifier — Life, Mana, Physical, Attack }
+0.2% of Physical Attack Damage Leeched as Mana
+{ Unique Modifier — Life, Minion }
+Minions have 11(10-15)% increased maximum Life
+{ Unique Modifier — Speed, Minion }
+Minions have 11(10-15)% increased Movement Speed
+{ Unique Modifier — Damage, Minion }
+Minions deal 11(10-15)% increased Damage
+--------
+The breath of life is yours to give.
+--------
+Corrupted

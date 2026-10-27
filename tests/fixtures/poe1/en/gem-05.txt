@@ -1,0 +1,32 @@
+Item Class: Skill Gems
+Rarity: Gem
+Glacial Shield Swipe
+--------
+Attack, Melee, AoE, Cold, Physical, Retaliation
+Level: 1
+Cost: 7 Mana
+Cooldown Time: 3.50 sec
+Attack Time: 0.70 sec
+Critical Strike Chance: 5.00%
+Attack Damage: 100% of base
+--------
+Requirements:
+Level: 16
+Str: 18
+Dex: 26
+--------
+Retaliate against a blocked hit with a sweep of your Shield, unleashing a wave of ice in a cone in front of you.
+--------
+78 to 117 Base Off Hand Physical Damage
+100% of Physical Damage Converted to Cold Damage
+Cannot be used by default
+Becomes Usable once for 2 seconds when you Block a Hit
+17 to 25 Added Physical Damage per 15 Armour or Evasion Rating on Shield
+Always Freezes enemies
+Can't be Evaded
+50% less Damage with Ailments
+Base radius is 8 metres
+--------
+Experience: 1665/49725
+--------
+Place into an item socket to gain this skill. Right click to remove from a socket.

@@ -1,0 +1,20 @@
+Item Class: Support Gems
+Rarity: Gem
+Melee Splash Support
+--------
+Support, Melee, Attack, Strike, AoE
+Level: 1
+Cost & Reservation Multiplier: 130%
+--------
+Requirements:
+Level: 8
+Str: 18
+--------
+Supports melee strike skills, causing their melee strike to deal splash damage around each target hit.
+--------
+Supported Skills deal Splash Damage to surrounding targets
+Supported Skills deal 40% less Splash Damage to surrounding targets
+--------
+Experience: 1/3231
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Skill Gem you wish to augment. Right click to remove from a socket.

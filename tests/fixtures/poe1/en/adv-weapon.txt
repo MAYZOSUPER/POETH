@@ -1,0 +1,32 @@
+Item Class: One Hand Maces
+Rarity: Rare
+Rune Mangler
+Bladed Mace
+--------
+One Handed Mace
+Physical Damage: 41-68 (augmented)
+Critical Strike Chance: 5.00%
+Attacks per Second: 1.54 (augmented)
+Weapon Range: 1.1 metres
+--------
+Requirements:
+Level: 51
+Str: 83
+--------
+Sockets: R-R-B 
+--------
+Item Level: 75
+--------
+{ Implicit Modifier }
+10% reduced Enemy Stun Threshold
+--------
+{ Fractured Prefix Modifier "Tempered" (Tier: 6) — Damage, Physical, Attack }
+Adds 5(4-6) to 11(9-11) Physical Damage
+{ Prefix Modifier "Cruel" (Tier: 3) — Damage, Physical, Attack }
+110(100-134)% increased Physical Damage
+{ Suffix Modifier "of Celebration" (Tier: 4) — Attack, Speed }
+10(8-10)% increased Attack Speed
+{ Suffix Modifier "of the Titan" (Tier: 3) — Attribute }
++35(33-37) to Strength
+--------
+Fractured Item

@@ -1,0 +1,21 @@
+Item Class: Helmets
+Rarity: Rare
+Empyrean Dome
+Reaver Helmet
+--------
+Armour: 198
+--------
+Requirements:
+Level: 40
+Str: 85
+--------
+Sockets: R-R R 
+--------
+Item Level: 49
+--------
++1 to Level of Socketed Minion Gems
++19 to Intelligence
++53 to maximum Life
++11% to Lightning Resistance
+--------
+Note: ~price 0.5 alch

@@ -1,0 +1,29 @@
+Item Class: Bows
+Rarity: Unique
+Quill Rain
+Short Bow
+--------
+Bow
+Physical Damage: 6-16
+Critical Strike Chance: 5.00%
+Attacks per Second: 3.00 (augmented)
+--------
+Requirements:
+Level: 5
+Dex: 26
+--------
+Sockets: G 
+--------
+Item Level: 54
+--------
++13 to Dexterity
+100% increased Attack Speed
+50% increased Projectile Speed
++34 to Accuracy Rating
+50% less Damage
+--------
+"The rain of a thousand quills that whittle
+present into past, life into death."
+- Rigwald of the Ezomytes
+--------
+Note: ~price 1 alch

@@ -1,0 +1,22 @@
+Item Class: Mana Flasks
+Rarity: Magic
+Enduring Sanctified Mana Flask of Heat
+--------
+Quality: +20% (augmented)
+Recovers 924 (augmented) Mana over 4.60 (augmented) Seconds
+Consumes 7 of 35 Charges on use
+Currently has 0 Charges
+--------
+Requirements:
+Level: 50
+--------
+Item Level: 64
+--------
+30% reduced Amount Recovered
+30% reduced Duration
+Effect is not removed when Unreserved Mana is Filled
+Effect does not Queue
+Grants Immunity to Chill for 4 seconds if used while Chilled
+Grants Immunity to Freeze for 4 seconds if used while Frozen
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.

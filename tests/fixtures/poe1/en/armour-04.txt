@@ -1,0 +1,14 @@
+Item Class: Boots
+Rarity: Rare
+Antique Greaves
+--------
+Armour: 122
+--------
+Requirements:
+Strength: 67
+--------
+Sockets: R-R-R 
+--------
+Item Level: 72
+--------
+Unidentified

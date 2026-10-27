@@ -1,0 +1,25 @@
+Item Class: Rings
+Rarity: Rare
+Dragon Knot
+Coral Ring
+--------
+Requirements:
+Level: 60
+--------
+Item Level: 83
+--------
+{ Implicit Modifier — Life }
++24(20-30) to maximum Life (implicit)
+--------
+{ Prefix Modifier "Rotund" (Tier: 4) — Life }
++64(60-69) to maximum Life
+{ Prefix Modifier "Crusader's" (Tier: 1) — Damage, Elemental, Lightning }
+21(19-22)% increased Lightning Damage
+{ Suffix Modifier "of the Furnace" (Tier: 4) — Elemental, Fire, Resistance }
++33(30-35)% to Fire Resistance
+{ Suffix Modifier "of the Ranger" (Tier: 5) — Attack }
++120(100-130) to Accuracy Rating
+{ Master Crafted Suffix Modifier "of Craft" (Rank: 2) — Elemental, Cold, Resistance }
++25(21-28)% to Cold Resistance
+--------
+Crusader Item

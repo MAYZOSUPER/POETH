@@ -1,0 +1,28 @@
+Item Class: Thrusting One Hand Swords
+Rarity: Rare
+Carrion Razor
+Spiraled Foil
+--------
+One Handed Sword
+Physical Damage: 27-64
+Elemental Damage: 40-70 (augmented)
+Critical Strike Chance: 5.50%
+Attacks per Second: 1.60
+Weapon Range: 1.4 metres
+--------
+Requirements:
+Level: 64
+Dex: 212
+--------
+Sockets: B-G A 
+--------
+Item Level: 79
+--------
++25% to Global Critical Strike Multiplier
+--------
+3.01% of Physical Attack Damage Leeched as Life
+Has 1 Abyssal Socket
+Adds 40 to 70 Cold Damage
++24% to Global Critical Strike Multiplier
+--------
+Fractured Item

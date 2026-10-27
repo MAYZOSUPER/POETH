@@ -1,0 +1,15 @@
+Item Class: Divination Cards
+Rarity: Divination Card
+The Flora's Gift
+--------
+Stack Size: 5/5
+--------
+Five-Link Staff
+Item Level: 66
+--------
+Sturdy and strong,
+grown from the stream.
+The Flora that live here,
+A combatant's dream.
+--------
+Shift click to unstack.

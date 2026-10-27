@@ -1,0 +1,19 @@
+Item Class: Jewels
+Rarity: Unique
+Militant Faith
+Timeless Jewel
+--------
+Limited to: 1 Historic
+Radius: Large
+--------
+Item Level: 86
+--------
+Carved to glorify 5528 new faithful converted by High Templar Dominus
+Passives in radius are Conquered by the Templars
+1% reduced Mana Cost of Skills per 10 Devotion
+Regenerate 0.6 Mana per Second per 10 Devotion
+Historic
+--------
+They believed themselves the utmost faithful, but that conviction became oppression.
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

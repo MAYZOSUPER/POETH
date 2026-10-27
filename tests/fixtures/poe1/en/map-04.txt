@@ -1,0 +1,18 @@
+Item Class: Maps
+Rarity: Normal
+Blighted Map (Tier 15)
+--------
+Map Area: Burial Chambers
+Item Quantity: +5% (augmented)
+Quality (Quantity): +5% (augmented)
+--------
+Item Level: 82
+--------
+Monster Level: 82
+--------
+Area is infested with Fungal Growths
+Map's Item Quantity Modifiers also affect Blight Chest count at 25% value
+Can be Anointed up to 3 times
+Natural inhabitants of this area have been removed
+--------
+Travel to a Map of this tier or lower by using this in a personal Map Device. Maps can only be used once. 

@@ -1,0 +1,13 @@
+Item Class: Divination Cards
+Rarity: Divination Card
+The Incantation
+--------
+Stack Size: 4/4
+--------
+The Whispering Ice
+--------
+When there is no other choice, even the meekest whisper can bring about the greatest storm.
+--------
+Shift click to unstack.
+--------
+Note: ~price 0.5 alch

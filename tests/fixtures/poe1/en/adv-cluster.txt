@@ -1,0 +1,21 @@
+Item Class: Jewels
+Rarity: Rare
+Bramble Heart
+Medium Cluster Jewel
+--------
+Requirements:
+Level: 40
+--------
+Item Level: 83
+--------
+Adds 4 Passive Skills (enchant)
+Added Small Passive Skills grant: 12% increased Chaos Damage over Time (enchant)
+--------
+{ Prefix Modifier "Oblivious" — Damage, Chaos }
+1 Added Passive Skill is Circling Oblivion
+{ Prefix Modifier "Suffering" — Damage, Chaos }
+1 Added Passive Skill is Eternal Suffering
+{ Suffix Modifier "of the Jeweller" }
+1 Added Passive Skill is a Jewel Socket
+--------
+Place into an allocated Medium or Large Jewel Socket on the Passive Skill Tree. Added passives do not interact with jewel radiuses. Right click to remove from the Socket.

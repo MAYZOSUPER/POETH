@@ -1,0 +1,21 @@
+Item Class: Rings
+Rarity: Rare
+Dragon Knuckle
+Iron Ring
+--------
+Requirements:
+Level: 54
+--------
+Item Level: 75
+--------
+Adds 1 to 4 Physical Damage to Attacks
+--------
+15% increased Global Accuracy Rating
+Regenerate 3.7 Life per second
++15 to maximum Mana
++37% to Fire Resistance
+5% chance to Freeze
+10% increased Light Radius
+Adds 10 to 29 Cold Damage against Chilled or Frozen Enemies
+--------
+Redeemer Item

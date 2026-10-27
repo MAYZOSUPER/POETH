@@ -1,0 +1,11 @@
+Item Class: Divination Cards
+Rarity: Divination Card
+The Metalsmith's Gift
+--------
+Stack Size: 1/6
+--------
+Prismatic Ring
+--------
+A month's work, a year's wages, a foolish shortcut through a Rhoa's nest, and a grieving bride-to-be, who never received her betrothed's great gift.
+--------
+Note: ~price 1 alch
