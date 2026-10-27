@@ -7,9 +7,9 @@ import { LiveIco, LiveSwitch } from './live/ui'
 import { ago, coinClass, hitName, priceText, rarityColor, searchStatus } from './live/format'
 import './live/live.css'
 
-// Р’РєР»Р°РґРєР° Live РєРѕРјРїР°РЅСЊРѕРЅР° (PoE1, S6) РїРѕ СѓС‚РІРµСЂР¶РґС‘РЅРЅРѕРјСѓ РјР°РєРµС‚Сѓ: РѕР±С‰РёРµ РїРµСЂРµРєР»СЋС‡Р°С‚РµР»Рё Рё СЃС‡С‘С‚С‡РёРє
-// В«РђРєС‚РёРІРЅРѕ N РёР· 10В», СЃРїРёСЃРѕРє РїРѕРёСЃРєРѕРІ (СЃС‚Р°С‚СѓСЃ, РІРєР»/РІС‹РєР», Р·РІСѓРє, СѓР±СЂР°С‚СЊ), РїРѕСЃР»РµРґРЅРёРµ РЅР°С…РѕРґРєРё.
-// РџРѕРёСЃРєРё РґРѕР±Р°РІР»СЏСЋС‚СЃСЏ СЃСЃС‹Р»РєРѕР№ СЃ СЃР°Р№С‚Р° С‚СЂРµР№РґР°; РїРѕР·Р¶Рµ S5 РїРѕРґРєР»СЋС‡РёС‚ С„Р»Р°Рі live РёР· РёР·Р±СЂР°РЅРЅРѕРіРѕ.
+// Вкладка Live компаньона (PoE1, S6) по утверждённому макету: общие переключатели и счётчик
+// «Активно N из 10», список поисков (статус, вкл/выкл, звук, убрать), последние находки.
+// Поиски добавляются ссылкой с сайта трейда; позже S5 подключит флаг live из избранного.
 
 function useNow(): number {
   const [now, setNow] = useState(Date.now())
@@ -32,9 +32,9 @@ function SearchRow({ s, now, masterOn, max }: { s: LiveSearchView; now: number; 
     <div className="live-row">
       <span className={`ui-dot${dot}`} />
       <span className="live-t">
-        <b title={`${s.title} В· ${s.league}`}>
+        <b title={`${s.title} · ${s.league}`}>
           {s.title}
-          <span className="live-league"> В· {s.league}</span>
+          <span className="live-league"> · {s.league}</span>
           {s.source === 'favorite' && <span className="ui-tag live-fav">{t('live.row.fav')}</span>}
         </b>
         <span className={`st-${st.level}`}>{st.text}</span>
