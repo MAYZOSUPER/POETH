@@ -127,6 +127,11 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- `d642004` — _(лид, 28.10)_ слит `integration-1` (`05886dd`…`4d805a5`, сессия S1): `initNetIdentity` + fuses-хук
+  `afterPack` + `npmRebuild:false`; `Settings.overlay.pricePosition`; в настройках — запрет занятых игрой сочетаний,
+  позиция окна цены, `AccountPanel` (PoE1), дисклеймер GGG RU/EN; `logTailer` под `GameDef.logSubdirs` + событие
+  `lines` (регресс кампании PoE2 зелёный); `pasteSearch1..5` → regex-библиотека → Ctrl+F+вставка. `.gitattributes`
+  `*.snap eol=lf`. 936 тестов. `disableHardwareAcceleration` не нужен (вернуться в S10 при чёрном фоне/просадке FPS).
 - `81bf07f` — _(лид, 28.10)_ слиты без конфликтов (927 тестов зелёные):
   - S3 `1990117` — сеть: изолированная сессия `persist:poe-account`, `http`/allowlist, лимитер по политикам + fail-fast,
     `tradeGateway` с кэшем, лиги с авто-выбором, вход/выход/вставка POESESSID, `AccountPanel`, `SiteCheckBanner`, fuses-хук.
