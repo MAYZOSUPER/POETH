@@ -589,14 +589,20 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
 
 function BulkResult({ result, lang, t }: { result: Extract<PcResult, { kind: 'bulk' }>; lang: UiLang; t: T }) {
   const best = result.offers[0]
+  const each = best ? best.exchangeAmount / best.itemAmount : 0
   return (
     <>
       <div className="ui-summary">
         <span className="ui-summary__price">
           {best && (
             <>
-              <i className={coinClass(best.currency)} />≈ {fmtNum(best.exchangeAmount / best.itemAmount, lang)}{' '}
-              {currencyLabel(best.currency)}
+              <i className={coinClass(best.currency)} />
+              {each >= 0.1
+                ? t('pc1.bulk.each', { price: `≈ ${fmtNum(each, lang)} ${currencyLabel(best.currency)}` })
+                : t('pc1.bulk.forOne', {
+                    n: fmtNum(best.itemAmount / best.exchangeAmount, lang),
+                    cur: currencyLabel(best.currency)
+                  })}
             </>
           )}
         </span>

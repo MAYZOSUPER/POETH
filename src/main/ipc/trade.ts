@@ -169,6 +169,8 @@ async function poe1Exchange(args: unknown): Promise<Poe1ExchangeResult> {
         whisper: typeof r.listing.whisper === 'string' ? r.listing.whisper : undefined
       } satisfies Poe1ExchangeOffer
     })
+    // дешевле за штуку — выше
+    .sort((a, b) => a.exchangeAmount / a.itemAmount - b.exchangeAmount / b.itemAmount)
   return {
     ok: true,
     queryId: id,

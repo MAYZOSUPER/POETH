@@ -6,7 +6,9 @@ import {
   buildRequest,
   bulkOffersByCurrency,
   createPriceCheck,
+  localizeTradeRequest,
   type BulkSearchResult,
+  type TradeRequest,
   type FilterGroup,
   type FilterPreset,
   type PriceCheckOptions,
@@ -186,8 +188,40 @@ describe('timeless-джуэлы', () => {
   })
 })
 
+describe('имена под хост трейда', () => {
+  // adv-ring ищется по категории (без имени), map-01 — по id области (от языка не зависит)
+  it.each([
+    ['unique-01', true],
+    ['gem-01', true],
+    ['card-01', true],
+    ['flask-01', true],
+    ['timeless-01', true],
+    ['adv-ring', false],
+    ['map-01', false]
+  ] as const)(
+    '%s: ru.pathofexile.com — русские имена, одинаковые для EN и RU предмета; id статов те же',
+    (name, hasNames) => {
+      const www = requests('en', name).presets[0].request
+      const fromEn = localizeTradeRequest(requests('en', name).presets[0].request.body as TradeRequest, data.ru)
+      const fromRu = localizeTradeRequest(requests('ru', name).presets[0].request.body as TradeRequest, data.ru)
+      expect(fromRu).toEqual(fromEn)
+      expect(fromEn.query.stats).toEqual(www.body.query.stats)
+      const names = JSON.stringify([fromEn.query.name, fromEn.query.type])
+      if (hasNames) expect(names).toMatch(/[А-Яа-яЁё]/)
+      else expect(names).not.toMatch(/[A-Za-z]{4,} [A-Za-z]/)
+      expect(localizeTradeRequest(www.body as TradeRequest, data.en)).toEqual(www.body)
+    }
+  )
+
+  it('уник: name и type — как в RU-клиенте', () => {
+    const ru = localizeTradeRequest(requests('en', 'unique-01').presets[0].request.body as TradeRequest, data.ru)
+    expect(ru.query.name).toBe('Дыхание Ши')
+    expect(ru.query.type).toBe('Амулет из ракушек')
+  })
+})
+
 describe('bulk-обмен', () => {
-  it('валюта → /api/trade/exchange, want = trade tag, have — divine и chaos', () => {
+  it('валюта → /api/trade/exchange, want = trade tag, платим не той же валютой', () => {
     for (const lang of ['en', 'ru'] as const) {
       const req = requests(lang, 'manual-currency-01').presets[0].request
       expect(req).toEqual({
@@ -195,7 +229,7 @@ describe('bulk-обмен', () => {
         league: LEAGUE,
         body: {
           engine: 'new',
-          query: { have: ['divine', 'chaos'], want: ['chaos'], status: { option: 'online' } },
+          query: { have: ['divine'], want: ['chaos'], status: { option: 'online' } },
           sort: { have: 'asc' }
         }
       })

@@ -5985,7 +5985,6 @@ exports[`запрос по каждой фикстуре > manual-currency-01: �
           "query": {
             "have": [
               "divine",
-              "chaos",
             ],
             "status": {
               "option": "online",
@@ -6017,7 +6016,6 @@ exports[`запрос по каждой фикстуре > manual-currency-02: �
           "engine": "new",
           "query": {
             "have": [
-              "divine",
               "chaos",
             ],
             "status": {

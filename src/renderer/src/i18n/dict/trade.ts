@@ -169,7 +169,9 @@ export const trade: DomainDict = {
     'pc1.open.help': 'Откроет этот поиск на сайте трейда.',
     'pc1.save': 'В избранное',
     'pc1.live': 'Следить (live)',
-    'pc1.soon': 'Скоро'
+    'pc1.soon': 'Скоро',
+    'pc1.bulk.each': '{price} за 1 шт.',
+    'pc1.bulk.forOne': '{n} шт. за 1 {cur}'
   },
   en: {
     'soon.priceCheck':
@@ -336,6 +338,8 @@ export const trade: DomainDict = {
     'pc1.open.help': 'Opens this search on the trade site.',
     'pc1.save': 'Save',
     'pc1.live': 'Live search',
-    'pc1.soon': 'Coming soon'
+    'pc1.soon': 'Coming soon',
+    'pc1.bulk.each': '{price} each',
+    'pc1.bulk.forOne': '{n} for 1 {cur}'
   }
 }

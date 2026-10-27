@@ -32,7 +32,7 @@ export {
   type TimelessJewelKind,
   type TimelessSearch
 } from './filters/pseudo/timeless-jewel'
-export { CATEGORY_TO_TRADE_ID, createTradeRequest, type TradeRequest } from './query/trade'
+export { CATEGORY_TO_TRADE_ID, createTradeRequest, localizeTradeRequest, type TradeRequest } from './query/trade'
 export {
   createBulkRequest,
   bulkStatus,

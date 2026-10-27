@@ -5,12 +5,14 @@ import { parseClipboard, type ParseErrorCode, type ParsedItem } from '@shared/po
 import {
   buildRequest,
   createPriceCheck,
+  localizeTradeRequest,
   setTimelessConquerorMode,
   vilsolUrl,
   type FilterGroup,
   type FilterPreset,
   type StatFilter,
   type TimelessConquerorMode,
+  type TradeRequest,
   type TradeStatus
 } from '@shared/poe1/pricecheck'
 import { fallbackToFilter } from '@shared/poe1/pricecheck/fallback'
@@ -58,6 +60,8 @@ interface PcState {
   league: string
   leagues: PcLeague[]
   status: TradeStatus
+  /** хост трейда из настроек: ru.pathofexile.com принимает только русские имена предметов */
+  siteHost: 'www.pathofexile.com' | 'ru.pathofexile.com'
   simple: boolean
   searchStatRange: number
   result?: PcResult
@@ -106,6 +110,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
   league: '',
   leagues: [],
   status: 'available',
+  siteHost: 'www.pathofexile.com',
   simple: true,
   searchStatRange: 10,
   dirty: false,
@@ -148,6 +153,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
       league,
       leagues: leagues?.leagues ?? [{ id: league, text: league }],
       simple: settings?.ui.simpleMode ?? true,
+      siteHost: settings?.siteHost ?? 'www.pathofexile.com',
       presets: pc.presets,
       activePreset: pc.active
     })
@@ -191,10 +197,16 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
 
     const req = buildRequest(item, data, preset)
     const api = window.overlayApi.trade
-    const res =
-      req.api === 'bulk'
-        ? await api.poe1Exchange({ league: req.league, body: req.body })
-        : await api.poe1Search({ league: req.league, body: req.body })
+    let res
+    if (req.api === 'bulk') {
+      res = await api.poe1Exchange({ league: req.league, body: req.body })
+    } else {
+      // запрос строится на английских именах; ru.pathofexile.com их не принимает («Unknown item name»)
+      const hostData = get().siteHost === 'ru.pathofexile.com' ? await dataStore.ensureLanguage('ru').catch(() => null) : null
+      const body = hostData ? localizeTradeRequest(req.body as TradeRequest, hostData) : req.body
+      if (my !== session) return
+      res = await api.poe1Search({ league: req.league, body })
+    }
     if (my !== session) return
 
     if (!res.ok) {

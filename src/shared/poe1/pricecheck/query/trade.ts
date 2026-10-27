@@ -432,6 +432,34 @@ export function createTradeRequest(filters: ItemFilters, stats: FilterOrGroup[],
   return body
 }
 
+/**
+ * POETH: имена предметов под язык хоста трейда. Проверено на живом API 28.10.2026: ru.pathofexile.com
+ * отвечает `400 Unknown item name` на английские `name`/`type` — там нужны русские имена (trade id статов,
+ * категории и дискриминаторы от языка не зависят). `target` — данные языка хоста (ru для ru.pathofexile.com).
+ */
+export function localizeTradeRequest(body: TradeRequest, target: Poe1Data): TradeRequest {
+  if (target.lang === 'en') return body
+  const translate = (ref: string, namespaces: ReadonlyArray<Parameters<Poe1Data['itemByRef']>[0]>): string => {
+    for (const ns of namespaces) {
+      const found = target.itemByRef(ns, ref)
+      if (found) return found[0].name
+    }
+    return ref
+  }
+  type NameQuery = string | { discriminator: string; option: string }
+  const map = (v: NameQuery, ns: Parameters<typeof translate>[1]): NameQuery =>
+    typeof v === 'string' ? translate(v, ns) : { discriminator: v.discriminator, option: translate(v.option, ns) }
+  const query = { ...body.query }
+  if (query.name) query.name = map(query.name, ['UNIQUE'])
+  if (query.type) query.type = map(query.type, ['ITEM', 'GEM', 'DIVINATION_CARD', 'CAPTURED_BEAST'])
+  const reward = (query.filters.map_filters?.filters.map_completion_reward as { option?: string } | undefined)?.option
+  if (reward) {
+    query.filters = structuredClone(query.filters)
+    ;(query.filters.map_filters!.filters.map_completion_reward as { option?: string }).option = translate(reward, ['UNIQUE'])
+  }
+  return { ...body, query }
+}
+
 function getMinMax(roll: StatFilter['roll'], divisor: number) {
   if (!roll) {
     return { min: undefined, max: undefined }
