@@ -242,11 +242,17 @@ describe('chatCommands («Команды чата»)', () => {
 })
 
 describe('startup / updates (S10a)', () => {
-  it('файл настроек уже был (компас, ранний POETH) — это не первый запуск', () => {
-    expect(migrateSettings(fixture('v1-exile-companion.json')).startup.firstRunDone).toBe(true)
+  it('профили без флага (компас, ранний POETH) получают мастер первого запуска один раз', () => {
+    expect(migrateSettings(fixture('v1-exile-companion.json')).startup.firstRunDone).toBe(false)
     const v2old: Record<string, unknown> = { ...defaultSettings() }
     delete v2old.startup
-    expect(migrateSettings(v2old).startup).toEqual({ withWindows: false, minimized: true, firstRunDone: true })
+    expect(migrateSettings(v2old).startup).toEqual({ withWindows: false, minimized: true, firstRunDone: false })
+  })
+
+  it('мастер пройден — флаг сохраняется и переживает миграцию', () => {
+    const done = applySettingsPatch(defaultSettings(), { startup: { firstRunDone: true } })
+    expect(done.startup).toEqual({ withWindows: false, minimized: true, firstRunDone: true })
+    expect(migrateSettings(JSON.parse(JSON.stringify(done))).startup.firstRunDone).toBe(true)
   })
 
   it('настроек нет — первый запуск', () => {

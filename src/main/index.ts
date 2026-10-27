@@ -67,8 +67,10 @@ async function bootstrap(): Promise<void> {
   if (plan.splash) openSplash()
   console.log(`[startup] splash=${plan.splash} companion=${plan.showCompanion ? 'shown' : 'hidden'}`)
   setStartupStep('settings')
-  // overlayVisible — состояние окна компаньона (его же применяет applySettingsToWindow)
-  const settings = await updateSettings({ overlayVisible: plan.showCompanion, startup: { firstRunDone: true } })
+  // overlayVisible — состояние окна компаньона (его же применяет applySettingsToWindow).
+  // startup.firstRunDone ставит мастер первого запуска (S9: «Готово»/«Пропустить»), не main:
+  // пока мастер не пройден, компаньон открывается при каждом запуске.
+  const settings = await updateSettings({ overlayVisible: plan.showCompanion })
   createCompanionWindow({ show: plan.showCompanion })
 
   initClickThrough(settings.locked)

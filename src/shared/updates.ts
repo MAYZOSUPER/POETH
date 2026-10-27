@@ -108,7 +108,7 @@ export function loopbackUrl(raw: string | undefined): string | null {
 // ---------------------------------------------------------------------------
 
 export interface StartupInput {
-  /** первый запуск (настроек ещё не было) */
+  /** мастер первого запуска ещё не пройден (!settings.startup.firstRunDone) */
   firstRun: boolean
   /** запущен Windows при входе (аргумент --autostart) */
   autostarted: boolean

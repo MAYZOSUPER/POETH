@@ -208,11 +208,9 @@ function normalize(src: Obj): Settings {
 export function migrateSettings(raw: unknown): Settings {
   if (!isObj(raw)) return defaultSettings()
   const version = typeof raw.schemaVersion === 'number' ? raw.schemaVersion : 1
-  const s = normalize(version < 2 ? upgradeV1(raw as SettingsV1) : raw)
-  // файл настроек уже был (компас, ранний POETH) — это не первый запуск
-  const startup = isObj(raw.startup) ? raw.startup : null
-  if (!startup || typeof startup.firstRunDone !== 'boolean') s.startup.firstRunDone = true
-  return s
+  // startup.firstRunDone без значения → false: мастер первого запуска (S9) покажется один раз
+  // и существующим профилям (компас, ранний POETH)
+  return normalize(version < 2 ? upgradeV1(raw as SettingsV1) : raw)
 }
 
 /**
