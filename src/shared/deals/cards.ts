@@ -11,6 +11,13 @@ import type { Deal, DealCardAction, DealDir, DealStatus, DealsConfig } from '../
 export const CARD_TTL_MS = 30 * 60_000
 /** Сколько карточек показывать сразу (остальные — «ещё N»). */
 export const MAX_CARDS = 4
+/** Примерная высота карточки в простом режиме, CSS px (две строки кнопок + подсветка). */
+export const CARD_HEIGHT_PX = 240
+
+/** Сколько карточек влезает по высоте окна игры (не меньше одной, не больше MAX_CARDS). */
+export function cardsFit(viewportHeight: number): number {
+  return Math.max(1, Math.min(MAX_CARDS, Math.floor((viewportHeight - 40) / CARD_HEIGHT_PX)))
+}
 
 const OPEN: DealStatus[] = ['new', 'invited']
 const DONE: DealStatus[] = ['traded', 'sold']

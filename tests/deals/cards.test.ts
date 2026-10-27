@@ -4,7 +4,7 @@ import { promises as fs, readFileSync } from 'fs'
 import os from 'os'
 import path from 'path'
 import type { Deal, DealCardAction } from '@shared/types'
-import { CARD_TTL_MS, activeCards, ageParts, cardActions, cardEffect, topCard } from '@shared/deals/cards'
+import { CARD_TTL_MS, activeCards, ageParts, cardActions, cardEffect, cardsFit, topCard } from '@shared/deals/cards'
 import { defaultDealsConfig } from '@shared/deals/history'
 import { DealsStore, attachLogSource } from '../../src/main/services/dealsStore'
 
@@ -78,6 +78,14 @@ describe('cardActions / cardEffect', () => {
     expect(cardEffect('sold', d({}), cfg)).toEqual({ status: 'sold', hide: true })
     expect(cardEffect('sold', d({ dir: 'out' }), cfg)).toEqual({})
     for (const a of ['wait', 'whois', 'still', 'hideout'] as DealCardAction[]) expect(cardEffect(a, d({}), cfg)).toEqual({})
+  })
+
+  it('сколько карточек влезает по высоте окна', () => {
+    expect(cardsFit(720)).toBe(2)
+    expect(cardsFit(900)).toBe(3)
+    expect(cardsFit(1080)).toBe(4)
+    expect(cardsFit(2160)).toBe(4)
+    expect(cardsFit(300)).toBe(1)
   })
 
   it('возраст карточки', () => {

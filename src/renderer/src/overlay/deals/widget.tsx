@@ -1,7 +1,7 @@
 import { useEffect, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import type { Deal, DealCardAction, UiLang } from '@shared/types'
-import { MAX_CARDS, activeCards, ageParts, cardActions } from '@shared/deals/cards'
+import { activeCards, ageParts, cardActions, cardsFit } from '@shared/deals/cards'
 import { isKnownQuadTab } from '@shared/deals/history'
 import { calibrationFromCorners, stashCellRect, stashGridRect, type Point } from '@shared/deals/stashGrid'
 import { useOverlayStore } from '../../store/useOverlayStore'
@@ -64,7 +64,7 @@ function DealsWidget() {
   if (!ready || !state || !settings) return null
   const enabled = settings.deals.enabled
   const cards = enabled ? activeCards(state.deals, state.config, now) : []
-  const shown = cards.slice(0, MAX_CARDS)
+  const shown = cards.slice(0, cardsFit(window.innerHeight))
   const more = cards.length - shown.length
 
   return (

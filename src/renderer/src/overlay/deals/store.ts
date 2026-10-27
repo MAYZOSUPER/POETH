@@ -71,8 +71,9 @@ export const useDealsOverlay = create<DealsOverlay>((set, get) => ({
             const cfg = get().state?.config
             if (!s?.deals.enabled || deal.dir !== 'in' || deal.status !== 'new') return
             // звук — по настройке менеджера и общей громкости; подсветка — свежей входящей
+            // (игроку из чёрного списка — только по кнопке «Показать в тайнике»)
             if (cfg?.sound && s.sound.enabled) playChime(s.sound.volume)
-            if (cfg?.highlightStash && deal.pos) set({ highlightId: deal.id })
+            if (cfg?.highlightStash && deal.pos && !deal.blacklist) set({ highlightId: deal.id })
           })
       }),
       api().onOverlayFocus(() => void get().refreshSettings()),
