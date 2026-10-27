@@ -28,6 +28,8 @@ function SearchRow({ s, now, masterOn, max }: { s: LiveSearchView; now: number; 
   const limitId = useLiveStore((st) => st.limitId)
   const st = searchStatus(t, s, now, masterOn)
   const dot = st.level === 'ok' ? '' : st.level === 'warn' ? ' ui-dot--afk' : st.level === 'bad' ? ' ui-dot--bad' : ' ui-dot--off'
+  // поисками избранного управляет молния в трейд-окне (S5)
+  const fav = s.source === 'favorite'
   return (
     <div className="live-row">
       <span className={`ui-dot${dot}`} />
@@ -35,13 +37,24 @@ function SearchRow({ s, now, masterOn, max }: { s: LiveSearchView; now: number; 
         <b title={`${s.title} · ${s.league}`}>
           {s.title}
           <span className="live-league"> · {s.league}</span>
-          {s.source === 'favorite' && <span className="ui-tag live-fav">{t('live.row.fav')}</span>}
+          {fav && (
+            <span className="ui-tag live-fav" title={t('live.row.favHint')}>
+              {t('live.row.fav')}
+            </span>
+          )}
+          {!s.notify && <span className="ui-tag live-fav">{t('live.row.quiet')}</span>}
         </b>
         <span className={`st-${st.level}`}>{st.text}</span>
         {limitId === s.id && <span className="st-bad">{t('live.row.limit', { max })}</span>}
       </span>
       <span className="live-acts">
-        <LiveSwitch live on={s.enabled} title={t('live.row.on')} onChange={(v) => void setEnabled(s.id, v)} />
+        <LiveSwitch
+          live
+          on={s.enabled}
+          disabled={fav}
+          title={fav ? t('live.row.favHint') : t('live.row.on')}
+          onChange={(v) => void setEnabled(s.id, v)}
+        />
         <button
           type="button"
           className="ui-btn ui-btn--sm ui-btn--ghost ui-btn--icon"
@@ -63,7 +76,7 @@ function SearchRow({ s, now, masterOn, max }: { s: LiveSearchView; now: number; 
         >
           <LiveIco name="external" />
         </button>
-        {s.state === 'invalid' ? (
+        {fav ? null : s.state === 'invalid' ? (
           <button type="button" className="ui-btn ui-btn--sm ui-btn--danger" onClick={() => void remove(s.id)}>
             <LiveIco name="trash" />
             {t('live.row.remove')}

@@ -6,7 +6,7 @@ import { readJson, writeJsonAtomic } from '../../../services/atomicJson'
 
 // Список live-поисков и опции вкладки Live — userData/live.json (S6). Секретов здесь нет:
 // только код поиска на сайте, лига и флаги. Поиски из избранного трейд-окна (S5) приходят
-// через syncFavorites() в liveSearch.ts и помечены source:'favorite'.
+// через адаптер FavLiveAdapter (liveSearch.ts → setFavoriteLive) и помечены source:'favorite'.
 
 export interface StoredSearch {
   id: string
@@ -15,6 +15,8 @@ export interface StoredSearch {
   slug: string
   enabled: boolean
   sound: boolean
+  /** тост, звук и уведомление о находках (у поисков избранного — флаг «уведомлять» S5) */
+  notify: boolean
   source: 'manual' | 'favorite'
   /** id в избранном трейд-окна (source:'favorite') */
   favId?: string
@@ -66,6 +68,7 @@ function normalize(raw: unknown): LiveFile {
       slug: s.slug.slice(0, 512),
       enabled: bool(s.enabled, false),
       sound: bool(s.sound, true),
+      notify: bool(s.notify, true),
       source: s.source === 'favorite' ? 'favorite' : 'manual',
       ...(typeof s.favId === 'string' ? { favId: s.favId } : {}),
       createdAt: typeof s.createdAt === 'number' ? s.createdAt : Date.now()

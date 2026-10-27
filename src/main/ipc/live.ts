@@ -26,9 +26,23 @@ const manager = new LiveManager({
   hit: (e) => broadcast(IPC.events.liveHit, e)
 })
 
-/** Для S5 (адаптер избранного): manager.syncFavorites(list). */
-export function getLiveManager(): LiveManager {
-  return manager
+/**
+ * Адаптер live для избранного трейд-окна — по контракту FavLiveAdapter S5 (src/main/ipc/fav.ts).
+ * Подключение после слияния S5: в setupForGame ниже
+ *   registerFavLiveAdapter(def.id === 'poe1' ? getFavLiveAdapter() : null)
+ */
+export function getFavLiveAdapter(): {
+  setLive: LiveManager['setFavoriteLive']
+  setNotify(favId: string, notify: boolean): void
+  snapshot: LiveManager['favoriteSnapshot']
+  onChange: LiveManager['onChange']
+} {
+  return {
+    setLive: (target, enabled) => manager.setFavoriteLive(target, enabled),
+    setNotify: (favId, notify) => manager.setFavoriteNotify(favId, notify),
+    snapshot: () => manager.favoriteSnapshot(),
+    onChange: (cb) => manager.onChange(cb)
+  }
 }
 
 function handle(channel: string, fn: (...args: unknown[]) => unknown): void {

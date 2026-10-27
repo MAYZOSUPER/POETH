@@ -35,6 +35,8 @@ export interface LiveSearchView {
   enabled: boolean
   /** звук находок этого поиска */
   sound: boolean
+  /** тосты/уведомления о находках (у поисков избранного — флаг «уведомлять» трейд-окна) */
+  notify: boolean
   state: LiveConnKind
   reason?: LiveBackoffReason
   /** backoff / ratelimited: когда следующая попытка (ms epoch) */

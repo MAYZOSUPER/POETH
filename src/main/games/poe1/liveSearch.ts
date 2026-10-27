@@ -1,5 +1,5 @@
 import { clipboard, Notification, shell } from 'electron'
-import { GAMES, liveUrl, siteUrl, type SiteHost } from '@shared/games'
+import { GAMES, liveUrl, siteUrl, type GameId, type SiteHost } from '@shared/games'
 import { isAllowedExternalUrl } from '@shared/links'
 import type {
   AuthStatus,
@@ -33,6 +33,7 @@ import { HitBatcher, ToastThrottle } from './live/batch'
 import { toLiveHit } from './live/hits'
 import { parseLiveInput } from './live/tradeUrl'
 import { cleanTitle, DEFAULT_OPTIONS, loadLiveFile, newSearchId, saveLiveFile, type StoredSearch } from './live/store'
+import { favLiveState, type FavLiveStateS6 } from './live/favState'
 import { createWindowTransport, createWsTransport, preferredTransport, type LiveConnection, type LiveTransport } from './wsTransport'
 
 // Менеджер live search PoE1 (S6). Только main: соединения, cookies, fetch.
@@ -53,15 +54,30 @@ export interface LiveEmitter {
   hit(e: LiveHitEvent): void
 }
 
-/** Поиск из избранного трейд-окна (адаптер для S5). */
-export interface FavoriteLiveSearch {
+/**
+ * Поиск избранного трейд-окна для live — по контракту FavLiveTarget S5 (src/main/ipc/fav.ts).
+ * Поисками избранного управляет только молния в трейд-окне: во вкладке Live их нельзя
+ * выключить или убрать (иначе «намерение» в избранном и список live разъедутся).
+ */
+export interface FavoriteLiveTarget {
   favId: string
   title: string
-  league: string
+  type: 'search' | 'exchange'
   slug: string
-  /** флаг live в избранном */
-  live: boolean
+  league: string
+  game: GameId
+  notify: boolean
 }
+
+export type FavoriteLiveResult = { ok: true } | { ok: false; reason: 'limit' | 'auth' | 'unsupported' | 'error' }
+
+export interface FavoriteLiveSnapshot {
+  states: Record<string, FavLiveStateS6>
+  used: number
+  max: number
+}
+
+const SLUG = /^[A-Za-z0-9_-]{3,512}$/
 
 export type LiveToggleResult = 'ok' | 'limit' | 'not-found'
 
@@ -101,6 +117,7 @@ export class LiveManager {
   private offAuth: (() => void) | null = null
   private readonly batcher = new HitBatcher({ onFlush: (sid, ids) => void this.fetchHits(sid, ids) })
   private readonly throttle = new ToastThrottle()
+  private readonly changeListeners = new Set<() => void>()
 
   constructor(private readonly emit: LiveEmitter) {
     this.transport = this.makeTransport(preferredTransport())
@@ -299,7 +316,7 @@ export class LiveManager {
     e.lastHitAt = hit.at
     this.recent = [hit, ...this.recent.filter((h) => h.key !== hit.key)].slice(0, RECENT_MAX)
     if (hit.whisper) this.lastWhisper = hit
-    const toast = this.throttle.allow(e.def.id, hit.at)
+    const toast = e.def.notify && this.throttle.allow(e.def.id, hit.at)
     const sound = toast && this.options.sound && e.def.sound && this.soundOn
     this.emit.hit({ hit, toast, sound, volume: this.volume })
     if (toast && this.options.notifyWindows) this.notifyWindows(hit)
@@ -341,6 +358,7 @@ export class LiveManager {
       slug: e.def.slug,
       enabled: e.def.enabled,
       sound: e.def.sound,
+      notify: e.def.notify,
       state: c.kind,
       hits: e.hits,
       siteUrl: siteUrl(GAMES.poe1, this.host, e.def.league, e.def.slug),
@@ -360,6 +378,7 @@ export class LiveManager {
     this.emitTimer = setTimeout(() => {
       this.emitTimer = null
       void this.snapshot().then((s) => this.emit.state(s))
+      for (const cb of [...this.changeListeners]) cb()
     }, STATE_EMIT_DELAY_MS)
   }
 
@@ -389,6 +408,7 @@ export class LiveManager {
       slug: parsed.slug,
       enabled: this.activeCount() < this.max,
       sound: true,
+      notify: true,
       source: 'manual',
       createdAt: Date.now()
     }
@@ -401,10 +421,15 @@ export class LiveManager {
     return { ok: true, search: this.view(entry) }
   }
 
+  /** Убрать поиск из вкладки Live (поиски избранного убирает только трейд-окно). */
   async remove(id: unknown): Promise<void> {
     await this.load()
     const e = typeof id === 'string' ? this.entries.get(id) : undefined
-    if (!e) return
+    if (!e || e.def.source === 'favorite') return
+    this.drop(e)
+  }
+
+  private drop(e: Entry): void {
     this.apply(e, { type: 'disable' })
     this.batcher.drop(e.def.id)
     this.throttle.drop(e.def.id)
@@ -417,7 +442,7 @@ export class LiveManager {
     await this.load()
     await this.refreshSettings()
     const e = typeof id === 'string' ? this.entries.get(id) : undefined
-    if (!e) return 'not-found'
+    if (!e || e.def.source === 'favorite') return 'not-found'
     const want = on === true
     if (want && !e.def.enabled && this.activeCount() >= this.max) return 'limit'
     e.def.enabled = want
@@ -489,42 +514,86 @@ export class LiveManager {
     return true
   }
 
+  // ---------------------------------------------------------------- адаптер избранного (S5)
+
+  private favEntry(favId: string): Entry | undefined {
+    return [...this.entries.values()].find((e) => e.def.source === 'favorite' && e.def.favId === favId)
+  }
+
   /**
-   * Адаптер для S5: поиски из избранного трейд-окна с флагом live. Добавляет/обновляет
-   * поиски source:'favorite' и убирает те, которых в избранном больше нет.
+   * Молния у поиска избранного. Включение без входа — ок: поиск ждёт входа (состояние 'auth')
+   * и подключится сам. Выключение убирает поиск из live (нет в states = 'off').
    */
-  async syncFavorites(list: FavoriteLiveSearch[]): Promise<void> {
+  async setFavoriteLive(t: FavoriteLiveTarget, enabled: boolean): Promise<FavoriteLiveResult> {
     await this.load()
     await this.refreshSettings()
-    const keep = new Set<string>()
-    for (const f of list) {
-      keep.add(f.favId)
-      const existing = [...this.entries.values()].find((e) => e.def.source === 'favorite' && e.def.favId === f.favId)
-      if (existing) {
-        existing.def.title = cleanTitle(f.title, existing.def.title)
-        if (existing.def.enabled !== f.live) await this.setEnabled(existing.def.id, f.live)
-        continue
-      }
-      const def: StoredSearch = {
-        id: newSearchId(),
-        title: cleanTitle(f.title, f.slug),
-        league: f.league,
-        slug: f.slug,
-        enabled: f.live && this.activeCount() < this.max,
-        sound: true,
-        source: 'favorite',
-        favId: f.favId,
-        createdAt: Date.now()
-      }
-      const entry: Entry = { def, conn: { kind: 'idle' }, socket: null, token: 0, hits: 0 }
-      this.entries.set(def.id, entry)
-      if (def.enabled && this.options.enabled && this.running) this.apply(entry, { type: 'enable', loggedIn: this.loggedIn })
+    const existing = this.favEntry(t.favId)
+    if (!enabled) {
+      if (existing) this.drop(existing)
+      return { ok: true }
     }
-    for (const e of [...this.entries.values()]) {
-      if (e.def.source === 'favorite' && (!e.def.favId || !keep.has(e.def.favId))) await this.remove(e.def.id)
+    if (t.type !== 'search' || t.game !== 'poe1' || !this.running) return { ok: false, reason: 'unsupported' }
+    if (!SLUG.test(t.slug) || !t.league || t.league.includes('/')) return { ok: false, reason: 'error' }
+    if (existing) {
+      const moved = existing.def.slug !== t.slug || existing.def.league !== t.league
+      existing.def.title = cleanTitle(t.title, existing.def.title)
+      existing.def.slug = t.slug
+      existing.def.league = t.league
+      existing.def.notify = t.notify
+      if (moved) {
+        // другой поиск — переподключиться
+        this.apply(existing, { type: 'disable' })
+        if (this.options.enabled) this.apply(existing, { type: 'enable', loggedIn: this.loggedIn })
+      }
+      this.save()
+      this.pump()
+      this.scheduleEmit()
+      return { ok: true }
     }
+    if (this.activeCount() >= this.max) return { ok: false, reason: 'limit' }
+    const def: StoredSearch = {
+      id: newSearchId(),
+      title: cleanTitle(t.title, t.slug),
+      league: t.league,
+      slug: t.slug,
+      enabled: true,
+      sound: true,
+      notify: t.notify,
+      source: 'favorite',
+      favId: t.favId,
+      createdAt: Date.now()
+    }
+    const entry: Entry = { def, conn: { kind: 'idle' }, socket: null, token: 0, hits: 0 }
+    this.entries.set(def.id, entry)
+    if (this.options.enabled) this.apply(entry, { type: 'enable', loggedIn: this.loggedIn })
     this.save()
     this.pump()
     this.scheduleEmit()
+    return { ok: true }
+  }
+
+  /** «Уведомлять» у поиска избранного — без переподключения. */
+  setFavoriteNotify(favId: string, notify: boolean): void {
+    const e = this.favEntry(favId)
+    if (!e || e.def.notify === notify) return
+    e.def.notify = notify
+    this.save()
+    this.scheduleEmit()
+  }
+
+  /** Состояния молний по favId (нет записи = 'off'), занято и лимит — для сайдбара трейд-окна. */
+  favoriteSnapshot(): FavoriteLiveSnapshot {
+    const states: Record<string, FavLiveStateS6> = {}
+    for (const e of this.entries.values()) {
+      if (e.def.source !== 'favorite' || !e.def.favId) continue
+      states[e.def.favId] = this.running ? favLiveState(e.conn.kind, this.options.enabled) : 'off'
+    }
+    return { states, used: this.activeCount(), max: this.max }
+  }
+
+  /** Подписка на любые изменения (состояния, поиски, опции). */
+  onChange(cb: () => void): () => void {
+    this.changeListeners.add(cb)
+    return () => this.changeListeners.delete(cb)
   }
 }

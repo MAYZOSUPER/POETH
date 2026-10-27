@@ -43,6 +43,8 @@ export const live: DomainDict = {
     'live.row.remove': 'Убрать',
     'live.row.limit': 'Включено максимум поисков ({max}). Выключите другой поиск.',
     'live.row.fav': 'из избранного',
+    'live.row.favHint': 'Включается и выключается молнией у поиска в избранном трейд-окна',
+    'live.row.quiet': 'без уведомлений',
     'live.hint':
       'Live search следит за поиском на сайте и сообщает о новых предметах сразу. «Написать» вставляет сообщение продавцу в чат игры — Enter нажимаете вы.',
     'live.recent': 'Последние находки',
@@ -127,6 +129,8 @@ export const live: DomainDict = {
     'live.row.remove': 'Remove',
     'live.row.limit': 'The maximum number of searches ({max}) is on. Turn another one off.',
     'live.row.fav': 'from favorites',
+    'live.row.favHint': 'Turned on and off with the bolt next to the search in trade window favorites',
+    'live.row.quiet': 'no notifications',
     'live.hint':
       'Live search watches a site search and tells you about new items right away. “Whisper” pastes the message into game chat — you press Enter.',
     'live.recent': 'Recent hits',
