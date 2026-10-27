@@ -4,6 +4,7 @@
 
 import { isGameId, isSiteHost } from './games'
 import { PRICE_POPUP_POSITIONS } from './types/overlay'
+import { defaultChatCommands, normalizeChatCommands } from './chatCommands'
 import type {
   HotkeyAction,
   HotkeyBinding,
@@ -66,7 +67,8 @@ export function defaultSettings(): Settings {
     deals: { enabled: true, stashGrid: 'auto', calibration: null },
     regex: {},
     ui: { simpleMode: true },
-    overlay: { pricePosition: 'cursor' }
+    overlay: { pricePosition: 'cursor' },
+    chatCommands: defaultChatCommands()
   }
 }
 
@@ -172,6 +174,8 @@ function normalize(src: Obj): Settings {
   s.regex = isObj(src.regex) ? { ...src.regex } : {}
   s.ui = mergeSection(def.ui, src.ui)
   s.overlay = mergeSection(def.overlay, src.overlay)
+  // нет списка (v1, ранний v2) — пресеты; пустой список — игрок удалил всё сам
+  s.chatCommands = normalizeChatCommands(src.chatCommands) ?? def.chatCommands
   s.hotkeys = normalizeHotkeys(src.hotkeys)
 
   // перечисления и диапазоны

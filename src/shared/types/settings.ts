@@ -7,7 +7,7 @@ import type { GameId, SiteHost } from '../games'
 import type { LiveSettings } from './live'
 import type { DealsSettings } from './deals'
 import type { RegexSettings } from './regex'
-import type { OverlaySettings } from './overlay'
+import type { ChatCommand, OverlaySettings } from './overlay'
 
 export type UiLang = 'ru' | 'en'
 
@@ -102,6 +102,8 @@ export interface Settings {
   ui: UiSettings
   /** игровой оверлей (S1): где открывать окно цены по Ctrl+D */
   overlay: OverlaySettings
+  /** команды чата по хоткеям (F5 → /hideout и др.), см. src/shared/chatCommands.ts */
+  chatCommands: ChatCommand[]
 }
 
 /**
