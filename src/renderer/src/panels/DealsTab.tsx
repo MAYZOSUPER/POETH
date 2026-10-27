@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useT } from '../i18n'
 import { useAppStore } from '../store/useAppStore'
 import { useDealsStore, type DealsPage } from '../store/useDealsStore'
-import { Ico, Rich, Switch, playChime, useSimple, type IcoName } from './deals/common'
+import { Ico, Rich, Switch, useSimple, type IcoName } from './deals/common'
 import { HistoryPage } from './deals/HistoryPage'
 import { RepliesPage } from './deals/RepliesPage'
 import { StashPage } from './deals/StashPage'
@@ -11,7 +11,7 @@ import './deals/deals.css'
 
 // Вкладка «Сделки» компаньона (PoE1, этап S8) по утверждённому макету: история с фильтрами,
 // шаблоны ответов RU/EN, подсветка тайника и калибровка, чёрный список PoE Hub. Справа —
-// включение менеджера и простой/экспертный режим. Карточки поверх игры — фаза 2 (после S1).
+// включение менеджера и простой/экспертный режим. Карточки поверх игры — overlay/deals/.
 
 const PAGES: { id: DealsPage; icon: IcoName }[] = [
   { id: 'history', icon: 'history' },
@@ -30,8 +30,6 @@ export function DealsTab() {
   const page = useDealsStore((s) => s.page)
   const setPage = useDealsStore((s) => s.setPage)
   const log = useDealsStore((s) => s.log)
-  const config = useDealsStore((s) => s.state?.config)
-  const lastNew = useDealsStore((s) => s.lastNew)
   const total = useDealsStore((s) => s.state?.deals.filter((d) => d.status === 'new').length ?? 0)
 
   useEffect(() => {
@@ -39,12 +37,6 @@ export function DealsTab() {
   }, [init])
 
   const enabled = settings?.deals.enabled ?? true
-
-  // звук входящей сделки (пока карточек поверх игры нет — играет компаньон)
-  useEffect(() => {
-    if (!lastNew || !enabled || !config?.sound || !settings?.sound.enabled) return
-    if (lastNew.dir === 'in' && lastNew.status === 'new') playChime(settings.sound.volume)
-  }, [lastNew]) // только на новую сделку, не на смену настроек
 
   if (!ready || !settings) return <div className="ui-empty">{t('deals.loading')}</div>
 
@@ -83,10 +75,10 @@ export function DealsTab() {
         </div>
       )}
       {enabled && page === 'history' && log && !log.connected && (
-        <div className="ui-banner ui-banner--info">
-          <Ico name="info" />
+        <div className={`ui-banner${log.supported ? '' : ' ui-banner--info'}`}>
+          <Ico name={log.supported ? 'warn' : 'info'} />
           <span>
-            <Rich text={t('deals.log.banner')} />
+            <Rich text={t(log.supported ? 'deals.log.banner.notFound' : 'deals.log.banner.pending')} />
           </span>
           <span />
         </div>

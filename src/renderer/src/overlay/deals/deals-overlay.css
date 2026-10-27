@@ -1,0 +1,125 @@
+/* Карточки сделок поверх игры (S8, фаза 2) по макету: .ui-panel + .ui-deal__* из components.css;
+   здесь — ширина карточки, мелочи макета, подсветка тайника и экран калибровки. Только токены. */
+
+.dl-ov-card {
+  width: min(340px, calc(100vw - 2 * var(--sp-7)));
+}
+.dl-ov-deal {
+  position: relative;
+}
+.dl-ov-grow {
+  flex: 1;
+}
+.dl-ov-banner {
+  border-top: 0;
+}
+.dl-ov-item {
+  color: var(--fg);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.dl-ov-item--gem {
+  color: var(--rarity-gem);
+}
+.dl-ov-item--cur {
+  color: var(--rarity-currency);
+}
+.dl-ov-msg {
+  color: var(--info);
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+.dl-ov-raw {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  color: var(--fg-faint);
+  font: 400 var(--fs-2xs) / 1.4 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+.dl-ov-note {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 0 var(--sp-6) var(--sp-5);
+  color: var(--good);
+  font-size: var(--fs-xs);
+}
+.dl-ov-note--bad {
+  color: var(--bad);
+}
+.dl-ov-more {
+  justify-self: end;
+  background: var(--surface);
+  color: var(--fg-muted);
+  pointer-events: none;
+}
+
+/* ---- подсветка ячейки тайника (абсолютно по окну оверлея, мышь не ловит) ---- */
+.dl-ov-hit {
+  position: fixed;
+  z-index: 1;
+}
+.dl-ov-hitlabel {
+  position: fixed;
+  z-index: 1;
+  transform: translate(-50%, calc(-100% - var(--sp-3)));
+  white-space: nowrap;
+  pointer-events: none;
+}
+.dl-ov-hitlabel > .ui-panel {
+  padding: var(--sp-2) var(--sp-4);
+  font-size: var(--fs-sm);
+}
+
+/* ---- калибровка: весь экран ловит клики, панель с шагами сверху по центру ---- */
+.dl-ov-calib {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  cursor: crosshair;
+  background: color-mix(in srgb, var(--scrim) 35%, transparent);
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.dl-ov-calib__box {
+  position: absolute;
+  top: var(--sp-8);
+  left: 50%;
+  width: min(420px, calc(100vw - 2 * var(--sp-7)));
+  transform: translateX(-50%);
+  cursor: default;
+}
+.dl-ov-calib__body {
+  display: grid;
+  gap: var(--sp-4);
+}
+.dl-ov-calib__body p {
+  margin: 0;
+}
+.dl-ov-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.dl-ov-ok {
+  color: var(--good);
+}
+.dl-ov-calib__pt {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border: 2px solid var(--accent-hi);
+  border-radius: 50%;
+  box-shadow: var(--halo);
+  pointer-events: none;
+}
+.dl-ov-calib__grid {
+  position: absolute;
+  border: 2px solid var(--accent-hi);
+  background: var(--accent-soft);
+  box-shadow: var(--halo);
+  pointer-events: none;
+}

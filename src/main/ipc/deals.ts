@@ -1,30 +1,60 @@
 import { app, dialog, ipcMain, net } from 'electron'
-import { promises as fs } from 'fs'
+import { existsSync, promises as fs } from 'fs'
 import path from 'path'
 import { IPC } from '@shared/ipc'
 import type { GameDef } from '@shared/games'
-import type { DealLang, DealStatus, DealsConfigPatch, DealsExportResult, DealsLogStatus } from '@shared/types'
-import { DealsStore } from '../services/dealsStore'
+import type {
+  DealCardAction,
+  DealLang,
+  DealStatus,
+  DealsCalibrateResult,
+  DealsConfigPatch,
+  DealsExportResult,
+  DealsLogStatus,
+  HotkeyAction,
+  TailerStatus
+} from '@shared/types'
+import { DEAL_ACTIONS } from '@shared/deals/commands'
+import { activeCards, topCard } from '@shared/deals/cards'
+import { DealsStore, attachLogSource, type RawLineSource } from '../services/dealsStore'
 import { BlacklistService, type TextFetcher } from '../services/dealsBlacklist'
+import * as tailerModule from '../services/logTailer'
+import { typeInChat } from '../input/gameInput'
+import { onHotkeyAction } from '../hotkeys'
+import {
+  activateOverlay,
+  ensureGameForeground,
+  getOverlayStatus,
+  sendToOverlay
+} from '../windows/gameOverlay'
 import { getCompanionWindow, sendToCompanion } from '../windows/companionWindow'
 import type { IpcDomain } from './types'
 
-// Домен «менеджер сделок» (main, этап S8). Фаза 1: история (userData/deals.json), настройки
-// менеджера, экспорт, чёрный список PoE Hub (кэш userData/cache/poehub-blacklist.json), примеры.
-// Фаза 2 (после S1 и патча logTailer через лида): строки Client.txt PoE1 → store.ingestLines,
-// карточки поверх игры, кнопки — одна команда в чат через typeInChat (S1).
+// Домен «менеджер сделок» (main, этап S8).
+// Фаза 1: история (userData/deals.json), настройки менеджера, экспорт, чёрный список PoE Hub
+// (кэш userData/cache/poehub-blacklist.json), примеры.
+// Фаза 2: строки Client.txt PoE1 (LogTailer с GameDef.logSubdirs, событие 'lines') → история;
+// карточки поверх игры (оверлей S1, overlay/deals/) — кнопки и хоткеи верхней карточки дают
+// РОВНО ОДНУ команду в чат через typeInChat; калибровка стэша кликами поверх игры.
+// Никаких автоответов и таймеров: каждая команда — по нажатию игрока.
 
 let store: DealsStore | null = null
 let blacklist: BlacklistService | null = null
 let started: Promise<void> | null = null
 
-/** Сеть до слияния S3: net.fetch сессии окон (без cookies аккаунта). После S3 — net/http.ts. */
+/** Сеть списка: net.fetch сессии окон (без cookies аккаунта). После S3-рефакторинга — net/http.ts. */
 const fetchText: TextFetcher = async (url, { etag, timeoutMs }) => {
   const res = await net.fetch(url, {
     headers: etag ? { 'If-None-Match': etag } : {},
     signal: AbortSignal.timeout(timeoutMs)
   })
   return { status: res.status, body: res.status === 200 ? await res.text() : '', etag: res.headers.get('etag') ?? undefined }
+}
+
+/** Событие во все окна, которым оно нужно: компаньон (вкладка «Сделки») и оверлей (карточки). */
+function broadcast(channel: string, payload?: unknown): void {
+  sendToCompanion(channel, payload)
+  sendToOverlay(channel, payload)
 }
 
 function getStore(): DealsStore {
@@ -35,9 +65,9 @@ function getStore(): DealsStore {
       fetcher: fetchText
     })
     s.setBlacklistChecker((who) => bl.check(who))
-    s.on('changed', (state) => sendToCompanion(IPC.events.dealsChanged, state))
-    s.on('deal', (deal) => sendToCompanion(IPC.events.dealsNew, deal))
-    bl.on('status', (st) => sendToCompanion(IPC.events.dealsBlacklist, st))
+    s.on('changed', (state) => broadcast(IPC.events.dealsChanged, state))
+    s.on('deal', (deal) => broadcast(IPC.events.dealsNew, deal))
+    bl.on('status', (st) => broadcast(IPC.events.dealsBlacklist, st))
     store = s
     blacklist = bl
   }
@@ -70,6 +100,130 @@ function start(): Promise<void> {
   }
   return started
 }
+
+// ---------------------------------------------------------------------------
+// Client.txt PoE1: LogTailer({ logSubdirs }) + событие 'lines' (патч logTailer, через лида)
+// ---------------------------------------------------------------------------
+
+interface LinesTailer extends RawLineSource {
+  start(customPath?: string | null): Promise<TailerStatus>
+  stop(): void
+  getStatus(): TailerStatus
+}
+
+/**
+ * Патч logTailer (S8-logTailer.patch: опции конструктора + 'lines') распознаётся по экспорту
+ * candidateLogPaths. Без него тейлер искал бы лог PoE2 и не отдавал строки — не запускаем.
+ */
+const TAILER_SUPPORTED = 'candidateLogPaths' in tailerModule
+type TailerCtor = new (opts: { logSubdirs: string[] }) => LinesTailer
+
+let tailer: LinesTailer | null = null
+let tailerDef: GameDef | null = null
+
+function logStatus(): DealsLogStatus {
+  const st = tailer?.getStatus()
+  return {
+    supported: TAILER_SUPPORTED,
+    connected: !!st?.running && !!st.found,
+    logPath: st?.logPath ?? null,
+    custom: !!store?.getState().config.logPath
+  }
+}
+
+/** Запустить/перезапустить чтение Client.txt PoE1 (менеджер включён и игра — с deals). */
+async function reconcileLog(): Promise<void> {
+  const def = tailerDef
+  const s = getStore()
+  await s.load()
+  if (!TAILER_SUPPORTED || !def?.features.deals) {
+    stopLog()
+    return
+  }
+  if (!tailer) {
+    const Ctor = tailerModule.LogTailer as unknown as TailerCtor
+    tailer = new Ctor({ logSubdirs: def.logSubdirs })
+    attachLogSource(tailer, s) // тейлер живёт до выхода — отписка не нужна
+  }
+  const custom = s.getState().config.logPath
+  await tailer.start(custom && existsSync(custom) ? custom : null)
+  broadcast(IPC.events.dealsLog, logStatus())
+}
+
+function stopLog(): void {
+  tailer?.stop()
+  broadcast(IPC.events.dealsLog, logStatus())
+}
+
+async function pickLog(reset: boolean): Promise<DealsLogStatus> {
+  const s = getStore()
+  if (reset) {
+    await s.setConfig({ logPath: null })
+  } else {
+    const win = getCompanionWindow()
+    const ru = app.getLocale().startsWith('ru')
+    const opts = {
+      title: ru ? 'Выберите Client.txt Path of Exile' : 'Choose the Path of Exile Client.txt',
+      properties: ['openFile' as const],
+      filters: [{ name: 'Client log', extensions: ['txt'] }]
+    }
+    const r = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
+    if (r.canceled || r.filePaths.length === 0) return logStatus()
+    await s.setConfig({ logPath: r.filePaths[0] })
+  }
+  await reconcileLog()
+  return logStatus()
+}
+
+// ---------------------------------------------------------------------------
+// Кнопки и хоткеи карточек: одна команда в чат на нажатие
+// ---------------------------------------------------------------------------
+
+/** Команда в чат игры и сразу Enter (S1 typeInChat: буфер вернётся, канал чата — тоже). */
+const sendToChat = (command: string) => typeInChat(command, { send: true })
+
+function cardAction(id: string, action: DealCardAction) {
+  return getStore().cardAction(id, action, sendToChat)
+}
+
+/**
+ * Хоткеи верхней карточки (область 'game', одно действие на нажатие). Действия добавляет лид
+ * в Settings v2 (HotkeyAction/HOTKEY_DEFAULTS); пока их нет в настройках, обработчики не
+ * регистрируются (hotkeyPlan берёт только назначенные сочетания).
+ */
+export const DEAL_HOTKEYS = {
+  dealInvite: 'invite',
+  dealTrade: 'trade',
+  dealDismiss: 'dismiss'
+} as const
+
+async function onDealHotkey(what: (typeof DEAL_HOTKEYS)[keyof typeof DEAL_HOTKEYS]): Promise<void> {
+  const s = getStore()
+  await s.load()
+  const st = s.getState()
+  const cards = activeCards(st.deals, st.config, Date.now())
+  if (what === 'dismiss') {
+    const top = cards[0]
+    if (top) await s.hideCard(top.id)
+    return
+  }
+  const top = topCard(cards, 'in')
+  if (top && !top.blacklist) await cardAction(top.id, what)
+}
+
+/** Калибровка стэша: игра на передний план, оверлей активен, оверлей ждёт два клика. */
+async function startCalibration(): Promise<DealsCalibrateResult> {
+  const st = getOverlayStatus()
+  if (st.tracking && !st.attached) return 'no-game'
+  ensureGameForeground()
+  // focusTarget асинхронен: даём игре стать активной, иначе оверлей скрыт и не активируется
+  await new Promise((r) => setTimeout(r, 150))
+  activateOverlay()
+  sendToOverlay(IPC.events.dealsCalibrate)
+  return 'ok'
+}
+
+// ---------------------------------------------------------------------------
 
 const STATUSES: DealStatus[] = ['new', 'invited', 'traded', 'sold', 'ignored']
 const MAX_SIM_LINES = 500
@@ -119,7 +273,9 @@ function register(): void {
   )
   ipcMain.handle(IPC.deals.clear, (_e, demoOnly: unknown) => getStore().clear(demoOnly === true))
   ipcMain.handle(IPC.deals.setConfig, async (_e, patch: unknown) => {
-    const state = await getStore().setConfig((patch ?? {}) as DealsConfigPatch)
+    // путь к логу меняется только через диалог pickLog
+    const { logPath: _ignored, ...rest } = (patch ?? {}) as DealsConfigPatch
+    const state = await getStore().setConfig(rest)
     syncBlacklist(state.config.checkBlacklist)
     return state
   })
@@ -133,7 +289,20 @@ function register(): void {
       .map((l) => l.slice(0, MAX_LINE_LEN))
     return getStore().ingestLines(clean)
   })
-  ipcMain.handle(IPC.deals.logStatus, (): DealsLogStatus => ({ connected: false, logPath: null }))
+  ipcMain.handle(IPC.deals.logStatus, () => logStatus())
+  ipcMain.handle(IPC.deals.pickLog, (_e, reset: unknown) => pickLog(reset === true))
+  // кнопка карточки: id сделки и имя действия — сам текст команды строит main (из истории
+  // и шаблонов), renderer не может напечатать в чат произвольное
+  ipcMain.handle(IPC.deals.action, async (_e, id: unknown, action: unknown) => {
+    if (typeof id !== 'string' || !DEAL_ACTIONS.includes(action as DealCardAction)) {
+      return { result: 'no-deal', state: getStore().getState() }
+    }
+    return cardAction(id, action as DealCardAction)
+  })
+  ipcMain.handle(IPC.deals.hideCard, (_e, id: unknown, hidden: unknown) =>
+    typeof id === 'string' ? getStore().hideCard(id, hidden !== false) : getStore().getState()
+  )
+  ipcMain.handle(IPC.deals.calibrate, () => startCalibration())
   ipcMain.handle(IPC.deals.blacklist.status, async () => {
     await getBlacklist().loadCache()
     return getBlacklist().status()
@@ -151,7 +320,17 @@ function register(): void {
 }
 
 async function setupForGame(def: GameDef): Promise<void> {
-  if (def.features.deals) await start()
+  tailerDef = def
+  if (!def.features.deals) {
+    stopLog()
+    return
+  }
+  await start()
+  for (const [action, what] of Object.entries(DEAL_HOTKEYS)) {
+    // действия появятся в HotkeyAction после патча Settings v2 (лид) — до тех пор не назначены
+    onHotkeyAction(action as unknown as HotkeyAction, () => onDealHotkey(what))
+  }
+  await reconcileLog()
 }
 
 export const dealsDomain: IpcDomain = { register, setupForGame }

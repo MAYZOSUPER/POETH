@@ -12,10 +12,10 @@ import {
   blacklistWarning,
   coinClass,
   formatTime,
-  playChime,
   statusTag,
   useSimple
 } from './common'
+import { playChime } from './sound'
 
 // «История» вкладки «Сделки»: фильтры и поиск, таблица сделок, переключатели карточек,
 // хранение/экспорт истории, в экспертном режиме — проверка строки лога.
@@ -252,12 +252,43 @@ const CARD_SWITCHES: (keyof Pick<
   'sound' | 'hideAfterSold' | 'checkBlacklist' | 'highlightStash' | 'showOutgoing'
 >)[] = ['sound', 'hideAfterSold', 'checkBlacklist', 'highlightStash', 'showOutgoing']
 
+function LogRow() {
+  const t = useT()
+  const log = useDealsStore((s) => s.log)
+  const pickLog = useDealsStore((s) => s.pickLog)
+  if (!log) return null
+  const tag = !log.supported
+    ? { cls: '', text: t('deals.log.pending') }
+    : log.connected
+      ? { cls: 'ui-tag--good', text: t(log.custom ? 'deals.log.custom' : 'deals.log.auto') }
+      : { cls: 'ui-tag--warn', text: t('deals.log.notFound') }
+  return (
+    <div className="dl-field">
+      <span className="ui-field__label">{t('deals.log.title')}</span>
+      {log.logPath && <span className="dl-path">{log.logPath}</span>}
+      <div className="dl-row">
+        <span className={`ui-tag ${tag.cls}`}>{tag.text}</span>
+        <button type="button" className="ui-btn ui-btn--sm" onClick={() => void pickLog()}>
+          {t('deals.log.pick')}
+        </button>
+        {log.custom && (
+          <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" onClick={() => void pickLog(true)}>
+            {t('deals.log.reset')}
+          </button>
+        )}
+      </div>
+      {!log.connected && <span className="ui-field__help">{t('deals.log.help')}</span>}
+    </div>
+  )
+}
+
 function CardsBox({ config }: { config: DealsConfig }) {
   const t = useT()
   const setConfig = useDealsStore((s) => s.setConfig)
   const sound = useAppStore((s) => s.settings?.sound)
   return (
     <Box title={t('deals.cards.title')} icon="layers">
+      <LogRow />
       {CARD_SWITCHES.map((k) => (
         <Switch key={k} on={config[k]} onChange={(v) => void setConfig({ [k]: v })}>
           {t(`deals.cfg.${k}`)}

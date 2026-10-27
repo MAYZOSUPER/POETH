@@ -50,7 +50,8 @@ export function defaultDealsConfig(): DealsConfig {
     stashInFolder: false,
     historyLimit: DEFAULT_HISTORY_LIMIT,
     replyLang: 'auto',
-    templates: { ru: { ...DEFAULT_TEMPLATES.ru }, en: { ...DEFAULT_TEMPLATES.en } }
+    templates: { ru: { ...DEFAULT_TEMPLATES.ru }, en: { ...DEFAULT_TEMPLATES.en } },
+    logPath: null
   }
 }
 
@@ -82,6 +83,7 @@ export function normalizeDealsConfig(raw: unknown): DealsConfig {
     out.historyLimit = Math.min(5000, Math.max(20, Math.round(raw.historyLimit)))
   }
   if (raw.replyLang === 'auto' || raw.replyLang === 'ru' || raw.replyLang === 'en') out.replyLang = raw.replyLang
+  if (typeof raw.logPath === 'string' && raw.logPath.trim()) out.logPath = raw.logPath
   const t = isObj(raw.templates) ? raw.templates : {}
   out.templates = { ru: normTemplates(t.ru, def.templates.ru), en: normTemplates(t.en, def.templates.en) }
   return out
@@ -269,6 +271,12 @@ export function setDealStatus(data: DealsFileData, id: string, status: DealStatu
     ignored = [{ key, item: deal.item, ts: now }, ...pruneIgnored(ignored, now).filter((x) => x.key !== key)]
   }
   return { ...data, deals, ignored }
+}
+
+/** Закрыть/вернуть карточку поверх игры (сделка в истории остаётся). */
+export function setCardHidden(data: DealsFileData, id: string, hidden: boolean): DealsFileData {
+  if (!data.deals.some((d) => d.id === id)) return data
+  return { ...data, deals: data.deals.map((d) => (d.id === id ? { ...d, cardHidden: hidden || undefined } : d)) }
 }
 
 export function removeDeal(data: DealsFileData, id: string): DealsFileData {

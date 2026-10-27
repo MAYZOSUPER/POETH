@@ -1,0 +1,10 @@
+2026/10/28 21:40:00 74519921 cffb0658 [DEBUG Client 19012] Generating level 68 area "HeistHub" with seed 1118868288
+2026/10/28 21:40:01 74519922 cffb0658 [INFO Client 19012] : You have entered Celestial Nebula Hideout.
+2026/10/28 21:40:05 74519926 cffb0658 [INFO Client 19012] @From <GG> MarshWitch: Hi, I would like to buy your Storm Stride Two-Toned Boots listed for 2 divine in Settlers (stash tab "Sale"; position: left 7, top 3)
+2026/10/28 21:40:09 74519930 cffb0658 [INFO Client 19012] @From GemBuyer: Hi, I would like to buy your level 21 20% Vaal Grace listed for 15 chaos in Settlers (stash tab "gems"; position: left 14, top 2) 12c?
+2026/10/28 21:40:12 74519933 cffb0658 [INFO Client 19012] @From BulkGuy: Hi, I'd like to buy your 150 Chaos Orb for my 1 Divine Orb in Settlers.
+2026/10/28 21:40:15 74519936 cffb0658 [INFO Client 19012] @To MoonWarden: Hi, I would like to buy your Wanderer Path Hubris Circlet listed for 45 chaos in Settlers (stash tab "1"; position: left 2, top 5)
+2026/10/28 21:40:20 74519941 cffb0658 [INFO Client 19012] @From MarshWitch: ty
+2026/10/28 21:40:30 74519951 cffb0658 [INFO Client 19012] : MarshWitch has joined the area.
+2026/10/28 21:40:50 74519971 cffb0658 [INFO Client 19012] : Trade accepted.
+2026/10/28 21:41:00 74519981 cffb0658 [INFO Client 19012] : MarshWitch has left the area.
