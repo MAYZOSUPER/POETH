@@ -1,0 +1,67 @@
+/* Блок «Аккаунт pathofexile.com» (S3). Токены — из globals.css. */
+
+.account-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 2px 0 4px;
+}
+.account-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--muted);
+}
+.account-dot.on {
+  background: var(--green);
+}
+.account-dot.wait {
+  background: var(--gold);
+  animation: hk-pulse 1s ease-in-out infinite;
+}
+.account-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.account-notes {
+  margin: 4px 0 6px;
+  padding-left: 16px;
+}
+.account-notes li {
+  margin: 2px 0;
+}
+.account-paste {
+  margin-top: 4px;
+}
+.account-paste summary {
+  cursor: pointer;
+  color: var(--gold);
+  margin-bottom: 5px;
+}
+.account-paste summary:hover {
+  color: var(--gold-bright);
+}
+.account-warn {
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin: 4px 0 6px;
+}
+.account-paste-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+}
+.account-paste-row .btn {
+  margin: 0;
+}
+.account-ok {
+  color: var(--green);
+}
+.account-danger {
+  color: var(--danger);
+}
