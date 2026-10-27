@@ -1,308 +1,142 @@
-# Exile Companion (бывш. Act Compass) — память проекта (handoff)
+# POETH (POE Trade Helper) — память проекта (handoff)
 
-> Прочитай это первым в новой сессии. Здесь — что это, что готово, как запускать,
-> где что лежит, подводные камни и журнал изменений. Планы: кампания — [PLAN.md](PLAN.md);
-> companion (прайс-чек/стэш) + справка по trade2 API — [docs/plan-companion.md](docs/plan-companion.md).
-
-## 🧭 Для следующего Claude (на ЛЮБОМ ПК — прочти первым)
-**Между машинами едет ТОЛЬКО git-репозиторий** (GitHub `MAYZOSUPER/POE-2-ACT-Compas`). Полный
-переносимый handoff = **этот `MEMORY.md` + [docs/plan-companion.md](docs/plan-companion.md) + [PLAN.md](PLAN.md) + код**.
-Они самодостаточны — этого хватит, чтобы понять «что/как/на чём остановились».
-
-**НЕ едет на другой ПК (не полагайся на это):** авто-память Claude (`~/.claude/projects/.../memory/`),
-планы в `~/.claude/plans/`, `node_modules/`, `dist-release/`, `secret.json` (**POESESSID вводится заново
-на каждом ПК** в приложении), сырьё датасета `tools/dataset-build/sources/`. Собранный датасет
-`resources/data/` **закоммичен** — пересборка не нужна.
-
-**Поднять на новом ПК:** `git clone` → `npm install` (если бинарь Electron не докачался:
-`node node_modules/electron/install.js`) → `npm run dev`. Тесты прайс-чека: `npm run test:trade`.
-
-**Стиль работы (пожелания владельца):** общаться **по-русски**; Claude **пишет весь код** сам
-(не «обучай меня»), сам выбирает стек; цель — **законченное приложение** + публичный релиз позже.
-Платформа — Windows 11.
-
-**На чём остановились (2026-06-29):** фаза 1 (прайс-чек) **готова** (коммит `a4b3af1`). Дальше на
-выбор: (а) живой end-to-end тест прайс-чека с реальным POESESSID; (б) маппинг RU→EN названий; (в)
-**фаза 2 — оценка стэша** (спроектирована в [docs/plan-companion.md](docs/plan-companion.md)). Детали — секция «✅ Фаза 1 готова» ниже.
-
-## ⚠️ Соглашение по ведению этого файла
-**После КАЖДОГО изменения дописывай строку в раздел [«Changelog»](#changelog) внизу**
-(что сделано + хэш коммита) и при необходимости обновляй разделы «Что сделано» / «TODO».
-Это рабочая память проекта — держи её в актуальном состоянии. Если правишь логику прайс-чека/стэша —
-обновляй и [docs/plan-companion.md](docs/plan-companion.md).
-
-## ✅ Фаза 1 готова: ребрендинг «Exile Companion» + вкладки + прайс-чек (коммит a4b3af1)
-Полный план + проверенная справка по trade2 API — **в репозитории**: [docs/plan-companion.md](docs/plan-companion.md)
-(на другом ПК будет доступен). Спека trade2 API (из исследования
-исходников **Exiled Exchange 2** kvan7 + **Awakened PoE Trade** SnosMe, MIT) встроена в код.
-Приложение из трекера кампании стало **companion** (кампания + **прайс-чек предметов**; **оценка
-стэша** — фаза 2). Авторизация **POESESSID**; захват предмета — пользователь жмёт **Ctrl+C**, затем
-хоткей читает буфер (без нативных либ).
-
-**Ключевая находка (важно для фазы 2):** на API-путях trade2 **НЕТ `?realm=poe2`** — сегмент
-`trade2` уже = PoE2. `POST /api/trade2/search/<league>` → ids → `GET /api/trade2/fetch/<ids,до10>?query=<id>`.
-POESESSID шлётся **явным заголовком `Cookie: POESESSID=...`** (не `useSessionCookies` — cookie-jar
-пуст), `User-Agent`=`app.userAgentFallback`, всё из **main** через `net.request`.
-
-### Реализовано (коммит a4b3af1; typecheck+build+`npm run test:trade` зелёные)
-- **Вкладки**: `AppTabs.tsx` (Кампания/Прайс-чек), store `appTab`+`setAppTab` (персист `lastAppTab`),
-  свитч в `App.tsx`, стили `.app-tabs`, i18n.
-- **Движок (main):** `tradeCore.ts` — **чистое тестируемое ядро** (без electron): парсер предмета
-  (EN+RU client_strings, секции `--------`, нейм-плейт класс/рарность/имя/база, ilvl/уровень камня),
-  построение trade2-запроса по типу (уник→name+type; рарка/мэджик→база+rarity+ilvl≈; камень→type+
-  category+gem_level; валюта→type), сводка по **модальной валюте** (мин/медиана), rate-limiter
-  (синк по `x-rate-limit-*` + 429/Retry-After), фильтр лиг. `tradeClient.ts` — IO: `net.request` из
-  main, search→fetch, маппинг 401/403/Cloudflare/empty/протухшей сессии → `PriceCheckResult`,
-  локализованные ошибки RU/EN. `secretStore.ts` — POESESSID через `safeStorage` (DPAPI) в `secret.json`.
-- **IPC** namespace `trade` (`priceCheck`/`setSession`/`hasSession`/`getLeagues`) + событие
-  `events.priceResult`; `window.openExternal` (только https + хост pathofexile.com).
-- **Хоткей** `priceCheck` (`Alt+D`): main читает буфер → `tradeClient` → событие → автопереход на
-  вкладку; настраивается в Настройках (`HK_ACTIONS` + `set.hk.priceCheck`).
-- **`PriceCheckTab.tsx`**: поле POESESSID (с инструкцией), выбор лиги, подсказка «Ctrl+C → хоткей»,
-  ручная вставка текста, показ предмета + мин/медиана + листинги + «открыть на сайте». i18n RU/EN.
-- **Тесты + ревью**: `scripts/test-trade.mjs` (`npm run test:trade`, 31 проверка). Прошло
-  состязательное ревью (14 фиксов: host-allowlist openExternal, serialize-цепочка, кламп Retry-After,
-  `encodeURIComponent(id)`, first-match ilvl, детерминир. tie-break валюты, сброс устаревшей лиги,
-  гард слушателей StrictMode, спиннер всегда снимается).
-
-### Осталось проверить / доработать (фаза 1)
-- [ ] **Живой end-to-end** с реальным POESESSID+лигой (нельзя проверить без аккаунта; парсер/логика
-      покрыты юнит-тестами, сетевой путь — нет). Запуск `npm run dev`, диагностика `OVERLAY_DEBUG=1`.
-- [ ] **RU-клиент**: торговый API ждёт английские названия → RU-имена предмета не матчатся (помечается
-      note «возможно неточно»). Маппинг RU→EN баз/уников — позже.
-- [ ] **magic-предметы**: ищутся по полному магическому имени (нет отдельной строки базы) → часто
-      пусто. Извлечение базы — позже (словарь баз, как в EE2).
-
-### Фаза 2 (отложено): оценка стэша
-По POESESSID: `/api/account/stashes` → вкладки/предметы → оценка (poe.ninja PoE2 economy для
-валюты/уников; рарки **приблизительно**), новая вкладка «Stash» с итогами **по вкладке + общим**.
+> Прочитай это первым в новой сессии. Здесь — что это, статус, как запускать, где что лежит, подводные
+> камни и журнал изменений. План — [docs/PLAN-POETH.md](docs/PLAN-POETH.md), этапы и «свои файлы» —
+> [docs/stages.md](docs/stages.md), архитектура — [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Что это
-**Exile Companion** (бывш. Act Compass) — десктоп-**оверлей** для **Path of Exile 2**:
-трекер кампании по актам (обязательные/необязательные квесты с наградами), лейауты карт зон,
-гид «Что дальше?», автоопределение текущей зоны/уровня по логу игры, **прайс-чек предметов**
-(trade2 API по POESESSID, хоткей `Alt+D`), полная локализация RU/EN.
-Прозрачное окно поверх игры, несколько профилей персонажей. Цель — личное использование + публичный релиз.
 
-- **GitHub:** https://github.com/MAYZOSUPER/POE-2-ACT-Compas (ветка `main`, логин MAYZOSUPER)
-- **Статус:** рабочий MVP+. Собирается, проходит typecheck, запускается, упаковывается в `.exe`.
+**POE Trade Helper (POETH)** — оверлей-помощник по трейду для **Path of Exile 1 и 2** с переключателем игры
+в шапке. Одинаково хорошо работает с **русским и английским** клиентом игры (каждая функция проверяется на
+RU- и EN-фикстурах). Аудитория — прежде всего новички: простой режим по умолчанию, понятные подсказки
+«почему это выгодно». **Никаких авто-покупок и ботов** — одно действие игрока = одно действие приложения (GGG).
 
-## Стек
-Electron + TypeScript + React + Vite (**electron-vite**). Main/preload — **CommonJS**
-(в `package.json` НЕТ `"type":"module"` — намеренно). Состояние UI — **zustand**.
-Без сторонних UI-библиотек. Node 24, Electron 33.
+- **Репозиторий:** приватный `MAYZOSUPER/POETH` (полная история компаса `MAYZOSUPER/POE-2-ACT-Compas` —
+  remote `compas-upstream`, только чтение). Ветка `main`.
+- **Релиз v0.1.0 (PoE 1): 11.11.2026** (лига 3.30 стартует ~13.11) → v0.1.1 с данными 3.30.
+- В v0.1 обязательно: прайс-чек с модами по **Ctrl+D**, трейд-окно в игре + избранное, live search +
+  уведомления, regex-строки (карты, торговец, библиотека), менеджер входящих сделок.
+- PoE 2: трекер кампании (компас) + прайс-чек trade2 — работают как в Exile Companion.
+- После релиза (v0.2+): «Советник: что фармить», флиппинг валюты/предметов, умная оценка timeless,
+  учёт богатства, трейд PoE 2.
 
-## Что уже сделано (фичи)
-- **Квесты по 4 актам + 3 интерлюдиям** (129 квестов): метки **обяз/опц**, бейджи наград
-  (очки пассивок/набора оружия, дух, сопротивления, жизнь/мана, камни). Чек-лист по зонам.
-- **Ручные галочки**, сохраняются; **несколько профилей** (создание/переключение/переименование/удаление,
-  **выбор класса** персонажа из 8 (вкл. Huntress, Druid) в форме add/edit — фильтрует подсказки по камням,
-  **импорт/экспорт в файл** — кнопки ⤓/⤒: экспорт активного профиля в `*.actcompass.json` (мета+прогресс),
-  импорт как новый профиль с новым id и санитизацией данных).
-- **Лейауты карт для всех актов и интерлюдий** (77 зон) — картинки Exile-UI (MIT), ленивая загрузка
-  с GitHub raw + кэш в `%APPDATA%`, через кастомный протокол `poe2img://`.
-- **Автоопределение (опц., пилюля «Авто»)** — чтение `Client.txt`: текущая зона + уровень. Сам находит
-  лог в любых Steam-библиотеках (читает `libraryfolders.vdf`) и берёт **самый свежий по mtime**
-  (несколько установок/протухшие логи — реальный кейс). Парсит уровень формата `Name (Class) is now level N`.
-- **Автопрогрессия (opt-in, `autoCheckQuests`)** — авто-отметка квестов по логу, **никогда не снимает**
-  ручные галочки, бейдж «авто». Два механизма: (A) **по зонам** — обязательные квесты строго-предыдущих
-  зон маршрута (язык-независимо, areaId); (B) **детект боссов** — `bossMatcher` ловит имя босса в реплике
-  лога (`<Boss>: …`) и отмечает квест босса. **Срабатывает на реплику, НЕ на награду пассивок** — многие
-  боссы дают камень, а не очки (напр. The Rust King), поэтому award-сигнала нет. Дебаунс 60с на босса.
-  ⚠️ **Важно (исправляет старое допущение):** лог PoE2 НАМНОГО богаче — пишет имена боссов в репликах,
-  награды пассивок, открытия гейтов. НО `<X> has been slain` = **смерть ИГРОКА**, не босса — не парсить.
-  **Ограничение:** автопрогрессия работает ТОЛЬКО на живой игре (история не переигрывается — лог общий
-  на всех персонажей; эндгейм-зоны не распознаются как зоны кампании). Для **уже пройденного** персонажа —
-  ручная кнопка «✓ всё» в шапке чек-листа (`markActQuests` → `progress.setManyQuests`, отметить/снять акт).
-- **Гид «Что дальше?»** — пошаговый режим: текущая зона + её задачи (⚔ Обязательно / ✦ Необязательно)
-  + карточка «Дальше». Авто-едет за игроком; ◀/▶ и хоткеи; «📍 Вы сейчас здесь» / «вернуться к зоне».
-- **Навигационные подсказки по зоне** (79 зон, RU+EN): 🎯 цель, ➡️ выход, тип лейаута, ориентиры, советы.
-- **Счётчик наград кампании** (сворачиваемый): собрано/всего — очки пассивок, набор оружия, дух, сопр.
-  **Наведение на строку** → popover со всеми квестами этой награды: ✓ полученные / ○ оставшиеся (акт+значение),
-  чтобы не искать по всему чек-листу. `position:fixed` (не обрезается скроллом), `pointer-events:none`.
-- **Подсказки по камням** умений по классам для **актов 1–4** (**8 классов** × 4 акта = 32 рекомендации,
-  каталог 52 камня; скиллы взяты со страниц классов **poe2db**, прокачка спроектирована по тирам;
-  редакторские, **needs-validation**, заметки RU/EN). На интерлюдиях панель показывает камни финального
-  акта (фолбэк). Каталог генерируется из имён рекомендаций — FK гарантирован по построению.
-- **Трекер аскенданси** (сворачиваемая панель «Вознесение»): выбор аскенданси (2–4 на класс, **данные poe2db** us+ru,
-  все 8 классов вкл. Druid=Oracle/Shaman), фильтр по классу профиля, чек-лист из 4 **испытаний**
-  (Сехема/Хаос × кампания/эндгейм) с очками, счётчик
-  очков X/8. Прогресс трайлов — вручную (как квесты, авто-детект невозможен). Данные — `ascendancy.mjs`
-  → `ascendancy.json` (редакторские, needs-validation, RU/EN). Прогресс хранит `completedTrialIds`+`ascendancyId`
-  (входят в импорт/экспорт, bundle v2).
-- **Локализация RU/EN** — два независимых переключателя в настройках:
-  - **Язык интерфейса** (`uiLang`, по умолч. ru): вся обвязка, описания наград, типы лейаутов, навигационные
-    подсказки и **per-quest заметки** (`notesRu`, 125 шт., имена собственные остаются EN).
-  - **Язык названий** (`nameLang`, по умолч. en): **все** названия зон/боссов/POI (215 RU-записей: официальные
-    с poe2db + переведённые описательные ярлыки). Независим от uiLang.
-  - Комбо: RU-интерфейс+EN-имена / полностью RU / полностью EN.
-- **Оверлей:** прозрачное always-on-top окно, **сквозной режим** (🔒/`Ctrl+Shift+L`), прозрачность (CSS),
-  сворачивание, перетаскивание, **показ на панели задач** (настройка). Двухпанельный вид (трекер + карта/компас).
-- **Системный трей**: клик — показать/скрыть; меню — показать/скрыть, сквозной режим, автоопределение, выход.
-- **Прайс-чек предметов (вкладка «Прайс-чек»)** — POESESSID (зашифрован `safeStorage`) + выбор лиги;
-  скопируй предмет (`Ctrl+C`) и нажми `Alt+D` → запрос к официальному **trade2 API** из main
-  (`net.request`, без `realm=poe2`), показ мин/медианы и листингов + кнопка «открыть на сайте».
-  Уники по имени, рарки/камни/валюта по базе+фильтрам (рарки — приблизительно). См. фазу 1 выше.
-- **Бренд Act Compass** + тёмно-золотая готическая тема.
+**Организация:** лид-сессия (куратор) ставит задачи, ревьюит и сливает; код этапов пишут отдельные сессии,
+параллельные — в своих git worktree (см. [docs/stages.md](docs/stages.md)); дизайнер — отдельная сессия.
+Общение, отчёты и коммиты — **по-русски** (код/идентификаторы — как есть).
 
-## Настройки (`%APPDATA%/Exile Companion/settings.json`)
-`uiLang`, `nameLang`, `opacity` (CSS), `locked` (сквозной), `showInTaskbar`, `overlayVisible`,
-`tailerEnabled`+`logPath`+`autoAdvanceZone` (автодетект), `activeProfileId`, `hotkeys`.
+## Статус (2026-10-27)
 
-## Хоткеи
-`Ctrl+Shift+O` — показать/скрыть · `Ctrl+Shift+L` — сквозной режим · `Ctrl+Shift+[` / `]` — пред./след. шаг.
-**Настраиваются** в Настройках: клик по хоткею → нажми новое сочетание (Esc — отмена), кнопка «Сбросить».
-На время захвата глобальные шорткаты приостанавливаются (suspend/resume), конфликты блокируются.
+- ✅ **S0 — каркас готов:** ребрендинг, протокол `poeth://`, миграция userData, IPC/типы/preload/i18n по
+  доменам, Settings v2 + миграция v1→v2, таблица игр `GameDef`, переключатель PoE1/PoE2 с перезапуском,
+  заглушки вкладок PoE1, vitest, multi-page renderer, **Electron 40.10.6**, документация.
+- ⏳ Дальше параллельно: S1 (платформа оверлея), S2 (данные + парсер), S3 (сеть + вход), S7 (regex);
+  затем S4, S5, S6, S8; S9–S10 — интеграция и релиз.
 
-## Структура
-```
-src/main/        overlayWindow, clickThrough (lock-модель), hotkeys, ipcHandlers, tray,
-                 services/{profileStore,settingsStore,questDataset,layoutResolver,logTailer,atomicJson}
-src/preload/     contextBridge → window.overlayApi
-src/renderer/    React UI: panels/, components/, store/useAppStore.ts, i18n.ts, styles/globals.css
-src/shared/      types.ts, ipc.ts (контракт IPC — единый источник правды)
-resources/data/  СОБРАННЫЙ датасет (index, acts/*, areas, layouts/index, hints[.ru], names.ru, gems, route, meta)
-resources/brand/ tray-default.png (+ сюда класть PNG-ассеты бренда: app_icon.png, big_compass.png, …)
-tools/dataset-build/  пайплайн данных; tools/make-tray-icon.mjs
-```
+## Для следующего Claude (на любом ПК)
 
-## Данные (как пересобрать)
-Датасет генерируется, **не** правится вручную:
-```
-npm run build:data      # tools/dataset-build/build.mjs → resources/data/*
-npm run validate:data   # проверка
-```
-Сырьё (gitignored, `tools/dataset-build/sources/`): `helper_zones.json` (poe2-helper),
-`exile-ui-filelist.json` (Exile-UI). Наши производные модули (коммитятся):
-`area-id-map.mjs`, `interludes.mjs`, `gem-recs.mjs`, `hints.0.5.mjs` (EN-подсказки),
-`hints.ru.0.5.mjs` (RU-подсказки), `names.ru.0.5.mjs` (EN→RU имена из poe2db.tw/ru).
-Патч **0.5**, данные community-derived — сверять с живой игрой. Лейауты привязаны к Exile-UI commit (SHA).
+Между машинами едет **только git-репозиторий**. Полный handoff = этот `MEMORY.md` + `docs/` + код.
+**Не едет:** авто-память Claude (`~/.claude/projects/…/memory/`), планы в `~/.claude/plans/`,
+`node_modules/`, `dist-release/`, `%APPDATA%/POETH/` (настройки, профили, `secret.json`).
 
-## Запуск / сборка
-```
+```bash
 npm install            # если бинарь Electron не докачался: node node_modules/electron/install.js
-npm run dev            # дев с hot-reload
-npm run start          # запуск собранной версии
-npm run build          # сборка main/preload/renderer
-npm run package        # NSIS-инсталлятор + портативный .exe в dist-release/ (gitignored)
+npm run dev            # dev с hot-reload
+npm run typecheck      # tsc: main/preload/shared + renderer + tests
+npm test               # vitest (tests/**)
+npm run test:trade     # ядро прайс-чека PoE2 (31 проверка)
+npm run build          # сборка main/preload/renderer (3 страницы)
+npm run package:dir    # распакованная сборка в dist-release/win-unpacked/POETH.exe
+npm run package        # NSIS-инсталлятор
 ```
-Итог: `dist-release/win-unpacked/Exile Companion.exe` (портативный) и `dist-release/Exile Companion Setup 0.1.0.exe`.
-Подписи нет → SmartScreen ругается (ок для своей сборки).
+
+## ⚠️ Соглашение по ведению этого файла
+
+**После КАЖДОГО изменения в `main` — строка в раздел [«Changelog»](#changelog)** (что сделано + хэш коммита),
+при необходимости — обновить «Статус» и `docs/stages.md`. Этот файл правит **лид** (сессии этапов присылают
+строку для Changelog в отчёте), чтобы параллельные ветки не конфликтовали.
+
+## Структура (кратко; подробно — docs/ARCHITECTURE.md)
+
+```
+src/shared/    games.ts (GameDef) · settings.ts (Settings v2) · ipc.ts + ipc/<домен>.ts · types.ts + types/<домен>.ts
+src/main/      index.ts · protocol.ts (poeth://) · gameContext.ts · hotkeys.ts · tray.ts · clickThrough.ts
+               windows/{companionWindow,rendererPage}.ts · ipc/{index,types,<домен>}.ts · services/*
+src/preload/   index.ts + domains/<домен>.ts  →  window.overlayApi
+src/renderer/  index.html (компаньон) · overlay.html (S1) · trade-sidebar.html (S5)
+               src/{App.tsx, tabs.ts, i18n/{index,dicts}.ts + i18n/dict/<домен>.ts, panels/, components/, store/}
+resources/     data/ (датасет кампании PoE2; data/poe1/ — S2) · brand/
+tests/         *.test.ts (vitest) · fixtures/{settings, poe1/{en,ru}}
+docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex · plan-companion (trade2) · compass/ (архив)
+```
+Домены: `app`, `campaign` (PoE2), `trade`, `overlay` (S1), `auth` (S3), `fav` (S5), `live` (S6), `regex` (S7),
+`deals` (S8). Новый функционал подключается только через свои доменные файлы (таблица в docs/stages.md).
+
+## Настройки (`%APPDATA%/POETH/settings.json`, v2)
+
+`game` (`poe1` по умолч.) · `siteHost` (`www`/`ru.pathofexile.com`) · `poe1.league` (`auto`) · `poe2.league` ·
+`hotkeys` `{[action]: {accel, scope:'game'|'always'}}` · `sound` · `live.maxSearches` · `deals` · `regex` · `ui.simpleMode`
++ поля компаса (`uiLang`, `nameLang`, `opacity`, `locked`, `tailerEnabled`, `logPath`, …).
+Дефолты/миграция/патч — `src/shared/settings.ts` (тесты `tests/settings.test.ts`). Новые поля добавляет лид.
+
+## Хоткеи (по умолчанию)
+
+`Ctrl+D` прайс-чек (game) · `Shift+Space` оверлей (game) · `whisperLastHit`, `pasteSearch1..5` (game, не заданы) ·
+`Ctrl+Shift+O` компаньон · `Ctrl+Shift+L` замок · `Ctrl+Shift+T` трейд-окно · `Ctrl+Shift+[`/`]` шаги кампании.
+Регистрируются **только действия с обработчиком для текущей игры** (`onHotkeyAction` в домене). Гейтинг
+`scope:'game'` по фокусу игры — S1.
 
 ## Подводные камни (важно!)
-- **Игра в режиме «Окно»/«Окно без рамки»** — в эксклюзивном fullscreen оверлей не виден.
-- **Один экземпляр:** упакованный процесс — **`Exile Companion.exe`** (не `electron`), держит single-instance lock.
-  Если dev `npm run start` молча выходит (exit 0, лог «another instance holds the single-instance lock») —
-  закрой `Get-Process "Exile Companion" | Stop-Process`. Пересборка `.exe` тоже требует закрыть запущенный.
+
+- **Игра — в режиме «Окно» или «Окно без рамки».** В эксклюзивном fullscreen оверлеи Windows не видны.
 - **Прозрачность — только через CSS** (`.app` opacity). Нативный `win.setOpacity()` на прозрачном окне валит
   приложение — НЕ возвращать.
-- **Данные/настройки** в `%APPDATA%/Exile Companion/` (миграция с `Act Compass` — один раз при старте).
-  Запись атомарная, `readJson` срезает BOM. POESESSID — зашифрован в `secret.json` (per-ПК, не в git).
-- **Автоопределение по умолчанию ВЫКЛ** (opt-in).
+- **Один экземпляр:** процесс упакованной версии — `POETH.exe`, держит single-instance lock (на каталог
+  userData). Второй запуск молча выходит («another instance holds the single-instance lock») — закрыть:
+  `Get-Process POETH, electron | Stop-Process`. Для тестов и параллельных `npm run dev` из разных worktree —
+  `POETH_USER_DATA_DIR=<папка>` (свой профиль = свой lock).
+- **Смена игры в dev — мягкая:** electron-vite завершает dev-сервер, когда Electron выходит, поэтому в dev
+  `app.switchGame` не делает `app.relaunch()`, а перенастраивает домены и перезагружает окна. Настоящий relaunch
+  проверяется на собранной версии (`npm run build` → `electron .` или `npm run package:dir`).
+- **userData:** `%APPDATA%/POETH/`; при первом старте один раз копируется `Exile Companion` или `Act Compass`
+  (маркер `migrated-from.json`). Запись JSON атомарная, `readJson` срезает BOM; старый settings v1 остаётся в `.bak`.
+- **POESESSID (PoE2-прайс-чек компаса)** — в `secret.json` через safeStorage (per-ПК, не в git). Никаких
+  паролей/POESESSID в репозитории и в логах. В PoE1 вход — только через официальный сайт в изолированной сессии (S3).
+- **`poeth://` и fetch:** схема с `corsEnabled` + `Access-Control-Allow-Origin` — иначе `<img>` работает,
+  а `fetch()` падает «Failed to fetch».
+- **Автоопределение зоны (кампания PoE2) по умолчанию ВЫКЛ** (opt-in); в режиме PoE1 тейлер кампании не запускается.
+- **Упаковка на Windows без режима разработчика:** electron-builder не может распаковать `winCodeSign`
+  (симлинки macOS) → «Cannot create symbolic link». Обход: распаковать последний
+  `%LOCALAPPDATA%\electron-builder\Cache\winCodeSign\*.7z` 7-Zip'ом (`node_modules/7zip-bin/win/x64/7za.exe x -snld`)
+  в папку `winCodeSign-2.6.0` рядом (ошибки двух darwin-симлинков игнорировать). На этом ПК уже сделано.
+- **Иконки приложения пока нет** (`build/icon.ico` отсутствует → стандартная иконка Electron) — даст дизайнер.
+- **Переводы строк:** `core.autocrlf=true` — в рабочей копии CRLF. Скрипты правок файлов должны нормализовать
+  `\r\n`, иначе замены строк «не находятся».
+- **npm 11 `allow-scripts`:** предупреждение про postinstall electron/esbuild — бинари всё равно ставятся;
+  если нет — `node node_modules/electron/install.js`.
 
 ## Лицензии
-Свой код — **MIT** ([LICENSE](LICENSE)). Атрибуция — [NOTICE.md](NOTICE.md). MIT-апстримы: Exile-UI (картинки),
-poe2-leveling-overlay (areaId/интерлюдии/подсказки), exile-leveling (схема); факты + RU-имена (poe2db).
-Дисклеймер GGG. `derek-etherton/PoE2-Map-Layout-Utility` — без лицензии, только идея.
 
-## TODO
-- [ ] Подключить брендовые PNG из `resources/brand/` (логотип в шапку, иконки боссов/POI).
-- [ ] Иконка приложения (`build/icon.ico`) для окна/ярлыка/инсталлятора (сейчас стандартная Electron).
-- [x] ~~5 интерлюдийных зон + POI-имена остаются EN~~ — закрыто: все зоны/боссы/POI имеют RU (poe2db + перевод).
-- [x] ~~Отслеживание ascendancy / трайлов~~ — сделано (панель «Вознесение», `ascendancy.json`).
-- [x] ~~Камни умений для Druid~~ — сделано (скиллы Druid с poe2db, как и все 8 классов). Опц.: камни на акты 5–6.
-- [ ] Подпись кода (убрать предупреждение SmartScreen).
-- [ ] Релиз 1.0 PoE2 = 6 актов без интерлюдий → пересобрать датасет.
-- [ ] Точечный клик-сквозь (клики сквозь пустые места) — опционально.
+Свой код — **MIT** ([LICENSE](LICENSE)). Атрибуция — [NOTICE.md](NOTICE.md): Awakened PoE Trade (MIT, порт
+кода/данных с шапкой-атрибуцией в каждом файле, пин `3188208957`), RePoE fork (данные), формат Better Trading
+(MIT), poe.re — **не используется**, ассеты кампании (Exile-UI, MIT), дисклеймер GGG.
 
 ## Changelog
-> Новые изменения добавляй сверху: `<коммит> — что сделано`.
 
-- _(docs)_ — **портируемый handoff**: вынес companion-план + проверенную справку по trade2 API в репо
-  ([docs/plan-companion.md](docs/plan-companion.md)), добавил раздел «🧭 Для следующего Claude (на любом ПК)»,
-  починил ссылки на план и устаревшие пути/имя процесса (`Act Compass`→`Exile Companion`).
-- `a4b3af1` — **прайс-чек предметов: фаза 1 завершена**: вкладки Кампания/Прайс-чек; движок
-  `tradeCore.ts` (чистое ядро, 31 тест `npm run test:trade`) + `tradeClient.ts` (electron
-  `net.request` из main, `Cookie: POESESSID`, **без `realm=poe2`**, 429/Cloudflare/протухшая сессия);
-  `secretStore.ts` (safeStorage); IPC `trade` + `events.priceResult` + `window.openExternal`
-  (host-allowlist); хоткей `Alt+D`; UI `PriceCheckTab` (POESESSID/лига/листинги, RU/EN). Прошло
-  состязательное ревью (14 фиксов). typecheck+build+тесты зелёные.
-- `3df9bee` — **лог-тейлер: сверка с живым логом 0.5** (с другого ПК): фикс регэкспа уровня
-  (формат `Name (Class) is now level N`); выбор самого свежего `Client.txt` по mtime (брал протухший
-  C:-лог вместо активного); +11 имён зон 0.5 в `area-id-map.mjs` → `areas.json`. build:data+validate ОК.
-- `2324f54` — **Exile Companion: ребрендинг + каркас прайс-чека (фаза 1, чекпойнт)**:
-  переименование Act Compass→Exile Companion (productName/builder/заголовки/трей/тулбар), миграция
-  userData, типы вкладок (`AppTab`,`lastAppTab`,`league`) и прайс-чека (`HotkeyMap.priceCheck`,
-  trade-типы), дефолты настроек. Вкладки/IPC/tradeClient/PriceCheckTab — впереди (см. «🚧 В работе»
-  вверху). typecheck+build зелёные.
-- `83488da` — **ручная «догонялка» прогресса**: кнопка «✓ всё / ✕ всё» в шапке чек-листа отмечает/
-  снимает все квесты акта (`markActQuests` → батч `progress.setManyQuests`, manual, без бейджа «авто»). Решает
-  кейс «зашёл на пройденного персонажа — ничего не обновилось» (автопрогрессия — только live, историю не берёт).
-- `c25aa12` — **фикс детекта боссов**: триггер по **реплике** босса, а не по награде пассивок
-  (проверено на живом логе — The Rust King даёт камень, award не приходит; реплика `The Rust King: …` есть).
-  Дебаунс 60с/босс. Тест tailer 6/6.
-- `f1fddba` — **автопрогрессия по логу** (opt-in `autoCheckQuests`, бейдж «авто», never-uncheck):
-  (A) по зонам — `inferAutoCheck` отмечает обязательные квесты строго-предыдущих зон в `applyZoneEvent`;
-  (B) детект боссов — новый `src/main/services/bossMatcher.ts` (двуязычный индекс EN+RU, containment),
-  `logTailer` парсит реплику босса + награду пассивок → событие `bossDefeat`. Батч IPC `progress.setQuestsDone`,
-  поле `progress.autoCompletedQuestIds` (bundle v3). **Исследование по логу — в [docs/plan-companion.md](docs/plan-companion.md) (приложение).**
-  Тесты: bossMatcher 17/17, парсинг+корреляция 11/11, зональная инференция OK; typecheck+build зелёные.
-- `6739a36` — **раскладка наград по квестам**: наведение на строку счётчика наград (напр. «Очки
-  пассивок») показывает popover со всеми квестами этой награды — ✓ получено / ○ осталось (акт+значение).
-  `RewardsSummary` собирает contributors по категориям; popover `position:fixed` с клампом к краям экрана.
-  Renderer-only, typecheck+build зелёные.
-- `70baa4d` — **RU-имена всех зон/боссов/POI**: закрыт 91 пропуск (5 зон, 18 боссов, 68 POI) →
-  `names.ru.0.5.mjs` теперь 215 записей. Официальные имена (13) сверены с poe2db (напр. Count of Ogham→
-  Граф Жеонор, The Gallows→Виселица), описательные ярлыки переведены. Пайплайн: `merge-names` в scratchpad
-  (декодирует `&amp;`→`&` перед нормализацией ключа). Датасет пересобран, 0 пропусков, валидация зелёная.
-- `ca1ab66` — **камни по всем 8 классам из poe2db**: `gem-recs.mjs` полностью пересобран — скиллы
-  взяты со страниц классов poe2db (8 агентов), прокачка по 4 актам спроектирована по тирам (ещё 8 агентов),
-  каталог (52 камня) генерируется из имён рекомендаций → **FK гарантирован**. 32 рекомендации (8×4), заметки
-  RU/EN. **Druid** теперь с камнями (Lunar Assault/Volcano/Rolling Magma/…). Пайплайн сборки: `assemble-gems`
-  в scratchpad из результата воркфлоу. Датасет пересобран, валидация+typecheck зелёные.
-- `3c28a9b` — **QA-фиксы из живого теста**: (1) **локализация per-quest заметок** — 125 EN-заметок
-  переведены на RU (`notes.ru.0.5.mjs` → `notesRu` через build, рендер по `uiLang` в `QuestRow`); раньше
-  показывались по-английски. (2) **Классы Huntress + Druid** добавлены в picker (теперь 8); Huntress — камни
-  актов 1–4; **аскенданси всех 8 классов по poe2db** (us+ru, вкл. Druid=Oracle/Shaman, поправлены RU-имена:
-  Deadeye=Снайпер и др.). Gem-панель строго фильтрует по классу; классы без данных показывают аккуратную
-  заглушку. Druid-камни пока не заведены (нет надёжного источника скиллов).
-- `edc89df` — **трекер аскенданси/трайлов** (фаза 4): новая панель «Вознесение» — выбор аскенданси
-  (2 на класс, фильтр по классу профиля), чек-лист 4 испытаний с очками (X/8). Данные `ascendancy.mjs`→
-  `ascendancy.json` (грузится в `dataset.ascendancy`); прогресс расширен `completedTrialIds`+`ascendancyId`
-  (миграция + импорт/экспорт bundle v2); IPC `progress.setTrialDone`/`setAscendancy`. Typecheck+build+валидация
-  данных зелёные (4 трайла = 8 очк., 6 классов).
-- `8078f0f` — **выбор класса в профиле** (фаза 4): селект 6 классов в форме создания/редактирования
-  профиля (`profiles.setClass` IPC/store/handler; `setProfileClass` в profileStore). Класс совпадает с ключами
-  рекомендаций камней → **включает фильтрацию подсказок по камням по классу**. Typecheck+build зелёные,
-  совпадение списков классов проверено скриптом.
-- `d281c2c` — **камни на акты 2–4** (фаза 4): `gem-recs.mjs` расширен до 6 классов × актов 1–4
-  (24 рекомендации, каталог 46 камней), заметки локализованы (`note`/`noteRu`). Тип `GemRecommendation.noteRu`;
-  `GemHintsPanel` берёт RU-заметку при uiLang=ru и для интерлюдий показывает камни финального акта (фолбэк).
-  Пересобран `gems.json` (`build:data`); FK+покрытие проверены скриптом, typecheck+build зелёные.
-- `8ff4949` — **перенастройка хоткеев** (фаза 4): в Настройках хоткеи теперь редактируемы —
-  клик → захват сочетания (`KeyboardEvent`→Electron-accelerator), Esc-отмена, проверка конфликтов,
-  кнопка «Сбросить». При патче `hotkeys` main перерегистрирует глобальные шорткаты; на время захвата —
-  `hotkeys.suspend/resume`, чтобы текущая комбинация не срабатывала. Typecheck+build зелёные, конвертер
-  покрыт тестом (17/17).
-- `c57dd9b` — **импорт/экспорт профилей** (фаза 4): экспорт активного профиля в `*.actcompass.json`
-  (мета+прогресс) и импорт из файла как новый профиль (новый id, валидация+санитизация бандла). Каналы
-  `profiles.export/import`, диалоги в `ipcHandlers`, `getProfileBundle`/`importProfileBundle` в `profileStore`,
-  кнопки ⤓/⤒ в `ProfileBar` + i18n RU/EN. Typecheck+build зелёные, санитайзер покрыт тестом (19/19).
-- _(docs)_ — обновлён MEMORY.md под текущее состояние (локализация, настройки) + введено правило вести Changelog.
-- `537c352` — перевод всех навигационных подсказок на русский (79 зон); локализация завершена.
-- `c0e129e` — русские названия зон/боссов из poe2db + отдельный переключатель «Язык названий» (`nameLang`).
-- `40e2c32` — локализация интерфейса RU/EN (i18n, `uiLang`, словарь, перевод наград/типов лейаутов).
-- `64a1311` — настройка «Показывать на панели задач» (`showInTaskbar`).
-- `be48238` — окно показывается на панели задач (`skipTaskbar: false`).
-- `3fb896a` — добавлен `MEMORY.md` (handoff).
-- `1116c05` — системный трей с меню (показать/скрыть, сквозной, автодетект, выход) + генератор иконки.
-- `1ea2ed9` — фикс краша при смене прозрачности (CSS вместо нативного setOpacity).
-- `fb85798` — навигационные подсказки по зонам + счётчик собранных наград.
-- `d2df70f` — метки обяз/опц на квестах + «📍 вы здесь» / возврат к текущей зоне.
-- `b4ab72e` — режим-гид «Что дальше?».
-- `958661d` — ребренд Act Compass + двухпанельный UI и тёмно-золотая тема.
-- `c33a6ef` — синхронизация зоны при старте + определение акта для городов/испытаний + баннер зоны.
-- `211a245` — авто-поиск Client.txt в любых Steam-библиотеках (libraryfolders.vdf).
-- `ac52802` — лейауты Актов 2–4 + интерлюдии + автоопределение зоны/уровня по Client.txt.
-- `9c9e0ba` — фиксы: перетаскивание, скролл колесом, показ лейаутов (CSP/flex/lock-модель).
-- `a59cfe8` — первый коммит: MVP (акты/квесты, лейауты Act 1, профили, оверлей).
+> Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
+> [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
+
+- _(docs, S0)_ — документация POETH: этот `MEMORY.md`, `docs/{PLAN-POETH,ARCHITECTURE,stages,poe1-trade-api,regex}.md`;
+  `PLAN.md` и старый `MEMORY.md` компаса → `docs/compass/` (архив).
+- `144e5a9` — **Electron 33 → 40.10.6** (как у APT); кода менять не пришлось; проверены dev, собранная версия и
+  `electron-builder --dir`.
+- `1915163` — `poeth://`: CORS для `fetch()` из renderer (данные S2).
+- `94d4592` — **переключатель PoE 1 / PoE 2** в шапке (подтверждение → relaunch, в dev — мягкий перезапуск);
+  вкладки по `GameDef.features`, заглушки PoE1 (Прайс-чек/Live/Regex/Сделки); i18n по доменам; **vitest**
+  (games, settings v1→v2, ipc, i18n); multi-page (`overlay.html`, `trade-sidebar.html`); `POETH_USER_DATA_DIR`.
+- `3261a69` — **каркас по доменам**: `src/shared/ipc/*`, `src/shared/types/*`, `src/preload/domains/*`,
+  `src/main/ipc/*` (контракт `IpcDomain`), `windows/companionWindow.ts`, `gameContext.ts`; **Settings v2** +
+  миграция; хоткеи v2 через `onHotkeyAction`; `src/shared/games.ts` (`GameDef`, `siteUrl/apiUrl/liveUrl`),
+  PoE2-`tradeClient` переведён на хелперы (URL'ы те же).
+- `33c2e5f` — **ребрендинг** Exile Companion → POETH: `poeth`, `com.poeth.app`, протокол `poeth://`
+  (+ `data/<game>/<lang>/<file>`), миграция userData Act Compass → Exile Companion → POETH, README, NOTICE.
+- `7306ea1` — последний коммит компаса (база POETH).

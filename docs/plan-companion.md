@@ -1,3 +1,6 @@
+> **POETH:** справка по trade2 для PoE2-модуля (прайс-чек PoE2 из компаса). Для PoE1 —
+> [poe1-trade-api.md](poe1-trade-api.md); общий план — [PLAN-POETH.md](PLAN-POETH.md).
+
 # Exile Companion — план «companion» (прайс-чек + стэш) и проверенная справка по trade2 API
 
 > Этот файл **в репозитории** — его видит любой клон на любом ПК. Краткий статус и обзор — в
