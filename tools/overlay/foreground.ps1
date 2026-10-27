@@ -7,6 +7,7 @@
 #   click <x> <y>      → переместить курсор и кликнуть левой кнопкой
 #   move <x> <y>       → переместить курсор
 #   shot <x> <y> <w> <h> <file.png> → снимок области экрана (физические пиксели)
+#   idle               → сколько мс не было ввода с клавиатуры/мыши (за ПК кто-то работает?)
 Add-Type -AssemblyName System.Drawing
 Add-Type -TypeDefinition @'
 using System;
@@ -26,6 +27,9 @@ public static class Fg {
   [DllImport("user32.dll")] public static extern bool GetCursorPos(out POINT p);
   [DllImport("user32.dll")] public static extern void mouse_event(int f, int dx, int dy, int d, int e);
   [StructLayout(LayoutKind.Sequential)] public struct POINT { public int X; public int Y; }
+  [StructLayout(LayoutKind.Sequential)] public struct LASTINPUTINFO { public uint cbSize; public uint dwTime; }
+  [DllImport("user32.dll")] public static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+  public static uint IdleMs() { var li = new LASTINPUTINFO(); li.cbSize = (uint)Marshal.SizeOf(li); GetLastInputInfo(ref li); return unchecked((uint)Environment.TickCount - li.dwTime); }
   public static string Title(IntPtr h) { var sb = new StringBuilder(512); GetWindowText(h, sb, 512); return sb.ToString(); }
   public static string Activate(string title) {
     IntPtr h = FindWindow(null, title);
@@ -50,6 +54,7 @@ while ($true) {
   $parts = $line.Split(' ', 2)
   switch ($parts[0]) {
     'fg' { [Console]::Out.WriteLine([Fg]::Title([Fg]::GetForegroundWindow())) }
+    'idle' { [Console]::Out.WriteLine([Fg]::IdleMs()) }
     'activate' { [Console]::Out.WriteLine([Fg]::Activate($parts[1])) }
     'cursor' { $p = New-Object Fg+POINT; [void][Fg]::GetCursorPos([ref]$p); [Console]::Out.WriteLine("$($p.X),$($p.Y)") }
     'move' { $xy = $parts[1].Split(' '); [void][Fg]::SetCursorPos([int]$xy[0], [int]$xy[1]); [Console]::Out.WriteLine('ok') }

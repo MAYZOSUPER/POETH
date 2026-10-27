@@ -5,8 +5,8 @@ import { LogTailer } from './logTailer'
 // Client.txt запущенной игры для функций вне кампании: команды чата (@last, <char>), менеджер
 // сделок (S8, фаза 2 — может подписаться сюда же). Один тейлер на процесс, а не по одному на
 // функцию; запускается с первым подписчиком и останавливается с последним. Путь — автопоиск по
-// GameDef.logSubdirs (Settings.logPath принадлежит кампании PoE2). Кампания PoE2 по-прежнему
-// живёт на своём экземпляре logTailer.
+// GameDef.logSubdirs (Settings.logPath принадлежит кампании PoE2); POETH_GAME_LOG=<путь> —
+// свой файл (тесты, нестандартная установка). Кампания PoE2 живёт на своём экземпляре logTailer.
 
 type LinesListener = (lines: string[]) => void
 
@@ -38,7 +38,7 @@ async function ensureTailer(def: GameDef): Promise<string | null> {
       }
     }
   })
-  const status = await t.start(null)
+  const status = await t.start(process.env.POETH_GAME_LOG || null)
   logPath = status.logPath ?? null
   console.log(`[gameLog] ${def.id}: ${logPath ?? 'Client.txt not found'}`)
   return logPath
