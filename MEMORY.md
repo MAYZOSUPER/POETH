@@ -127,6 +127,12 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ — слит `design/system` `938c5cc`: блок «Благодарности» для «О программе», иконка «Печать».
+- `cdcc57b` — S2: данные APT en/ru (`tools/data/sync-apt-data.mjs` → `resources/data/poe1`, `data.meta.json`, пин
+  `3188208957…`), загрузчик `src/shared/poe1/data` и порт парсера `src/shared/poe1/parser` (EN/RU, расширенный и
+  обычный формат, текст с трейда, timeless), 108 пар фикстур EN/RU, тесты `tests/poe1` (412 тестов). Скрипты
+  `sync:data`, `verify:data`, `collect:fixtures`. Не распознаются: 5 legacy-завоевателей timeless (решаем в S4),
+  legacy-моды флаконов, статы камней. Подробности — `S2-handover.md` в общей папке заметок.
 - _(лид, 28.10)_ — слит `design/system` (дизайнер): токены «Золото компаса» + компоненты `ui-*`, шрифты OFL
   (Golos Text, Cormorant SC, JetBrains Mono — с кириллицей), знак «ромб обмена»/логотип/трей/иконки действий,
   `build/icon.ico`, `docs/design-system.md` (`43695ed`…`a2e5a82`); `globals.css` подключает `tokens.css`,
