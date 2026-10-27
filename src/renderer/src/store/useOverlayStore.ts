@@ -1,0 +1,75 @@
+import { create } from 'zustand'
+import type { CapturedItem, OverlayFocusState, OverlayStatus, PricePopupPosition, UiLang } from '@shared/types'
+
+// Состояние страницы игрового оверлея (overlay.html, S1). Компаньон сюда не ходит —
+// у него свой useAppStore. Виджеты этапов (S4/S6/S8) держат свои данные в своих сторах,
+// а отсюда берут общее: фокус, язык интерфейса, последний захваченный предмет и сигнал
+// «закрыть всплывающие окна» (popupDismissSeq).
+
+// TODO(лид, Settings v2): брать из Settings.overlay.pricePosition ('cursor' | 'left' | 'right'),
+// когда поле появится в main; до тех пор — «у курсора».
+const DEFAULT_PRICE_POSITION: PricePopupPosition = 'cursor'
+
+interface OverlayStore {
+  ready: boolean
+  /** язык интерфейса (Settings.uiLang) */
+  lang: UiLang
+  /** акселератор overlayToggle — для подсказок ('Shift+Space') */
+  toggleKey: string
+  /** «Позиция окна цены» для окон слоя popup */
+  pricePosition: PricePopupPosition
+  focus: OverlayFocusState
+  status: OverlayStatus | null
+  /** предмет для демо-виджета «текст предмета» (null — виджет закрыт) */
+  item: CapturedItem | null
+  /**
+   * Растёт, когда всплывающие окна (слой popup) надо закрыть: Esc, клик мимо окна,
+   * курсор ушёл от предмета. Виджеты этапов подписываются на смену значения.
+   */
+  popupDismissSeq: number
+
+  /** Загрузить состояние и подписаться на события main; возвращает отписку. */
+  init: () => Promise<() => void>
+  /** Перечитать язык и хоткей из настроек (их меняют в окне компаньона). */
+  refreshSettings: () => Promise<void>
+  /** Закрыть всплывающие окна (без возврата фокуса — это делает вызывающий). */
+  dismissPopups: () => void
+}
+
+const api = (): Window['overlayApi'] => window.overlayApi
+
+export const useOverlayStore = create<OverlayStore>((set, get) => ({
+  ready: false,
+  lang: 'ru',
+  toggleKey: 'Shift+Space',
+  pricePosition: DEFAULT_PRICE_POSITION,
+  focus: { game: false, overlay: false, usingHotkey: false },
+  status: null,
+  item: null,
+  popupDismissSeq: 0,
+
+  init: async () => {
+    const offs = [
+      api().onOverlayFocus((focus) => {
+        set({ focus })
+        // оверлей активировали — самое время подтянуть свежие настройки
+        if (focus.overlay) void get().refreshSettings()
+      }),
+      api().onOverlayStatus((status) => set({ status })),
+      // повторный Ctrl+D по тому же предмету закрывает окно (макет: «Закрытие»)
+      api().onItemCaptured((item) => set({ item: get().item?.text === item.text ? null : item })),
+      api().onOverlayAutoHide(() => get().dismissPopups()),
+      api().onOverlayDismiss(() => get().dismissPopups())
+    ]
+    const [state] = await Promise.all([api().overlay.getState(), get().refreshSettings()])
+    set({ ready: true, focus: state.focus, status: state.status, item: get().item ?? state.lastItem })
+    return () => offs.forEach((off) => off())
+  },
+
+  refreshSettings: async () => {
+    const s = await api().settings.get()
+    set({ lang: s.uiLang, toggleKey: s.hotkeys.overlayToggle?.accel ?? '' })
+  },
+
+  dismissPopups: () => set((s) => ({ item: null, popupDismissSeq: s.popupDismissSeq + 1 }))
+}))

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Path of Exile</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; overflow: hidden; }
+      body {
+        font: 13px 'Segoe UI', sans-serif;
+        color: #d8cfbf;
+        background: radial-gradient(80% 70% at 50% 40%, #2a2117, #0d0b09);
+      }
+      /* боковые панели как у PoE: ширина = высота * 370/600 */
+      .panel {
+        position: absolute; top: 0; bottom: 0; width: calc(100vh * 370 / 600);
+        background: rgba(20, 16, 12, 0.92); border: 1px solid #5a4a30; padding: 12px;
+      }
+      .panel h2 { margin: 0 0 10px; font: 600 15px Georgia, serif; color: #c9a85e; }
+      #stash { left: 0; } #inv { right: 0; }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .item {
+        height: 86px; padding: 6px; border: 1px solid #4a3d28; border-radius: 4px;
+        background: rgba(40, 32, 22, 0.9); cursor: default; font-size: 12px; line-height: 1.25;
+      }
+      .item small { display: block; margin-top: 4px; color: #8f8370; }
+      .item.hover { outline: 2px solid #e2c56b; }
+      .item.match { box-shadow: 0 0 0 2px #6fc26f inset; }
+      .item.empty { border-style: dashed; color: #6f6556; }
+      #search {
+        width: 100%; margin-bottom: 10px; padding: 5px 8px; border: 1px solid #5a4a30;
+        background: #120f0b; color: #e8dcc4; border-radius: 3px;
+      }
+      #center {
+        position: absolute; top: 12px; left: calc(100vh * 370 / 600 + 16px);
+        right: calc(100vh * 370 / 600 + 16px); color: #a99c86; font-size: 12px;
+      }
+      #center b { color: #e2c56b; }
+      #copied {
+        margin-top: 8px; max-height: 30vh; overflow: auto; padding: 6px; white-space: pre-wrap;
+        background: rgba(0, 0, 0, 0.35); border: 1px solid #3a3022; font: 11px Consolas, monospace;
+      }
+      #chat {
+        position: absolute; left: calc(100vh * 370 / 600 + 16px); bottom: 12px; width: 46%;
+      }
+      #chatLog { max-height: 22vh; overflow: auto; font-size: 12px; color: #cfc3ad; }
+      #chatInput {
+        width: 100%; margin-top: 4px; padding: 5px 8px; border: 1px solid #7a6640;
+        background: rgba(0, 0, 0, 0.75); color: #fff;
+      }
+      #log { margin-top: 8px; font: 11px Consolas, monospace; color: #7f735f; max-height: 18vh; overflow: auto; }
+    </style>
+  </head>
+  <body>
+    <div id="stash" class="panel">
+      <h2>Тайник / Stash</h2>
+      <input id="search" placeholder="Поиск (Ctrl+F)" />
+      <div class="grid" id="stashGrid"></div>
+    </div>
+    <div id="center">
+      <div>
+        <b>Тестовое окно «Path of Exile»</b> — наведите курсор на предмет и нажмите <b>Ctrl+D</b>
+        (POETH скопирует его сам) или Ctrl+C. Enter — чат, Ctrl+F — поиск в стэше.
+      </div>
+      <div>Последнее скопированное игрой:</div>
+      <div id="copied">—</div>
+      <div id="log"></div>
+    </div>
+    <div id="inv" class="panel">
+      <h2>Инвентарь / Inventory</h2>
+      <div class="grid" id="invGrid"></div>
+    </div>
+    <div id="chat">
+      <div id="chatLog"></div>
+      <input id="chatInput" hidden />
+    </div>
+    <script src="fake-items.js"></script>
+    <script src="fake-game-page.js"></script>
+  </body>
+</html>
