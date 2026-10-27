@@ -20,10 +20,12 @@ import {
 } from '../windows/gameOverlay'
 import { sendToCompanion } from '../windows/companionWindow'
 import type { IpcDomain } from './types'
+import { getPasteString } from './regex'
 
 // Домен «игровой оверлей» (S1): окно поверх игры (windows/gameOverlay.ts), хоткеи
 // overlayToggle (Shift+Space) и priceCheck (Ctrl+D → текст предмета), кликабельные
-// виджеты (focus/interactiveAreas.ts), ввод в игру для renderer'ов (чат, поиск в стэше).
+// виджеты (focus/interactiveAreas.ts), ввод в игру для renderer'ов (чат, поиск в стэше),
+// хоткеи pasteSearch1..5 → строка слота regex-библиотеки (S7) → поиск в стэше.
 
 type ItemListener = (item: CapturedItem) => void
 
@@ -99,6 +101,15 @@ async function setupForGame(def: GameDef): Promise<void> {
   initGameOverlay(def)
   setPollInterval((await getSettings()).clickThroughPollMs)
   onHotkeyAction('overlayToggle', () => toggleOverlay(true))
+  // Строки regex из библиотеки S7 по хоткеям: одно нажатие = Ctrl+F + вставка (без Enter).
+  if (def.features.regex) {
+    for (const slot of [1, 2, 3, 4, 5] as const) {
+      onHotkeyAction(`pasteSearch${slot}`, async () => {
+        const text = await getPasteString(slot)
+        if (text) stashSearch(text, { submit: false })
+      })
+    }
+  }
   // Ctrl+D: если priceCheck уже взял другой домен (PoE2 — trade.ts; ipc/index.ts
   // настраивает trade раньше overlay), не перебиваем его — тот вызывает captureItemText сам.
   if (!hasHotkeyAction('priceCheck')) {

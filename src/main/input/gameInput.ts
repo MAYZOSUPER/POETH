@@ -263,8 +263,12 @@ export function typeInChat(text: string, opts: { send?: boolean } = {}): GameInp
   return done ? 'ok' : 'busy'
 }
 
-/** Поиск в стэше/у торговца: Ctrl+F → вставить текст → Enter (буфер вернётся через 120 мс). */
-export function stashSearch(text: string): GameInputResult {
+/**
+ * Поиск в стэше/у торговца: Ctrl+F → вставить текст (→ Enter, если submit) — буфер вернётся
+ * через 120 мс. submit по умолчанию как в APT (Enter снимает фокус с поля поиска); хоткеи
+ * строк regex (pasteSearch1..5) вставляют без Enter.
+ */
+export function stashSearch(text: string, opts: { submit?: boolean } = {}): GameInputResult {
   const k = prepareInput()
   if (typeof k === 'string') return k
   const { uIOhook, UiohookKey: Key } = k
@@ -273,7 +277,7 @@ export function stashSearch(text: string): GameInputResult {
     clipboard.writeText(text)
     uIOhook.keyTap(Key.F, [Key.Ctrl])
     uIOhook.keyTap(Key.V, [process.platform === 'darwin' ? Key.Meta : Key.Ctrl])
-    uIOhook.keyTap(Key.Enter)
+    if (opts.submit !== false) uIOhook.keyTap(Key.Enter)
   })
   return done ? 'ok' : 'busy'
 }
