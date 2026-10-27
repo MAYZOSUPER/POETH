@@ -13,6 +13,14 @@ files:
   - out/**/*
   - package.json
 
+# Автообновление (S10a): релизы GitHub MAYZOSUPER/POETH. В сборку кладётся app-update.yml,
+# в релиз — latest.yml + установщик (CI: .github/workflows/release.yml, --publish always).
+publish:
+  provider: github
+  owner: MAYZOSUPER
+  repo: POETH
+  releaseType: release
+
 # Нативные модули — N-API prebuilds (electron-overlay-window, uiohook-napi): пересборка под Electron
 # не нужна. Без npmRebuild:false electron-builder собирает .node из исходников (нужен MSVC, ломается
 # на пробелах в пути) — проверено в S1: упакованная сборка на одних prebuilds работает.

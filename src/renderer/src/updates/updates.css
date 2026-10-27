@@ -1,0 +1,83 @@
+/* Служебные окна S10a: экран загрузки и «Вышло обновление». Только токены и ui-*. */
+
+/* только служебные окна (main.tsx ставит класс): у компаньона фон прозрачный */
+body.svc-body,
+body.svc-body #root {
+  background: var(--page);
+}
+
+.svc {
+  height: 100vh;
+  border-radius: 0;
+}
+
+.svc--splash {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--sp-5);
+  padding: var(--sp-7) var(--sp-8);
+}
+.svc-splash__mark {
+  width: 56px;
+  height: 56px;
+}
+.svc-splash__name {
+  color: var(--accent-hi);
+  font: 700 var(--fs-title) / 1.15 var(--font-display);
+  letter-spacing: 0.06em;
+}
+.svc-splash__meter {
+  width: 260px;
+}
+
+.svc--update {
+  display: flex;
+  flex-direction: column;
+}
+/* окно без рамки: тащить за шапку */
+.svc-drag {
+  -webkit-app-region: drag;
+}
+.svc-update__body {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  gap: var(--sp-4);
+  align-content: start;
+}
+.svc-update__ver {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.svc-update__notes {
+  max-height: 150px;
+  padding: var(--sp-4) var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--sunken);
+  color: var(--fg);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  user-select: text;
+}
+.svc-update__err {
+  margin-inline: calc(-1 * var(--sp-6));
+}
+.svc-update__hint {
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}
+.svc-update__foot {
+  justify-content: flex-end;
+}
+
+/* блок «Запуск и обновления» в настройках */
+.upd-set__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-3);
+}
