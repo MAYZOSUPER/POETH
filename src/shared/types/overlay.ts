@@ -103,5 +103,7 @@ export interface OverlayNotice {
   /** ключ строки i18n (dict/overlay.ts) */
   key: string
   params?: Record<string, string | number>
+  /** уже готовый текст (сообщения main на языке интерфейса) — тогда key не переводится */
+  text?: string
   kind: 'info' | 'warn'
 }

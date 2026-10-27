@@ -11,6 +11,7 @@ import { Ico } from './regex/Ico'
 import { useT } from '../i18n'
 import { AccountPanel } from './account/AccountPanel'
 import { ChatCommandsPanel } from './chat/ChatCommandsPanel'
+import { UpdatesSettings } from '../updates/UpdatesSettings'
 
 const BOTH: GameId[] = ['poe1', 'poe2']
 
@@ -352,6 +353,7 @@ export function SettingsPanel() {
         </>
       )}
 
+      <UpdatesSettings />
       <div className="block">
         <div className="onb-settings-links">
           <button type="button" className="ui-btn ui-btn--sm" onClick={() => useShellStore.getState().setPage('about')}>

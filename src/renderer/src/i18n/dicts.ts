@@ -9,6 +9,7 @@ import { regex } from './dict/regex'
 import { auth } from './dict/auth'
 import { deals } from './dict/deals'
 import { onboarding } from './dict/onboarding'
+import { updates } from './dict/updates'
 
 // Строки интерфейса по доменам: этап добавляет ключи только в свой ./dict/<домен>.ts.
 // Этот список ЗАМОРОЖЕН после S0 (новый домен подключает лид; onboarding — S9). Полнота RU/EN и
@@ -23,5 +24,6 @@ export const DOMAIN_DICTS: Record<string, DomainDict> = {
   regex,
   auth,
   deals,
-  onboarding
+  onboarding,
+  updates
 }

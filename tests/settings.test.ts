@@ -29,6 +29,8 @@ describe('defaultSettings', () => {
     expect(s.regex).toEqual({})
     expect(s.ui).toEqual({ simpleMode: true })
     expect(s.overlay).toEqual({ pricePosition: 'cursor' })
+    expect(s.startup).toEqual({ withWindows: false, minimized: true, firstRunDone: false })
+    expect(s.updates).toEqual({ check: true })
     expect(s.chatCommands.find((c) => c.id === 'hideout')).toMatchObject({ text: '/hideout', hotkey: 'F5', send: true })
   })
 
@@ -253,5 +255,42 @@ describe('firstRunDone («Мастер первого запуска», S9)', ()
     expect(done.firstRunDone).toBe(true)
     expect(migrateSettings(JSON.parse(JSON.stringify(done))).firstRunDone).toBe(true)
     expect(migrateSettings({ ...defaultSettings(), firstRunDone: 'yes' }).firstRunDone).toBe(false)
+  })
+})
+
+describe('startup / updates (S10a)', () => {
+  it('профили без флага (компас, ранний POETH) получают мастер первого запуска один раз', () => {
+    expect(migrateSettings(fixture('v1-exile-companion.json')).startup.firstRunDone).toBe(false)
+    const v2old: Record<string, unknown> = { ...defaultSettings() }
+    delete v2old.startup
+    expect(migrateSettings(v2old).startup).toEqual({ withWindows: false, minimized: true, firstRunDone: false })
+  })
+
+  it('мастер пройден — флаг сохраняется и переживает миграцию', () => {
+    const done = applySettingsPatch(defaultSettings(), { startup: { firstRunDone: true } })
+    expect(done.startup).toEqual({ withWindows: false, minimized: true, firstRunDone: true })
+    expect(migrateSettings(JSON.parse(JSON.stringify(done))).startup.firstRunDone).toBe(true)
+  })
+
+  it('настроек нет — первый запуск', () => {
+    expect(migrateSettings(null).startup.firstRunDone).toBe(false)
+  })
+
+  it('сохранённые значения переживают миграцию, мусор — к дефолту', () => {
+    const s = migrateSettings({
+      ...defaultSettings(),
+      startup: { withWindows: true, minimized: false, firstRunDone: true },
+      updates: { check: false }
+    })
+    expect(s.startup).toEqual({ withWindows: true, minimized: false, firstRunDone: true })
+    expect(s.updates).toEqual({ check: false })
+    const bad = migrateSettings({ ...defaultSettings(), startup: { withWindows: 'yes' }, updates: 1 })
+    expect(bad.startup.withWindows).toBe(false)
+    expect(bad.updates).toEqual({ check: true })
+  })
+
+  it('патч раздела не трогает остальные поля', () => {
+    const a = applySettingsPatch(defaultSettings(), { startup: { withWindows: true } })
+    expect(a.startup).toEqual({ withWindows: true, minimized: true, firstRunDone: false })
   })
 })

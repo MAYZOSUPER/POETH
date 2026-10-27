@@ -8,6 +8,7 @@ import type { LiveSettings } from './live'
 import type { DealsSettings } from './deals'
 import type { RegexSettings } from './regex'
 import type { ChatCommand, OverlaySettings } from './overlay'
+import type { StartupSettings, UpdatesSettings } from './updates'
 
 export type UiLang = 'ru' | 'en'
 
@@ -113,6 +114,10 @@ export interface Settings {
    * (даже при «запуске в трее», S10a) и мастер поверх него.
    */
   firstRunDone: boolean
+  /** запуск: вместе с Windows, свёрнутым, первый запуск (S10a) */
+  startup: StartupSettings
+  /** проверка обновлений приложения и данных (S10a) */
+  updates: UpdatesSettings
 }
 
 /**
