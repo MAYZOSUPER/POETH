@@ -8,7 +8,8 @@ export type LiveInput =
   | { ok: true; slug: string; league?: string; host?: SiteHost }
   | { ok: false; error: Exclude<LiveAddError, 'duplicate'> }
 
-const SLUG = /^[A-Za-z0-9_-]{3,64}$/
+// короткие коды (kE6YLz5Tw) и длинные id вида H4sIAAAA… (~130 символов), которые сейчас отдаёт поиск
+const SLUG = /^[A-Za-z0-9_-]{3,512}$/
 
 function decode(s: string): string | null {
   try {

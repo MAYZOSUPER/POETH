@@ -26,6 +26,12 @@ describe('разбор ссылки на поиск', () => {
     })
   })
 
+  it('длинный id поиска (H4sI…), который сейчас отдаёт API', () => {
+    const id = 'H4sIAAAAAAAAA6tWKi5JLCktVrKqVsovKMnMz1OyUsrPy8nMS1Wq1VHKS8xNBQqEJCaV5iQqBCUWJyrpKJVUFoAEgzNzC3JSFYLyk4BKAWolA5lIAAAA'
+    expect(parseLiveInput(`https://www.pathofexile.com/trade/search/Standard/${id}`)).toMatchObject({ ok: true, slug: id })
+    expect(parseLiveInput('x'.repeat(513))).toEqual({ ok: false, error: 'bad-url' })
+  })
+
   it('«лига/код» и просто код', () => {
     expect(parseLiveInput('Allflame/kE6YLz5Tw')).toEqual({ ok: true, league: 'Allflame', slug: 'kE6YLz5Tw' })
     expect(parseLiveInput('kE6YLz5Tw')).toEqual({ ok: true, slug: 'kE6YLz5Tw' })

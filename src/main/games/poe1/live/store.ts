@@ -63,7 +63,7 @@ function normalize(raw: unknown): LiveFile {
       id,
       title: cleanTitle(s.title, s.slug),
       league: s.league.slice(0, 80),
-      slug: s.slug.slice(0, 64),
+      slug: s.slug.slice(0, 512),
       enabled: bool(s.enabled, false),
       sound: bool(s.sound, true),
       source: s.source === 'favorite' ? 'favorite' : 'manual',
