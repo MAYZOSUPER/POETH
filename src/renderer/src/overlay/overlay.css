@@ -1,0 +1,162 @@
+/* Игровой оверлей (S1). Только токены из styles/globals.css — тему даст дизайнер. */
+
+.ov-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* Активный оверлей (Shift+Space): лёгкое затемнение — видно, что ввод сейчас у POETH,
+   и у окна гарантированно есть «пиксели» для клика по пустому фону. */
+.ov-root.is-active {
+  background: rgba(8, 7, 10, 0.14);
+}
+
+.ov-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ov-layer--cards {
+  z-index: 10;
+}
+.ov-layer--toasts {
+  z-index: 20;
+}
+.ov-layer--popup {
+  z-index: 30;
+}
+
+.ov-widget {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.ov-hint {
+  position: absolute;
+  z-index: 40;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--gold-bright);
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+}
+
+/* ---- панель виджета ---- */
+
+.ov-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 16px);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.ov-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ov-panel__title {
+  flex: 1;
+  font-family: var(--font-serif);
+  letter-spacing: 0.5px;
+  color: var(--gold-bright);
+  font-size: 14px;
+}
+
+.ov-badge {
+  padding: 1px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ov-icon-btn {
+  width: 24px;
+  height: 24px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ov-icon-btn:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.ov-panel__foot {
+  padding: 8px 10px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.ov-panel__keys {
+  margin-top: 2px;
+  color: var(--gold);
+}
+
+/* ---- демо-виджет «текст предмета» ---- */
+
+.ov-itemtext {
+  width: min(420px, calc(100vw - 16px));
+}
+
+.ov-itemtext__name {
+  padding: 8px 10px 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ov-itemtext__meta {
+  padding: 2px 10px 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.ov-itemtext__raw {
+  flex: 1;
+  min-height: 0;
+  max-height: 52vh;
+  margin: 0;
+  padding: 8px 10px;
+  overflow: auto;
+  border-top: 1px solid var(--line);
+  background: var(--row);
+  color: var(--text);
+  font-family: Consolas, 'Cascadia Mono', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: text;
+  cursor: text;
+}
+.ov-itemtext__raw::-webkit-scrollbar {
+  width: 8px;
+}
+.ov-itemtext__raw::-webkit-scrollbar-thumb {
+  background: var(--scroll);
+  border-radius: 4px;
+}
