@@ -44,6 +44,10 @@ export const common: DomainDict = {
     'set.hk.conflict': '⚠ Это сочетание уже занято',
     'set.hk.reset': 'Сбросить',
     'set.hk.hint': 'Клик — изменить · Esc — отмена',
+    'set.support': 'Поддержать проект',
+    'set.support.text':
+      'POETH бесплатный и без платных функций. Если он вам помогает — можно поддержать разработку на Boosty.',
+    'set.support.btn': 'Boosty',
     'set.disclaimer':
       'POE Trade Helper (POETH) — неофициальный фанатский инструмент. Не связан с Grinding Gear Games. Path of Exile, Path of Exile 2 и все ассеты © GGG.'
   },
@@ -88,6 +92,10 @@ export const common: DomainDict = {
     'set.hk.conflict': '⚠ That combo is already used',
     'set.hk.reset': 'Reset',
     'set.hk.hint': 'Click to change · Esc to cancel',
+    'set.support': 'Support the project',
+    'set.support.text':
+      'POETH is free, with no paid features. If it helps you, you can support development on Boosty.',
+    'set.support.btn': 'Boosty',
     'set.disclaimer':
       'POE Trade Helper (POETH) is an unofficial fan-made tool. Not affiliated with Grinding Gear Games. Path of Exile, Path of Exile 2 and all assets © GGG.'
   }

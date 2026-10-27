@@ -65,6 +65,11 @@ npm run build       # сборка main/preload/renderer
 npm run package     # NSIS-инсталлятор в dist-release/
 ```
 
+## Поддержать проект
+
+POETH бесплатный — без платных функций и рекламы. Если он помогает вам в игре, разработку можно
+поддержать на **Boosty**: https://boosty.to/twistedthreadstudios (ссылка есть и в меню трея, и внизу настроек).
+
 ## Документация
 
 - [MEMORY.md](MEMORY.md) — handoff: что это, статус, как запускать, подводные камни, журнал

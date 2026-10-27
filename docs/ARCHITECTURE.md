@@ -91,7 +91,7 @@ lock. `secret.json` компаса (POESESSID, safeStorage) копируется
   pathofexile.com, остальное → системный браузер; `window.open`/загрузки/разрешения запрещены.
 - Hardening (S3/S10): fuses `RunAsNode=off`, `EnableNodeCliInspectArguments=off`, `OnlyLoadAppFromAsar=on`,
   `EmbeddedAsarIntegrityValidation=on`; CSP в наших окнах (✅ есть); проверка `event.senderFrame` во всех IPC;
-  `openExternal` — только https + allowlist (✅ есть: `www|ru.pathofexile.com`).
+  `openExternal` — только https + allowlist (✅ есть: `src/shared/links.ts` — `www|ru.pathofexile.com`, `boosty.to`).
 - Выход чистит partition. Фолбэк «вставить POESESSID» → `cookies.set` в partition + копия в `safeStorage`
   (`secretStore.ts`). Без телеметрии и своих серверов; логи маскируют cookie.
 - UA: `app.userAgentFallback` = Chromium UA + ` POETH/<ver>` (один на окно и API — `cf_clearance` привязан к UA);

@@ -71,6 +71,7 @@
 | Файл | Зачем |
 |---|---|
 | `src/shared/games.ts` | таблица игр `GameDef`, `siteUrl/apiUrl/liveUrl` |
+| `src/shared/links.ts` | внешние ссылки (`BOOSTY_URL`) и allowlist хостов `openExternal` |
 | `src/shared/settings.ts`, `src/shared/types/settings.ts` | Settings v2: поля, дефолты, миграция, патч |
 | `src/shared/ipc.ts`, `src/shared/types.ts`, `src/preload/index.ts`, `src/main/ipc/index.ts`, `src/main/ipc/types.ts` | агрегаторы доменов |
 | `src/shared/ipc/app.ts`, `src/main/ipc/app.ts`, `src/preload/domains/app.ts` | настройки, окно, смена игры |

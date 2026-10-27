@@ -40,7 +40,7 @@ export interface AppIpcApi {
     setLocked(locked: boolean): void
     toggleVisible(): void
     minimize(): void
-    /** open an https URL on pathofexile.com in the user's default browser */
+    /** open an https URL in the default browser (allowlist: @shared/links EXTERNAL_HOSTS) */
     openExternal(url: string): void
   }
   hotkeys: {

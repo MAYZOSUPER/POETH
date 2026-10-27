@@ -1,6 +1,7 @@
 import { app, ipcMain, shell } from 'electron'
 import { IPC } from '@shared/ipc'
 import { isGameId, type GameId } from '@shared/games'
+import { isAllowedExternalUrl } from '@shared/links'
 import type { AppInfo, Settings, SettingsPatch } from '@shared/types'
 import { getSettings, updateSettings } from '../services/settingsStore'
 import { getCompanionWindow } from '../windows/companionWindow'
@@ -86,20 +87,9 @@ function register(): void {
     void toggleCompanionVisible()
   })
   ipcMain.on(IPC.window.minimize, () => getCompanionWindow()?.minimize())
-  ipcMain.on(IPC.window.openExternal, (_e, url: string) => {
-    // Only ever open https links to the official site (www / ru).
-    if (typeof url !== 'string') return
-    try {
-      const parsed = new URL(url)
-      if (parsed.protocol !== 'https:') return
-      const host = parsed.hostname
-      if (host !== 'www.pathofexile.com' && host !== 'ru.pathofexile.com' && host !== 'pathofexile.com') {
-        return
-      }
-      void shell.openExternal(url)
-    } catch {
-      // malformed URL — ignore
-    }
+  ipcMain.on(IPC.window.openExternal, (_e, url: unknown) => {
+    // Only https links to allowlisted hosts (official site, Boosty) — see @shared/links.
+    if (isAllowedExternalUrl(url)) void shell.openExternal(url)
   })
 
   // ---- hotkey rebinding: suspend globals while the user captures a combo ----

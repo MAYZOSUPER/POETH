@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { HotkeyAction, UiLang } from '@shared/types'
 import { GAMES, type GameId } from '@shared/games'
 import { HOTKEY_ACTIONS, defaultHotkeys } from '@shared/settings'
+import { BOOSTY_URL } from '@shared/links'
 import { useAppStore } from '../store/useAppStore'
 import { useT } from '../i18n'
 
@@ -315,6 +316,14 @@ export function SettingsPanel() {
           </div>
         </>
       )}
+
+      <div className="block support">
+        <div className="block-title">{t('set.support')}</div>
+        <div className="small muted">{t('set.support.text')}</div>
+        <button className="btn small" onClick={() => window.overlayApi.window.openExternal(BOOSTY_URL)}>
+          ♥ {t('set.support.btn')}
+        </button>
+      </div>
 
       <div className="disclaimer small muted">{t('set.disclaimer')}</div>
     </section>
