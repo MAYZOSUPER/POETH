@@ -105,7 +105,14 @@ export function openLoginWindow(opts: LoginWindowOptions): BrowserWindow {
   win.webContents.on('render-process-gone', () => {
     if (!win.isDestroyed()) win.close()
   })
-  win.once('ready-to-show', () => win.show())
+  // ready-to-show может не прийти, если первым отрисовался и сменился челлендж
+  // Cloudflare, — тогда показываем по таймеру
+  const reveal = (): void => {
+    if (!win.isDestroyed() && !win.isVisible()) win.show()
+  }
+  win.once('ready-to-show', reveal)
+  win.webContents.once('did-finish-load', reveal)
+  setTimeout(reveal, 1500)
   win.on('closed', () => {
     if (loginWin === win) loginWin = null
   })

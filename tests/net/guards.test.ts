@@ -113,6 +113,29 @@ describe('детект Cloudflare / HTML', () => {
     expect(isCloudflareChallenge({ status: 403, headers: { 'cf-mitigated': 'challenge' }, body: '' })).toBe(true)
   })
 
+  it('обычная страница GGG (401 /my-account) со следами Cloudflare — не челлендж', () => {
+    // реальные фрагменты: Turnstile формы входа и скрипт Bot Management на всех страницах
+    const loginPage = html(
+      401,
+      '<!DOCTYPE html><html><head><title>Path of Exile</title>' +
+        '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script></head>' +
+        '<body><form action="/login"><input type="password"></form>' +
+        "<script>(function(){var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';" +
+        "document.getElementsByTagName('head')[0].appendChild(a);})();</script></body></html>"
+    )
+    expect(isCloudflareChallenge(loginPage)).toBe(false)
+  })
+
+  it('локализованный челлендж («Один момент…») узнаётся по служебным маркерам', () => {
+    const ru = CF_PAGE.replace('Just a moment...', 'Один момент…')
+    expect(isCloudflareChallenge(html(403, ru))).toBe(true)
+    const onlyOrchestrate = html(
+      403,
+      "<html><head><title>x</title></head><script>a.src='/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1?ray=1'</script></html>"
+    )
+    expect(isCloudflareChallenge(onlyOrchestrate)).toBe(true)
+  })
+
   it('HTML 403 без маркеров — не челлендж, но для API это blocked', () => {
     const page = html(403, '<!DOCTYPE html><html><title>Forbidden</title></html>')
     expect(isCloudflareChallenge(page)).toBe(false)

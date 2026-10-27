@@ -19,6 +19,8 @@ const COOKIE_NAME = 'POESESSID'
 const COOKIE_DOMAIN = '.pathofexile.com'
 /** срок cookie, вставленного вручную (сайт сам продлевает свою сессию) */
 const PASTED_COOKIE_TTL_S = 28 * 24 * 3600
+/** срок, с которым пересохраняется сессионный POESESSID сайта (см. makePersistent) */
+const PERSIST_COOKIE_TTL_S = 30 * 24 * 3600
 const VERIFY_DEBOUNCE_MS = 700
 const LOGIN_CLOSE_DELAY_MS = 1200
 
@@ -80,10 +82,39 @@ async function sessionCookie(h: SiteHost): Promise<Cookie | null> {
 export function initAccount(d: AccountDeps): void {
   if (deps) return
   deps = d
-  getAccountSession().cookies.on('changed', (_event, cookie) => {
-    if (isSessionCookie(cookie)) scheduleVerify()
+  getAccountSession().cookies.on('changed', (_event, cookie, _cause, removed) => {
+    if (!isSessionCookie(cookie)) return
+    if (!removed && cookie.session) void makePersistent(cookie)
+    scheduleVerify()
   })
   void restorePasted().finally(() => void verify())
+}
+
+/**
+ * Сайт ставит POESESSID сессионным (без Expires), а Chromium такие cookies на диск не
+ * пишет — вход пропадал бы после перезапуска. Пересохраняем его постоянным: сервер
+ * по-прежнему решает, жива ли сессия (это ловит проверка /my-account), а на диске
+ * cookie зашифрован (fuse EnableCookieEncryption).
+ */
+async function makePersistent(c: Cookie): Promise<void> {
+  try {
+    const ses = getAccountSession()
+    const domain = (c.domain ?? '').replace(/^\./, '')
+    await ses.cookies.set({
+      url: `https://${domain}${c.path ?? '/'}`,
+      ...(c.hostOnly ? {} : { domain: c.domain }),
+      path: c.path ?? '/',
+      name: c.name,
+      value: c.value,
+      secure: true,
+      httpOnly: true,
+      sameSite: c.sameSite === 'unspecified' ? 'lax' : c.sameSite,
+      expirationDate: Math.floor(Date.now() / 1000) + PERSIST_COOKIE_TTL_S
+    })
+    await ses.cookies.flushStore()
+  } catch (e) {
+    netLog('warn', 'account: persist cookie failed', e instanceof Error ? e.message : String(e))
+  }
 }
 
 /** Cookie потерян, а копия вставленного POESESSID есть — вернуть cookie. */

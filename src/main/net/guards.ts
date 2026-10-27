@@ -77,13 +77,17 @@ export interface ResponseLike {
   body: string
 }
 
+// Только маркеры страницы-челленджа. Обычные страницы GGG (/login, /my-account → 401)
+// тоже содержат следы Cloudflare — Turnstile с challenges.cloudflare.com и скрипт
+// /cdn-cgi/challenge-platform/scripts/jsd/main.js, — это НЕ челлендж. Заголовок
+// «Just a moment» локализуется по Accept-Language («Один момент…»), поэтому главные
+// признаки — заголовок cf-mitigated, _cf_chl_opt и путь …/challenge-platform/h/…/orchestrate/.
 const CF_MARKERS = [
   /<title>\s*just a moment/i,
-  /_cf_chl_opt/,
-  /\/cdn-cgi\/challenge-platform\//,
+  /\b_cf_chl_opt\b/,
+  /\/cdn-cgi\/challenge-platform\/h\/[^"'\s]*\/orchestrate\//,
   /attention required!?\s*\|\s*cloudflare/i,
-  /cf-browser-verification/i,
-  /challenges\.cloudflare\.com/i
+  /cf-browser-verification/i
 ]
 
 /** Ответ — HTML-страница (по content-type или по началу тела). */
