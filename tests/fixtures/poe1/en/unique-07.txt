@@ -1,0 +1,30 @@
+Item Class: Warstaves
+Rarity: Unique
+The Whispering Ice
+Vile Staff
+--------
+Warstaff
+Physical Damage: 41-76
+Critical Strike Chance: 7.50%
+Attacks per Second: 1.30
+Weapon Range: 1.3 metres
+--------
+Requirements:
+Level: 33
+Str: 59
+Int: 59
+--------
+Sockets: R-B-G-B 
+--------
+Item Level: 70
+--------
++18% Chance to Block Attack Damage
+--------
++1 to Level of Socketed Support Gems
+Grants Level 1 Icestorm Skill
+17% increased Intelligence
+12% increased Cast Speed
+1% increased Spell Damage per 10 Intelligence
+--------
+Guard your darkest thoughts well, for they are
+the cracks through which the Nightmare crawls.

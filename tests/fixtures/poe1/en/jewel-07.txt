@@ -1,0 +1,14 @@
+Item Class: Jewels
+Rarity: Rare
+Bramble Heart
+Crimson Jewel
+--------
+Item Level: 44
+--------
++15 to Intelligence
++17% to Critical Strike Multiplier with Two Handed Melee Weapons
+0.37% of Physical Attack Damage Leeched as Life
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.
+--------
+Note: ~price 1 alch

@@ -1,0 +1,18 @@
+Item Class: Utility Flasks
+Rarity: Magic
+Topaz Flask of the Crystal
+--------
+Lasts 8 Seconds
+Consumes 20 of 50 Charges on use
+Currently has 0 Charges
++5% to maximum Lightning Resistance
++40% to Lightning Resistance
+--------
+Requirements:
+Level: 18
+--------
+Item Level: 69
+--------
+20% additional Elemental Resistances during Effect
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.

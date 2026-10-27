@@ -1,0 +1,12 @@
+Item Class: Jewels
+Rarity: Rare
+Loath Eye
+Crimson Jewel
+--------
+Item Level: 77
+--------
+14% increased Damage with Maces or Sceptres
+18% increased Critical Strike Chance with Fire Skills
+12% increased Area Damage
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

@@ -1,0 +1,15 @@
+Item Class: Jewels
+Rarity: Rare
+Behemoth Solace
+Viridian Jewel
+--------
+Item Level: 42
+--------
+12% increased Chaos Damage
+4% increased Attack Speed while holding a Shield
+7% increased Ignite Duration on Enemies
+4% chance to Ignite
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.
+--------
+Note: ~price 1 alch

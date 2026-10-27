@@ -1,0 +1,29 @@
+Item Class: Shields
+Rarity: Unique
+Matua Tupuna
+Tarnished Spirit Shield
+--------
+Chance to Block: 24%
+Energy Shield: 33 (augmented)
+--------
+Requirements:
+Level: 23
+Int: 60
+--------
+Sockets: B-B-B 
+--------
+Item Level: 73
+--------
+9% increased Spell Damage
+--------
++2 to Level of Socketed Minion Gems
+59% increased Energy Shield
++15 to maximum Mana
+10% increased effect of Non-Curse Auras from your Skills on your Minions
+Spreads Tar when you take a Critical Strike
+10% increased effect of Non-Curse Auras from your Skills
+--------
+You carried me through life,
+The least I can do is carry you through death.
+--------
+Note: ~price 1 alch

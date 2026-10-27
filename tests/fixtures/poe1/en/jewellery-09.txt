@@ -1,0 +1,18 @@
+Item Class: Amulets
+Rarity: Rare
+Morbid Rosary
+Gold Amulet
+--------
+Requirements:
+Level: 60
+--------
+Item Level: 84
+--------
+19% increased Rarity of Items found
+--------
+Adds 11 to 16 Cold Damage to Attacks
++21 to maximum Energy Shield
++15% to all Elemental Resistances
+Gain 13% of Physical Damage as Extra Cold Damage
+--------
+Redeemer Item

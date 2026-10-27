@@ -1,0 +1,26 @@
+Item Class: Wands
+Rarity: Rare
+Torment Barb
+Imbued Wand
+--------
+Wand
+Physical Damage: 41-76 (augmented)
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.60
+--------
+Requirements:
+Level: 59
+Int: 188
+--------
+Sockets: B 
+--------
+Item Level: 61
+--------
+36% increased Spell Damage
+--------
+4% increased Cold Damage
+Adds 14 to 26 Physical Damage
+6% increased Cast Speed
++173 to Accuracy Rating
+--------
+Fractured Item

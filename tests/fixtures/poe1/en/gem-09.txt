@@ -1,0 +1,23 @@
+Item Class: Skill Gems
+Rarity: Gem
+Vulnerability
+--------
+Spell, AoE, Duration, Curse, Physical, Hex
+Level: 1
+Cost: 16 Mana
+Cast Time: 0.50 sec
+--------
+Requirements:
+Level: 24
+Str: 37
+Int: 25
+--------
+Curse all targets in an area, causing them to take increased physical damage. Attacks against the cursed enemies have a chance to inflict bleeding.
+--------
+Base duration is 8.00 seconds
+Cursed enemies take 15% increased Physical Damage
+Attack Hits against Cursed Enemies have 25% chance to inflict Bleeding
+--------
+Experience: 1/118383
+--------
+Place into an item socket to gain this skill. Right click to remove from a socket.

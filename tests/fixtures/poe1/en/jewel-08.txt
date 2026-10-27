@@ -1,0 +1,12 @@
+Item Class: Jewels
+Rarity: Rare
+Dusk Scar
+Viridian Jewel
+--------
+Item Level: 59
+--------
+14% increased Trap Damage
++13% to Melee Critical Strike Multiplier
+18% increased Damage with Bleeding
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

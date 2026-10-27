@@ -1,0 +1,25 @@
+Item Class: Wands
+Rarity: Unique
+Reverberation Rod
+Spiraled Wand
+--------
+Wand
+Physical Damage: 11-32
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.45
+--------
+Requirements:
+Level: 24
+Int: 83
+--------
+Sockets: B-R-B 
+--------
+Item Level: 70
+--------
+15% increased Spell Damage
+--------
++1 to Level of Socketed Gems
+Socketed Gems are Supported by Level 10 Spell Echo
++11 to Intelligence
+--------
+If it's worth doing once, it's worth doing twice.

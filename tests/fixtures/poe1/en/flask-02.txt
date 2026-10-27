@@ -1,0 +1,22 @@
+Item Class: Mana Flasks
+Rarity: Magic
+Enduring Divine Mana Flask of Staunching
+--------
+Quality: +15% (augmented)
+Recovers 1127 (augmented) Mana over 3.50 (augmented) Seconds
+Consumes 8 of 42 Charges on use
+Currently has 0 Charges
+--------
+Requirements:
+Level: 60
+--------
+Item Level: 66
+--------
+30% reduced Amount Recovered
+30% reduced Duration
+Effect is not removed when Unreserved Mana is Filled
+Effect does not Queue
+Grants Immunity to Bleeding for 4 seconds if used while Bleeding
+Grants Immunity to Corrupted Blood for 4 seconds if used while affected by Corrupted Blood
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.

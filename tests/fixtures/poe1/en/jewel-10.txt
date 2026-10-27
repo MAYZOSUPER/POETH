@@ -1,0 +1,15 @@
+Item Class: Jewels
+Rarity: Rare
+Viper Strike
+Viridian Jewel
+--------
+Item Level: 33
+--------
+14% increased Trap Damage
+16% increased Damage with Bows
+Attacks have 3% chance to cause Bleeding
+15% increased Bleeding Duration
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.
+--------
+Note: ~price 1 alch

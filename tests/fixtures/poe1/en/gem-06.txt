@@ -1,0 +1,24 @@
+Item Class: Skill Gems
+Rarity: Gem
+Frost Wall
+--------
+Spell, Duration, Cold
+Level: 1
+Cost: 9 Mana
+Cooldown Time: 3.00 sec (3 uses)
+Cast Time: 0.50 sec
+--------
+Requirements:
+Level: 4
+Int: 16
+--------
+Creates a wall of ice which holds back enemies. Targets under the wall are damaged and pushed back.
+--------
+Deals 8 to 12 Cold Damage
+Base duration is 3.00 seconds
+0.2 seconds between appearance of Wall sections
+Wall will be 2.8 meters long
+--------
+Experience: 1/841
+--------
+Place into an item socket to gain this skill. Right click to remove from a socket.

@@ -1,0 +1,29 @@
+Item Class: Skill Gems
+Rarity: Gem
+Glacial Hammer
+--------
+Attack, Melee, Strike, Cold
+Level: 12
+Cost: 8 Mana
+Attack Damage: 400.7% of base
+Effectiveness of Added Damage: 400%
+--------
+Requirements:
+Level: 40
+Str: 92
+--------
+Hits enemies, converting some of your physical damage to cold damage. If a non-unique enemy is frozen and is on less than one third life, they will shatter when hit by Glacial Hammer. If striking three times in a row, the third strike will freeze enemies more easily. Requires a Mace, Sceptre or Staff.
+--------
+100% of Physical Damage Converted to Cold Damage
+25% chance to Freeze enemies
+Every third successive strike Freezes enemies as though dealing 310% more Damage
+21% increased Effect of Cold Ailments
+35% increased Duration of Cold Ailments
+--------
+Experience: 1061223/1061223
+--------
+Next-level requirements:
+Level: 44
+Str: 100
+--------
+Place into an item socket to gain this skill. Right click to remove from a socket.

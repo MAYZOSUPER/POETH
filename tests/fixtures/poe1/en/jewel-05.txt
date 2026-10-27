@@ -1,0 +1,15 @@
+Item Class: Jewels
+Rarity: Rare
+Oblivion Vessel
+Viridian Jewel
+--------
+Item Level: 73
+--------
+14% increased Damage with Swords
+5% increased Attack Speed while Dual Wielding
+10% increased Area Damage
+35% reduced Poison Duration on you
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.
+--------
+Note: ~b/o 1 alch

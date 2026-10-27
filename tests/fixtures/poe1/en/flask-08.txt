@@ -1,0 +1,20 @@
+Item Class: Utility Flasks
+Rarity: Magic
+Amethyst Flask of the Hare
+--------
+Quality: +11% (augmented)
+Lasts 7.20 (augmented) Seconds
+Consumes 35 of 65 Charges on use
+Currently has 0 Charges
++35% to Chaos Resistance
+--------
+Requirements:
+Level: 18
+--------
+Item Level: 69
+--------
+25% increased Movement Speed during Effect
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+--------
+Note: ~price 1 alch

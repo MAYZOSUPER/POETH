@@ -1,0 +1,16 @@
+Item Class: Boots
+Rarity: Rare
+Zealot Boots
+--------
+Armour: 73
+Energy Shield: 15
+--------
+Requirements:
+Str: 39
+Int: 39
+--------
+Sockets: R 
+--------
+Item Level: 71
+--------
+Unidentified

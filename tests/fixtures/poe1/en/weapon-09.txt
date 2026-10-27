@@ -1,0 +1,31 @@
+Item Class: Claws
+Rarity: Rare
+Brood Barb
+Great White Claw
+--------
+Claw
+Physical Damage: 37-95 (augmented)
+Elemental Damage: 63-120 (augmented)
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.30
+Weapon Range: 1.1 metres
+--------
+Requirements:
+Level: 58
+Dex: 81
+Int: 117
+--------
+Sockets: B-G 
+--------
+Item Level: 85
+--------
+Grants 46 Life per Enemy Hit
+--------
++42 to Intelligence
++19 to Dexterity
+22% increased Physical Damage
+Adds 63 to 120 Fire Damage
+25% increased Stun Duration on Enemies
++36 to Accuracy Rating
+--------
+Fractured Item

@@ -1,0 +1,29 @@
+Item Class: One Hand Axes
+Rarity: Unique
+Dreadarc
+Cleaver
+--------
+One Handed Axe
+Physical Damage: 18-59 (augmented)
+Elemental Damage: 11-24 (augmented)
+Critical Strike Chance: 5.00%
+Attacks per Second: 1.43 (augmented)
+Weapon Range: 1.1 metres
+--------
+Requirements:
+Level: 16
+Str: 48
+--------
+Sockets: B-R 
+--------
+Item Level: 62
+--------
+Adds 6 to 24 Physical Damage
+Adds 11 to 24 Fire Damage
+10% increased Attack Speed
++22% to Fire Resistance
+5% increased Movement Speed
+Curse Enemies with Flammability on Hit
+--------
+The fastest way to a man's heart
+is through his sternum.

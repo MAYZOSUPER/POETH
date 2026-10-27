@@ -1,0 +1,24 @@
+Item Class: Skill Gems
+Rarity: Gem
+Sniper's Mark
+--------
+Spell, Curse, Mark
+Level: 1
+Cost: 16 Mana
+Cast Time: 0.50 sec
+Quality: +10% (augmented)
+--------
+Requirements:
+Level: 4
+Dex: 16
+--------
+Curses a single enemy, increasing the damage they take from projectiles, and making projectiles split when hitting them, to hit other targets around them. You can only have one Mark at a time.
+--------
+Cursed enemies take 12% increased Damage from Projectile Hits
+Projectiles which Hit Cursed Enemies Split towards 2 additional targets
+--------
+Experience: 1/841
+--------
+Place into an item socket to gain this skill. Right click to remove from a socket.
+--------
+Note: ~b/o .99 alch

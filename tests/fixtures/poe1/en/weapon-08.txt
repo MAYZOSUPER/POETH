@@ -1,0 +1,28 @@
+Item Class: Wands
+Rarity: Rare
+Torment Song
+Omen Wand
+--------
+Wand
+Physical Damage: 24-45
+Elemental Damage: 26-61 (augmented)
+Critical Strike Chance: 10.26% (augmented)
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 53
+Int: 200
+--------
+Sockets: B B 
+--------
+Item Level: 71
+--------
+29% increased Spell Damage
+--------
+26% increased Stun Duration on Enemies
+Adds 26 to 61 Fire Damage
+Adds 32 to 68 Fire Damage to Spells
+13% increased Cast Speed
+18% increased Critical Strike Chance
+--------
+Fractured Item

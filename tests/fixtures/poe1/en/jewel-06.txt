@@ -1,0 +1,14 @@
+Item Class: Jewels
+Rarity: Rare
+Fulgent Breath
+Cobalt Jewel
+--------
+Item Level: 77
+--------
+15% increased Trap Damage
+5% increased Cast Speed while Dual Wielding
+8% increased Ignite Duration on Enemies
+3% chance to Ignite
+18% increased Damage with Bleeding
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

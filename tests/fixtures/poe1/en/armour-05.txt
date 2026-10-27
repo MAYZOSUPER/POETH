@@ -1,0 +1,21 @@
+Item Class: Helmets
+Rarity: Rare
+Gale Brow
+Lunaris Circlet
+--------
+Energy Shield: 53 (augmented)
+--------
+Requirements:
+Level: 39
+Int: 83
+--------
+Sockets: B-B G 
+--------
+Item Level: 48
+--------
++189 to Accuracy Rating
++12 to maximum Energy Shield
++61 to maximum Life
++34 to maximum Mana
+--------
+Note: ~price 0.5 alch

@@ -1,0 +1,13 @@
+Item Class: Divination Cards
+Rarity: Divination Card
+The Scholar
+--------
+Stack Size: 3/3
+--------
+40x Scroll of Wisdom
+--------
+It is with the smallest of words that we find the largest of truths.
+--------
+Shift click to unstack.
+--------
+Note: ~b/o 0.5 alch

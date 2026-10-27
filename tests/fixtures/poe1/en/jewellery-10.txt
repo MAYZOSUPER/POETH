@@ -1,0 +1,20 @@
+Item Class: Belts
+Rarity: Rare
+Death Twine
+Heavy Belt
+--------
+Requirements:
+Level: 60
+--------
+Item Level: 75
+--------
++27 to Strength
+--------
+10% reduced Enemy Stun Threshold
++18 to maximum Energy Shield
++61 to maximum Mana
+29% increased Spell Damage during any Flask Effect
+--------
+Shaper Item
+--------
+Note: ~price 1 alch

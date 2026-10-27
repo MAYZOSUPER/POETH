@@ -1,0 +1,29 @@
+Item Class: Two Hand Maces
+Rarity: Rare
+Behemoth Star
+Colossus Mallet
+--------
+Two Handed Mace
+Physical Damage: 71-147 (augmented)
+Elemental Damage: 63-108 (augmented), 16-34 (augmented)
+Critical Strike Chance: 5.50%
+Attacks per Second: 1.30
+Weapon Range: 1.3 metres
+--------
+Requirements:
+Level: 59
+Str: 188
+--------
+Sockets: R-B-R 
+--------
+Item Level: 60
+--------
+30% increased Stun Duration on Enemies
+--------
+Adds 63 to 108 Fire Damage
++32 to Strength
+Adds 6 to 12 Physical Damage
+Adds 16 to 34 Cold Damage
++6 to Accuracy Rating
+--------
+Fractured Item

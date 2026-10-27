@@ -1,0 +1,24 @@
+Item Class: Gloves
+Rarity: Unique
+Meginord's Vise
+Steel Gauntlets
+--------
+Armour: 164 (augmented)
+--------
+Requirements:
+Level: 35
+Str: 52
+--------
+Sockets: R 
+--------
+Item Level: 72
+--------
++100 to Strength
+10% increased Global Physical Damage
+41% increased Armour
+--------
+Ride with pride,
+strike with vengeance,
+live with honour.
+--------
+Note: ~price 1 alch

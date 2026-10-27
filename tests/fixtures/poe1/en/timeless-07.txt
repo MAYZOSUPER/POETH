@@ -1,0 +1,17 @@
+Item Class: Jewels
+Rarity: Unique
+Brutal Restraint
+Timeless Jewel
+--------
+Limited to: 1 Historic
+Radius: Large
+--------
+Item Level: 86
+--------
+Denoted service of 6375 dekhara in the akhara of Nasima
+Passives in radius are Conquered by the Maraketh
+Historic
+--------
+They believed themselves the most ordered, but that tradition turned their forests to salt.
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

@@ -1,0 +1,24 @@
+Item Class: Amulets
+Rarity: Unique
+Maligaro's Cruelty
+Turquoise Amulet
+--------
+Requirements:
+Level: 20
+--------
+Item Level: 58
+--------
++17 to Dexterity and Intelligence
+--------
+4% increased maximum Life
+26% chance to gain a Frenzy Charge on Killing an Enemy affected by at least 5 Poisons
+13% chance to gain a Power Charge on Killing an Enemy affected by fewer than 5 Poisons
+10% increased Damage with Poison per Frenzy Charge
+3% increased Poison Duration per Power Charge
+--------
+"He does not love. He does not feel regret or remorse.
+He does not think about consequences, only possibilities.
+If that does not describe a monster, tell me: what does?"
+- Archbishop Geofri
+--------
+Note: ~price 1 alch

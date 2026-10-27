@@ -1,0 +1,28 @@
+Item Class: Two Hand Maces
+Rarity: Rare
+Bramble Bane
+Dread Maul
+--------
+Two Handed Mace
+Physical Damage: 77-104
+Critical Strike Chance: 6.05% (augmented)
+Attacks per Second: 1.25
+Weapon Range: 1.3 metres
+--------
+Requirements:
+Level: 54
+Str: 173
+--------
+Sockets: R-R 
+--------
+Item Level: 85
+--------
+30% increased Stun Duration on Enemies
+--------
++1 to Level of Socketed Melee Gems
++1 to Level of Socketed Gems
+21% increased Critical Strike Chance
+Grants 5 Life per Enemy Hit
+Gain 2 Mana per Enemy Killed
+--------
+Fractured Item

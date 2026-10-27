@@ -1,0 +1,27 @@
+Item Class: Skill Gems
+Rarity: Gem
+Molten Strike
+--------
+Attack, Projectile, AoE, Melee, Strike, Fire
+Level: 4
+Cost: 6 Mana
+Attack Damage: 146% of base
+Effectiveness of Added Damage: 146%
+--------
+Requirements:
+Level: 7
+Str: 22
+--------
+Infuses your melee weapon with molten energies to attack with physical and fire damage. This attack causes balls of molten magma to launch forth from the enemies you hit, divided amongst all enemies hit by the strike. These will deal area attack damage to enemies where they land.
+--------
+Fires 4 Projectiles
+60% of Physical Damage Converted to Fire Damage
+Projectiles deal 60% less Damage with Hits and Ailments
+--------
+Experience: 6667/6667
+--------
+Next-level requirements:
+Level: 11
+Str: 31
+--------
+Place into an item socket to gain this skill. Right click to remove from a socket.

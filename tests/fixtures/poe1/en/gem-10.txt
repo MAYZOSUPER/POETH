@@ -1,0 +1,23 @@
+Item Class: Support Gems
+Rarity: Gem
+Deadly Ailments Support
+--------
+Support
+Level: 1
+Cost & Reservation Multiplier: 140%
+Quality: +9% (augmented)
+--------
+Requirements:
+Level: 18
+Dex: 21
+Int: 14
+--------
+Supports any skill that hits enemies.
+--------
+Supported Skills deal 30% more Damage with Ailments
+Supported Skills deal 80% less Damage with Hits
+Supported Skills deal 4% increased Damage over Time
+--------
+Experience: 1/69833
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Skill Gem you wish to augment. Right click to remove from a socket.

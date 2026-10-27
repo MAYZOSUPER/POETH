@@ -1,0 +1,19 @@
+Item Class: Life Flasks
+Rarity: Magic
+Avenger's Eternal Life Flask of the Albatross
+--------
+Recovers 2080 Life over 2 Seconds
+Consumes 15 of 45 Charges on use
+Currently has 0 Charges
+--------
+Requirements:
+Level: 65
+--------
+Item Level: 67
+--------
+Recharges 5 Charges when you take a Critical Strike
+12% increased Cast Speed during Effect
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+--------
+Note: ~price 1 alch

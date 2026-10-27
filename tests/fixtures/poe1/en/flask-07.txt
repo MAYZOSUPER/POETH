@@ -1,0 +1,20 @@
+Item Class: Life Flasks
+Rarity: Magic
+Substantial Eternal Life Flask of Craving
+--------
+Recovers 3120 (augmented) Life over 3 (augmented) Seconds
+Consumes 15 of 45 Charges on use
+Currently has 0 Charges
+--------
+Requirements:
+Level: 65
+--------
+Item Level: 70
+--------
+50% increased Amount Recovered
+33% reduced Recovery rate
+0.4% of Physical Attack Damage Leeched as Mana during Effect
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+--------
+Note: ~price 1 alch

@@ -1,0 +1,29 @@
+Item Class: Daggers
+Rarity: Rare
+Oblivion Stinger
+Gutting Knife
+--------
+Dagger
+Physical Damage: 23-84 (augmented)
+Elemental Damage: 5-60 (augmented)
+Critical Strike Chance: 9.00%
+Attacks per Second: 1.64 (augmented)
+Weapon Range: 1 metre
+--------
+Requirements:
+Level: 56
+Dex: 113
+Int: 78
+--------
+Sockets: B-G 
+--------
+Item Level: 60
+--------
+30% increased Global Critical Strike Chance
+--------
+Adds 5 to 60 Lightning Damage
+17% increased Attack Speed
++2 to Level of Socketed Fire Gems
+Adds 4 to 8 Physical Damage
+--------
+Fractured Item

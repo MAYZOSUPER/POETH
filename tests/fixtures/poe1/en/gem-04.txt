@@ -1,0 +1,26 @@
+Item Class: Skill Gems
+Rarity: Gem
+Infernal Blow
+--------
+Attack, AoE, Melee, Strike, Fire, Duration
+Level: 1
+Cost: 6 Mana
+Attack Damage: 164.3% of base
+Effectiveness of Added Damage: 164%
+--------
+Requirements:
+Level: 12
+Str: 33
+--------
+Attacks with your weapon, applying a charged debuff to enemies hit by your strike, and an uncharged debuff to any other enemies hit. Upon reaching 6 charges, expiring, or the enemy's death, the charged debuff is removed to damage that and other surrounding enemies. Enemies with either debuff explode when they die, damaging other surrounding enemies. Damage from this explosion cannot be reflected. Requires a Sword, Axe, Mace, Sceptre, Staff or Unarmed.
+--------
+Base duration is 0.80 seconds
+60% of Physical Damage Converted to Fire Damage
+Explosion deals base Fire Damage equal to 6% of the corpse's Maximum Life
+Base radius is 2.4 metres
+Base explosion radius is 1.8 metres
+Debuff deals 66% of Damage per Charge
+--------
+Experience: 2896/15249
+--------
+Place into an item socket to gain this skill. Right click to remove from a socket.

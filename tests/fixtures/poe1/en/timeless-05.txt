@@ -1,0 +1,17 @@
+Item Class: Jewels
+Rarity: Unique
+Glorious Vanity
+Timeless Jewel
+--------
+Limited to: 1 Historic
+Radius: Large
+--------
+Item Level: 86
+--------
+Bathed in the blood of 7705 sacrificed in the name of Xibaqua
+Passives in radius are Conquered by the Vaal
+Historic
+--------
+They believed themselves the pinnacle of civilisation, but that height toppled their empire.
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

@@ -1,0 +1,20 @@
+Item Class: Amulets
+Rarity: Rare
+Vortex Beads
+Jade Amulet
+--------
+Requirements:
+Level: 54
+--------
+Item Level: 73
+--------
++24 to Dexterity
+--------
++23 to all Attributes
+7% increased Intelligence
++7 to maximum Energy Shield
++8% to Fire Resistance
+--------
+Crusader Item
+--------
+Note: ~b/o 1 alch

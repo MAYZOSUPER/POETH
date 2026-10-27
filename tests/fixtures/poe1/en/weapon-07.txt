@@ -1,0 +1,29 @@
+Item Class: Two Hand Swords
+Rarity: Rare
+Doom Stinger
+Wraith Sword
+--------
+Two Handed Sword
+Physical Damage: 52-109
+Elemental Damage: 41-76 (augmented), 7-211 (augmented)
+Critical Strike Chance: 5.00%
+Attacks per Second: 1.35
+Weapon Range: 1.3 metres
+--------
+Requirements:
+Level: 54
+Str: 93
+Dex: 93
+--------
+Sockets: R-R-R 
+--------
+Item Level: 72
+--------
+30% increased Global Accuracy Rating
+--------
+Adds 7 to 211 Lightning Damage
+Adds 41 to 76 Cold Damage
+Gain 6 Life per Enemy Killed
++110 to Accuracy Rating
+--------
+Fractured Item
