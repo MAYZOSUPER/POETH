@@ -93,10 +93,17 @@ Currency Exchange (Фаустус), поэтому bulk для валюты по
 | search | `5:10:60, 15:60:300, 30:300:1800, 600:21600:3600` |
 | fetch | `12:4:10, 16:12:300, 50:300:300, 1000:21600:1800` |
 | exchange | `5:15:60, 10:90:300, 30:300:1800` |
-| live-fetch | отдельная политика для `fetch` находок live (⚠ значения — по заголовкам) |
+| live-fetch | свой лимитер с окнами `fetch`; если сервер отвечает тем же `x-rate-limit-policy`, что и `fetch`, лимитеры сливаются (общий бюджет) |
+| data | `data/leagues`, `data/stats`… — без заголовков лимитов (ответ из кэша Cloudflare), свой потолок `10:60:60` |
 
 Правила POETH: интерактивный запрос (Ctrl+D) вперёд очереди; ждать > 1.5 с — сразу ошибка с обратным отсчётом;
-фоновые (live) — только если остаётся ≥ 25 % окна; кэш 5 мин по хэшу запроса.
+фоновые (live) — только если остаётся ≥ 25 % окна; кэш 5 мин по хэшу запроса. Реализация — `src/main/net/`
+(`rateLimit.ts`, `tradeGateway.ts`; вход для этапов — `src/main/net/index.ts`: `tradeRequest({kind, priority, req})`).
+
+**Проверено на живом API (S3, 28.10.2026, анонимно, через шлюз):** `POST search/Standard` → 200,
+`x-rate-limit-policy: trade-search-request-limit`, правило `Ip`, окна совпадают со стартовыми; `GET fetch/<10 id>?query=`
+→ 200, `trade-fetch-request-limit`, окна совпадают. `GET data/leagues` → 200 из кэша Cloudflare
+(`cache-control: public, max-age=120`), **без** заголовков лимитов. exchange — ещё не вызывался (S4).
 
 ## Live search (WebSocket)
 
@@ -108,10 +115,37 @@ Currency Exchange (Фаустус), поэтому bulk для валюты по
   **429** → бэкофф 30 с … 10 мин, **401** → ждём входа, **404** → поиск недействителен.
 - Транспорт — за интерфейсом; фолбэк — скрытое окно на сайте, если Cloudflare не пустит `ws`.
 
+## Лиги (`data/leagues`)
+
+Ответ: `{result:[{id, realm, text}]}` — по набору на `realm` `pc` / `xbox` / `sony`. Порядок (28.10.2026):
+`Allflame, Hardcore Allflame, Ruthless Allflame, HC Ruthless Allflame, Standard, Hardcore, Ruthless,
+Hardcore Ruthless`. POETH берёт только `realm: pc`, без Ruthless и приватных `(PLxxxx)`; `poe1.league: 'auto'` =
+первая софткор-лига, не Standard/Hardcore и не SSF (`src/main/net/leagueRules.ts`). Обновление — при старте,
+раз в час и после выхода из сна; последний список — `userData/leagues-poe1.json`.
+
+## Вход и cookies (проверено в S3)
+
+- `POESESSID` сайт выдаёт **любому** посетителю: `domain=.pathofexile.com; secure; HttpOnly; SameSite=Lax`, **без
+  Expires** (сессионный). Домен общий для `www` и `ru` — вход на одном хосте действует на обоих. Наличие cookie ≠ вход.
+- Проверка входа: `GET /my-account` сессией аккаунта — анонимно **401** (HTML), после входа — 200.
+  `GET /character-window/get-account-name` больше нет (**404**).
+- Chromium не пишет сессионные cookies на диск → POETH пересохраняет `POESESSID` постоянным (30 дней), иначе вход
+  пропадал бы после перезапуска. На диске cookie зашифрован (fuse `EnableCookieEncryption`, проверено в
+  `package:dir`: `value` пустой, `encrypted_value` заполнен).
+- Страница `/login`: способы входа Email / Steam / Epic Games / Xbox Live / PlayStation Network. В окне POETH
+  работает только Email (навигация ограничена pathofexile.com); остальным — фолбэк «вставить POESESSID».
+
 ## Ошибки и Cloudflare
 
 - 401/403 с JSON → сессия устарела; 403/HTML («Just a moment», `cf-…`) → Cloudflare-челлендж → UI предлагает
   «Открыть трейд-окно» и пройти проверку там (общий UA окна и API, `cf_clearance` привязан к UA).
+- Признаки **страницы-челленджа** (`guards.ts`): заголовок `cf-mitigated: challenge`, `window._cf_chl_opt`, путь
+  `/cdn-cgi/challenge-platform/h/…/orchestrate/`, `<title>Just a moment` (локализуется: «Один момент…»). **Не**
+  признаки: Turnstile с `challenges.cloudflare.com` и `/cdn-cgi/challenge-platform/scripts/jsd/main.js` — они есть
+  на обычных страницах GGG (`/login`, 401 `/my-account`). Для JSON-API любой HTML = `blocked`.
+- Страница трейда `/trade/search/…` для curl отдаёт managed challenge; API (`/api/trade/…`) через сетевой стек
+  Chromium (`net.request`) проходит без него. В окне входа Turnstile иногда проходит сам, иногда просит отметить
+  «Подтвердите, что вы человек» — это делает пользователь.
 - 429 → `retry-after`; 5xx → «сервер недоступен».
 
 ## Политика GGG (обязательно)
