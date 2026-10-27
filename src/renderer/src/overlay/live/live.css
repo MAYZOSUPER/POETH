@@ -1,0 +1,65 @@
+/* Тосты live search (S6) — поверх .ui-toast из components.css; только токены. */
+
+.lv-toast-wrap {
+  max-width: 100%;
+}
+.lv-toast {
+  /* ширина — var(--w-toast) из .ui-toast */
+  pointer-events: auto;
+}
+/* «поиск · когда» — одной строкой: длинное название обрезается, время — никогда */
+.lv-meta-where {
+  display: inline-flex;
+  flex: 1 1 0;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.lv-meta-search {
+  overflow: hidden;
+  min-width: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.lv-meta-ago {
+  flex: none;
+  white-space: nowrap;
+}
+.lv-kind--done {
+  color: var(--fg-muted);
+}
+.lv-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.lv-mods {
+  display: grid;
+  gap: var(--sp-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.lv-mods li {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.lv-price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2) var(--sp-3);
+}
+.lv-sub {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.lv-note {
+  color: var(--warn);
+  font-size: var(--fs-sm);
+}
+.lv-more {
+  height: var(--h-btn);
+}
