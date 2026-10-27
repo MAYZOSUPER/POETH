@@ -1,5 +1,23 @@
-// Типы прайс-чека PoE2 (trade2 API, перенесено из компаса).
-// TODO S4: типы прайс-чека PoE1 (фильтры модов, результаты, bulk) — сюда или в src/shared/poe1/.
+// Типы прайс-чека: PoE2 (trade2 API, перенесено из компаса) и IPC-типы PoE1 (S4; сами фильтры и запрос —
+// src/shared/poe1/pricecheck).
+
+export type {
+  Poe1Listing,
+  Poe1ListingKind,
+  Poe1Price,
+  Poe1SearchArgs,
+  Poe1SearchResult,
+  Poe1ExchangeArgs,
+  Poe1ExchangeOffer,
+  Poe1ExchangeResult
+} from '../poe1/pricecheck/results'
+export type { FallbackMatch as Poe1FallbackMatch } from '../poe1/pricecheck/fallback'
+
+/** Нераспознанная строка мода (ParsedItem.unknownModifiers) для фолбэка data/stats. */
+export interface Poe1UnknownLine {
+  text: string
+  type: string
+}
 
 export interface TradeListing {
   amount: number

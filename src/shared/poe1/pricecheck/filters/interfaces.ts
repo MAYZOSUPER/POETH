@@ -161,6 +161,8 @@ export interface StatFilter {
   option?: {
     value: number // NOTE: mutable in UI
   }
+  /** POETH: стат найден только в данных сайта трейда (мод нового патча, нет в данных APT) */
+  fromSite?: true
   /** i18n-ключ причины, почему фильтр скрыт по умолчанию */
   hidden?: string
   disabled: boolean // NOTE: mutable in UI

@@ -1,0 +1,134 @@
+/* Окно цены PoE1 (S4) — по утверждённому макету «Прайс-чек»: только токены и компоненты ui-*
+   (docs/design-system.md). Ширина 384 px (эксперт 420 px), высота по содержимому до 80 % окна игры,
+   прокрутка внутри. */
+
+.ov-pricecheck {
+  max-width: calc(100vw - 2 * var(--sp-4));
+}
+
+.pc {
+  display: flex;
+  flex-direction: column;
+  width: var(--w-pricecheck);
+  max-width: 100%;
+  max-height: 80vh;
+}
+.pc.is-expert {
+  width: var(--w-pricecheck-expert);
+}
+
+.pc-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.pc-league {
+  width: auto;
+  max-width: 140px;
+  height: 22px;
+}
+
+.pc-item {
+  padding: var(--sp-5) var(--sp-6) var(--sp-3);
+}
+
+.pc-blk {
+  display: grid;
+  gap: var(--sp-1);
+  padding: var(--sp-3) var(--sp-3) var(--sp-2);
+}
+.pc-blk > .ui-label {
+  padding: var(--sp-1) var(--sp-3);
+}
+.pc-blk--tight {
+  padding-bottom: 0;
+}
+
+.pc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding: var(--sp-1) var(--sp-6) var(--sp-5);
+}
+.pc-chips--top {
+  padding-top: var(--sp-4);
+}
+
+.pc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.pc-status .ui-select {
+  width: auto;
+  height: var(--h-chip);
+}
+
+.pc-more {
+  display: flex;
+  justify-content: center;
+  padding: var(--sp-1) 0 var(--sp-3);
+}
+.pc-more--again {
+  padding-top: var(--sp-4);
+}
+.pc-more--pad {
+  padding: var(--sp-5);
+}
+
+.pc-btns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+
+/* «честная цена»: две группы — купить сейчас (торговец) и по whisper (лично) */
+.pc-summary {
+  display: grid;
+  gap: var(--sp-3);
+}
+.pc-group {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--sp-1) var(--sp-4);
+}
+.pc-group__price {
+  color: var(--accent-hi);
+  font: 700 var(--fs-lg) / 1.2 var(--font-ui);
+  white-space: nowrap;
+}
+.pc-group[data-kind='instant'] .pc-group__price {
+  font-size: var(--fs-price);
+}
+.pc-group__median {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+.pc-group__none {
+  color: var(--fg-faint);
+  font-size: var(--fs-sm);
+}
+.pc-group__note {
+  grid-column: 2;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+
+.pc-listings {
+  max-height: 40vh;
+}
+
+.pc-sk {
+  display: grid;
+  gap: var(--sp-5);
+  padding: var(--sp-6);
+}
+.pc-sk__row {
+  display: grid;
+  grid-template-columns: 60px 1fr 70px;
+  gap: var(--sp-5);
+}
