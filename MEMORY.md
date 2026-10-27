@@ -127,7 +127,7 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
-- _(S0, Boosty)_ — поддержка проекта: `src/shared/links.ts` (`BOOSTY_URL`, allowlist `openExternal` + тест),
+- `aea5366` — поддержка проекта: `src/shared/links.ts` (`BOOSTY_URL`, allowlist `openExternal` + тест),
   пункт «♥ Поддержать проект» в трее (меню трея теперь RU/EN и строится при каждом открытии), блок внизу
   настроек, README, раздел «Монетизация» в плане.
 - `31a688c` — документация POETH: этот `MEMORY.md`, `docs/{PLAN-POETH,ARCHITECTURE,stages,poe1-trade-api,regex}.md`;
