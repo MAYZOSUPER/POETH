@@ -172,6 +172,16 @@ async function create(title: string): Promise<BaseWindow> {
     scheduleSave()
   })
   w.on('move', scheduleSave)
+  // Компаньон висит на уровне screen-saver и закрыл бы трейд-окно. Пока окно в фокусе — оно
+  // поднимается на тот же уровень; ушёл фокус (игра, компаньон) — опускается, если не закреплено.
+  w.on('focus', () => {
+    if (state.pinned || w.isDestroyed()) return
+    w.setAlwaysOnTop(true, 'screen-saver')
+    w.moveTop()
+  })
+  w.on('blur', () => {
+    if (!state.pinned && !w.isDestroyed()) w.setAlwaysOnTop(false)
+  })
   w.on('maximize', layout)
   w.on('unmaximize', layout)
   w.on('restore', layout)

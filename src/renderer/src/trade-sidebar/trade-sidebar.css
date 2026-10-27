@@ -1,0 +1,355 @@
+/* Сайдбар трейд-окна (S5) по макету «трейд-окно с избранным». Только токены tokens.css и
+   компоненты ui-*. Числа 300px (колонка) и 40px (адресная строка) совпадают с SIDEBAR_WIDTH и
+   BAR_HEIGHT в src/main/windows/tradeWindow.ts: правее и ниже лежит siteView с сайтом. */
+
+html,
+body {
+  background: var(--page);
+}
+
+.ts {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--page);
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+
+/* ---- колонка избранного ---- */
+.ts-side {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--border);
+  background: var(--surface-solid);
+}
+.ts-head {
+  flex: none;
+}
+.ts-league.ui-select {
+  width: auto;
+  max-width: 150px;
+  height: 22px;
+}
+.ts-league-fixed {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.ts-top {
+  flex: none;
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6);
+}
+.ts-list {
+  flex: 1;
+  min-height: 0;
+  padding: var(--sp-2) var(--sp-3) var(--sp-4);
+}
+.ts-foot {
+  flex: none;
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6) var(--sp-6);
+  border-top: 1px solid var(--border);
+}
+.ts-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.ts-acct {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.ts-grow {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ts-form {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-panel);
+  background: var(--sunken);
+}
+.ts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.ts-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.ts-textarea.ui-input {
+  height: auto;
+  min-height: 72px;
+  padding: var(--sp-3);
+  line-height: 1.4;
+  resize: vertical;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+}
+.ts-notice {
+  border-radius: var(--r-sm);
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+}
+.ts-notice.ui-banner--info {
+  border-color: color-mix(in srgb, var(--info) 30%, transparent);
+}
+.ts-notice.ui-banner--bad {
+  border-color: color-mix(in srgb, var(--bad) 35%, transparent);
+}
+.ts-empty {
+  padding-top: var(--sp-8);
+}
+.ts-empty .ui-ico {
+  color: var(--accent);
+}
+.ts-nothing {
+  padding: var(--sp-6);
+  color: var(--fg-faint);
+  text-align: center;
+}
+
+/* ---- папки ---- */
+.ts-fold {
+  display: grid;
+  border-radius: var(--r-sm);
+}
+.ts-fold.is-drop {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.ts-fold-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 30px;
+  border-radius: var(--r-sm);
+}
+.ts-fold-row:hover {
+  background: var(--hover);
+}
+.ts-fold-btn {
+  display: grid;
+  grid-template-columns: 14px 16px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+  min-height: 30px;
+  padding: 0 var(--sp-3);
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font: 600 var(--fs-md) / 1.2 var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+}
+.ts-fold-btn .ui-ico {
+  color: var(--fg-muted);
+}
+.ts-fold-t {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ts-fold-row .ts-inline {
+  grid-column: 1;
+  margin-left: 42px;
+  width: auto;
+}
+.ts-fold-row:has(.ts-inline) .ts-fold-btn {
+  display: none;
+}
+
+/* ---- поиски ---- */
+.ts-srch {
+  position: relative;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 40px;
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) 26px;
+  border-radius: var(--r-sm);
+}
+.ts-srch:hover {
+  background: var(--hover);
+}
+.ts-srch.is-active {
+  background: var(--selected);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.ts-srch.is-drop-before {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+.ts-srch.is-drop-after {
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+.ts-srch > .ui-ico {
+  color: var(--fg-muted);
+}
+.ts-srch.is-archived {
+  opacity: 0.75;
+}
+.ts-srch-t {
+  display: grid;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+}
+.ts-srch-t:disabled {
+  cursor: default;
+}
+.ts-srch-t b {
+  overflow: hidden;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ts-srch-t span {
+  overflow: hidden;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ts-inline.ui-input {
+  min-width: 0;
+}
+.ts-live[aria-pressed='true'][data-state='on'] {
+  color: var(--live);
+}
+.ts-live[aria-pressed='true'][data-state='connecting'],
+.ts-live[aria-pressed='true'][data-state='paused'] {
+  color: var(--warn);
+}
+.ts-live[aria-pressed='true'][data-state='error'] {
+  color: var(--bad);
+}
+.ts-live[aria-pressed='true'][data-state='off'] {
+  color: var(--fg-muted);
+}
+.ts-live[aria-disabled='true'] {
+  opacity: 0.4;
+}
+
+/* ---- меню «⋯» ---- */
+.ts-menu {
+  position: fixed;
+  z-index: 50;
+  max-width: 280px;
+}
+.ts-menu__title {
+  padding: var(--sp-3) var(--sp-5) var(--sp-2);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+.ts-menu .ui-menu__item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ---- адресная строка сайта ---- */
+.ts-bar {
+  position: absolute;
+  top: 0;
+  left: 300px;
+  right: 0;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-solid);
+}
+.ts-flip .ui-ico {
+  transform: scaleX(-1);
+}
+.ts-url {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  height: 26px;
+  padding: 0 var(--sp-5);
+  border-radius: var(--r-pill);
+  background: var(--sunken);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ts-url > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: text;
+}
+.ts-url .ui-ico {
+  flex: none;
+  color: var(--good);
+}
+.ts-bar .ui-switch {
+  white-space: nowrap;
+}
+.ts-bar__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+  animation: ts-progress 1.1s linear infinite;
+}
+@keyframes ts-progress {
+  from {
+    background-position: -40% 0;
+  }
+  to {
+    background-position: 140% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ts-bar__progress {
+    animation: none;
+    background-size: 100% 100%;
+  }
+}
+
+/* место под сайт (пока siteView не нарисовался) */
+.ts-site-wait {
+  position: absolute;
+  top: 40px;
+  left: 300px;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  color: var(--fg-faint);
+}
