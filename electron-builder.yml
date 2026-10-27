@@ -45,6 +45,8 @@ win:
   icon: build/icon.ico
 
 nsis:
+  # имя без пробелов — совпадает с url в latest.yml (иначе GitHub переименует файл)
+  artifactName: POETH-Setup-${version}.${ext}
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
