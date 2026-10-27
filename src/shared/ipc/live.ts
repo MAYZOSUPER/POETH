@@ -45,7 +45,7 @@ export interface LiveIpcApi {
     whisper(hitKey: string): Promise<LiveWhisperResult>
     /** скопировать whisper в буфер обмена */
     copyWhisper(hitKey: string): Promise<boolean>
-    /** открыть лот (до трейд-окна S5 — страница поиска в браузере) */
+    /** открыть лот в трейд-окне S5 (запрос ?q= по продавцу и предмету) */
     openHit(hitKey: string): Promise<boolean>
   }
   onLiveState(cb: (s: LiveSnapshot) => void): () => void

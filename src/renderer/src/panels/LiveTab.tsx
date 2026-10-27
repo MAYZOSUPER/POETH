@@ -72,7 +72,7 @@ function SearchRow({ s, now, masterOn, max }: { s: LiveSearchView; now: number; 
           className="ui-btn ui-btn--sm ui-btn--ghost ui-btn--icon"
           title={t('live.row.open')}
           aria-label={t('live.row.open')}
-          onClick={() => window.overlayApi.window.openExternal(s.siteUrl)}
+          onClick={() => void window.overlayApi.tradeWindow.open({ url: s.siteUrl, game: 'poe1' })}
         >
           <LiveIco name="external" />
         </button>
