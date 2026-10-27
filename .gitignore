@@ -12,3 +12,4 @@ tools/dataset-build/.cache/
 tools/dataset-build/sources/
 # stray third-party clone accidentally dropped in the repo root (not part of the project)
 UsersuserAppDataLocalTempawakened-poe-trade/
+dist-data/
