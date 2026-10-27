@@ -18,7 +18,11 @@ export const overlay: DomainDict = {
       'Обычная клавиша помешает печатать в чате игры — добавьте Ctrl или Alt.',
     'overlay.hotkey.reserved.system': 'Это системное сочетание Windows — выберите другое.',
     'overlay.status.admin':
-      'Игра запущена от имени администратора — запустите POETH тоже от администратора, иначе Ctrl+D не сработает.'
+      'Игра запущена от имени администратора — запустите POETH тоже от администратора, иначе Ctrl+D не сработает.',
+    'overlay.set.pricePosition': 'Позиция окна цены',
+    'overlay.set.pricePosition.cursor': 'У курсора',
+    'overlay.set.pricePosition.left': 'У левого края',
+    'overlay.set.pricePosition.right': 'У правого края'
   },
   en: {
     'overlay.hint.active': 'POETH is active — Esc or a click on empty space returns you to the game',
@@ -34,6 +38,10 @@ export const overlay: DomainDict = {
       'A plain key would get in the way of typing in the game chat — add Ctrl or Alt.',
     'overlay.hotkey.reserved.system': 'This is a Windows system shortcut — choose another one.',
     'overlay.status.admin':
-      'The game is running as administrator — run POETH as administrator too, otherwise Ctrl+D will not work.'
+      'The game is running as administrator — run POETH as administrator too, otherwise Ctrl+D will not work.',
+    'overlay.set.pricePosition': 'Price window position',
+    'overlay.set.pricePosition.cursor': 'Next to the cursor',
+    'overlay.set.pricePosition.left': 'Left edge',
+    'overlay.set.pricePosition.right': 'Right edge'
   }
 }

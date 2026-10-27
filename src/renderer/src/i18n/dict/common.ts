@@ -49,7 +49,7 @@ export const common: DomainDict = {
       'POETH бесплатный и без платных функций. Если он вам помогает — можно поддержать разработку на Boosty.',
     'set.support.btn': 'Boosty',
     'set.disclaimer':
-      'POE Trade Helper (POETH) — неофициальный фанатский инструмент. Не связан с Grinding Gear Games. Path of Exile, Path of Exile 2 и все ассеты © GGG.'
+      'POE Trade Helper (POETH) — неофициальный фанатский инструмент. POETH не связан с Grinding Gear Games и не одобрен ими. Path of Exile, Path of Exile 2 и все ассеты © GGG.'
   },
   en: {
     'tb.auto': 'Auto',
@@ -97,6 +97,6 @@ export const common: DomainDict = {
       'POETH is free, with no paid features. If it helps you, you can support development on Boosty.',
     'set.support.btn': 'Boosty',
     'set.disclaimer':
-      'POE Trade Helper (POETH) is an unofficial fan-made tool. Not affiliated with Grinding Gear Games. Path of Exile, Path of Exile 2 and all assets © GGG.'
+      "POE Trade Helper (POETH) is an unofficial fan-made tool. This product isn't affiliated with or endorsed by Grinding Gear Games in any way. Path of Exile, Path of Exile 2 and all assets © GGG."
   }
 }
