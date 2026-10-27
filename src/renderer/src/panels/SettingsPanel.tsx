@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { HotkeyAction, UiLang } from '@shared/types'
-import type { GameId } from '@shared/games'
+import { GAMES, type GameId } from '@shared/games'
 import { HOTKEY_ACTIONS, defaultHotkeys } from '@shared/settings'
 import { useAppStore } from '../store/useAppStore'
 import { useT } from '../i18n'
@@ -102,6 +102,7 @@ export function SettingsPanel() {
   const meta = dataset?.meta
   const game = settings?.game ?? 'poe1'
   const hkActions = HOTKEY_ACTIONS.filter((a) => HK_META[a].games.includes(game))
+  const hasCampaign = GAMES[game].features.campaign
 
   const [capturing, setCapturing] = useState<HotkeyAction | null>(null)
   const [hkNote, setHkNote] = useState<string | null>(null)
@@ -159,18 +160,22 @@ export function SettingsPanel() {
         </select>
       </div>
 
-      <div className="setting">
-        <label>{t('set.nameLang')}</label>
-        <select
-          className="lang-select"
-          value={settings?.nameLang ?? 'en'}
-          onChange={(e) => void patchSettings({ nameLang: e.target.value as UiLang })}
-        >
-          <option value="en">English</option>
-          <option value="ru">Русский</option>
-        </select>
-      </div>
-      <div className="hint small muted">{t('set.nameLang.note')}</div>
+      {hasCampaign && (
+        <>
+          <div className="setting">
+            <label>{t('set.nameLang')}</label>
+            <select
+              className="lang-select"
+              value={settings?.nameLang ?? 'en'}
+              onChange={(e) => void patchSettings({ nameLang: e.target.value as UiLang })}
+            >
+              <option value="en">English</option>
+              <option value="ru">Русский</option>
+            </select>
+          </div>
+          <div className="hint small muted">{t('set.nameLang.note')}</div>
+        </>
+      )}
 
       <div className="setting">
         <label>{t('set.opacity')}</label>
@@ -220,18 +225,17 @@ export function SettingsPanel() {
                   >
                     {capturing === action ? t('set.hk.press') : formatAccel(binding?.accel)}
                   </button>
-                  {binding?.accel && capturing !== action && (
-                    <button
-                      className="icon hk-clear"
-                      title={t('set.hk.clear')}
-                      onClick={() => {
-                        if (!binding) return
-                        void patchSettings({ hotkeys: { [action]: { ...binding, accel: '' } } })
-                      }}
-                    >
-                      ✕
-                    </button>
-                  )}
+                  <button
+                    className="icon hk-clear"
+                    title={t('set.hk.clear')}
+                    style={{ visibility: binding?.accel && capturing !== action ? 'visible' : 'hidden' }}
+                    onClick={() => {
+                      if (!binding) return
+                      void patchSettings({ hotkeys: { [action]: { ...binding, accel: '' } } })
+                    }}
+                  >
+                    ✕
+                  </button>
                 </span>
               </li>
             )
@@ -253,60 +257,64 @@ export function SettingsPanel() {
         </div>
       </div>
 
-      <div className="block">
-        <div className="block-title">{t('set.auto')}</div>
-        <label className="row-toggle">
-          <input
-            type="checkbox"
-            checked={settings?.tailerEnabled ?? false}
-            onChange={(e) => void (e.target.checked ? tailerStart() : tailerStop())}
-          />
-          {t('set.auto.read')}
-        </label>
-        <div className="small muted">
-          {tailerStatus?.running
-            ? tailerStatus.found
-              ? t('set.auto.found', { path: tailerStatus.logPath ?? '' })
-              : t('set.auto.notfound')
-            : t('set.auto.off')}
-        </div>
-        <button className="btn" onClick={() => void tailerPickFile()}>
-          {t('set.auto.pick')}
-        </button>
-        <label className="row-toggle">
-          <input
-            type="checkbox"
-            checked={settings?.autoAdvanceZone ?? true}
-            onChange={(e) => void patchSettings({ autoAdvanceZone: e.target.checked })}
-          />
-          {t('set.auto.advance')}
-        </label>
-        <label className="row-toggle">
-          <input
-            type="checkbox"
-            checked={settings?.autoCheckQuests ?? false}
-            onChange={(e) => void patchSettings({ autoCheckQuests: e.target.checked })}
-          />
-          {t('set.auto.check')}
-        </label>
-        <div className="small muted">{t('set.auto.check.note')}</div>
-        <div className="small muted">{t('set.auto.note')}</div>
-      </div>
+      {hasCampaign && (
+        <>
+          <div className="block">
+            <div className="block-title">{t('set.auto')}</div>
+            <label className="row-toggle">
+              <input
+                type="checkbox"
+                checked={settings?.tailerEnabled ?? false}
+                onChange={(e) => void (e.target.checked ? tailerStart() : tailerStop())}
+              />
+              {t('set.auto.read')}
+            </label>
+            <div className="small muted">
+              {tailerStatus?.running
+                ? tailerStatus.found
+                  ? t('set.auto.found', { path: tailerStatus.logPath ?? '' })
+                  : t('set.auto.notfound')
+                : t('set.auto.off')}
+            </div>
+            <button className="btn" onClick={() => void tailerPickFile()}>
+              {t('set.auto.pick')}
+            </button>
+            <label className="row-toggle">
+              <input
+                type="checkbox"
+                checked={settings?.autoAdvanceZone ?? true}
+                onChange={(e) => void patchSettings({ autoAdvanceZone: e.target.checked })}
+              />
+              {t('set.auto.advance')}
+            </label>
+            <label className="row-toggle">
+              <input
+                type="checkbox"
+                checked={settings?.autoCheckQuests ?? false}
+                onChange={(e) => void patchSettings({ autoCheckQuests: e.target.checked })}
+              />
+              {t('set.auto.check')}
+            </label>
+            <div className="small muted">{t('set.auto.check.note')}</div>
+            <div className="small muted">{t('set.auto.note')}</div>
+          </div>
 
-      <div className="block">
-        <div className="block-title">{t('set.data')}</div>
-        <div className="small muted">{t('set.data.version', { label: meta?.gameVersionLabel ?? '' })}</div>
-        <div className="small muted">
-          {t('set.data.schema', { schema: meta?.schemaVersion ?? '', acts: meta?.actCount ?? 0 })}
-        </div>
-        <ul className="sources small muted">
-          {meta?.sources.map((s, i) => (
-            <li key={i}>
-              {s.name} — {s.license}
-            </li>
-          ))}
-        </ul>
-      </div>
+          <div className="block">
+            <div className="block-title">{t('set.data')}</div>
+            <div className="small muted">{t('set.data.version', { label: meta?.gameVersionLabel ?? '' })}</div>
+            <div className="small muted">
+              {t('set.data.schema', { schema: meta?.schemaVersion ?? '', acts: meta?.actCount ?? 0 })}
+            </div>
+            <ul className="sources small muted">
+              {meta?.sources.map((s, i) => (
+                <li key={i}>
+                  {s.name} — {s.license}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
 
       <div className="disclaimer small muted">{t('set.disclaimer')}</div>
     </section>

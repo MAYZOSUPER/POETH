@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "activeProfileId": "p-1719650000000",
+  "uiLang": "ru",
+  "nameLang": "ru",
+  "opacity": 0.85,
+  "locked": false,
+  "overlayVisible": true,
+  "showInTaskbar": false,
+  "clickThroughPollMs": 33,
+  "logPath": "D:\\SteamLibrary\\steamapps\\common\\Path of Exile 2\\logs\\Client.txt",
+  "tailerEnabled": true,
+  "autoAdvanceZone": true,
+  "autoCheckQuests": true,
+  "lastAppTab": "campaign",
+  "league": "Dawn of the Hunt",
+  "hotkeys": {
+    "toggleVisible": "Control+Shift+O",
+    "toggleLock": "Control+Shift+L",
+    "prevStep": "Control+Shift+[",
+    "nextStep": "Control+Shift+]",
+    "priceCheck": "Alt+D"
+  }
+}

@@ -36,7 +36,12 @@ export default defineConfig({
     plugins: [react()],
     build: {
       rollupOptions: {
-        input: { index: resolve('src/renderer/index.html') }
+        // multi-page: компаньон, игровой оверлей (S1), сайдбар трейд-окна (S5)
+        input: {
+          index: resolve('src/renderer/index.html'),
+          overlay: resolve('src/renderer/overlay.html'),
+          'trade-sidebar': resolve('src/renderer/trade-sidebar.html')
+        }
       }
     }
   }

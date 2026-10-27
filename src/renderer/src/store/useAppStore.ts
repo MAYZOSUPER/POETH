@@ -14,6 +14,7 @@ import type {
   TailerStatus,
   ZoneEvent
 } from '@shared/types'
+import { resolveTab } from '../tabs'
 
 interface AppState {
   ready: boolean
@@ -316,7 +317,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       selectedZoneAreaId: null,
       currentStepIndex: initialStep,
       tailerStatus,
-      appTab: settings.lastAppTab ?? 'campaign',
+      appTab: resolveTab(settings.game, settings.lastAppTab),
       ready: true
     })
 
@@ -331,7 +332,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     if (tailerStatus.level) void get().setLevel(tailerStatus.level)
 
-    // Load price-check metadata in the background (network for leagues).
+    // PoE2 price-check metadata in the background (network for leagues).
+    if (settings.game !== 'poe2') return
     void api()
       .trade.hasSession()
       .then((sessionSet) => set({ sessionSet }))

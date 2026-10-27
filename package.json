@@ -12,11 +12,14 @@
     "build": "electron-vite build",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json",
-    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "typecheck:test": "tsc --noEmit -p tsconfig.test.json",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web && npm run typecheck:test",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:trade": "node scripts/test-trade.mjs",
     "build:data": "node tools/dataset-build/build.mjs",
     "build:tray-icon": "node tools/make-tray-icon.mjs",
     "validate:data": "node scripts/validate-dataset.mjs",
-    "test:trade": "node scripts/test-trade.mjs",
     "package": "npm run build && electron-builder --win nsis",
     "package:dir": "npm run build && electron-builder --dir"
   },
@@ -34,6 +37,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.7.2",
-    "vite": "^5.4.11"
+    "vite": "^5.4.11",
+    "vitest": "^3.2.7"
   }
 }

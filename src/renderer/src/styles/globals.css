@@ -241,6 +241,91 @@ button.icon.danger:hover {
   font-size: 13px;
 }
 
+/* ---------- game switch (PoE 1 / PoE 2) ---------- */
+.game-switch-wrap {
+  position: relative;
+  -webkit-app-region: no-drag;
+}
+.game-switch {
+  display: inline-flex;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.game-switch-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.game-switch-btn + .game-switch-btn {
+  border-left: 1px solid var(--line-strong);
+}
+.game-switch-btn:hover {
+  color: var(--text);
+}
+.game-switch-btn.active {
+  color: var(--bg);
+  background: var(--gold);
+}
+.game-confirm {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* ---------- coming-soon placeholder (PoE 1 tabs before their stages) ---------- */
+.coming-soon {
+  margin: auto;
+  max-width: 460px;
+  padding: 24px;
+  text-align: center;
+}
+.coming-soon-icon {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+.coming-soon-title {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  margin-bottom: 8px;
+}
+.coming-soon-text {
+  color: var(--text);
+  line-height: 1.5;
+}
+.stub-page {
+  padding: 16px;
+  color: var(--gold-bright);
+  background: var(--panel);
+  font-family: var(--font-serif);
+}
+.page-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 /* ---------- price-check tab ---------- */
 .price-check {
   flex: 1;

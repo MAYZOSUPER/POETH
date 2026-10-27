@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "activeProfileId": null,
+  "uiLang": "en",
+  "nameLang": "en",
+  "opacity": 1,
+  "locked": true,
+  "overlayVisible": false,
+  "showInTaskbar": true,
+  "clickThroughPollMs": 33,
+  "logPath": null,
+  "tailerEnabled": false,
+  "autoAdvanceZone": false,
+  "autoCheckQuests": false,
+  "lastAppTab": "priceCheck",
+  "league": "Standard",
+  "hotkeys": {
+    "toggleVisible": "Control+Alt+O",
+    "toggleLock": "F7",
+    "prevStep": "Control+Shift+[",
+    "nextStep": "Control+Shift+]",
+    "priceCheck": "Control+Alt+P"
+  }
+}

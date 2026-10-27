@@ -8,6 +8,10 @@ import { getSettings } from './services/settingsStore'
 import { registerPoethScheme, handlePoethProtocol } from './protocol'
 import { migrateUserData } from './services/userDataMigration'
 
+// dev/test: isolated profile (migration tests, parallel `npm run dev` from several
+// worktrees — the single-instance lock is per userData dir).
+if (process.env.POETH_USER_DATA_DIR) app.setPath('userData', process.env.POETH_USER_DATA_DIR)
+
 // Must happen before `ready` (scheme) and before the single-instance lock
 // (userData copy from the old product names, before Chromium writes there).
 registerPoethScheme()
