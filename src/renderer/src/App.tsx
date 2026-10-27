@@ -97,7 +97,10 @@ export default function App() {
     <div className="app" style={{ opacity }}>
       <Toolbar showSettings={page !== null} onToggleSettings={() => setPage(page ? null : 'settings')} />
       {!ready ? (
-        <div className="loading">Загрузка…</div>
+        // язык интерфейса ещё неизвестен (настройки грузятся) — без текста
+        <div className="loading" aria-busy="true">
+          <span className="ui-skeleton" style={{ width: 180, margin: '0 auto' }} />
+        </div>
       ) : (
         <>
           <AppTabs />
