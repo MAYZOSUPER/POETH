@@ -10,6 +10,11 @@ files:
   - out/**/*
   - package.json
 
+# Нативные модули (N-API prebuilds) должны лежать вне app.asar, иначе .node не загрузится.
+asarUnpack:
+  - "**/node_modules/electron-overlay-window/**"
+  - "**/node_modules/uiohook-napi/**"
+
 extraResources:
   - from: resources
     to: resources
