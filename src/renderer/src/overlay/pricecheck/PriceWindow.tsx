@@ -107,7 +107,10 @@ function ModRow({ f, expert, lang, t }: { f: StatFilter; expert: boolean; lang: 
   const touch = usePriceCheckStore((s) => s.touch)
   const pseudo = f.tag === 'pseudo'
   const tier = f.sources[0]?.modifier.info.tier
-  const parts = statParts(f, lang)
+  // свойства предмета (броня, DPS, IIQ карты…) в данных — английские ключи; переводим по trade id
+  const propKey = `pc1.prop.${f.tradeId[0]}`
+  const propText = f.tag === 'property' || f.tradeId[0]?.startsWith('item.') ? t(propKey) : undefined
+  const parts = statParts(f, lang, propText && propText !== propKey ? propText : f.text)
   const label = `${parts.before}${parts.value ?? ''}${parts.after}`
   const toggle = (): void => {
     f.disabled = !f.disabled

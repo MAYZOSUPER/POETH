@@ -41,8 +41,11 @@ export function ageKey(indexed: string | undefined, now = Date.now()): [string, 
 }
 
 /** Текст фильтра частями: [до #, число, после #]; без # или с несколькими # — как есть + число отдельно. */
-export function statParts(f: StatFilter, lang: UiLang): { before: string; value?: string; after: string } {
-  const text = f.text
+export function statParts(
+  f: StatFilter,
+  lang: UiLang,
+  text = f.text
+): { before: string; value?: string; after: string } {
   const value = f.roll ? fmtNum(f.roll.value, lang) : undefined
   const first = text.indexOf('#')
   if (first === -1 || value === undefined) return { before: text.replace(/#/g, '…'), after: '' }

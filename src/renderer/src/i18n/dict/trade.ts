@@ -171,7 +171,24 @@ export const trade: DomainDict = {
     'pc1.live': 'Следить (live)',
     'pc1.soon': 'Скоро',
     'pc1.bulk.each': '{price} за 1 шт.',
-    'pc1.bulk.forOne': '{n} шт. за 1 {cur}'
+    'pc1.bulk.forOne': '{n} шт. за 1 {cur}',
+    'pc1.prop.item.armour': 'Броня: #',
+    'pc1.prop.item.evasion_rating': 'Уклонение: #',
+    'pc1.prop.item.energy_shield': 'Энерг. щит: #',
+    'pc1.prop.item.ward': 'Барьер: #',
+    'pc1.prop.item.block': 'Шанс блока: #%',
+    'pc1.prop.item.total_dps': 'Общий DPS: #',
+    'pc1.prop.item.physical_dps': 'Физический DPS: #',
+    'pc1.prop.item.elemental_dps': 'DPS от стихий: #',
+    'pc1.prop.item.crit': 'Шанс крит. удара: #%',
+    'pc1.prop.item.aps': 'Атак в секунду: #',
+    'pc1.prop.item.base_percentile': 'Процентиль базы: #%',
+    'pc1.prop.item.memory_strands': 'Пряди воспоминаний: #',
+    'pc1.prop.item.map_item_quantity': 'Количество предметов: +#%',
+    'pc1.prop.item.map_item_rarity': 'Редкость предметов: +#%',
+    'pc1.prop.item.map_pack_size': 'Размер групп монстров: +#%',
+    'pc1.prop.item.chart_sulphur': 'Мертвецкая сера: +#%',
+    'pc1.prop.item.has_empty_modifier': 'Есть свободное или ремесленное свойство'
   },
   en: {
     'soon.priceCheck':
@@ -340,6 +357,23 @@ export const trade: DomainDict = {
     'pc1.live': 'Live search',
     'pc1.soon': 'Coming soon',
     'pc1.bulk.each': '{price} each',
-    'pc1.bulk.forOne': '{n} for 1 {cur}'
+    'pc1.bulk.forOne': '{n} for 1 {cur}',
+    'pc1.prop.item.armour': 'Armour: #',
+    'pc1.prop.item.evasion_rating': 'Evasion Rating: #',
+    'pc1.prop.item.energy_shield': 'Energy Shield: #',
+    'pc1.prop.item.ward': 'Ward: #',
+    'pc1.prop.item.block': 'Block: #%',
+    'pc1.prop.item.total_dps': 'Total DPS: #',
+    'pc1.prop.item.physical_dps': 'Physical DPS: #',
+    'pc1.prop.item.elemental_dps': 'Elemental DPS: #',
+    'pc1.prop.item.crit': 'Critical Strike Chance: #%',
+    'pc1.prop.item.aps': 'Attacks per Second: #',
+    'pc1.prop.item.base_percentile': 'Base Percentile: #%',
+    'pc1.prop.item.memory_strands': 'Memory Strands: #',
+    'pc1.prop.item.map_item_quantity': 'Item Quantity: +#%',
+    'pc1.prop.item.map_item_rarity': 'Item Rarity: +#%',
+    'pc1.prop.item.map_pack_size': 'Monster Pack Size: +#%',
+    'pc1.prop.item.chart_sulphur': 'Dead Man\'s Sulphur: +#%',
+    'pc1.prop.item.has_empty_modifier': '1 Empty or Crafted Modifier'
   }
 }
