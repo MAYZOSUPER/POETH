@@ -6,11 +6,19 @@ directories:
   output: dist-release
   buildResources: build
 
+# Electron fuses (hardening, S3): cookie encryption, без RunAsNode/--inspect, только app.asar + integrity.
+afterPack: build/afterPack.cjs
+
 files:
   - out/**/*
   - package.json
 
-# Нативные модули (N-API prebuilds) должны лежать вне app.asar, иначе .node не загрузится.
+# Нативные модули — N-API prebuilds (electron-overlay-window, uiohook-napi): пересборка под Electron
+# не нужна. Без npmRebuild:false electron-builder собирает .node из исходников (нужен MSVC, ломается
+# на пробелах в пути) — проверено в S1: упакованная сборка на одних prebuilds работает.
+npmRebuild: false
+
+# Нативные модули должны лежать вне app.asar, иначе .node не загрузится.
 asarUnpack:
   - "**/node_modules/electron-overlay-window/**"
   - "**/node_modules/uiohook-napi/**"
