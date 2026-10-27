@@ -1,0 +1,26 @@
+/* POETH — шрифты (все SIL Open Font License 1.1, файлы и лицензии в resources/fonts/).
+   Подключаются локально, без CDN. Все три с полной кириллицей; Golos Text — с табличными цифрами (tnum). */
+
+@font-face {
+  font-family: 'Cormorant SC';
+  src: url('../../../../resources/fonts/CormorantSC-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Golos Text';
+  src: url('../../../../resources/fonts/GolosText-Variable.ttf') format('truetype');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('../../../../resources/fonts/JetBrainsMono-Variable.ttf') format('truetype');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
