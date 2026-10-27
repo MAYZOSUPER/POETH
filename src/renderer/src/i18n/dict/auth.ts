@@ -12,7 +12,7 @@ export const auth: DomainDict = {
     'auth.in.p1': 'Пароль вы вводили только на сайте GGG. POETH его не видит и не хранит.',
     'auth.in.p1.pasted': 'Сессия из вставленного POESESSID. Пароль POETH не видит и не хранит.',
     'auth.in.p2': 'Сессия зашифрована на этом компьютере и отделена от остальных окон приложения.',
-    'auth.in.p3': 'Вход нужен для live search и сообщений продавцам в один клик.',
+    'auth.in.p3': 'Вход нужен для live search и чтобы пользоваться сайтом трейда в трейд-окне (кнопки сайта нажимаете вы сами).',
     'auth.logout': 'Выйти',
     'auth.logout.hint':
       '«Выйти» стирает сессию только в POETH. «Выйти» на сайте GGG завершает все ваши сессии — после этого войдите в POETH заново.',
@@ -68,7 +68,7 @@ export const auth: DomainDict = {
     'auth.in.p1': 'You typed your password only on the GGG site. POETH never sees or stores it.',
     'auth.in.p1.pasted': 'Session from a pasted POESESSID. POETH never sees or stores your password.',
     'auth.in.p2': 'The session is encrypted on this computer and isolated from other app windows.',
-    'auth.in.p3': 'Sign-in is needed for live search and one-click seller messages.',
+    'auth.in.p3': 'Sign-in is needed for live search and for using the trade site in the trade window (you press the site buttons yourself).',
     'auth.logout': 'Sign out',
     'auth.logout.hint':
       '“Sign out” erases the session in POETH only. “Log out” on the GGG site ends all your sessions — then sign in to POETH again.',

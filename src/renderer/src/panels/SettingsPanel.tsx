@@ -24,6 +24,9 @@ const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameI
   pasteSearch5: { labelKey: 'set.hk.pasteSearch', n: 5, games: ['poe1'] },
   toggleCompanion: { labelKey: 'set.hk.toggle', games: BOTH },
   toggleLock: { labelKey: 'set.hk.lock', games: BOTH },
+  dealInvite: { labelKey: 'set.hk.dealInvite', games: ['poe1'] },
+  dealTrade: { labelKey: 'set.hk.dealTrade', games: ['poe1'] },
+  dealDismiss: { labelKey: 'set.hk.dealDismiss', games: ['poe1'] },
   toggleTradeWindow: { labelKey: 'set.hk.tradeWindow', games: ['poe1'] },
   prevStep: { labelKey: 'set.hk.prev', games: ['poe2'] },
   nextStep: { labelKey: 'set.hk.next', games: ['poe2'] }

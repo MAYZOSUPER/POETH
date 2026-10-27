@@ -7,7 +7,13 @@ const all = (): boolean => true
 describe('planHotkeys', () => {
   it('дефолты раскладываются по областям game / always', () => {
     const plan = planHotkeys(defaultHotkeys(), all)
-    expect(plan.game.map((h) => h.action)).toEqual(['priceCheck', 'overlayToggle'])
+    expect(plan.game.map((h) => h.action)).toEqual([
+      'priceCheck',
+      'overlayToggle',
+      'dealInvite',
+      'dealTrade',
+      'dealDismiss'
+    ])
     expect(plan.always.map((h) => h.action)).toEqual([
       'toggleCompanion',
       'toggleLock',
@@ -40,7 +46,7 @@ describe('planHotkeys', () => {
       { action: 'pasteSearch2', accel: 'Shift+Space', reason: 'duplicate' },
       { action: 'toggleLock', accel: 'Alt+F4', reason: 'system' }
     ])
-    expect(plan.game.map((h) => h.action)).toEqual(['overlayToggle'])
+    expect(plan.game.map((h) => h.action)).toEqual(['overlayToggle', 'dealInvite', 'dealTrade', 'dealDismiss'])
   })
 
   it('регистрируется каноническая запись', () => {
@@ -57,7 +63,14 @@ describe('planHotkeys', () => {
       { action: 'chat:bad', accel: 'Enter', scope: 'game' },
       { action: 'chat:dup2', accel: 'F5', scope: 'game' }
     ])
-    expect(plan.game.map((h) => h.action)).toEqual(['priceCheck', 'overlayToggle', 'chat:hideout'])
+    expect(plan.game.map((h) => h.action)).toEqual([
+      'priceCheck',
+      'overlayToggle',
+      'dealInvite',
+      'dealTrade',
+      'dealDismiss',
+      'chat:hideout'
+    ])
     expect(plan.skipped).toEqual([
       { action: 'chat:dup', accel: 'Control+D', reason: 'duplicate' },
       { action: 'chat:bad', accel: 'Enter', reason: 'game' },

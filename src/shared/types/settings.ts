@@ -36,6 +36,10 @@ export type HotkeyAction =
   | 'pasteSearch3'
   | 'pasteSearch4'
   | 'pasteSearch5'
+  // менеджер сделок (S8): верхняя карточка — одно действие на нажатие
+  | 'dealInvite'
+  | 'dealTrade'
+  | 'dealDismiss'
   // always
   | 'toggleCompanion'
   | 'toggleLock'

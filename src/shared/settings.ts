@@ -26,6 +26,10 @@ export const HOTKEY_DEFAULTS: Readonly<Record<HotkeyAction, HotkeyBinding>> = {
   pasteSearch3: { accel: '', scope: 'game' },
   pasteSearch4: { accel: '', scope: 'game' },
   pasteSearch5: { accel: '', scope: 'game' },
+  // сделки (S8): Alt+цифра в PoE1 по умолчанию свободна; Alt+F1…F3 заняты оверлеем NVIDIA
+  dealInvite: { accel: 'Alt+1', scope: 'game' },
+  dealTrade: { accel: 'Alt+2', scope: 'game' },
+  dealDismiss: { accel: 'Alt+3', scope: 'game' },
   toggleCompanion: { accel: 'Control+Shift+O', scope: 'always' },
   toggleLock: { accel: 'Control+Shift+L', scope: 'always' },
   toggleTradeWindow: { accel: 'Control+Shift+T', scope: 'always' },
