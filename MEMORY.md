@@ -127,6 +127,12 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ — слит `design/system` (дизайнер): токены «Золото компаса» + компоненты `ui-*`, шрифты OFL
+  (Golos Text, Cormorant SC, JetBrains Mono — с кириллицей), знак «ромб обмена»/логотип/трей/иконки действий,
+  `build/icon.ico`, `docs/design-system.md` (`43695ed`…`a2e5a82`); `globals.css` подключает `tokens.css`,
+  трей берёт `tray.png` раньше `app_icon.png`.
+- `d4aaa76` — (лид) зависимости для S1/S3/S6: `electron-overlay-window@4.1.0`, `uiohook-napi@1.5.5`, `ws`,
+  `@electron/fuses`; `asarUnpack` нативных модулей. Репо `MAYZOSUPER/POETH` создан, `main` запушен с историей.
 - `aea5366` — поддержка проекта: `src/shared/links.ts` (`BOOSTY_URL`, allowlist `openExternal` + тест),
   пункт «♥ Поддержать проект» в трее (меню трея теперь RU/EN и строится при каждом открытии), блок внизу
   настроек, README, раздел «Монетизация» в плане.

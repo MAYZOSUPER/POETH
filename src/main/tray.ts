@@ -13,7 +13,7 @@ let tray: Tray | null = null
 
 function iconPath(): string {
   const brand = path.join(resourcesDir(), 'brand')
-  for (const f of ['app_icon.png', 'tray.png', 'tray-default.png']) {
+  for (const f of ['tray.png', 'app_icon.png', 'tray-default.png']) {
     const p = path.join(brand, f)
     if (existsSync(p)) return p
   }

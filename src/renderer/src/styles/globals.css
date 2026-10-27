@@ -1,3 +1,4 @@
+@import './tokens.css';
 :root {
   --font-serif: 'Cinzel', 'Trajan Pro', Georgia, 'Times New Roman', serif;
   --font-sans: 'Segoe UI', Tahoma, sans-serif;
