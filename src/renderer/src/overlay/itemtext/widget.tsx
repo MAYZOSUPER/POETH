@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { OverlayWidget } from '../OverlayWidget'
-import { formatAccel, useOverlayT } from '../useOverlayT'
+import { Kbd } from '../Kbd'
+import { useOverlayT } from '../useOverlayT'
 import type { OverlayWidgetDef } from '../registry'
 
 // Демо-виджет S1: сырой текст предмета после Ctrl+D (проверка всего цикла
@@ -10,12 +11,25 @@ import type { OverlayWidgetDef } from '../registry'
 const AUTO_HIDE_PX = 100
 const SEPARATOR = '--------'
 
-/** Заголовок: имя и база (строки 3–4 текста), без разделителей. */
-function itemTitle(lines: string[]): string {
-  return lines
-    .slice(2, 4)
-    .filter((l) => l && l !== SEPARATOR)
-    .join(' · ')
+/** Редкость по 2-й строке («Rarity: Rare» / «Редкость: Редкий») → токен цвета. */
+const RARITY: Record<string, string> = {
+  normal: 'normal',
+  обычный: 'normal',
+  magic: 'magic',
+  волшебный: 'magic',
+  rare: 'rare',
+  редкий: 'rare',
+  unique: 'unique',
+  уникальный: 'unique',
+  gem: 'gem',
+  камень: 'gem',
+  currency: 'currency',
+  валюта: 'currency'
+}
+
+function rarityOf(line: string | undefined): string | undefined {
+  const value = line?.split(':')[1]?.trim().toLowerCase()
+  return value ? RARITY[value] : undefined
 }
 
 function ItemTextWidget() {
@@ -34,17 +48,22 @@ function ItemTextWidget() {
 
   if (!item) return null
   const lines = item.text.split(/\r?\n/)
+  const name = lines[2] && lines[2] !== SEPARATOR ? lines[2] : (lines[1]?.split(':')[1]?.trim() ?? '')
+  const base = lines[3] && lines[3] !== SEPARATOR ? lines[3] : null
   const lineCount = lines.filter((l) => l.trim() !== '').length
+  const [keysBefore, keysAfter] = t('overlay.item.keys').split('{toggle}')
 
   return (
     <OverlayWidget placement={{ mode: 'opposite', anchor: item.cursor }} className="ov-itemtext">
-      <div className="ov-panel">
-        <header className="ov-panel__head">
-          <span className="ov-panel__title">{t('overlay.item.title')}</span>
-          <span className="ov-badge">{item.lang.toUpperCase()}</span>
+      <section className="ui-panel">
+        <header className="ui-panel__head">
+          <span className="ui-panel__title">{t('overlay.item.title')}</span>
+          <span className="ui-tag ui-tag--merchant" title={t('overlay.item.client', { lang: item.lang.toUpperCase() })}>
+            {item.lang.toUpperCase()}
+          </span>
           <button
             type="button"
-            className="ov-icon-btn"
+            className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
             title={t('overlay.item.close')}
             aria-label={t('overlay.item.close')}
             onClick={dismiss}
@@ -52,17 +71,25 @@ function ItemTextWidget() {
             ✕
           </button>
         </header>
-        <div className="ov-itemtext__name">{itemTitle(lines)}</div>
-        <div className="ov-itemtext__meta">
-          {t('overlay.item.client', { lang: item.lang.toUpperCase() })} ·{' '}
-          {t('overlay.item.lines', { n: lineCount })}
+        <div className="ui-panel__body">
+          <div className="ov-itemtext__name" data-rarity={rarityOf(lines[1])} title={name}>
+            {name}
+          </div>
+          {base && <div className="ov-itemtext__base">{base}</div>}
+          <div className="ov-itemtext__meta">
+            {t('overlay.item.client', { lang: item.lang.toUpperCase() })} · {t('overlay.item.lines', { n: lineCount })}
+          </div>
         </div>
-        <pre className="ov-itemtext__raw">{item.text}</pre>
-        <footer className="ov-panel__foot">
+        <pre className="ov-itemtext__raw ui-scroll">{item.text}</pre>
+        <footer className="ui-panel__foot">
           <div>{t('overlay.item.demo')}</div>
-          <div className="ov-panel__keys">{t('overlay.item.keys', { toggle: formatAccel(toggleKey) })}</div>
+          <div>
+            {keysBefore}
+            <Kbd accel={toggleKey} />
+            {keysAfter}
+          </div>
         </footer>
-      </div>
+      </section>
     </OverlayWidget>
   )
 }

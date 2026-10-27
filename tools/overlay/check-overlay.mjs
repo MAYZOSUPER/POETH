@@ -166,7 +166,7 @@ function evaluate(expression) {
 
 const overlayState = () => evaluate('window.overlayApi.overlay.getState()')
 const widgetText = () => evaluate("document.querySelector('.ov-itemtext__raw')?.textContent ?? null")
-const widgetBadge = () => evaluate("document.querySelector('.ov-itemtext .ov-badge')?.textContent ?? null")
+const widgetBadge = () => evaluate("document.querySelector('.ov-itemtext .ui-tag')?.textContent ?? null")
 
 // ---------------------------------------------------------------------------
 // ввод (только в проверенное окно)
