@@ -30,7 +30,8 @@ export const overlayEvents = {
   overlayFocus: 'event:overlay.focus',
   overlayStatus: 'event:overlay.status',
   overlayItemCaptured: 'event:overlay.itemCaptured',
-  overlayAutoHide: 'event:overlay.autoHide'
+  overlayAutoHide: 'event:overlay.autoHide',
+  overlayDismiss: 'event:overlay.dismiss'
 } as const
 
 export interface OverlayIpcApi {
@@ -46,8 +47,9 @@ export interface OverlayIpcApi {
      */
     updateInteractiveRects(rects: InteractiveRect[]): void
     /**
-     * Следить, отошёл ли курсор от точки `from` (окно оверлея) дальше `threshold` px —
-     * тогда придёт onOverlayAutoHide (так прячется виджет Ctrl+D, как в APT). null — перестать.
+     * Следить, отошёл ли курсор от точки `from` (окно оверлея) дальше `threshold` px или
+     * кликнул мимо виджетов — тогда придёт onOverlayAutoHide (так прячется окно Ctrl+D,
+     * как в APT). null — перестать.
      */
     trackAutoHide(from: OverlayPoint | null, threshold?: number): void
     /** Вставить текст в чат игры (через буфер обмена); send — сразу отправить Enter. */
@@ -59,6 +61,11 @@ export interface OverlayIpcApi {
   onOverlayStatus(cb: (status: OverlayStatus) => void): () => void
   /** Ctrl+D: текст предмета скопирован из игры (буфер уже восстановлен). */
   onItemCaptured(cb: (item: CapturedItem) => void): () => void
-  /** Курсор ушёл от точки trackAutoHide — спрятать «исключительный» виджет. */
+  /**
+   * Спрятать «исключительный» виджет (окно Ctrl+D): курсор ушёл от точки trackAutoHide
+   * или игрок кликнул мимо окна, пока оверлей пассивен.
+   */
   onOverlayAutoHide(cb: () => void): () => void
+  /** Esc в активном оверлее: закрыть всплывающие окна (фокус уже уходит в игру). */
+  onOverlayDismiss(cb: () => void): () => void
 }

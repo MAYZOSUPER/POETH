@@ -9,6 +9,7 @@ import { setInteractiveRects, setPollInterval, trackAutoHide } from '../focus/in
 import { captureItemText, stashSearch, typeInChat } from '../input/gameInput'
 import {
   activateOverlay,
+  displayAreaInOverlay,
   focusGame,
   getOverlayStatus,
   getOverlayWindow,
@@ -44,10 +45,12 @@ export function getLastCapturedItem(): CapturedItem | null {
 
 /** Ctrl+D: скопировать предмет под курсором и разослать его (оверлей, компаньон, main). */
 export async function captureAndPublishItem(): Promise<CapturedItem | null> {
-  const cursor = toOverlayPoint(screen.getCursorScreenPoint())
+  const screenCursor = screen.getCursorScreenPoint()
+  const cursor = toOverlayPoint(screenCursor)
+  const area = displayAreaInOverlay(screenCursor)
   const item = await captureItemText()
   if (!item) return null
-  const captured: CapturedItem = { ...item, cursor, at: Date.now() }
+  const captured: CapturedItem = { ...item, cursor, area, at: Date.now() }
   lastItem = captured
   sendToOverlay(IPC.events.overlayItemCaptured, captured)
   sendToCompanion(IPC.events.overlayItemCaptured, captured)

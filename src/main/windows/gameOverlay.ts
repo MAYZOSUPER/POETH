@@ -1,7 +1,7 @@
 import { BrowserWindow, dialog, screen } from 'electron'
 import path from 'path'
 import type { GameDef } from '@shared/games'
-import type { OverlayPoint, OverlayStatus } from '@shared/types'
+import type { InteractiveRect, OverlayPoint, OverlayStatus } from '@shared/types'
 import { IPC } from '@shared/ipc'
 import { keyPressToAccelerator, sameAccelerator } from '@shared/accelerators'
 import { loadRendererPage } from './rendererPage'
@@ -99,6 +99,15 @@ export function getCursorInOverlay(): OverlayPoint {
   return toOverlayPoint(screen.getCursorScreenPoint())
 }
 
+/** Монитор под точкой экрана (DIP) — в координатах окна оверлея (для позиции виджетов). */
+export function displayAreaInOverlay(screenPoint: OverlayPoint): InteractiveRect | null {
+  const w = getOverlayWindow()
+  if (!w) return null
+  const b = w.getContentBounds()
+  const d = screen.getDisplayNearestPoint({ x: Math.round(screenPoint.x), y: Math.round(screenPoint.y) }).bounds
+  return { x: d.x - b.x, y: d.y - b.y, width: d.width, height: d.height }
+}
+
 function pushStatus(): void {
   if (statusTimer) {
     clearTimeout(statusTimer)
@@ -192,6 +201,8 @@ function handleOverlayKeys(event: Electron.Event, input: Electron.Input): void {
   if (!accel) return
   if (accel === 'Escape' || accel === 'Control+W') {
     event.preventDefault()
+    // макет: Esc закрывает окно цены и возвращает фокус игре
+    sendToOverlay(IPC.events.overlayDismiss)
     process.nextTick(() => focusGame())
   } else if (toggleAccel && sameAccelerator(accel, toggleAccel)) {
     event.preventDefault()

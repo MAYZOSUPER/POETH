@@ -10,7 +10,8 @@
 // «Too many actions». Публичное API для этапов: captureItemText (S4, PoE2-прайс-чек),
 // typeInChat (S6, S8), stashSearch (S7, S8).
 
-import type { GameInputResult, ItemLang } from '@shared/types'
+import { app } from 'electron'
+import type { GameInputResult, ItemLang, OverlayPoint } from '@shared/types'
 import { parseAccelerator } from '@shared/accelerators'
 import { hostClipboard } from './hostClipboard'
 import { detectItemLang } from './itemText'
@@ -38,6 +39,54 @@ function loadHook(): UiohookLib | null {
 export function isGameInputAvailable(): boolean {
   return loadHook() !== null
 }
+
+// ---------------------------------------------------------------------------
+// Глобальный хук мыши — только пока он кому-то нужен
+// ---------------------------------------------------------------------------
+
+type MouseDownListener = (screenPhysical: OverlayPoint) => void
+
+const mouseListeners = new Set<MouseDownListener>()
+let hookRunning = false
+
+function handleHookMouseDown(e: { x: number; y: number }): void {
+  for (const cb of [...mouseListeners]) {
+    try {
+      cb({ x: e.x, y: e.y })
+    } catch (err) {
+      console.error('[input] mousedown listener failed:', err)
+    }
+  }
+}
+
+function stopHook(): void {
+  if (!hookRunning || !hookLib) return
+  hookLib.uIOhook.removeListener('mousedown', handleHookMouseDown)
+  hookLib.uIOhook.stop()
+  hookRunning = false
+}
+
+/**
+ * Нажатие мыши в любом месте экрана (физические пиксели). Глобальный хук uiohook
+ * запускается с первым подписчиком и останавливается с последним — пока открыто окно
+ * Ctrl+D (клик мимо него закрывает окно, как в макете и в APT). В игру мы ничего не шлём.
+ */
+export function onGlobalMouseDown(cb: MouseDownListener): () => void {
+  const k = loadHook()
+  if (!k) return () => undefined
+  mouseListeners.add(cb)
+  if (!hookRunning) {
+    k.uIOhook.on('mousedown', handleHookMouseDown)
+    k.uIOhook.start()
+    hookRunning = true
+  }
+  return () => {
+    mouseListeners.delete(cb)
+    if (mouseListeners.size === 0) stopHook()
+  }
+}
+
+app.on('will-quit', stopHook)
 
 const PUNCT_KEYS: Record<string, keyof KeyTable> = {
   '[': 'BracketLeft',

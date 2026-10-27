@@ -1,10 +1,15 @@
-// Где показать виджет оверлея. Чистый модуль — tests/overlay/placement.test.ts.
+// Где показать всплывающее окно оверлея (popup: прайс-чек, демо «текст предмета»).
+// Чистый модуль — tests/overlay/placement.test.ts. Все координаты — DIP окна оверлея
+// (= клиентская область игры); при масштабе 125/150 % они дробные, итог округляется.
 //
-// - 'cursor'   — рядом с курсором (справа-снизу, у края экрана — с другой стороны);
-// - 'opposite' — с противоположной стороны экрана, вплотную к панели игры: предмет в
-//   инвентаре (правая половина) → окно слева от инвентаря; предмет в стэше (левая
-//   половина) → справа от стэша. Так окно не закрывает ни предмет, ни панели.
-//   Ширина панели PoE зависит только от высоты окна: 370 px при 800×600 (как в APT).
+// - 'cursor' (по умолчанию) — рядом с курсором: курсор в правой половине окна игры → окно
+//   слева от курсора, иначе справа; со сдвигом, чтобы не закрывать подсказку предмета;
+//   по вертикали верх окна — на уровне курсора;
+// - 'left' / 'right' — у левого / правого края, по вертикали тоже у курсора.
+// Окно всегда целиком внутри `area` — пересечения окна игры и монитора под курсором
+// (игра в окне может свисать за край экрана или стоять на двух мониторах).
+
+import type { PricePopupPosition } from '@shared/types'
 
 export interface Point {
   x: number
@@ -16,55 +21,70 @@ export interface Size {
   height: number
 }
 
-export type PlacementMode = 'cursor' | 'opposite'
+export interface Rect extends Point, Size {}
 
 export interface PlacementInput {
-  mode: PlacementMode
-  /** точка привязки (курсор в момент Ctrl+D), координаты окна оверлея */
+  mode: PricePopupPosition
+  /** курсор в момент Ctrl+D */
   anchor: Point
   /** размер виджета */
   size: Size
-  /** размер окна оверлея (= клиентская область игры) */
+  /** окно оверлея (= клиентская область игры) */
   viewport: Size
-  /** отступ от краёв окна */
+  /** где можно показывать (окно игры ∩ монитор под курсором); по умолчанию — весь viewport */
+  area?: Rect | null
+  /** отступ от краёв области */
   margin?: number
-  /** зазор между курсором/панелью и виджетом */
+  /** сдвиг от курсора по горизонтали (не закрыть подсказку предмета) */
   gap?: number
+  /** сдвиг верха окна вверх от курсора */
+  lift?: number
 }
 
-const DEFAULT_MARGIN = 8
-const DEFAULT_GAP = 12
+export const POPUP_MARGIN = 8
+export const POPUP_CURSOR_GAP = 24
+export const POPUP_CURSOR_LIFT = 12
 
-/** Ширина боковой панели игры (стэш/инвентарь) для окна этой высоты. */
-export function poePanelWidth(viewport: Size): number {
-  const ratio = 370 / 600
-  return Math.min(Math.round(viewport.height * ratio), Math.floor(viewport.width / 2))
+/** Пересечение прямоугольников; null — не пересекаются. */
+export function intersect(a: Rect, b: Rect): Rect | null {
+  const x = Math.max(a.x, b.x)
+  const y = Math.max(a.y, b.y)
+  const right = Math.min(a.x + a.width, b.x + b.width)
+  const bottom = Math.min(a.y + a.height, b.y + b.height)
+  return right > x && bottom > y ? { x, y, width: right - x, height: bottom - y } : null
 }
 
-function clamp(v: number, min: number, max: number): number {
-  // виджет больше окна — прижать к началу (левый/верхний край виден)
-  if (max < min) return min
-  return Math.min(max, Math.max(min, v))
+/**
+ * Свести v в [min, max] и округлить до целого пикселя, не вылезая за границы (дробные DIP
+ * при 125/150 %). Не помещается (max < min) — прижать к началу: виден верх/левый край.
+ */
+function fit(v: number, min: number, max: number): number {
+  if (max < min) return Math.ceil(min)
+  return Math.min(Math.floor(max), Math.max(Math.ceil(min), Math.round(v)))
 }
 
 export function placeWidget(input: PlacementInput): Point {
   const { anchor, size, viewport } = input
-  const margin = input.margin ?? DEFAULT_MARGIN
-  const gap = input.gap ?? DEFAULT_GAP
-  const maxX = viewport.width - size.width - margin
-  const maxY = viewport.height - size.height - margin
+  const margin = input.margin ?? POPUP_MARGIN
+  const gap = input.gap ?? POPUP_CURSOR_GAP
+  const lift = input.lift ?? POPUP_CURSOR_LIFT
+  const full: Rect = { x: 0, y: 0, width: viewport.width, height: viewport.height }
+  const area = (input.area && intersect(input.area, full)) || full
 
-  if (input.mode === 'cursor') {
-    let x = anchor.x + gap
-    if (x + size.width > viewport.width - margin) x = anchor.x - gap - size.width
-    let y = anchor.y + gap
-    if (y + size.height > viewport.height - margin) y = anchor.y - gap - size.height
-    return { x: clamp(x, margin, maxX), y: clamp(y, margin, maxY) }
+  const minX = area.x + margin
+  const maxX = area.x + area.width - margin - size.width
+  const minY = area.y + margin
+  const maxY = area.y + area.height - margin - size.height
+
+  let x: number
+  if (input.mode === 'left') x = minX
+  else if (input.mode === 'right') x = maxX
+  else {
+    // половина — по окну игры, а не по монитору: инвентарь у PoE справа в окне игры
+    const cursorOnRight = anchor.x >= viewport.width / 2
+    x = cursorOnRight ? anchor.x - gap - size.width : anchor.x + gap
   }
+  const y = anchor.y - lift
 
-  const panel = poePanelWidth(viewport)
-  const itemOnRight = anchor.x >= viewport.width / 2
-  const x = itemOnRight ? viewport.width - panel - gap - size.width : panel + gap
-  const y = anchor.y - size.height / 2
-  return { x: clamp(x, margin, maxX), y: clamp(y, margin, maxY) }
+  return { x: fit(x, minX, maxX), y: fit(y, minY, maxY) }
 }

@@ -24,8 +24,28 @@ export interface CapturedItem {
   lang: ItemLang
   /** курсор в момент нажатия — в координатах окна оверлея (DIP), для позиционирования виджета */
   cursor: OverlayPoint
+  /**
+   * Монитор под курсором в координатах окна оверлея (DIP). Окно виджета держим внутри
+   * пересечения этого монитора и окна игры (игра в окне может свисать за край экрана или
+   * стоять на двух мониторах). null — монитор не определён, ограничиваемся окном игры.
+   */
+  area: InteractiveRect | null
   /** Date.now() момента захвата */
   at: number
+}
+
+/** Где открывать окно цены (popup) по Ctrl+D. */
+export type PricePopupPosition = 'cursor' | 'left' | 'right'
+
+export const PRICE_POPUP_POSITIONS: readonly PricePopupPosition[] = ['cursor', 'left', 'right']
+
+/**
+ * Раздел настроек оверлея — предложение лиду для Settings v2 (`Settings.overlay`,
+ * дефолт `{ pricePosition: 'cursor' }`). Пока поля нет, renderer берёт значение по умолчанию.
+ */
+export interface OverlaySettings {
+  /** «Позиция окна цены»: у курсора / у левого края / у правого края */
+  pricePosition: PricePopupPosition
 }
 
 /** Кто сейчас в фокусе: игра, активированный оверлей (Shift+Space) или что-то третье. */

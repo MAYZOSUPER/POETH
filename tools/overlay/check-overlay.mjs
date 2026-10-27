@@ -11,9 +11,10 @@
 //   node tools/overlay/check-overlay.mjs --shot=<file.png> # снимок игры с виджетом (прозрачность)
 //   node tools/overlay/check-overlay.mjs --dev            # dev-сервер (electron-vite dev) вместо out/
 //
-// ВНИМАНИЕ: шлёт настоящие нажатия (Ctrl+D, Shift+Space, Esc) и забирает фокус. Перед каждым
+// ВНИМАНИЕ: шлёт настоящие нажатия (Ctrl+D, Shift+Space, Esc), забирает фокус, а с --mouse
+// двигает курсор и кликает — запускать, когда за ПК никто не работает. Перед каждым
 // нажатием проверяет по WinAPI, что на переднем плане нужное тестовое окно, иначе не жмёт.
-// Буфер обмена пользователя сохраняется и возвращается.
+// Буфер обмена сохраняется и возвращается (если за время проверки его не сменил человек).
 
 import { execFileSync, spawn } from 'node:child_process'
 import { createRequire } from 'node:module'
@@ -120,6 +121,8 @@ const clipboardText = async () => (await fakeCmd({ cmd: 'clipboard' })).text
 
 let poeth
 let poethLog = []
+const MARK = 'POETH-S1-CHECK буфер 🙂'
+let markSet = false
 let cdp
 let cdpSeq = 0
 const cdpPending = new Map()
@@ -247,8 +250,8 @@ async function main() {
   )
 
   // ---- Ctrl+D: EN и RU ----
-  const MARK = 'POETH-S1-CHECK буфер 🙂'
   await fakeCmd({ cmd: 'clipboard-set', text: MARK })
+  markSet = true
 
   for (const [id, lang, first] of [
     ['en-rare', 'EN', 'Item Class: Gloves'],
@@ -265,7 +268,7 @@ async function main() {
       return t?.startsWith(first) ? t : null
     })
     const ms = Date.now() - t0
-    check(`Ctrl+D ${id}: виджет показал текст (${lang})`, !!text && (await widgetBadge()) === lang, `${ms} мс`)
+    check(`Ctrl+D ${id}: виджет показал текст (${lang})`, !!text && !!(await widgetBadge())?.endsWith(lang), `${ms} мс`)
     if (!text) {
       const seen = fakeEvents.filter((e) => e.win === 'game' && (e.evt === 'key' || e.evt === 'copy')).slice(-6)
       console.log(`  тестовое окно получило: ${JSON.stringify(seen)}`)
@@ -273,6 +276,10 @@ async function main() {
     await sleep(150)
     check(`Ctrl+D ${id}: буфер восстановлен`, (await clipboardText()) === MARK)
   }
+
+  // повторный Ctrl+D по тому же предмету закрывает окно (макет «Закрытие»)
+  await press(K.D, [K.Ctrl])
+  check('повторный Ctrl+D по тому же предмету закрыл окно', await waitFor(async () => (await widgetText()) === null))
 
   // курсор не над предметом → ничего не показываем, буфер на месте
   const before = (await overlayState()).lastItem?.at
@@ -287,13 +294,18 @@ async function main() {
   check('POETH_SAVE_CAPTURES=1: файлы en/ru сохранены', caps[0] >= 2 && caps[1] >= 2, `en=${caps[0]} ru=${caps[1]}`)
 
   // ---- Shift+Space / Esc ----
+  await fakeCmd({ cmd: 'hover', id: 'en-chaos' })
+  await press(K.D, [K.Ctrl])
+  await waitFor(async () => (await widgetText())?.startsWith('Item Class: Stackable Currency'))
   await press(K.Space, [K.Shift])
   const act = await waitFor(async () => (await overlayState()).focus.overlay && (await foreground()) === TITLE.overlay)
   const activeDom = await evaluate("document.querySelector('.ov-root')?.classList.contains('is-active')")
   check('Shift+Space: оверлей активирован', act && activeDom, `передний план: «${await foreground()}»`)
+  check('Shift+Space: окно Ctrl+D осталось открытым', (await widgetText()) !== null)
   if (act) await press(K.Escape, [], 'overlay')
   const back = await waitFor(async () => !(await overlayState()).focus.overlay && (await foreground()) === TITLE.game)
   check('Esc: фокус вернулся игре', back, `передний план: «${await foreground()}»`)
+  check('Esc: окно Ctrl+D закрыто', (await widgetText()) === null)
 
   await press(K.Space, [K.Shift])
   const act2 = await waitFor(async () => (await foreground()) === TITLE.overlay)
@@ -349,7 +361,7 @@ async function main() {
     await fakeCmd({ cmd: 'hover', id: 'en-unique' })
     await press(K.D, [K.Ctrl])
     await waitFor(async () => (await widgetText())?.startsWith('Item Class: Rings'))
-    const btn = await evaluate(`(() => { const b = document.querySelector('.ov-itemtext .ov-icon-btn').getBoundingClientRect();
+    const btn = await evaluate(`(() => { const b = document.querySelector('.ov-itemtext .ui-panel__head .ui-btn').getBoundingClientRect();
       return { x: Math.round((window.screenX + b.left + b.width / 2) * devicePixelRatio), y: Math.round((window.screenY + b.top + b.height / 2) * devicePixelRatio) } })()`)
     // курсор над виджетом → main должен снять «сквозную» мышь, не активируя оверлей
     await psCmd(`move ${btn.x} ${btn.y}`)
@@ -359,8 +371,38 @@ async function main() {
     check('клик по ✕ виджета закрыл его', await waitFor(async () => (await widgetText()) === null))
     check('после клика фокус снова у игры', await waitFor(async () => (await foreground()) === TITLE.game && !(await overlayState()).focus.overlay))
 
-    // авто-скрытие: курсор ушёл от «предмета» в сторону — виджет прячется; к виджету — нет
+    // позиция у курсора: в правой половине окна игры — слева от курсора, в левой — справа;
+    // верх окна на уровне курсора (сдвиг вверх 12 px)
     const g = (await fakeState()).bounds
+    const widgetRect = () =>
+      evaluate(`(() => { const r = document.querySelector('.ov-itemtext').getBoundingClientRect(), d = devicePixelRatio;
+        return { left: (window.screenX + r.left) * d, right: (window.screenX + r.right) * d, top: (window.screenY + r.top) * d } })()`)
+    for (const [fx, side] of [[0.75, 'слева'], [0.3, 'справа']]) {
+      const C = { x: g.x + Math.round(g.width * fx), y: g.y + Math.round(g.height * 0.4) }
+      await psCmd(`move ${C.x} ${C.y}`)
+      await fakeCmd({ cmd: 'hover', id: 'ru-rare' })
+      await press(K.D, [K.Ctrl])
+      await waitFor(async () => (await widgetText())?.startsWith('Класс предмета: Перчатки'))
+      await sleep(150)
+      const r = await widgetRect()
+      const sideOk = side === 'слева' ? r.right <= C.x : r.left >= C.x
+      check(`окно у курсора: ${side} от него, верх у курсора`, sideOk && Math.abs(r.top - (C.y - 12 * ov.dpr)) <= 2 * ov.dpr,
+        `курсор ${C.x},${C.y} · окно ${Math.round(r.left)}…${Math.round(r.right)}, верх ${Math.round(r.top)}`)
+      await press(K.D, [K.Ctrl]) // повторный Ctrl+D — закрыть
+      await waitFor(async () => (await widgetText()) === null)
+    }
+
+    // клик мимо окна (оверлей пассивен) — окно закрывается, клик достаётся игре
+    const Q = { x: g.x + Math.round(g.width * 0.75), y: g.y + Math.round(g.height * 0.4) }
+    await psCmd(`move ${Q.x} ${Q.y}`)
+    await fakeCmd({ cmd: 'hover', id: 'en-rare' })
+    await press(K.D, [K.Ctrl])
+    await waitFor(async () => (await widgetText())?.startsWith('Item Class: Gloves'))
+    await psCmd(`click ${Q.x + 20} ${Q.y + 10}`)
+    check('клик мимо окна закрыл его', await waitFor(async () => (await widgetText()) === null))
+    check('клик мимо: фокус остался у игры', (await foreground()) === TITLE.game && !(await overlayState()).focus.overlay)
+
+    // авто-скрытие: курсор ушёл от «предмета» в сторону — виджет прячется; к виджету — нет
     const P = { x: g.x + Math.round(g.width * 0.8), y: g.y + Math.round(g.height * 0.5) }
     await psCmd(`move ${P.x} ${P.y}`)
     await fakeCmd({ cmd: 'hover', id: 'en-rare' })
@@ -371,6 +413,7 @@ async function main() {
     await psCmd(`move ${P.x} ${P.y}`)
     await press(K.D, [K.Ctrl])
     await waitFor(async () => (await widgetText())?.startsWith('Item Class: Gloves'))
+    await sleep(150)
     const box = await evaluate(`(() => { const r = document.querySelector('.ov-itemtext').getBoundingClientRect();
       return { x: Math.round((window.screenX + r.left + r.width / 2) * devicePixelRatio), y: Math.round((window.screenY + r.top + r.height / 2) * devicePixelRatio) } })()`)
     for (let i = 1; i <= 5; i++) {
@@ -406,7 +449,11 @@ try {
 } finally {
   try {
     if (fakePort) {
-      await fakeCmd({ cmd: 'clipboard-restore' })
+      // вернуть буфер пользователя, только если там всё ещё наша метка: если человек
+      // успел что-то скопировать за время проверки, его новый буфер не трогаем
+      const now = await clipboardText()
+      if (!markSet || now === MARK) await fakeCmd({ cmd: 'clipboard-restore' })
+      else console.log('буфер изменён пользователем во время проверки — не восстанавливаю')
       await fakeCmd({ cmd: 'quit' })
     }
   } catch {

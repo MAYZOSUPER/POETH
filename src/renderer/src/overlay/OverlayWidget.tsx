@@ -1,14 +1,18 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { placeWidget, type PlacementMode, type Point, type Size } from './placement'
+import type { PricePopupPosition } from '@shared/types'
+import { placeWidget, type Point, type Rect, type Size } from './placement'
 import { scheduleRectsFlush, useInteractive } from './interactive'
 
-// Обёртка виджета оверлея: позиционирует себя (у курсора или с противоположной
-// стороны экрана, см. placement.ts) и регистрирует свой прямоугольник как
-// кликабельный, пока оверлей пассивен. Без placement — позиционирование на CSS виджета.
+// Обёртка виджета оверлея: позиционирует себя (у курсора или у края окна игры, в пределах
+// монитора — см. placement.ts) и регистрирует свой прямоугольник как кликабельный, пока
+// оверлей пассивен. Без placement — место задаёт слой (стопки тостов и карточек) или CSS.
 
 export interface WidgetPlacement {
-  mode: PlacementMode
+  mode: PricePopupPosition
+  /** курсор в момент Ctrl+D (CapturedItem.cursor) */
   anchor: Point
+  /** монитор под курсором (CapturedItem.area) */
+  area?: Rect | null
 }
 
 interface Props {

@@ -7,7 +7,7 @@ export const overlay: DomainDict = {
   ru: {
     'overlay.hint.active': 'POETH активен — Esc или клик по пустому месту вернёт вас в игру',
     'overlay.item.title': 'Текст предмета',
-    'overlay.item.client': 'Клиент {lang}',
+    'overlay.item.client': 'Клиент: {lang}',
     'overlay.item.lines': 'Строк: {n}',
     'overlay.item.close': 'Закрыть',
     'overlay.item.demo': 'Здесь появится прайс-чек. Пока — сырой текст, как его скопировала игра.',
@@ -23,7 +23,7 @@ export const overlay: DomainDict = {
   en: {
     'overlay.hint.active': 'POETH is active — Esc or a click on empty space returns you to the game',
     'overlay.item.title': 'Item text',
-    'overlay.item.client': '{lang} client',
+    'overlay.item.client': 'Client: {lang}',
     'overlay.item.lines': 'Lines: {n}',
     'overlay.item.close': 'Close',
     'overlay.item.demo': 'The price check will appear here. For now — the raw text as the game copied it.',

@@ -17,6 +17,7 @@ export function overlayBridge(): OverlayIpcApi {
     onOverlayFocus: (cb) => subscribe(IPC.events.overlayFocus, cb),
     onOverlayStatus: (cb) => subscribe(IPC.events.overlayStatus, cb),
     onItemCaptured: (cb) => subscribe(IPC.events.overlayItemCaptured, cb),
-    onOverlayAutoHide: (cb) => subscribe(IPC.events.overlayAutoHide, () => cb())
+    onOverlayAutoHide: (cb) => subscribe(IPC.events.overlayAutoHide, () => cb()),
+    onOverlayDismiss: (cb) => subscribe(IPC.events.overlayDismiss, () => cb())
   }
 }

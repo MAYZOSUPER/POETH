@@ -1,5 +1,6 @@
 /* Игровой оверлей (S1): хост виджетов и демо «текст предмета».
-   Только токены и компоненты ui-* дизайн-системы (docs/design-system.md). */
+   Только токены и компоненты ui-* дизайн-системы (docs/design-system.md),
+   раскладка — по утверждённым макетам. */
 
 .ov-root {
   position: fixed;
@@ -36,6 +37,29 @@
   pointer-events: auto;
 }
 
+/* стопки: тосты справа сверху, карточки сделок справа снизу (центр экрана свободен) */
+.ov-stack {
+  position: absolute;
+  display: grid;
+  gap: var(--sp-5);
+  justify-items: end;
+  max-width: calc(100vw - 2 * var(--sp-7));
+  max-height: calc(100vh - 2 * var(--sp-7));
+}
+.ov-stack--top-right {
+  top: var(--sp-7);
+  right: var(--sp-7);
+  align-content: start;
+}
+.ov-stack--bottom-right {
+  right: var(--sp-7);
+  bottom: var(--sp-7);
+  align-content: end;
+}
+.ov-stack > .ov-widget {
+  position: relative;
+}
+
 .ov-hint {
   position: absolute;
   z-index: 40;
@@ -56,63 +80,69 @@
   pointer-events: none;
 }
 
-/* ---- демо-виджет «текст предмета» ---- */
+/* ---- демо-виджет «текст предмета» (оболочка как у окна прайс-чека) ---- */
 
 .ov-itemtext {
   width: min(var(--w-pricecheck-expert), calc(100vw - 2 * var(--sp-4)));
 }
 
+/* макет: высота по содержимому, максимум 80 % окна игры, прокрутка внутри */
 .ov-itemtext .ui-panel {
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 2 * var(--sp-4));
+  max-height: 80vh;
 }
 
-.ov-itemtext__name {
+.ov-item {
+  display: grid;
+  gap: var(--sp-1);
+  padding: var(--sp-5) var(--sp-6) var(--sp-3);
+}
+
+.ov-item__name {
   overflow: hidden;
-  font: 700 var(--fs-name) / 1.15 var(--font-display);
-  letter-spacing: 0.03em;
+  font: 700 var(--fs-name) / 1.1 var(--font-display);
   color: var(--item-color, var(--fg));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.ov-itemtext__name[data-rarity='normal'] {
+.ov-item__name[data-rarity='normal'] {
   --item-color: var(--rarity-normal);
 }
-.ov-itemtext__name[data-rarity='magic'] {
+.ov-item__name[data-rarity='magic'] {
   --item-color: var(--rarity-magic);
 }
-.ov-itemtext__name[data-rarity='rare'] {
+.ov-item__name[data-rarity='rare'] {
   --item-color: var(--rarity-rare);
 }
-.ov-itemtext__name[data-rarity='unique'] {
+.ov-item__name[data-rarity='unique'] {
   --item-color: var(--rarity-unique);
 }
-.ov-itemtext__name[data-rarity='gem'] {
+.ov-item__name[data-rarity='gem'] {
   --item-color: var(--rarity-gem);
 }
-.ov-itemtext__name[data-rarity='currency'] {
+.ov-item__name[data-rarity='currency'] {
   --item-color: var(--rarity-currency);
 }
 
-.ov-itemtext__base {
-  color: var(--fg-muted);
-  font-size: var(--fs-sm);
+.ov-item__base {
+  color: var(--fg);
 }
 
-.ov-itemtext__meta {
-  margin-top: var(--sp-2);
-  color: var(--fg-faint);
-  font-size: var(--fs-xs);
+.ov-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-4);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
 }
 
 .ov-itemtext__raw {
   flex: 1;
   min-height: 0;
-  max-height: 52vh;
   margin: 0;
   padding: var(--sp-4) var(--sp-6);
-  overflow: auto;
   border-top: 1px solid var(--border);
   background: var(--sunken);
   color: var(--fg);
@@ -123,9 +153,7 @@
   cursor: text;
 }
 
-.ov-itemtext .ui-panel__foot {
-  display: grid;
-  gap: var(--sp-3);
+.ov-itemtext__hint {
+  border-top: 1px solid var(--border);
   color: var(--fg-muted);
-  font-size: var(--fs-xs);
 }

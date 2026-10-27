@@ -4,13 +4,15 @@ import { IPC } from '@shared/ipc'
 import { isOverlayActive, onGameFocusChange } from './gameFocus'
 import { pointInRects, sanitizeRects, shouldAutoHide } from './hitTest'
 import { focusGame, getOverlayWindow, sendToOverlay } from '../windows/gameOverlay'
+import { onGlobalMouseDown } from '../input/gameInput'
 
 // Кликабельные виджеты без активации оверлея. Пока оверлей пассивен (мышь — в игру),
 // renderer шлёт прямоугольники интерактивных виджетов; main опрашивает курсор (~30 Гц)
 // и, когда он над виджетом, временно снимает setIgnoreMouseEvents. Клик по виджету
 // активирует окно (так устроен Windows) — renderer после клика, а этот опрос как
 // страховка (курсор ушёл с виджета) возвращают фокус игре (focusGame → focusTarget).
-// Здесь же — авто-скрытие виджета Ctrl+D, когда курсор уходит от предмета (как APT).
+// Здесь же — авто-скрытие окна Ctrl+D: курсор ушёл от предмета в сторону или игрок
+// кликнул мимо окна (глобальный хук мыши — только пока окно открыто), как в APT.
 
 const DEFAULT_AUTO_HIDE_PX = 100
 
@@ -20,6 +22,7 @@ let applied: boolean | null = null
 let autoHide: { from: OverlayPoint; threshold: number } | null = null
 let timer: NodeJS.Timeout | null = null
 let pollMs = 33
+let offMouseDown: (() => void) | null = null
 
 function needed(): boolean {
   return (rects.length > 0 || autoHide !== null) && !isOverlayActive()
@@ -30,7 +33,29 @@ function stop(): void {
   timer = null
 }
 
+/** Клик где угодно, пока открыто окно Ctrl+D и оверлей пассивен: мимо окна — спрятать его. */
+function handleMouseDown(screenPhysical: OverlayPoint): void {
+  const w = getOverlayWindow()
+  if (!autoHide || !w || !w.isVisible() || isOverlayActive()) return
+  const p = process.platform === 'win32' ? screen.screenToDipPoint(screenPhysical) : screenPhysical
+  const b = w.getContentBounds()
+  if (pointInRects({ x: p.x - b.x, y: p.y - b.y }, rects)) return
+  autoHide = null
+  sendToOverlay(IPC.events.overlayAutoHide)
+  reconcile()
+}
+
+function syncMouseHook(): void {
+  const want = autoHide !== null && !isOverlayActive()
+  if (want && !offMouseDown) offMouseDown = onGlobalMouseDown(handleMouseDown)
+  if (!want && offMouseDown) {
+    offMouseDown()
+    offMouseDown = null
+  }
+}
+
 function reconcile(): void {
+  syncMouseHook()
   if (!needed()) {
     stop()
     // виджетов больше нет — окно снова пропускает мышь (если ловить её начали мы)
