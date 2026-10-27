@@ -8,7 +8,7 @@ import './account.css'
 // Раздел «Аккаунт» в настройках — по утверждённому макету (Настройки → Аккаунт):
 // карточка «Вы вошли на pathofexile.com» / «Вход не выполнен», объяснение безопасности,
 // Войти/Выйти, запасной путь «Вставить POESESSID вручную» со строгим предупреждением.
-// Вход — только на официальной странице GGG в отдельном окне (после S5 — в трейд-окне).
+// Вход — только на официальной странице GGG, в трейд-окне (S5) на /login.
 
 export function AccountPanel({ title = true }: { title?: boolean }) {
   const t = useT()
@@ -66,6 +66,11 @@ export function AccountPanel({ title = true }: { title?: boolean }) {
               <li>{t('auth.in.p3')}</li>
             </ul>
             <div className="account-card__btns">
+              {/* S5: трейд-окно — сайт трейда в той же сессии аккаунта, рядом избранное */}
+              <button type="button" className="ui-btn" onClick={() => void window.overlayApi.tradeWindow.open()}>
+                <Ico name="external" />
+                {t('auth.openTrade')}
+              </button>
               <button
                 type="button"
                 className="ui-btn ui-btn--danger"

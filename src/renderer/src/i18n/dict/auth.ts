@@ -20,6 +20,7 @@ export const auth: DomainDict = {
     'auth.out.p1': 'Прайс-чек, regex и сделки работают и без входа.',
     'auth.out.p2': 'Для live search войдите на официальной странице сайта GGG — пароль вводится только там.',
     'auth.login': 'Войти на сайте GGG',
+    'auth.openTrade': 'Открыть трейд-окно',
     'auth.login.hint':
       'Код двухфакторной защиты (2FA) вводится там же, на странице GGG. Вход через Steam, Xbox или PlayStation в окне не работает — войдите по почте и паролю или вставьте POESESSID.',
     'auth.recheck': 'Проверить',
@@ -75,6 +76,7 @@ export const auth: DomainDict = {
     'auth.out.p1': 'Price check, regex and trades work without signing in.',
     'auth.out.p2': 'For live search, sign in on the official GGG site page — that is the only place you type your password.',
     'auth.login': 'Sign in on the GGG site',
+    'auth.openTrade': 'Open trade window',
     'auth.login.hint':
       'The two-factor (2FA) code is entered on the same GGG page. Steam, Xbox or PlayStation sign-in does not work in the window — use your email and password, or paste a POESESSID.',
     'auth.recheck': 'Check',

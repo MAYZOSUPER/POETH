@@ -9,10 +9,10 @@ import {
   initAccount,
   logout,
   onAuthStatus,
-  openLogin,
   pasteSession,
   recheck
 } from '../net/account'
+import { openTradeLogin } from './fav'
 import {
   getLeagueState,
   onLeaguesChanged,
@@ -58,10 +58,8 @@ function register(): void {
   onLeaguesChanged((s) => broadcast(IPC.events.authLeagues, s))
 
   handle(IPC.auth.status, () => getAuthStatus())
-  handle(IPC.auth.login, async () => {
-    const lang = (await getSettings()).uiLang
-    await openLogin(lang === 'ru' ? 'Вход в Path of Exile — POETH' : 'Path of Exile sign-in — POETH')
-  })
+  // S5: вход — в трейд-окне на официальной странице /login (после входа окно переходит на сайт трейда)
+  handle(IPC.auth.login, () => openTradeLogin())
   handle(IPC.auth.logout, () => logout())
   handle(IPC.auth.recheck, () => recheck())
   handle(IPC.auth.pasteSession, (value) => pasteSession(value))
