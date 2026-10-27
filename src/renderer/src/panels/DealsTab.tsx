@@ -75,10 +75,10 @@ export function DealsTab() {
         </div>
       )}
       {enabled && page === 'history' && log && !log.connected && (
-        <div className={`ui-banner${log.supported ? '' : ' ui-banner--info'}`}>
-          <Ico name={log.supported ? 'warn' : 'info'} />
+        <div className="ui-banner">
+          <Ico name="warn" />
           <span>
-            <Rich text={t(log.supported ? 'deals.log.banner.notFound' : 'deals.log.banner.pending')} />
+            <Rich text={t('deals.log.banner.notFound')} />
           </span>
           <span />
         </div>

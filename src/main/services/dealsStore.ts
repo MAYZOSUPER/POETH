@@ -43,22 +43,6 @@ export type BlacklistChecker = (who: { account?: string; character?: string }) =
 /** Ввод одной команды в чат игры (S1: typeInChat(text, { send: true })). */
 export type ChatSender = (command: string) => GameInputResult | Promise<GameInputResult>
 
-/** Источник сырых строк Client.txt (LogTailer после патча: событие 'lines'). */
-export interface RawLineSource {
-  on(event: 'lines', cb: (lines: string[]) => void): unknown
-  off(event: 'lines', cb: (lines: string[]) => void): unknown
-}
-
-/** Подписать стор на строки лога; возвращает отписку. Ошибка разбора не роняет тейлер. */
-export function attachLogSource(source: RawLineSource, store: DealsStore): () => void {
-  const onLines = (lines: string[]): void => {
-    store.ingestLines(lines).catch((e) => console.error('[deals] строки лога:', e))
-  }
-  source.on('lines', onLines)
-  return () => {
-    source.off('lines', onLines)
-  }
-}
 
 export class DealsStore extends EventEmitter {
   private data: DealsFileData = emptyDealsFile()
