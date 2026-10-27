@@ -1,0 +1,128 @@
+/* POETH — дизайн-токены, стиль «Золото компаса».
+   Подключение: первой строкой globals.css — @import './tokens.css';
+   Отсюда же подключаются шрифты и базовые компоненты (ui-*).
+   Новые имена объявлены на :root. Старые имена темы компаса (--gold, --panel, --font-serif…) переопределены
+   ниже на :root:root: блок :root в globals.css идёт после импорта и с той же специфичностью перебил бы их. */
+@import './fonts.css';
+@import './components.css';
+
+:root {
+  /* ---------- шрифты ---------- */
+  --font-display: 'Cormorant SC', Georgia, 'Times New Roman', serif; /* заголовки окон и имена предметов, от 15 px */
+  --font-ui: 'Golos Text', 'Segoe UI', Tahoma, sans-serif;            /* весь интерфейс */
+  --font-mono: 'JetBrains Mono', Consolas, monospace;                 /* regex, пути, id */
+
+  /* ---------- кегли ---------- */
+  --fs-2xs: 10.5px;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 13px;     /* основной текст оверлея */
+  --fs-lg: 15px;
+  --fs-title: 16px;  /* заголовок окна, --font-display */
+  --fs-name: 19px;   /* имя предмета, --font-display */
+  --fs-price: 22px;  /* итоговая цена */
+  --lh: 1.35;
+
+  /* ---------- отступы и размеры ---------- */
+  --sp-1: 2px;
+  --sp-2: 4px;
+  --sp-3: 6px;
+  --sp-4: 8px;
+  --sp-5: 10px;
+  --sp-6: 12px;
+  --sp-7: 16px;
+  --sp-8: 20px;
+  --h-row: 28px;     /* строка мода, листинга */
+  --h-btn: 28px;
+  --h-btn-sm: 24px;
+  --h-input: 24px;
+  --h-chip: 24px;
+  --w-pricecheck: 384px;        /* окно прайс-чека, простой режим */
+  --w-pricecheck-expert: 420px; /* экспертный режим: колонки ролла и min/max */
+  --w-toast: 320px;
+
+  /* ---------- скругления ---------- */
+  --r-panel: 7px;
+  --r-sm: 4px;
+  --r-btn: 5px;
+  --r-pill: 999px;
+
+  /* ---------- поверхности ---------- */
+  --panel-rgb: 21 17 13;
+  --panel-alpha: 0.92; /* настройка «Непрозрачность панелей», 0.8–1. Размытие фона игры в Electron не работает */
+  --surface: rgb(var(--panel-rgb) / var(--panel-alpha)); /* панели оверлея поверх игры */
+  --surface-solid: rgb(var(--panel-rgb));                /* то же без прозрачности */
+  --page: #0f0c0a;    /* фон обычных окон: компаньон, трейд-окно */
+  --raised: #2b241c;  /* кнопки, всплывающие меню, подсказки */
+  --sunken: rgba(0, 0, 0, 0.26); /* поля ввода, полоса итога */
+  --hover: rgba(232, 205, 143, 0.06);
+  --selected: rgba(201, 165, 92, 0.14);
+  --border: rgba(201, 165, 92, 0.22);
+  --border-strong: rgba(201, 165, 92, 0.5);
+  --head-bg: linear-gradient(180deg, rgba(74, 56, 30, 0.55), rgba(74, 56, 30, 0));
+  --halo: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 12px 32px rgba(0, 0, 0, 0.6); /* отделяет панель от любой сцены */
+  --scrim: rgba(8, 6, 5, 0.62); /* затемнение под модальным окном */
+
+  /* ---------- текст ---------- */
+  --fg: #eee7d7;
+  --fg-muted: #a99f8b;
+  --fg-faint: #776f60;
+
+  /* ---------- акцент ---------- */
+  --accent: #c9a55c;     /* линии, активные элементы */
+  --accent-hi: #e8cd8f;  /* цены, заголовки, выбранное */
+  --accent-ink: #1d150b; /* текст на золотой кнопке */
+  --accent-grad: linear-gradient(180deg, #e4c681, #b98f45);
+  --accent-soft: rgba(201, 165, 92, 0.16);
+
+  /* ---------- смысловые цвета (всегда дублируются иконкой или текстом) ---------- */
+  --good: #80c98c;  /* в сети, «хочу», готово */
+  --warn: #e4aa52;  /* АФК, пауза, лимит */
+  --bad: #e5735e;   /* «не хочу», ошибка, кик, чёрный список */
+  --info: #82b8db;  /* подсказки новичку, псевдо-статы */
+  --live: #80c98c;  /* live search, новая находка */
+  --on-good: #0c160f;
+  --on-bad: #1a0b08;
+
+  /* ---------- редкость предметов ---------- */
+  --rarity-normal: #d7d3c9;
+  --rarity-magic: #90aaf3;
+  --rarity-rare: #ebd96d;
+  --rarity-unique: #dc9351;
+  --rarity-gem: #61c3b5;
+  --rarity-currency: #cfb983;
+
+  /* ---------- фокус и движение ---------- */
+  --focus-ring: 0 0 0 2px rgba(232, 205, 143, 0.6);
+  --t-fast: 120ms;
+  --t-med: 180ms;
+}
+
+/* Имена, которые совпадают с темой компаса, и алиасы старых имён. :root:root — см. шапку файла. */
+:root:root {
+  --text: var(--fg);
+  --line: var(--border);
+  --line-strong: var(--border-strong);
+  --scroll: rgba(201, 165, 92, 0.35);
+
+  --font-serif: var(--font-display);
+  --font-sans: var(--font-ui);
+  --bg: var(--page);
+  --panel: rgba(21, 17, 13, 0.96);
+  --panel-soft: rgba(43, 36, 28, 0.55);
+  --row: rgba(255, 255, 255, 0.025);
+  --muted: var(--fg-muted);
+  --gold: var(--accent);
+  --gold-bright: var(--accent-hi);
+  --perm: #d7b768;
+  --gem: var(--rarity-gem);
+  --green: var(--good);
+  --danger: var(--bad);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-fast: 0ms;
+    --t-med: 0ms;
+  }
+}
