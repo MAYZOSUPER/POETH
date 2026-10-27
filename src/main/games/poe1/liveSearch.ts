@@ -1,4 +1,4 @@
-import { clipboard, Notification, shell } from 'electron'
+import { clipboard, Notification } from 'electron'
 import { GAMES, liveUrl, siteUrl, type GameId, type SiteHost } from '@shared/games'
 import { isAllowedExternalUrl } from '@shared/links'
 import type {
@@ -17,6 +17,7 @@ import { getAuthStatus, onAuthStatus } from '../../net/account'
 import { tradeRequest } from '../../net/gateway'
 import { getEffectiveLeague } from '../../net/leagues'
 import { netLog } from '../../net/http'
+import { openTradeWindow } from '../../ipc/fav'
 import { getGameFocus, isFocusTracking } from '../../focus/gameFocus'
 import { typeInChat } from '../../input/gameInput'
 import {
@@ -506,15 +507,16 @@ export class LiveManager {
   }
 
   /**
-   * «Открыть лот»: до трейд-окна (S5) — страница поиска на сайте в системном браузере.
-   * После слияния S5: openTradeWindow({ lot: { account, name, typeLine, ilvl }, league: hit.league })
-   * из src/main/ipc/fav.ts — сайт сам покажет этот лот продавца.
+   * «Открыть лот» в трейд-окне S5: сайт сам покажет этот лот продавца (запрос ?q= по аккаунту,
+   * имени, базе и ilvl). Без базы предмета — страница поиска в том же трейд-окне.
    */
   openHit(key: unknown): boolean {
     const hit = this.findHit(key)
-    const url = hit?.siteUrl
-    if (!url || !isAllowedExternalUrl(url)) return false
-    void shell.openExternal(url)
+    if (!hit) return false
+    if (!hit.typeLine && !(hit.siteUrl && isAllowedExternalUrl(hit.siteUrl))) return false
+    const lot = { account: hit.account, name: hit.name, typeLine: hit.typeLine, ilvl: hit.ilvl }
+    const target = hit.typeLine ? { lot, league: hit.league, game: 'poe1' as const } : { url: hit.siteUrl }
+    void openTradeWindow(target).catch((err) => netLog('warn', 'live: openHit', err))
     return true
   }
 

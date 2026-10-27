@@ -10,6 +10,9 @@ import {
   type TradeStatus
 } from '@shared/poe1/pricecheck'
 import type { Poe1Listing, Poe1Price, PriceGroupSummary } from '@shared/poe1/pricecheck/results'
+import type { TradeWindowTarget } from '@shared/types/fav'
+import type { LiveAddError } from '@shared/types/live'
+import { parseTradeUrl } from '@shared/favorites/tradeUrl'
 import { fallbackKey } from '@shared/poe1/pricecheck/fallback'
 import { netErrorText } from '../../panels/account/netError'
 import { Icon } from '../Icon'
@@ -35,6 +38,28 @@ const inputProps = {
 function openExternal(url: string): void {
   window.overlayApi.window.openExternal(url)
 }
+
+/** Трейд-окно S5 вместо системного браузера: поиск по адресу или конкретный лот. */
+function openInTradeWindow(target: TradeWindowTarget): void {
+  void window.overlayApi.tradeWindow.open({ game: 'poe1', ...target })
+}
+
+/** «Купить» у лота торговца: сайт сам покажет этот лот (продавец + имя + база + ilvl). */
+function openListing(l: Poe1Listing, siteUrl: string): void {
+  const league = parseTradeUrl(siteUrl)?.league
+  if (!l.baseType || !league) return openInTradeWindow({ url: siteUrl })
+  openInTradeWindow({ lot: { account: l.accountName, name: l.itemName, typeLine: l.baseType, ilvl: l.itemLevel }, league })
+}
+
+/** Название поиска для избранного и live: имя предмета [+ база], как в шапке окна. */
+function searchTitle(captured: CapturedItem, item: ParsedItem | null): string {
+  const lines = captured.text.split(/\r?\n/)
+  const name = lines[2] && lines[2] !== '--------' ? lines[2] : (item?.info.name ?? '')
+  const base = lines[3] && lines[3] !== '--------' ? lines[3] : ''
+  return [name, base].filter(Boolean).join(' ').slice(0, 120)
+}
+
+type ActionState = 'idle' | 'busy' | 'done' | 'fail'
 
 function useNow(active: boolean): number {
   const [now, setNow] = useState(Date.now())
@@ -525,7 +550,7 @@ function ListingRow({ l, siteUrl, lang, t }: { l: Poe1Listing; siteUrl: string; 
         )}
       </span>
       {l.kind === 'instant' ? (
-        <button type="button" className="ui-btn ui-btn--sm ui-btn--primary" title={t('pc1.buy.help')} onClick={() => openExternal(siteUrl)}>
+        <button type="button" className="ui-btn ui-btn--sm ui-btn--primary" title={t('pc1.buy.help')} onClick={() => openListing(l, siteUrl)}>
           <Icon name="external" />
           {t('pc1.buy')}
         </button>
@@ -861,27 +886,86 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
         )}
         <Results t={t} lang={lang} />
       </div>
-      <footer className="ui-panel__foot">
-        <button
-          type="button"
-          className="ui-btn ui-btn--primary"
-          title={t('pc1.open.help')}
-          disabled={!result}
-          onClick={() => result && openExternal(result.siteUrl)}
-        >
-          <Icon name="external" />
-          {t('pc1.open')}
-        </button>
-        {/* TODO S5: избранное и трейд-окно; TODO S6: live search по этому запросу */}
-        <button type="button" className="ui-btn" disabled title={t('pc1.soon')}>
-          <Icon name="star" />
-          {t('pc1.save')}
-        </button>
-        <button type="button" className="ui-btn ui-btn--live" disabled title={t('pc1.soon')}>
-          <Icon name="bolt" />
-          {t('pc1.live')}
-        </button>
-      </footer>
+      <PriceActions result={result} title={searchTitle(captured, item)} t={t} />
     </section>
+  )
+}
+
+const LIVE_ERROR_KEYS: Record<LiveAddError, string> = {
+  duplicate: 'pc1.live.duplicate',
+  exchange: 'pc1.live.exchange',
+  poe2: 'pc1.live.fail',
+  'bad-url': 'pc1.live.fail'
+}
+
+/** Кнопки окна цены: трейд-окно (S5), избранное (S5), live search по этому запросу (S6). */
+function PriceActions({ result, title, t }: { result: PcResult | undefined; title: string; t: T }) {
+  const [saved, setSaved] = useState<ActionState>('idle')
+  const [live, setLive] = useState<ActionState>('idle')
+  const [liveError, setLiveError] = useState<LiveAddError | null>(null)
+  const siteUrl = result?.siteUrl
+  // новый поиск — новые кнопки
+  useEffect(() => {
+    setSaved('idle')
+    setLive('idle')
+    setLiveError(null)
+  }, [siteUrl])
+  const search = siteUrl ? parseTradeUrl(siteUrl) : null
+  const bulk = result?.kind === 'bulk'
+
+  const save = async (): Promise<void> => {
+    if (!search?.slug || saved === 'busy' || saved === 'done') return
+    setSaved('busy')
+    const fav = await window.overlayApi.fav
+      .add({ title, game: 'poe1', type: search.type, slug: search.slug, league: search.league })
+      .catch(() => null)
+    setSaved(fav ? 'done' : 'fail')
+  }
+  const watch = async (): Promise<void> => {
+    if (!siteUrl || bulk || live === 'busy' || live === 'done') return
+    setLive('busy')
+    const r = await window.overlayApi.live.add(siteUrl, title).catch(() => null)
+    if (r?.ok) return setLive('done')
+    setLiveError(r ? r.error : null)
+    setLive('fail')
+  }
+  const liveText =
+    live === 'done' ? t('pc1.live.done') : live === 'fail' ? t(liveError ? LIVE_ERROR_KEYS[liveError] : 'pc1.live.fail') : t('pc1.live')
+
+  return (
+    <footer className="ui-panel__foot">
+      <button
+        type="button"
+        className="ui-btn ui-btn--primary"
+        title={t('pc1.open.help')}
+        disabled={!siteUrl}
+        onClick={() => siteUrl && openInTradeWindow({ url: siteUrl })}
+      >
+        <Icon name="external" />
+        {t('pc1.open')}
+      </button>
+      <button
+        type="button"
+        className="ui-btn"
+        title={t('pc1.save.help')}
+        disabled={!search?.slug || saved === 'busy'}
+        aria-pressed={saved === 'done'}
+        onClick={() => void save()}
+      >
+        <Icon name={saved === 'done' ? 'check' : 'star'} />
+        {saved === 'done' ? t('pc1.save.done') : saved === 'fail' ? t('pc1.save.fail') : t('pc1.save')}
+      </button>
+      <button
+        type="button"
+        className="ui-btn ui-btn--live"
+        title={bulk ? t('pc1.live.exchange') : t('pc1.live.help')}
+        disabled={!siteUrl || bulk || live === 'busy'}
+        aria-pressed={live === 'done'}
+        onClick={() => void watch()}
+      >
+        <Icon name={live === 'done' ? 'check' : 'bolt'} />
+        {liveText}
+      </button>
+    </footer>
   )
 }

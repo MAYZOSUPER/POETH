@@ -1,4 +1,4 @@
-import { app, dialog, ipcMain, net } from 'electron'
+import { app, dialog, ipcMain } from 'electron'
 import { promises as fs } from 'fs'
 import path from 'path'
 import { IPC } from '@shared/ipc'
@@ -19,6 +19,7 @@ import { DealsStore } from '../services/dealsStore'
 import { BlacklistService, type TextFetcher } from '../services/dealsBlacklist'
 import { getGameLogStatus, onGameLogStatus, setGameLogPath, subscribeGameLog } from '../services/gameLog'
 import { typeInChat } from '../input/gameInput'
+import { httpRequest } from '../net/http'
 import { onHotkeyAction } from '../hotkeys'
 import {
   activateOverlay,
@@ -41,13 +42,15 @@ let store: DealsStore | null = null
 let blacklist: BlacklistService | null = null
 let started: Promise<void> | null = null
 
-/** Сеть списка: net.fetch сессии окон (без cookies аккаунта). После S3-рефакторинга — net/http.ts. */
+/** Сеть списка: httpRequest S3 — анонимная сессия без cookies аккаунта, только https, общий UA. */
 const fetchText: TextFetcher = async (url, { etag, timeoutMs }) => {
-  const res = await net.fetch(url, {
+  const res = await httpRequest({
+    url,
     headers: etag ? { 'If-None-Match': etag } : {},
-    signal: AbortSignal.timeout(timeoutMs)
+    timeoutMs,
+    accept: 'text/csv, text/plain, */*'
   })
-  return { status: res.status, body: res.status === 200 ? await res.text() : '', etag: res.headers.get('etag') ?? undefined }
+  return { status: res.status, body: res.status === 200 ? res.body : '', etag: res.headers.etag || undefined }
 }
 
 /** Событие во все окна, которым оно нужно: компаньон (вкладка «Сделки») и оверлей (карточки). */

@@ -23,6 +23,10 @@ if (process.env.POETH_USER_DATA_DIR) app.setPath('userData', process.env.POETH_U
 // disable-blink-features=AutomationControlled — до ready и до создания окон.
 initNetIdentity()
 
+// Уведомления Windows (live S6, тост запуска S10a) от имени POETH — как у ярлыка NSIS,
+// а не electron.app.Electron; до ready, чтобы первое уведомление уже шло с этим AUMID.
+if (process.platform === 'win32') app.setAppUserModelId('com.poeth.app')
+
 // Must happen before `ready` (scheme) and before the single-instance lock
 // (userData copy from the old product names, before Chromium writes there).
 registerPoethScheme()
@@ -51,8 +55,6 @@ async function warmLeagues(timeoutMs: number): Promise<void> {
 
 async function bootstrap(): Promise<void> {
   handlePoethProtocol()
-  // уведомления Windows от имени POETH (как у ярлыка NSIS), а не electron.app.Electron
-  if (process.platform === 'win32') app.setAppUserModelId('com.poeth.app')
 
   registerIpcHandlers()
   const initial = await getSettings()

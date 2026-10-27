@@ -4,6 +4,7 @@ import type { GameDef } from '@shared/games'
 import { isTrustedAppUrl } from '../net/guards'
 import { onHotkeyAction } from '../hotkeys'
 import { LiveManager } from '../games/poe1/liveSearch'
+import { registerFavLiveAdapter } from './fav'
 import type { IpcDomain } from './types'
 
 // Домен «live search» (main, S6): менеджер live-поисков PoE1, хоткей whisperLastHit.
@@ -28,8 +29,7 @@ const manager = new LiveManager({
 
 /**
  * Адаптер live для избранного трейд-окна — по контракту FavLiveAdapter S5 (src/main/ipc/fav.ts).
- * Подключение после слияния S5: в setupForGame ниже
- *   registerFavLiveAdapter(def.id === 'poe1' ? getFavLiveAdapter() : null)
+ * Регистрируется в setupForGame: только PoE1, в PoE2 молния в избранном неактивна.
  */
 export function getFavLiveAdapter(): {
   setLive: LiveManager['setFavoriteLive']
@@ -66,6 +66,7 @@ function register(): void {
 
 async function setupForGame(def: GameDef): Promise<void> {
   if (def.id !== 'poe1') {
+    registerFavLiveAdapter(null)
     manager.stop()
     return
   }
@@ -75,6 +76,8 @@ async function setupForGame(def: GameDef): Promise<void> {
     if (r !== 'ok') console.log('[live] whisperLastHit:', r)
   })
   await manager.start()
+  // после start: до него setLive отвечает 'unsupported' и включённые поиски избранного не поднялись бы
+  registerFavLiveAdapter(getFavLiveAdapter())
 }
 
 export const liveDomain: IpcDomain = { register, setupForGame }

@@ -179,8 +179,9 @@ function evaluate(expression) {
 }
 
 const overlayState = () => evaluate('window.overlayApi.overlay.getState()')
-const widgetText = () => evaluate("document.querySelector('.ov-itemtext__raw')?.textContent ?? null")
-const widgetBadge = () => evaluate("document.querySelector('.ov-itemtext .ui-tag')?.textContent ?? null")
+// окно цены S4 (демо-виджет S1 удалён): текст предмета — из состояния оверлея, пока окно открыто
+const widgetText = () => evaluate("window.overlayApi.overlay.getState().then(s => document.querySelector('.ov-pricecheck') ? s.lastItem?.text ?? null : null)")
+const widgetBadge = () => evaluate("document.querySelector('.ov-pricecheck .pc-item .ui-tag')?.textContent ?? null")
 
 // ---------------------------------------------------------------------------
 // ввод (только в проверенное окно)
@@ -412,7 +413,7 @@ async function main() {
     await fakeCmd({ cmd: 'hover', id: 'en-unique' })
     await press(K.D, [K.Ctrl])
     await waitFor(async () => (await widgetText())?.startsWith('Item Class: Rings'))
-    const btn = await evaluate(`(() => { const b = document.querySelector('.ov-itemtext .ui-panel__head .ui-btn').getBoundingClientRect();
+    const btn = await evaluate(`(() => { const b = document.querySelector('.ov-pricecheck .ui-panel__head button:last-of-type').getBoundingClientRect();
       return { x: Math.round((window.screenX + b.left + b.width / 2) * devicePixelRatio), y: Math.round((window.screenY + b.top + b.height / 2) * devicePixelRatio) } })()`)
     // курсор над виджетом → main должен снять «сквозную» мышь, не активируя оверлей
     await psCmd(`move ${btn.x} ${btn.y}`)
@@ -426,7 +427,7 @@ async function main() {
     // верх окна на уровне курсора (сдвиг вверх 12 px)
     const g = (await fakeState()).bounds
     const widgetRect = () =>
-      evaluate(`(() => { const r = document.querySelector('.ov-itemtext').getBoundingClientRect(), d = devicePixelRatio;
+      evaluate(`(() => { const r = document.querySelector('.ov-pricecheck').getBoundingClientRect(), d = devicePixelRatio;
         return { left: (window.screenX + r.left) * d, right: (window.screenX + r.right) * d, top: (window.screenY + r.top) * d } })()`)
     for (const [fx, side] of [[0.75, 'слева'], [0.3, 'справа']]) {
       const C = { x: g.x + Math.round(g.width * fx), y: g.y + Math.round(g.height * 0.4) }
@@ -465,7 +466,7 @@ async function main() {
     await press(K.D, [K.Ctrl])
     await waitFor(async () => (await widgetText())?.startsWith('Item Class: Gloves'))
     await sleep(150)
-    const box = await evaluate(`(() => { const r = document.querySelector('.ov-itemtext').getBoundingClientRect();
+    const box = await evaluate(`(() => { const r = document.querySelector('.ov-pricecheck').getBoundingClientRect();
       return { x: Math.round((window.screenX + r.left + r.width / 2) * devicePixelRatio), y: Math.round((window.screenY + r.top + r.height / 2) * devicePixelRatio) } })()`)
     for (let i = 1; i <= 5; i++) {
       await psCmd(`move ${Math.round(P.x + ((box.x - P.x) * i) / 5)} ${Math.round(P.y + ((box.y - P.y) * i) / 5)}`)

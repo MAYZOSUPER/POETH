@@ -12,8 +12,8 @@ import { readJson, writeJsonAtomic } from './atomicJson'
 
 // Чёрный список PoE Hub (The-Forbidden-Trove/ForbiddenTroveBlacklist, MIT): скачать blacklist.csv,
 // держать кэш на диске (userData/cache/poehub-blacklist.json), обновлять не чаще раза в сутки.
-// Сеть — за интерфейсом TextFetcher: сейчас net.fetch (ipc/deals.ts), после слияния S3 —
-// net/http.ts (httpRequest, сессия без cookies). Без electron — тестируется с фейковой сетью.
+// Сеть — за интерфейсом TextFetcher: в ipc/deals.ts это net/http.ts S3 (httpRequest, сессия без
+// cookies). Без electron — тестируется с фейковой сетью.
 //
 // События: 'status' (BlacklistStatus).
 

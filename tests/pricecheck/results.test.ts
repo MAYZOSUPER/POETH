@@ -50,6 +50,15 @@ describe('нормализация ответа fetch', () => {
     expect(normalizeListing(person)).toMatchObject({ kind: 'person', online: 'afk', whisper: '@Char Hi, I would like to buy your …' })
     expect(normalizeListing({ id: 'x', listing: { account: { name: 'C' } } })).toMatchObject({ price: null, online: 'offline' })
   })
+
+  it('имя и база лота для «Купить» → лот в трейд-окне: без разметки сайта, у магических — база', () => {
+    const unique = normalizeListing({ id: 'u', item: { name: '<<set:MS>><<set:M>><<set:S>>Sidhebreath', typeLine: 'Paua Amulet', baseType: 'Paua Amulet' } })
+    expect(unique).toMatchObject({ itemName: 'Sidhebreath', baseType: 'Paua Amulet' })
+    const magic = normalizeListing({ id: 'm', item: { name: '', typeLine: "Pyromaniac's Amethyst Ring of the Lynx", baseType: 'Amethyst Ring' } })
+    expect(magic.itemName).toBeUndefined()
+    expect(magic.baseType).toBe('Amethyst Ring')
+    expect(normalizeListing({ id: 'o', item: { typeLine: 'Кольцо из аметиста' } }).baseType).toBe('Кольцо из аметиста')
+  })
 })
 
 describe('«честная цена»', () => {

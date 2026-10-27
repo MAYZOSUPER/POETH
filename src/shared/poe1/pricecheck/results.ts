@@ -31,6 +31,9 @@ export interface Poe1Listing {
   whisper?: string
   itemLevel?: number
   corrupted?: boolean
+  /** имя и база предмета на языке сайта — «Купить» открывает этот лот в трейд-окне (S5, {lot}) */
+  itemName?: string
+  baseType?: string
 }
 
 /** Сырой элемент ответа /api/trade/fetch (только используемые поля). */
@@ -43,7 +46,14 @@ export interface TradeFetchItem {
     whisper?: string | null
     account?: { name?: string; lastCharacterName?: string; online?: { status?: string } | null } | null
   }
-  item?: { ilvl?: number; corrupted?: boolean }
+  item?: { ilvl?: number; corrupted?: boolean; name?: string; typeLine?: string; baseType?: string }
+}
+
+/** Текст предмета от сайта без разметки вида <<set:MS>>; пусто — undefined. */
+function siteText(s: unknown): string | undefined {
+  if (typeof s !== 'string') return undefined
+  const v = s.replace(/<<[^>]*>>/g, '').trim()
+  return v || undefined
 }
 
 export function normalizeListing(r: TradeFetchItem): Poe1Listing {
@@ -66,7 +76,10 @@ export function normalizeListing(r: TradeFetchItem): Poe1Listing {
     online: fee != null ? 'online' : status,
     whisper: typeof l.whisper === 'string' && l.whisper ? l.whisper : undefined,
     itemLevel: r.item?.ilvl,
-    corrupted: r.item?.corrupted
+    corrupted: r.item?.corrupted,
+    itemName: siteText(r.item?.name),
+    // у магических typeLine с аффиксами — для запроса лота нужна база
+    baseType: siteText(r.item?.baseType) ?? siteText(r.item?.typeLine)
   }
 }
 
