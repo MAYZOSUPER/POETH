@@ -18,7 +18,14 @@ export function registerPoethScheme(): void {
   protocol.registerSchemesAsPrivileged([
     {
       scheme: SCHEME,
-      privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true }
+      // corsEnabled + ACAO header: renderer pages (file:// / dev http origin) can fetch() data files
+      privileges: {
+        standard: true,
+        secure: true,
+        supportFetchAPI: true,
+        corsEnabled: true,
+        stream: true
+      }
     }
   ])
 }
@@ -64,7 +71,7 @@ async function fileResponse(abs: string | null, file: string): Promise<Response>
   if (!abs) return new Response('Not found', { status: 404 })
   const data = await fs.readFile(abs)
   return new Response(new Uint8Array(data), {
-    headers: { 'Content-Type': contentTypeFor(file) }
+    headers: { 'Content-Type': contentTypeFor(file), 'Access-Control-Allow-Origin': '*' }
   })
 }
 
