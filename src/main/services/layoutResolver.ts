@@ -3,8 +3,8 @@ import path from 'path'
 import { promises as fs } from 'fs'
 import { loadDataset, resourcesDir } from './questDataset'
 
-// Layout images are served to the renderer through the custom `poe2img://`
-// protocol (registered in main/index.ts). The protocol handler calls
+// Layout images are served to the renderer through the custom `poeth://`
+// protocol (registered in main/protocol.ts). The protocol handler calls
 // `resolveLayoutFile` which looks the image up in order:
 //   1. bundled in resources/layouts (offline-first for shipped acts)
 //   2. cached in %APPDATA%/layout-cache (previously fetched)
@@ -34,7 +34,7 @@ export async function resolveLayout(areaId: string): Promise<string[]> {
   const ref = ds.layouts[areaId]
   if (!ref || ref.files.length === 0) return []
   return ref.files.map(
-    (file) => `poe2img://img/${encodeURIComponent(areaId)}/${encodeURIComponent(file)}`
+    (file) => `poeth://img/${encodeURIComponent(areaId)}/${encodeURIComponent(file)}`
   )
 }
 
@@ -80,6 +80,19 @@ export function contentTypeFor(file: string): string {
       return 'image/webp'
     case '.gif':
       return 'image/gif'
+    case '.svg':
+      return 'image/svg+xml'
+    case '.json':
+      return 'application/json'
+    case '.ndjson':
+      return 'application/x-ndjson'
+    case '.js':
+      return 'text/javascript'
+    case '.txt':
+    case '.csv':
+      return 'text/plain; charset=utf-8'
+    case '.bin':
+      return 'application/octet-stream'
     default:
       return 'image/jpeg'
   }

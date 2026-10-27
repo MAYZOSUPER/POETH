@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 
 /**
- * Renders a brand asset PNG from resources/brand/ (served via poe2img://brand/).
+ * Renders a brand asset PNG from resources/brand/ (served via poeth://brand/).
  * If the file isn't present (user hasn't dropped it yet) it shows `fallback`.
  */
 export function BrandImg({
@@ -19,7 +19,7 @@ export function BrandImg({
   if (failed) return <>{fallback}</>
   return (
     <img
-      src={`poe2img://brand/${encodeURIComponent(file)}`}
+      src={`poeth://brand/${encodeURIComponent(file)}`}
       alt={alt ?? ''}
       className={className}
       onError={() => setFailed(true)}

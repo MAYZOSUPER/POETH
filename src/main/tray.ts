@@ -47,7 +47,7 @@ async function buildMenu(): Promise<Menu> {
   const win = getOverlayWindow()
   const visible = !!win && !win.isDestroyed() && win.isVisible()
   return Menu.buildFromTemplate([
-    { label: 'Exile Companion', enabled: false },
+    { label: 'POE Trade Helper (POETH)', enabled: false },
     { type: 'separator' },
     { label: visible ? 'Скрыть оверлей' : 'Показать оверлей', click: () => void toggleVisible() },
     {
@@ -74,7 +74,7 @@ async function refresh(): Promise<void> {
 export async function createTray(): Promise<void> {
   const img = nativeImage.createFromPath(iconPath())
   tray = new Tray(img.isEmpty() ? nativeImage.createEmpty() : img)
-  tray.setToolTip('Exile Companion')
+  tray.setToolTip('POE Trade Helper')
   // left-click toggles the overlay; right-click opens the menu (Windows default)
   tray.on('click', () => void toggleVisible())
   await refresh()

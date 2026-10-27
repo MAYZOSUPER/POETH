@@ -1,6 +1,6 @@
-appId: com.actcompass.app
-productName: Exile Companion
-copyright: Copyright © 2026 Exile Companion contributors
+appId: com.poeth.app
+productName: POETH
+copyright: Copyright © 2026 POETH contributors
 
 directories:
   output: dist-release
@@ -29,3 +29,4 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
+  shortcutName: POE Trade Helper

@@ -1,9 +1,9 @@
 {
-  "name": "poe2-quest-overlay",
-  "productName": "Exile Companion",
+  "name": "poeth",
+  "productName": "POETH",
   "version": "0.1.0",
-  "description": "Path of Exile 2 companion overlay — campaign tracker (quests, maps, gems, ascendancy, auto-progress) + item price check",
-  "author": "PoE2 Quest Overlay contributors",
+  "description": "POE Trade Helper — оверлей-помощник по трейду для Path of Exile 1/2 (прайс-чек, live search, regex, сделки) + трекер кампании PoE2",
+  "author": "POETH contributors",
   "license": "MIT",
   "main": "./out/main/index.js",
   "scripts": {

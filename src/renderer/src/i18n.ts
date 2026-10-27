@@ -159,7 +159,7 @@ const RU: Dict = {
   'set.data.version': 'Версия данных: {label}',
   'set.data.schema': 'Схема {schema} · актов: {acts}',
   'set.disclaimer':
-    'Неофициальный фанатский инструмент. Не связан с Grinding Gear Games. Path of Exile 2 и все ассеты © GGG.',
+    'POE Trade Helper (POETH) — неофициальный фанатский инструмент. Не связан с Grinding Gear Games. Path of Exile, Path of Exile 2 и все ассеты © GGG.',
   // layout types
   'layout.linear': 'Линейная',
   'layout.open': 'Открытая',
@@ -307,7 +307,7 @@ const EN: Dict = {
   'set.data.version': 'Data version: {label}',
   'set.data.schema': 'Schema {schema} · acts: {acts}',
   'set.disclaimer':
-    'Unofficial fan-made tool. Not affiliated with Grinding Gear Games. Path of Exile 2 and all assets © GGG.',
+    'POE Trade Helper (POETH) is an unofficial fan-made tool. Not affiliated with Grinding Gear Games. Path of Exile, Path of Exile 2 and all assets © GGG.',
   'layout.linear': 'Linear',
   'layout.open': 'Open',
   'layout.branching': 'Branching',
