@@ -54,8 +54,10 @@ Chromium: проходит Cloudflare, нет CORS, можно ставить `C
 ### Ответ `fetch`
 `listing`: `indexed` (ISO-время), `account {name, online?, lastCharacterName}`, `price {type:'~price'|'~b/o',
 amount, currency}` (цена опциональна — листинги без цены пропускать), `stash {name, x, y}`, `whisper` (только у
-in-person листингов). `item` — полный предмет; `item.extended.text` — текст предмета (⚠ кодировка: base64 —
-проверить; используем в live search для парсинга находки).
+in-person листингов). У лота торговца (`available`/`securable`) — `listing.fee` (комиссия в золоте), `method`, без
+`whisper`. `item` — полный предмет; `item.extended.text` — **base64** текста предмета с `
+` (проверено в S6;
+разбирается парсером S2).
 
 ### Bulk-обмен (`exchange`) — валюта, фрагменты, карты, карточки
 ```jsonc
@@ -114,6 +116,12 @@ Currency Exchange (Фаустус), поэтому bulk для валюты по
 - Поведение клиента: до 10 поисков (настройка до 20), подключения с шагом 2.5 с, реконнект 3 с + jitter,
   **429** → бэкофф 30 с … 10 мин, **401** → ждём входа, **404** → поиск недействителен.
 - Транспорт — за интерфейсом; фолбэк — скрытое окно на сайте, если Cloudflare не пустит `ws`.
+
+**Проверено (S6, 28.10.2026, без входа):** рукопожатие `ws` из Node TLS (Electron main) с `Origin: https://<host>`,
+UA приложения и cookies partition аккаунта Cloudflare пропускает; без входа сервер отвечает **401** (пустое тело) —
+это и есть «нужен вход». С входом: `{"auth": true}` и `{"new": […]}` — ⚠ проверит пользователь (2–3 дешёвых
+поиска в Standard). Id поиска, который сейчас отдаёт `POST search`, — длинная строка вида `H4sIAAAA…` (~130 символов);
+она же работает в URL сайта и live. Реализация — `src/main/games/poe1/{liveSearch,wsTransport}.ts` + `live/**`.
 
 ## Лиги (`data/leagues`)
 
