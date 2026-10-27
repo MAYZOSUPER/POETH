@@ -45,6 +45,14 @@ describe('находка из ответа fetch', () => {
     expect(hit?.seller).toBeUndefined()
   })
 
+  it('магический лот: typeLine с аффиксами для показа, база — для «Открыть лот»', () => {
+    const hit = toLiveHit(
+      { id: 'm'.repeat(64), listing: { whisper: '@x hi' }, item: { name: '', typeLine: "Pyromaniac's Leather Belt of the Lynx", baseType: 'Leather Belt', frameType: 1 } },
+      ctx
+    )
+    expect(hit).toMatchObject({ typeLine: "Pyromaniac's Leather Belt of the Lynx", baseType: 'Leather Belt', rarity: 'magic' })
+  })
+
   it('AFK-продавец', () => {
     const hit = toLiveHit({ id: 'c'.repeat(64), listing: { whisper: '@x hi', account: { online: { status: 'afk' } } }, item: {} }, ctx)
     expect(hit?.seller).toBe('afk')

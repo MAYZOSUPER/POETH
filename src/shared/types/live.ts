@@ -75,6 +75,8 @@ export interface LiveHit {
   at: number
   name: string
   typeLine: string
+  /** база предмета (у магических typeLine с аффиксами) — для «Открыть лот» (запрос сайта по базе) */
+  baseType?: string
   rarity: LiveRarity
   ilvl?: number
   corrupted?: boolean

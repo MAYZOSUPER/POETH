@@ -60,6 +60,7 @@ interface FetchEntry {
   item?: {
     name?: unknown
     typeLine?: unknown
+    baseType?: unknown
     frameType?: unknown
     ilvl?: unknown
     corrupted?: unknown
@@ -99,6 +100,8 @@ export function toLiveHit(raw: unknown, ctx: HitContext): LiveHit | null {
   }
   const ilvl = num(item.ilvl)
   if (ilvl !== undefined) hit.ilvl = ilvl
+  const baseType = str(item.baseType, 120)
+  if (baseType) hit.baseType = baseType
   if (item.corrupted === true) hit.corrupted = true
   const text = decodeItemText(item.extended?.text)
   if (text) hit.text = text

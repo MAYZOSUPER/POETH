@@ -513,9 +513,12 @@ export class LiveManager {
   openHit(key: unknown): boolean {
     const hit = this.findHit(key)
     if (!hit) return false
-    if (!hit.typeLine && !(hit.siteUrl && isAllowedExternalUrl(hit.siteUrl))) return false
-    const lot = { account: hit.account, name: hit.name, typeLine: hit.typeLine, ilvl: hit.ilvl }
-    const target = hit.typeLine ? { lot, league: hit.league, game: 'poe1' as const } : { url: hit.siteUrl }
+    // разметка сайта вида <<set:MS>> в имени и базе запросу сайта не нужна
+    const plain = (s: string | undefined): string => (s ?? '').replace(/<<[^>]*>>/g, '').trim()
+    const typeLine = plain(hit.baseType) || plain(hit.typeLine)
+    if (!typeLine && !(hit.siteUrl && isAllowedExternalUrl(hit.siteUrl))) return false
+    const lot = { account: hit.account, name: plain(hit.name) || undefined, typeLine, ilvl: hit.ilvl }
+    const target = typeLine ? { lot, league: hit.league, game: 'poe1' as const } : { url: hit.siteUrl }
     void openTradeWindow(target).catch((err) => netLog('warn', 'live: openHit', err))
     return true
   }
