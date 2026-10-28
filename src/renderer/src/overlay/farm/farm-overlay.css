@@ -1,46 +1,77 @@
-/* Виджет трекера карт поверх игры (S11b): одна строка в стопке справа сверху. */
+/* Мини-виджет фарма поверх игры (S11b) по макету дизайнера (там .w-wid; перенос в components.css —
+   после утверждения). Полоса 34 px, центр по left, мышь ловят только ручка и кнопки. */
 
 .ov-farm {
+  position: absolute;
+  transform: translateX(-50%);
   display: flex;
-  align-items: baseline;
-  gap: var(--sp-4);
-  padding: var(--sp-2) var(--sp-5);
-  border-radius: var(--r-pill);
-  color: var(--fg);
-  font: 500 var(--fs-sm) / 1.3 var(--font-ui);
-  font-variant-numeric: tabular-nums;
+  align-items: center;
+  gap: var(--sp-1);
+  height: 34px;
+  padding: 0 var(--sp-2) 0 var(--sp-1);
+  font-size: var(--fs-md);
   white-space: nowrap;
-  opacity: 0.92;
+  pointer-events: none;
 }
-.ov-farm__timer {
+.ov-farm__grip {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 26px;
+  color: var(--fg-faint);
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+.ov-farm__grip:active {
+  cursor: grabbing;
+}
+.ov-farm__seg {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 0 9px;
+}
+.ov-farm__seg .ui-ico {
   color: var(--fg-muted);
-  font-weight: 700;
 }
-.ov-farm--on .ov-farm__timer {
+.ov-farm__seg b {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ov-farm__time {
+  min-width: 3.1em;
   color: var(--accent-hi);
 }
-.ov-farm__map {
-  max-width: 220px;
+.ov-farm__name {
+  max-width: 150px;
   overflow: hidden;
-  font-weight: 600;
+  color: var(--fg);
   text-overflow: ellipsis;
 }
-.ov-farm__tier {
-  margin-left: var(--sp-2);
-  color: var(--fg-faint);
-  font-weight: 500;
-}
-.ov-farm__muted {
+.ov-farm__lbl,
+.ov-farm__state {
   color: var(--fg-muted);
 }
-.ov-farm__warn {
+.ov-farm__sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+}
+.ov-farm.is-pause .ov-farm__time,
+.ov-farm.is-pause .ov-farm__state {
   color: var(--warn);
 }
-.ov-farm__gold {
-  color: var(--accent-hi);
+.ov-farm__btns {
+  display: inline-flex;
+  gap: var(--sp-1);
+  margin-left: var(--sp-1);
+  pointer-events: auto;
 }
-.ov-farm__sep {
-  align-self: stretch;
-  width: 1px;
-  background: var(--border);
+/* пока тянут за ручку: весь экран оверлея ловит мышь, полоса не теряет курсор */
+.ov-farm-shield {
+  position: absolute;
+  inset: 0;
+  cursor: grabbing;
+  pointer-events: auto;
 }

@@ -33,7 +33,17 @@ export const FARM_SESSIONS_LIMIT = 200
 const MIN_RATE_MS = 60_000
 const HOUR = 3_600_000
 
-export const DEFAULT_FARM_CONFIG: FarmConfig = { overlayWidget: false }
+export const DEFAULT_FARM_CONFIG: FarmConfig = { overlayWidget: false, widgetPos: null }
+
+const unit = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : null)
+
+/** Позиция виджета: обе доли 0…1, иначе null (сверху по центру). */
+export function cleanWidgetPos(v: unknown): FarmConfig['widgetPos'] {
+  const p = v as { x?: unknown; y?: unknown } | null
+  const x = unit(p?.x)
+  const y = unit(p?.y)
+  return x !== null && y !== null ? { x, y } : null
+}
 
 /** Всё, что трекер сохраняет (userData/farm.json). */
 export interface FarmTrackerData {
@@ -124,7 +134,7 @@ export function normalizeFarmData(raw: unknown): FarmTrackerData {
       .filter((v) => v && typeof v.id === 'string' && Number.isFinite(v.endedAt) && v.stats)
       .slice(0, FARM_SESSIONS_LIMIT)
   }
-  if (x.config) d.config = { ...DEFAULT_FARM_CONFIG, overlayWidget: x.config.overlayWidget === true }
+  if (x.config) d.config = { overlayWidget: x.config.overlayWidget === true, widgetPos: cleanWidgetPos(x.config.widgetPos) }
   if (Number.isFinite(x.savedAt)) d.savedAt = x.savedAt
   return d
 }
@@ -149,6 +159,7 @@ export class FarmTracker {
 
   setConfig(patch: Partial<FarmConfig>): void {
     if (typeof patch.overlayWidget === 'boolean') this.d.config.overlayWidget = patch.overlayWidget
+    if ('widgetPos' in patch) this.d.config.widgetPos = cleanWidgetPos(patch.widgetPos)
   }
 
   private get ticking(): boolean {
@@ -397,7 +408,9 @@ export class FarmTracker {
       runs: all.length,
       mapsPerHour: rated ? maps / hours : null,
       avgMapMs: doneMaps.length ? doneMaps.reduce((a, r) => a + r.activeMs, 0) / doneMaps.length : null,
+      fastestMapMs: doneMaps.length ? Math.min(...doneMaps.map((r) => r.activeMs)) : null,
       deaths: all.reduce((a, r) => a + r.deaths, 0),
+      mapsWithDeaths: all.filter((r) => r.kind === 'map' && r.deaths > 0).length,
       profitChaos,
       profitPerHour: profitChaos !== null && rated ? profitChaos / hours : null
     }
@@ -417,7 +430,7 @@ export class FarmTracker {
       stats: d.session ? this.statsFor(d.session, now) : null,
       runs: d.runs.slice(0, runsLimit).map((r) => ({ ...r })),
       sessions: d.sessions.map((s) => ({ ...s, stats: { ...s.stats } })),
-      config: { ...d.config }
+      config: { ...d.config, widgetPos: d.config.widgetPos ? { ...d.config.widgetPos } : null }
     }
   }
 }

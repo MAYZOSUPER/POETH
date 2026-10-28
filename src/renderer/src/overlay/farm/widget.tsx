@@ -1,15 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import type { FarmState, FarmWidgetPos } from '@shared/types/farm'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { farmTicking, useFarmStore } from '../../store/useFarmStore'
-import { chaos, clock, currentRunMs, rate, runName, sessionMs } from '../../panels/farm/format'
-import { OverlayWidget } from '../OverlayWidget'
+import { chaos, clock, currentRunMs, runName, sessionMs } from '../../panels/farm/format'
+import { Icon } from '../Icon'
+import { scheduleRectsFlush, useInteractive } from '../interactive'
 import { useOverlayT } from '../useOverlayT'
 import type { OverlayWidgetDef } from '../registry'
 import './farm-overlay.css'
 
-// Виджет трекера карт поверх игры (S11b): таймер текущей карты, карт за сессию, карт в час и
-// доход в час (от учёта богатства S11a, когда посчитан). Включается в панели «Карты»
-// (FarmConfig.overlayWidget, по умолчанию выключен). Не кликабельный — мышь проходит в игру.
+// Мини-виджет фарма поверх игры (S11b) по макету дизайнера: полоса 34 px сверху по центру —
+// таймер карты (в убежище — время последней карты, на паузе — часы сессии), карт за сессию,
+// доход в час (от учёта богатства S11a). Только во время сессии и если включён в разделе
+// «Сессия фарма» (FarmConfig.overlayWidget). Клики проходят в игру везде, кроме «⋮⋮»
+// (перетащить, позиция запоминается) и двух кнопок: «Пауза»/«Продолжить» и «Скрыть».
+// Пока тянут, весь экран оверлея ловит мышь (иначе курсор уйдёт с ручки и фокус вернётся игре).
+
+const DEFAULT_TOP_PX = 14
+const HOUR = 3_600_000
 
 function useNow(active: boolean): number {
   const [now, setNow] = useState(() => Date.now())
@@ -22,11 +30,187 @@ function useNow(active: boolean): number {
   return now
 }
 
+/** Простой режим из настроек (перечитываем, когда игрок вернулся в игру). */
+function useSimpleMode(): boolean {
+  const [simple, setSimple] = useState(true)
+  useEffect(() => {
+    const read = (): void => {
+      void window.overlayApi.settings.get().then((s) => setSimple(s.ui.simpleMode))
+    }
+    read()
+    return window.overlayApi.onOverlayFocus(read)
+  }, [])
+  return simple
+}
+
+/** Центр полосы и верх в px окна оверлея; без позиции — сверху по центру. */
+function toPx(pos: FarmWidgetPos | null): { cx: number; top: number } {
+  if (!pos) return { cx: window.innerWidth / 2, top: DEFAULT_TOP_PX }
+  return { cx: pos.x * window.innerWidth, top: pos.y * window.innerHeight }
+}
+
+function FarmBar({ state, now }: { state: FarmState; now: number }) {
+  const t = useOverlayT()
+  const lang = useOverlayStore((s) => s.lang)
+  const simple = useSimpleMode()
+  const pause = useFarmStore((s) => s.pause)
+  const resume = useFarmStore((s) => s.resume)
+  const setConfig = useFarmStore((s) => s.setConfig)
+  const gripRef = useRef<HTMLSpanElement>(null)
+  const btnsRef = useRef<HTMLSpanElement>(null)
+  const barRef = useRef<HTMLDivElement>(null)
+  const shieldRef = useRef<HTMLDivElement>(null)
+  const [drag, setDrag] = useState<{ dx: number; dy: number; cx: number; top: number } | null>(null)
+  const [, setViewport] = useState(0)
+
+  useInteractive(gripRef)
+  useInteractive(btnsRef)
+  useInteractive(shieldRef, !!drag)
+
+  useEffect(() => {
+    const onResize = (): void => setViewport((n) => n + 1)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  const base = toPx(state.config.widgetPos)
+  const cx = drag ? drag.cx : base.cx
+  const top = drag ? drag.top : base.top
+
+  // полоса уехала (перетащили, сменилась ширина) — main должен узнать новые прямоугольники
+  useLayoutEffect(() => {
+    scheduleRectsFlush()
+  }, [cx, top])
+
+  const done = () => window.overlayApi.overlay.focusGame()
+
+  const onGripDown = (e: ReactPointerEvent): void => {
+    if (e.button !== 0) return
+    e.preventDefault()
+    setDrag({ dx: e.clientX - cx, dy: e.clientY - top, cx, top })
+  }
+
+  useEffect(() => {
+    if (!drag) return
+    const { dx, dy } = drag
+    const move = (e: PointerEvent): void => {
+      const w = barRef.current?.offsetWidth ?? 0
+      const h = barRef.current?.offsetHeight ?? 0
+      const nx = Math.min(window.innerWidth - w / 2, Math.max(w / 2, e.clientX - dx))
+      const ny = Math.min(window.innerHeight - h, Math.max(0, e.clientY - dy))
+      setDrag((d) => (d ? { ...d, cx: nx, top: ny } : d))
+    }
+    const up = (): void => {
+      setDrag((d) => {
+        if (d) void setConfig({ widgetPos: { x: d.cx / window.innerWidth, y: d.top / window.innerHeight } })
+        return null
+      })
+      done()
+    }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
+    return () => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+    }
+    // смещение курсора от ручки фиксируется в начале перетаскивания
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drag?.dx, drag?.dy])
+
+  const stats = state.stats
+  const paused = state.session?.pausedAt !== null
+  const run = state.current && state.current.sessionId === state.session?.id ? state.current : null
+  const last = state.runs.find((r) => r.sessionId === state.session?.id) ?? null
+  const dur = sessionMs(state, now)
+  const perHour = stats && stats.profitChaos !== null && dur >= 60_000 ? stats.profitChaos / (dur / HOUR) : null
+
+  let first
+  if (paused) {
+    first = (
+      <span className="ov-farm__seg">
+        <Icon name="pause" />
+        <span className="ov-farm__state">{t('farm.ov.paused')}</span>
+        <b className="ov-farm__time">{clock(dur)}</b>
+      </span>
+    )
+  } else if (run && state.inside) {
+    first = (
+      <span className="ov-farm__seg" title={t('farm.ov.map')}>
+        <Icon name="map" />
+        {simple && <span className="ov-farm__name">{runName(run)}</span>}
+        <b className="ov-farm__time">{clock(currentRunMs(state, now))}</b>
+      </span>
+    )
+  } else {
+    // в убежище (или вышли из карты через портал): время последней карты
+    const lastMs = run ? currentRunMs(state, now) : last?.activeMs
+    first = (
+      <span className="ov-farm__seg">
+        <Icon name="home" />
+        <span className="ov-farm__state">{t('farm.ov.hideout')}</span>
+        {lastMs !== undefined && (
+          <>
+            {simple && <span className="ov-farm__lbl">{t('farm.ov.last')}</span>}
+            <b>{clock(lastMs)}</b>
+          </>
+        )}
+      </span>
+    )
+  }
+
+  return (
+    <>
+      {drag && <div ref={shieldRef} className="ov-farm-shield" />}
+      <div
+        ref={barRef}
+        className={`ui-panel ov-farm${paused ? ' is-pause' : ''}`}
+        role="status"
+        aria-label={t('farm.ov.label')}
+        style={{ left: Math.round(cx), top: Math.round(top) }}
+      >
+        <span ref={gripRef} className="ov-farm__grip" title={t('farm.ov.drag')} onPointerDown={onGripDown}>
+          <Icon name="dots" />
+        </span>
+        {first}
+        <span className="ov-farm__sep" />
+        <span className="ov-farm__seg" title={t('farm.ov.maps.title')}>
+          {simple ? <span className="ov-farm__lbl">{t('farm.ov.maps')}</span> : <Icon name="grid" />}
+          <b>{stats?.maps ?? 0}</b>
+        </span>
+        <span className="ov-farm__sep" />
+        <span className="ov-farm__seg" title={t('farm.ov.income.title')}>
+          <i className="ui-coin ui-coin--chaos" />
+          <b>{perHour !== null ? chaos(perHour, lang) : '—'}</b>
+          <span className="ov-farm__lbl">{`c${t('farm.ov.perHour')}`}</span>
+        </span>
+        <span ref={btnsRef} className="ov-farm__btns">
+          <button
+            type="button"
+            className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+            aria-label={t(paused ? 'farm.ov.resume' : 'farm.ov.pause')}
+            title={t(paused ? 'farm.ov.resume' : 'farm.ov.pause')}
+            onClick={() => void (paused ? resume() : pause()).finally(done)}
+          >
+            <Icon name={paused ? 'chev-r' : 'pause'} />
+          </button>
+          <button
+            type="button"
+            className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+            aria-label={t('farm.ov.hide')}
+            title={t('farm.ov.hide')}
+            onClick={() => void setConfig({ overlayWidget: false }).finally(done)}
+          >
+            <Icon name="min" />
+          </button>
+        </span>
+      </div>
+    </>
+  )
+}
+
 function FarmWidget() {
   const init = useFarmStore((s) => s.init)
   const state = useFarmStore((s) => s.state)
-  const lang = useOverlayStore((s) => s.lang)
-  const t = useOverlayT()
   const now = useNow(farmTicking(state))
 
   useEffect(() => {
@@ -39,44 +223,11 @@ function FarmWidget() {
     }
   }, [init])
 
-  if (!state?.config.overlayWidget || (!state.session && !state.current)) return null
-
-  const run = state.current
-  const stats = state.stats
-  const paused = !!state.session && state.session.pausedAt !== null
-  const dur = sessionMs(state, now)
-  const hours = dur / 3_600_000
-  const rated = dur >= 60_000
-
-  return (
-    <OverlayWidget interactive={false}>
-      <div className={`ui-panel ov-farm${state.ticking ? ' ov-farm--on' : ''}`} role="status">
-        <span className="ov-farm__timer">{run ? clock(currentRunMs(state, now)) : '—'}</span>
-        {run && (
-          <span className="ov-farm__map">
-            {runName(run)}
-            {run.tier !== null && <span className="ov-farm__tier">T{run.tier}</span>}
-          </span>
-        )}
-        {run && !state.inside && <span className="ov-farm__muted">{t('farm.ov.out')}</span>}
-        {paused && <span className="ov-farm__warn">{t('farm.ov.paused')}</span>}
-        {stats && (
-          <>
-            <span className="ov-farm__sep" aria-hidden="true" />
-            <span>{t('farm.ov.maps', { n: stats.maps })}</span>
-            {rated && <span className="ov-farm__muted">{t('farm.ov.perHour', { v: rate(stats.maps / hours, lang) })}</span>}
-            {rated && stats.profitChaos !== null && (
-              <span className="ov-farm__gold">
-                {t('farm.ov.perHour', { v: t('farm.chaos', { n: chaos(stats.profitChaos / hours, lang) }) })}
-              </span>
-            )}
-          </>
-        )}
-      </div>
-    </OverlayWidget>
-  )
+  // только во время сессии и если виджет включён
+  if (!state?.config.overlayWidget || !state.session) return null
+  return <FarmBar state={state} now={now} />
 }
 
-// в стопке справа сверху — выше уведомлений и тостов live (order)
-const widget: OverlayWidgetDef = { id: 'farm', layer: 'toasts', order: -20, Component: FarmWidget }
+// своё место (сверху по центру, перетаскивается) — в слое popup, без стопок
+const widget: OverlayWidgetDef = { id: 'farm', layer: 'popup', order: -10, Component: FarmWidget }
 export default widget
