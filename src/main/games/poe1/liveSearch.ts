@@ -36,6 +36,7 @@ import { parseLiveInput } from './live/tradeUrl'
 import { cleanTitle, DEFAULT_OPTIONS, loadLiveFile, newSearchId, saveLiveFile, type StoredSearch } from './live/store'
 import { favLiveState, type FavLiveStateS6 } from './live/favState'
 import { notificationIcon } from '../../appIcon'
+import { windowsToastsAllowed } from '../../services/notify'
 import { createWindowTransport, createWsTransport, preferredTransport, type LiveConnection, type LiveTransport } from './wsTransport'
 
 // Менеджер live search PoE1 (S6). Только main: соединения, cookies, fetch.
@@ -328,7 +329,7 @@ export class LiveManager {
   private notifyWindows(hit: LiveHit): void {
     // игра в фокусе — хватит тоста в оверлее
     if (!isFocusTracking() || getGameFocus().game || getGameFocus().overlay) return
-    if (!Notification.isSupported()) return
+    if (!windowsToastsAllowed()) return
     const tx = NOTIFY_TEXT[this.lang]
     const name = [hit.name, hit.typeLine].filter(Boolean).join(' ')
     const price = hit.price ? `${hit.price.amount} ${hit.price.currency}` : ''
