@@ -21,6 +21,8 @@
 | **S12** | Канал обновления данных вживую: ветка `data`, workflow, скрипт «день лиги» | до 13.11 | сессия s7-regex | `s12-data-channel` | ✅ слит 28.10 |
 | **S13** | Флиппинг валюты (v0.2 заранее): часовой фид GGG, маршруты, комиссии, вкладка «Обмен» | ∥ | сессия s3-net-auth | `s13-flip-v2` | ✅ слит 28.10 |
 | **S14** | Оверлей прокачки PoE1 RU (v0.2 заранее): маршрут exile-leveling, зоны по логу | ∥ | сессия s8-deals | `s14-leveling` | ✅ слит 28.10 |
+| **S15** | Окно цены: вердикт «что делать с предметом» (+ заметка `~price`), предупреждения «не тот вариант» | ∥ с 28.10 | сессия s15-pc-verdict | `s15-pc-verdict` | ⏳ в работе |
+| **S16** | Советник «что фармить»: каркас вкладки, модель стратегий, расчёт по ценам, связь с трекером карт (скрыт флагом до 3.30) | ∥ с 28.10 | сессия s16-advisor | `s16-advisor` | ⏳ в работе |
 | **S10** | Hardening + релиз: матрица EN/RU, DPI, NSIS, тег v0.1.0 | Д13–15 | лид | `main` | S10a ✅ · репо открыт 28.10 ✅ · ⏳ живые проверки, тег v0.1.0 |
 
 ∥ — параллельно с другими этапами, каждый в своём git worktree. Последовательные S1 → S4 → S6 —
@@ -69,6 +71,8 @@
 | **S6** | `src/main/games/poe1/{liveSearch,wsTransport}.ts`, `src/main/ipc/live.ts`, `src/shared/ipc/live.ts`, `src/shared/types/live.ts`, `src/preload/domains/live.ts`, `src/renderer/src/panels/LiveTab.tsx` + `panels/live/**`, `src/renderer/src/overlay/live/**`, `i18n/dict/live.ts`, `tests/live/**`. |
 | **S7** | `src/shared/regex/**`, `tools/regex/**`, `resources/data/poe1/regex/**`, `src/main/services/regexLibraryStore.ts`, `src/main/ipc/regex.ts`, `src/shared/ipc/regex.ts`, `src/shared/types/regex.ts`, `src/preload/domains/regex.ts`, `src/renderer/src/panels/RegexTab.tsx` + `panels/regex/**`, `i18n/dict/regex.ts`, `tests/regex/**`. |
 | **S8** | `src/shared/deals/**` (whisperParse EN/RU), `src/main/services/dealsStore.ts`, `src/main/ipc/deals.ts`, `src/shared/ipc/deals.ts`, `src/shared/types/deals.ts`, `src/preload/domains/deals.ts`, `src/renderer/src/panels/DealsTab.tsx` + `panels/deals/**`, `src/renderer/src/overlay/deals/**`, `i18n/dict/deals.ts`, `tests/deals/**`. Чтение `Client.txt` PoE1: обобщение `logTailer.ts` под `GameDef.logSubdirs` — через лида (регресс кампании PoE2). |
+| **S15** | как у S4: `src/shared/poe1/pricecheck/**`, `src/renderer/src/overlay/pricecheck/**`, `src/main/ipc/trade.ts`, `src/shared/{ipc,types}/trade.ts`, `i18n/dict/trade.ts`, `tests/pricecheck/**`. Парсер — только чтение. |
+| **S16** | `src/shared/advisor/**`, `resources/data/poe1/advisor/**`, `src/{main,shared}/ipc/advisor.ts`, `src/shared/types/advisor.ts`, `src/preload/domains/advisor.ts`, `panels/AdvisorTab.tsx` + `panels/advisor/**`, `store/useAdvisorStore.ts`, `i18n/dict/advisor.ts`, `tests/advisor/**`, `docs/advisor.md`. По разрешению лида — строки в агрегаторах, `tabs.ts`, `App.tsx`, флаг `advisor` в `games.ts`; метка стратегии в трекере карт. |
 
 ## Замороженные общие файлы (меняет только лид)
 
