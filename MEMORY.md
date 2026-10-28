@@ -127,6 +127,11 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ **репозиторий открыт**: https://github.com/MAYZOSUPER/POETH (MIT). История переписана — все коммиты от
+  `MAYZOSUPER <291924623+MAYZOSUPER@users.noreply.github.com>`, личных данных и секретов нет (проверено чистым клоном).
+  Старый приватный репо с исходной историей — `MAYZOSUPER/POETH-archive` (remote `archive`), полный бэкап —
+  `H:\POETH-backup\poeth-before-publish-2026-10-28.bundle`. Хэши коммитов до этой записи в Changelog относятся к старой
+  истории (содержимое то же). Новые ветки — только от свежего `origin/main`. LICENSE: «POETH contributors».
 - _(лид, 28.10)_ слит `integration-2` (`b3769b3`, сессия S1) — **все функции v0.1 в main**, 1116 тестов:
   S8 `4dd0c8e` (сделки на общем `gameLog`), S4 фаза 2 (окно цены PoE1 в оверлее, «честная цена» мгновенный выкуп vs whisper,
   «Скопировать whisper», фолбэк `/api/trade/data/stats`, PoE2 на авто-копии), S6 (live search: `ws` + редьюсер, бэкоффы,
