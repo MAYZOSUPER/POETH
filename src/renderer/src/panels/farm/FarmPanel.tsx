@@ -195,7 +195,11 @@ function Kpis({ state, now, props }: { state: FarmState; now: number; props: Far
           </span>
         </span>
         <b>{stats.deaths}</b>
-        <span>{t('farm.stat.deaths.sub', { n: stats.mapsWithDeaths, of: stats.maps })}</span>
+        <span>
+          {stats.deaths > 0
+            ? t('farm.stat.deaths.sub', { n: stats.mapsWithDeaths, of: stats.maps })
+            : t('farm.stat.deaths.none')}
+        </span>
       </div>
     </div>
   )
@@ -320,7 +324,7 @@ function RunningView({ state, now, props }: { state: FarmState; now: number; pro
       <div className="fm-sess-top">
         <span className="fm-run">
           <span className={`ui-dot${paused ? ' ui-dot--afk' : ''}`} />
-          {t(paused ? 'farm.session.paused' : 'farm.session.running')} · <b>{clock(sessionMs(state, now))}</b>
+          {t(paused ? 'farm.session.paused' : 'farm.session.running')} · <b>{clock(sessionMs(state, now), true)}</b>
         </span>
         <span className="fm-grow" />
         <WidgetSwitch state={state} />
@@ -366,13 +370,22 @@ function AllRuns({ runs }: { runs: FarmRun[] }) {
   const lang = useLang()
   const removeRun = useFarmStore((s) => s.removeRun)
   const clear = useFarmStore((s) => s.clear)
+  const [open, setOpen] = useState(false)
   if (runs.length === 0) return null
   const onClear = (): void => {
     if (window.confirm(t('farm.runs.clearConfirm'))) void clear()
   }
+  // по макету — кнопка под таблицей, как «Все изменения» у тайника
+  const toggle = (
+    <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm fm-all__btn" aria-expanded={open} onClick={() => setOpen(!open)}>
+      {t('farm.runs.all', { n: runs.length })}
+      <Ico name={open ? 'chev-d' : 'chev-r'} />
+    </button>
+  )
+  if (!open) return toggle
   return (
-    <details className="fm-all">
-      <summary className="ui-label">{t('farm.runs.all', { n: runs.length })}</summary>
+    <div className="fm-all">
+      {toggle}
       <div className="fm-all__bar">
         <span className="fm-p fm-faint">{t('farm.how')}</span>
         <span className="fm-grow" />
@@ -428,7 +441,7 @@ function AllRuns({ runs }: { runs: FarmRun[] }) {
           </tbody>
         </table>
       </div>
-    </details>
+    </div>
   )
 }
 

@@ -123,8 +123,9 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
   const last = state.runs.find((r) => r.sessionId === state.session?.id) ?? null
   const dur = sessionMs(state, now)
   const perHour = stats && stats.profitChaos !== null && dur >= 60_000 ? stats.profitChaos / (dur / HOUR) : null
-  // доход в div по курсу из прибылей S11a (по макету), без курса — в chaos
-  const divRate = latestDivineRate(state.runs.filter((r) => r.sessionId === state.session?.id))
+  // как на плитке: от 1 div в час — div/ч (курс из прибылей S11a), меньше или без курса — c/ч
+  const rateDiv = latestDivineRate(state.runs.filter((r) => r.sessionId === state.session?.id))
+  const divRate = rateDiv && perHour !== null && Math.abs(perHour / rateDiv) >= 1 ? rateDiv : null
   const incomeText = perHour === null ? '—' : divRate ? rate(perHour / divRate, lang) : chaos(perHour, lang)
 
   let first
@@ -133,7 +134,7 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
       <span className="ov-farm__seg">
         <Icon name="pause" />
         <span className="ov-farm__state">{t('farm.ov.paused')}</span>
-        <b className="ov-farm__time">{clock(dur)}</b>
+        <b className="ov-farm__time">{clock(dur, true)}</b>
       </span>
     )
   } else if (run && state.inside) {

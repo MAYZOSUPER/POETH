@@ -21,14 +21,14 @@ export function sessionMs(state: FarmState, now: number): number {
   return state.stats.durationMs + (sessionTicking(state) ? Math.max(0, now - state.at) : 0)
 }
 
-/** «4:07», «1:02:03». */
-export function clock(ms: number): string {
+/** «4:07», «1:02:03»; withHours — всегда с часами («0:00:14», часы сессии). */
+export function clock(ms: number, withHours = false): string {
   const total = Math.max(0, Math.floor(ms / 1000))
   const h = Math.floor(total / 3600)
   const m = Math.floor((total % 3600) / 60)
   const s = total % 60
   const p = (n: number): string => String(n).padStart(2, '0')
-  return h > 0 ? `${h}:${p(m)}:${p(s)}` : `${m}:${p(s)}`
+  return h > 0 || withHours ? `${h}:${p(m)}:${p(s)}` : `${m}:${p(s)}`
 }
 
 /** Число с одним знаком после запятой по языку («7,5» / «7.5»). */

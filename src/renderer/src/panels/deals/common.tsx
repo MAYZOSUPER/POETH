@@ -56,6 +56,8 @@ export type IcoName =
   | 'map'
   | 'coins'
   | 'external'
+  | 'chev-r'
+  | 'chev-d'
 
 export function Ico({ name, size }: { name: IcoName; size?: 'sm' | 'lg' }) {
   useEffect(() => {
