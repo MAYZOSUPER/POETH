@@ -30,6 +30,8 @@ export const HOTKEY_DEFAULTS: Readonly<Record<HotkeyAction, HotkeyBinding>> = {
   dealInvite: { accel: 'Alt+1', scope: 'game' },
   dealTrade: { accel: 'Alt+2', scope: 'game' },
   dealDismiss: { accel: 'Alt+3', scope: 'game' },
+  // прокачка (S14): Ctrl+Shift+G («гид») — не занят игрой, не печатный символ, не совпадает с остальными
+  levelingToggle: { accel: 'Control+Shift+G', scope: 'game' },
   toggleCompanion: { accel: 'Control+Shift+O', scope: 'always' },
   toggleLock: { accel: 'Control+Shift+L', scope: 'always' },
   toggleTradeWindow: { accel: 'Control+Shift+T', scope: 'always' },

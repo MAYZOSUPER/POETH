@@ -28,8 +28,11 @@ describe('GameDef', () => {
       regex: true,
       deals: true,
       wealth: true,
-      flip: true
+      flip: true,
+      // прокачка по маршруту (S14) — вкладка «Кампания» в PoE 1
+      leveling: true
     })
+    expect(GAMES.poe2.features.leveling).toBe(false)
     expect(poe2.features.campaign).toBe(true)
     expect(poe2.features.priceCheck).toBe(true)
     expect(poe2.features.wealth).toBe(false)

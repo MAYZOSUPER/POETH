@@ -1,0 +1,123 @@
+/* Гид прокачки поверх игры (S14): панель ~390 px слева сверху под баффами, свёрнуто — .ui-hud.
+   Мышь ловят шапка и кнопки; остальное пропускает клики в игру. */
+
+.lv-ov {
+  position: absolute;
+  width: 390px;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+.lv-ov--hud {
+  width: auto;
+}
+.lv-ov__head {
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+.lv-ov__grip {
+  pointer-events: auto;
+  touch-action: none;
+}
+.lv-ov__title {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.lv-ov__step {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.lv-ov__lvl {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+.lv-ov__zl {
+  color: var(--fg-faint);
+}
+.lv-ov__btns {
+  display: inline-flex;
+  gap: var(--sp-1);
+  pointer-events: auto;
+}
+.lv-flip .ui-ico {
+  transform: scaleX(-1);
+}
+.lv-ov__body {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6) var(--sp-6);
+}
+.lv-ov__text {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  font-size: var(--fs-lg);
+  line-height: 1.4;
+}
+.lv-ov__text > .ui-ico {
+  flex: none;
+  margin-top: 0.2em;
+  color: var(--accent);
+}
+.lv-ov__sub {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+/* «Важное здесь» — пункт в рамке --border-strong, цвет награды — у иконки того же имени */
+.lv-ov__now {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  padding: var(--sp-3) var(--sp-5);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--accent-soft);
+  color: var(--fg);
+  font-weight: 600;
+}
+.lv-ov__now > .ui-ico {
+  flex: none;
+  color: var(--accent-hi);
+}
+.lv-ov__now--trial > .ui-ico {
+  color: var(--info);
+}
+.lv-ov__now--flask > .ui-ico {
+  color: var(--good);
+}
+.lv-ov__now--gem > .ui-ico {
+  color: var(--rarity-gem);
+}
+.lv-ov__off {
+  margin-inline: calc(-1 * var(--sp-6));
+}
+.lv-ov__off .ui-btn {
+  pointer-events: auto;
+}
+.lv-ov__miss {
+  display: grid;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border);
+}
+.lv-ov__missrow {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  font-size: var(--fs-sm);
+}
+.lv-ov__missrow .lv-tags {
+  margin-left: 0;
+}
+.lv-ov__misstext {
+  min-width: 0;
+  color: var(--fg-muted);
+}
+.lv-ov-shield {
+  position: absolute;
+  inset: 0;
+  cursor: grabbing;
+  pointer-events: auto;
+}

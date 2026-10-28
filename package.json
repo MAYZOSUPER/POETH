@@ -21,6 +21,7 @@
     "verify:data": "node tools/data/sync-apt-data.mjs --verify",
     "collect:fixtures": "node tools/data/collect-fixtures.mjs",
     "build:data": "node tools/dataset-build/build.mjs",
+    "build:leveling": "node tools/leveling/build.mjs",
     "build:tray-icon": "node tools/make-tray-icon.mjs",
     "validate:data": "node scripts/validate-dataset.mjs",
     "package": "npm run build && electron-builder --win",

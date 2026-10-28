@@ -20,7 +20,8 @@ const ALL_TABS: TabDef[] = [
 
 export function tabsFor(game: GameId): TabDef[] {
   const f = GAMES[game].features
-  return ALL_TABS.filter((t) => f[t.id])
+  // «Кампания» в PoE 1 — прокачка по маршруту (S14), в PoE 2 — компас
+  return ALL_TABS.filter((t) => f[t.id] || (t.id === 'campaign' && f.leveling))
 }
 
 /** The wanted tab if it exists for this game, otherwise the game's first tab. */

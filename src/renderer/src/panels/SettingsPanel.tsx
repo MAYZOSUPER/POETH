@@ -30,6 +30,7 @@ const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameI
   dealInvite: { labelKey: 'set.hk.dealInvite', games: ['poe1'] },
   dealTrade: { labelKey: 'set.hk.dealTrade', games: ['poe1'] },
   dealDismiss: { labelKey: 'set.hk.dealDismiss', games: ['poe1'] },
+  levelingToggle: { labelKey: 'set.hk.levelingToggle', games: ['poe1'] },
   toggleTradeWindow: { labelKey: 'set.hk.tradeWindow', games: ['poe1'] },
   prevStep: { labelKey: 'set.hk.prev', games: ['poe2'] },
   nextStep: { labelKey: 'set.hk.next', games: ['poe2'] }

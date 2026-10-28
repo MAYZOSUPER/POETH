@@ -17,6 +17,7 @@ import { updatesDomain } from './updates'
 import { farmDomain } from './farm'
 import { wealthDomain } from './wealth'
 import { flipDomain } from './flip'
+import { levelingDomain } from './leveling'
 
 // Реестр доменов main-IPC. ЗАМОРОЖЕН после S0: новый домен подключает лид.
 const DOMAINS: IpcDomain[] = [
@@ -32,7 +33,8 @@ const DOMAINS: IpcDomain[] = [
   updatesDomain,
   farmDomain,
   wealthDomain,
-  flipDomain
+  flipDomain,
+  levelingDomain
 ]
 
 /** Register every domain's ipcMain handlers (once, at startup). */
