@@ -127,6 +127,11 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ слит сайт `design/site` (`f2e736b`…`8f855c3`): GitHub Pages https://mayzosuper.github.io/POETH/ (RU/EN,
+  `site/` + `pages.yml`) — опубликован. Слит S11b `9507cbd` (сессия s8-deals): трекер карт и сессия фарма по `Client.txt`
+  (забег = areaId+seed; порталы и перезаход — один забег; время, ярус, смерти EN/RU), «Начать/Пауза/Завершить», карт/час,
+  API `onFarmEvent`/`getFarmState`/`setRunProfit` для S11a, раздел «Сессия фарма», мини-виджет (выкл.), `farm.json`.
+  1171 тест. Связку с доходом/час (`attachFarm` + `FarmPanel` во вкладке «Богатство») добавит S11a при слиянии.
 - _(лид, 28.10)_ слит S10b (`213c3fd`…`d99c5c1`, сессия S1): NSIS как у APT — мастер RU/EN по языку Windows, без страницы
   «для меня/для всех» (хук `customInstallMode`), `%LOCALAPPDATA%\Programs\POETH` без админа, картинки мастера от дизайнера,
   настройки при удалении сохраняются; `POETH-Portable-<ver>.exe` (обновление вручную по ссылке); релиз с описанием RU/EN;
