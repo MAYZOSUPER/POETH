@@ -283,7 +283,12 @@ function MyResult({ row, lang, farm }: { row: AdvisorRow; lang: string; farm: Fa
           </button>
           {answer && <span className={answer === 'unknown' ? 'ad-bad' : 'ad-muted'}>{t(`advisor.farm.${answer}`)}</span>}
         </div>
-        {!answer && btn !== 'running' && <p className="ui-hint ad-hint">{t('advisor.farm.hint')}</p>}
+        {!answer && btn !== 'running' && (
+          <div className="ui-hint ad-hint">
+            <AIco name="help" />
+            <span>{t('advisor.farm.hint')}</span>
+          </div>
+        )}
       </div>
     </div>
   )

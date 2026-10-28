@@ -159,11 +159,12 @@ describe('советник: код POETH1', () => {
     expect(fromBase64Url('ab+/')).toBeNull()
   })
 
-  it('отпечаток: тот же для своей и импортированной копии, другой — при любой правке', () => {
+  it('отпечаток: содержание без источника — та же для своей, импорта и кода с ником; другой — при правке содержания', () => {
     const s = full()
     expect(strategyFingerprint({ ...s, source: { ...s.source, kind: 'imported' } })).toBe(strategyFingerprint(s))
+    expect(strategyFingerprint({ ...s, source: { kind: 'mine', date: '2026-12-01' } })).toBe(strategyFingerprint(s))
     expect(strategyFingerprint({ ...s, draft: true })).toBe(strategyFingerprint(s))
     expect(strategyFingerprint({ ...s, minutesPerMap: 6 })).not.toBe(strategyFingerprint(s))
-    expect(strategyFingerprint({ ...s, source: { ...s.source, author: 'other' } })).not.toBe(strategyFingerprint(s))
+    expect(strategyFingerprint({ ...s, steps: [T('другой шаг', 'other step')] })).not.toBe(strategyFingerprint(s))
   })
 })

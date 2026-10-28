@@ -371,9 +371,8 @@ var POETHStrategy = (() => {
     return { ok: true, strategy: res.strategy, code };
   }
   function strategyFingerprint(s) {
-    const { kind: _kind, ...source2 } = s.source;
-    const { draft: _draft, ...rest } = s;
-    return JSON.stringify({ ...rest, source: source2 });
+    const { draft: _draft, source: _source, ...rest } = s;
+    return JSON.stringify(rest);
   }
 
   // src/shared/advisor/codecBrowser.ts

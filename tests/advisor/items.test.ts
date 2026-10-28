@@ -47,5 +47,7 @@ describe('советник: поиск предмета для редактор�
     expect(hit.length).toBeGreaterThan(0)
     expect(hit[0].ref).toMatch(/^Ambush Scarab/)
     expect(searchItems(real, 'Essence Scarab')[0].ref).toBe('Essence Scarab')
+    // предметы обмена выше камней и уников: «засад» — скарабей, а не камень «Засада»
+    expect(searchItems(real, 'засад')[0]).toMatchObject({ kind: 'stackable', ref: expect.stringMatching(/^Ambush Scarab/) })
   })
 })

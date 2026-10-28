@@ -42,9 +42,11 @@ const MECH_LABEL: Record<(typeof MECHANICS)[number], AIcoName> = {
   abyss: 'abyss'
 }
 
+type Update = (patch: Partial<AdvisorDraft> | ((cur: AdvisorDraft) => Partial<AdvisorDraft>)) => void
+
 interface StepProps {
   d: AdvisorDraft
-  update: (patch: Partial<AdvisorDraft>) => void
+  update: Update
   err: (field: string) => string | null
   t: T
   lang: string
@@ -590,7 +592,7 @@ function StepDiff({ d, update, err, t }: StepProps) {
             <span>{t(`advisor.build.${k}`)}</span>
             <div className="ui-seg" role="group" aria-label={t(`advisor.build.${k}`)}>
               {([1, 2, 3] as AdvisorLevel[]).map((n) => (
-                <button key={n} type="button" aria-pressed={d.build[k] === n} onClick={() => update({ build: { ...d.build, [k]: n } })}>
+                <button key={n} type="button" aria-pressed={d.build[k] === n} onClick={() => update((cur) => ({ build: { ...cur.build, [k]: n } }))}>
                   {t(`advisor.level.${n}`)}
                 </button>
               ))}
@@ -599,7 +601,7 @@ function StepDiff({ d, update, err, t }: StepProps) {
         ))}
       </div>
       {be && <span className="ui-field__error">{be}</span>}
-      <TextFields d={d} value={d.build.note} onChange={(note) => update({ build: { ...d.build, note } })} field="build.note" label={t('advisor.ed.buildNote')} max={LIMITS.buildNote} ph={t('advisor.ed.buildNote.ph')} err={err} t={t} />
+      <TextFields d={d} value={d.build.note} onChange={(note) => update((cur) => ({ build: { ...cur.build, note } }))} field="build.note" label={t('advisor.ed.buildNote')} max={LIMITS.buildNote} ph={t('advisor.ed.buildNote.ph')} err={err} t={t} />
     </>
   )
 }
@@ -708,7 +710,11 @@ export function Editor({ state, lang, expert, farm, nameOf }: { state: AdvisorSt
     setStep(n)
     setVisited((v) => (v.includes(n) ? v : [...v, n]))
   }
-  const update = (p: Partial<AdvisorDraft>): void => setDraft({ ...d, ...p })
+  // правки — поверх последнего черновика из стора (несколько правок за один такт не затирают друг друга)
+  const update = (p: Partial<AdvisorDraft> | ((cur: AdvisorDraft) => Partial<AdvisorDraft>)): void => {
+    const cur = (useAdvisorStore.getState().draft ?? d) as AdvisorDraft
+    setDraft({ ...cur, ...(typeof p === 'function' ? p(cur) : p) })
+  }
 
   // карточка «как увидят другие»: время карты — из стратегии (у других нет ваших сессий), цены — ваши живые
   const previewStrategy: AdvisorStrategy = { ...result.raw, source: { ...result.raw.source, kind: 'imported' } }

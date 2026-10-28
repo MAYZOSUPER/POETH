@@ -60,14 +60,18 @@ function score(name: string | undefined, q: string): number {
   return 9
 }
 
-/** До limit кандидатов: точное совпадение, начало имени, начало слова, подстрока; меньше 2 букв — пусто. */
+/**
+ * До limit кандидатов: точное совпадение, начало имени, начало слова, подстрока; меньше 2 букв — пусто.
+ * Предметы обмена (валюта, скарабеи…) — на ступень выше карт, уников и камней: в стратегиях они чаще
+ * («засад» — сначала «Скарабей Засады», а не камень «Засада»).
+ */
 export function searchItems(catalog: readonly ItemCandidate[], query: string, limit = 8): ItemCandidate[] {
   const q = normalize(String(query ?? '')).slice(0, 80)
   if (q.length < 2) return []
   const hits: Array<{ c: ItemCandidate; s: number }> = []
   for (const c of catalog) {
     const s = Math.min(score(c.ref, q), score(c.ru, q))
-    if (s < 9) hits.push({ c, s })
+    if (s < 9) hits.push({ c, s: s + (c.kind === 'stackable' ? 0 : 1) })
   }
   hits.sort((a, b) => a.s - b.s || KIND_ORDER[a.c.kind] - KIND_ORDER[b.c.kind] || a.c.ref.length - b.c.ref.length || (a.c.ref < b.c.ref ? -1 : 1))
   return hits.slice(0, limit).map((h) => h.c)

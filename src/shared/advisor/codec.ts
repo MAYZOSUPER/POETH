@@ -144,12 +144,11 @@ export async function decodeStrategyCode(input: string, inflate: Inflate): Promi
 }
 
 /**
- * Отпечаток стратегии для сравнения «уже есть» и «в каталоге»: всё, кроме вида источника (импорт ставит
- * imported, каталог — community) и пометки черновика. Валидатор строит объекты в одном порядке полей,
- * поэтому JSON детерминирован.
+ * Отпечаток стратегии для сравнения «уже есть» и «в каталоге»: содержание — без источника (вид, автор, дата:
+ * импорт ставит imported, каталог — community, «Поделиться» добавляет ник к своей) и пометки черновика.
+ * Валидатор строит объекты в одном порядке полей, поэтому JSON детерминирован.
  */
 export function strategyFingerprint(s: AdvisorStrategy): string {
-  const { kind: _kind, ...source } = s.source
-  const { draft: _draft, ...rest } = s
-  return JSON.stringify({ ...rest, source })
+  const { draft: _draft, source: _source, ...rest } = s
+  return JSON.stringify(rest)
 }

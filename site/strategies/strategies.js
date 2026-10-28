@@ -344,7 +344,7 @@
         ])
       ]),
       s.warnings.length ? h('p', { class: 'st-warn' }, [h('b', null, L('Осторожно. ', 'Watch out. ')), s.warnings.map(T).join(' ')]) : null,
-      h('p', { class: 'st-codeline' }, [ic('shield'), h('span', null, L('Код POETH1 · ', 'POETH1 code · ') + num(view.code.length, 0) + L(' символов · раскрыт в вашем браузере, на сервер не отправлялся.', ' characters · decoded in your browser, never sent to a server.')), copyBtn('view2', view.code, true)])
+      h('p', { class: 'st-codeline' }, [ic('shield'), h('span', null, L('Код POETH1 · ', 'POETH1 code · ') + (lang() === 'ru' ? plur(view.code.length, 'символ', 'символа', 'символов').replace(/^\d+/, num(view.code.length, 0)) : num(view.code.length, 0) + ' characters') + L(' · раскрыт в вашем браузере, на сервер не отправлялся.', ' · decoded in your browser, never sent to a server.')), copyBtn('view2', view.code, true)])
     ]);
   }
   function openInApp() {

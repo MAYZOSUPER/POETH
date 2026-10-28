@@ -117,7 +117,8 @@
 .ad-ed { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
 .ad-form { display: grid; gap: 14px; min-width: 0; align-content: start; }
 .ad-form--wide { max-width: 860px; }
-.ad-aside { position: sticky; top: 0; display: grid; gap: 8px; min-width: 0; }
+/* своя ширина для карточки «как увидят другие»: её container-запросы считаются от колонки, а не от вкладки */
+.ad-aside { position: sticky; top: 0; display: grid; gap: 8px; min-width: 0; container-type: inline-size; }
 .ad-h4 { margin: 0; font: 700 18px / 1.15 var(--font-display); letter-spacing: 0.03em; color: var(--fg); }
 .ad-flabel { display: flex; align-items: baseline; gap: 8px; }
 .ad-cnt { font-size: var(--fs-xs); color: var(--fg-faint); font-variant-numeric: tabular-nums; }
