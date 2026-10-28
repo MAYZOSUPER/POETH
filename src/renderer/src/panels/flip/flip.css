@@ -81,7 +81,8 @@
   .fx-table td { padding-left: 8px; padding-right: 8px; }
   .fx-table th.is-num { white-space: normal; }
   .fx-pair b { white-space: normal; }
-  .fx-table .fx-conf__w { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* слово уверенности новичку важнее точек — не прячем, а ставим под них */
+  .fx-table .fx-conf { flex-direction: column; align-items: flex-start; gap: 2px; }
 }
 @container (max-width: 640px) {
   .fx-how { grid-template-columns: minmax(0, 1fr); }
