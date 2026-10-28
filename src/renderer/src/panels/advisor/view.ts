@@ -11,7 +11,8 @@ import type {
 import type { FarmState } from '@shared/types/farm'
 import { mapTime, myResult, perHour } from '@shared/advisor/time'
 
-export type AdvisorSort = 'profit' | 'easy'
+/** По доходу в час, сначала лёгкие, дешёвый вход (стоимость входа за карту). */
+export type AdvisorSort = 'profit' | 'easy' | 'cost'
 
 export interface AdvisorView {
   sort: AdvisorSort
@@ -41,10 +42,13 @@ export function buildRows(
       return { ...v, time, perHour: perHour(v.estimate.profit, time?.minutes), mine: myResult(v.strategy.id, farm) }
     })
   const income = (r: AdvisorRow): number => r.perHour ?? Number.NEGATIVE_INFINITY
+  const cost = (r: AdvisorRow): number => r.estimate.cost ?? Number.POSITIVE_INFINITY
   return rows.sort((a, b) =>
     view.sort === 'easy'
       ? a.strategy.difficulty - b.strategy.difficulty || income(b) - income(a)
-      : income(b) - income(a) || a.strategy.difficulty - b.strategy.difficulty
+      : view.sort === 'cost'
+        ? cost(a) - cost(b) || income(b) - income(a)
+        : income(b) - income(a) || a.strategy.difficulty - b.strategy.difficulty
   )
 }
 

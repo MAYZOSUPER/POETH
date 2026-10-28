@@ -67,7 +67,9 @@
 .ad-steps > li::before { content: counter(st); display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--border-strong); border-radius: 50%; color: var(--accent-hi); font: 700 12px / 1 var(--font-ui); }
 .ad-terms { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: var(--fs-sm); }
 .ad-term { display: inline-flex; align-items: center; gap: 4px; }
-.ad-source { margin: 0; font-size: var(--fs-xs); color: var(--fg-faint); }
+.ad-source { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: var(--fs-xs); color: var(--fg-faint); }
+.ad-source p { margin: 0; }
+.ad-measured { display: inline-flex; align-items: center; gap: 6px; color: var(--good); }
 .ad-farm .ui-box__body { gap: 8px; }
 .ad-farm__act { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .ad-mine { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0; }

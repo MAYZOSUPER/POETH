@@ -19,6 +19,7 @@ export type AIcoName =
   | 'book'
   | 'step'
   | 'compass'
+  | 'copy'
 
 export function AIco({ name, size }: { name: AIcoName; size?: 'sm' | 'lg' }) {
   ensureSprite()

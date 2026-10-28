@@ -1,6 +1,8 @@
-import type { ReactNode } from 'react'
-import type { AdvisorGlossaryTerm, AdvisorLine, AdvisorPricedLine } from '@shared/types'
+import { useState, type ReactNode } from 'react'
+import type { AdvisorGlossaryTerm, AdvisorLine, AdvisorPricedLine, AdvisorStrategy } from '@shared/types'
 import type { FarmState } from '@shared/types/farm'
+import { isAllowedExternalUrl } from '@shared/links'
+import { foreignLang, isOutdated } from '@shared/advisor/data'
 import { useT } from '../../i18n'
 import { useAdvisorStore } from '../../store/useAdvisorStore'
 import { AIco, Confidence, Level, type AIcoName } from './ui'
@@ -8,7 +10,9 @@ import { chaosText, farmButton, hm, itemNs, minutesText, qtyText, tx, versus, ty
 
 // Карточка стратегии вкладки «Что фармить» (S16). Свёрнутая — главное число «~X chaos/ч», сложность и что нужно
 // билду; раскрытая — что вложить и что получите с ценами, время карты, «почему выгодно», атлас, шаги,
-// предупреждения, термины с подсказками и «Мой результат» с кнопкой сессии фарма. Простой режим — меньше цифр.
+// предупреждения, термины с подсказками, источник (автор, ссылка на оригинал, замер автора) и «Мой результат»
+// с кнопкой сессии фарма. Метки: черновик, «может устареть» (другая версия игры), «написано на английском».
+// Простой режим — меньше цифр.
 
 type T = ReturnType<typeof useT>
 type NameOf = (l: { name: string; ns: ReturnType<typeof itemNs> }) => string
@@ -20,12 +24,14 @@ export interface CardProps {
   open: boolean
   farm: FarmState | null
   glossary: Record<string, AdvisorGlossaryTerm>
+  /** версия игры текущих данных — для «может устареть» */
+  currentPatch: string | null
   nameOf: NameOf
 }
 
 function lineName(l: AdvisorLine, lang: string, nameOf: NameOf): string {
   if (l.item.label) return tx(l.item.label, lang)
-  return l.item.name ? nameOf({ name: l.item.name, ns: itemNs(l.item) }) : ''
+  return l.item.ref ? nameOf({ name: l.item.ref, ns: itemNs(l.item) }) : ''
 }
 
 /** Главное число: доход в час, «не меньше», убыток или почему его нет. */
@@ -172,7 +178,52 @@ function MyResult({ row, lang, farm }: { row: AdvisorRow; lang: string; farm: Fa
   )
 }
 
-function Details({ row, lang, expert, farm, glossary, nameOf }: Omit<CardProps, 'open'>) {
+/** Откуда стратегия: вид источника, автор, дата, откуда количества, оригинал и замер автора. */
+function Source({ s, lang }: { s: AdvisorStrategy; lang: string }) {
+  const t = useT()
+  const [copied, setCopied] = useState(false)
+  const src = s.source
+  const url = src.url
+  const m = s.measured
+  return (
+    <div className="ad-source">
+      <p>
+        {t('advisor.src', { kind: t(`advisor.src.kind.${src.kind}`), date: src.date })}
+        {src.author && ` · ${t('advisor.src.author', { name: src.author })}`}
+        {src.note && ` · ${t('advisor.src.note', { text: tx(src.note, lang) })}`}
+      </p>
+      {m && (
+        <p className="ad-measured">
+          <AIco name="check" size="sm" />
+          {t('advisor.measured', {
+            maps: m.maps,
+            hours: minutesText(m.hours, lang),
+            v: chaosText(m.perHour, lang),
+            date: m.date + (m.patch ? `, ${m.patch}` : '')
+          })}
+        </p>
+      )}
+      {url &&
+        (isAllowedExternalUrl(url) ? (
+          <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" title={url} onClick={() => window.overlayApi.window.openExternal(url)}>
+            {t('advisor.src.open')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="ui-btn ui-btn--ghost ui-btn--sm"
+            title={url}
+            onClick={() => void navigator.clipboard.writeText(url).then(() => setCopied(true))}
+          >
+            <AIco name={copied ? 'check' : 'copy'} size="sm" />
+            {t(copied ? 'advisor.src.copied' : 'advisor.src.copy')}
+          </button>
+        ))}
+    </div>
+  )
+}
+
+function Details({ row, lang, expert, farm, glossary, nameOf }: Omit<CardProps, 'open' | 'currentPatch'>) {
   const t = useT()
   const s = row.strategy
   const e = row.estimate
@@ -249,14 +300,14 @@ function Details({ row, lang, expert, farm, glossary, nameOf }: Omit<CardProps, 
           ))}
         </div>
       )}
-      <p className="ad-source">{t('advisor.source', { text: tx(s.source.text, lang), date: s.source.date })}</p>
+      <Source s={s} lang={lang} />
       <MyResult row={row} lang={lang} farm={farm} />
     </div>
   )
 }
 
 export function StrategyCard(props: CardProps) {
-  const { row, lang, expert, open, nameOf } = props
+  const { row, lang, expert, open, nameOf, currentPatch } = props
   const t = useT()
   const toggle = useAdvisorStore((s) => s.toggle)
   const s = row.strategy
@@ -266,11 +317,20 @@ export function StrategyCard(props: CardProps) {
     ...s.outputs.filter((_, i) => e.outputs[i].total === null)
   ].map((l) => lineName(l, lang, nameOf))
   const detailsId = `ad-details-${s.id}`
+  const foreign = foreignLang(s, lang)
+  const outdated = isOutdated(s, currentPatch)
   return (
     <article className={`ui-box ad-card${open ? ' is-open' : ''}`}>
       <div className="ui-box__head">
         <h4 className="ad-name">{tx(s.name, lang)}</h4>
         {s.draft && <span className="ui-tag ui-tag--warn">{t('advisor.draftTag', { patch: s.patch })}</span>}
+        {outdated && (
+          <span className="ui-tag ui-tag--warn" title={t('advisor.outdated.title', { patch: s.patch, current: currentPatch ?? '' })}>
+            {t('advisor.outdated', { patch: s.patch })}
+          </span>
+        )}
+        {s.source.kind !== 'official' && <span className="ui-tag">{t(`advisor.src.kind.${s.source.kind}`)}</span>}
+        {foreign && <span className="ui-tag">{t(`advisor.lang.${foreign}`)}</span>}
         <span className="ui-label__grow" />
         <span className="ad-diff">
           <span className="ad-faint">{t('advisor.diff')}</span>
@@ -300,6 +360,7 @@ export function StrategyCard(props: CardProps) {
               </span>
             )}
             <Confidence value={e.confidence} reasons={e.reasons} />
+            {s.measured && <span className="ad-faint">{t('advisor.measured.short', { v: chaosText(s.measured.perHour, lang) })}</span>}
           </div>
         </div>
         {open && (

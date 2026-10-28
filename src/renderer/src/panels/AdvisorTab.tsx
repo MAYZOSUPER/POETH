@@ -37,7 +37,7 @@ function Controls({ busy }: { busy: boolean }) {
     <div className="ui-chips">
       <span className="ui-label">{t('advisor.sort')}</span>
       <div className="ui-seg" role="group" aria-label={t('advisor.sort')}>
-        {(['profit', 'easy'] as AdvisorSort[]).map((k) => (
+        {(['profit', 'easy', 'cost'] as AdvisorSort[]).map((k) => (
           <button key={k} type="button" aria-pressed={view.sort === k} onClick={() => setView({ sort: k })}>
             {t(`advisor.sort.${k}`)}
           </button>
@@ -144,6 +144,7 @@ export function AdvisorTab() {
               open={open === row.strategy.id}
               farm={farm}
               glossary={s.data?.glossary ?? {}}
+              currentPatch={s.data?.patch ?? null}
               nameOf={nameOf}
             />
           ))}
