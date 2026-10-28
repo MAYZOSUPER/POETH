@@ -13,7 +13,8 @@ const ALL_TABS: TabDef[] = [
   { id: 'priceCheck', key: 'app.priceCheck', icon: '💰' },
   { id: 'live', key: 'app.live', icon: '📡' },
   { id: 'regex', key: 'app.regex', icon: '🔎' },
-  { id: 'deals', key: 'app.deals', icon: '🤝' }
+  { id: 'deals', key: 'app.deals', icon: '🤝' },
+  { id: 'wealth', key: 'app.wealth', icon: '💎' }
 ]
 
 export function tabsFor(game: GameId): TabDef[] {
