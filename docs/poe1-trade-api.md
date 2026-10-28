@@ -156,6 +156,29 @@ Hardcore Ruthless`. POETH берёт только `realm: pc`, без Ruthless �
   «Подтвердите, что вы человек» — это делает пользователь.
 - 429 → `retry-after`; 5xx → «сервер недоступен».
 
+## Учёт богатства (проверено в S11a, 28.10.2026)
+
+**Стэш (legacy, только main, сессия аккаунта):**
+`GET https://www.pathofexile.com/character-window/get-stash-items?accountName=<Name#1234>&realm=pc&league=<лига>&tabs=<0|1>&tabIndex=<n>`
+→ `{numTabs, tabs?: [{n, i, id, type, colour:{r,g,b}}], items: [...]}`. Без входа — **403** `{"error":{"code":6,"message":"Forbidden"}}`
+(и с пустым, и с выдуманным именем). Политика **`backend-item-request-limit`**, правило `Ip`: `30:60:120,90:1800:600,180:7200:3600`
+(после входа может добавиться `Account` — лимитер ресинкается). Берём у **www** — имена и свойства предметов на английском
+(для сопоставления цен; cookie `POESESSID` общий для `.pathofexile.com`). `get-account-name` без входа — 404 (с входом не проверено);
+имя берём из входа (ссылка профиля `Name-1234` → `Name#1234`) или ввода. MapStash/UniqueStash legacy-эндпоинт не отдаёт.
+Снимок = по запросу на выбранную вкладку (первая — вместе со списком, `tabs=1`); 25 вкладок при резерве 25 % → авто-снимок не чаще раза в 23 мин.
+
+**Фид обмена GGG (без авторизации):** `GET https://web.poecdn.com/api/currency-exchange/<hourId>` (hourId — unix-секунды начала часа).
+Без hourId отдаёт **самый первый** час (Settlers, 2024) — листать вперёд по `next_change_id`. Текущий час — 404, прошлый — 200
+(`cache-control: max-age=31536000`, ~0,8–1 МБ JSON, gzip). `market_pair` — полные metadata-пути (`Metadata/Items/Currency/CurrencyRerollRare`
+= chaos, `…/CurrencyModValues` = divine); `volume_traded {A:a, B:b}` — a штук A обменяли на b штук B. 571 id за час, все есть
+в RePoE `base_items.json` (сопоставление — `tools/wealth/sync-exchange-ids.mjs` → `resources/data/poe1/wealth/exchange-ids.json`).
+
+**poe.watch:** публичный API (OpenAPI `https://poe.watch/docs.yaml`, документация docs.poe.watch), условий использования и лимитов
+не объявлено, вопросы — их Discord. `GET https://api.poe.watch/compact?league=<лига>` — все категории одним ответом
+(Cloudflare `max-age=1200`, **zstd**; Allflame ~8 МБ, Standard ~20 МБ JSON). Поля: `name, category, group, frame (3 — уник),
+mean (chaos), linkCount, gemLevel, gemQuality, gemIsCorrupted, mapTier, lowConfidence`. Берём не чаще раза в час.
+poe.ninja просит десктоп-приложения ходить через свой бэкенд — прямых массовых запросов к нему нет (заготовка прокси).
+
 ## Политика GGG (обязательно)
 
 Одно действие пользователя = одно действие приложения: никаких авто-покупок, авто-whisper'ов, «бот-подобного»
