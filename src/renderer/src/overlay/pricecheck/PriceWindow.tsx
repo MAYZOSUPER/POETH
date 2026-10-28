@@ -20,7 +20,9 @@ import { useOverlayStore } from '../../store/useOverlayStore'
 import { useOverlayT } from '../useOverlayT'
 import { PopupPositionButton } from '../PopupPosition'
 import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
-import { ageKey, coinClass, currencyLabel, fmtNum, statParts, tierWordKey } from './format'
+import { ageKey, currencyLabel, fmtNum, statParts, tierWordKey } from './format'
+import { CoinIcon, Currency, CurrencyTipBody, RateTipBody, TipAnchor, useCurrencyNames } from '../../components/Currency'
+import type { RuCase } from '@shared/currency'
 import { convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
 import { createClickGuard, lotActions, whisperCommand } from '@shared/poe1/pricecheck/lotActions'
 import type { Verdict, VerdictKind } from '@shared/poe1/pricecheck/verdict'
@@ -93,38 +95,60 @@ function fmtDiv(v: number, lang: UiLang): string {
   return lang === 'ru' ? s.replace('.', ',') : s
 }
 
-function Price({ price, lang }: { price: Poe1Price; lang: UiLang }) {
+/** Цена с иконкой и подсказкой (там же — перевод в другую валюту по курсу); full — полное название (простой режим). */
+function Price({ price, lang, full = false }: { price: Poe1Price; lang: UiLang; full?: boolean }) {
   const t = useOverlayT()
   const rate = usePriceCheckStore((s) => s.rate?.chaosPerDivine)
+  const conv = conversionTitle(price, rate, lang, t)
   return (
-    <span className="pc-price" title={conversionTitle(price, rate, lang, t)}>
-      <i className={coinClass(price.currency)} />
-      {fmtNum(price.amount, lang)} {currencyLabel(price.currency)}
-    </span>
+    <Currency tag={price.currency} text={fmtNum(price.amount, lang)} full={full} lang={lang} className="pc-price" extra={conv && <b>{conv}</b>} />
   )
 }
 
-/** Плашка курса «1 div = N c»; при наведении — дроби 0.1…1 div. Без курса не показывается. */
+/** Цена текстом: простой режим — полное название с падежом («за ~14 Сфер хаоса»), эксперт — «14 c». */
+type PriceText = (p: Poe1Price, c?: RuCase) => string
+function usePriceText(lang: UiLang): PriceText {
+  const simple = usePriceCheckStore((s) => s.simple)
+  const names = useCurrencyNames(lang)
+  return (p, c = 'nom') => {
+    const n = fmtNum(p.amount, lang)
+    return `${n} ${simple ? names.after(p.currency, n, c) : currencyLabel(p.currency)}`
+  }
+}
+
+/** Плашка курса «1 div = N c»; при наведении — что такое курс, дроби 0.1…1 div, сленг. Без курса не показывается. */
 function RateBadge({ lang, t }: { lang: UiLang; t: T }) {
   const rate = usePriceCheckStore((s) => s.rate)
   if (!rate) return null
   const rows = rateFractions(rate.chaosPerDivine)
+  const n = fmtNum(roundChaos(rate.chaosPerDivine), lang)
   return (
-    <span className="pc-rate" tabIndex={0} aria-label={t('pc1.rate', { n: fmtNum(roundChaos(rate.chaosPerDivine), lang) })}>
-      <i className="ui-coin ui-coin--div" />
-      {t('pc1.rate', { n: fmtNum(roundChaos(rate.chaosPerDivine), lang) })}
-      <span className="ui-tip pc-rate__tip" role="tooltip">
-        <b>{t('pc1.rate.title')}</b>
-        <span className="pc-rate__rows">
-          {rows.map((r) => (
-            <span key={r.div}>
-              {fmtNum(r.div, lang)} div = {fmtNum(r.chaos, lang)} c
-            </span>
-          ))}
-        </span>
-        <span className="pc-rate__src">{t('pc1.rate.src', { league: rate.league })}</span>
-      </span>
-    </span>
+    <TipAnchor
+      className="pc-rate"
+      focusable
+      tip={
+        <RateTipBody
+          rate={rate.chaosPerDivine}
+          text={n}
+          lang={lang}
+          extra={
+            <>
+              <span className="pc-rate__rows">
+                {rows.map((r) => (
+                  <span key={r.div}>
+                    {fmtNum(r.div, lang)} div = {fmtNum(r.chaos, lang)} c
+                  </span>
+                ))}
+              </span>
+              <span className="pc-rate__src">{t('pc1.rate.src', { league: rate.league })}</span>
+            </>
+          }
+        />
+      }
+    >
+      <CoinIcon tag="divine" lang={lang} />
+      {t('pc1.rate', { n })}
+    </TipAnchor>
   )
 }
 
@@ -146,10 +170,6 @@ function SearchAgainBar({ t }: { t: T }) {
       </button>
     </div>
   )
-}
-
-function priceText(p: Poe1Price, lang: UiLang): string {
-  return `${fmtNum(p.amount, lang)} ${currencyLabel(p.currency)}`
 }
 
 // ---------------------------------------------------------------- предмет
@@ -534,14 +554,19 @@ function ItemFiltersRow({ filters, item, t }: { filters: ItemFilters; item: Pars
 // ---------------------------------------------------------------- результаты
 
 function GroupLine({ kind, g, lang, t }: { kind: 'instant' | 'person'; g: PriceGroupSummary; lang: UiLang; t: T }) {
+  const simple = usePriceCheckStore((s) => s.simple)
+  const priceText = usePriceText(lang)
   return (
     <div className="pc-group" data-kind={kind}>
       <span className={`ui-tag ui-tag--${kind === 'instant' ? 'merchant' : 'person'}`}>{t(`pc1.summary.${kind}`)}</span>
       {g.min ? (
         <span className="pc-group__price">
-          <Price price={g.min} lang={lang} />
+          <Price price={g.min} lang={lang} full={simple} />
           {g.median && g.count > 1 && (
-            <span className="pc-group__median"> · {t('pc1.summary.median', { price: priceText(g.median, lang) })}</span>
+            <>
+              {' '}
+              <span className="pc-group__median">· {t('pc1.summary.median', { price: priceText(g.median) })}</span>
+            </>
           )}
         </span>
       ) : (
@@ -554,6 +579,7 @@ function GroupLine({ kind, g, lang, t }: { kind: 'instant' | 'person'; g: PriceG
 
 function WhyHint({ result, lang, t }: { result: Extract<PcResult, { kind: 'trade' }>; lang: UiLang; t: T }) {
   const range = usePriceCheckStore((s) => s.searchStatRange)
+  const priceText = usePriceText(lang)
   const { instant, person } = result.honest
   const outliers = instant.outliers.length + person.outliers.length
   return (
@@ -561,8 +587,8 @@ function WhyHint({ result, lang, t }: { result: Extract<PcResult, { kind: 'trade
       <Icon name="help" />
       <span>
         <b>{t('pc1.why.title')}</b> {t('pc1.why.search', { range, n: result.total })}
-        {instant.min && <> {t('pc1.why.instant', { price: priceText(instant.min, lang) })}</>}
-        {person.min && <> {t('pc1.why.person', { price: priceText(person.min, lang) })}</>}
+        {instant.min && <> {t('pc1.why.instant', { price: priceText(instant.min, 'gen') })}</>}
+        {person.min && <> {t('pc1.why.person', { price: priceText(person.min, 'gen') })}</>}
         {outliers > 0 && <> {t('pc1.why.outliers', { n: outliers })}</>}
       </span>
     </div>
@@ -634,10 +660,10 @@ function ListingRow({ l, siteUrl, lang, t }: { l: Poe1Listing; siteUrl: string; 
           {age && <> · {t(age[0], age[1])}</>}
         </span>
         {l.fee != null && (
-          <span className="ui-listing__fee">
-            <i className="ui-coin ui-coin--gold" />
+          <TipAnchor className="ui-listing__fee ui-cur" tip={<CurrencyTipBody tag="gold" lang={lang} />}>
+            <CoinIcon tag="gold" lang={lang} />
             {t('pc1.fee', { n: l.fee.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US') })}
-          </span>
+          </TipAnchor>
         )}
         {note && (
           <span className={`pc-lot-note${note.ok ? '' : ' is-bad'}`} role="status">
@@ -710,11 +736,11 @@ const VERDICT_TONE: Record<VerdictKind, string> = {
 
 function verdictText(
   v: Verdict,
-  ctx: { bulk: boolean; timeless: boolean; noMods?: boolean },
-  lang: UiLang,
+  ctx: { bulk: boolean; timeless: boolean; noMods?: boolean; one: string },
+  priceText: PriceText,
   t: T
 ): { title: string; sub?: string; help?: string } {
-  const price = v.price ? priceText(v.price, lang) : ''
+  const price = v.price ? priceText(v.price) : ''
   switch (v.kind) {
     case 'none':
       return {
@@ -732,7 +758,7 @@ function verdictText(
             : t('pc1.v.few.noPrice', { n: v.count })
       }
     case 'junk':
-      return { title: t('pc1.v.junk'), sub: t('pc1.v.junk.sub', { price }), help: t('pc1.v.junk.help') }
+      return { title: t('pc1.v.junk'), sub: t('pc1.v.junk.sub', { price, one: ctx.one }), help: t('pc1.v.junk.help') }
     case 'cheap':
       return { title: t('pc1.v.cheap'), sub: t('pc1.v.cheap.sub', { price }) }
     case 'valuable':
@@ -741,16 +767,16 @@ function verdictText(
         sub: v.caution
           ? t('pc1.v.caution')
           : v.reason === 'spread' && v.range
-            ? t('pc1.v.valuable.spread', { min: priceText(v.range.min, lang), max: priceText(v.range.max, lang) })
+            ? t('pc1.v.valuable.spread', { min: priceText(v.range.min, 'gen'), max: priceText(v.range.max, 'gen') })
             : v.reason === 'few'
               ? t('pc1.v.valuable.few', { price, n: v.count })
-              : t('pc1.v.valuable.div', { price }),
+              : t('pc1.v.valuable.div', { price: v.price ? priceText(v.price, 'gen') : '' }),
         help: t('pc1.v.valuable.help')
       }
     case 'list':
       // откуда цена — уже в «Почему такая цена?», здесь только в подсказке: окно не растёт
       return {
-        title: t(ctx.bulk ? 'pc1.v.list.each' : 'pc1.v.list', { price }),
+        title: t(ctx.bulk ? 'pc1.v.list.each' : 'pc1.v.list', { price: v.price ? priceText(v.price, 'acc') : '' }),
         sub: v.caution ? t('pc1.v.caution') : undefined,
         help: t(ctx.bulk ? 'pc1.v.list.bulk' : 'pc1.v.list.sub')
       }
@@ -805,7 +831,11 @@ function VerdictPlate({
   lang: UiLang
   t: T
 }) {
-  const { title, sub, help } = verdictText(v, { bulk, timeless, noMods }, lang, t)
+  const priceText = usePriceText(lang)
+  const names = useCurrencyNames(lang)
+  // «меньше 1 Сферы хаоса» / «less than 1 Chaos Orb»; эксперт — «1 c»
+  const one = simple ? `1 ${names.after('chaos', 1, 'gen')}` : '1 c'
+  const { title, sub, help } = verdictText(v, { bulk, timeless, noMods, one }, priceText, t)
   const tip = simple ? help : [sub, help].filter(Boolean).join(' ')
   return (
     <div className={`pc-verdict pc-verdict--${v.caution ? 'info' : VERDICT_TONE[v.kind]}`} role="status" data-kind={v.kind}>
@@ -919,21 +949,23 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
 function BulkResult({ result, simple, lang, t }: { result: Extract<PcResult, { kind: 'bulk' }>; simple: boolean; lang: UiLang; t: T }) {
   const best = result.offers[0]
   const each = best ? best.exchangeAmount / best.itemAmount : 0
+  const priceText = usePriceText(lang)
+  const names = useCurrencyNames(lang)
   return (
     <>
       <VerdictPlate v={result.verdict} bulk timeless={false} simple={simple} lang={lang} t={t} />
       <div className="ui-summary">
         <span className="ui-summary__price">
           {best && (
-            <>
-              <i className={coinClass(best.currency)} />
+            <TipAnchor className="ui-cur" focusable tip={<CurrencyTipBody tag={best.currency} lang={lang} />}>
+              <CoinIcon tag={best.currency} lang={lang} />
               {each >= 0.1
-                ? t('pc1.bulk.each', { price: `≈ ${fmtNum(each, lang)} ${currencyLabel(best.currency)}` })
+                ? t('pc1.bulk.each', { price: `≈ ${priceText({ amount: each, currency: best.currency })}` })
                 : t('pc1.bulk.forOne', {
                     n: fmtNum(best.itemAmount / best.exchangeAmount, lang),
-                    cur: currencyLabel(best.currency)
+                    cur: simple ? names.after(best.currency, 1, 'acc') : currencyLabel(best.currency)
                   })}
-            </>
+            </TipAnchor>
           )}
         </span>
         <span className="ui-summary__conf">{t('pc1.bulk.title')} · {t('pc1.conf.similar', { n: result.total })}</span>
@@ -943,8 +975,7 @@ function BulkResult({ result, simple, lang, t }: { result: Extract<PcResult, { k
           {result.offers.slice(0, 10).map((o) => (
             <div className="ui-listing" key={o.id}>
               <span className="ui-listing__price">
-                <i className={coinClass(o.currency)} />
-                {fmtNum(o.exchangeAmount, lang)} {currencyLabel(o.currency)}
+                <Currency tag={o.currency} text={fmtNum(o.exchangeAmount, lang)} lang={lang} />
               </span>
               <span className="ui-listing__meta">
                 <span className="ui-listing__who">{o.characterName || o.accountName}</span>

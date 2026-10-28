@@ -188,7 +188,7 @@ describe('вердикт', () => {
       'pc1.v.valuable.few', 'pc1.v.valuable.spread', 'pc1.v.valuable.div', 'pc1.v.valuable.help', 'pc1.v.list',
       'pc1.v.list.each', 'pc1.v.list.sub', 'pc1.v.list.bulk', 'pc1.v.note', 'pc1.v.note.done', 'pc1.v.note.fail', 'pc1.v.note.help', 'pc1.v.caution'
     ]
-    const params = { n: 3, price: '7 chaos', min: '1 div', max: '4 div', note: '~price 7 chaos' }
+    const params = { n: 3, price: '7 chaos', min: '1 div', max: '4 div', note: '~price 7 chaos', one: '1 c' }
     for (const lang of ['ru', 'en'] as const) {
       for (const k of keys) expect(text(lang, k, params), `${lang}:${k}`).not.toMatch(/\{\w+\}/)
     }
