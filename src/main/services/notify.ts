@@ -19,14 +19,17 @@ const TEXT = {
     startedNoKey: 'POETH запущен и ждёт в трее. Назначьте хоткей прайс-чека в настройках.',
     dataUpdated: 'Данные обновлены ({version}). Перезапустите POETH, чтобы применить.',
     upToDate: 'У вас последняя версия POETH ({version}).',
-    checkFailed: 'Не удалось проверить обновления: нет связи с GitHub.'
+    checkFailed: 'Не удалось проверить обновления: нет связи с GitHub.',
+    hotkeyTaken:
+      '{key} занят другой программой (возможно, Awakened PoE Trade или Sidekick). Закройте её или назначьте другую клавишу.'
   },
   en: {
     started: 'POETH is running — hover an item in the game and press {key}.',
     startedNoKey: 'POETH is running in the tray. Set a price check hotkey in the settings.',
     dataUpdated: 'Data updated ({version}). Restart POETH to apply it.',
     upToDate: 'You have the latest POETH ({version}).',
-    checkFailed: 'Could not check for updates: no connection to GitHub.'
+    checkFailed: 'Could not check for updates: no connection to GitHub.',
+    hotkeyTaken: '{key} is taken by another program (maybe Awakened PoE Trade or Sidekick). Close it or choose another key.'
   }
 } as const
 
@@ -57,11 +60,12 @@ export function windowsToastsAllowed(): boolean {
 export async function notifyUser(
   key: NoticeKey,
   params?: Record<string, string | number>,
-  kind: OverlayNotice['kind'] = 'info'
+  kind: OverlayNotice['kind'] = 'info',
+  action?: OverlayNotice['action']
 ): Promise<void> {
   const text = await noticeText(key, params)
   if (getGameFocus().game && getOverlayStatus().attached) {
-    const notice: OverlayNotice = { key: `main.${key}`, text, kind }
+    const notice: OverlayNotice = { key: `main.${key}`, text, kind, ...(action ? { action } : {}) }
     sendToOverlay(IPC.events.overlayNotice, notice)
     return
   }

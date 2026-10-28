@@ -1331,6 +1331,15 @@ input[type='checkbox']:checked::after {
     opacity: 0.55;
   }
 }
+/* сочетание занято другой программой (APT, Sidekick…) — S1 */
+.hotkey.conflict {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+.hk-conflict {
+  margin: 0 0 var(--sp-4);
+}
+
 .hk-cell {
   display: inline-flex;
   align-items: center;

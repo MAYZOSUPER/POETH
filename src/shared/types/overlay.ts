@@ -114,4 +114,15 @@ export interface OverlayNotice {
   /** уже готовый текст (сообщения main на языке интерфейса) — тогда key не переводится */
   text?: string
   kind: 'info' | 'warn'
+  /** кнопка в уведомлении: 'hotkeySettings' — «Сменить клавишу» (настройки компаньона) */
+  action?: 'hotkeySettings'
+}
+
+/**
+ * Хоткей, который не удалось зарегистрировать: сочетание занято другой программой
+ * (Awakened PoE Trade, Sidekick…). action — HotkeyAction или 'chat:<id>' (команда чата).
+ */
+export interface HotkeyConflict {
+  action: string
+  accel: string
 }

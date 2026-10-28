@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { HotkeyAction, PricePopupPosition, UiLang } from '@shared/types'
+import type { HotkeyAction, HotkeyConflict, PricePopupPosition, UiLang } from '@shared/types'
 import { PRICE_POPUP_POSITIONS } from '@shared/types'
 import { findHotkeyConflict } from '@shared/chatCommands'
 import { GAMES, type GameId } from '@shared/games'
@@ -117,6 +117,12 @@ export function SettingsPanel() {
 
   const [capturing, setCapturing] = useState<HotkeyAction | null>(null)
   const [hkNote, setHkNote] = useState<string | null>(null)
+  // хоткеи, занятые другой программой (APT, Sidekick…): плашка и отметка в списке
+  const [conflicts, setConflicts] = useState<HotkeyConflict[]>([])
+  useEffect(() => {
+    void window.overlayApi.overlay.hotkeyConflicts().then(setConflicts)
+    return window.overlayApi.onHotkeyConflicts(setConflicts)
+  }, [])
   const settingsRef = useRef(settings)
   settingsRef.current = settings
 
@@ -238,6 +244,11 @@ export function SettingsPanel() {
 
       <div className="block">
         <div className="block-title">{t('set.hotkeys')}</div>
+        {conflicts.map((c) => (
+          <div key={c.action} className="hk-conflict small danger" role="alert">
+            {t(c.action.startsWith('chat:') ? 'overlay.hk.conflict.chat' : 'overlay.hk.conflict', { key: formatAccel(c.accel) })}
+          </div>
+        ))}
         <ul className="kv">
           {hkActions.map((action) => {
             const { labelKey, n } = HK_META[action]
@@ -252,8 +263,12 @@ export function SettingsPanel() {
                 </span>
                 <span className="hk-cell">
                   <button
-                    className={'hotkey' + (capturing === action ? ' capturing' : '')}
-                    title={t('set.hk.hint')}
+                    className={
+                      'hotkey' +
+                      (capturing === action ? ' capturing' : '') +
+                      (conflicts.some((c) => c.action === action) ? ' conflict' : '')
+                    }
+                    title={conflicts.some((c) => c.action === action) ? t('overlay.hk.conflict.row') : t('set.hk.hint')}
                     onClick={() => {
                       setHkNote(null)
                       setCapturing((cur) => (cur === action ? null : action))

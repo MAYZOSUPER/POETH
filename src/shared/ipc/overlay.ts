@@ -9,6 +9,7 @@ import type {
   GameInputResult,
   InteractiveRect,
   OverlayFocusState,
+  HotkeyConflict,
   OverlayNotice,
   OverlayPoint,
   OverlayState,
@@ -23,7 +24,9 @@ export const overlayChannels = {
     updateInteractiveRects: 'overlay:updateInteractiveRects',
     trackAutoHide: 'overlay:trackAutoHide',
     typeInChat: 'overlay:typeInChat',
-    stashSearch: 'overlay:stashSearch'
+    stashSearch: 'overlay:stashSearch',
+    hotkeyConflicts: 'overlay:hotkeyConflicts',
+    openHotkeySettings: 'overlay:openHotkeySettings'
   }
 } as const
 
@@ -33,7 +36,8 @@ export const overlayEvents = {
   overlayItemCaptured: 'event:overlay.itemCaptured',
   overlayAutoHide: 'event:overlay.autoHide',
   overlayDismiss: 'event:overlay.dismiss',
-  overlayNotice: 'event:overlay.notice'
+  overlayNotice: 'event:overlay.notice',
+  overlayHotkeyConflicts: 'event:overlay.hotkeyConflicts'
 } as const
 
 export interface OverlayIpcApi {
@@ -58,6 +62,10 @@ export interface OverlayIpcApi {
     typeInChat(text: string, opts?: { send?: boolean }): Promise<GameInputResult>
     /** Ctrl+F → вставить текст в поле поиска стэша/торговца → Enter. */
     stashSearch(text: string): Promise<GameInputResult>
+    /** Хоткеи, которые сейчас не зарегистрированы: сочетание занято другой программой. */
+    hotkeyConflicts(): Promise<HotkeyConflict[]>
+    /** «Сменить клавишу» из уведомления поверх игры: компаньон на странице настроек. */
+    openHotkeySettings(): void
   }
   onOverlayFocus(cb: (focus: OverlayFocusState) => void): () => void
   onOverlayStatus(cb: (status: OverlayStatus) => void): () => void
@@ -72,4 +80,6 @@ export interface OverlayIpcApi {
   onOverlayDismiss(cb: () => void): () => void
   /** Короткое уведомление поверх игры (тост на несколько секунд). */
   onOverlayNotice(cb: (notice: OverlayNotice) => void): () => void
+  /** Список занятых хоткеев изменился (настройки показывают плашку). */
+  onHotkeyConflicts(cb: (conflicts: HotkeyConflict[]) => void): () => void
 }

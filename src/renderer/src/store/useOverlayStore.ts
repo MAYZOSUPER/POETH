@@ -9,8 +9,9 @@ import type {
   UiLang
 } from '@shared/types'
 
-/** Сколько висит уведомление поверх игры. */
+/** Сколько висит уведомление поверх игры (с кнопкой — дольше, чтобы успеть нажать). */
 const NOTICE_MS = 3500
+const NOTICE_ACTION_MS = 9000
 
 let noticeSeq = 0
 
@@ -84,7 +85,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
       api().onOverlayNotice((notice) => {
         const id = ++noticeSeq
         set({ notices: [...get().notices.slice(-2), { id, notice }] })
-        window.setTimeout(() => set({ notices: get().notices.filter((n) => n.id !== id) }), NOTICE_MS)
+        window.setTimeout(() => set({ notices: get().notices.filter((n) => n.id !== id) }), notice.action ? NOTICE_ACTION_MS : NOTICE_MS)
       })
     ]
     const [state] = await Promise.all([api().overlay.getState(), get().refreshSettings()])
