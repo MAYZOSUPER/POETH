@@ -127,6 +127,10 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ слиты S11a `0cfd605` (сессия s3-net-auth): учёт богатства — `StashProvider` (legacy стэш на сессии аккаунта),
+  `PriceSource` (почасовой фид обмена GGG + poe.watch), снапшоты, «что прибавилось», доход в час и прибыль за карту через трекер
+  S11b, вкладка «Богатство» на компонентах `ui-*` (`features.wealth` — только PoE1). И S10c `3bde142` (сессия S1): знак POETH
+  во всех окнах и уведомлениях, AUMID `com.poeth.app.dev` в dev. 1237 тестов. **Все функции v0.1 в main.**
 - _(лид, 28.10)_ слит сайт `design/site` (`f2e736b`…`8f855c3`): GitHub Pages https://mayzosuper.github.io/POETH/ (RU/EN,
   `site/` + `pages.yml`) — опубликован. Слит S11b `9507cbd` (сессия s8-deals): трекер карт и сессия фарма по `Client.txt`
   (забег = areaId+seed; порталы и перезаход — один забег; время, ярус, смерти EN/RU), «Начать/Пауза/Завершить», карт/час,
