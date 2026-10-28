@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MIN_MAPS, mapTime, myResult, perHour } from '@shared/advisor/time'
+import { MIN_MAPS, mapTime, measuredFrom, myResult, perHour } from '@shared/advisor/time'
 import { done, farm } from './fixtures'
 
 const MIN = 60_000
@@ -80,5 +80,23 @@ describe('советник: мой результат', () => {
     const r = myResult('a', farm([done({ maps: 1, durationMs: 30_000, profitChaos: 50 }, 'a')]))
     expect(r?.profitChaos).toBe(50)
     expect(r?.perHour).toBeNull()
+  })
+})
+
+describe('советник: замер для экспорта', () => {
+  it('из «Моего результата»: только числа, дата и версия; мало карт или нет дохода — null', () => {
+    const mine = myResult('a', farm([done({ maps: 12, durationMs: 1.5 * HOUR, profitChaos: 300 }, 'a')]))
+    expect(measuredFrom(mine, { date: '2026-10-28', patch: '3.29' })).toEqual({
+      maps: 12,
+      hours: 1.5,
+      perHour: 200,
+      date: '2026-10-28',
+      patch: '3.29'
+    })
+    const few = myResult('a', farm([done({ maps: 2, durationMs: HOUR, profitChaos: 100 }, 'a')]))
+    expect(measuredFrom(few, { date: '2026-10-28' })).toBeNull()
+    const noProfit = myResult('a', farm([done({ maps: 10, durationMs: HOUR }, 'a')]))
+    expect(measuredFrom(noProfit, { date: '2026-10-28' })).toBeNull()
+    expect(measuredFrom(null, { date: '2026-10-28' })).toBeNull()
   })
 })

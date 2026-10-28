@@ -4,7 +4,7 @@
 //  1) ваши сессии с меткой этой стратегии; 2) все ваши сессии; 3) типичное время из стратегии.
 // Источник берётся, только если карт в нём не меньше MIN_MAPS и время больше нуля.
 
-import type { AdvisorMapTime, AdvisorMyResult } from '../types/advisor'
+import type { AdvisorMapTime, AdvisorMeasured, AdvisorMyResult } from '../types/advisor'
 import type { FarmSession, FarmState, FarmStats } from '../types/farm'
 
 /** Меньше карт — свой замер слишком шумный, берём следующий источник. */
@@ -47,6 +47,26 @@ export function mapTime(strategyId: string, farm: FarmState | null, strategyMinu
 export function perHour(profitPerMap: number | null, minutes: number | null | undefined): number | null {
   if (profitPerMap === null || !minutes || !(minutes > 0) || !Number.isFinite(minutes)) return null
   return (profitPerMap * 60) / minutes
+}
+
+/**
+ * «Мой результат» → замер для экспорта стратегии (S17): только числа (карт, часов, доход в час), дата и
+ * версия игры — без аккаунта и персонажа. null — мало карт или доход не посчитан.
+ */
+export function measuredFrom(
+  mine: AdvisorMyResult | null,
+  at: { date: string; patch?: string; league?: string }
+): AdvisorMeasured | null {
+  if (!mine || mine.maps < MIN_MAPS || mine.perHour === null || !(mine.durationMs > 0)) return null
+  const out: AdvisorMeasured = {
+    maps: mine.maps,
+    hours: Math.round((mine.durationMs / HOUR) * 100) / 100,
+    perHour: Math.round(mine.perHour),
+    date: at.date
+  }
+  if (at.patch) out.patch = at.patch
+  if (at.league) out.league = at.league
+  return out
 }
 
 /** Ваши сессии фарма с этой стратегией; null — их не было. */

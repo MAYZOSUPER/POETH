@@ -53,8 +53,8 @@ function candidates(ref: AdvisorItemRef, list: readonly PriceEntry[]): readonly 
  * сделок» (непонятно, какой вариант); нет — null.
  */
 export function priceOf(ref: AdvisorItemRef, index: PriceIndex): { chaos: number; source: PriceEntry['source']; low: boolean } | null {
-  if (!ref.name) return null
-  const list = candidates(ref, index.get(priceKind(ref), ref.name))
+  if (!ref.ref) return null
+  const list = candidates(ref, index.get(priceKind(ref), ref.ref))
   if (!list.length) return null
   const e = list.length === 1 ? list[0] : median(list)
   return { chaos: e.chaos, source: e.source, low: list.length > 1 || e.low === true }

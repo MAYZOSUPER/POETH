@@ -1,14 +1,21 @@
 // Типы домена «Советник: что фармить» (S16). Стратегии фарма для новичков приходят данными
 // (resources/data/poe1/advisor/strategies.json, канал обновления данных S12), цены — из индекса цен
-// учёта богатства (фид обмена GGG + poe.watch). Разбор данных и расчёт — src/shared/advisor/*.
-// Только подсказки: никаких действий в игре.
+// учёта богатства (фид обмена GGG + poe.watch). Проверка и разбор — src/shared/advisor/{validate,data}.ts,
+// расчёт — estimate.ts / time.ts. Только подсказки: никаких действий в игре.
+//
+// Модель рассчитана на обмен стратегиями (S17: редактор, код `POETH1:` + base64url(deflate(JSON)), каталог):
+// схема с версией, предметы — по стабильным английским именам (refName), цен в стратегии нет (только
+// количества), источник и автор — поле, тексты — на одном или двух языках, замер автора — отдельно от оценки.
 
 import type { PriceSourceId, WealthPriceInfo } from './wealth'
 
-/** Текст на обоих языках интерфейса. */
+/** Версия схемы стратегии и файла (новые поля — новая версия: валидатор строгий). */
+export const ADVISOR_SCHEMA = 1
+
+/** Текст автора: хотя бы один язык (второй UI подставит с пометкой «написано на английском»). */
 export interface AdvisorText {
-  ru: string
-  en: string
+  ru?: string
+  en?: string
 }
 
 /**
@@ -20,8 +27,11 @@ export type AdvisorItemKind = 'stackable' | 'card' | 'map' | 'unique' | 'gem'
 /** Предмет в стратегии. */
 export interface AdvisorItemRef {
   kind: AdvisorItemKind
-  /** английское имя (фид обмена GGG / poe.watch); нет — предмет без цены, только подпись */
-  name?: string
+  /**
+   * Стабильный id предмета — английское имя (= refName данных APT = имя в фиде обмена и poe.watch),
+   * одинаковое для RU и EN клиента. Нет — предмет без цены, только подпись.
+   */
+  ref?: string
   /** ярус карты (kind = map) */
   tier?: number
   /** уровень и качество камня (kind = gem): 1 и 0 по умолчанию */
@@ -31,7 +41,7 @@ export interface AdvisorItemRef {
   label?: AdvisorText
 }
 
-/** Строка «что вложить» или «что получишь» за одну карту. */
+/** Строка «что вложить» или «что получишь» за одну карту (только количество — цены всегда живые). */
 export interface AdvisorLine {
   item: AdvisorItemRef
   /** штук за карту; дробное — в среднем (0.3 — примерно раз в три карты) */
@@ -52,8 +62,38 @@ export interface AdvisorBuildNeeds {
   note?: AdvisorText
 }
 
+/**
+ * Откуда стратегия: official — наши данные; community — каталог POETH (S17); imported — игрок вставил код
+ * сам; wealthy — Wealthy Exile (только если автор сайта разрешит, см. docs/advisor.md).
+ */
+export type AdvisorSourceKind = 'official' | 'community' | 'imported' | 'wealthy'
+
+export interface AdvisorSource {
+  kind: AdvisorSourceKind
+  /** ник автора (без аккаунта и персонажа) */
+  author?: string
+  /** оригинал (https) */
+  url?: string
+  /** когда составлена или обновлена (YYYY-MM или YYYY-MM-DD) */
+  date: string
+  /** откуда количества («грубая оценка», «замер 40 карт») */
+  note?: AdvisorText
+}
+
+/** Замер по трекеру карт (автора или свой — для экспорта): только числа, без аккаунта и персонажа. */
+export interface AdvisorMeasured {
+  maps: number
+  hours: number
+  /** chaos в час */
+  perHour: number
+  /** YYYY-MM-DD */
+  date: string
+  patch?: string
+  league?: string
+}
+
 export interface AdvisorStrategy {
-  /** латиница, цифры и дефис: метка стратегии у сессии фарма */
+  /** латиница, цифры и дефис: метка стратегии у сессии фарма — не переименовывать */
   id: string
   name: AdvisorText
   /** одна строка под названием */
@@ -70,8 +110,9 @@ export interface AdvisorStrategy {
   minutesPerMap: number
   inputs: AdvisorLine[]
   outputs: AdvisorLine[]
-  /** откуда количества «что получишь»: текст и дата (YYYY-MM или YYYY-MM-DD) */
-  source: { text: AdvisorText; date: string }
+  source: AdvisorSource
+  /** замер автора (подтверждение реальными числами, а не оценкой) */
+  measured?: AdvisorMeasured
   /** что взять на атласе */
   atlas: AdvisorText[]
   /** что делать в карте, по шагам */
@@ -79,8 +120,10 @@ export interface AdvisorStrategy {
   warnings: AdvisorText[]
   /** черновик: количества грубые, проверить после обновления лиги */
   draft: boolean
-  /** для какой версии игры («3.29») */
+  /** для какой версии игры («3.29») — другая версия = «может устареть» (атлас меняется) */
   patch: string
+  /** лига, если важна («Settlers») */
+  league?: string
 }
 
 export interface AdvisorGlossaryTerm {
@@ -90,7 +133,8 @@ export interface AdvisorGlossaryTerm {
 
 /** Файл strategies.json после проверки. */
 export interface AdvisorData {
-  version: 1
+  schema: typeof ADVISOR_SCHEMA
+  /** версия игры, под которую данные (текущая для «может устареть») */
   patch: string
   updatedAt: string
   draft: boolean

@@ -24,9 +24,9 @@ const views: AdvisorStrategyView[] = [
   // прибыль 8 за карту, 5 мин → 96/ч
   strategy({ id: 'a', difficulty: 2 }),
   // прибыль 2×1 − 0 = 2 за карту, 4 мин → 30/ч
-  strategy({ id: 'b', difficulty: 1, minutesPerMap: 4, inputs: [], outputs: [{ item: { kind: 'stackable', name: 'Chaos Orb' }, qty: 2 }] }),
+  strategy({ id: 'b', difficulty: 1, minutesPerMap: 4, inputs: [], outputs: [{ item: { kind: 'stackable', ref: 'Chaos Orb' }, qty: 2 }] }),
   // нет цены
-  strategy({ id: 'c', difficulty: 1, outputs: [{ item: { kind: 'stackable', name: 'Nope' }, qty: 1 }] })
+  strategy({ id: 'c', difficulty: 1, outputs: [{ item: { kind: 'stackable', ref: 'Nope' }, qty: 1 }] })
 ].map((s) => ({ strategy: s, estimate: estimateStrategy(s, idx) }))
 
 describe('советник: карточки', () => {
@@ -38,6 +38,18 @@ describe('советник: карточки', () => {
     expect(rows[1].perHour).toBe(30)
     expect(rows[2].perHour).toBeNull()
     expect(rows[2].estimate.profit).toBeNull()
+  })
+
+  it('дешёвый вход: по стоимости входа за карту, без цены входа — в конце', () => {
+    const withCost = [
+      ...views,
+      ...[strategy({ id: 'd', inputs: [{ item: { kind: 'stackable', ref: 'Nope' }, qty: 1 }] })].map((s) => ({
+        strategy: s,
+        estimate: estimateStrategy(s, idx)
+      }))
+    ]
+    // b — вход 0, a и c — по 2 (выше доход у a), d — нет цены входа
+    expect(buildRows(withCost, null, { sort: 'cost', easyOnly: false }).map((r) => r.strategy.id)).toEqual(['b', 'a', 'c', 'd'])
   })
 
   it('сначала лёгкие; «только лёгкие» убирает сложность 2–3', () => {
@@ -99,9 +111,9 @@ describe('советник: числа и имена RU/EN', () => {
     expect(hm(-5)).toEqual({ h: 0, m: 0 })
     expect(tx(T('да', 'yes'), 'ru')).toBe('да')
     expect(tx(T('да', 'yes'), 'en')).toBe('yes')
-    expect(itemNs({ kind: 'card', name: 'The Doctor' })).toBe('DIVINATION_CARD')
-    expect(itemNs({ kind: 'unique', name: 'Tabula Rasa' })).toBe('UNIQUE')
-    expect(itemNs({ kind: 'gem', name: 'Enlighten Support' })).toBe('GEM')
-    expect(itemNs({ kind: 'map', name: 'Strand Map' })).toBe('ITEM')
+    expect(itemNs({ kind: 'card', ref: 'The Doctor' })).toBe('DIVINATION_CARD')
+    expect(itemNs({ kind: 'unique', ref: 'Tabula Rasa' })).toBe('UNIQUE')
+    expect(itemNs({ kind: 'gem', ref: 'Enlighten Support' })).toBe('GEM')
+    expect(itemNs({ kind: 'map', ref: 'Strand Map' })).toBe('ITEM')
   })
 })

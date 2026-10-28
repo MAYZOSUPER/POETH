@@ -16,14 +16,14 @@ const index = (...entries: PriceEntry[]) => buildPriceIndex([entries])
 describe('советник: цена предмета', () => {
   it('стакающийся — по английскому имени; без имени или без записи — нет цены', () => {
     const idx = index(ex('Essence Scarab', 1.5))
-    expect(priceOf({ kind: 'stackable', name: 'Essence Scarab' }, idx)).toEqual({ chaos: 1.5, source: 'exchange', low: false })
-    expect(priceOf({ kind: 'stackable', name: 'Unknown' }, idx)).toBeNull()
+    expect(priceOf({ kind: 'stackable', ref: 'Essence Scarab' }, idx)).toEqual({ chaos: 1.5, source: 'exchange', low: false })
+    expect(priceOf({ kind: 'stackable', ref: 'Unknown' }, idx)).toBeNull()
     expect(priceOf({ kind: 'stackable', label: T('Прочее') }, idx)).toBeNull()
   })
 
   it('карта Таро ищется среди стакающихся', () => {
     const idx = buildPriceIndex([[{ name: 'The Doctor', kind: 'stackable', chaos: 900, source: 'poewatch' }]])
-    expect(priceOf({ kind: 'card', name: 'The Doctor' }, idx)?.chaos).toBe(900)
+    expect(priceOf({ kind: 'card', ref: 'The Doctor' }, idx)?.chaos).toBe(900)
   })
 
   it('карта — по ярусу, несколько кандидатов — медиана с пометкой «мало сделок»', () => {
@@ -34,8 +34,8 @@ describe('советник: цена предмета', () => {
       ],
       [{ name: 'Lair Map', kind: 'map', chaos: 2, source: 'poewatch' }]
     ])
-    expect(priceOf({ kind: 'map', name: 'Strand Map', tier: 16 }, idx)).toEqual({ chaos: 3, source: 'poewatch', low: false })
-    expect(priceOf({ kind: 'map', name: 'Strand Map', tier: 10 }, idx)).toBeNull()
+    expect(priceOf({ kind: 'map', ref: 'Strand Map', tier: 16 }, idx)).toEqual({ chaos: 3, source: 'poewatch', low: false })
+    expect(priceOf({ kind: 'map', ref: 'Strand Map', tier: 10 }, idx)).toBeNull()
     const many = buildPriceIndex([
       [
         { name: 'X', kind: 'stackable', chaos: 1, source: 'poewatch' },
@@ -43,7 +43,7 @@ describe('советник: цена предмета', () => {
         { name: 'X', kind: 'stackable', chaos: 3, source: 'poewatch' }
       ]
     ])
-    expect(priceOf({ kind: 'stackable', name: 'X' }, many)).toEqual({ chaos: 3, source: 'poewatch', low: true })
+    expect(priceOf({ kind: 'stackable', ref: 'X' }, many)).toEqual({ chaos: 3, source: 'poewatch', low: true })
   })
 
   it('уник — без 5–6 связей, камень — уровень и качество, не осквернённый', () => {
@@ -56,9 +56,9 @@ describe('советник: цена предмета', () => {
         { name: 'Enlighten Support', kind: 'gem', chaos: 300, source: 'poewatch', gemLevel: 3, gemQuality: 0, corrupted: true }
       ]
     ])
-    expect(priceOf({ kind: 'unique', name: 'Tabula Rasa' }, idx)?.chaos).toBe(10)
-    expect(priceOf({ kind: 'gem', name: 'Enlighten Support' }, idx)?.chaos).toBe(20)
-    expect(priceOf({ kind: 'gem', name: 'Enlighten Support', level: 3 }, idx)?.chaos).toBe(400)
+    expect(priceOf({ kind: 'unique', ref: 'Tabula Rasa' }, idx)?.chaos).toBe(10)
+    expect(priceOf({ kind: 'gem', ref: 'Enlighten Support' }, idx)?.chaos).toBe(20)
+    expect(priceOf({ kind: 'gem', ref: 'Enlighten Support', level: 3 }, idx)?.chaos).toBe(400)
   })
 })
 
@@ -77,7 +77,7 @@ describe('советник: оценка карты', () => {
 
   it('своя карта с ценой на рынке: цена видна, в стоимость не идёт', () => {
     const s = strategy({
-      inputs: [{ item: { kind: 'stackable', name: 'Essence Scarab' }, qty: 2, own: true }]
+      inputs: [{ item: { kind: 'stackable', ref: 'Essence Scarab' }, qty: 2, own: true }]
     })
     const e = estimateStrategy(s, index(ex('Essence Scarab', 2), ex('Deafening Essence of Greed', 5)))
     expect(e.inputs[0]).toEqual({ unit: 2, total: 0, source: 'exchange' })
@@ -105,7 +105,7 @@ describe('советник: оценка карты', () => {
   it('часть добычи без цены — доход «не меньше», уверенность средняя', () => {
     const s = strategy({
       outputs: [
-        { item: { kind: 'stackable', name: 'Deafening Essence of Greed' }, qty: 2 },
+        { item: { kind: 'stackable', ref: 'Deafening Essence of Greed' }, qty: 2 },
         { item: { kind: 'stackable', label: T('Прочие сущности') }, qty: 3 }
       ]
     })

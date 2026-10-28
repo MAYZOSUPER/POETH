@@ -1,61 +1,87 @@
 {
-  "version": 1,
+  "schema": 1,
   "patch": "3.29",
   "updatedAt": "2026-10-28",
   "draft": true,
-  "defaults": { "minutesPerMap": 5 },
+  "defaults": {
+    "minutesPerMap": 5
+  },
   "glossary": {
     "map-device": {
-      "term": { "ru": "Устройство карт", "en": "Map Device" },
+      "term": {
+        "ru": "Устройство карт",
+        "en": "Map Device"
+      },
       "tip": {
         "ru": "Устройство в убежище: кладёте карту и скарабеи, открываете порталы в карту.",
         "en": "The device in your hideout: put a map and scarabs in, it opens portals into the map."
       }
     },
     "scarab": {
-      "term": { "ru": "Скарабей", "en": "Scarab" },
+      "term": {
+        "ru": "Скарабей",
+        "en": "Scarab"
+      },
       "tip": {
         "ru": "Кладётся в устройство карт вместе с картой и добавляет в неё механику (больше сущностей, сундуков…). Расходуется.",
         "en": "Goes into the Map Device with the map and adds a mechanic to it (more essences, strongboxes…). Consumed on use."
       }
     },
     "atlas": {
-      "term": { "ru": "Атлас", "en": "Atlas" },
+      "term": {
+        "ru": "Атлас",
+        "en": "Atlas"
+      },
       "tip": {
         "ru": "Дерево пассивов атласа (клавиша G): очки за пройденные карты усиливают выбранные механики.",
         "en": "The Atlas passive tree (G key): points from completed maps boost the mechanics you pick."
       }
     },
     "own-map": {
-      "term": { "ru": "Своя карта", "en": "Your own map" },
+      "term": {
+        "ru": "Своя карта",
+        "en": "Your own map"
+      },
       "tip": {
         "ru": "Карты падают в картах: если закрывать их быстро, покупать карты не нужно.",
         "en": "Maps drop in maps: if you clear them steadily, you don't need to buy maps."
       }
     },
     "exchange": {
-      "term": { "ru": "Обмен валюты", "en": "Currency Exchange" },
+      "term": {
+        "ru": "Обмен валюты",
+        "en": "Currency Exchange"
+      },
       "tip": {
         "ru": "Окно обмена у Фаустуса: продаёте добычу пачкой за chaos или divine без переписки с игроками.",
         "en": "Faustus' exchange window: sell loot in bulk for chaos or divine without whispering players."
       }
     },
     "essence": {
-      "term": { "ru": "Сущность", "en": "Essence" },
+      "term": {
+        "ru": "Сущность",
+        "en": "Essence"
+      },
       "tip": {
         "ru": "Кристалл с монстром внутри: убейте монстра — получите сущность. Сущности нужны для крафта и хорошо продаются.",
         "en": "A crystal with a monster inside: kill it to get the essence. Essences are used in crafting and sell well."
       }
     },
     "strongbox": {
-      "term": { "ru": "Сундук", "en": "Strongbox" },
+      "term": {
+        "ru": "Сундук",
+        "en": "Strongbox"
+      },
       "tip": {
         "ru": "Сундук в карте: при открытии вызывает монстров, внутри — валюта и предметы.",
         "en": "A box in the map: opening it summons monsters, inside are currency and items."
       }
     },
     "expedition": {
-      "term": { "ru": "Экспедиция", "en": "Expedition" },
+      "term": {
+        "ru": "Экспедиция",
+        "en": "Expedition"
+      },
       "tip": {
         "ru": "Механика с взрывчаткой: ставите заряды, взрыв открывает сундуки и монстров, за них дают артефакты.",
         "en": "A mechanic with explosives: you place charges, the blast opens chests and monsters that give artifacts."
@@ -65,7 +91,10 @@
   "strategies": [
     {
       "id": "essence-basic",
-      "name": { "ru": "Сущности", "en": "Essences" },
+      "name": {
+        "ru": "Сущности",
+        "en": "Essences"
+      },
       "summary": {
         "ru": "Обычные карты со скарабеем сущностей — сущности продаются пачкой на обмене валюты.",
         "en": "Regular maps with an Essence Scarab — essences sell in bulk on the Currency Exchange."
@@ -84,36 +113,102 @@
           "en": "The monster from the crystal is tougher than a normal rare — you need enough damage to kill it quickly."
         }
       },
-      "tags": ["essence", "maps"],
-      "terms": ["essence", "scarab", "map-device", "atlas", "own-map", "exchange"],
+      "tags": [
+        "essence",
+        "maps"
+      ],
+      "terms": [
+        "essence",
+        "scarab",
+        "map-device",
+        "atlas",
+        "own-map",
+        "exchange"
+      ],
       "minutesPerMap": 5,
       "inputs": [
         {
-          "item": { "kind": "map", "label": { "ru": "Карта T14–16", "en": "Map T14–16" } },
+          "item": {
+            "kind": "map",
+            "label": {
+              "ru": "Карта T14–16",
+              "en": "Map T14–16"
+            }
+          },
           "qty": 1,
           "own": true,
-          "note": { "ru": "своя, с прошлых карт", "en": "your own, from earlier maps" }
+          "note": {
+            "ru": "своя, с прошлых карт",
+            "en": "your own, from earlier maps"
+          }
         },
-        { "item": { "kind": "stackable", "name": "Essence Scarab" }, "qty": 1 }
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Essence Scarab"
+          },
+          "qty": 1
+        }
       ],
       "outputs": [
-        { "item": { "kind": "stackable", "name": "Deafening Essence of Greed" }, "qty": 0.3 },
-        { "item": { "kind": "stackable", "name": "Deafening Essence of Contempt" }, "qty": 0.3 },
-        { "item": { "kind": "stackable", "name": "Deafening Essence of Hatred" }, "qty": 0.3 },
-        { "item": { "kind": "stackable", "name": "Deafening Essence of Wrath" }, "qty": 0.3 },
-        { "item": { "kind": "stackable", "name": "Shrieking Essence of Greed" }, "qty": 0.6 },
         {
-          "item": { "kind": "stackable", "label": { "ru": "Прочие сущности", "en": "Other essences" } },
+          "item": {
+            "kind": "stackable",
+            "ref": "Deafening Essence of Greed"
+          },
+          "qty": 0.3
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Deafening Essence of Contempt"
+          },
+          "qty": 0.3
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Deafening Essence of Hatred"
+          },
+          "qty": 0.3
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Deafening Essence of Wrath"
+          },
+          "qty": 0.3
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Shrieking Essence of Greed"
+          },
+          "qty": 0.6
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "label": {
+              "ru": "Прочие сущности",
+              "en": "Other essences"
+            }
+          },
           "qty": 3,
-          "note": { "ru": "много видов, цены разные", "en": "many kinds, prices vary" }
+          "note": {
+            "ru": "много видов, цены разные",
+            "en": "many kinds, prices vary"
+          }
         }
       ],
       "source": {
-        "text": {
+        "kind": "official",
+        "author": "POETH",
+        "date": "2026-10",
+        "note": {
           "ru": "Черновик POETH: грубая оценка по опыту прошлых лиг, не замер. Сверьте со своим трекером карт.",
           "en": "POETH draft: rough estimate from past leagues, not a measurement. Check it against your own map tracker."
-        },
-        "date": "2026-10"
+        }
       },
       "atlas": [
         {
@@ -152,7 +247,10 @@
     },
     {
       "id": "strongbox-ambush",
-      "name": { "ru": "Сундуки", "en": "Strongboxes" },
+      "name": {
+        "ru": "Сундуки",
+        "en": "Strongboxes"
+      },
       "summary": {
         "ru": "Скарабей засады добавляет сундуки — внутри валюта, которую сразу видно в добыче.",
         "en": "The Ambush Scarab adds strongboxes — they hold currency you see right away."
@@ -171,35 +269,94 @@
           "en": "A strongbox summons packs around you — you need enough survivability to outlast the wave."
         }
       },
-      "tags": ["strongbox", "maps"],
-      "terms": ["strongbox", "scarab", "map-device", "atlas", "own-map"],
+      "tags": [
+        "strongbox",
+        "maps"
+      ],
+      "terms": [
+        "strongbox",
+        "scarab",
+        "map-device",
+        "atlas",
+        "own-map"
+      ],
       "minutesPerMap": 5,
       "inputs": [
         {
-          "item": { "kind": "map", "label": { "ru": "Карта T14–16", "en": "Map T14–16" } },
+          "item": {
+            "kind": "map",
+            "label": {
+              "ru": "Карта T14–16",
+              "en": "Map T14–16"
+            }
+          },
           "qty": 1,
           "own": true,
-          "note": { "ru": "своя, с прошлых карт", "en": "your own, from earlier maps" }
+          "note": {
+            "ru": "своя, с прошлых карт",
+            "en": "your own, from earlier maps"
+          }
         },
-        { "item": { "kind": "stackable", "name": "Ambush Scarab" }, "qty": 1 }
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Ambush Scarab"
+          },
+          "qty": 1
+        }
       ],
       "outputs": [
-        { "item": { "kind": "stackable", "name": "Chaos Orb" }, "qty": 2 },
-        { "item": { "kind": "stackable", "name": "Orb of Alchemy" }, "qty": 2 },
-        { "item": { "kind": "stackable", "name": "Orb of Scouring" }, "qty": 1 },
-        { "item": { "kind": "stackable", "name": "Divine Orb" }, "qty": 0.02 },
         {
-          "item": { "kind": "stackable", "label": { "ru": "Прочие предметы из сундуков", "en": "Other strongbox loot" } },
+          "item": {
+            "kind": "stackable",
+            "ref": "Chaos Orb"
+          },
+          "qty": 2
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Orb of Alchemy"
+          },
+          "qty": 2
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Orb of Scouring"
+          },
+          "qty": 1
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Divine Orb"
+          },
+          "qty": 0.02
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "label": {
+              "ru": "Прочие предметы из сундуков",
+              "en": "Other strongbox loot"
+            }
+          },
           "qty": 1,
-          "note": { "ru": "карты, камни, редкие предметы", "en": "maps, gems, rare items" }
+          "note": {
+            "ru": "карты, камни, редкие предметы",
+            "en": "maps, gems, rare items"
+          }
         }
       ],
       "source": {
-        "text": {
+        "kind": "official",
+        "author": "POETH",
+        "date": "2026-10",
+        "note": {
           "ru": "Черновик POETH: грубая оценка по опыту прошлых лиг, не замер. Сверьте со своим трекером карт.",
           "en": "POETH draft: rough estimate from past leagues, not a measurement. Check it against your own map tracker."
-        },
-        "date": "2026-10"
+        }
       },
       "atlas": [
         {
@@ -234,7 +391,10 @@
     },
     {
       "id": "expedition-artifacts",
-      "name": { "ru": "Экспедиция", "en": "Expedition" },
+      "name": {
+        "ru": "Экспедиция",
+        "en": "Expedition"
+      },
       "summary": {
         "ru": "Взрывайте экспедицию в каждой карте, артефакты продавайте пачкой.",
         "en": "Blow up an Expedition in every map and sell the artifacts in bulk."
@@ -253,39 +413,99 @@
           "en": "The blast releases strong monsters all at once — you need both damage and survivability."
         }
       },
-      "tags": ["expedition", "maps"],
-      "terms": ["expedition", "scarab", "map-device", "atlas", "own-map", "exchange"],
+      "tags": [
+        "expedition",
+        "maps"
+      ],
+      "terms": [
+        "expedition",
+        "scarab",
+        "map-device",
+        "atlas",
+        "own-map",
+        "exchange"
+      ],
       "minutesPerMap": 6,
       "inputs": [
         {
-          "item": { "kind": "map", "label": { "ru": "Карта T14–16", "en": "Map T14–16" } },
+          "item": {
+            "kind": "map",
+            "label": {
+              "ru": "Карта T14–16",
+              "en": "Map T14–16"
+            }
+          },
           "qty": 1,
           "own": true,
-          "note": { "ru": "своя, с прошлых карт", "en": "your own, from earlier maps" }
+          "note": {
+            "ru": "своя, с прошлых карт",
+            "en": "your own, from earlier maps"
+          }
         },
-        { "item": { "kind": "stackable", "name": "Expedition Scarab" }, "qty": 1 }
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Expedition Scarab"
+          },
+          "qty": 1
+        }
       ],
       "outputs": [
-        { "item": { "kind": "stackable", "name": "Exotic Coinage" }, "qty": 1 },
-        { "item": { "kind": "stackable", "name": "Astragali" }, "qty": 30 },
-        { "item": { "kind": "stackable", "name": "Scrap Metal" }, "qty": 30 },
         {
-          "item": { "kind": "stackable", "name": "Burial Medallion" },
-          "qty": 3,
-          "note": { "ru": "дороже, попадаются реже", "en": "pricier, drop less often" }
+          "item": {
+            "kind": "stackable",
+            "ref": "Exotic Coinage"
+          },
+          "qty": 1
         },
         {
-          "item": { "kind": "stackable", "label": { "ru": "Журнал экспедиции", "en": "Expedition Logbook" } },
+          "item": {
+            "kind": "stackable",
+            "ref": "Astragali"
+          },
+          "qty": 30
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Scrap Metal"
+          },
+          "qty": 30
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Burial Medallion"
+          },
+          "qty": 3,
+          "note": {
+            "ru": "дороже, попадаются реже",
+            "en": "pricier, drop less often"
+          }
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "label": {
+              "ru": "Журнал экспедиции",
+              "en": "Expedition Logbook"
+            }
+          },
           "qty": 0.3,
-          "note": { "ru": "цена зависит от уровня и свойств", "en": "price depends on level and modifiers" }
+          "note": {
+            "ru": "цена зависит от уровня и свойств",
+            "en": "price depends on level and modifiers"
+          }
         }
       ],
       "source": {
-        "text": {
+        "kind": "official",
+        "author": "POETH",
+        "date": "2026-10",
+        "note": {
           "ru": "Черновик POETH: грубая оценка по опыту прошлых лиг, не замер. Сверьте со своим трекером карт.",
           "en": "POETH draft: rough estimate from past leagues, not a measurement. Check it against your own map tracker."
-        },
-        "date": "2026-10"
+        }
       },
       "atlas": [
         {

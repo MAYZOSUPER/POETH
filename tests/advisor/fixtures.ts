@@ -18,10 +18,10 @@ export function strategy(patch: Partial<AdvisorStrategy> = {}): AdvisorStrategy 
     minutesPerMap: 5,
     inputs: [
       { item: { kind: 'map', label: T('Карта', 'Map') }, qty: 1, own: true },
-      { item: { kind: 'stackable', name: 'Essence Scarab' }, qty: 1 }
+      { item: { kind: 'stackable', ref: 'Essence Scarab' }, qty: 1 }
     ],
-    outputs: [{ item: { kind: 'stackable', name: 'Deafening Essence of Greed' }, qty: 2 }],
-    source: { text: T('оценка', 'estimate'), date: '2026-10' },
+    outputs: [{ item: { kind: 'stackable', ref: 'Deafening Essence of Greed' }, qty: 2 }],
+    source: { kind: 'official', date: '2026-10', note: T('оценка', 'estimate') },
     atlas: [],
     steps: [T('шаг', 'step')],
     warnings: [],
