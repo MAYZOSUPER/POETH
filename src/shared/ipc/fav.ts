@@ -43,6 +43,7 @@ export const favChannels = {
     hide: 'tradeWindow:hide',
     nav: 'tradeWindow:nav',
     setPinned: 'tradeWindow:setPinned',
+    setSidebar: 'tradeWindow:setSidebar',
     state: 'tradeWindow:state',
     openInBrowser: 'tradeWindow:openInBrowser'
   }
@@ -94,6 +95,8 @@ export interface FavIpcApi {
     hide(): Promise<void>
     nav(action: 'back' | 'forward' | 'reload' | 'stop' | 'home'): Promise<void>
     setPinned(pinned: boolean): Promise<void>
+    /** свернуть/развернуть колонку избранного */
+    setSidebar(collapsed: boolean): Promise<void>
     state(): Promise<TradeSiteState>
     /** текущую страницу сайта — в системный браузер */
     openInBrowser(): Promise<boolean>

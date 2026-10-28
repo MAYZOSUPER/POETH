@@ -18,12 +18,28 @@ export function TradeSidebarApp() {
   const t = useT()
   const ready = useFavStore((s) => s.ready)
   const init = useFavStore((s) => s.init)
+  const collapsed = useFavStore((s) => !!s.site?.sidebarCollapsed)
+  const overGame = useFavStore((s) => !!s.site?.overGame)
   const [filter, setFilter] = useState('')
 
   useEffect(() => init(), [init])
 
+  // Поверх игры Esc прячет окно (на сайте его ловит main). Меню и переименование закрываются
+  // своим Esc первыми (preventDefault) — проверяем после всех обработчиков нажатия.
+  useEffect(() => {
+    if (!overGame) return
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key !== 'Escape' || e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return
+      setTimeout(() => {
+        if (!e.defaultPrevented) void api().tradeWindow.hide()
+      }, 0)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [overGame])
+
   return (
-    <div className="ts">
+    <div className={`ts${collapsed ? ' ts--collapsed' : ''}${overGame ? ' ts--game' : ''}`}>
       <aside className="ts-side">
         <Head />
         <div className="ts-top">

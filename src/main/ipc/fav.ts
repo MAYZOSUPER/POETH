@@ -400,6 +400,7 @@ function register(): void {
     else if (action === 'back' || action === 'forward' || action === 'reload' || action === 'stop') tw.siteNav(action)
   })
   handle(IPC.tradeWindow.setPinned, (pinned) => tw.setTradeWindowPinned(pinned === true))
+  handle(IPC.tradeWindow.setSidebar, (collapsed) => tw.setTradeSidebarCollapsed(collapsed === true))
   handle(IPC.tradeWindow.state, () => tw.getTradeSiteState())
   handle(IPC.tradeWindow.openInBrowser, () => tw.openSiteInBrowser())
 }

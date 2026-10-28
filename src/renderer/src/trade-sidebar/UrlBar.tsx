@@ -2,14 +2,18 @@ import { useT } from '../i18n'
 import { Ico } from '../panels/regex/Ico'
 import { useFavStore } from './useFavStore'
 
-// Адресная строка над сайтом (правее колонки избранного): назад/вперёд/обновить, к поиску,
-// адрес страницы (только чтение), «В браузере», «Поверх игры». Сам сайт — siteView поверх нашей страницы.
+// Адресная строка над сайтом (правее колонки избранного): свернуть избранное, назад/вперёд/обновить,
+// к поиску, адрес страницы (только чтение), «В браузере», «Поверх игры». Сам сайт — siteView поверх
+// нашей страницы. Окно поверх игры (без системной рамки): строка — его шапка (тянется за пустое
+// место), вместо «Поверх игры» — × (как Esc: спрятать и вернуть фокус игре).
 
 export function UrlBar() {
   const t = useT()
   const site = useFavStore((s) => s.site)
   const tw = window.overlayApi.tradeWindow
   const loading = !!site?.loading
+  const collapsed = !!site?.sidebarCollapsed
+  const overGame = !!site?.overGame
   let shown = site?.url ?? ''
   try {
     const u = new URL(shown)
@@ -19,6 +23,16 @@ export function UrlBar() {
   }
   return (
     <header className="ts-bar">
+      <button
+        type="button"
+        className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm ts-side-toggle"
+        aria-pressed={!collapsed}
+        aria-label={collapsed ? t('tw.side.show') : t('tw.side.hide')}
+        title={collapsed ? t('tw.side.show') : t('tw.side.hide')}
+        onClick={() => void tw.setSidebar(!collapsed)}
+      >
+        <Ico name="star" size="sm" />
+      </button>
       <button
         type="button"
         className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm ts-flip"
@@ -65,18 +79,30 @@ export function UrlBar() {
         <Ico name="external" />
         {t('tw.inBrowser')}
       </button>
-      <button
-        type="button"
-        className="ui-switch"
-        role="switch"
-        aria-checked={!!site?.pinned}
-        title={t('tw.pin.title')}
-        onClick={() => void tw.setPinned(!site?.pinned)}
-      >
-        <span className="ui-switch__track" />
-        <Ico name="pin" size="sm" />
-        {t('tw.pin')}
-      </button>
+      {overGame ? (
+        <button
+          type="button"
+          className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm ts-close"
+          aria-label={t('tw.close')}
+          title={t('tw.close')}
+          onClick={() => void tw.hide()}
+        >
+          <Ico name="close" size="sm" />
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="ui-switch"
+          role="switch"
+          aria-checked={!!site?.pinned}
+          title={t('tw.pin.title')}
+          onClick={() => void tw.setPinned(!site?.pinned)}
+        >
+          <span className="ui-switch__track" />
+          <Ico name="pin" size="sm" />
+          {t('tw.pin')}
+        </button>
+      )}
       {loading && <span className="ts-bar__progress" aria-hidden="true" />}
     </header>
   )

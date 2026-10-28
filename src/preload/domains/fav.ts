@@ -31,6 +31,7 @@ export function favBridge(): FavIpcApi {
       hide: () => ipcRenderer.invoke(IPC.tradeWindow.hide),
       nav: (action) => ipcRenderer.invoke(IPC.tradeWindow.nav, action),
       setPinned: (pinned) => ipcRenderer.invoke(IPC.tradeWindow.setPinned, pinned),
+      setSidebar: (collapsed) => ipcRenderer.invoke(IPC.tradeWindow.setSidebar, collapsed),
       state: () => ipcRenderer.invoke(IPC.tradeWindow.state),
       openInBrowser: () => ipcRenderer.invoke(IPC.tradeWindow.openInBrowser)
     },

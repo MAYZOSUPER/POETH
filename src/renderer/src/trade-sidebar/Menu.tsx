@@ -69,7 +69,10 @@ function Menu({ anchor, root, onClose }: { anchor: HTMLElement; root: MenuStep; 
       if (!ref.current?.contains(e.target as Node) && !anchor.contains(e.target as Node)) onClose()
     }
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose()
+      }
     }
     window.addEventListener('mousedown', onDown)
     window.addEventListener('keydown', onKey)
