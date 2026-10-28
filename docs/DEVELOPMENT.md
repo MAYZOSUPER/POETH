@@ -1,6 +1,7 @@
 # POETH — разработка
 
-Для игроков — [README](../README.md). Здесь — как собрать, проверить и выпустить POETH.
+Для игроков — [README](../README.md) ([English](../README.en.md)); картинки README — `docs/img/` (пока из
+утверждённых макетов, позже — скриншоты из игры). Здесь — как собрать, проверить и выпустить POETH.
 
 ## Запуск
 
@@ -70,8 +71,6 @@ npm run package       # POETH-Setup-<версия>.exe (+ .blockmap, latest.yml)
 Данные игры обновляются без переустановки: `node tools/data/publish-data.mjs --version <версия-данных>` →
 содержимое `dist-data/` в ветку `data` (см. `src/main/services/dataUpdater.ts`).
 
-Подпись кода — [docs/signing.md](signing.md).
-
 ## Благодарности (`resources/supporters.json`)
 
 Имена подписчиков Boosty уровня «Печать» показываются в «О программе» → «Благодарности». Список обновляется
@@ -96,7 +95,6 @@ npm run package       # POETH-Setup-<версия>.exe (+ .blockmap, latest.yml)
 - [docs/stages.md](stages.md) — этапы S0–S10 и «свои файлы» каждого
 - [docs/poe1-trade-api.md](poe1-trade-api.md), [docs/regex.md](regex.md), [docs/deals.md](deals.md)
 - [docs/plan-companion.md](plan-companion.md) — справка по trade2 (PoE2)
-- [docs/signing.md](signing.md) — подпись кода (SignPath Foundation)
 
 Данные и настройки хранятся в `%APPDATA%\POETH\` (при первом запуске копируются из `Exile Companion` /
 `Act Compass`).
