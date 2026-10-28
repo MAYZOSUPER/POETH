@@ -24,7 +24,7 @@ export const CREDITS: readonly CreditEntry[] = [
 /** Текст LICENSE (в сборку файл не попадает — держим копию; тест сверяет с LICENSE). */
 export const MIT_LICENSE_TEXT = `MIT License
 
-Copyright (c) 2026 PoE2 Quest Overlay contributors
+Copyright (c) 2026 POETH contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
