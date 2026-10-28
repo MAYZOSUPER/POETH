@@ -76,6 +76,8 @@ export async function checkDataUpdate(force = false): Promise<DataCheckResult> {
       console.warn(`[data] update ${m.version} rolled back: ${res.error}`)
       return 'failed'
     }
+    // проверка дошла до манифеста: данные совпадают с встроенными или уже применёнными
+    console.log(`[data] ${m.game} ${m.version}: up to date`)
     return 'unchanged'
   } catch (e) {
     console.warn('[data] update check failed:', e instanceof Error ? e.message : e)

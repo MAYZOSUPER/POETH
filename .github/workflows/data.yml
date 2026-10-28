@@ -1,0 +1,73 @@
+# Публикация пакета данных (S12): обновление данных у игроков без переустановки.
+# Собирает манифест из resources/data/poe1 (tools/data/publish-data.mjs) и публикует его с файлами
+# в orphan-ветку `data` (tools/data/push-data-branch.mjs). Приложение читает
+# https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json (links.DATA_MANIFEST_URL).
+# Токен — встроенный GITHUB_TOKEN этого запуска (contents: write), секретов и личных данных нет.
+#
+# Запуск: Actions → «Data» → Run workflow (версия пакета, пусто — дата данных APT из data.meta.json)
+# или тег: git tag data-3.30.0-1 && git push origin data-3.30.0-1 (версия = тег без «data-»).
+# Регламент — docs/league-update.md, весь «день лиги» — tools/data/league-day.mjs.
+name: Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Версия пакета данных (например 3.30.0-1); пусто — дата данных APT'
+        required: false
+        default: ''
+  push:
+    tags: ['data-*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # только из main или по тегу data-* — не из рабочих веток
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/data-')
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Данные целы (sha256 по data.meta.json)
+        run: npm run verify:data
+      - name: Тесты
+        run: npm test
+      - name: Собрать пакет
+        shell: bash
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        run: |
+          v="$INPUT_VERSION"
+          if [ -z "$v" ] && [ -n "$TAG" ]; then v="${TAG#data-}"; fi
+          node tools/data/publish-data.mjs ${v:+--version "$v"} --out dist-data
+      - name: Опубликовать в ветку data
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: node tools/data/push-data-branch.mjs --dir dist-data
+      - name: Манифест доступен по публичному адресу
+        shell: bash
+        run: |
+          want=$(node -p "require('./dist-data/manifest.json').version")
+          for i in $(seq 1 24); do
+            got=$(curl -fsS -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version" 2>/dev/null || true)
+            echo "попытка $i: $got (ждём $want)"
+            [ "$got" = "$want" ] && exit 0
+            sleep 15
+          done
+          echo "CDN raw.githubusercontent.com ещё отдаёт прежний манифест — проверьте позже" && exit 1
