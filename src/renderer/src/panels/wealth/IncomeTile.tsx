@@ -5,7 +5,7 @@ import { useWealthStore } from './useWealthStore'
 import { WIco } from './ui'
 import { df, nf } from './format'
 
-// Плитка «Доход в час» сессии фарма по макету «Богатство» v2 (w-kpi--hero). Пропсы — FarmIncomeInput
+// Плитка «Доход в час» сессии фарма по макету «Богатство» (.ui-stat--hero, без входа — --empty). Пропсы — FarmIncomeInput
 // трекера карт S11b: FarmPanel зовёт renderIncome={(p) => <IncomeTile {...p} />}. Курс divine и
 // «нужен вход» — из стора учёта богатства. Главная цифра — в div (в chaos под ней), пока доход
 // меньше 1 div в час — наоборот.
@@ -31,10 +31,10 @@ export function IncomeTile({ profitChaos, activeMs, pending }: IncomeTileProps) 
 
   if (state && !state.loggedIn) {
     return (
-      <div className="w-kpi w-kpi--hero w-kpi--need">
+      <div className="ui-stat ui-stat--hero ui-stat--empty">
         <span className="ui-label">{t('wealth.income')}</span>
-        <b>{t('wealth.income.need')}</b>
-        <span>
+        <b className="ui-stat__value">{t('wealth.income.need')}</b>
+        <span className="ui-stat__sub">
           <button type="button" className="ui-btn ui-btn--sm" onClick={() => void window.overlayApi.auth.login()}>
             <WIco name="external" />
             {t('wealth.auth.btn')}
@@ -59,10 +59,10 @@ export function IncomeTile({ profitChaos, activeMs, pending }: IncomeTileProps) 
     sub = rate > 0 ? `≈ ${df(perH / rate, lang, 2)} div` : t('wealth.income.perHour')
   }
   return (
-    <div className="w-kpi w-kpi--hero">
+    <div className="ui-stat ui-stat--hero">
       <span className="ui-label">{t('wealth.income')}</span>
-      <b>{hero}</b>
-      <span>{sub}</span>
+      <b className="ui-stat__value">{hero}</b>
+      <span className="ui-stat__sub">{sub}</span>
     </div>
   )
 }

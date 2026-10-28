@@ -2,14 +2,13 @@ import { create } from 'zustand'
 import type { WealthDiff, WealthOptions, WealthState } from '@shared/types'
 
 // Состояние вкладки «Богатство» (компаньон, S11a). Источник — main (wealth:state + event:wealth.state);
-// «что прибавилось» (с прошлого снимка и с начала сессии) перечитывается, когда появляется новый снимок.
+// «что прибавилось с прошлого снимка» перечитывается, когда появляется новый снимок. Сессия фарма —
+// у трекера карт S11b (useFarmStore).
 
 interface WealthStore {
   state: WealthState | null
   /** с прошлого снимка */
   diff: WealthDiff | null
-  /** с начала сессии фарма */
-  sessionDiff: WealthDiff | null
   busy: boolean
   accountError: boolean
   init: () => void
@@ -17,25 +16,16 @@ interface WealthStore {
   setTabs: (ids: string[]) => Promise<void>
   setAccount: (name: string | null) => Promise<boolean>
   setOptions: (patch: Partial<WealthOptions>) => Promise<void>
-  startFarm: () => Promise<void>
-  stopFarm: () => Promise<void>
 }
 
 let subscribed = false
 let lastKey = ''
 
 async function reloadDiffs(set: (p: Partial<WealthStore>) => void, s: WealthState): Promise<void> {
-  const session = s.farm.session
-  const key = `${s.latest?.id ?? ''}|${session ? `${session.startId}:${session.endId ?? ''}` : ''}`
+  const key = s.latest?.id ?? ''
   if (key === lastKey) return
   lastKey = key
-  if (!s.latest) {
-    set({ diff: null, sessionDiff: null })
-    return
-  }
-  const api = window.overlayApi.wealth
-  const [diff, sessionDiff] = await Promise.all([api.diff(), session ? api.diff('session') : Promise.resolve(null)])
-  set({ diff, sessionDiff })
+  set({ diff: s.latest ? await window.overlayApi.wealth.diff() : null })
 }
 
 export const useWealthStore = create<WealthStore>((set) => {
@@ -54,7 +44,6 @@ export const useWealthStore = create<WealthStore>((set) => {
   return {
     state: null,
     diff: null,
-    sessionDiff: null,
     busy: false,
     accountError: false,
 
@@ -77,8 +66,6 @@ export const useWealthStore = create<WealthStore>((set) => {
     },
     setOptions: async (patch) => {
       apply(await window.overlayApi.wealth.setOptions(patch))
-    },
-    startFarm: () => run(() => window.overlayApi.wealth.startFarm()),
-    stopFarm: () => run(() => window.overlayApi.wealth.stopFarm())
+    }
   }
 })

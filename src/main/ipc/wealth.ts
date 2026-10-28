@@ -12,6 +12,7 @@ import { LegacyStashProvider } from '../games/poe1/wealth/stashProvider'
 import { PriceService } from '../games/poe1/wealth/priceService'
 import { WealthManager } from '../games/poe1/wealth/manager'
 import { WealthStore } from '../games/poe1/wealth/store'
+import { onFarmEvent, setRunProfit } from '../services/farmSession'
 import type { IpcDomain } from './types'
 
 // Домен «учёт богатства» (main, S11a): стэш через legacy-эндпоинты на сессии аккаунта
@@ -130,6 +131,7 @@ async function setupForGame(def: GameDef): Promise<void> {
   unsubs = []
   const m = getManager()
   if (def.id !== 'poe1') {
+    m.attachFarm(null)
     m.stop()
     return
   }
@@ -137,6 +139,8 @@ async function setupForGame(def: GameDef): Promise<void> {
   unsubs.push(onLeaguesChanged(() => void m.onLeagueChanged()))
   unsubs.push(onSettingsChange(() => void m.onLeagueChanged()))
   await m.start()
+  // трекер карт S11b: снимки на границах забегов и прибыль за карту (S11a сливался вторым)
+  m.attachFarm({ onFarmEvent, setRunProfit })
 }
 
 export const wealthDomain: IpcDomain = { register, setupForGame }

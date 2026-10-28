@@ -327,6 +327,21 @@ describe('связка с трекером карт S11b', () => {
     expect(m.state().nextAutoAt).toBeUndefined()
   })
 
+  it('«Начать» в убежище после забега без сессии: runEnd(sessionId: null) → session:start — без прибыли', async () => {
+    const { provider, f, advance, ev } = await linked()
+    await ev(run('runStart', 'r0'))
+    await advance(5 * 60_000)
+    // S11b закрывает забег без сессии и сразу начинает сессию — в одном тике
+    f.emit({ type: 'runEnd', run: { id: 'r0', sessionId: null }, at: 0 })
+    await ev(sess('start'))
+    await ev(run('runStart', 'r1'))
+    await advance(5 * 60_000)
+    provider.content[0] = 130
+    await ev({ type: 'runEnd', run: { id: 'r1', sessionId: 's1' }, at: 0 })
+    await ev(run('runStart', 'r2'))
+    expect(f.profits).toEqual([['r1', { chaos: 30, runs: 1, divineRate: 300 }]])
+  })
+
   it('без входа: сессия трекера идёт, запросов к сайту нет, прибыли нет', async () => {
     const { provider, f, advance, ev } = await linked(false)
     await ev(sess('start'))

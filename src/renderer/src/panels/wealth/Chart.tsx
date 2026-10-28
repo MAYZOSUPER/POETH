@@ -48,8 +48,8 @@ export function WealthChart({ points, lang, expert }: { points: readonly WealthP
   const last = geo ? geo.pts[geo.pts.length - 1] : null
 
   return (
-    <div className="wl-box">
-      <div className="wl-box-h">
+    <div className="ui-box">
+      <div className="ui-box__head">
         <span className="ui-label">
           <WIco name="chart" size="sm" />
           {t('wealth.chart')}
@@ -78,7 +78,7 @@ export function WealthChart({ points, lang, expert }: { points: readonly WealthP
         )}
       </div>
       {geo && last ? (
-        <div className="w-chart">
+        <div className="ui-chart">
           <svg
             ref={svgRef}
             viewBox={`0 0 ${CH.w} ${CH.h}`}
@@ -94,55 +94,55 @@ export function WealthChart({ points, lang, expert }: { points: readonly WealthP
               const yy = geo.y(v)
               return (
                 <g key={v}>
-                  <line className="w-grid-l" x1={CH.l} x2={CH.w - CH.r} y1={yy} y2={yy} />
-                  <text className="w-axis-t" x={CH.l - 8} y={yy + 3.5} textAnchor="end">
+                  <line className="ui-chart__grid" x1={CH.l} x2={CH.w - CH.r} y1={yy} y2={yy} />
+                  <text className="ui-chart__tick" x={CH.l - 8} y={yy + 3.5} textAnchor="end">
                     {axisLabel(v, lang)}
                   </text>
                 </g>
               )
             })}
             {geo.ticks.map((tk) => (
-              <text key={tk.at} className="w-axis-t" x={geo.x(tk.at)} y={CH.h - 8} textAnchor={tk.anchor}>
+              <text key={tk.at} className="ui-chart__tick" x={geo.x(tk.at)} y={CH.h - 8} textAnchor={tk.anchor}>
                 {tickLabel(t, tk.at, geo.t1, total, lang)}
               </text>
             ))}
-            <path className="w-line" d={geo.pts.map((p, i) => `${i ? 'L' : 'M'}${geo.x(p.at).toFixed(1)} ${geo.y(p.chaos).toFixed(1)}`).join('')} />
-            <circle className="w-end" cx={geo.x(last.at)} cy={geo.y(last.chaos)} r={5} />
-            <text className="w-end-t" x={geo.x(last.at) + 10} y={geo.y(last.chaos) + 4}>
+            <path className="ui-chart__line" d={geo.pts.map((p, i) => `${i ? 'L' : 'M'}${geo.x(p.at).toFixed(1)} ${geo.y(p.chaos).toFixed(1)}`).join('')} />
+            <circle className="ui-chart__dot" cx={geo.x(last.at)} cy={geo.y(last.chaos)} r={5} />
+            <text className="ui-chart__value" x={geo.x(last.at) + 10} y={geo.y(last.chaos) + 4}>
               {nf(last.chaos, lang)}
             </text>
             {hp && (
               <g>
-                <line className="w-cross" x1={geo.x(hp.at)} x2={geo.x(hp.at)} y1={CH.t} y2={CH.h - CH.b} />
-                <circle className="w-end" cx={geo.x(hp.at)} cy={geo.y(hp.chaos)} r={5} />
+                <line className="ui-chart__cross" x1={geo.x(hp.at)} x2={geo.x(hp.at)} y1={CH.t} y2={CH.h - CH.b} />
+                <circle className="ui-chart__dot" cx={geo.x(hp.at)} cy={geo.y(hp.chaos)} r={5} />
               </g>
             )}
-            <rect className="w-hit" x={CH.l} y={0} width={CH.w - CH.l - CH.r + 8} height={CH.h - CH.b} />
+            <rect className="ui-chart__hit" x={CH.l} y={0} width={CH.w - CH.l - CH.r + 8} height={CH.h - CH.b} />
           </svg>
           {hp && (
             <div
-              className="ui-tip w-tip"
+              className="ui-tip ui-chart__tip"
               style={{ left: Math.max(90, Math.min(svgW - 90, geo.x(hp.at) * k + 4)), top: geo.y(hp.chaos) * k + 6 }}
             >
               <b>{nf(hp.chaos, lang)} chaos</b> <span>≈ {divOf(hp)} div · {timeOf(hp.at, lang, withDate)}</span>
             </div>
           )}
           {table && (
-            <div className="w-ptable ui-scroll">
-              <table className="wl-tbl">
+            <div className="ui-chart__table ui-scroll">
+              <table className="ui-table">
                 <thead>
                   <tr>
                     <th>{t('wealth.col.when')}</th>
-                    <th style={{ textAlign: 'right' }}>chaos</th>
-                    <th style={{ textAlign: 'right' }}>div</th>
+                    <th className="is-num">chaos</th>
+                    <th className="is-num">div</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[...geo.pts].reverse().map((p) => (
                     <tr key={p.at}>
                       <td>{timeOf(p.at, lang, true)}</td>
-                      <td style={{ textAlign: 'right' }}>{nf(p.chaos, lang)}</td>
-                      <td style={{ textAlign: 'right' }}>{divOf(p)}</td>
+                      <td className="is-num">{nf(p.chaos, lang)}</td>
+                      <td className="is-num">{divOf(p)}</td>
                     </tr>
                   ))}
                 </tbody>

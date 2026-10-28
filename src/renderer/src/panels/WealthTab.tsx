@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useT } from '../i18n'
 import { useAppStore } from '../store/useAppStore'
+import { useFarmStore } from '../store/useFarmStore'
+import { FarmPanel } from './farm/FarmPanel'
+import { sessionMs } from './farm/format'
 import { useWealthStore } from './wealth/useWealthStore'
 import { useNameOf } from './wealth/names'
 import { StashView } from './wealth/StashView'
-import { SessionView } from './wealth/SessionView'
+import { IncomeTile } from './wealth/IncomeTile'
 import { WIco } from './wealth/ui'
 import { clock } from './wealth/format'
 import './wealth/wealth.css'
 
-// Вкладка «Богатство» компаньона (PoE1, S11a) по утверждённому макету «Богатство» v2: подвкладки
-// «Тайник» (сумма тайника, график, разбивка, что прибавилось) и «Сессия фарма» (пока — своя по тайнику;
-// после слияния с трекером карт S11b здесь будет его FarmPanel с плиткой дохода IncomeTile).
+// Вкладка «Богатство» компаньона (PoE1) по утверждённому макету «Богатство»: подвкладки «Тайник»
+// (S11a: сумма тайника, график, разбивка, что прибавилось) и «Сессия фарма» (S11b: FarmPanel — карты,
+// время, смерти, забеги; плитка «Доход в час» — IncomeTile S11a по прибыли забегов из снимков тайника).
 
 type Sub = 'stash' | 'session'
 
@@ -30,11 +33,23 @@ export function WealthTab() {
   const expert = !(useAppStore((s) => s.settings?.ui.simpleMode ?? true))
   const s = useWealthStore((st) => st.state)
   const init = useWealthStore((st) => st.init)
+  const farm = useFarmStore((st) => st.state)
+  const initFarm = useFarmStore((st) => st.init)
   const nameOf = useNameOf(lang)
   const now = useNow()
   const [sub, setSub] = useState<Sub>('stash')
 
   useEffect(() => init(), [init])
+  // часы идущей сессии на подвкладке — и когда открыт «Тайник»
+  useEffect(() => {
+    let off: (() => void) | null = null
+    let disposed = false
+    void initFarm().then((fn) => (disposed ? fn() : (off = fn)))
+    return () => {
+      disposed = true
+      off?.()
+    }
+  }, [initFarm])
 
   if (!s) return <div className="wealth-tab" />
   if (!s.supported) {
@@ -46,8 +61,6 @@ export function WealthTab() {
       </div>
     )
   }
-  const session = s.farm.session
-  const running = !!session && session.stoppedAt === undefined
   const subs: Array<[Sub, 'grid' | 'map', string]> = [
     ['stash', 'grid', t('wealth.sub.stash')],
     ['session', 'map', t('wealth.sub.session')]
@@ -59,7 +72,9 @@ export function WealthTab() {
           <button key={id} type="button" className="ui-tab" role="tab" aria-selected={sub === id} onClick={() => setSub(id)}>
             <WIco name={icon} />
             {label}
-            {id === 'session' && running && <span className="ui-count ui-count--live">{clock(now - session.startedAt, true).slice(0, -3)}</span>}
+            {id === 'session' && farm?.session && (
+              <span className="ui-count ui-count--live">{clock(sessionMs(farm, now), true).slice(0, -3)}</span>
+            )}
           </button>
         ))}
       </div>
@@ -67,7 +82,9 @@ export function WealthTab() {
         {sub === 'stash' ? (
           <StashView s={s} t={t} lang={lang} now={now} expert={expert} nameOf={nameOf} />
         ) : (
-          <SessionView s={s} t={t} lang={lang} now={now} expert={expert} nameOf={nameOf} />
+          <div className="w-pad">
+            <FarmPanel renderIncome={(p) => <IncomeTile {...p} />} needLogin={!s.loggedIn} />
+          </div>
         )}
       </div>
     </div>

@@ -1,6 +1,5 @@
-/* Вкладка «Богатство» (S11a) — по утверждённому макету «Богатство» v2. Только токены и ui-*.
-   Классы w-* — копия из макета: когда дизайнер перенесёт их в components.css, блок «w-* из макета»
-   отсюда удаляется. wl-* — свои обёртки вкладки (блок, таблица, кнопки). */
+/* Вкладка «Богатство» (S11a) по макету «Богатство». Компоненты — ui-* из components.css (дизайн-система),
+   здесь только раскладка вкладки (w-* как на макете) и свои мелочи wl-*. Только токены. */
 
 .wealth-tab {
   display: grid;
@@ -18,55 +17,10 @@
   min-height: 0;
 }
 
-/* блок с шапкой (как .box в макете) */
-.wl-box {
-  border: 1px solid var(--border);
-  border-radius: var(--r-panel);
-  background: rgba(0, 0, 0, 0.16);
-}
-.wl-box-h {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sp-4);
-  padding: 9px var(--sp-6);
-  border-bottom: 1px solid var(--border);
-}
-.wl-box-b {
-  display: grid;
-  gap: var(--sp-4);
-  padding: var(--sp-5) var(--sp-6);
-}
-.wl-box-h > .ui-label,
-.wl-box-h .ui-seg > button {
-  white-space: nowrap;
-}
 .wl-btns {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-3);
-}
-.wl-tbl {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--fs-md);
-}
-.wl-tbl th {
-  padding: var(--sp-4) var(--sp-5);
-  border-bottom: 1px solid var(--border);
-  color: var(--fg-faint);
-  font: 600 var(--fs-2xs) / 1.2 var(--font-ui);
-  letter-spacing: 0.05em;
-  text-align: left;
-  text-transform: uppercase;
-}
-.wl-tbl td {
-  padding: var(--sp-4) var(--sp-5);
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
-.wl-tbl tr:last-child td {
-  border-bottom: 0;
 }
 .wl-banner {
   border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
@@ -108,95 +62,20 @@
   color: var(--fg-muted);
 }
 
-/* ===================== w-* из макета «Богатство» v2 ===================== */
+/* раскладка вкладки (на макете — w-*); компоненты — ui-* из components.css */
 .w-pad { display: grid; gap: 14px; padding: 14px 16px 18px; align-content: start; }
 .w-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 24px; align-items: end; }
 .w-total { display: grid; gap: 6px; min-width: 0; }
-.w-hero { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
-.w-hero > b { font: 600 40px / 1 var(--font-ui); letter-spacing: -0.01em; color: var(--accent-hi); font-variant-numeric: proportional-nums; }
-.w-hero > b small { font-size: 20px; font-weight: 500; color: var(--fg-muted); margin-left: 4px; }
-.w-alt { display: inline-flex; align-items: center; gap: 6px; font-size: 18px; color: var(--fg-muted); }
-.w-delta { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-md); font-weight: 600; }
-.w-delta .ui-ico { width: 14px; height: 14px; stroke-width: 2.2; }
-.w-delta--up { color: var(--good); }
-.w-delta--down { color: var(--bad); }
-.w-delta span { color: var(--fg-muted); font-weight: 400; }
 .w-wait { color: var(--fg-muted); font-size: var(--fs-sm); }
 .w-snap { display: grid; justify-items: end; gap: 6px; font-size: var(--fs-sm); color: var(--fg-muted); text-align: right; }
 .w-snap .wl-btns { justify-content: flex-end; }
 .w-rate { font-size: var(--fs-xs); color: var(--fg-faint); }
-.w-filter { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.w-filter .ui-label { margin-right: 4px; }
-.w-filter .ui-chip[aria-pressed="false"] { text-decoration: line-through; text-decoration-color: var(--fg-faint); }
 .w-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; align-items: start; }
-
-/* график: одна линия, сетка в волос, точка на конце, перекрестие при наведении */
-.w-chart { position: relative; padding: 6px 4px 2px; }
-.w-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
-.w-chart svg:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; border-radius: 4px; }
-.w-grid-l { stroke: var(--border); stroke-width: 1; shape-rendering: crispEdges; }
-.w-axis-t { fill: var(--fg-faint); font: 500 10.5px / 1 var(--font-ui); font-variant-numeric: tabular-nums; }
-.w-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-.w-end { fill: var(--accent-hi); stroke: var(--page); stroke-width: 2; }
-.w-end-t { fill: var(--fg); font: 600 11.5px / 1 var(--font-ui); font-variant-numeric: tabular-nums; }
-.w-cross { stroke: var(--fg-faint); stroke-width: 1; }
-.w-hit { fill: transparent; cursor: crosshair; }
-.w-tip { position: absolute; z-index: 3; pointer-events: none; white-space: nowrap; transform: translate(-50%, calc(-100% - 12px)); }
-.w-tip::before { top: auto; bottom: -5px; left: calc(50% - 4px); transform: rotate(225deg); }
-.w-tip span { color: var(--fg-muted); }
-.w-ptable { max-height: 168px; overflow: auto; margin-top: 8px; border-top: 1px solid var(--border); }
-.w-ptable .wl-tbl td, .w-ptable .wl-tbl th { padding: 5px 10px; }
-
-/* разбивка по вкладкам: тонкие полосы одного цвета, значение у конца */
-.w-bars { display: grid; gap: 2px; }
-.w-bar-row { display: grid; grid-template-columns: minmax(86px, 0.9fr) minmax(0, 1.3fr) 72px; gap: 10px; align-items: center; min-height: 32px; padding: 0 2px; }
-.w-bar-row.is-x { grid-template-columns: minmax(86px, 0.9fr) minmax(0, 1fr) 72px 48px; }
-.w-bar-row.is-off { color: var(--fg-faint); }
-.w-bar-n { display: grid; min-width: 0; }
-.w-bar-n b { font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.w-bar-n span { font-size: var(--fs-xs); color: var(--fg-faint); }
-.w-bar { height: 8px; }
-.w-bar i { display: block; height: 100%; border-radius: 0 4px 4px 0; background: var(--accent); }
-.w-bar-v { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.w-bar-v small { font-weight: 400; color: var(--fg-muted); }
-.w-bar-d { text-align: right; font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
-.w-bar-d.up { color: var(--good); }
-.w-bar-d.down { color: var(--bad); }
-.w-noval { justify-self: start; }
-
-/* прибыль с прошлого снимка */
-.w-gain td.q, .w-gain td.v, .w-gain td.u { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.w-gain th.q, .w-gain th.v, .w-gain th.u { text-align: right; }
-.w-gain td.v { font-weight: 600; color: var(--good); }
-.w-gain td.v.down { color: var(--bad); }
-.w-gain .nm { display: inline-flex; align-items: center; gap: 6px; }
-.w-gain .cur { color: var(--fg); }
-.w-gain .uni { color: var(--rarity-unique); }
-.w-gain .rar { color: var(--rarity-rare); }
-.w-gain .gem { color: var(--rarity-gem); }
-.w-gain .map { color: var(--fg); }
-.w-foot { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; padding: 8px 12px; border-top: 1px solid var(--border); font-size: var(--fs-sm); color: var(--fg-muted); }
-
-/* сессия фарма */
-.w-sess-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
-.w-sess-top .grow { flex: 1; }
-.w-run { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
-.w-run b { font-variant-numeric: tabular-nums; color: var(--accent-hi); }
-.w-kpis { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 10px; }
-.w-kpi { display: grid; gap: 4px; align-content: start; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-panel); background: rgba(0, 0, 0, 0.16); }
-.w-kpi > b { font: 600 26px / 1.05 var(--font-ui); color: var(--fg); font-variant-numeric: proportional-nums; }
-.w-kpi > span:last-child { font-size: var(--fs-xs); color: var(--fg-muted); }
-.w-kpi--hero { border-color: var(--border-strong); background: var(--accent-soft); }
-.w-kpi--hero > b { font-size: 40px; color: var(--accent-hi); }
-.w-kpi--need > b { font-size: 15px; font-weight: 500; color: var(--fg-muted); line-height: 1.4; }
-/* ===================== конец w-* из макета ===================== */
-
-.w-kpis--2 { grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)); }
-.w-gain .ui-tag { font-size: 9.5px; }
+.wealth-tab .ui-box__head > .ui-label,
+.wealth-tab .ui-box__head .ui-seg > button { white-space: nowrap; }
 
 @media (max-width: 760px) {
   .w-grid { grid-template-columns: minmax(0, 1fr); }
   .w-top { grid-template-columns: minmax(0, 1fr); }
   .w-snap { justify-items: start; text-align: left; }
-  .w-kpis, .w-kpis--2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }

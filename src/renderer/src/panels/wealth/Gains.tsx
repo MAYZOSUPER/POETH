@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { WealthDiff, WealthDiffLine, WealthItemNs } from '@shared/types'
 import { useT } from '../../i18n'
 import { WIco } from './ui'
-import { lineFacts, lineKind, nf, sg, span, unitPrice } from './format'
+import { itemClass, lineFacts, nf, sg, span, unitPrice } from './format'
 
 // «Что прибавилось» по макету «Богатство» v2: предмет, кол-во, прибавка; в эксперте ещё цена за штуку
 // и источник. Внизу — «Ушло» (проданы или использованы) и «Все изменения».
@@ -28,14 +28,14 @@ export function Gains({
   const t = useT()
   const [all, setAll] = useState(false)
   const head = (
-    <div className="wl-box-h">
+    <div className="ui-box__head">
       <span className="ui-label">
         <WIco name="plus" size="sm" />
         {title}
       </span>
       <span className="ui-label__grow" />
       {diff && !first && (
-        <span className={`w-delta ${diff.chaosDelta >= 0 ? 'w-delta--up' : 'w-delta--down'}`}>
+        <span className={`ui-delta ${diff.chaosDelta >= 0 ? 'ui-delta--up' : 'ui-delta--down'}`}>
           <WIco name={diff.chaosDelta >= 0 ? 'arrow-up' : 'arrow-down'} />
           {sg(diff.chaosDelta, lang)} chaos <span>{span(t, diff.toAt - diff.fromAt)}</span>
         </span>
@@ -44,7 +44,7 @@ export function Gains({
   )
   if (first || !diff) {
     return (
-      <div className="wl-box">
+      <div className="ui-box">
         {head}
         <div className="ui-empty">{t(first ? 'wealth.gains.first' : 'wealth.gains.none')}</div>
       </div>
@@ -63,24 +63,24 @@ export function Gains({
     .join(', ')
 
   return (
-    <div className="wl-box">
+    <div className="ui-box">
       {head}
       {rows.length ? (
-        <table className="wl-tbl w-gain">
+        <table className="ui-table">
           <thead>
             <tr>
               <th>{t('wealth.col.item')}</th>
-              <th className="q">{t('wealth.col.qty')}</th>
-              {expert && <th className="u">{t('wealth.col.unit')}</th>}
+              <th className="is-num">{t('wealth.col.qty')}</th>
+              {expert && <th className="is-num">{t('wealth.col.unit')}</th>}
               {expert && <th>{t('wealth.col.source')}</th>}
-              <th className="v">{t('wealth.col.added')}</th>
+              <th className="is-num">{t('wealth.col.added')}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((l) => (
               <tr key={l.key}>
                 <td>
-                  <span className={`nm ${lineKind(l)}`}>
+                  <span className={`ui-item ${itemClass(l)}`}>
                     {nameOf(l)}
                     {lineFacts(t, l).map((f) => (
                       <span key={f} className="ui-tag">
@@ -89,21 +89,21 @@ export function Gains({
                     ))}
                   </span>
                 </td>
-                <td className="q">{sg(l.qtyDelta, lang)}</td>
-                {expert && <td className="u">{l.unit !== undefined ? `${unitPrice(l.unit, lang)} c` : '—'}</td>}
+                <td className="is-num">{sg(l.qtyDelta, lang)}</td>
+                {expert && <td className="is-num">{l.unit !== undefined ? `${unitPrice(l.unit, lang)} c` : '—'}</td>}
                 {expert && (
                   <td>
                     <span className={`ui-tag${l.source === 'exchange' && l.unit !== undefined ? ' ui-tag--merchant' : ''}`}>{src(l)}</span>
                   </td>
                 )}
                 {l.unit === undefined ? (
-                  <td className="v" style={{ color: 'inherit' }}>
+                  <td className="is-num">
                     <span className="ui-tag" title={t(l.reason === 'rare' ? 'wealth.unpriced.rare' : `wealth.reason.${l.reason ?? 'no-price'}`)}>
                       {t('wealth.unpriced')}
                     </span>
                   </td>
                 ) : (
-                  <td className={`v${l.chaosDelta < 0 ? ' down' : ''}`} title={l.low ? t('wealth.low') : undefined}>
+                  <td className={`is-num ${l.chaosDelta < 0 ? 'is-bad' : 'is-good'}`} title={l.low ? t('wealth.low') : undefined}>
                     {l.low ? '~' : ''}
                     {sg(l.chaosDelta, lang)} c
                   </td>
@@ -116,7 +116,7 @@ export function Gains({
         <div className="ui-empty">{t('wealth.gains.none')}</div>
       )}
       {(gone.length > 0 || added.length > SHOWN) && (
-        <div className="w-foot">
+        <div className="ui-box__foot">
           {gone.length > 0 && <span>{t('wealth.gone', { n: nf(goneChaos, lang), items: goneNames })}</span>}
           <span className="ui-label__grow" />
           <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" aria-expanded={all} onClick={() => setAll(!all)}>

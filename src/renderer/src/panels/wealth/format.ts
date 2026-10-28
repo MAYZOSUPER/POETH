@@ -79,13 +79,13 @@ export function lineFacts(t: T, l: WealthLine | WealthDiffLine): string[] {
   return out
 }
 
-/** Цвет имени в «Что прибавилось»: уник, рарка, камень, карта, валюта. */
-export function lineKind(l: WealthDiffLine): 'uni' | 'rar' | 'gem' | 'map' | 'cur' {
-  if (l.ns === 'UNIQUE') return 'uni'
-  if (l.reason === 'rare') return 'rar'
-  if (l.ns === 'GEM') return 'gem'
-  if (l.mapTier !== undefined) return 'map'
-  return 'cur'
+/** Цвет имени предмета (.ui-item): уник, рарка, камень, карта (обычный), валюта и прочее стакающееся. */
+export function itemClass(l: WealthDiffLine): string {
+  if (l.ns === 'UNIQUE') return 'ui-item--unique'
+  if (l.reason === 'rare') return 'ui-item--rare'
+  if (l.ns === 'GEM') return 'ui-item--gem'
+  if (l.mapTier !== undefined) return ''
+  return 'ui-item--currency'
 }
 
 // ------------------------------------------------------------------ график

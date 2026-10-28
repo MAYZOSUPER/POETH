@@ -147,7 +147,7 @@ function Top({ s, t, lang, now, expert }: { s: WealthState; t: T; lang: string; 
     const up = s.delta.chaos >= 0
     const pct = s.delta.pct === null ? '' : ` (${up ? '+' : '−'}${df(Math.abs(s.delta.pct), lang, 0)}%)`
     delta = (
-      <span className={`w-delta ${up ? 'w-delta--up' : 'w-delta--down'}`}>
+      <span className={`ui-delta ${up ? 'ui-delta--up' : 'ui-delta--down'}`}>
         <WIco name={up ? 'arrow-up' : 'arrow-down'} />
         {sg(s.delta.chaos, lang)} chaos{pct} <span>{span(t, latest.at - s.delta.fromAt)}</span>
       </span>
@@ -174,13 +174,13 @@ function Top({ s, t, lang, now, expert }: { s: WealthState; t: T; lang: string; 
     <div className="w-top">
       <div className="w-total">
         <span className="ui-label">{t('wealth.total')}</span>
-        <div className="w-hero">
-          <b>
+        <div className="ui-figure">
+          <span className="ui-figure__value">
             {latest ? nf(latest.chaos, lang) : '—'}
-            <small>chaos</small>
-          </b>
+            <span className="ui-figure__unit">chaos</span>
+          </span>
           {latest && toDivine(latest.chaos, rate) !== null && (
-            <span className="w-alt">
+            <span className="ui-figure__alt">
               <Coin unit="divine" />≈ {df(toDivine(latest.chaos, rate) ?? 0, lang)} div
             </span>
           )}
@@ -236,7 +236,7 @@ function Filter({ s, t }: { s: WealthState; t: T }) {
   const selected = s.tabs.filter((x) => x.selected).map((x) => x.id)
   const toggle = (id: string, on: boolean): void => void setTabs(on ? [...selected, id] : selected.filter((x) => x !== id))
   return (
-    <div className="w-filter">
+    <div className="ui-chips ui-chips--include">
       <span className="ui-label">{t('wealth.count')}</span>
       {s.tabs.map((x) => (
         <button
@@ -267,10 +267,10 @@ function Breakdown({ s, t, lang, expert }: { s: WealthState; t: T; lang: string;
   const rows = s.tabs.length ? on : (latest?.tabs ?? []).map((x) => ({ id: x.id, name: x.name, selected: true }))
   const max = Math.max(1, ...rows.map((x) => totals.get(x.id)?.chaos ?? 0))
   if (!rows.length && !off.length) return null
-  const cls = (extra: string): string => `w-bar-row${expert ? ' is-x' : ''}${extra}`
+  const cls = (extra: string): string => `ui-bars__row${expert ? ' ui-bars__row--delta' : ''}${extra}`
   return (
-    <div className="wl-box">
-      <div className="wl-box-h">
+    <div className="ui-box">
+      <div className="ui-box__head">
         <span className="ui-label">
           <WIco name="layers" size="sm" />
           {t('wealth.tabs')}
@@ -278,13 +278,13 @@ function Breakdown({ s, t, lang, expert }: { s: WealthState; t: T; lang: string;
         <span className="ui-label__grow" />
         {expert && <span className="ui-label">{t('wealth.tabs.day')}</span>}
       </div>
-      <div className="wl-box-b">
-        <div className="w-bars">
+      <div className="ui-box__body">
+        <div className="ui-bars">
           {rows.map((x) => {
             const tot = totals.get(x.id)
             const noval = !!tot && tot.chaos <= 0 && tot.unpriced > 0
             const name = (
-              <span className="w-bar-n">
+              <span className="ui-bars__name">
                 <b title={x.name}>{x.name}</b>
                 {(expert || noval) && tot && <span>{t('wealth.tabs.items', { n: tot.items })}</span>}
               </span>
@@ -294,11 +294,11 @@ function Breakdown({ s, t, lang, expert }: { s: WealthState; t: T; lang: string;
                 <div key={x.id} className={cls('')}>
                   {name}
                   {noval ? (
-                    <span className="ui-tag w-noval" title={t('wealth.unpriced.rare')}>
+                    <span className="ui-tag ui-bars__note" title={t('wealth.unpriced.rare')}>
                       {t('wealth.unpriced')}
                     </span>
                   ) : (
-                    <span className="w-bar-v" style={{ fontWeight: 400, justifySelf: 'start' }}>
+                    <span className="ui-bars__value" style={{ fontWeight: 400, justifySelf: 'start' }}>
                       {t('wealth.tabs.next')}
                     </span>
                   )}
@@ -311,22 +311,26 @@ function Breakdown({ s, t, lang, expert }: { s: WealthState; t: T; lang: string;
             return (
               <div key={x.id} className={cls('')}>
                 {name}
-                <span className="w-bar">
+                <span className="ui-bars__track">
                   <i style={{ width: `${((Math.max(0, tot.chaos) / max) * 100).toFixed(1)}%` }} />
                 </span>
-                <span className="w-bar-v">
+                <span className="ui-bars__value">
                   {nf(tot.chaos, lang)} <small>c</small>
                 </span>
-                {expert && <span className={`w-bar-d${d ? (d > 0 ? ' up' : ' down') : ''}`}>{d === undefined ? '' : sg(d, lang)}</span>}
+                {expert && (
+                  <span className={`ui-bars__delta${d ? (d > 0 ? ' ui-bars__delta--up' : ' ui-bars__delta--down') : ''}`}>
+                    {d === undefined ? '' : sg(d, lang)}
+                  </span>
+                )}
               </div>
             )
           })}
           {off.map((x) => (
-            <div key={x.id} className={cls(' is-off')}>
-              <span className="w-bar-n">
+            <div key={x.id} className={cls(' ui-bars__row--off')}>
+              <span className="ui-bars__name">
                 <b title={x.name}>{x.name}</b>
               </span>
-              <span className="w-bar-v" style={{ fontWeight: 400, justifySelf: 'start' }}>
+              <span className="ui-bars__value" style={{ fontWeight: 400, justifySelf: 'start' }}>
                 {t(x.unsupported ? 'wealth.tabs.unsupportedShort' : 'wealth.tabs.off')}
               </span>
               <span />
@@ -342,14 +346,14 @@ function Breakdown({ s, t, lang, expert }: { s: WealthState; t: T; lang: string;
 function ExpertSettings({ s, t }: { s: WealthState; t: T }) {
   const setOptions = useWealthStore((st) => st.setOptions)
   return (
-    <div className="wl-box">
-      <div className="wl-box-h">
+    <div className="ui-box">
+      <div className="ui-box__head">
         <span className="ui-label">
           <WIco name="gear" size="sm" />
           {t('wealth.settings')}
         </span>
       </div>
-      <div className="wl-box-b">
+      <div className="ui-box__body">
         <div className="wl-settings">
           <WSwitch on={s.options.poeWatch} label={t('wealth.opt.poewatch')} onChange={(v) => void setOptions({ poeWatch: v })} />
           <span className="ui-field__help">
@@ -393,8 +397,8 @@ export function StashView({
       )}
       <div className="w-grid">
         {first || !s.latest ? (
-          <div className="wl-box">
-            <div className="wl-box-h">
+          <div className="ui-box">
+            <div className="ui-box__head">
               <span className="ui-label">
                 <WIco name="chart" size="sm" />
                 {t('wealth.chart')}

@@ -75,8 +75,8 @@ type Pre = { ok: true; account: string; league: string } | { ok: false; error: W
 
 /** Событие трекера карт S11b (структурно совместимо с FarmEvent из src/shared/types/farm.ts). */
 export type FarmEventLike =
-  | { type: 'runStart'; run: { id: string }; at: number }
-  | { type: 'runEnd'; run: { id: string }; at: number }
+  | { type: 'runStart'; run: { id: string; sessionId?: string | null }; at: number }
+  | { type: 'runEnd'; run: { id: string; sessionId?: string | null }; at: number }
   | { type: 'session'; state: 'start' | 'stop' | 'pause' | 'resume'; at: number }
 
 /** Прибыль забега (или группы из `runs` забегов подряд, последний — runId), chaos. */
@@ -559,7 +559,8 @@ export class WealthManager {
   private async onFarmEvent(e: FarmEventLike): Promise<void> {
     if (!this.farm) return
     if (e.type === 'runEnd') {
-      if (!this.pendingRuns.includes(e.run.id)) this.pendingRuns.push(e.run.id)
+      // забег вне сессии (sessionId: null — «Начать» нажали в убежище после него): прибыль не считаем
+      if (e.run.sessionId !== null && !this.pendingRuns.includes(e.run.id)) this.pendingRuns.push(e.run.id)
       if (this.inRun === e.run.id) this.inRun = null
       this.clearBoundaryTimer()
       return
