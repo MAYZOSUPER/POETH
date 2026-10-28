@@ -5,6 +5,7 @@ import type { AdvisorStrategyView } from '@shared/types/advisor'
 import {
   DEFAULT_ADVISOR_VIEW,
   buildRows,
+  sourceCounts,
   chaosText,
   farmButton,
   hm,
@@ -49,12 +50,12 @@ describe('советник: карточки', () => {
       }))
     ]
     // b — вход 0, a и c — по 2 (выше доход у a), d — нет цены входа
-    expect(buildRows(withCost, null, { sort: 'cost', easyOnly: false }).map((r) => r.strategy.id)).toEqual(['b', 'a', 'c', 'd'])
+    expect(buildRows(withCost, null, { sort: 'cost', easyOnly: false, src: 'all' }).map((r) => r.strategy.id)).toEqual(['b', 'a', 'c', 'd'])
   })
 
   it('сначала лёгкие; «только лёгкие» убирает сложность 2–3', () => {
-    expect(buildRows(views, null, { sort: 'easy', easyOnly: false }).map((r) => r.strategy.id)).toEqual(['b', 'c', 'a'])
-    expect(buildRows(views, null, { sort: 'profit', easyOnly: true }).map((r) => r.strategy.id)).toEqual(['b', 'c'])
+    expect(buildRows(views, null, { sort: 'easy', easyOnly: false, src: 'all' }).map((r) => r.strategy.id)).toEqual(['b', 'c', 'a'])
+    expect(buildRows(views, null, { sort: 'profit', easyOnly: true, src: 'all' }).map((r) => r.strategy.id)).toEqual(['b', 'c'])
   })
 
   it('время карты из трекера меняет доход в час; «Мой результат» по метке', () => {
@@ -115,5 +116,28 @@ describe('советник: числа и имена RU/EN', () => {
     expect(itemNs({ kind: 'unique', ref: 'Tabula Rasa' })).toBe('UNIQUE')
     expect(itemNs({ kind: 'gem', ref: 'Enlighten Support' })).toBe('GEM')
     expect(itemNs({ kind: 'map', ref: 'Strand Map' })).toBe('ITEM')
+  })
+})
+
+describe('советник: фильтр источника (S17)', () => {
+  const mixed: AdvisorStrategyView[] = (
+    [
+      ['o', 'official'],
+      ['c', 'community'],
+      ['m', 'mine'],
+      ['i', 'imported'],
+      ['w', 'wealthy']
+    ] as const
+  ).map(([id, kind]) => {
+    const s = strategy({ id, source: { kind, date: '2026-11', ...(kind === 'wealthy' ? { author: 'A', url: 'https://wealthyexile.com/s/1' } : {}) } })
+    return { strategy: s, estimate: estimateStrategy(s, idx) }
+  })
+  it('наши, сообщество, мои, импорт (с Wealthy Exile); числа для чипов', () => {
+    const ids = (src: typeof DEFAULT_ADVISOR_VIEW.src) => buildRows(mixed, null, { ...DEFAULT_ADVISOR_VIEW, src }).map((r) => r.strategy.id).sort()
+    expect(ids('all')).toEqual(['c', 'i', 'm', 'o', 'w'])
+    expect(ids('official')).toEqual(['o'])
+    expect(ids('mine')).toEqual(['m'])
+    expect(ids('imported')).toEqual(['i', 'w'])
+    expect(sourceCounts(mixed)).toEqual({ all: 5, official: 1, community: 1, mine: 1, imported: 2 })
   })
 })
