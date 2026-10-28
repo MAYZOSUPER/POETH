@@ -9,6 +9,7 @@ import type { DealsSettings } from './deals'
 import type { RegexSettings } from './regex'
 import type { ChatCommand, OverlaySettings } from './overlay'
 import type { StartupSettings, UpdatesSettings } from './updates'
+import type { PriceCheckSettings } from './trade'
 
 export type UiLang = 'ru' | 'en'
 
@@ -107,6 +108,8 @@ export interface Settings {
   ui: UiSettings
   /** игровой оверлей (S1): где открывать окно цены по Ctrl+D */
   overlay: OverlaySettings
+  /** окно цены (S4): «Написать» у лота — вставить whisper или сразу отправить */
+  priceCheck: PriceCheckSettings
   /** команды чата по хоткеям (F5 → /hideout и др.), см. src/shared/chatCommands.ts */
   chatCommands: ChatCommand[]
   /** запуск: вместе с Windows, свёрнутым; firstRunDone — мастер первого запуска пройден (S10a, S9) */

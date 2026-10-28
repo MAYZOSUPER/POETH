@@ -240,6 +240,20 @@ export function SettingsPanel() {
       )}
       {game === 'poe1' && <div className="hint small muted">{t('overlay.set.pricePosition.hint')}</div>}
 
+      {game === 'poe1' && (
+        <>
+          <label className="row-toggle">
+            <input
+              type="checkbox"
+              checked={settings?.priceCheck?.sendWhisper ?? false}
+              onChange={(e) => void patchSettings({ priceCheck: { sendWhisper: e.target.checked } })}
+            />
+            {t('pc1.set.sendWhisper')}
+          </label>
+          <div className="hint small muted">{t('pc1.set.sendWhisper.hint')}</div>
+        </>
+      )}
+
       {game === 'poe1' && <AccountPanel />}
 
       <div className="block">
