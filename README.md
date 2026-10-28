@@ -1,99 +1,100 @@
 # POE Trade Helper (POETH)
 
-Оверлей-помощник по трейду для **Path of Exile 1 и 2** с переключателем игры.
-Одинаково работает с **русским и английским** клиентом игры. Сделан в первую очередь
-для новичков: понятные подсказки, простой режим по умолчанию, никаких ботов и
-авто-покупок — решения и клики делает игрок.
+**[⬇ Скачать для Windows](https://github.com/MAYZOSUPER/POETH/releases/latest)** ·
+[Сайт](https://mayzosuper.github.io/POETH/) · [Boosty](https://boosty.to/twistedthreadstudios) · [English](#english)
 
-> Неофициальный фанатский инструмент. Не связан с Grinding Gear Games. См. [NOTICE.md](NOTICE.md).
+Помощник по трейду для **Path of Exile 1 и 2** поверх игры: наведите курсор на предмет, нажмите `Ctrl+D` —
+и увидите честную цену. Работает с **русским и английским** клиентом, бесплатно, без ботов и авто-покупок.
 
-## Возможности
+## Как установить
 
-**PoE 1 (v0.1.0, в работе — релиз к 11.11.2026):**
-- ⏳ Прайс-чек с модами по `Ctrl+D` (наводишь курсор на предмет — окно цены поверх игры)
-- ⏳ Трейд-окно в игре + избранные поиски (папки, импорт Better Trading)
-- ⏳ Live search с уведомлениями
-- ⏳ Regex-строки для поиска в игре (карты, торговец, своя библиотека)
-- ⏳ Менеджер входящих сделок + подсветка ячейки стэша
+1. Скачайте **`POETH-Setup-<версия>.exe`** со страницы [последнего релиза](https://github.com/MAYZOSUPER/POETH/releases/latest).
+2. Запустите его и нажмите «Далее»: POETH встанет в вашу папку пользователя, права администратора не нужны.
+3. Оставьте галочку «Запустить POETH» — мастер первого запуска поможет выбрать язык и игру.
+   В игре включите режим **«Окно»** или **«Окно без рамки»**.
 
-**PoE 2 (из проекта Exile Companion, работает):**
-- ✅ Трекер кампании: квесты по актам и интерлюдиям, награды, лейауты зон, подсказки по камням,
-  аскенданси, «Что дальше?», автоопределение зоны/уровня по `Client.txt`
-- ✅ Прайс-чек предмета (trade2 API): `Ctrl+C` в игре → хоткей прайс-чека
+> **Windows показал «Система Windows защитила ваш компьютер»?** У POETH пока нет цифровой подписи
+> (подпись в процессе). Нажмите **«Подробнее» → «Выполнить в любом случае»**.
 
-Игра выбирается переключателем **PoE 1 / PoE 2** в шапке окна (смена — с перезапуском).
+Без установки — **`POETH-Portable-<версия>.exe`**: запускается сразу, новую версию нужно скачать самому.
+Установленный POETH обновляется сам — предложит новую версию и перезапустится. Настройки и избранное
+сохраняются, даже если удалить программу.
 
-## Запуск (разработка)
+## Что умеет
 
-```bash
-npm install
-npm run dev      # запуск с hot-reload
-```
+**PoE 1:**
+- прайс-чек по `Ctrl+D` с «честной ценой» — без приманок и устаревших лотов;
+- трейд-окно прямо в игре и избранные поиски (папки, импорт из Better Trading);
+- live search — новые лоты приходят уведомлением поверх игры;
+- regex-строки для поиска в тайнике (карты, торговец, своя библиотека);
+- менеджер входящих сделок с подсветкой ячейки тайника и команды чата по клавишам (`F5` → `/hideout`).
 
-Если `npm install` не докачал бинарь Electron, запусти установку бинаря вручную:
+**PoE 2:** трекер кампании (квесты, награды, лейауты зон, «Что дальше?») и прайс-чек предмета.
 
-```bash
-node node_modules/electron/install.js
-```
+Игра выбирается переключателем **PoE 1 / PoE 2** в шапке окна.
 
-> ⚠️ Игра должна работать в режиме **«Окно»** или **«Окно без рамки»**.
-> В эксклюзивном полноэкранном режиме оверлей не отображается.
-
-## Проверки
-
-```bash
-npm run typecheck   # TypeScript (main/preload/shared + renderer)
-npm test            # юнит-тесты (vitest)
-npm run test:trade  # тесты ядра прайс-чека PoE2
-npm run build       # сборка main/preload/renderer
-```
-
-## Горячие клавиши (по умолчанию, переназначаются в настройках)
-
-| Действие | Клавиши |
+| Действие (переназначается в настройках) | Клавиши |
 |---|---|
 | Прайс-чек предмета | `Ctrl+D` |
 | Активировать оверлей | `Shift+Space` |
-| Показать / скрыть компаньон | `Ctrl+Shift+O` |
-| Блокировка кликов (всё уходит в игру) | `Ctrl+Shift+L` |
+| Показать / скрыть окно POETH | `Ctrl+Shift+O` |
 | Трейд-окно | `Ctrl+Shift+T` |
-| Кампания PoE2: пред. / след. зона | `Ctrl+Shift+[` / `]` |
+| Сделка: пригласить / обменяться / убрать | `Alt+1` / `Alt+2` / `Alt+3` |
+| В убежище | `F5` |
 
-## Сборка инсталлятора
+POETH бесплатный — без платных функций и рекламы. Если он помогает вам в игре, разработку можно поддержать
+на [Boosty](https://boosty.to/twistedthreadstudios). Подписка не открывает функций — всё доступно каждому.
 
-```bash
-npm run package     # NSIS-инсталлятор в dist-release/
-```
+> POE Trade Helper — неофициальный фанатский инструмент. POETH не связан с Grinding Gear Games и не одобрен
+> ими. Path of Exile, Path of Exile 2 и все ассеты © Grinding Gear Games. Одно действие игрока — одно
+> действие программы: никаких ботов, авто-покупок и авто-сообщений.
 
-## Поддержать проект
+---
 
-POETH бесплатный — без платных функций и рекламы. Если он помогает вам в игре, разработку можно
-поддержать на **Boosty**: https://boosty.to/twistedthreadstudios (ссылка есть в меню трея, в настройках,
-в «О программе» и в конце мастера первого запуска). Подписка не открывает функций — всё доступно каждому.
+## English
 
-### Благодарности (`resources/supporters.json`)
+**[⬇ Download for Windows](https://github.com/MAYZOSUPER/POETH/releases/latest)** ·
+[Website](https://mayzosuper.github.io/POETH/) · [Boosty](https://boosty.to/twistedthreadstudios)
 
-Имена подписчиков уровня «Печать» показываются в «О программе» → «Благодарности». Список обновляется вручную
-к каждому релизу, приложение его не скачивает. Формат — массив (в JSON нет комментариев, поэтому описание здесь):
+A trade helper for **Path of Exile 1 and 2** on top of the game: hover an item, press `Ctrl+D` and see a fair
+price. Works with the **English and Russian** game client — free, no bots, no auto-buying.
 
-```json
-[
-  { "name": "Ник подписчика", "since": "10.2026" },
-  { "name": "Другой ник" }
-]
-```
+### How to install
 
-`name` — до 40 символов (длиннее обрезается), `since` — необязательно, «ММ.ГГГГ», видно в подсказке.
-Пустой массив `[]` — в приложении спокойный текст «Пока здесь пусто…».
+1. Download **`POETH-Setup-<version>.exe`** from the [latest release](https://github.com/MAYZOSUPER/POETH/releases/latest).
+2. Run it and click “Next”: POETH installs into your user folder, no administrator rights needed.
+3. Keep “Run POETH” checked — the first-run wizard helps you pick the language and the game.
+   Set the game to **Windowed** or **Windowed Fullscreen**.
 
-## Документация
+> **Windows showed “Windows protected your PC”?** POETH isn't code-signed yet (signing is in progress).
+> Click **“More info” → “Run anyway”**.
 
-- [MEMORY.md](MEMORY.md) — handoff: что это, статус, как запускать, подводные камни, журнал
-- [docs/PLAN-POETH.md](docs/PLAN-POETH.md) — утверждённый план
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — окна, безопасность входа, сеть, данные, структура
-- [docs/stages.md](docs/stages.md) — этапы S0–S10 и «свои файлы» каждого
-- [docs/poe1-trade-api.md](docs/poe1-trade-api.md), [docs/regex.md](docs/regex.md)
-- [docs/plan-companion.md](docs/plan-companion.md) — справка по trade2 (PoE2)
+No install: **`POETH-Portable-<version>.exe`** runs right away; download new versions yourself.
+The installed POETH updates itself — it offers the new version and restarts. Settings and favorites are kept,
+even if you uninstall it.
 
-Данные и настройки хранятся в `%APPDATA%/POETH/` (при первом запуске копируются из
-`Exile Companion` / `Act Compass`).
+### Features
+
+**PoE 1:** `Ctrl+D` price check with a “fair price” (no bait or stale listings) · in-game trade window with
+favorite searches (folders, Better Trading import) · live search with notifications over the game · regex
+strings for stash search (maps, vendor, your own library) · incoming trade manager with stash cell highlight
+and chat commands on hotkeys (`F5` → `/hideout`).
+
+**PoE 2:** campaign tracker (quests, rewards, zone layouts, “What's next?”) and item price check.
+
+Hotkeys: price check `Ctrl+D`, overlay `Shift+Space`, POETH window `Ctrl+Shift+O`, trade window
+`Ctrl+Shift+T`, trade invite / trade / dismiss `Alt+1` / `Alt+2` / `Alt+3`, hideout `F5` — all can be changed
+in settings.
+
+POETH is free — no paid features, no ads. If it helps you, you can support development on
+[Boosty](https://boosty.to/twistedthreadstudios); a subscription unlocks nothing — everything is for everyone.
+
+> POE Trade Helper is an unofficial fan-made tool. This product isn't affiliated with or endorsed by Grinding
+> Gear Games in any way. Path of Exile, Path of Exile 2 and all assets © Grinding Gear Games. One player
+> action — one app action: no bots, auto-buying or auto-messages.
+
+---
+
+**Для разработчиков / For developers:** [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) ·
+[NOTICE.md](NOTICE.md) (сторонний код и данные / third-party code & data) · [MIT License](LICENSE) ·
+© POETH contributors
