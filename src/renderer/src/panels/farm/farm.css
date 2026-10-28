@@ -213,8 +213,8 @@
   display: grid;
   gap: var(--sp-4);
 }
-.fm-all > summary {
-  cursor: pointer;
+.fm-all__btn {
+  justify-self: start;
 }
 .fm-all__bar {
   display: flex;
