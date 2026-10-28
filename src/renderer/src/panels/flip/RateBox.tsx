@@ -169,7 +169,7 @@ export function RateBox({ s, lang, expert }: { s: FlipState; lang: string; exper
         </div>
         {!expert && (
           <span className="ui-delta fx-rate__delta">
-            <FIco name={v.delta >= 0 ? 'arrow-up' : 'arrow-down'} />
+            {deltaText !== f1(0) && <FIco name={v.delta >= 0 ? 'arrow-up' : 'arrow-down'} />}
             {deltaWords}
           </span>
         )}

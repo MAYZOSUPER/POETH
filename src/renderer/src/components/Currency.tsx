@@ -62,7 +62,10 @@ export function useCurrencyNames(lang: UiLang) {
 }
 
 const COIN_MOD: Record<string, string> = { divine: 'div', chaos: 'chaos', exalted: 'ex', gold: 'gold' }
-const broken = new Set<string>()
+/** Иконки, которые не загрузились (нет сети): кружок, повтор не раньше чем через 10 минут (оверлей живёт всю сессию). */
+const brokenAt = new Map<string, number>()
+const RETRY_MS = 10 * 60_000
+const isBroken = (url: string): boolean => Date.now() - (brokenAt.get(url) ?? -Infinity) < RETRY_MS
 
 export function iconSrc(url: string): string {
   return `poeth://icon/?u=${encodeURIComponent(url)}`
@@ -71,8 +74,8 @@ export function iconSrc(url: string): string {
 /** Иконка валюты по tradeTag; без иконки/сети — градиентный кружок ui-coin (как до S18). */
 export function CoinIcon({ tag, lang }: { tag: string; lang: UiLang }) {
   const icon = useCurrencyTable(lang)?.get(tag)?.icon
-  const [failed, setFailed] = useState<string | null>(null)
-  if (!icon || failed === icon || broken.has(icon)) {
+  const [, setFailed] = useState(0)
+  if (!icon || isBroken(icon)) {
     const mod = COIN_MOD[tag]
     return <i className={mod ? `ui-coin ui-coin--${mod}` : 'ui-coin'} aria-hidden="true" />
   }
@@ -84,8 +87,8 @@ export function CoinIcon({ tag, lang }: { tag: string; lang: UiLang }) {
       aria-hidden="true"
       draggable={false}
       onError={() => {
-        broken.add(icon)
-        setFailed(icon)
+        brokenAt.set(icon, Date.now())
+        setFailed((n) => n + 1)
       }}
     />
   )
