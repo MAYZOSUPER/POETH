@@ -23,9 +23,11 @@ if (process.env.POETH_USER_DATA_DIR) app.setPath('userData', process.env.POETH_U
 // disable-blink-features=AutomationControlled — до ready и до создания окон.
 initNetIdentity()
 
-// Уведомления Windows (live S6, тост запуска S10a) от имени POETH — как у ярлыка NSIS,
-// а не electron.app.Electron; до ready, чтобы первое уведомление уже шло с этим AUMID.
-if (process.platform === 'win32') app.setAppUserModelId('com.poeth.app')
+// Уведомления Windows (live S6, тост запуска S10a) от имени POETH, а не electron.app.Electron; до ready,
+// чтобы первое уведомление уже шло с этим AUMID. Установленная версия: ярлык NSIS «POE Trade Helper» несёт
+// AUMID = appId — в шапке тоста его имя и значок. Dev (electron.exe): свой AUMID, чтобы тосты не смешивались
+// с установленной копией и Windows группировал их отдельно.
+if (process.platform === 'win32') app.setAppUserModelId(app.isPackaged ? 'com.poeth.app' : 'com.poeth.app.dev')
 
 // Must happen before `ready` (scheme) and before the single-instance lock
 // (userData copy from the old product names, before Chromium writes there).

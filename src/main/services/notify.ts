@@ -4,6 +4,7 @@ import { IPC } from '@shared/ipc'
 import { getSettings } from './settingsStore'
 import { getGameFocus } from '../focus/gameFocus'
 import { getOverlayStatus, sendToOverlay } from '../windows/gameOverlay'
+import { notificationIcon } from '../appIcon'
 
 // Короткие сообщения игроку из main (S10a): «POETH запущен…», «Данные обновлены», результат
 // ручной проверки обновлений. Если игра в фокусе и оверлей прицеплен — тост поверх игры,
@@ -53,5 +54,5 @@ export async function notifyUser(
     return
   }
   if (!Notification.isSupported()) return
-  new Notification({ title: 'POE Trade Helper', body: text, silent: true }).show()
+  new Notification({ title: 'POE Trade Helper', body: text, icon: notificationIcon(), silent: true }).show()
 }

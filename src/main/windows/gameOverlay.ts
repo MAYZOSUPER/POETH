@@ -8,6 +8,7 @@ import { loadRendererPage } from './rendererPage'
 import { getGameFocus, isOverlayActive, onGameFocusChange, setGameFocus } from '../focus/gameFocus'
 import { getSettings } from '../services/settingsStore'
 import { isDevServer } from '../gameContext'
+import { windowIcon } from '../appIcon'
 
 // Игровой оверлей (S1): прозрачное окно поверх клиентской области игры.
 // electron-overlay-window (OverlayController) следит за окном с заголовком
@@ -331,6 +332,7 @@ export function initGameOverlay(def: GameDef): BrowserWindow {
   win = new BrowserWindow({
     ...(lib?.OVERLAY_WINDOW_OPTS ?? FALLBACK_WINDOW_OPTS),
     title: 'POETH overlay',
+    icon: windowIcon(),
     width: 800,
     height: 600,
     backgroundColor: '#00000000',
