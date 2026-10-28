@@ -81,7 +81,8 @@ describe('советник: валидатор стратегии', () => {
 
   it('источник: вид из списка, ссылка только https, у wealthy — сайт WE, автор и ссылка обязательны', () => {
     const src = (source: unknown) => strategy({ source: source as never })
-    expect(err(src({ kind: 'mine', date: '2026-10' }))).toContain('source.kind')
+    expect(err(src({ kind: 'admin', date: '2026-10' }))).toContain('source.kind')
+    expect(err(src({ kind: 'mine', date: '2026-10' }))).toBe('ok') // своя из редактора (S17)
     expect(err(src({ kind: 'imported', date: '2026-10', url: 'http://example.com' }))).toContain('только https')
     expect(err(src({ kind: 'imported', date: '2026-10', url: 'javascript:alert(1)' }))).toContain('только https')
     expect(err(src({ kind: 'imported', date: '2026-10', url: 'https://user:pw@example.com' }))).toContain('только https')
@@ -90,6 +91,14 @@ describe('советник: валидатор стратегии', () => {
     expect(err(src({ kind: 'wealthy', date: '2026-10', author: 'A', url: 'https://wealthyexile.com/strategies/1/x' }))).toBe('ok')
     expect(err(src({ kind: 'community', date: 'вчера' }))).toContain('source.date')
     expect(err(src({ kind: 'community', date: '2026-10', author: 'x'.repeat(LIMITS.author + 1) }))).toContain('source.author')
+  })
+
+  it('ссылка на дерево атласа: только https без логина, любой сайт (открывается по клику)', () => {
+    expect(err(strategy({ atlasTree: 'https://poeplanner.com/atlas/AAAA' }))).toBe('ok')
+    expect(err(strategy({ atlasTree: 'pathofexile.com/fullscreen-atlas-skill-tree/3.30.0/AAAA' }))).toContain('atlasTree')
+    expect(err(strategy({ atlasTree: 'http://www.pathofexile.com/x' }))).toContain('atlasTree: только https')
+    expect(err(strategy({ atlasTree: 'https://a:b@example.com/' }))).toContain('только https')
+    expect(err(strategy({ atlasTree: 'https://example.com/' + 'a'.repeat(LIMITS.url) }))).toContain('длиннее')
   })
 
   it('замер: только числа, дата и версия; аккаунт и персонаж — неизвестные поля', () => {

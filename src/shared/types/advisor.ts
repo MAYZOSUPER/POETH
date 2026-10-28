@@ -64,9 +64,10 @@ export interface AdvisorBuildNeeds {
 
 /**
  * Откуда стратегия: official — наши данные; community — каталог POETH (S17); imported — игрок вставил код
- * сам; wealthy — Wealthy Exile (только если автор сайта разрешит, см. docs/advisor.md).
+ * сам; mine — игрок создал в редакторе (S17); wealthy — Wealthy Exile (только если автор сайта разрешит,
+ * см. docs/advisor.md). В коде POETH1 вид источника не доверенный: импорт всегда ставит imported.
  */
-export type AdvisorSourceKind = 'official' | 'community' | 'imported' | 'wealthy'
+export type AdvisorSourceKind = 'official' | 'community' | 'imported' | 'mine' | 'wealthy'
 
 export interface AdvisorSource {
   kind: AdvisorSourceKind
@@ -115,6 +116,8 @@ export interface AdvisorStrategy {
   measured?: AdvisorMeasured
   /** что взять на атласе */
   atlas: AdvisorText[]
+  /** ссылка на дерево атласа (только https; открывается в браузере только по клику игрока) */
+  atlasTree?: string
   /** что делать в карте, по шагам */
   steps: AdvisorText[]
   warnings: AdvisorText[]
@@ -187,6 +190,10 @@ export interface AdvisorMapEstimate {
 export interface AdvisorStrategyView {
   strategy: AdvisorStrategy
   estimate: AdvisorMapEstimate
+  /** каталог сообщества: когда проверена (YYYY-MM-DD) */
+  checked?: string
+  /** свои (mine / imported): когда добавлена (YYYY-MM-DD) */
+  addedAt?: string
 }
 
 export interface AdvisorState {
@@ -198,9 +205,12 @@ export interface AdvisorState {
   loading: boolean
   /** версия игры, дата и пометка «черновик» данных; null — файл не прочитан */
   data: Pick<AdvisorData, 'patch' | 'updatedAt' | 'draft' | 'defaults' | 'glossary'> | null
+  /** наши, каталог сообщества и свои (mine / imported) */
   views: AdvisorStrategyView[]
   /** стратегий отброшено проверкой данных */
   invalid: number
+  /** ник автора для «Поделиться» (запоминается); '' — не указан */
+  nick: string
   /** откуда цены и когда (тот же индекс, что у учёта богатства) */
   prices: WealthPriceInfo | null
   /** data — файл стратегий не прочитан; prices — цены не загрузились (берём из кэша) */
@@ -211,6 +221,64 @@ export interface AdvisorState {
 
 /** «Начать сессию фарма с этой стратегией»: started — новая сессия, tagged — метка на идущую. */
 export type AdvisorFarmResult = 'started' | 'tagged' | 'unknown'
+
+// ---------------------------------------------------------------------------
+// Свои стратегии, код POETH1, импорт (S17)
+// ---------------------------------------------------------------------------
+
+/**
+ * Почему код не прочитан: empty — пусто; notcode — не код POETH; newer — код или схема новее приложения;
+ * broken — код обрезан или повреждён; toolarge — слишком большой (до или после распаковки);
+ * invalid — данные не прошли проверку (detail — что именно, по-русски).
+ */
+export type AdvisorCodeError = 'empty' | 'notcode' | 'newer' | 'broken' | 'toolarge' | 'invalid'
+
+/** Замечания к импорту (импорт возможен): нет цены у предмета, текст на одном языке, сторонняя ссылка, другая версия игры. */
+export type AdvisorImportNote =
+  | { kind: 'noPrice'; ref: string }
+  | { kind: 'lang'; lang: 'ru' | 'en' }
+  | { kind: 'link'; host: string }
+  | { kind: 'outdated'; patch: string }
+
+/** new — такой ещё нет; same — уже есть точно такая; conflict — есть с тем же id, но другая. */
+export type AdvisorImportMatch = 'new' | 'same' | 'conflict'
+
+export interface AdvisorImportExisting {
+  id: string
+  kind: AdvisorSourceKind
+  name: AdvisorText
+}
+
+export type AdvisorImportPreview =
+  | {
+      ok: true
+      /** нормализованный код (без ссылки и пробелов) */
+      code: string
+      /** как будет в списке: source.kind = imported, оценка по живым ценам */
+      view: AdvisorStrategyView
+      match: AdvisorImportMatch
+      existing: AdvisorImportExisting | null
+      notes: AdvisorImportNote[]
+    }
+  | { ok: false; error: AdvisorCodeError; detail?: string }
+
+/** add — новая; replace — заменить свою с тем же id; copy — добавить копией с новым id. */
+export type AdvisorImportMode = 'add' | 'replace' | 'copy'
+
+export type AdvisorImportResult =
+  | { ok: true; id: string }
+  | { ok: false; error: AdvisorCodeError | 'exists' | 'disabled' }
+
+/** Код и ссылка своей или любой стратегии из списка. */
+export interface AdvisorShareInfo {
+  code: string
+  link: string
+}
+
+/** «Отправить в каталог»: opened — форма открыта с кодом; copied — код длинный, форма без кода, код в буфере. */
+export type AdvisorSubmitResult = 'opened' | 'copied' | 'error'
+
+export type AdvisorSaveResult = { ok: true; id: string } | { ok: false; error: string }
 
 // ---------------------------------------------------------------------------
 // Время и свой результат (renderer, по трекеру карт)
