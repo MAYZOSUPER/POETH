@@ -24,7 +24,7 @@ import type {
   WealthSummary,
   WealthTab
 } from '@shared/types/wealth'
-import { farmView, netWorthAt, startSession, stopSession } from '@shared/wealth/farm'
+import { chartPoints, farmView, netWorthAt, startSession, stopSession } from '@shared/wealth/farm'
 import { buildSnapshot, diffSnapshots, type TabItems } from '@shared/wealth/snapshot'
 import {
   DEFAULT_MAX_TABS,
@@ -200,7 +200,7 @@ export class WealthManager {
       },
       latest: league ? (this.last.get(league) ?? null) : null,
       detailed: [...this.detailed],
-      history: points,
+      history: chartPoints(points, this.now()),
       farm: farmView(this.session(), points),
       prices: league ? this.deps.prices.info(league, opts) : { exchangeItems: 0, poeWatchItems: 0 }
     }
