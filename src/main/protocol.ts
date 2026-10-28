@@ -3,6 +3,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { resolveLayoutFile, resolveBrandFile, contentTypeFor } from './services/layoutResolver'
 import { resourcesDir } from './services/questDataset'
+import { iconResponse } from './services/iconCache'
 
 // Privileged scheme `poeth://` for serving local files to the renderer (works in
 // both the dev http origin and the packaged file origin, unlike raw file:// URLs
@@ -11,6 +12,7 @@ import { resourcesDir } from './services/questDataset'
 //   poeth://img/<areaId>/<file>         -> PoE2 layout image (bundled/cached/remote)
 //   poeth://data/<game>/<lang>/<file>   -> userData/data/... (updates without reinstall),
 //                                          then bundled resources/data/...
+//   poeth://icon/?u=<https://web.poecdn.com/…> -> userData/icons (S18, services/iconCache.ts)
 export const SCHEME = 'poeth'
 
 /** Must run before app `ready`. */
@@ -95,6 +97,8 @@ export function handlePoethProtocol(): void {
         }
         return fileResponse(await resolveLayoutFile(areaId, file), file)
       }
+
+      if (url.host === 'icon') return iconResponse(url.searchParams.get('u'))
 
       if (url.host === 'data') {
         const [game, lang, file] = segments
