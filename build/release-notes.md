@@ -15,6 +15,6 @@
 - First release for PoE 1: Ctrl+D price check with a “fair price”, trade window with favorites, live search, regex strings, trade manager, chat commands on hotkeys.
 - PoE 2: campaign tracker and price check — as in Exile Companion.
 
-**How to install:** download `POETH-Setup-0.1.0.exe` below and run it — [step by step](https://github.com/MAYZOSUPER/POETH#how-to-install). No install — `POETH-Portable-0.1.0.exe` (updated manually).
+**How to install:** download `POETH-Setup-0.1.0.exe` below and run it — [step by step](https://github.com/MAYZOSUPER/POETH/blob/main/README.en.md#how-to-install). No install — `POETH-Portable-0.1.0.exe` (updated manually).
 
 POETH is a fan-made tool, not affiliated with or endorsed by Grinding Gear Games.

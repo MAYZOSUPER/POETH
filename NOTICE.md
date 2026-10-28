@@ -25,6 +25,9 @@ whose full history is kept in this repository.
   our own regex data.
 - **[Better Trading](https://github.com/exile-center/better-trading)** — MIT License.
   Only the bookmark import/export **format** (`"3:"+base64(JSON)`) is supported; no code copied.
+- **[ForbiddenTroveBlacklist](https://github.com/The-Forbidden-Trove/ForbiddenTroveBlacklist)** (PoE Hub) —
+  MIT License. The trade blacklist (`blacklist.csv`) is downloaded at runtime for the trade manager
+  and cached locally; it is not redistributed with POETH.
 - **poe.re is NOT used.** It has no license, so none of its code or data is copied;
   POETH's regex engine is implemented independently.
 - **Native modules** (added in later stages): `electron-overlay-window`, `uiohook-napi`
