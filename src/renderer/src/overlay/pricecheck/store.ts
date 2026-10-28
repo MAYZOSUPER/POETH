@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { CapturedItem, NetError } from '@shared/types'
+import type { CapturedItem, CurrencyRate, NetError } from '@shared/types'
 import { getDefaultPoe1DataStore, type Poe1Data, type Poe1Lang } from '@shared/poe1/data'
 import { parseClipboard, type ParseErrorCode, type ParsedItem } from '@shared/poe1/parser'
 import {
@@ -69,6 +69,8 @@ interface PcState {
   dirty: boolean
   /** счётчик правок мутабельных фильтров (для перерисовки) */
   rev: number
+  /** курс chaos ↔ divine лиги поиска (фид обмена GGG); null — нет данных, плашка скрыта */
+  rate: CurrencyRate | null
 
   open: (captured: CapturedItem) => Promise<void>
   close: () => void
@@ -115,6 +117,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
   searchStatRange: 10,
   dirty: false,
   rev: 0,
+  rate: null,
 
   open: async (captured) => {
     const my = ++session
@@ -155,8 +158,11 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
       simple: settings?.ui.simpleMode ?? true,
       siteHost: settings?.siteHost ?? 'www.pathofexile.com',
       presets: pc.presets,
+      rate: get().rate?.league === league ? get().rate : null,
       activePreset: pc.active
     })
+
+    loadRate(league, get, set)
 
     // моды, которых нет в данных APT (новый патч) → статы сайта; фильтры добавляются выключенными,
     // поэтому на первый поиск не влияют и ждать их не нужно
@@ -259,7 +265,8 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
   },
 
   setLeague: (league) => {
-    set({ league })
+    set({ league, rate: null })
+    loadRate(league, get, set)
     void get().search()
   },
 
@@ -293,6 +300,16 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
     void get().search()
   }
 }))
+
+/** Курс лиги — фоном (первый раз main может докачивать часы фида); устаревший ответ не применяем. */
+function loadRate(league: string, get: () => PcState, set: (p: Partial<PcState>) => void): void {
+  void window.overlayApi.trade
+    .currencyRate(league)
+    .then((rate) => {
+      if (get().league === league) set({ rate })
+    })
+    .catch(() => undefined)
+}
 
 function round(v: number, dp: boolean): number {
   return dp ? Math.round(v * 100) / 100 : Math.round(v)

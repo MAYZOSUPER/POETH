@@ -20,6 +20,7 @@ import { useOverlayStore } from '../../store/useOverlayStore'
 import { useOverlayT } from '../useOverlayT'
 import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
 import { ageKey, coinClass, currencyLabel, fmtNum, statParts, tierWordKey } from './format'
+import { convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
 
 // Окно цены PoE1 по утверждённому макету (docs/design-system.md, классы ui-*): шапка с лигой, предмет,
 // свойства и псевдо-статы с галочками, фильтры предмета, сводка «честной цены», предложения, кнопки.
@@ -71,12 +72,72 @@ function useNow(active: boolean): number {
   return now
 }
 
+/** «34 c ≈ 0.10 div» / «1.5 div ≈ 507 c» — подсказка к цене по курсу фида обмена. */
+function conversionTitle(price: Poe1Price, rate: number | undefined, lang: UiLang, t: T): string | undefined {
+  const other = convertPrice(price, rate)
+  if (!other) return undefined
+  return price.currency === 'chaos'
+    ? t('pc1.conv.toDiv', { c: fmtNum(price.amount, lang), d: fmtDiv(other.amount, lang) })
+    : t('pc1.conv.toChaos', { d: fmtNum(price.amount, lang), c: fmtNum(other.amount, lang) })
+}
+
+function fmtDiv(v: number, lang: UiLang): string {
+  const s = v < 10 ? v.toFixed(2) : String(v)
+  return lang === 'ru' ? s.replace('.', ',') : s
+}
+
 function Price({ price, lang }: { price: Poe1Price; lang: UiLang }) {
+  const t = useOverlayT()
+  const rate = usePriceCheckStore((s) => s.rate?.chaosPerDivine)
   return (
-    <>
+    <span className="pc-price" title={conversionTitle(price, rate, lang, t)}>
       <i className={coinClass(price.currency)} />
       {fmtNum(price.amount, lang)} {currencyLabel(price.currency)}
-    </>
+    </span>
+  )
+}
+
+/** Плашка курса «1 div = N c»; при наведении — дроби 0.1…1 div. Без курса не показывается. */
+function RateBadge({ lang, t }: { lang: UiLang; t: T }) {
+  const rate = usePriceCheckStore((s) => s.rate)
+  if (!rate) return null
+  const rows = rateFractions(rate.chaosPerDivine)
+  return (
+    <span className="pc-rate" tabIndex={0} aria-label={t('pc1.rate', { n: fmtNum(roundChaos(rate.chaosPerDivine), lang) })}>
+      <i className="ui-coin ui-coin--div" />
+      {t('pc1.rate', { n: fmtNum(roundChaos(rate.chaosPerDivine), lang) })}
+      <span className="ui-tip pc-rate__tip" role="tooltip">
+        <b>{t('pc1.rate.title')}</b>
+        <span className="pc-rate__rows">
+          {rows.map((r) => (
+            <span key={r.div}>
+              {fmtNum(r.div, lang)} div = {fmtNum(r.chaos, lang)} c
+            </span>
+          ))}
+        </span>
+        <span className="pc-rate__src">{t('pc1.rate.src', { league: rate.league })}</span>
+      </span>
+    </span>
+  )
+}
+
+/** Кнопка «Искать заново»: фильтры изменились — видна внизу окна всегда (липкая), плюс Enter. */
+function SearchAgainBar({ t }: { t: T }) {
+  const dirty = usePriceCheckStore((s) => s.dirty)
+  const phase = usePriceCheckStore((s) => s.phase)
+  const search = usePriceCheckStore((s) => s.search)
+  if (!dirty || phase === 'loading' || phase === 'parsing') return null
+  return (
+    <div className="pc-again">
+      <span className="pc-again__note">{t('pc1.search.dirty')}</span>
+      <button type="button" className="ui-btn ui-btn--primary" onClick={() => void search()}>
+        <Icon name="search" />
+        {t('pc1.search.again')}
+        <span className="ui-kbd">
+          <kbd>Enter</kbd>
+        </span>
+      </button>
+    </div>
   )
 }
 
@@ -666,20 +727,10 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
   const parseError = usePriceCheckStore((s) => s.parseError)
   const retryAt = usePriceCheckStore((s) => s.retryAt)
   const simple = usePriceCheckStore((s) => s.simple)
-  const dirty = usePriceCheckStore((s) => s.dirty)
   const search = usePriceCheckStore((s) => s.search)
   const loosen = usePriceCheckStore((s) => s.loosen)
   const preset = usePriceCheckStore((s) => activePresetOf(s))
   const now = useNow(phase === 'limit')
-
-  const again = dirty && phase !== 'loading' && phase !== 'parsing' && (
-    <div className="pc-more pc-more--again">
-      <button type="button" className="ui-btn ui-btn--primary ui-btn--sm" onClick={() => void search()}>
-        <Icon name="search" />
-        {t('pc1.search.again')}
-      </button>
-    </div>
-  )
 
   if (phase === 'parsing' || phase === 'loading') {
     return (
@@ -773,7 +824,6 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
     const timeless = preset?.timeless?.mode === 'exact'
     return (
       <>
-        {again}
         <div className="ui-empty">
           <span className="ui-empty__title">{t('pc1.empty.title')}</span>
           <span>{t(timeless ? 'pc1.timeless.noExact' : 'pc1.empty.text')}</span>
@@ -789,7 +839,6 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
   if (phase === 'result' && result) {
     return (
       <>
-        {again}
         {result.kind === 'trade' ? (
           <TradeResult result={result} simple={simple} lang={lang} t={t} />
         ) : (
@@ -825,10 +874,24 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
   const preset = presets.find((p) => p.id === activeId) ?? presets[0]
   const expert = !simple
 
+  // Enter — искать заново с изменёнными фильтрами (клавиши доходят до окна, когда оверлей активен)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key !== 'Enter' || e.repeat || e.isComposing) return
+      const st = usePriceCheckStore.getState()
+      if (!st.item || st.phase === 'loading' || st.phase === 'parsing') return
+      e.preventDefault()
+      void st.search()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   return (
     <section className={`ui-panel pc${expert ? ' is-expert' : ''}`}>
       <header className="ui-panel__head">
         <span className="ui-panel__title">{t('pc1.title')}</span>
+        <RateBadge lang={lang} t={t} />
         {leagues.length > 0 && (
           <select
             className="ui-select pc-league"
@@ -878,6 +941,12 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
             </div>
           </div>
         )}
+        {simple && preset?.defaultsHint && (
+          <div className="ui-hint pc-defaults">
+            <Icon name="info" />
+            <span>{t(`pc1.defaults.${preset.defaultsHint}`)}</span>
+          </div>
+        )}
         {item && preset && (
           <>
             <StatsBlocks preset={preset} item={item} expert={expert} lang={lang} t={t} />
@@ -885,6 +954,7 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
           </>
         )}
         <Results t={t} lang={lang} />
+        <SearchAgainBar t={t} />
       </div>
       <PriceActions result={result} title={searchTitle(captured, item)} t={t} />
     </section>
