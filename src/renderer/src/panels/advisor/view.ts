@@ -6,7 +6,6 @@ import type {
   AdvisorMapTime,
   AdvisorMyResult,
   AdvisorStrategyView,
-  AdvisorText,
   WealthItemNs
 } from '@shared/types'
 import type { FarmState } from '@shared/types/farm'
@@ -79,7 +78,8 @@ export function itemNs(ref: AdvisorItemRef): WealthItemNs {
   }
 }
 
-export const tx = (t: AdvisorText, lang: string): string => (lang === 'ru' ? t.ru : t.en)
+/** Текст стратегии на языке интерфейса. */
+export { tx } from '@shared/advisor/data'
 
 const locale = (lang: string): string => (lang === 'ru' ? 'ru-RU' : 'en-US')
 
