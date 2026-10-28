@@ -1,0 +1,42 @@
+2026/10/28 21:00:00 74519921 1186a8a3 [DEBUG Client 19012] Generating level 60 area "HideoutSpace" with seed 1
+2026/10/28 21:00:00 74519921 e001b752 [INFO Client 19012] [SCENE] Set Source [(null)]
+2026/10/28 21:00:00 74519921 e001b752 [INFO Client 19012] [SCENE] Set Source [Celestial Nebula Hideout]
+2026/10/28 21:00:01 74519922 cffb0658 [INFO Client 19012] : You have entered Celestial Nebula Hideout.
+2026/10/28 21:01:00 74519981 1186a8a3 [DEBUG Client 19012] Generating level 83 area "MapWorldsStrand" with seed 111
+2026/10/28 21:01:00 74519981 e001b752 [INFO Client 19012] [SCENE] Set Source [(null)]
+2026/10/28 21:01:00 74519981 e001b752 [INFO Client 19012] [SCENE] Set Source [Strand]
+2026/10/28 21:01:01 74519982 cffb0658 [INFO Client 19012] : You have entered Strand.
+2026/10/28 21:02:00 74520041 cffb0658 [INFO Client 19012] @From Buyer: Hi, I would like to buy your Tabula Rasa listed for 5 chaos in Standard
+2026/10/28 21:03:00 74520101 cffb0658 [INFO Client 19012] : Hero has been slain.
+2026/10/28 21:03:05 74520106 1186a8a3 [DEBUG Client 19012] Generating level 60 area "HideoutSpace" with seed 1
+2026/10/28 21:03:06 74520107 cffb0658 [INFO Client 19012] : You have entered Celestial Nebula Hideout.
+2026/10/28 21:03:30 74520131 1186a8a3 [DEBUG Client 19012] Generating level 83 area "MapWorldsStrand" with seed 111
+2026/10/28 21:03:31 74520132 cffb0658 [INFO Client 19012] : You have entered Strand.
+2026/10/28 21:05:00 74520221 1186a8a3 [DEBUG Client 19012] Generating level 83 area "SideArea_TestVault" with seed 444
+2026/10/28 21:05:01 74520222 cffb0658 [INFO Client 19012] : You have entered Test Vault.
+2026/10/28 21:06:00 74520281 1186a8a3 [DEBUG Client 19012] Generating level 83 area "MapWorldsStrand" with seed 111
+2026/10/28 21:06:01 74520282 cffb0658 [INFO Client 19012] : You have entered Strand.
+2026/10/28 21:07:00 74520341 1186a8a3 [DEBUG Client 19012] Generating level 60 area "HideoutSpace" with seed 1
+2026/10/28 21:07:01 74520342 cffb0658 [INFO Client 19012] : You have entered Celestial Nebula Hideout.
+2026/10/28 21:07:30 74520371 1186a8a3 [DEBUG Client 19012] Generating level 83 area "MapWorldsStrand" with seed 111
+2026/10/28 21:07:31 74520372 cffb0658 [INFO Client 19012] : You have entered Strand.
+2026/10/28 21:09:00 74520461 1186a8a3 [DEBUG Client 19012] Generating level 60 area "HideoutSpace" with seed 1
+2026/10/28 21:09:01 74520462 cffb0658 [INFO Client 19012] : You have entered Celestial Nebula Hideout.
+2026/10/28 21:10:00 74520521 1186a8a3 [DEBUG Client 19012] Generating level 82 area "MapWorldsStrand" with seed 222
+2026/10/28 21:10:00 74520521 e001b752 [INFO Client 19012] [SCENE] Set Source [Strand]
+2026/10/28 21:10:01 74520522 cffb0658 [INFO Client 19012] : You have entered Strand.
+2026/10/28 21:12:00 74520641 cffb0658 [INFO Client 19012] : Ally has joined the area.
+2026/10/28 21:13:00 74520701 cffb0658 [INFO Client 19012] : Ally has been slain.
+2026/10/28 21:15:00 74520821 cffb0658 [INFO Client 19012] : Hero has been slain.
+2026/10/28 21:15:10 74520831 1186a8a3 [DEBUG Client 19012] Generating level 69 area "2_11_endgame_town" with seed 1
+2026/10/28 21:15:11 74520832 cffb0658 [INFO Client 19012] : You have entered Karui Shores.
+2026/10/28 21:16:00 74520881 1186a8a3 [DEBUG Client 19012] Generating level 82 area "MapWorldsStrand" with seed 222
+2026/10/28 21:16:01 74520882 cffb0658 [INFO Client 19012] : You have entered Strand.
+2026/10/28 21:20:00 74521121 1186a8a3 [DEBUG Client 19012] Generating level 60 area "HideoutSpace" with seed 1
+2026/10/28 21:20:01 74521122 cffb0658 [INFO Client 19012] : You have entered Celestial Nebula Hideout.
+2026/10/28 21:21:00 74521181 1186a8a3 [DEBUG Client 19012] Generating level 68 area "HeistHub" with seed 999
+2026/10/28 21:21:01 74521182 cffb0658 [INFO Client 19012] : You have entered The Rogue Harbour.
+2026/10/28 21:22:00 74521241 1186a8a3 [DEBUG Client 19012] Generating level 83 area "HeistBunker9" with seed 333
+2026/10/28 21:22:01 74521242 cffb0658 [INFO Client 19012] : You have entered Bunker.
+2026/10/28 21:30:00 74521721 1186a8a3 [DEBUG Client 19012] Generating level 68 area "HeistHub" with seed 999
+2026/10/28 21:30:01 74521722 cffb0658 [INFO Client 19012] : You have entered The Rogue Harbour.

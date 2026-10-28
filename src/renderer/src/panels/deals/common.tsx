@@ -53,6 +53,9 @@ export type IcoName =
   | 'folder'
   | 'edit'
   | 'layers'
+  | 'map'
+  | 'coins'
+  | 'external'
 
 export function Ico({ name, size }: { name: IcoName; size?: 'sm' | 'lg' }) {
   useEffect(() => {

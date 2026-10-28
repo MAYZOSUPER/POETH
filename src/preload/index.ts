@@ -10,6 +10,7 @@ import { regexBridge } from './domains/regex'
 import { authBridge } from './domains/auth'
 import { dealsBridge } from './domains/deals'
 import { updatesBridge } from './domains/updates'
+import { farmBridge } from './domains/farm'
 
 // window.overlayApi — мост contextBridge. Куски по доменам: src/preload/domains/*.ts
 // (этап меняет только свой файл). Этот файл ЗАМОРОЖЕН после S0.
@@ -23,7 +24,8 @@ const api: OverlayApi = {
   ...regexBridge(),
   ...authBridge(),
   ...dealsBridge(),
-  ...updatesBridge()
+  ...updatesBridge(),
+  ...farmBridge()
 }
 
 contextBridge.exposeInMainWorld('overlayApi', api)
