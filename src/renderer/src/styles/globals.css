@@ -52,7 +52,11 @@ body {
     var(--bg);
   border: 1px solid var(--line);
   border-radius: 10px;
-  overflow: hidden;
+  /* clip, не hidden: hidden остаётся контейнером прокрутки, и focus()/scrollIntoView на чём-то за правым краем
+     сдвигал всё окно влево без способа вернуть (S19) */
+  overflow: clip;
+  /* длинный код, ссылка, путь или ник без пробелов переносится, а не вылезает за край (S19) */
+  overflow-wrap: break-word;
 }
 
 /* serif gold heading helper */
@@ -179,6 +183,12 @@ button.icon.danger:hover {
   flex: 1;
   display: flex;
   min-height: 0;
+  min-width: 0;
+}
+/* корень вкладки не шире окна: иначе min-width:auto флекс-элемента растягивает его по самому широкому
+   непереносимому куску, и абзацы режутся правым краем вместо переноса (S19) */
+.body > * {
+  min-width: 0;
 }
 .left {
   flex: 0 0 446px;
@@ -205,17 +215,25 @@ button.icon.danger:hover {
 }
 
 /* ---------- top-level app tabs (campaign / price-check) ---------- */
+/* на узком окне строка прокручивается сама (тонкая полоса снизу, колесо мыши — AppTabs.tsx), страницу не раздувает (S19) */
 .app-tabs {
   display: flex;
   gap: 4px;
+  min-width: 0;
   padding: 6px 10px 0;
   background: linear-gradient(180deg, rgba(28, 24, 20, 0.6), transparent);
   border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll) transparent;
 }
 .app-tab {
+  flex: none;
   display: flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
   background: transparent;
   border: 1px solid transparent;
   border-bottom: none;
@@ -226,7 +244,8 @@ button.icon.danger:hover {
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  padding: 7px 14px;
+  /* 12 px: 7 вкладок релиза без переноса умещаются в 820 px по умолчанию и на RU, и на EN (S19) */
+  padding: 7px 12px;
   cursor: pointer;
 }
 .app-tab:hover {
@@ -240,6 +259,10 @@ button.icon.danger:hover {
 }
 .app-tab-icon {
   font-size: 13px;
+}
+.app-tab:focus-visible {
+  outline: none;
+  box-shadow: inset var(--focus-ring);
 }
 
 /* ---------- game switch (PoE 1 / PoE 2) ---------- */
@@ -1196,13 +1219,19 @@ input[type='checkbox']:checked::after {
   color: var(--gold);
   background: radial-gradient(60% 50% at 50% 45%, rgba(60, 50, 38, 0.25), transparent 70%);
 }
+/* правая колонка компаса на узком окне — около 110 px: картинка ужимается, а не обрезается (S19) */
 .big-compass {
   width: 220px;
-  height: 220px;
+  max-width: calc(100% - 20px);
+  height: auto;
+  aspect-ratio: 1;
   object-fit: contain;
   opacity: 0.92;
 }
 .rightpane.empty .compass-mark {
+  max-width: calc(100% - 20px);
+  height: auto;
+  aspect-ratio: 1;
   color: var(--gold);
   opacity: 0.85;
 }
@@ -1221,6 +1250,7 @@ input[type='checkbox']:checked::after {
 }
 .empty-divider-img {
   width: 180px;
+  max-width: calc(100% - 20px);
   opacity: 0.7;
 }
 
