@@ -37,11 +37,11 @@
 .ad-conf { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--fg-muted); white-space: nowrap; }
 .ad-foot { padding-top: 6px; padding-bottom: 6px; }
 
-/* уровни 1–3: точки цвета акцента (не «хорошо/плохо») + слово */
+/* уровни 1–3: закрашенные точки цвета акцента (не «хорошо/плохо»), пустые — кольцом + слово */
 .ad-lv { display: inline-flex; align-items: center; gap: 5px; color: var(--fg); white-space: nowrap; }
 .ad-lv__dots { display: inline-flex; gap: var(--sp-1); }
-.ad-lv__dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--border-strong); }
-.ad-lv__dots i.on { background: var(--accent); }
+.ad-lv__dots i { width: 7px; height: 7px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--fg-faint); }
+.ad-lv__dots i.on { background: var(--accent); box-shadow: none; }
 
 /* раскрытие */
 .ad-details { display: grid; gap: 14px; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--border); }

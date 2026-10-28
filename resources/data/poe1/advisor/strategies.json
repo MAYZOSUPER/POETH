@@ -267,9 +267,13 @@
       ],
       "outputs": [
         { "item": { "kind": "stackable", "name": "Exotic Coinage" }, "qty": 1 },
-        { "item": { "kind": "stackable", "name": "Astragali" }, "qty": 20 },
-        { "item": { "kind": "stackable", "name": "Scrap Metal" }, "qty": 20 },
-        { "item": { "kind": "stackable", "name": "Burial Medallion" }, "qty": 20 },
+        { "item": { "kind": "stackable", "name": "Astragali" }, "qty": 30 },
+        { "item": { "kind": "stackable", "name": "Scrap Metal" }, "qty": 30 },
+        {
+          "item": { "kind": "stackable", "name": "Burial Medallion" },
+          "qty": 3,
+          "note": { "ru": "дороже, попадаются реже", "en": "pricier, drop less often" }
+        },
         {
           "item": { "kind": "stackable", "label": { "ru": "Журнал экспедиции", "en": "Expedition Logbook" } },
           "qty": 0.3,
