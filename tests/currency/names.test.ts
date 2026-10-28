@@ -68,6 +68,15 @@ describe('declineRu — склонения по данным', () => {
     expect(declineRu(n, 'many', 'acc')).toBe('Сфер хаоса')
   })
 
+  it('родительный — «от N …»', () => {
+    expect(declineRu('Божественная сфера', 'one', 'gen')).toBe('Божественной сферы')
+    expect(declineRu('Божественная сфера', 'few', 'gen')).toBe('Божественных сфер')
+    expect(declineRu('Сфера хаоса', 'many', 'gen')).toBe('Сфер хаоса')
+    expect(declineRu('Сфера хаоса', 'frac', 'gen')).toBe('Сферы хаоса')
+    expect(declineRu('Осколок зеркала', 'one', 'gen')).toBe('Осколка зеркала')
+    expect(declineRu('Золото', 'many', 'gen')).toBe('Золота')
+  })
+
   it.each([
     ['Сфера возвышения', 'Сферы возвышения', 'Сфер возвышения'],
     ['Зеркало Каландры', 'Зеркала Каландры', 'Зеркал Каландры'],
@@ -167,8 +176,8 @@ describe('таблица валют по языку данных', () => {
 
   it('золота нет в данных — своё имя; неизвестное — null', () => {
     expect(RU.has('gold')).toBe(false)
-    expect(currencyName(RU, 'gold', 'ru')).toBe('Золото')
-    expect(currencyName(EN, 'gold', 'en')).toBe('Gold')
+    expect(currencyName(RU, 'gold', 'ru')).toBe('золото')
+    expect(currencyName(EN, 'gold', 'en')).toBe('gold')
     expect(currencyName(EN, 'no-such-tag', 'en')).toBeNull()
     expect(currencyName(null, 'chaos', 'ru')).toBeNull()
   })

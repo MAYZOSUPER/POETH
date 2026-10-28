@@ -5,8 +5,8 @@
 
 /** Форма после числа: 1/21 — one, 2–4/22 — few, 0/5–20/11–14 — many, дробь (1,5) — frac. */
 export type RuCount = 'one' | 'few' | 'many' | 'frac'
-/** Именительный («стоит 2 Сферы хаоса») или винительный («подорожал на 1 Сферу хаоса»). */
-export type RuCase = 'nom' | 'acc'
+/** Именительный («стоит 2 Сферы хаоса»), винительный («за 1 Сферу хаоса») или родительный («от 2 Сфер хаоса»). */
+export type RuCase = 'nom' | 'acc' | 'gen'
 export type RuGender = 'm' | 'f' | 'n'
 
 /** Форма по числу или по его записи на русском («149,2», «1 500», «≈ 3», «−21»). */
@@ -116,6 +116,8 @@ function nounForms(w: string): Forms {
 }
 
 function pick(f: Forms, count: RuCount, c: RuCase, adjective: boolean, mass: boolean): string {
+  // «от 1 Сферы», «от 2 Сфер», «от 1,5 Сферы»: родительный управляет и числом, и названием
+  if (c === 'gen') return mass || count === 'one' || count === 'frac' ? f.gen : f.genPl
   if (count === 'one') return c === 'acc' ? f.acc : f.nom
   if (mass || count === 'frac') return f.gen
   if (count === 'few') return adjective ? (f.g === 'f' ? (f.nomPl ?? f.genPl) : f.genPl) : f.gen

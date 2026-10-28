@@ -40,9 +40,9 @@ export function parseCurrencyTable(ndjson: string): Map<string, CurrencyEntry> {
   return out
 }
 
-/** Валюта, которой нет в items.ndjson: золото — комиссия мерчанта и Фаустуса. */
+/** Валюта, которой нет в items.ndjson: золото — комиссия мерчанта и Фаустуса (не имя предмета — со строчной). */
 const EXTRA: Record<string, Record<CurrencyLang, string>> = {
-  gold: { ru: 'Золото', en: 'Gold' }
+  gold: { ru: 'золото', en: 'gold' }
 }
 
 /** Неисчисляемые: «1 500 золота», «1,500 Gold». */
