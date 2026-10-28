@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { farmView, netWorthAt, ratePerHour, startSession, stopSession } from '../../src/shared/wealth/farm'
+import { chartPoints, farmView, netWorthAt, ratePerHour, startSession, stopSession } from '../../src/shared/wealth/farm'
 import type { WealthPoint } from '../../src/shared/types/wealth'
 
 const MIN = 60_000
@@ -63,5 +63,19 @@ describe('фарм в час', () => {
     expect(farmView(null, [pt(0, 1)])).toEqual({ session: null, snapshots: 0 })
     const s = startSession('L', T0, 'start', 1000)
     expect(farmView(s, [pt(0, 1000)])).toMatchObject({ gain: 0, lastHour: null, snapshots: 1 })
+  })
+})
+
+describe('точки графика', () => {
+  it('последние 7 дней — все, раньше — по одной на день (последняя), много свежих — каждая n-я + последняя', () => {
+    const DAY = 24 * 60 * MIN
+    const now = T0 + 30 * DAY
+    const old = Array.from({ length: 6 }, (_, i) => ({ at: T0 + Math.floor(i / 3) * DAY + (i % 3) * 60 * MIN, chaos: i, divineRate: 300 }))
+    const recent = Array.from({ length: 10 }, (_, i) => ({ at: now - 2 * DAY + i * 20 * MIN, chaos: 100 + i, divineRate: 300 }))
+    const out = chartPoints([...recent, ...old], now)
+    expect(out.map((p) => p.chaos)).toEqual([2, 5, ...recent.map((p) => p.chaos)])
+    const thin = chartPoints(recent, now, 4)
+    expect(thin.map((p) => p.chaos)).toEqual([100, 103, 106, 109])
+    expect(chartPoints(recent, now, 3).map((p) => p.chaos)).toEqual([100, 104, 108, 109])
   })
 })
