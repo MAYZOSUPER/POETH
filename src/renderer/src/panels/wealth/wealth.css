@@ -215,6 +215,7 @@
 .wl-chart__plot {
   position: relative;
   height: 160px;
+  margin: var(--sp-6) 0;
 }
 .wl-chart__plot svg {
   display: block;
@@ -248,14 +249,14 @@
   pointer-events: none;
 }
 .wl-chart__max {
-  top: 0;
+  top: calc(-1 * var(--sp-6));
 }
 .wl-chart__min {
-  bottom: 0;
+  bottom: calc(-1 * var(--sp-6));
 }
 .wl-chart__tip {
   position: absolute;
-  top: calc(-1 * var(--sp-2));
+  top: calc(-1 * var(--sp-6));
   padding: var(--sp-1) var(--sp-3);
   border: 1px solid var(--border);
   border-radius: var(--r-panel);
