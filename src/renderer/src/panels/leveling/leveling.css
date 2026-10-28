@@ -1,0 +1,219 @@
+/* Прокачка PoE1 (S14): раскладка вкладки «Кампания» и цвета сегментов/тегов шага (общие с гидом поверх игры).
+   Компоненты — ui-* дизайн-системы; lv-* — раскладка по макету «Прокачка PoE 1». */
+
+.lv {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: 14px var(--sp-7);
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.lv-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4) var(--sp-6);
+}
+.lv-field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.lv-field .ui-select {
+  width: auto;
+  min-width: 120px;
+}
+.lv-grow {
+  flex: 1;
+}
+.lv-log {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.lv-path {
+  margin-left: var(--sp-3);
+  font: 500 var(--fs-xs) / 1.3 var(--font-mono);
+  color: var(--fg-faint);
+}
+.lv-acts {
+  flex-wrap: wrap;
+}
+.lv-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--sp-6);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .lv-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.lv-route {
+  min-height: 0;
+}
+.lv-rows {
+  max-height: calc(100vh - 230px);
+}
+.lv-row {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+}
+.lv-row:last-child {
+  border-bottom: 0;
+}
+.lv-row > .ui-check {
+  margin-top: 2px;
+}
+.lv-row.is-done .lv-row__text {
+  color: var(--fg-faint);
+}
+.lv-row.is-done .lv-seg {
+  color: inherit;
+}
+.lv-row.is-now {
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.lv-row__text {
+  line-height: 1.45;
+}
+.lv-row__n {
+  display: inline-block;
+  min-width: 1.6em;
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+.lv-row__sub {
+  margin: var(--sp-1) 0 0 1.6em;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.lv-here {
+  margin-left: var(--sp-4);
+  color: var(--accent-hi);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.lv-zl {
+  margin-left: var(--sp-4);
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}
+.lv-side {
+  display: grid;
+  gap: var(--sp-5);
+  align-content: start;
+}
+.lv-count {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+.lv-count b {
+  color: var(--accent-hi);
+  font-variant-numeric: tabular-nums;
+}
+.lv-p {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.lv-reward {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.lv-gem {
+  display: grid;
+  gap: var(--sp-1);
+}
+.lv-gem__how {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.lv-attr--strength {
+  color: #e5735e;
+}
+.lv-attr--dexterity {
+  color: #80c98c;
+}
+.lv-attr--intelligence {
+  color: #82b8db;
+}
+
+/* ---- сегменты текста шага и теги (общие с гидом) ---- */
+.lv-seg--area {
+  color: var(--accent-hi);
+  font-weight: 600;
+}
+.lv-seg--quest {
+  color: var(--fg);
+  font-weight: 600;
+}
+.lv-seg--boss {
+  color: var(--bad);
+  font-weight: 600;
+}
+.lv-seg--item {
+  color: var(--rarity-currency);
+}
+.lv-seg--wp,
+.lv-seg--town,
+.lv-seg--lab,
+.lv-seg--craft {
+  color: var(--info);
+}
+.lv-seg--trial {
+  color: var(--info);
+  font-weight: 600;
+}
+.lv-seg--dir {
+  color: var(--accent);
+  font-weight: 700;
+}
+.lv-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-left: var(--sp-4);
+  vertical-align: 1px;
+}
+.lv-tag {
+  display: inline-block;
+  padding: 0 5px;
+  border: 1px solid currentColor;
+  border-radius: var(--r-sm);
+  font: 700 10px / 1.5 var(--font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.lv-tag--passive {
+  color: var(--accent-hi);
+}
+.lv-tag--trial {
+  color: var(--info);
+}
+.lv-tag--flask {
+  color: var(--good);
+}
+.lv-tag--gem {
+  color: var(--rarity-gem);
+}

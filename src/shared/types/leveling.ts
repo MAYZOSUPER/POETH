@@ -154,4 +154,14 @@ export interface LevelingState {
   progress: LevelingProgress
   config: LevelingConfig
   log: LevelingLogStatus
+  /** игрок в зоне другого шага: номер шага в плоском маршруте, куда «перейти»; null — по маршруту */
+  offRoute: number | null
 }
+
+/** Кнопки маршрута (одно действие — одно изменение прогресса, в игру ничего не шлём). */
+export type LevelingAction =
+  | { type: 'next' }
+  | { type: 'prev' }
+  | { type: 'toggle'; stepId: string }
+  | { type: 'jump'; index: number }
+  | { type: 'reset' }

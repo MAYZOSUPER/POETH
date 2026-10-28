@@ -18,6 +18,7 @@ import { Poe1PriceCheckTab } from './panels/Poe1PriceCheckTab'
 import { LiveTab } from './panels/LiveTab'
 import { RegexTab } from './panels/RegexTab'
 import { DealsTab } from './panels/DealsTab'
+import { LevelingTab } from './panels/leveling/LevelingTab'
 import { WealthTab } from './panels/WealthTab'
 import { ViewToggle } from './components/ViewToggle'
 import { Wizard } from './panels/onboarding/Wizard'
@@ -80,6 +81,7 @@ export default function App() {
   const ready = useAppStore((s) => s.ready)
   const init = useAppStore((s) => s.init)
   const appTab = useAppStore((s) => s.appTab)
+  const game = useAppStore((s) => s.settings?.game ?? 'poe1')
   const opacity = useAppStore((s) => s.settings?.opacity ?? 1)
   const firstRunDone = useAppStore((s) => s.settings?.startup.firstRunDone ?? true)
   // S9: служебные страницы (настройки, «О программе») и мастер первого запуска
@@ -111,7 +113,11 @@ export default function App() {
             <div className="body">
               <AboutPanel />
             </div>
-          ) : appTab === 'campaign' ? (
+          ) : appTab === 'campaign' && game === 'poe1' && !showSettings ? (
+            <div className="body">
+              <LevelingTab />
+            </div>
+          ) : appTab === 'campaign' && game !== 'poe1' ? (
             <CampaignTab showSettings={showSettings} />
           ) : showSettings ? (
             <div className="body">
