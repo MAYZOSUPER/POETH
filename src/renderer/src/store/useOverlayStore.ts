@@ -9,8 +9,9 @@ import type {
   UiLang
 } from '@shared/types'
 
-/** Сколько висит уведомление поверх игры. */
+/** Сколько висит уведомление поверх игры (с кнопкой — дольше, чтобы успеть нажать). */
 const NOTICE_MS = 3500
+const NOTICE_ACTION_MS = 9000
 
 let noticeSeq = 0
 
@@ -25,6 +26,8 @@ interface OverlayStore {
   lang: UiLang
   /** акселератор overlayToggle — для подсказок ('Shift+Space') */
   toggleKey: string
+  /** акселератор priceCheck ('Control+D') — в активном оверлее закрывает окно цены */
+  priceCheckKey: string
   /** «Позиция окна цены» для окон слоя popup (Settings.overlay.pricePosition) */
   pricePosition: PricePopupPosition
   /** куда окно цены перетащили (Settings.overlay.priceWindowPos) — для 'saved' */
@@ -57,6 +60,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
   ready: false,
   lang: 'ru',
   toggleKey: 'Shift+Space',
+  priceCheckKey: 'Control+D',
   pricePosition: 'cursor',
   priceWindowPos: null,
   focus: { game: false, overlay: false, usingHotkey: false },
@@ -84,7 +88,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
       api().onOverlayNotice((notice) => {
         const id = ++noticeSeq
         set({ notices: [...get().notices.slice(-2), { id, notice }] })
-        window.setTimeout(() => set({ notices: get().notices.filter((n) => n.id !== id) }), NOTICE_MS)
+        window.setTimeout(() => set({ notices: get().notices.filter((n) => n.id !== id) }), notice.action ? NOTICE_ACTION_MS : NOTICE_MS)
       })
     ]
     const [state] = await Promise.all([api().overlay.getState(), get().refreshSettings()])
@@ -97,6 +101,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
     set({
       lang: s.uiLang,
       toggleKey: s.hotkeys.overlayToggle?.accel ?? '',
+      priceCheckKey: s.hotkeys.priceCheck?.accel ?? '',
       pricePosition: s.overlay?.pricePosition ?? 'cursor',
       priceWindowPos: s.overlay?.priceWindowPos ?? null
     })

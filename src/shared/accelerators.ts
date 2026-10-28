@@ -262,8 +262,22 @@ export function codeToAccelKey(code: string, key?: string): string | null {
   if (!code && key) {
     if (key in KEY_NAMES) return KEY_NAMES[key]
     if (/^[a-zA-Z0-9]$/.test(key)) return key.toUpperCase()
+    // с зажатым Ctrl key бывает управляющим символом (Ctrl+D → U+0004) — это буква A…Z
+    const c = key.length === 1 ? key.charCodeAt(0) : 0
+    if (c >= 1 && c <= 26) return String.fromCharCode(64 + c)
   }
   return null
+}
+
+/**
+ * DOM keyCode → code для синтетических нажатий без скан-кода (code пустой): буквы, цифры, F1–F24.
+ * Пусто — не знаем.
+ */
+export function keyCodeToCode(keyCode: number): string {
+  if (keyCode >= 65 && keyCode <= 90) return `Key${String.fromCharCode(keyCode)}`
+  if (keyCode >= 48 && keyCode <= 57) return `Digit${keyCode - 48}`
+  if (keyCode >= 112 && keyCode <= 135) return `F${keyCode - 111}`
+  return ''
 }
 
 /** Нажатие → канонический акселератор ('Control+D'); null — нажат только модификатор. */

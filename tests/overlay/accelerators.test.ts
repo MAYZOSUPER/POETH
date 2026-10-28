@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   isReservedAccelerator,
+  keyCodeToCode,
   keyPressToAccelerator,
   normalizeAccelerator,
   parseAccelerator,
@@ -88,6 +89,20 @@ describe('isReservedAccelerator', () => {
       const { accel } = HOTKEY_DEFAULTS[action]
       expect(isReservedAccelerator(accel), `${action}: ${accel}`).toBe(false)
     }
+  })
+})
+
+describe('синтетические нажатия без скан-кода (пустой code)', () => {
+  it('Ctrl+D с key-управляющим символом U+0004 — это Control+D', () => {
+    expect(keyPressToAccelerator({ code: '', key: '', control: true })).toBe('Control+D')
+    expect(keyPressToAccelerator({ code: '', key: '', control: true, alt: true })).toBe('Control+Alt+A')
+  })
+
+  it('keyCodeToCode: буквы, цифры, F-клавиши; остальное — не знаем', () => {
+    expect(keyCodeToCode(68)).toBe('KeyD')
+    expect(keyCodeToCode(51)).toBe('Digit3')
+    expect(keyCodeToCode(116)).toBe('F5')
+    expect(keyCodeToCode(13)).toBe('')
   })
 })
 

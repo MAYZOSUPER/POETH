@@ -1,4 +1,5 @@
 import { useEffect, type MouseEvent } from 'react'
+import { keyCodeToCode, keyPressToAccelerator, sameAccelerator } from '@shared/accelerators'
 import { useOverlayStore } from '../store/useOverlayStore'
 import { IconSprite } from './Icon'
 import { widgetsOfLayer } from './registry'
@@ -45,11 +46,37 @@ export function OverlayApp() {
   // себе: нажатие внутри уже активировало оверлей (OverlayWidget).
   useEffect(() => {
     const onClick = (e: globalThis.MouseEvent): void => {
-      if ((e.target as Element | null)?.closest?.('[data-keep-focus]')) return
+      // путь события, а не e.target.closest: кнопка могла исчезнуть по своему же клику
+      // («Вернуть к курсору»), и к этому моменту её уже нет в документе
+      if (e.composedPath().some((n) => n instanceof Element && n.hasAttribute('data-keep-focus'))) return
       if (!useOverlayStore.getState().focus.overlay) window.overlayApi.overlay.focusGame()
     }
     document.addEventListener('click', onClick)
     return () => document.removeEventListener('click', onClick)
+  }, [])
+
+  // Повторный Ctrl+D в активном оверлее закрывает окно цены. Обычно это ловит main (before-input-event,
+  // по code); сюда нажатие доходит, только если main его не распознал (синтетический ввод без скан-кода:
+  // пустой code) — тогда по keyCode.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      const st = useOverlayStore.getState()
+      if (!st.focus.overlay || !st.priceCheckKey) return
+      const accel = keyPressToAccelerator({
+        code: e.code || keyCodeToCode(e.keyCode),
+        key: e.key,
+        control: e.ctrlKey,
+        alt: e.altKey,
+        shift: e.shiftKey,
+        meta: e.metaKey
+      })
+      if (!accel || !sameAccelerator(accel, st.priceCheckKey)) return
+      e.preventDefault()
+      st.dismissPopups()
+      window.overlayApi.overlay.focusGame()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [])
 
   const onBackground = (e: MouseEvent<HTMLDivElement>): void => {

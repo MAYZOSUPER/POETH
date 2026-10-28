@@ -1,6 +1,6 @@
 import { globalShortcut } from 'electron'
 import { IPC } from '@shared/ipc'
-import type { HotkeyAction, HotkeyMap } from '@shared/types'
+import type { HotkeyAction, HotkeyConflict, HotkeyMap } from '@shared/types'
 import { sendToCompanion } from './windows/companionWindow'
 import { sendToOverlay, setOverlayPriceCheckAccel, setOverlayToggleAccel } from './windows/gameOverlay'
 import { isGameFocused, onGameFocusChange } from './focus/gameFocus'
@@ -12,6 +12,7 @@ import {
   type PlannedHotkey
 } from './input/hotkeyPlan'
 import { releaseAcceleratorKeys } from './input/gameInput'
+import { HotkeyConflicts } from './input/hotkeyConflicts'
 
 // Глобальные хоткеи v2. Домены регистрируют main-обработчики своих действий через
 // onHotkeyAction() в setupForGame() (см. src/main/ipc/*). Каждое срабатывание
@@ -47,6 +48,34 @@ let plan: HotkeyPlan = { game: [], always: [], skipped: [] }
 /** registerHotkeys вызван и не приостановлен (suspend на время записи нового сочетания) */
 let enabled = false
 let gameRegistered = false
+
+// Занятые другой программой сочетания (APT, Sidekick…): список — для плашки в настройках,
+// предупреждение игроку — раз за сессию на сочетание (ipc/overlay.ts показывает его поверх игры).
+const conflicts = new HotkeyConflicts()
+const conflictListeners = new Set<(list: HotkeyConflict[]) => void>()
+const warnListeners = new Set<(c: HotkeyConflict) => void>()
+
+/** Хоткеи, которые сейчас не зарегистрированы (сочетание занято). */
+export function getHotkeyConflicts(): HotkeyConflict[] {
+  return conflicts.list()
+}
+
+/** Список занятых хоткеев изменился. */
+export function onHotkeyConflicts(cb: (list: HotkeyConflict[]) => void): () => void {
+  conflictListeners.add(cb)
+  return () => conflictListeners.delete(cb)
+}
+
+/** Сочетание оказалось занято впервые за сессию — предупредить игрока. */
+export function onHotkeyConflictWarning(cb: (c: HotkeyConflict) => void): () => void {
+  warnListeners.add(cb)
+  return () => warnListeners.delete(cb)
+}
+
+function emitConflicts(): void {
+  const list = conflicts.list()
+  for (const cb of conflictListeners) cb(list)
+}
 
 /** Назначить main-обработчик действия (заменяет прежний). */
 export function onHotkeyAction(action: HotkeyId, handler: Handler): void {
@@ -97,9 +126,17 @@ function register(h: PlannedHotkey): void {
       void dispatchHotkey(h.action, h.accel)
     })
     if (!ok) console.warn(`[hotkeys] "${h.accel}" (${h.action}) is taken by another application`)
+    noteRegistration(h, ok)
   } catch (e) {
     console.warn(`[hotkeys] cannot register "${h.accel}" (${h.action}):`, e)
   }
+}
+
+function noteRegistration(h: PlannedHotkey, ok: boolean): void {
+  const before = JSON.stringify(conflicts.list())
+  const warn = conflicts.report(h.action, h.accel, ok)
+  if (JSON.stringify(conflicts.list()) !== before) emitConflicts()
+  if (warn) for (const cb of warnListeners) cb({ action: h.action, accel: h.accel })
 }
 
 /** Привести регистрацию хоткеев области 'game' к текущему фокусу игры. */
@@ -111,6 +148,12 @@ function syncGameHotkeys(): void {
     if (want) register(h)
     else globalShortcut.unregister(h.accel)
   }
+  // хоткеи 'always', которые при запуске оказались заняты: другую программу могли закрыть —
+  // пробуем снова при возврате в игру (предупреждение всё равно один раз за сессию)
+  if (want) {
+    const pending = new Set(conflicts.list().map((c) => c.action))
+    for (const h of plan.always) if (pending.has(h.action)) register(h)
+  }
 }
 
 export function registerHotkeys(map: HotkeyMap): void {
@@ -119,6 +162,10 @@ export function registerHotkeys(map: HotkeyMap): void {
   gameRegistered = false
   currentMap = map
   plan = planHotkeys(map, (a) => handlers.has(a), extras)
+  // сменили сочетание или убрали действие — прежний конфликт больше не актуален
+  const before = JSON.stringify(conflicts.list())
+  conflicts.retain([...plan.game, ...plan.always])
+  if (JSON.stringify(conflicts.list()) !== before) emitConflicts()
   for (const s of plan.skipped) {
     console.warn(`[hotkeys] "${s.accel}" (${s.action}) not registered: ${s.reason}`)
   }

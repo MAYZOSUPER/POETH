@@ -26,6 +26,11 @@ export const overlay: DomainDict = {
     'overlay.set.pricePosition.saved': 'Где оставил',
     'overlay.set.pricePosition.hint': 'Окно цены можно перетащить за шапку — следующий Ctrl+D откроет его там же.',
     'overlay.popup.toCursor': 'Вернуть к курсору',
+    'overlay.notice.changeKey': 'Сменить клавишу',
+    'overlay.hk.conflict':
+      '{key} занят другой программой (возможно, Awakened PoE Trade или Sidekick). Закройте её или назначьте другую клавишу — нажмите на сочетание ниже.',
+    'overlay.hk.conflict.chat': '{key} (команда чата) занят другой программой — закройте её или смените клавишу в «Командах чата».',
+    'overlay.hk.conflict.row': 'Занято другой программой',
     'overlay.chat.noLast': "Команда не отправлена: вам ещё никто не писал в личку (@last).",
     'overlay.chat.noChar': "Команда не отправлена: персонаж неизвестен — впишите свой ник вместо <char>.",
     'overlay.chat.noInput': "Ввод в игру недоступен — перезапустите POETH.",
@@ -79,6 +84,11 @@ export const overlay: DomainDict = {
     'overlay.set.pricePosition.saved': 'Where I left it',
     'overlay.set.pricePosition.hint': 'Drag the price window by its header — the next Ctrl+D opens it in the same place.',
     'overlay.popup.toCursor': 'Back to the cursor',
+    'overlay.notice.changeKey': 'Change key',
+    'overlay.hk.conflict':
+      '{key} is taken by another program (maybe Awakened PoE Trade or Sidekick). Close it or choose another key — click the shortcut below.',
+    'overlay.hk.conflict.chat': '{key} (chat command) is taken by another program — close it or change the key in “Chat commands”.',
+    'overlay.hk.conflict.row': 'Taken by another program',
     'overlay.chat.noLast': "Command not sent: nobody has whispered you yet (@last).",
     'overlay.chat.noChar': "Command not sent: your character is unknown — type your name instead of <char>.",
     'overlay.chat.noInput': "In-game input is unavailable — restart POETH.",

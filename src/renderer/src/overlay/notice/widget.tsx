@@ -6,7 +6,8 @@ import type { OverlayWidgetDef } from '../registry'
 
 // Короткие уведомления поверх игры (слой toasts, справа сверху): например, команда чата не
 // отправлена — «нет последнего собеседника». Не кликабельные (мышь проходит в игру),
-// исчезают сами (useOverlayStore, NOTICE_MS).
+// исчезают сами (useOverlayStore, NOTICE_MS). С кнопкой (notice.action) — кликабельные и висят
+// дольше: «хоткей занят другой программой» → «Сменить клавишу» (настройки компаньона).
 
 function NoticeWidget() {
   const notices = useOverlayStore((s) => s.notices)
@@ -14,10 +15,20 @@ function NoticeWidget() {
   return (
     <>
       {notices.map(({ id, notice }) => (
-        <OverlayWidget key={id} interactive={false}>
+        <OverlayWidget key={id} interactive={!!notice.action}>
           <div className={`ui-panel ov-notice ov-notice--${notice.kind}`} role="status">
             <Icon name={notice.kind === 'warn' ? 'warn' : 'info'} />
             <span>{notice.text ?? t(notice.key, notice.params)}</span>
+            {notice.action === 'hotkeySettings' && (
+              <button
+                type="button"
+                className="ui-btn ui-btn--sm ov-notice__action"
+                onClick={() => window.overlayApi.overlay.openHotkeySettings()}
+              >
+                <Icon name="keyboard" />
+                {t('overlay.notice.changeKey')}
+              </button>
+            )}
           </div>
         </OverlayWidget>
       ))}

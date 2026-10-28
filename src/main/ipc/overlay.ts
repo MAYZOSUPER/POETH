@@ -3,7 +3,9 @@ import { IPC } from '@shared/ipc'
 import type { GameDef } from '@shared/games'
 import type { CapturedItem, OverlayState } from '@shared/types'
 import { getSettings } from '../services/settingsStore'
-import { hasHotkeyAction, onHotkeyAction } from '../hotkeys'
+import { getHotkeyConflicts, hasHotkeyAction, onHotkeyAction, onHotkeyConflicts, onHotkeyConflictWarning } from '../hotkeys'
+import { notifyUser } from '../services/notify'
+import { showCompanionPage } from './app'
 import { getGameFocus } from '../focus/gameFocus'
 import { setInteractiveRects, setPollInterval, trackAutoHide } from '../focus/interactiveAreas'
 import { captureItemText, stashSearch, typeInChat } from '../input/gameInput'
@@ -96,6 +98,21 @@ function register(): void {
   ipcMain.handle(IPC.overlay.stashSearch, (_e, text: unknown) => {
     if (typeof text !== 'string' || !text) return 'no-input'
     return stashSearch(text)
+  })
+
+  // Хоткей занят другой программой (APT, Sidekick…): плашка в настройках и раз за сессию —
+  // предупреждение поверх игры (или уведомлением Windows) с кнопкой «Сменить клавишу».
+  ipcMain.handle(IPC.overlay.hotkeyConflicts, () => getHotkeyConflicts())
+  ipcMain.on(IPC.overlay.openHotkeySettings, () => {
+    focusGame()
+    showCompanionPage('settings')
+  })
+  onHotkeyConflicts((list) => {
+    sendToCompanion(IPC.events.overlayHotkeyConflicts, list)
+    sendToOverlay(IPC.events.overlayHotkeyConflicts, list)
+  })
+  onHotkeyConflictWarning((c) => {
+    void notifyUser('hotkeyTaken', { key: c.accel.replace(/Control/g, 'Ctrl') }, 'warn', 'hotkeySettings')
   })
 }
 
