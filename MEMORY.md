@@ -127,6 +127,10 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ слит S10b (`213c3fd`…`d99c5c1`, сессия S1): NSIS как у APT — мастер RU/EN по языку Windows, без страницы
+  «для меня/для всех» (хук `customInstallMode`), `%LOCALAPPDATA%\Programs\POETH` без админа, картинки мастера от дизайнера,
+  настройки при удалении сохраняются; `POETH-Portable-<ver>.exe` (обновление вручную по ссылке); релиз с описанием RU/EN;
+  README по образцу APT (RU + EN), `docs/DEVELOPMENT.md`. Подпись кода не делаем. 1121 тест.
 - _(лид, 28.10)_ **репозиторий открыт**: https://github.com/MAYZOSUPER/POETH (MIT). История переписана — все коммиты от
   `MAYZOSUPER <291924623+MAYZOSUPER@users.noreply.github.com>`, личных данных и секретов нет (проверено чистым клоном).
   Старый приватный репо с исходной историей — `MAYZOSUPER/POETH-archive` (remote `archive`), полный бэкап —
