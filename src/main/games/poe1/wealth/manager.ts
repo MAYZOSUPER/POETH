@@ -18,6 +18,7 @@
 import type {
   WealthFarmSession,
   WealthAccountResult,
+  WealthDelta,
   WealthDiff,
   WealthError,
   WealthOptions,
@@ -35,11 +36,14 @@ import {
   DEFAULT_MAX_TABS,
   HARD_MAX_TABS,
   effectiveAutoIntervalMin,
+  mergeTabSelection,
   minAutoIntervalMin,
   minSnapshotSpacingMs,
+  MIN_SNAPSHOT_SPACING_MS,
   normalizeAccountName,
   reconcileSelection
 } from '@shared/wealth/tabs'
+import type { StashTabInfo } from '@shared/wealth/stash'
 import type { StashProvider } from './stashProvider'
 import type { PriceService } from './priceService'
 import { KEEP_DETAILED, newSnapshotId, sanitizeConfig, type WealthConfig, type WealthStore } from './store'
@@ -48,6 +52,9 @@ import { KEEP_DETAILED, newSnapshotId, sanitizeConfig, type WealthConfig, type W
 const FIRST_AUTO_DELAY_MS = 60_000
 /** Повтор авто-снимка после ошибки сети/сайта. */
 const AUTO_RETRY_MS = 5 * 60_000
+const DAY_MS = 24 * 3_600_000
+/** итогов (с вкладками) в памяти на лигу — для «за сутки» по вкладкам (при 15 мин — ~3 дня) */
+const RECENT_SUMMARIES = 300
 
 export interface WealthManagerDeps {
   provider: StashProvider & { waitMs?(): number }
@@ -90,6 +97,7 @@ export class WealthManager {
   private cfg: WealthConfig = sanitizeConfig(null)
   private points = new Map<string, WealthPoint[]>()
   private last = new Map<string, WealthSummary>()
+  private recent = new Map<string, WealthSummary[]>()
   private detailed: string[] = []
   private league: string | null = null
   private supported = false
@@ -188,6 +196,36 @@ export class WealthManager {
     this.points.set(s.league, list)
     const prev = this.last.get(s.league)
     if (!prev || prev.at <= s.at) this.last.set(s.league, s)
+    const rec = this.recent.get(s.league) ?? []
+    rec.push(s)
+    rec.sort((a, b) => a.at - b.at)
+    if (rec.length > RECENT_SUMMARIES) rec.splice(0, rec.length - RECENT_SUMMARIES)
+    this.recent.set(s.league, rec)
+  }
+
+  /** Изменение за сутки: общее (по точкам) и по вкладкам (по итогу, ближайшему к «сутки назад»). */
+  private dayDelta(league: string): { delta?: WealthDelta; tabDelta?: Record<string, number> } {
+    const latest = this.last.get(league)
+    const points = this.points.get(league) ?? []
+    if (!latest || points.length < 2 || points[0].at >= latest.at) return {}
+    const fromAt = Math.max(latest.at - DAY_MS, points[0].at)
+    const base = netWorthAt(points, fromAt)
+    if (base === null) return {}
+    const round2 = (n: number): number => Math.round(n * 100) / 100
+    const delta: WealthDelta = { chaos: round2(latest.chaos - base), pct: base > 0 ? round2(((latest.chaos - base) / base) * 100) : null, fromAt }
+    const rec = this.recent.get(league) ?? []
+    // последний итог не позже «сутки назад», иначе самый ранний из памяти
+    let ref: WealthSummary | undefined = rec[0]
+    for (const s of rec) if (s.at <= fromAt) ref = s
+    const tabDelta: Record<string, number> = {}
+    if (ref && ref.id !== latest.id) {
+      const before = new Map(ref.tabs.map((t) => [t.id, t.chaos]))
+      for (const t of latest.tabs) {
+        const b = before.get(t.id)
+        if (b !== undefined) tabDelta[t.id] = round2(t.chaos - b)
+      }
+    }
+    return { delta, tabDelta }
   }
 
   private selection(league: string): string[] {
@@ -215,6 +253,7 @@ export class WealthManager {
       const v: WealthTab = { id: t.id, index: t.index, name: t.name, type: t.type, selected: sel.includes(t.id) }
       if (t.colour) v.colour = t.colour
       if (t.unsupported) v.unsupported = true
+      if (t.removeOnly) v.removeOnly = true
       return v
     })
     const windows = this.deps.provider.windows()
@@ -247,6 +286,13 @@ export class WealthManager {
     if (tabsAt) state.tabsAt = tabsAt
     if (this.nextAutoAt) state.nextAutoAt = this.nextAutoAt
     if (this.farm) state.farmLinked = true
+    if (league) {
+      const { delta, tabDelta } = this.dayDelta(league)
+      if (delta) state.delta = delta
+      if (tabDelta && Object.keys(tabDelta).length) state.tabDelta = tabDelta
+      const lastAt = this.last.get(league)?.at
+      if (lastAt && lastAt + MIN_SNAPSHOT_SPACING_MS > this.now()) state.refreshAt = lastAt + MIN_SNAPSHOT_SPACING_MS
+    }
     return state
   }
 
@@ -296,14 +342,20 @@ export class WealthManager {
     this.setStatus({ phase: 'tabs' })
     const r = await this.deps.provider.fetchTabs({ account: pre.account, league: pre.league, index: 0 })
     if (!r.ok) return this.fail(r.error)
-    const list = r.data.tabs ?? []
-    this.cfg.tabs[pre.league] = { at: this.now(), list }
-    const saved = this.cfg.selected[pre.league]
-    if (saved) this.cfg.selected[pre.league] = reconcileSelection(list, saved)
+    this.applyTabList(pre.league, r.data.tabs ?? [])
     await this.save()
     this.schedule()
     this.setStatus({ phase: 'idle' })
     return { ok: true }
+  }
+
+  /** Новый список вкладок: выбор сохраняется по лиге, появившиеся вкладки включаются (кроме remove-only). */
+  private applyTabList(league: string, list: StashTabInfo[]): string[] {
+    const prev = this.cfg.tabs[league]?.list ?? null
+    const sel = mergeTabSelection(prev, list, this.cfg.selected[league] ?? null)
+    this.cfg.tabs[league] = { at: this.now(), list }
+    this.cfg.selected[league] = sel
+    return sel
   }
 
   async setTabs(ids: unknown): Promise<WealthResult> {
@@ -344,6 +396,13 @@ export class WealthManager {
 
   // ------------------------------------------------------------------ снимок
 
+  /** Кнопка «Обновить»: снимок, но не чаще раза в минуту (лимиты сайта). */
+  refresh(): Promise<WealthResult> {
+    const lastAt = this.league ? this.last.get(this.league)?.at : undefined
+    if (!this.inflight && lastAt && lastAt + MIN_SNAPSHOT_SPACING_MS > this.now()) return Promise.resolve({ ok: true })
+    return this.snapshot(true)
+  }
+
   snapshot(manual = true): Promise<WealthResult> {
     if (this.inflight) return this.inflight
     this.lastAttemptAt = this.now()
@@ -379,8 +438,7 @@ export class WealthManager {
     const first = await this.deps.provider.fetchTabs({ account, league, index: firstIndex })
     if (!first.ok) return this.fail(first.error)
     const list = first.data.tabs ?? []
-    this.cfg.tabs[league] = { at: this.now(), list }
-    sel = reconcileSelection(list, this.cfg.selected[league] ?? null)
+    sel = this.applyTabList(league, list)
     if (!sel.length) {
       await this.save()
       return this.fail({ code: 'no-tabs' })
@@ -610,16 +668,15 @@ export class WealthManager {
     if (!to) return null
     let from: WealthSnapshot | null = null
     if (typeof fromId === 'string' && fromId) from = await this.deps.store.loadDetail(fromId)
-    else {
+    else if (fromId === 'session') {
       const s = this.session()
       if (s && s.startId !== to.summary.id) from = await this.deps.store.loadDetail(s.startId)
-      if (!from) {
-        // предыдущий детализированный снимок той же лиги (id сортируются по времени)
-        const ids = this.detailed.filter((id) => id < to.summary.id)
-        for (let i = ids.length - 1; i >= 0 && !from; i--) {
-          const d = await this.deps.store.loadDetail(ids[i])
-          if (d && d.summary.league === to.summary.league) from = d
-        }
+    } else {
+      // «с прошлого снимка»: предыдущий детализированный снимок той же лиги (id сортируются по времени)
+      const ids = this.detailed.filter((id) => id < to.summary.id)
+      for (let i = ids.length - 1; i >= 0 && !from; i--) {
+        const d = await this.deps.store.loadDetail(ids[i])
+        if (d && d.summary.league === to.summary.league) from = d
       }
     }
     return from ? diffSnapshots(from, to) : null

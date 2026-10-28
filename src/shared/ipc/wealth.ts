@@ -40,7 +40,7 @@ export interface WealthIpcApi {
     /** имя аккаунта 'Name#1234'; null/'' — брать из сессии сайта */
     setAccount(name: string | null): Promise<WealthAccountResult>
     setOptions(patch: Partial<WealthOptions>): Promise<WealthState>
-    /** снимок сейчас (столько запросов к сайту, сколько выбрано вкладок) */
+    /** «Обновить»: снимок сейчас, не чаще раза в минуту (столько запросов к сайту, сколько выбрано вкладок) */
     snapshot(): Promise<WealthResult>
     /** «Начать сессию» — снимок-точка отсчёта, дальше авто-снимки */
     startFarm(): Promise<WealthResult>
@@ -48,7 +48,7 @@ export interface WealthIpcApi {
     stopFarm(): Promise<WealthResult>
     /** детали снимка (последнего, если id не задан); null — деталей уже нет */
     detail(id?: string): Promise<WealthSnapshot | null>
-    /** «что прибавилось»: по умолчанию начало сессии (или предыдущий снимок) → последний */
+    /** «что прибавилось»: по умолчанию прошлый снимок → последний; fromId 'session' — от начала сессии */
     diff(fromId?: string, toId?: string): Promise<WealthDiff | null>
   }
   onWealthState(cb: (s: WealthState) => void): () => void

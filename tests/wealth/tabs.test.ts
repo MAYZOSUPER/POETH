@@ -4,6 +4,7 @@ import {
   HARD_MAX_TABS,
   defaultTabSelection,
   effectiveAutoIntervalMin,
+  mergeTabSelection,
   minAutoIntervalMin,
   minSnapshotSpacingMs,
   normalizeAccountName,
@@ -83,5 +84,18 @@ describe('промежуток между снимками на границах
     expect(minSnapshotSpacingMs(5)).toBe(266_667) // ~4,5 мин
     expect(minSnapshotSpacingMs(25)).toBe(1_333_334) // ~22 мин
     expect(minSnapshotSpacingMs(0)).toBe(60_000)
+  })
+})
+
+describe('новые вкладки и «только изъятие»', () => {
+  it('появившиеся вкладки включаются, remove-only и неподдерживаемые — нет; исчезнувшие выпадают', () => {
+    const prev = [tab(0), tab(1), tab(2)]
+    const next = [tab(0), tab(2), tab(3), { ...tab(4), name: '4 (Remove-only)', removeOnly: true }, tab(5, 'MapStash', true)]
+    // пользователь выключил t2 и t1 (t1 исчез)
+    expect(mergeTabSelection(prev, next, ['t0'])).toEqual(['t0', 't3'])
+    // выбора ещё не было — по умолчанию (без remove-only)
+    expect(mergeTabSelection(null, next, null)).toEqual(['t0', 't2', 't3'])
+    // списка раньше не было, а выбор есть — только сверка
+    expect(mergeTabSelection(null, next, ['t2'])).toEqual(['t2'])
   })
 })

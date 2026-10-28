@@ -30,7 +30,7 @@ export interface WealthConfig {
 }
 
 export const DEFAULT_OPTIONS: WealthOptions = {
-  autoEnabled: false,
+  autoEnabled: true,
   autoIntervalMin: DEFAULT_AUTO_INTERVAL_MIN,
   poeWatch: true
 }
@@ -38,7 +38,7 @@ export const DEFAULT_OPTIONS: WealthOptions = {
 function sanitizeOptions(o: Partial<WealthOptions> | undefined): WealthOptions {
   const iv = Number(o?.autoIntervalMin)
   return {
-    autoEnabled: o?.autoEnabled === true,
+    autoEnabled: o?.autoEnabled !== false,
     autoIntervalMin: Number.isFinite(iv)
       ? Math.min(MAX_AUTO_INTERVAL_MIN, Math.max(MIN_AUTO_INTERVAL_MIN, Math.round(iv)))
       : DEFAULT_AUTO_INTERVAL_MIN,

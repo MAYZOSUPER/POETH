@@ -38,7 +38,7 @@ class FakeProvider implements StashProvider {
     const f = this.fail[q.index]
     if (f) return f
     const data: ParsedStash = { numTabs: tabs.length, items: [chaos(this.content[q.index] ?? 0)] }
-    if (withTabs) data.tabs = tabs
+    if (withTabs) data.tabs = tabs.map((t) => ({ ...t }))
     return { ok: true, data }
   }
   async fetchTabs(q: StashQuery) {
@@ -196,6 +196,7 @@ describe('менеджер учёта богатства', () => {
   it('сессия фарма: «Начать» → снимки по таймеру → «Стоп»; доход в час и «что прибавилось»', async () => {
     const { m, provider, tick } = setup()
     await m.start()
+    await m.setOptions({ autoEnabled: false }) // «вручную»: авто-снимки — только во время сессии
     expect(await m.startFarm()).toEqual({ ok: true })
     const s0 = m.state()
     expect(s0.farm.session).toMatchObject({ league: 'Allflame', startChaos: 150 })
@@ -300,6 +301,7 @@ describe('связка с трекером карт S11b', () => {
 
   it('«Стоп» — финальный снимок даёт прибыль последнего забега; пауза снимков не делает', async () => {
     const { m, provider, f, advance, ev } = await linked()
+    await m.setOptions({ autoEnabled: false })
     await ev(sess('start'))
     await ev(run('runStart', 'r1'))
     await ev(sess('pause'))
@@ -331,5 +333,57 @@ describe('связка с трекером карт S11b', () => {
     await ev(sess('stop'))
     expect(provider.calls).toHaveLength(0)
     expect(f.profits).toEqual([])
+  })
+})
+
+describe('по макету «Тайник»', () => {
+  it('«Обновить» — не чаще раза в минуту', async () => {
+    const { m, provider, tick } = setup()
+    await m.start()
+    expect(await m.refresh()).toEqual({ ok: true })
+    const n = provider.calls.length
+    tick(30_000)
+    expect(await m.refresh()).toEqual({ ok: true })
+    expect(provider.calls.length).toBe(n) // рано — без запросов
+    expect(m.state().refreshAt).toBe(T0 + 60_000)
+    tick(31_000)
+    await m.refresh()
+    expect(provider.calls.length).toBe(n + 2)
+    expect(m.state().refreshAt).toBeDefined()
+  })
+
+  it('изменение за сутки: общее и по вкладкам; одного снимка мало', async () => {
+    const { m, provider, tick } = setup()
+    await m.start()
+    await m.snapshot()
+    expect(m.state().delta).toBeUndefined()
+    tick(12 * 3_600_000)
+    provider.content[0] = 130
+    await m.snapshot()
+    tick(13 * 3_600_000)
+    provider.content[0] = 160
+    provider.content[1] = 40
+    await m.snapshot()
+    const st = m.state()
+    // сутки назад (T0+1 ч) — между 150 и 180: 152.5; сейчас 200
+    expect(st.delta).toEqual({ chaos: 47.5, pct: 31.15, fromAt: T0 + 3_600_000 })
+    // по вкладкам — от итога не позже «сутки назад» (первый снимок)
+    expect(st.tabDelta).toEqual({ cur: 60, dump: -10 })
+  })
+
+  it('новая вкладка на сайте включается сама, remove-only — нет', async () => {
+    const { m, provider } = setup()
+    await m.start()
+    await m.refreshTabs()
+    await m.setTabs(['cur'])
+    tabs.push({ id: 'new1', index: 3, name: 'Новая', type: 'PremiumStash' })
+    tabs.push({ id: 'ro1', index: 4, name: 'Старая (Remove-only)', type: 'PremiumStash', removeOnly: true })
+    try {
+      await m.refreshTabs()
+      expect(m.state().tabs.filter((t) => t.selected).map((t) => t.id)).toEqual(['cur', 'new1'])
+      expect(provider.calls.length).toBeGreaterThan(0)
+    } finally {
+      tabs.splice(3)
+    }
   })
 })
