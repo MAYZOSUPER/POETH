@@ -2,7 +2,8 @@
 
 Знак — «ромб обмена»: две встречные стрелки-шеврона и звезда в центре. Сгенерирован как вектор в Scenario
 (модель Recraft V4.1 SVG, ассет `asset_3Te3MJbv6JSngyaSuyf3R5pA`), затем очищен: убран фон, обрезаны поля.
-Надпись POETH собрана из контуров шрифта Cormorant SC Bold (OFL). Разделитель — Scenario, `asset_5o3omDqQVYEPFNX25Dq6ZDm6`.
+Надпись POETH собрана из контуров шрифта Cormorant SC Bold (OFL). Разделитель — Scenario, `asset_5o3omDqQVYEPFNX25Dq6ZDm6`,
+картинка пустых состояний — Scenario, `asset_93QoRVHSXwPvFVAargydCA38`.
 Вся графика оригинальная: без логотипов, иконок и арта Grinding Gear Games.
 
 Файлы раздаются протоколом `poeth://brand/<файл>` (см. `BrandImg`).
@@ -18,7 +19,8 @@
 | `mark-mono.svg` | знак на `currentColor` | внутри интерфейса, берёт цвет текста |
 | `mark-outlined.svg` | знак с тёмным контуром | светлые фоны, трей |
 | `logo.svg`, `wordmark.svg`, `app_icon_tile.svg`, `divider.svg` | векторные мастер-файлы | для новых размеров |
-| `icons/*.svg`, `icons-sprite.svg` | 65 линейных иконок действий 24×24, линия 1.8, `currentColor` | кнопки, меню, вкладки (класс `.ui-ico`) |
+| `icons/*.svg`, `icons-sprite.svg` | 72 линейные иконки действий и механик 24×24, линия 1.8, `currentColor` | кнопки, меню, вкладки, плитка механики (класс `.ui-ico`) |
+| `empty-route.svg` | свиток с маршрутом и ромбом, золото `#C9A55C` на прозрачном; Scenario (Recraft V4.1 SVG, `asset_93QoRVHSXwPvFVAargydCA38`), фон убран, вырезы — маской | пустые состояния «Стратегий фарма» (`.ui-empty`) |
 | `tray-default.png` | старая запасная иконка компаса | трей уже берёт `tray.png`, файл можно удалить |
 | `build/installerSidebar.bmp`, `build/installerHeader.bmp` | 164×314 и 150×57, BMP 24 бита, без текста кроме POETH: знак + надпись на тёмном | установщик NSIS: приветствие/завершение и шапка страниц (шапка стоит справа на белом, отсюда скос слева) |
 
