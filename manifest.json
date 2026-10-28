@@ -1,0 +1,87 @@
+{
+  "version": "2026.10.27",
+  "game": "poe1",
+  "minApp": "0.1.0",
+  "files": {
+    "data.meta.json": {
+      "sha256": "d64de0e388612e55a69f856ed612dc3a90cfec96b651ddf7f6c4130825685209",
+      "size": 1798
+    },
+    "en/client_strings.js": {
+      "sha256": "1ff5328903621b324bcc34824e31e2e76195a2c2f5669ac04741c97725ea7d84",
+      "size": 6556
+    },
+    "en/client_strings.json": {
+      "sha256": "28417e2a00ee64ebde1b12b01849862768ece19cfef977b08692fe008510b52b",
+      "size": 7734
+    },
+    "en/items-name.index.bin": {
+      "sha256": "d984736d54871ffafdeec18fcb082c3a74efcafeec1cc5924a3e5ea4ad90d0de",
+      "size": 39696
+    },
+    "en/items-ref.index.bin": {
+      "sha256": "d984736d54871ffafdeec18fcb082c3a74efcafeec1cc5924a3e5ea4ad90d0de",
+      "size": 39696
+    },
+    "en/items.ndjson": {
+      "sha256": "af8391e58698dacbd393361eea12e304d1abed83f50453dac4e5804de8775c6f",
+      "size": 1459983
+    },
+    "en/stats-matcher.index.bin": {
+      "sha256": "acb226f77b9f806a7691ee6caa574deb2b83354efd2bc4acc9b8915b05d8e91a",
+      "size": 103664
+    },
+    "en/stats-ref.index.bin": {
+      "sha256": "68a30646e44d110520c3a9698aed8140de955f8970d168cd06c782a2c3008dbd",
+      "size": 74224
+    },
+    "en/stats.ndjson": {
+      "sha256": "16fe7b84549d5570a734ef441e4722d589a6d17ecd3f834ecf867736855af719",
+      "size": 2565295
+    },
+    "regex/maps.en.json": {
+      "sha256": "91966c354d0914a532e82da37949e1de2111e48bfada4f3e8eabda271c2e876b",
+      "size": 60447
+    },
+    "regex/maps.ru.json": {
+      "sha256": "aab0132fd32a86aa5b13fa86a3121657336975ba2322b2957e27fe08b09bc888",
+      "size": 100396
+    },
+    "ru/client_strings.js": {
+      "sha256": "8438004553931607aa5697d5fddc7888f56a655b6133a48096e4f25dac2637d0",
+      "size": 9638
+    },
+    "ru/client_strings.json": {
+      "sha256": "cb82cf8ad30f85802b348b8234dae7717ea490622b1563251cad92bbf4a71e1a",
+      "size": 10831
+    },
+    "ru/items-name.index.bin": {
+      "sha256": "0c019dc548cb122a2ab203a6ff97d9cc82517a0e36ea722d02d1ef8a576aef6e",
+      "size": 39696
+    },
+    "ru/items-ref.index.bin": {
+      "sha256": "23e34461e4619734f0752e879c8cc54cc3c0d505aa67b361f3227d1a7e598fb2",
+      "size": 39696
+    },
+    "ru/items.ndjson": {
+      "sha256": "bca66968b116c1206603e49fff8b50f32b8d5c0529e8b8bae348c94ce9f67d58",
+      "size": 1545175
+    },
+    "ru/stats-matcher.index.bin": {
+      "sha256": "659f89405dfdf8ec183a8cc4173b25dacd0d647b212ca93b7b611bb292ce2fb0",
+      "size": 103640
+    },
+    "ru/stats-ref.index.bin": {
+      "sha256": "1cc31bde8d10cc915eec8fcc5571aad432eb652b8b8ecb862ff8ceca2d84e6f7",
+      "size": 74224
+    },
+    "ru/stats.ndjson": {
+      "sha256": "ba205f58915f8a2e60faf5826372d5806a3cdb4ada6266faeb99f5ae8e732d3f",
+      "size": 3358321
+    },
+    "wealth/exchange-ids.json": {
+      "sha256": "1e84e7f8cb14049a2ee03b0fd2f9ef56b83f696d2a057193683aa86bab4481ef",
+      "size": 111711
+    }
+  }
+}
