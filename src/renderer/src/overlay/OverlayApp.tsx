@@ -1,4 +1,5 @@
 import { useEffect, type MouseEvent } from 'react'
+import { keyCodeToCode, keyPressToAccelerator, sameAccelerator } from '@shared/accelerators'
 import { useOverlayStore } from '../store/useOverlayStore'
 import { IconSprite } from './Icon'
 import { widgetsOfLayer } from './registry'
@@ -52,6 +53,30 @@ export function OverlayApp() {
     }
     document.addEventListener('click', onClick)
     return () => document.removeEventListener('click', onClick)
+  }, [])
+
+  // Повторный Ctrl+D в активном оверлее закрывает окно цены. Обычно это ловит main (before-input-event,
+  // по code); сюда нажатие доходит, только если main его не распознал (синтетический ввод без скан-кода:
+  // пустой code) — тогда по keyCode.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      const st = useOverlayStore.getState()
+      if (!st.focus.overlay || !st.priceCheckKey) return
+      const accel = keyPressToAccelerator({
+        code: e.code || keyCodeToCode(e.keyCode),
+        key: e.key,
+        control: e.ctrlKey,
+        alt: e.altKey,
+        shift: e.shiftKey,
+        meta: e.metaKey
+      })
+      if (!accel || !sameAccelerator(accel, st.priceCheckKey)) return
+      e.preventDefault()
+      st.dismissPopups()
+      window.overlayApi.overlay.focusGame()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [])
 
   const onBackground = (e: MouseEvent<HTMLDivElement>): void => {

@@ -26,6 +26,8 @@ interface OverlayStore {
   lang: UiLang
   /** акселератор overlayToggle — для подсказок ('Shift+Space') */
   toggleKey: string
+  /** акселератор priceCheck ('Control+D') — в активном оверлее закрывает окно цены */
+  priceCheckKey: string
   /** «Позиция окна цены» для окон слоя popup (Settings.overlay.pricePosition) */
   pricePosition: PricePopupPosition
   /** куда окно цены перетащили (Settings.overlay.priceWindowPos) — для 'saved' */
@@ -58,6 +60,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
   ready: false,
   lang: 'ru',
   toggleKey: 'Shift+Space',
+  priceCheckKey: 'Control+D',
   pricePosition: 'cursor',
   priceWindowPos: null,
   focus: { game: false, overlay: false, usingHotkey: false },
@@ -98,6 +101,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
     set({
       lang: s.uiLang,
       toggleKey: s.hotkeys.overlayToggle?.accel ?? '',
+      priceCheckKey: s.hotkeys.priceCheck?.accel ?? '',
       pricePosition: s.overlay?.pricePosition ?? 'cursor',
       priceWindowPos: s.overlay?.priceWindowPos ?? null
     })
