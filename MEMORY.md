@@ -93,9 +93,11 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 - **Прозрачность — только через CSS** (`.app` opacity). Нативный `win.setOpacity()` на прозрачном окне валит
   приложение — НЕ возвращать.
 - **Один экземпляр:** процесс упакованной версии — `POETH.exe`, держит single-instance lock (на каталог
-  userData). Второй запуск молча выходит («another instance holds the single-instance lock») — закрыть:
-  `Get-Process POETH, electron | Stop-Process`. Для тестов и параллельных `npm run dev` из разных worktree —
-  `POETH_USER_DATA_DIR=<папка>` (свой профиль = свой lock).
+  userData). Второй запуск молча выходит («another instance holds the single-instance lock»). Для тестов и
+  параллельных `npm run dev` из разных worktree — `POETH_USER_DATA_DIR=<папка>` (свой профиль = свой lock).
+  **Закрывать только свой процесс по PID.** Никогда не убивать по имени (`Stop-Process -Name POETH/electron`,
+  `taskkill /IM`): на этом ПК стоит установленный POETH пользователя, он тестирует в игре — 29.10 у него из-за
+  запусков сессий вылетело трейд-окно. Пока пользователь в игре, проверки сессий не цепляются к окну PoE.
 - **Смена игры в dev — мягкая:** electron-vite завершает dev-сервер, когда Electron выходит, поэтому в dev
   `app.switchGame` не делает `app.relaunch()`, а перенастраивает домены и перезагружает окна. Настоящий relaunch
   проверяется на собранной версии (`npm run build` → `electron .` или `npm run package:dir`).
