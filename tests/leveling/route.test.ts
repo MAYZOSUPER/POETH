@@ -90,6 +90,20 @@ describe.each([
   ['EN', 'Hero (Witch) is now level 2', 'Hero', 'Witch'],
   ['RU', 'Героиня (Ведьма) достигает 2 уровня', 'Героиня', 'Ведьма']
 ] as const)('журнал игры %s', (_lang, levelUp, who, cls) => {
+  it('портал: глагол из текста маршрута не дублируется («…, place {portal|set}», «Take {portal|use}»)', () => {
+    const withPortal = flat.filter((f) => f.step.parts.some((p) => typeof p === 'object' && 'k' in p && p.k === 'portal'))
+    expect(withPortal.length).toBeGreaterThan(0)
+    for (const f of withPortal) {
+      const ruText = plainText(renderParts(f.step.parts, data, 'ru'))
+      const enText = plainText(renderParts(f.step.parts, data, 'en'))
+      expect(ruText, f.step.id).not.toMatch(/(поставьте|заберите)\s+(поставьте|войдите)/i)
+      expect(enText, f.step.id).not.toMatch(/\b(place|take)\s+(set|use)\b/i)
+    }
+    const den = withPortal.find((f) => f.step.id === 'a2-004')!
+    expect(plainText(renderParts(den.step.parts, data, 'ru'))).toMatch(/, поставьте портал$/)
+    expect(plainText(renderParts(den.step.parts, data, 'en'))).toMatch(/, set a portal$/)
+  })
+
   it('уровень персонажа и вход в зону', () => {
     expect(parseLevelingLine(`${P('INFO')}: ${levelUp}`)).toEqual({ type: 'level', character: who, className: cls, level: 2 })
     expect(parseLevelingLine(zone('1_1_2', 2))).toEqual({ type: 'zone', areaId: '1_1_2', level: 2 })

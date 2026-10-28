@@ -41,7 +41,7 @@ export function nameOf(data: LevelingData, en: string, lang: UiLangLv): string {
 export function renderParts(parts: LvPart[], data: LevelingData, lang: UiLangLv): Seg[] {
   const ru = lang === 'ru'
   const out: Seg[] = []
-  for (const p of parts) {
+  for (const [i, p] of parts.entries()) {
     if (typeof p === 'string') {
       if (p.trim()) out.push({ kind: 'text', text: p })
       continue
@@ -68,9 +68,25 @@ export function renderParts(parts: LvPart[], data: LevelingData, lang: UiLangLv)
       case 'logout':
         out.push({ kind: 'town', text: ru ? 'Выйдите в город (logout)' : 'Logout to town' })
         break
-      case 'portal':
-        out.push({ kind: 'town', text: p.v === 'set' ? (ru ? 'Поставьте портал' : 'Set a portal') : ru ? 'Войдите в портал' : 'Use the portal' })
+      case 'portal': {
+        const full = p.v === 'set' ? (ru ? 'Поставьте портал' : 'Set a portal') : ru ? 'Войдите в портал' : 'Use the portal'
+        // «…, place {portal|set}» / «Take {portal|use}»: глагол уже в тексте маршрута — оставляем один, наш
+        const before = parts[i - 1]
+        const prev = out[out.length - 1]
+        if (prev?.kind === 'text' && typeof before === 'object' && 't' in before && /(^|,\s*)(place|take)\s*$/i.test(before.t)) {
+          const head = prev.text.replace(/(^|,\s*)\S+\s*$/u, '$1').trimEnd()
+          if (head) {
+            prev.text = head
+            out.push({ kind: 'town', text: full.charAt(0).toLowerCase() + full.slice(1) })
+          } else {
+            out.pop()
+            out.push({ kind: 'town', text: full })
+          }
+          break
+        }
+        out.push({ kind: 'town', text: full })
         break
+      }
       case 'quest':
         out.push({ kind: 'quest', text: questName(data, p.q, lang), ref: p.q })
         break
