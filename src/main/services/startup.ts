@@ -4,17 +4,13 @@ import { IPC } from '@shared/ipc'
 import { AUTOSTART_ARG, loginItemSettings } from '@shared/updates'
 import { onSettingsChange } from './settingsStore'
 import { notifyUser } from './notify'
+import { portableExe } from './portable'
 
 // Запуск «как APT / Sidekick» (S10a): шаги экрана загрузки, «Запускать вместе с Windows»,
 // тост «POETH запущен — наведите на предмет и нажмите Ctrl+D». Решение, что показывать при
 // старте, — чистая функция decideStartup (@shared/updates), вызывается из main/index.ts.
 
 let state: StartupState = { step: 'settings', version: '' }
-
-/** Запущен ли portable-exe (S10b): путь к самому POETH-Portable-….exe, не к распакованной копии. */
-export function portableExe(): string | undefined {
-  return process.env.PORTABLE_EXECUTABLE_FILE || undefined
-}
 
 export function wasAutostarted(): boolean {
   return process.argv.includes(AUTOSTART_ARG)

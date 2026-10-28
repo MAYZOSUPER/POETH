@@ -8,6 +8,8 @@ directories:
 
 # Electron fuses (hardening, S3): cookie encryption, без RunAsNode/--inspect, только app.asar + integrity.
 afterPack: build/afterPack.cjs
+# ProductName в ресурсах POETH.exe = «POE Trade Helper» (S10c): один пункт в «Пуске» и шапка тоста — см. файл
+afterSign: build/afterSign.cjs
 
 files:
   - out/**/*

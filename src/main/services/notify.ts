@@ -5,10 +5,12 @@ import { getSettings } from './settingsStore'
 import { getGameFocus } from '../focus/gameFocus'
 import { getOverlayStatus, sendToOverlay } from '../windows/gameOverlay'
 import { notificationIcon } from '../appIcon'
+import { portableExe } from './portable'
 
 // Короткие сообщения игроку из main (S10a): «POETH запущен…», «Данные обновлены», результат
 // ручной проверки обновлений. Если игра в фокусе и оверлей прицеплен — тост поверх игры,
 // иначе — уведомление Windows (тихое, без звука). Строки main — здесь (у main нет i18n renderer).
+// Portable — только поверх игры (см. windowsToastsAllowed).
 
 const TEXT = {
   ru: {
@@ -41,6 +43,15 @@ export async function noticeText(key: NoticeKey, params?: Record<string, string 
   return format(TEXT[lang][key], params)
 }
 
+/**
+ * Можно ли показывать уведомления Windows. Portable — нет: Electron 40 при первом уведомлении (и уже при
+ * Notification.isSupported — он создаёт NotificationPresenter) ставит в «Пуск» ярлык и COM-ключ активатора
+ * на распакованную копию во %TEMP% (windows_toast_activator.cc). У portable — только сообщения поверх игры.
+ */
+export function windowsToastsAllowed(): boolean {
+  return !portableExe() && Notification.isSupported()
+}
+
 /** Показать сообщение: поверх игры, если она в фокусе, иначе уведомлением Windows. */
 export async function notifyUser(
   key: NoticeKey,
@@ -53,6 +64,6 @@ export async function notifyUser(
     sendToOverlay(IPC.events.overlayNotice, notice)
     return
   }
-  if (!Notification.isSupported()) return
+  if (!windowsToastsAllowed()) return
   new Notification({ title: 'POE Trade Helper', body: text, icon: notificationIcon(), silent: true }).show()
 }

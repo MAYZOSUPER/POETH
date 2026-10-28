@@ -6,7 +6,7 @@ import { IPC } from '@shared/ipc'
 import { loopbackUrl, releaseNotesText, releasePageUrl, shouldOfferUpdate } from '@shared/updates'
 import { getSettings } from './settingsStore'
 import { notifyUser } from './notify'
-import { portableExe } from './startup'
+import { portableExe } from './portable'
 import { closeUpdateWindow, openUpdateWindow } from '../windows/serviceWindows'
 
 // Автообновление приложения (S10a): electron-updater + GitHub Releases (provider github,
