@@ -33,6 +33,7 @@ function broadcast(channel: string, payload: unknown): void {
 const log = (msg: string): void => netLog('debug', msg)
 
 let manager: WealthManager | null = null
+let priceService: PriceService | null = null
 let unsubs: Array<() => void> = []
 
 async function loadNames(): Promise<ExchangeIdNames | null> {
@@ -60,7 +61,7 @@ function getManager(): WealthManager {
     statusAccountName: () => getAuthStatus().accountName,
     log
   })
-  const prices = new PriceService({
+  const prices = (priceService = new PriceService({
     // web.poecdn.com и api.poe.watch — без cookie сессии pathofexile.com (http.ts)
     getJson: async (url) => {
       const res = await httpRequest({ url, timeoutMs: 45_000 })
@@ -78,7 +79,7 @@ function getManager(): WealthManager {
     removeCache: (rel) => store.removeCache(rel),
     loadNames,
     log
-  })
+  }))
   manager = new WealthManager({
     provider,
     prices,
@@ -103,6 +104,27 @@ export function getWealthApi(): Pick<WealthManager, 'onSnapshot' | 'getNetWorthA
     getNetWorthAt: (at, league) => m.getNetWorthAt(at, league),
     takeSnapshot: () => m.takeSnapshot()
   }
+}
+
+/**
+ * Курс chaos за divine для других доменов (S4: окно цены) — тот же PriceService учёта богатства: почасовой
+ * фид обмена GGG (кэш на диске, не чаще раза в 10 мин), иначе poe.watch, если он включён в учёте богатства.
+ * null — данных нет (сеть недоступна и кэша нет).
+ */
+export async function getDivineRate(league: string): Promise<{ chaosPerDivine: number; hour?: number } | null> {
+  const m = getManager()
+  const prices = priceService!
+  let poeWatch = false
+  try {
+    poeWatch = m.state().options.poeWatch
+  } catch {
+    // менеджер ещё не загрузил настройки — только фид обмена
+  }
+  await prices.refresh(league, { poeWatch })
+  const rate = prices.divineRate(league, { poeWatch })
+  if (!(rate > 0)) return null
+  const hour = prices.exchange.prices(league).lastHour
+  return hour !== undefined ? { chaosPerDivine: rate, hour: hour * 1000 } : { chaosPerDivine: rate }
 }
 
 function handle(channel: string, fn: (...args: unknown[]) => unknown): void {

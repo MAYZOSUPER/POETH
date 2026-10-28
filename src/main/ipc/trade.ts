@@ -3,6 +3,7 @@ import path from 'path'
 import { IPC } from '@shared/ipc'
 import { GAMES, siteUrl, type GameDef, type SiteHost } from '@shared/games'
 import type {
+  CurrencyRate,
   NetError,
   Poe1ExchangeOffer,
   Poe1ExchangeResult,
@@ -24,6 +25,7 @@ import { readJson, writeJsonAtomic } from '../services/atomicJson'
 import { getSettings } from '../services/settingsStore'
 import { tradeRequest } from '../net'
 import { captureItemText } from '../input/gameInput'
+import { getDivineRate } from './wealth'
 import { sendToCompanion } from '../windows/companionWindow'
 import { onHotkeyAction } from '../hotkeys'
 import type { IpcDomain } from './types'
@@ -259,6 +261,32 @@ async function poe1MatchUnknown(lang: unknown, lines: unknown): Promise<Poe1Fall
   return fallbacks[lang]?.matcher.matchAll(clean) ?? []
 }
 
+// ---------------------------------------------------------------- курс chaos ↔ divine
+
+const RATE_TTL_MS = 10 * 60_000
+const rates = new Map<string, { at: number; rate: CurrencyRate | null; pending?: Promise<CurrencyRate | null> }>()
+
+/** Курс для окна цены: сервис цен учёта богатства (S11a), в памяти — 10 минут на лигу. */
+function currencyRate(league: unknown): Promise<CurrencyRate | null> {
+  if (typeof league !== 'string' || !league || league.length > 100) return Promise.resolve(null)
+  const hit = rates.get(league)
+  if (hit?.pending) return hit.pending
+  if (hit && Date.now() - hit.at < RATE_TTL_MS) return Promise.resolve(hit.rate)
+  const pending = getDivineRate(league)
+    .then((r) => (r ? { league, ...r } : null))
+    .catch((e) => {
+      console.warn('[trade] курс chaos/divine:', e instanceof Error ? e.message : e)
+      return null
+    })
+    .then((rate) => {
+      // без курса — повторить раньше, через минуту
+      rates.set(league, { at: rate ? Date.now() : Date.now() - RATE_TTL_MS + 60_000, rate })
+      return rate
+    })
+  rates.set(league, { at: hit?.at ?? 0, rate: hit?.rate ?? null, pending })
+  return pending
+}
+
 // ---------------------------------------------------------------- регистрация
 
 function register(): void {
@@ -273,6 +301,7 @@ function register(): void {
   ipcMain.handle(IPC.trade.poe1Exchange, (_e, args: unknown) => poe1Exchange(args))
   ipcMain.handle(IPC.trade.poe1MatchUnknown, (_e, lang: unknown, lines: unknown) => poe1MatchUnknown(lang, lines))
   // одно действие игрока — текст whisper в буфер; отправляет игрок сам
+  ipcMain.handle(IPC.trade.currencyRate, (_e, league: unknown) => currencyRate(league))
   ipcMain.handle(IPC.trade.copyText, (_e, text: unknown) => {
     if (typeof text !== 'string' || !text || text.length > 2000) return false
     clipboard.writeText(text)

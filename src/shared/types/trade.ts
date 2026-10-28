@@ -12,6 +12,7 @@ export type {
   Poe1ExchangeResult
 } from '../poe1/pricecheck/results'
 export type { FallbackMatch as Poe1FallbackMatch } from '../poe1/pricecheck/fallback'
+export type { CurrencyRate } from '../poe1/pricecheck/currency'
 
 /** Нераспознанная строка мода (ParsedItem.unknownModifiers) для фолбэка data/stats. */
 export interface Poe1UnknownLine {
