@@ -53,16 +53,28 @@
   gap: var(--sp-6);
   align-items: start;
 }
-@media (max-width: 900px) {
-  .lv-body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
 .lv-route {
   min-height: 0;
 }
 .lv-rows {
   max-height: calc(100vh - 230px);
+}
+/* одна колонка (окно уже 900 px, в том числе 820 по умолчанию): блоки справа уходят под маршрут, а область
+   прокручивается. min-height: auto у маршрута — иначе грид ужимал его строку и правые блоки ложились поверх (S19).
+   Блок стоит после .lv-route и .lv-rows: та же специфичность, побеждает более позднее правило */
+@media (max-width: 900px) {
+  .lv-body {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll) transparent;
+  }
+  .lv-route {
+    min-height: auto;
+  }
+  .lv-rows {
+    max-height: max(240px, calc(100vh - 300px));
+  }
 }
 .lv-row {
   display: grid;
