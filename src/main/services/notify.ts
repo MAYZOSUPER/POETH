@@ -1,4 +1,4 @@
-import { Notification } from 'electron'
+import { app, Notification } from 'electron'
 import type { OverlayNotice } from '@shared/types'
 import { IPC } from '@shared/ipc'
 import { getSettings } from './settingsStore'
@@ -6,6 +6,7 @@ import { getGameFocus } from '../focus/gameFocus'
 import { getOverlayStatus, sendToOverlay } from '../windows/gameOverlay'
 import { notificationIcon } from '../appIcon'
 import { portableExe } from './portable'
+import { windowsToastsPolicy } from './toastPolicy'
 
 // Короткие сообщения игроку из main (S10a): «POETH запущен…», «Данные обновлены», результат
 // ручной проверки обновлений. Если игра в фокусе и оверлей прицеплен — тост поверх игры,
@@ -44,12 +45,12 @@ export async function noticeText(key: NoticeKey, params?: Record<string, string 
 }
 
 /**
- * Можно ли показывать уведомления Windows. Portable — нет: Electron 40 при первом уведомлении (и уже при
- * Notification.isSupported — он создаёт NotificationPresenter) ставит в «Пуск» ярлык и COM-ключ активатора
- * на распакованную копию во %TEMP% (windows_toast_activator.cc). У portable — только сообщения поверх игры.
+ * Можно ли показывать уведомления Windows: установленная версия — да; portable и dev — нет (dev — только с
+ * POETH_DEV_TOASTS=1); POETH_NO_WINDOWS_TOASTS=1 — нет. Правило и причины — services/toastPolicy.ts.
+ * Notification.isSupported вызывается последним: он уже создаёт NotificationPresenter, а с ним ярлык в «Пуске».
  */
 export function windowsToastsAllowed(): boolean {
-  return !portableExe() && Notification.isSupported()
+  return windowsToastsPolicy({ packaged: app.isPackaged, portable: !!portableExe(), env: process.env }) && Notification.isSupported()
 }
 
 /** Показать сообщение: поверх игры, если она в фокусе, иначе уведомлением Windows. */
@@ -64,6 +65,9 @@ export async function notifyUser(
     sendToOverlay(IPC.events.overlayNotice, notice)
     return
   }
-  if (!windowsToastsAllowed()) return
+  if (!windowsToastsAllowed()) {
+    console.log(`[notify] ${text}`)
+    return
+  }
   new Notification({ title: 'POE Trade Helper', body: text, icon: notificationIcon(), silent: true }).show()
 }

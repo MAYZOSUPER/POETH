@@ -3,6 +3,7 @@ import {
   POPUP_CURSOR_GAP as GAP,
   POPUP_CURSOR_LIFT as LIFT,
   POPUP_MARGIN as M,
+  clampToArea,
   intersect,
   placeWidget,
   type PlacementInput,
@@ -75,6 +76,33 @@ describe('placeWidget: у левого / правого края', () => {
     const area = { x: 0, y: 0, width: 1920, height: 1080 }
     const p = placeWidget({ mode: 'right', anchor: { x: 300, y: 400 }, size: SIZE, viewport: { width: 2600, height: 1080 }, area })
     expect(p.x + SIZE.width).toBe(1920 - M)
+  })
+})
+
+describe('placeWidget: «где оставил» (окно перетащили за шапку)', () => {
+  it('открывается там, где оставили, — независимо от курсора', () => {
+    expect(place({ mode: 'saved', saved: { x: 700, y: 120 }, anchor: { x: 1500, y: 900 } })).toEqual({ x: 700, y: 120 })
+    expect(place({ mode: 'saved', saved: { x: 700, y: 120 }, anchor: { x: 100, y: 100 } })).toEqual({ x: 700, y: 120 })
+  })
+
+  it('ещё не перетаскивали — как «у курсора»', () => {
+    const anchor = { x: 1500, y: 400 }
+    expect(place({ mode: 'saved', saved: null, anchor })).toEqual(place({ mode: 'cursor', anchor }))
+  })
+
+  it('окно игры стало меньше или другой монитор — окно целиком внутри области', () => {
+    const area = { x: 0, y: 0, width: 1280, height: 720 }
+    const p = placeWidget({ mode: 'saved', saved: { x: 1700, y: 900 }, anchor: { x: 10, y: 10 }, size: SIZE, viewport: { width: 1280, height: 720 }, area })
+    expectInside(p, SIZE, area)
+  })
+
+  it('при перетаскивании окно не уходит за край окна игры и монитора (125 %: дробные DIP)', () => {
+    const view = { width: 1536, height: 864 }
+    const area = { x: 0, y: 0, width: 1536, height: 864 }
+    for (const raw of [{ x: -300, y: -50 }, { x: 1500.4, y: 700.6 }, { x: 600.5, y: 200.5 }]) {
+      expectInside(clampToArea(raw, SIZE, view, area), SIZE, area)
+    }
+    expect(clampToArea({ x: 600.4, y: 200.6 }, SIZE, view, area)).toEqual({ x: 600, y: 201 })
   })
 })
 

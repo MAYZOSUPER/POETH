@@ -31,6 +31,7 @@ type FullscreenEvent = import('electron-overlay-window').FullscreenEvent
 let win: BrowserWindow | null = null
 let lib: OverlayLib | null = null
 let toggleAccel = 'Shift+Space'
+let priceCheckAccel = 'Control+D'
 let adminWarned = false
 let statusTimer: NodeJS.Timeout | null = null
 
@@ -86,6 +87,11 @@ export function getOverlayStatus(): OverlayStatus {
 /** Акселератор overlayToggle — его же ловим в самом оверлее (when active), как APT. */
 export function setOverlayToggleAccel(accel: string): void {
   toggleAccel = accel
+}
+
+/** Акселератор priceCheck: в активном оверлее повторный Ctrl+D закрывает окно цены. */
+export function setOverlayPriceCheckAccel(accel: string): void {
+  priceCheckAccel = accel
 }
 
 /** Курсор (экран, DIP) → координаты окна оверлея (CSS px). */
@@ -200,9 +206,9 @@ function handleOverlayKeys(event: Electron.Event, input: Electron.Input): void {
     meta: input.meta
   })
   if (!accel) return
-  if (accel === 'Escape' || accel === 'Control+W') {
+  if (accel === 'Escape' || accel === 'Control+W' || (priceCheckAccel && sameAccelerator(accel, priceCheckAccel))) {
     event.preventDefault()
-    // макет: Esc закрывает окно цены и возвращает фокус игре
+    // макет: Esc (и повторный Ctrl+D, пока оверлей активен) закрывает окно цены и возвращает фокус игре
     sendToOverlay(IPC.events.overlayDismiss)
     process.nextTick(() => focusGame())
   } else if (toggleAccel && sameAccelerator(accel, toggleAccel)) {

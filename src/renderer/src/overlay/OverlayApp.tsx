@@ -14,6 +14,8 @@ import { useOverlayT } from './useOverlayT'
 export function OverlayApp() {
   const ready = useOverlayStore((s) => s.ready)
   const active = useOverlayStore((s) => s.focus.overlay)
+  // затемнение — только когда оверлей включили хоткеем; клик в окно цены экран не затемняет
+  const dim = useOverlayStore((s) => s.focus.overlay && s.focus.usingHotkey)
   const lang = useOverlayStore((s) => s.lang)
   const t = useOverlayT()
 
@@ -39,9 +41,11 @@ export function OverlayApp() {
 
   // Клик по виджету в пассивном режиме активирует окно (так работает Windows) —
   // после обработки клика возвращаем фокус игре. Слушатель на document срабатывает
-  // после onClick React (тот висит на #root).
+  // после onClick React (тот висит на #root). Окна с keepFocus (окно цены) фокус оставляют
+  // себе: нажатие внутри уже активировало оверлей (OverlayWidget).
   useEffect(() => {
-    const onClick = (): void => {
+    const onClick = (e: globalThis.MouseEvent): void => {
+      if ((e.target as Element | null)?.closest?.('[data-keep-focus]')) return
       if (!useOverlayStore.getState().focus.overlay) window.overlayApi.overlay.focusGame()
     }
     document.addEventListener('click', onClick)
@@ -58,7 +62,7 @@ export function OverlayApp() {
     widgetsOfLayer(name).map(({ id, Component }) => <Component key={id} />)
 
   return (
-    <div className={`ov-root${active ? ' is-active' : ''}`} onMouseDown={onBackground}>
+    <div className={`ov-root${active ? ' is-active' : ''}${dim ? ' is-dim' : ''}`} onMouseDown={onBackground}>
       <IconSprite />
       {ready && (
         <>

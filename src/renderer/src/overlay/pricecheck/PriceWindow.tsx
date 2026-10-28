@@ -18,6 +18,7 @@ import { netErrorText } from '../../panels/account/netError'
 import { Icon } from '../Icon'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { useOverlayT } from '../useOverlayT'
+import { PopupPositionButton } from '../PopupPosition'
 import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
 import { ageKey, coinClass, currencyLabel, fmtNum, statParts, tierWordKey } from './format'
 
@@ -827,7 +828,8 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
 
   return (
     <section className={`ui-panel pc${expert ? ' is-expert' : ''}`}>
-      <header className="ui-panel__head">
+      {/* шапка — ручка перетаскивания окна (S1, OverlayWidget); кнопки и select в ней не тащат */}
+      <header className="ui-panel__head" data-drag-handle>
         <span className="ui-panel__title">{t('pc1.title')}</span>
         {leagues.length > 0 && (
           <select
@@ -844,6 +846,7 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
             ))}
           </select>
         )}
+        <PopupPositionButton />
         <button
           type="button"
           className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"

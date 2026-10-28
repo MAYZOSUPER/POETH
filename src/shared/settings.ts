@@ -3,7 +3,7 @@
 // ЗАМОРОЖЕН после S0: новые поля/дефолты добавляет только лид.
 
 import { isGameId, isSiteHost } from './games'
-import { PRICE_POPUP_POSITIONS } from './types/overlay'
+import { PRICE_POPUP_POSITIONS, type PopupPoint } from './types/overlay'
 import { defaultChatCommands, normalizeChatCommands } from './chatCommands'
 import type {
   HotkeyAction,
@@ -71,7 +71,7 @@ export function defaultSettings(): Settings {
     deals: { enabled: true, stashGrid: 'auto', calibration: null },
     regex: {},
     ui: { simpleMode: true },
-    overlay: { pricePosition: 'cursor' },
+    overlay: { pricePosition: 'cursor', priceWindowPos: null },
     chatCommands: defaultChatCommands(),
     startup: { withWindows: false, minimized: true, firstRunDone: false },
     updates: { check: true }
@@ -148,6 +148,14 @@ function mergeSection<T extends object>(def: T, src: unknown): T {
   return out as T
 }
 
+/** Позиция окна цены: конечные числа в разумных пределах (DIP окна игры), округлённые; иначе null. */
+function normalizePopupPoint(v: unknown): PopupPoint | null {
+  if (!isObj(v)) return null
+  const { x, y } = v
+  const ok = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n) && Math.abs(n) <= 100_000
+  return ok(x) && ok(y) ? { x: Math.round(x), y: Math.round(y) } : null
+}
+
 function normalizeHotkeys(src: unknown): HotkeyMap {
   const out = defaultHotkeys()
   if (!isObj(src)) return out
@@ -194,6 +202,7 @@ function normalize(src: Obj): Settings {
   if (!APP_TABS.includes(s.lastAppTab)) s.lastAppTab = def.lastAppTab
   if (!STASH_GRIDS.includes(s.deals.stashGrid)) s.deals.stashGrid = def.deals.stashGrid
   if (!PRICE_POPUP_POSITIONS.includes(s.overlay.pricePosition)) s.overlay.pricePosition = def.overlay.pricePosition
+  s.overlay.priceWindowPos = normalizePopupPoint(isObj(src.overlay) ? src.overlay.priceWindowPos : null)
   if (s.activeProfileId !== null && typeof s.activeProfileId !== 'string') s.activeProfileId = null
   if (s.logPath !== null && typeof s.logPath !== 'string') s.logPath = null
   if (!s.poe1.league) s.poe1.league = def.poe1.league

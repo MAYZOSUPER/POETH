@@ -5,7 +5,9 @@
 // - 'cursor' (по умолчанию) — рядом с курсором: курсор в правой половине окна игры → окно
 //   слева от курсора, иначе справа; со сдвигом, чтобы не закрывать подсказку предмета;
 //   по вертикали верх окна — на уровне курсора;
-// - 'left' / 'right' — у левого / правого края, по вертикали тоже у курсора.
+// - 'left' / 'right' — у левого / правого края, по вертикали тоже у курсора;
+// - 'saved' — там, куда игрок перетащил окно за шапку (Settings.overlay.priceWindowPos); ещё не
+//   перетаскивали — как 'cursor'.
 // Окно всегда целиком внутри `area` — пересечения окна игры и монитора под курсором
 // (игра в окне может свисать за край экрана или стоять на двух мониторах).
 
@@ -39,6 +41,8 @@ export interface PlacementInput {
   gap?: number
   /** сдвиг верха окна вверх от курсора */
   lift?: number
+  /** левый верхний угол для 'saved' (куда окно перетащили) */
+  saved?: Point | null
 }
 
 export const POPUP_MARGIN = 8
@@ -63,6 +67,11 @@ function fit(v: number, min: number, max: number): number {
   return Math.min(Math.floor(max), Math.max(Math.ceil(min), Math.round(v)))
 }
 
+/** Куда можно поставить окно размера size: та же область, что у placeWidget (окно игры ∩ монитор). */
+export function clampToArea(p: Point, size: Size, viewport: Size, area?: Rect | null, margin = POPUP_MARGIN): Point {
+  return placeWidget({ mode: 'saved', saved: p, anchor: p, size, viewport, area, margin })
+}
+
 export function placeWidget(input: PlacementInput): Point {
   const { anchor, size, viewport } = input
   const margin = input.margin ?? POPUP_MARGIN
@@ -75,6 +84,10 @@ export function placeWidget(input: PlacementInput): Point {
   const maxX = area.x + area.width - margin - size.width
   const minY = area.y + margin
   const maxY = area.y + area.height - margin - size.height
+
+  if (input.mode === 'saved' && input.saved) {
+    return { x: fit(input.saved.x, minX, maxX), y: fit(input.saved.y, minY, maxY) }
+  }
 
   let x: number
   if (input.mode === 'left') x = minX

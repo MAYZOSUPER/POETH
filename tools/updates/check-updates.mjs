@@ -122,7 +122,9 @@ function startPoeth(port, cdpPort) {
       POETH_UPDATE_URL: `http://127.0.0.1:${port}/`,
       POETH_DATA_MANIFEST_URL: `http://127.0.0.1:${port}/data/manifest.json`,
       POETH_UPDATE_DELAY_MS: '2500',
-      POETH_FAKE_INSTALLER_MARKER: MARKER
+      POETH_FAKE_INSTALLER_MARKER: MARKER,
+      // без тостов Windows: Electron при первом тосте ставит в «Пуск» ярлык и COM-ключ на exe проверки
+      POETH_NO_WINDOWS_TOASTS: '1'
     },
     stdio: ['ignore', 'pipe', 'pipe']
   })

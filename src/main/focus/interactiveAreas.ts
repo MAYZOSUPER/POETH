@@ -11,7 +11,8 @@ import { onGlobalMouseDown } from '../input/gameInput'
 // и, когда он над виджетом, временно снимает setIgnoreMouseEvents. Клик по виджету
 // активирует окно (так устроен Windows) — renderer после клика, а этот опрос как
 // страховка (курсор ушёл с виджета) возвращают фокус игре (focusGame → focusTarget).
-// Здесь же — авто-скрытие окна Ctrl+D: курсор ушёл от предмета в сторону или игрок
+// Здесь же — авто-скрытие окна Ctrl+D: курсор ушёл от предмета в сторону (только пока он ни
+// разу не заходил в окно — дальше игрок с окном работает и выходит за край спокойно) или игрок
 // кликнул мимо окна (глобальный хук мыши — только пока окно открыто), как в APT.
 
 const DEFAULT_AUTO_HIDE_PX = 100
@@ -19,7 +20,7 @@ const DEFAULT_AUTO_HIDE_PX = 100
 let rects: InteractiveRect[] = []
 /** что сейчас стоит у окна: true — ловит мышь; null — неизвестно (библиотека могла сменить) */
 let applied: boolean | null = null
-let autoHide: { from: OverlayPoint; threshold: number } | null = null
+let autoHide: { from: OverlayPoint; threshold: number; entered: boolean } | null = null
 let timer: NodeJS.Timeout | null = null
 let pollMs = 33
 let offMouseDown: (() => void) | null = null
@@ -81,7 +82,8 @@ function tick(): void {
     w.setIgnoreMouseEvents(!inside)
   }
 
-  if (autoHide && shouldAutoHide(local, autoHide.from, rects, autoHide.threshold)) {
+  if (autoHide && inside) autoHide.entered = true
+  if (autoHide && !autoHide.entered && shouldAutoHide(local, autoHide.from, rects, autoHide.threshold)) {
     autoHide = null
     sendToOverlay(IPC.events.overlayAutoHide)
   }
@@ -111,7 +113,8 @@ export function trackAutoHide(from: unknown, threshold?: unknown): void {
         threshold:
           typeof threshold === 'number' && threshold > 0 && Number.isFinite(threshold)
             ? threshold
-            : DEFAULT_AUTO_HIDE_PX
+            : DEFAULT_AUTO_HIDE_PX,
+        entered: false
       }
     : null
   reconcile()

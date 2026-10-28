@@ -225,11 +225,14 @@ async function main() {
   fakePort = (await waitFake((e) => e.evt === 'ready', 15000)).port
   await fakeCmd({ cmd: 'clipboard-save' })
 
-  // команды чата: F5 → /hideout (по умолчанию) и F6 → /invite @last; лог игры — свой файл
+  // команды чата: F5 → /hideout (по умолчанию) и F6 → /invite @last; лог игры — свой файл.
+  // Мастер пройден и запуск свёрнутым: иначе компаньон с мастером (S9) открывается поверх тестовой
+  // «игры» и клики мышью попадают в него.
   writeFileSync(
     path.join(PROFILE, 'settings.json'),
     JSON.stringify({
       schemaVersion: 2,
+      startup: { firstRunDone: true, minimized: true, withWindows: false },
       chatCommands: [
         { id: 'hideout', text: '/hideout', hotkey: 'F5', send: true, enabled: true },
         { id: 'invite', text: '/invite @last', hotkey: 'F6', send: true, enabled: true }
@@ -241,7 +244,8 @@ async function main() {
 
   const appArgs = [`--remote-debugging-port=${CDP_PORT}`, ...CHROMIUM]
   if (SCALE) appArgs.push(`--force-device-scale-factor=${SCALE}`)
-  const env = { ...process.env, POETH_USER_DATA_DIR: PROFILE, POETH_SAVE_CAPTURES: '1', POETH_GAME_LOG: GAME_LOG }
+  // без тостов Windows: Electron при первом тосте ставит в «Пуск» ярлык и COM-ключ на exe проверки
+  const env = { ...process.env, POETH_USER_DATA_DIR: PROFILE, POETH_SAVE_CAPTURES: '1', POETH_GAME_LOG: GAME_LOG, POETH_NO_WINDOWS_TOASTS: '1' }
   if (DEV) {
     // electron-vite dev: dev-сервер renderer + hot reload; аргументы для Electron — после «--»
     poeth = spawn(process.execPath, [path.join(ROOT, 'node_modules/electron-vite/bin/electron-vite.js'), 'dev', '--', ...appArgs], {
@@ -474,6 +478,70 @@ async function main() {
     }
     await sleep(200)
     check('мышь идёт от предмета к виджету — виджет остаётся', (await widgetText()) !== null)
+
+    // ---- с окном цены работают (баг 28.10: окно пропадало при клике по галочкам) ----
+    const center = (sel) =>
+      evaluate(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; const r = e.getBoundingClientRect();
+        return { x: Math.round((window.screenX + r.left + r.width / 2) * devicePixelRatio), y: Math.round((window.screenY + r.top + r.height / 2) * devicePixelRatio) } })()`)
+    const CHK = '.ov-pricecheck [role="checkbox"]'
+    const before = await evaluate(`document.querySelector('${CHK}')?.getAttribute('aria-checked') ?? null`)
+    const chk = await center(CHK)
+    if (chk) await psCmd(`click ${chk.x} ${chk.y}`)
+    await sleep(400)
+    const after = await evaluate(`document.querySelector('${CHK}')?.getAttribute('aria-checked') ?? null`)
+    check('клик по галочке: окно на месте, галочка переключилась', !!chk && (await widgetText()) !== null && before !== null && after !== before, `${before} → ${after}`)
+    const fAfter = (await overlayState()).focus
+    const dimmed = await evaluate("!!document.querySelector('.ov-root.is-dim')")
+    check('после клика фокус у окна цены (оверлей активен), экран не затемнён', fAfter.overlay && (await foreground()) === TITLE.overlay && !dimmed)
+    // курсор уходит далеко за край окна — окно не закрывается (с ним уже работают)
+    await psCmd(`move ${P.x} ${P.y + Math.round(g.height * 0.35)}`)
+    await sleep(600)
+    check('курсор ушёл далеко после работы с окном — окно на месте', (await widgetText()) !== null)
+    // кнопка в шапке (обновить) — окно и фокус остаются
+    const refresh = await center('.ov-pricecheck .ui-panel__head button:has(use[href="#i-refresh"])')
+    if (refresh) await psCmd(`click ${refresh.x} ${refresh.y}`)
+    await sleep(500)
+    check('кнопка в окне нажата — окно и фокус остались', !!refresh && (await widgetText()) !== null && (await overlayState()).focus.overlay)
+
+    // ---- перетаскивание за шапку, «где оставил», «вернуть к курсору» ----
+    const rectOf = () =>
+      evaluate(`(() => { const r = document.querySelector('.ov-pricecheck').getBoundingClientRect(), d = devicePixelRatio;
+        return { left: Math.round((window.screenX + r.left) * d), top: Math.round((window.screenY + r.top) * d) } })()`)
+    const r0 = await rectOf()
+    const title = await center('.ov-pricecheck .ui-panel__title')
+    const DX = -Math.round(g.width * 0.2)
+    const DY = Math.round(g.height * 0.08)
+    await psCmd(`down ${title.x} ${title.y}`)
+    for (let i = 1; i <= 6; i++) {
+      await psCmd(`move ${title.x + Math.round((DX * i) / 6)} ${title.y + Math.round((DY * i) / 6)}`)
+      await sleep(40)
+    }
+    await psCmd(`up ${title.x + DX} ${title.y + DY}`)
+    await sleep(400)
+    const r1 = await rectOf()
+    const s1 = (await evaluate('window.overlayApi.settings.get()')).overlay
+    check('окно перетащили за шапку', Math.abs(r1.left - r0.left - DX) <= 3 && Math.abs(r1.top - r0.top - DY) <= 3,
+      `сдвиг ${r1.left - r0.left},${r1.top - r0.top} из ${DX},${DY}`)
+    check('позиция запомнилась: «где оставил»', s1.pricePosition === 'saved' && !!s1.priceWindowPos, JSON.stringify(s1))
+    await press(K.Escape, [], 'overlay')
+    check('Esc закрыл окно, фокус у игры', await waitFor(async () => (await widgetText()) === null && (await foreground()) === TITLE.game))
+    // следующий Ctrl+D — окно там же, где оставили (курсор в другом месте)
+    await psCmd(`move ${P.x - 40} ${P.y + 30}`)
+    await press(K.D, [K.Ctrl])
+    await waitFor(async () => (await widgetText())?.startsWith('Item Class: Gloves'))
+    await sleep(200)
+    const r2 = await rectOf()
+    check('Ctrl+D открыл окно там же, где оставили', Math.abs(r2.left - r1.left) <= 2 && Math.abs(r2.top - r1.top) <= 2, `${r2.left},${r2.top} / ${r1.left},${r1.top}`)
+    // «вернуть к курсору» (кнопка видна только у перетащенного окна)
+    const home = await center('.ov-pricecheck [data-popup-home]')
+    if (home) await psCmd(`click ${home.x} ${home.y}`)
+    await sleep(400)
+    const s2 = (await evaluate('window.overlayApi.settings.get()')).overlay
+    const r3 = await rectOf()
+    check('«Вернуть к курсору»: окно снова у курсора, настройка «у курсора»', s2.pricePosition === 'cursor' && (r3.left !== r2.left || r3.top !== r2.top), JSON.stringify(s2))
+    // повторный Ctrl+D при активном оверлее (после клика в окно) — закрывает
+    if ((await foreground()) === TITLE.overlay) await press(K.D, [K.Ctrl], 'overlay')
+    check('повторный Ctrl+D в активном окне закрыл его, фокус у игры', await waitFor(async () => (await widgetText()) === null && (await foreground()) === TITLE.game))
     const [cx, cy] = cursor0.split(',')
     await psCmd(`move ${cx} ${cy}`)
     await fakeCmd({ cmd: 'hover', id: null })
