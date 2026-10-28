@@ -18,6 +18,7 @@ import { dealsChannels, dealsEvents, type DealsIpcApi } from './ipc/deals'
 import { updatesChannels, updatesEvents, type UpdatesIpcApi } from './ipc/updates'
 import { farmChannels, farmEvents, type FarmIpcApi } from './ipc/farm'
 import { wealthChannels, wealthEvents, type WealthIpcApi } from './ipc/wealth'
+import { flipChannels, flipEvents, type FlipIpcApi } from './ipc/flip'
 
 /** Каналы и события по доменам — для проверки уникальности в тестах. */
 export const IPC_DOMAINS = {
@@ -32,7 +33,8 @@ export const IPC_DOMAINS = {
   deals: { channels: dealsChannels, events: dealsEvents },
   updates: { channels: updatesChannels, events: updatesEvents },
   farm: { channels: farmChannels, events: farmEvents },
-  wealth: { channels: wealthChannels, events: wealthEvents }
+  wealth: { channels: wealthChannels, events: wealthEvents },
+  flip: { channels: flipChannels, events: flipEvents }
 } as const
 
 export const IPC = {
@@ -48,6 +50,7 @@ export const IPC = {
   ...updatesChannels,
   ...farmChannels,
   ...wealthChannels,
+  ...flipChannels,
   events: {
     ...campaignEvents,
     ...tradeEvents,
@@ -60,7 +63,8 @@ export const IPC = {
     ...dealsEvents,
     ...updatesEvents,
     ...farmEvents,
-    ...wealthEvents
+    ...wealthEvents,
+    ...flipEvents
   }
 } as const
 
@@ -77,7 +81,8 @@ export interface OverlayApi
     DealsIpcApi,
     UpdatesIpcApi,
     FarmIpcApi,
-    WealthIpcApi {}
+    WealthIpcApi,
+    FlipIpcApi {}
 
 export type {
   CampaignIpcApi,
@@ -91,5 +96,6 @@ export type {
   DealsIpcApi,
   UpdatesIpcApi,
   FarmIpcApi,
-  WealthIpcApi
+  WealthIpcApi,
+  FlipIpcApi
 }
