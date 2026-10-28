@@ -10,12 +10,12 @@ import {
   Ico,
   Switch,
   blacklistWarning,
-  coinClass,
   formatTime,
   statusTag,
   useSimple
 } from './common'
 import { playChime } from './sound'
+import { DealPrice } from './DealPrice'
 
 // «История» вкладки «Сделки»: фильтры и поиск, таблица сделок, переключатели карточек,
 // хранение/экспорт истории, в экспертном режиме — проверка строки лога.
@@ -176,10 +176,7 @@ function DealRow({ d, expert }: { d: Deal; expert: boolean }) {
       </td>
       <td className="dl-price">
         {d.price ? (
-          <>
-            <i className={coinClass(d.priceValue?.currency)} />
-            {d.price}
-          </>
+          <DealPrice d={d} lang={lang} full={false} />
         ) : (
           '—'
         )}

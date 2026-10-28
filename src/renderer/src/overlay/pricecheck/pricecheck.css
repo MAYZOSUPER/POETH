@@ -91,7 +91,17 @@
 .pc-group__price {
   color: var(--accent-hi);
   font: 700 var(--fs-lg) / 1.2 var(--font-ui);
+}
+/* простой режим (S18): число крупно, полное название валюты — помельче, медиана переносится целиком */
+.pc-group__price .ui-cur,
+.pc-group__median {
   white-space: nowrap;
+}
+.pc-group__price .ui-cur__unit {
+  font-size: var(--fs-md);
+}
+.pc .ui-summary__price {
+  white-space: normal;
 }
 .pc-group[data-kind='instant'] .pc-group__price {
   font-size: var(--fs-price);
@@ -148,22 +158,7 @@
   color: var(--accent-hi);
   outline: none;
 }
-.pc-rate__tip {
-  position: absolute;
-  z-index: 5;
-  top: calc(100% + var(--sp-3));
-  left: 0;
-  display: none;
-  width: max-content;
-  min-width: 150px;
-  white-space: normal;
-  cursor: default;
-}
-.pc-rate:hover .pc-rate__tip,
-.pc-rate:focus-visible .pc-rate__tip {
-  display: grid;
-  gap: var(--sp-2);
-}
+/* подсказка курса — общая .ui-cur-tip (components/Currency.tsx): дроби и источник внутри неё */
 .pc-rate__rows {
   display: grid;
   grid-template-columns: repeat(2, auto);
@@ -175,11 +170,6 @@
   color: var(--fg-faint);
   font-size: var(--fs-xs);
 }
-/* цена с подсказкой-эквивалентом в другой валюте */
-.pc-price[title] {
-  cursor: help;
-}
-
 .pc-defaults {
   padding-top: 0;
   color: var(--fg-muted);

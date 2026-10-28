@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
-import type { WealthItemNs, WealthState } from '@shared/types'
+import type { UiLang, WealthItemNs, WealthState } from '@shared/types'
 import { useT } from '../../i18n'
+import { CurrencyTipBody, TipAnchor, useCurrencyNames } from '../../components/Currency'
 import { SiteCheckBanner } from '../account/SiteCheckBanner'
 import { useWealthStore } from './useWealthStore'
 import { WealthChart } from './Chart'
@@ -136,6 +137,8 @@ function Top({ s, t, lang, now, expert }: { s: WealthState; t: T; lang: string; 
   const busy = useWealthStore((st) => st.busy)
   const latest = s.latest
   const first = !!latest && s.history.length < 2
+  const ul = lang as UiLang
+  const cur = useCurrencyNames(ul)
   const rate = latest?.divineRate || s.prices.divineRate
   const running = s.status.phase !== 'idle'
   const wait = s.refreshAt && s.refreshAt > now ? s.refreshAt : undefined
@@ -175,14 +178,16 @@ function Top({ s, t, lang, now, expert }: { s: WealthState; t: T; lang: string; 
       <div className="w-total">
         <span className="ui-label">{t('wealth.total')}</span>
         <div className="ui-figure">
-          <span className="ui-figure__value">
+          {/* S18: иконки игры, полное название в простом режиме, подсказка новичку о chaos/divine */}
+          <TipAnchor className="ui-figure__value ui-cur" focusable tip={<CurrencyTipBody tag="chaos" lang={ul} />}>
             {latest ? nf(latest.chaos, lang) : '—'}
-            <span className="ui-figure__unit">chaos</span>
-          </span>
+            <span className="ui-figure__unit">{latest && !expert ? cur.after('chaos', nf(latest.chaos, lang)) : 'chaos'}</span>
+          </TipAnchor>
           {latest && toDivine(latest.chaos, rate) !== null && (
-            <span className="ui-figure__alt">
-              <Coin unit="divine" />≈ {df(toDivine(latest.chaos, rate) ?? 0, lang)} div
-            </span>
+            <TipAnchor className="ui-figure__alt ui-cur" tip={<CurrencyTipBody tag="divine" lang={ul} />}>
+              <Coin unit="divine" lang={ul} />≈ {df(toDivine(latest.chaos, rate) ?? 0, lang)}{' '}
+              {expert ? 'div' : cur.after('divine', df(toDivine(latest.chaos, rate) ?? 0, lang))}
+            </TipAnchor>
           )}
         </div>
         {delta}

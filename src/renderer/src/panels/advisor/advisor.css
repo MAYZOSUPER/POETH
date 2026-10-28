@@ -34,6 +34,8 @@
 .ad-hour { font: 600 26px / 1.1 var(--font-ui); color: var(--accent-hi); white-space: nowrap; }
 .ad-hour--none { font-size: var(--fs-lg); font-weight: 500; color: var(--fg-muted); }
 .ad-hour--bad { color: var(--bad); }
+/* S18: простой режим — «Сфер хаоса в час» помельче рядом с числом */
+.ad-hour__unit { margin-left: 6px; font-size: var(--fs-md); font-weight: 500; color: var(--fg-muted); }
 .ad-conf { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--fg-muted); white-space: nowrap; }
 .ad-foot { padding-top: 6px; padding-bottom: 6px; }
 

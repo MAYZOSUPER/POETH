@@ -127,6 +127,12 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 29.10)_ слиты `design/strategies` `df26ba9` (дизайнер: `ui-steps`, `ui-dialog`, `ui-code`, `ui-mech`, `ui-pips--accent`,
+  7 иконок механик, `empty-route.svg`; макеты стратегий утверждены пользователем 28.10) и S18 `d704017` (сессия s18-currency,
+  `09bf847`…`ff22efe`): понятная валюта — иконки сфер через кэш main `userData/icons` (только web.poecdn.com, без cookies и
+  редиректов, PNG/WebP ≤256 КБ, `poeth://icon`; `protocol.ts` +1 маршрут), общий `<Currency>` с названиями из данных APT и
+  падежами RU, подсказка новичку, курс словами — окно цены, «Обмен», «Богатство», фарм, «Сделки», live, «Что фармить».
+  Язык названий = язык интерфейса (не `nameLang`). 1557 тестов. Запущен S19 (вёрстка компаньона на узком окне).
 - _(лид, 28.10)_ слит S16 `5b28d3c` (сессия s16-advisor, `5ed186f`…`10e51ae`): советник «что фармить» — вкладка
   `advisor` (скрыта: `features.advisor=false`, в dev `POETH_ADVISOR=1`), `strategies.json` схема 1 (предметы по `ref`,
   source official/community/imported/wealthy, patch/«может устареть», тексты `{ru?,en?}`, `measured`), строгий

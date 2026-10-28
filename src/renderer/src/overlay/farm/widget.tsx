@@ -7,6 +7,7 @@ import { Icon } from '../Icon'
 import { scheduleRectsFlush, useInteractive } from '../interactive'
 import { useOverlayT } from '../useOverlayT'
 import type { OverlayWidgetDef } from '../registry'
+import { CoinIcon, CurrencyTipBody, TipAnchor } from '../../components/Currency'
 import './farm-overlay.css'
 
 // Мини-виджет фарма поверх игры (S11b) по макету дизайнера: полоса 34 px сверху по центру —
@@ -182,11 +183,15 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
           <b>{stats?.maps ?? 0}</b>
         </span>
         <span className="ui-hud__sep" />
-        <span className="ui-hud__seg" title={t('farm.ov.income.title')}>
-          <i className={`ui-coin ${divRate ? 'ui-coin--div' : 'ui-coin--chaos'}`} />
+        {/* S18: иконка игры; в подсказке — что за валюта (полоса узкая — подпись короткая и в простом режиме) */}
+        <TipAnchor
+          className="ui-hud__seg"
+          tip={<CurrencyTipBody tag={divRate ? 'divine' : 'chaos'} lang={lang} extra={<b>{t('farm.ov.income.title')}</b>} />}
+        >
+          <CoinIcon tag={divRate ? 'divine' : 'chaos'} lang={lang} />
           <b>{incomeText}</b>
           <span className="ui-hud__lbl">{`${divRate ? 'div' : 'c'}${t('farm.ov.perHour')}`}</span>
-        </span>
+        </TipAnchor>
         <span ref={btnsRef} className="ov-farm__btns">
           <button
             type="button"

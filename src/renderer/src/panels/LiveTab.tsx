@@ -1,10 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import type { LiveHit, LiveSearchView } from '@shared/types'
+import type { LiveHit, LiveSearchView, UiLang } from '@shared/types'
 import { useT } from '../i18n'
 import { useAppStore } from '../store/useAppStore'
 import { useLiveStore } from './live/useLiveStore'
 import { LiveIco, LiveSwitch } from './live/ui'
-import { ago, coinClass, hitName, priceText, rarityColor, searchStatus } from './live/format'
+import { ago, hitName, priceAmount, rarityColor, searchStatus } from './live/format'
+import { Currency } from '../components/Currency'
 import './live/live.css'
 
 // Вкладка Live компаньона (PoE1, S6) по утверждённому макету: общие переключатели и счётчик
@@ -100,7 +101,7 @@ function SearchRow({ s, now, masterOn, max }: { s: LiveSearchView; now: number; 
 function HitRow({ hit, now }: { hit: LiveHit; now: number }) {
   const t = useT()
   const [note, setNote] = useState<string | null>(null)
-  const coin = hit.price ? coinClass(hit.price.currency) : null
+  const lang = useAppStore((s) => s.settings?.uiLang ?? 'ru') as UiLang
   const whisper = async (): Promise<void> => {
     const r = await window.overlayApi.live.whisper(hit.key)
     setNote(r === 'ok' ? t('live.toast.done.note') : t(`live.act.err.${r}`))
@@ -122,8 +123,7 @@ function HitRow({ hit, now }: { hit: LiveHit; now: number }) {
         {note && <span className="live-hit-note">{note}</span>}
       </td>
       <td className="price">
-        {coin && <i className={coin} />}
-        {priceText(hit.price)}
+        {hit.price ? <Currency tag={hit.price.currency} text={priceAmount(hit.price.amount, lang)} lang={lang} /> : '—'}
       </td>
       <td className="live-when">{ago(t, hit.at, now)}</td>
       <td className="live-hit-acts">

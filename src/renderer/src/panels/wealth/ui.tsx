@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 import type { ReactNode } from 'react'
+import type { UiLang } from '@shared/types'
+import { CoinIcon } from '../../components/Currency'
 import sprite from '../../../../../resources/brand/icons-sprite.svg?raw'
 
 // Иконки, переключатель и монеты для вкладки «Богатство» (компоненты ui-* дизайн-системы).
@@ -78,6 +80,7 @@ export function WSwitch({
   )
 }
 
-export function Coin({ unit }: { unit: 'chaos' | 'divine' }) {
-  return <i className={`ui-coin ui-coin--${unit === 'divine' ? 'div' : 'chaos'}`} />
+/** Иконка chaos/divine (S18: настоящая иконка игры, без сети — кружок ui-coin). */
+export function Coin({ unit, lang }: { unit: 'chaos' | 'divine'; lang: UiLang }) {
+  return <CoinIcon tag={unit} lang={lang} />
 }

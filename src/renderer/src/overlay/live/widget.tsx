@@ -4,7 +4,9 @@ import { OverlayWidget } from '../OverlayWidget'
 import { Icon } from '../Icon'
 import { useOverlayT } from '../useOverlayT'
 import type { OverlayWidgetDef } from '../registry'
-import { ago, coinClass, countdown, hitName, priceText, rarityColor } from '../../panels/live/format'
+import { ago, countdown, hitName, priceAmount, rarityColor } from '../../panels/live/format'
+import { CoinIcon, Currency, CurrencyTipBody, TipAnchor } from '../../components/Currency'
+import { useOverlayStore } from '../../store/useOverlayStore'
 import { itemFacts, type ItemFact } from './itemFacts'
 import { playLiveChime } from './chime'
 import { TOAST_LIFE_MS, VISIBLE_TOASTS, useLiveToasts, type LiveToast } from './useLiveToasts'
@@ -68,7 +70,7 @@ function Toast({ toast }: { toast: LiveToast }) {
   }
   const open = (): void => void window.overlayApi.live.openHit(hit.key)
 
-  const coin = hit.price ? coinClass(hit.price.currency) : null
+  const lang = useOverlayStore((s) => s.lang)
   const done = toast.state === 'done'
 
   return (
@@ -115,13 +117,20 @@ function Toast({ toast }: { toast: LiveToast }) {
               )}
               <div className="lv-price-row">
                 <span className="ui-toast__price">
-                  {coin && <i className={coin} />}
-                  {priceText(hit.price)}
+                  {hit.price ? <Currency tag={hit.price.currency} text={priceAmount(hit.price.amount, lang)} lang={lang} /> : '—'}
                 </span>
                 {hit.merchant ? (
                   <span className="lv-sub">
                     <span className="ui-tag ui-tag--merchant">{t('live.merchant')}</span>
-                    {hit.fee !== undefined && <> {t('live.fee', { n: hit.fee.toLocaleString() })}</>}
+                    {hit.fee !== undefined && (
+                      <>
+                        {' '}
+                        <TipAnchor className="ui-cur" tip={<CurrencyTipBody tag="gold" lang={lang} />}>
+                          <CoinIcon tag="gold" lang={lang} />
+                          {t('live.fee', { n: hit.fee.toLocaleString() })}
+                        </TipAnchor>
+                      </>
+                    )}
                   </span>
                 ) : (
                   <span className="lv-sub">

@@ -460,6 +460,39 @@
 .ui-coin--ex { --coin: linear-gradient(135deg, #e9edf2, #8d97a3); }
 .ui-coin--chaos { --coin: linear-gradient(135deg, #e0cfa6, #6f5126); }
 .ui-coin--gold { --coin: linear-gradient(135deg, #ffdf7a, #c4860f); }
+/* настоящая иконка игры (S18: кэш main через poeth://icon); кружок выше — запасной, когда иконки нет.
+   Рамка того же размера, что у кружка (раскладка не сдвигается), картинка нарисована крупнее. */
+.ui-coin--img {
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  object-fit: contain;
+  transform: scale(1.45);
+}
+
+/* валюта: иконка + число (не разрываются) + название; с подсказкой — курсор help */
+.ui-cur__n { white-space: nowrap; }
+.ui-cur[data-tip] { cursor: help; }
+.ui-cur[data-tip]:focus-visible { border-radius: var(--r-sm); outline: 1px solid var(--accent); outline-offset: 2px; }
+/* подсказка новичку о валюте/курсе: поверх всего, не ловит мышь */
+.ui-cur-tip {
+  position: fixed;
+  z-index: 1000;
+  display: grid;
+  gap: var(--sp-2);
+  width: max-content;
+  max-width: 280px;
+  pointer-events: none;
+  letter-spacing: normal;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+}
+.ui-cur-tip::before { left: var(--tip-x, 14px); }
+.ui-cur-tip--up::before { top: auto; bottom: -5px; transform: rotate(225deg); }
+.ui-cur-tip__head { display: flex; align-items: center; gap: var(--sp-2); }
+.ui-cur-tip__head .ui-coin { margin-right: var(--sp-1); }
+.ui-cur-tip__faint { color: var(--fg-muted); font-size: var(--fs-xs); }
 
 /* статус игрока: точка + текст рядом */
 .ui-dot { display: inline-block; flex: none; width: 7px; height: 7px; margin-right: var(--sp-2); vertical-align: 1px; border-radius: 50%; background: var(--good); }
@@ -551,6 +584,9 @@
 .ui-pips { display: inline-flex; gap: var(--sp-1); }
 .ui-pips i { width: 6px; height: 6px; border-radius: 50%; background: var(--border-strong); }
 .ui-pips i.on { background: var(--good); }
+/* --accent: уровень (сложность, «что нужно билду»), не оценка «хорошо/плохо»; пустая точка — кольцо */
+.ui-pips--accent i { background: none; box-shadow: inset 0 0 0 1px var(--fg-faint); }
+.ui-pips--accent i.on { background: var(--accent); box-shadow: none; }
 
 /* ================= тост live search ================= */
 .ui-toast {
@@ -867,6 +903,48 @@
 @media (prefers-reduced-motion: reduce) {
   .ui-skeleton { animation: none; }
 }
+
+/* ================= плитка механики (карточка стратегии, чипы фильтра) ================= */
+/* Внутри — иконка механики: essence, strongbox, expedition, harvest, delirium, abyss. */
+.ui-mech { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border: 1px solid var(--border-strong); border-radius: var(--r-sm); background: var(--accent-soft); color: var(--accent-hi); }
+.ui-mech .ui-ico { width: 20px; height: 20px; }
+.ui-mech--sm { width: 26px; height: 26px; }
+.ui-mech--sm .ui-ico { width: 15px; height: 15px; }
+
+/* ================= шаги мастера (редактор стратегии) ================= */
+/* <ol class="ui-steps"><li><button aria-current="step" | data-state="done|error"><span class="ui-steps__n">1</span><span class="ui-steps__t">…</span></button></li></ol>
+   «Готово» — иконка check в __n, «ошибка» — «!» и красный цвет (не только цвет). Переход по клику на любой шаг. */
+.ui-steps { display: flex; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; }
+.ui-steps > li { flex: 1 1 0; min-width: 0; }
+.ui-steps button { display: flex; align-items: center; gap: var(--sp-4); width: 100%; min-width: 0; padding: var(--sp-3) var(--sp-3) var(--sp-4); border: 0; border-bottom: 2px solid var(--border); background: none; color: var(--fg-muted); font: 500 var(--fs-sm) / 1.25 var(--font-ui); text-align: left; cursor: pointer; }
+.ui-steps button:hover { color: var(--fg); }
+.ui-steps button:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
+.ui-steps__n { display: grid; place-items: center; flex: none; width: 22px; height: 22px; border: 1px solid var(--border-strong); border-radius: 50%; font: 700 11px / 1 var(--font-ui); color: var(--fg-muted); }
+.ui-steps__n .ui-ico { width: 12px; height: 12px; stroke-width: 2.4; }
+.ui-steps__t { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ui-steps button[aria-current="step"] { color: var(--accent-hi); border-bottom-color: var(--accent); }
+.ui-steps button[aria-current="step"] .ui-steps__n { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-hi); }
+.ui-steps button[data-state="done"] .ui-steps__n { border-color: color-mix(in srgb, var(--good) 50%, transparent); color: var(--good); }
+.ui-steps button[data-state="error"] { color: var(--bad); }
+.ui-steps button[data-state="error"] .ui-steps__n { border-color: color-mix(in srgb, var(--bad) 55%, transparent); color: var(--bad); }
+
+/* ================= диалог поверх окна («Поделиться», «Импорт») ================= */
+/* .ui-dialog-scrim — затемнение внутри окна компаньона (position: absolute от ближайшего position: relative). */
+.ui-dialog-scrim { position: absolute; inset: 0; z-index: 5; display: grid; justify-items: center; align-content: start; padding: 36px 16px; background: var(--scrim); overflow: auto; }
+.ui-dialog { width: 620px; max-width: 100%; border: 1px solid var(--border-strong); border-radius: var(--r-panel); background: var(--surface-solid); box-shadow: var(--halo); }
+.ui-dialog__head { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-5) var(--sp-4) var(--sp-5) var(--sp-7); border-bottom: 1px solid var(--border); }
+.ui-dialog__title { flex: 1; min-width: 0; margin: 0; font: 700 19px / 1.15 var(--font-display); letter-spacing: 0.03em; color: var(--accent-hi); }
+.ui-dialog__body { display: grid; gap: var(--sp-7); padding: var(--sp-7); }
+.ui-dialog__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4); padding: var(--sp-5) var(--sp-7) var(--sp-6); border-top: 1px solid var(--border); }
+.ui-dialog__foot .grow { flex: 1; }
+
+/* ================= код для обмена (POETH1:…) с кнопкой копирования ================= */
+/* <div class="ui-code"><p class="ui-code__text" tabindex="0">POETH1:…</p><button class="ui-btn">…</button></div>
+   Три строки моноширинным, выделяется целиком; --line — одна строка с многоточием (ссылка). */
+.ui-code { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-4); align-items: start; }
+.ui-code__text { display: -webkit-box; min-width: 0; max-height: calc(var(--fs-xs) * 1.5 * 3 + 14px); margin: 0; padding: 6px 9px; overflow: hidden; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--sunken); color: var(--fg); font: 400 var(--fs-xs) / 1.5 var(--font-mono); word-break: break-all; -webkit-line-clamp: 3; -webkit-box-orient: vertical; user-select: all; }
+.ui-code__text:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.ui-code--line .ui-code__text { display: block; white-space: nowrap; text-overflow: ellipsis; }
 
 /* ================= прокрутка ================= */
 .ui-scroll { overflow: auto; scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }

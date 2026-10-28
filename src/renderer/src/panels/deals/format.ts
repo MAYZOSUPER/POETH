@@ -21,15 +21,6 @@ export function formatDate(ts: number): string {
   return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-/** Значок монеты по названию валюты (своя графика из дизайн-системы). */
-export function coinClass(currency: string | undefined): string {
-  const c = (currency ?? '').toLowerCase()
-  if (/div|боже/.test(c)) return 'ui-coin ui-coin--div'
-  if (/exa|возвыш/.test(c)) return 'ui-coin ui-coin--ex'
-  if (/chaos|хаос/.test(c)) return 'ui-coin ui-coin--chaos'
-  return 'ui-coin'
-}
-
 /** Тег статуса: класс ui-tag и текст. Чёрный список важнее статуса. */
 export function statusTag(d: Deal, lang: UiLang): { cls: string; text: string } {
   const t = (k: string): string => translate(lang, k)
