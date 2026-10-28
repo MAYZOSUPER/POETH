@@ -21,6 +21,7 @@ import { DealsTab } from './panels/DealsTab'
 import { LevelingTab } from './panels/leveling/LevelingTab'
 import { WealthTab } from './panels/WealthTab'
 import { FlipTab } from './panels/FlipTab'
+import { AdvisorTab } from './panels/AdvisorTab'
 import { ViewToggle } from './components/ViewToggle'
 import { Wizard } from './panels/onboarding/Wizard'
 import { AboutPanel } from './panels/onboarding/AboutPanel'
@@ -75,6 +76,8 @@ function TabBody() {
       return <WealthTab />
     case 'flip':
       return <FlipTab />
+    case 'advisor':
+      return <AdvisorTab />
     default:
       return null
   }

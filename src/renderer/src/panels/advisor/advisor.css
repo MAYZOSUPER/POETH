@@ -1,0 +1,82 @@
+/* Вкладка «Что фармить» (S16) — раскладка в духе вкладки «Обмен» (классы ad-*). Компоненты ui-* — из components.css,
+   цвета и размеры — только токены. Своего макета у дизайнера пока нет (вкладка скрыта в v0.1.0). */
+
+.advisor-tab {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.ad-pad { display: grid; gap: 12px; padding: 14px 16px 18px; align-content: start; container-type: inline-size; }
+.ad-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.ad-title h3 { margin: 0; font: 700 22px / 1.1 var(--font-display); letter-spacing: 0.03em; color: var(--accent-hi); }
+.ad-fresh { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sm); color: var(--fg-muted); }
+.ad-banner { border: 1px solid color-mix(in srgb, var(--info) 30%, transparent); border-radius: var(--r-panel); }
+.ad-banner.ad-warn,
+.ad-warn { border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); border-radius: var(--r-sm); }
+.ad-hint { padding: 0; }
+.ad-muted { margin: 0; color: var(--fg-muted); font-size: var(--fs-sm); }
+.ad-faint { color: var(--fg-faint); }
+.ad-bad { color: var(--bad); font-size: var(--fs-sm); }
+.ad-list-cards { display: grid; gap: 12px; }
+
+/* карточка */
+.ad-card .ui-box__head { gap: 6px 10px; }
+.ad-name { margin: 0; font: 600 18px / 1.2 var(--font-display); letter-spacing: 0.02em; color: var(--fg); }
+.ad-diff { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-sm); }
+.ad-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 16px; align-items: start; }
+.ad-main { display: grid; gap: 8px; min-width: 0; }
+.ad-summary { margin: 0; color: var(--fg); }
+.ad-build { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-size: var(--fs-sm); color: var(--fg-muted); }
+.ad-build__item { display: inline-flex; align-items: center; gap: 6px; }
+.ad-figure { display: grid; justify-items: end; gap: 4px; text-align: right; }
+.ad-hour { font: 600 26px / 1.1 var(--font-ui); color: var(--accent-hi); white-space: nowrap; }
+.ad-hour--none { font-size: var(--fs-lg); font-weight: 500; color: var(--fg-muted); }
+.ad-hour--bad { color: var(--bad); }
+.ad-conf { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--fg-muted); white-space: nowrap; }
+.ad-foot { padding-top: 6px; padding-bottom: 6px; }
+
+/* уровни 1–3: точки цвета акцента (не «хорошо/плохо») + слово */
+.ad-lv { display: inline-flex; align-items: center; gap: 5px; color: var(--fg); white-space: nowrap; }
+.ad-lv__dots { display: inline-flex; gap: var(--sp-1); }
+.ad-lv__dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--border-strong); }
+.ad-lv__dots i.on { background: var(--accent); }
+
+/* раскрытие */
+.ad-details { display: grid; gap: 14px; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--border); }
+.ad-io { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.ad-sec { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.ad-lines { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.ad-line { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(56px, auto); gap: 2px 10px; align-items: baseline; padding: 4px 8px; border-radius: var(--r-sm); background: var(--sunken); font-variant-numeric: tabular-nums; }
+.ad-line__name { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; min-width: 0; }
+.ad-line__qty { color: var(--fg-muted); white-space: nowrap; }
+.ad-line__sum { text-align: right; white-space: nowrap; }
+.ad-line__unit { grid-column: 1 / -1; font-size: var(--fs-xs); color: var(--fg-faint); }
+.ad-note { font-size: var(--fs-xs); color: var(--fg-faint); }
+.ad-kv { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 4px 16px; font-size: var(--fs-md); }
+.ad-kv span { color: var(--fg-muted); }
+.ad-kv b { font-variant-numeric: tabular-nums; }
+.ad-kv b.good { color: var(--good); }
+.ad-kv b.bad { color: var(--bad); }
+.ad-kv b i { margin-left: 8px; font-style: normal; font-weight: 400; font-size: var(--fs-sm); color: var(--fg-faint); }
+.ad-text { margin: 0; }
+.ad-list { display: grid; gap: 4px; margin: 0; padding-left: 18px; }
+.ad-steps { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; counter-reset: st; }
+.ad-steps > li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; counter-increment: st; }
+.ad-steps > li::before { content: counter(st); display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--border-strong); border-radius: 50%; color: var(--accent-hi); font: 700 12px / 1 var(--font-ui); }
+.ad-terms { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: var(--fs-sm); }
+.ad-term { display: inline-flex; align-items: center; gap: 4px; }
+.ad-source { margin: 0; font-size: var(--fs-xs); color: var(--fg-faint); }
+.ad-farm .ui-box__body { gap: 8px; }
+.ad-farm__act { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.ad-mine { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0; }
+
+/* компаньон уже ~820 px: колонки «вложить / получить» друг под другом */
+@container (max-width: 720px) {
+  .ad-io { grid-template-columns: minmax(0, 1fr); }
+}
+@container (max-width: 520px) {
+  .ad-top { grid-template-columns: minmax(0, 1fr); }
+  .ad-figure { justify-items: start; text-align: left; }
+}
