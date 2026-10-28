@@ -1,0 +1,118 @@
+/* Вкладка «Обмен» (S13) — по docs/design-system.md, пока нет макета. Компоненты ui-*, здесь только раскладка. */
+
+.flip-tab {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.fl-pad {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 14px 16px 18px;
+}
+.fl-grow {
+  flex: 1;
+}
+.fl-muted {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.fl-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4) var(--sp-7);
+  align-items: center;
+}
+.fl-rate {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-6);
+  align-items: baseline;
+}
+.fl-rate__value {
+  color: var(--accent-hi);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+}
+.fl-rate__meta,
+.fl-feed {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.fl-banner {
+  border: 1px solid color-mix(in srgb, var(--info) 30%, transparent);
+  border-radius: var(--r-panel);
+}
+
+.fl-cards {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fl-card {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-6);
+}
+.fl-card + .fl-card {
+  border-top: 1px solid var(--border);
+}
+.fl-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-5);
+  align-items: center;
+}
+.fl-card__name {
+  font-weight: 600;
+}
+.fl-conf {
+  display: inline-flex;
+  gap: var(--sp-3);
+  align-items: center;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.fl-card__line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-6);
+  align-items: baseline;
+}
+.fl-card__per {
+  color: var(--good);
+}
+.fl-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-6);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.fl-steps {
+  display: grid;
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 0;
+  padding-left: var(--sp-8);
+  color: var(--fg);
+  font-size: var(--fs-sm);
+}
+.fl-scroll {
+  overflow-x: auto;
+}
+.fl-table td,
+.fl-table th {
+  white-space: nowrap;
+}
+.fl-filters {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.fl-note {
+  margin: 0;
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}
