@@ -127,7 +127,7 @@ export interface WealthPoint {
 }
 
 /** Сессия фарма: «Начать» → снимок, «Стоп» → снимок. */
-export interface FarmSession {
+export interface WealthFarmSession {
   league: string
   startedAt: number
   startId: string
@@ -137,8 +137,8 @@ export interface FarmSession {
   endChaos?: number
 }
 
-export interface FarmView {
-  session: FarmSession | null
+export interface WealthFarmView {
+  session: WealthFarmSession | null
   /** прибыль сессии, chaos (по последнему снимку сессии) */
   gain?: number
   /** доход в час за сессию, chaos/ч */
@@ -213,7 +213,7 @@ export interface WealthState {
   /** id последних снимков с деталями (новые в конце) */
   detailed: string[]
   history: WealthPoint[]
-  farm: FarmView
+  farm: WealthFarmView
   prices: WealthPriceInfo
   /** когда следующий авто-снимок (мс epoch) */
   nextAutoAt?: number
