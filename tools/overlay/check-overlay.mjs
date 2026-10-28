@@ -225,11 +225,14 @@ async function main() {
   fakePort = (await waitFake((e) => e.evt === 'ready', 15000)).port
   await fakeCmd({ cmd: 'clipboard-save' })
 
-  // команды чата: F5 → /hideout (по умолчанию) и F6 → /invite @last; лог игры — свой файл
+  // команды чата: F5 → /hideout (по умолчанию) и F6 → /invite @last; лог игры — свой файл.
+  // Мастер пройден и запуск свёрнутым: иначе компаньон с мастером (S9) открывается поверх тестовой
+  // «игры» и клики мышью попадают в него.
   writeFileSync(
     path.join(PROFILE, 'settings.json'),
     JSON.stringify({
       schemaVersion: 2,
+      startup: { firstRunDone: true, minimized: true, withWindows: false },
       chatCommands: [
         { id: 'hideout', text: '/hideout', hotkey: 'F5', send: true, enabled: true },
         { id: 'invite', text: '/invite @last', hotkey: 'F6', send: true, enabled: true }
