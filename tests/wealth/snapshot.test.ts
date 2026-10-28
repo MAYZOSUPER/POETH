@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildSnapshot, diffSnapshots, lineKey } from '../../src/shared/wealth/snapshot'
+import { buildSnapshot, diffSnapshots, lineKey, qtyProfit } from '../../src/shared/wealth/snapshot'
 import { buildPriceIndex, type PriceEntry } from '../../src/shared/wealth/prices'
 import type { StashItem } from '../../src/shared/wealth/stash'
 
@@ -77,5 +77,28 @@ describe('снимок', () => {
       ['Chaos Orb', 60, 60],
       ['Amethyst Ring', -1, 0]
     ])
+  })
+})
+
+describe('прибыль между снимками (для забегов S11b)', () => {
+  const at = (id: string, chaosQty: number, divineQty: number, divinePrice: number) =>
+    buildSnapshot({
+      id,
+      at: 1,
+      league: 'L',
+      divineRate: divinePrice,
+      index: buildPriceIndex([
+        [
+          { name: 'Chaos Orb', kind: 'stackable', chaos: 1, source: 'exchange' },
+          { name: 'Divine Orb', kind: 'stackable', chaos: divinePrice, source: 'exchange', low: divinePrice > 500 }
+        ]
+      ]),
+      tabs: [{ id: 't', name: 't', items: [cur('Chaos Orb', chaosQty), cur('Divine Orb', divineQty)] }]
+    })
+
+  it('только изменение штук × цена «после»; рост курса сам по себе — не прибыль', () => {
+    expect(qtyProfit(at('a', 100, 2, 300), at('b', 100, 2, 340))).toEqual({ chaos: 0, low: false })
+    expect(qtyProfit(at('a', 100, 2, 300), at('b', 130, 3, 340))).toEqual({ chaos: 370, low: false })
+    expect(qtyProfit(at('a', 100, 2, 300), at('b', 100, 1, 600))).toEqual({ chaos: -600, low: true })
   })
 })
