@@ -8,8 +8,10 @@ export function flipBridge(): FlipIpcApi {
     flip: {
       state: () => ipcRenderer.invoke(IPC.flip.state),
       refresh: () => ipcRenderer.invoke(IPC.flip.refresh),
-      setFilters: (patch) => ipcRenderer.invoke(IPC.flip.setFilters, patch)
+      setFilters: (patch) => ipcRenderer.invoke(IPC.flip.setFilters, patch),
+      setOptions: (patch) => ipcRenderer.invoke(IPC.flip.setOptions, patch)
     },
-    onFlipState: (cb) => subscribe(IPC.events.flipState, cb)
+    onFlipState: (cb) => subscribe(IPC.events.flipState, cb),
+    onFlipAlert: (cb) => subscribe(IPC.events.flipAlert, cb)
   }
 }

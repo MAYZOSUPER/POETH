@@ -4,7 +4,9 @@ import { describe, expect, it } from 'vitest'
 import { FlipManager, sanitizeFilters } from '../../src/main/games/poe1/flip/manager'
 import { leagueHour, parseFeedHour, type FullHour } from '../../src/shared/flip/feed'
 import { DEFAULT_FILTERS } from '../../src/shared/flip/routes'
-import type { FlipState } from '../../src/shared/types/flip'
+import type { FlipAlert, FlipState } from '../../src/shared/types/flip'
+import type { FullMarket } from '../../src/shared/flip/feed'
+import { CHAOS_ID, DIVINE_ID } from '../../src/shared/wealth/exchange'
 
 const ROOT = join(__dirname, '../..')
 const names = JSON.parse(readFileSync(join(ROOT, 'resources/data/poe1/wealth/exchange-ids.json'), 'utf8')).names
@@ -12,8 +14,9 @@ const fees = JSON.parse(readFileSync(join(ROOT, 'resources/data/poe1/flip/gold-f
 const raw = JSON.parse(readFileSync(join(__dirname, '../fixtures/flip/allflame-24h.json'), 'utf8')) as Array<{ hour: number; json: unknown }>
 const hours: FullHour[] = raw.map((h) => leagueHour(parseFeedHour(h.hour, h.json)!, 'Allflame'))
 
-function setup() {
+function setup(feedHours: FullHour[] = hours) {
   const states: FlipState[] = []
+  const alerts: FlipAlert[] = []
   let saved: unknown = null
   const listeners = new Set<() => void>()
   const refreshes: Array<[string, number | undefined]> = []
@@ -23,12 +26,13 @@ function setup() {
         refreshes.push([league, want])
         return true
       },
-      hours: (league) => (league === 'Allflame' ? hours : []),
+      hours: (league) => (league === 'Allflame' ? feedHours : []),
       onUpdate: (cb) => {
         listeners.add(cb)
         return () => listeners.delete(cb)
       },
-      hasProblem: () => false
+      hasProblem: () => false,
+      nextAt: () => 1_800_000_000_000
     },
     league: async () => 'Allflame',
     loadNames: async () => names,
@@ -37,9 +41,10 @@ function setup() {
     saveConfig: async (c) => {
       saved = c
     },
-    emit: (s) => states.push(s)
+    emit: (s) => states.push(s),
+    alert: (a) => alerts.push(a)
   })
-  return { m, states, refreshes, saved: () => saved, update: () => listeners.forEach((cb) => cb()) }
+  return { m, states, alerts, refreshes, saved: () => saved, update: () => listeners.forEach((cb) => cb()) }
 }
 
 describe('менеджер флиппинга', () => {
@@ -68,6 +73,37 @@ describe('менеджер флиппинга', () => {
     expect((saved() as { filters: unknown }).filters).toEqual(s.filters)
     expect(s.routes.length).toBeLessThan(before)
     expect(sanitizeFilters('мусор')).toEqual(DEFAULT_FILTERS)
+  })
+
+  it('маршруты «только тренд» — в общем списке (для чипа «Без тренда»), но не в топе по умолчанию', async () => {
+    const { m } = setup()
+    await m.start()
+    const s = await m.setFilters({ maxTrend: 0 })
+    const trendy = s.routes.filter((r) => r.rejects.includes('trend'))
+    expect(trendy.length).toBeGreaterThan(0)
+    expect(trendy.every((r) => r.rejects.length === 1)).toBe(true)
+    expect(s.rejected.every((r) => !(r.rejects.length === 1 && r.rejects[0] === 'trend'))).toBe(true)
+    expect(s.nextUpdateAt).toBe(1_800_000_000_000)
+  })
+
+  it('курс вышел из коридора недели — тост, если включено; один раз на час фида', async () => {
+    const H = 1_793_142_000
+    const hour = (i: number, chaos: number): FullHour => ({
+      hour: H - i * 3600,
+      markets: [['Allflame', CHAOS_ID, DIVINE_ID, chaos, 10, 0, 0, 0, 0, 0, 0, 0, 0] as FullMarket]
+    })
+    const feed = [...Array.from({ length: 10 }, (_, i) => hour(10 - i, 3000 + i * 10)), hour(0, 4000)]
+    const off = setup(feed)
+    await off.m.start()
+    expect(off.alerts).toEqual([])
+    const on = setup(feed)
+    await on.m.start()
+    await on.m.setOptions({ divineAlert: true })
+    on.update()
+    on.update()
+    expect(on.alerts).toEqual([{ dir: 'above', rate: 400, lo: 300, hi: 309, hour: H * 1000 }])
+    expect(on.m.state().options.divineAlert).toBe(true)
+    expect((on.saved() as { alertedHour?: number }).alertedHour).toBe(H * 1000)
   })
 
   it('PoE2 — нет поддержки; обновление фида — пересчёт', async () => {

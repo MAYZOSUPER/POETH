@@ -97,6 +97,12 @@ describe('маршруты на реальных часах фида (Allflame, 
     }
   })
 
+  it('топ: маршрут с трендом — только при выключенном «Без тренда»', () => {
+    const trendy = { ...routes[0], id: 'x', item: 'Scarabs/Trendy', rejects: ['trend' as const] }
+    expect(topFlips([trendy, ...routes]).some((r) => r.id === 'x')).toBe(false)
+    expect(topFlips([trendy, ...routes], MAX_FLIPS, true)[0].id).toBe('x')
+  })
+
   it('каждый маршрут — либо прошёл, либо с причинами', () => {
     for (const r of rejected) expect(r.rejects.length).toBeGreaterThan(0)
     expect(new Set([...routes, ...rejected].map((r) => r.id)).size).toBe(routes.length + rejected.length)

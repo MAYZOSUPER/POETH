@@ -81,7 +81,7 @@ export interface DivineTrack {
   hour: number
   day: { lo: number; hi: number } | null
   week: { lo: number; hi: number } | null
-  /** последний час вне коридора недели */
+  /** последний час вне коридора недели (мин–макс предыдущих часов) */
   outside: 'above' | 'below' | null
   /** точки для графика: час (мс) и chaos за divine */
   series: Array<{ at: number; rate: number }>
@@ -104,4 +104,23 @@ export interface FlipState {
   filters: FlipFilters
   /** откуда комиссии в золоте и когда собраны */
   feesFrom: string | null
+  /** следующее плановое обновление фида (мс) — «обновим в 16:05» */
+  nextUpdateAt: number | null
+  options: FlipOptions
+}
+
+export interface FlipOptions {
+  /** тост в оверлее, если курс divine вышел из коридора недели */
+  divineAlert: boolean
+}
+
+/** Курс вышел из коридора недели (тост в оверлее, если включено). */
+export interface FlipAlert {
+  dir: 'above' | 'below'
+  /** chaos за divine в последнем часе */
+  rate: number
+  lo: number
+  hi: number
+  /** час фида (мс) */
+  hour: number
 }

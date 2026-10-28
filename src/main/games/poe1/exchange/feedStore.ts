@@ -45,6 +45,7 @@ export class FeedStore {
   private inflight = new Map<string, Promise<boolean>>()
   private backfilling: Promise<void> | null = null
   private timer: ReturnType<typeof setTimeout> | null = null
+  private next: number | null = null
   private listeners = new Set<() => void>()
   private problem = false
   private readonly now: () => number
@@ -66,6 +67,11 @@ export class FeedStore {
         this.deps.log?.(`[feed] слушатель: ${e instanceof Error ? e.message : 'ошибка'}`)
       }
     }
+  }
+
+  /** Когда следующее плановое обновление (мс); null — таймер не запущен. */
+  nextAt(): number | null {
+    return this.next
   }
 
   /** Последняя попытка загрузки упала по сети (данные — из кэша). */
@@ -220,6 +226,7 @@ export class FeedStore {
     const plan = (): void => {
       const now = this.now()
       const next = (hourStart(now) + 3600) * 1000 + HOURLY_DELAY_MS + Math.floor((this.deps.random ?? Math.random)() * HOURLY_JITTER_MS)
+      this.next = next
       this.timer = setTimeout(async () => {
         this.timer = null
         const lg = await league().catch(() => null)
@@ -233,5 +240,6 @@ export class FeedStore {
   stop(): void {
     if (this.timer) clearTimeout(this.timer)
     this.timer = null
+    this.next = null
   }
 }

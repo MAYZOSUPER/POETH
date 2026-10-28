@@ -211,12 +211,16 @@ export function computeRoutes(input: ComputeInput): { routes: FlipRoute[]; rejec
   return { routes, rejected }
 }
 
-/** Лучшие флипы на одновременное исполнение: разные предметы, не больше MAX_FLIPS (= 10 ордеров). */
-export function topFlips(routes: readonly FlipRoute[], limit = MAX_FLIPS): FlipRoute[] {
+/**
+ * Лучшие флипы на одновременное исполнение: разные предметы, не больше MAX_FLIPS (= 10 ордеров); маршруты с
+ * трендом — только если `withTrend` (чип «Без тренда» выключен).
+ */
+export function topFlips(routes: readonly FlipRoute[], limit = MAX_FLIPS, withTrend = false): FlipRoute[] {
   const seen = new Set<string>()
   const out: FlipRoute[] = []
   for (const r of routes) {
     if (seen.has(r.item)) continue
+    if (!withTrend && r.rejects.includes('trend')) continue
     seen.add(r.item)
     out.push(r)
     if (out.length >= limit) break
