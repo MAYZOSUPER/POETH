@@ -12,6 +12,7 @@ import { LegacyStashProvider } from '../games/poe1/wealth/stashProvider'
 import { PriceService } from '../games/poe1/wealth/priceService'
 import { WealthManager } from '../games/poe1/wealth/manager'
 import { WealthStore } from '../games/poe1/wealth/store'
+import { getDivineTrack, getFeedStore } from '../games/poe1/exchange/feedService'
 import { onFarmEvent, setRunProfit } from '../services/farmSession'
 import type { IpcDomain } from './types'
 
@@ -62,7 +63,9 @@ function getManager(): WealthManager {
     log
   })
   const prices = (priceService = new PriceService({
-    // web.poecdn.com и api.poe.watch — без cookie сессии pathofexile.com (http.ts)
+    // часы фида обмена — общее хранилище (флиппинг S13, курс divine для окна цены S4)
+    feed: getFeedStore(),
+    // api.poe.watch — без cookie сессии pathofexile.com (http.ts)
     getJson: async (url) => {
       const res = await httpRequest({ url, timeoutMs: 45_000 })
       let json: unknown = null
@@ -107,11 +110,13 @@ export function getWealthApi(): Pick<WealthManager, 'onSnapshot' | 'getNetWorthA
 }
 
 /**
- * Курс chaos за divine для других доменов (S4: окно цены) — тот же PriceService учёта богатства: почасовой
- * фид обмена GGG (кэш на диске, не чаще раза в 10 мин), иначе poe.watch, если он включён в учёте богатства.
+ * Курс chaos за divine для других доменов (S4: окно цены) — трекер курса по общему хранилищу фида обмена GGG
+ * (тот же курс у учёта богатства и флиппинга); фида нет — poe.watch, если он включён в учёте богатства.
  * null — данных нет (сеть недоступна и кэша нет).
  */
 export async function getDivineRate(league: string): Promise<{ chaosPerDivine: number; hour?: number } | null> {
+  const track = await getDivineTrack(league).catch(() => null)
+  if (track && track.current > 0) return { chaosPerDivine: track.current, hour: track.hour }
   const m = getManager()
   const prices = priceService!
   let poeWatch = false

@@ -1,9 +1,8 @@
 // Цены для учёта богатства (S11a) за интерфейсом PriceSource. Ядро без electron: сеть и диск
 // передаются снаружи (боевой экземпляр — src/main/ipc/wealth.ts, тесты — tests/wealth/prices.test.ts).
 //
-//  - exchange — публичный почасовой фид обмена GGG (web.poecdn.com, без cookies аккаунта):
-//    последние 24 ч при первом запуске, дальше по часу; прошлые часы неизменны — кэш на диске,
-//    старше 48 ч удаляется;
+//  - exchange — публичный почасовой фид обмена GGG из общего хранилища часов (exchange/feedStore.ts —
+//    его же берут флиппинг S13 и трекер курса divine): VWAP за последние 6/24/48 ч;
 //  - poewatch — https://api.poe.watch/compact?league= (уники, камни, карты; запасной для
 //    стакающихся): не чаще раза в час, кэш на диске; выключается настройкой;
 //  - proxy — заготовка под будущий прокси poe.ninja (poe.ninja просит десктоп-приложения ходить
@@ -11,22 +10,14 @@
 // Ошибка источника не мешает снимку: цены берутся из кэша, строки без цены — «без оценки».
 
 import type { WealthPriceInfo } from '@shared/types/wealth'
-import {
-  compactFeedHour,
-  computeExchangePrices,
-  hourStart,
-  type CompactHour,
-  type ExchangePrices
-} from '@shared/wealth/exchange'
+import { computeExchangePrices, type ExchangePrices } from '@shared/wealth/exchange'
+import { toCompactHour, type FullHour } from '@shared/flip/feed'
 import { buildPriceIndex, type PriceEntry, type PriceIndex } from '@shared/wealth/prices'
 import { compactPoeWatch, exchangeEntries, poeWatchEntries, type ExchangeIdNames } from '@shared/wealth/sources'
 
-export const EXCHANGE_URL = 'https://web.poecdn.com/api/currency-exchange'
 export const POEWATCH_URL = 'https://api.poe.watch/compact'
-/** часов фида для VWAP (окна 6/24 ч + запас) */
-export const FEED_HOURS = 24
-const FEED_KEEP_H = 48
-const EXCHANGE_MIN_REFRESH_MS = 10 * 60_000
+/** часов фида для VWAP (окна 6/24/48 ч) */
+export const FEED_HOURS = 48
 export const POEWATCH_TTL_MS = 60 * 60_000
 const POEWATCH_RETRY_MS = 10 * 60_000
 
@@ -35,7 +26,17 @@ export interface JsonResponse {
   json: unknown
 }
 
+/** Часы фида обмена (общее хранилище exchange/feedStore.ts). */
+export interface FeedHours {
+  /** свежие часы лиги; false — сеть недоступна (данные из кэша) */
+  refresh(league: string, want?: number): Promise<boolean>
+  /** часы лиги в памяти, от старых к новым */
+  hours(league: string, limit?: number): FullHour[]
+}
+
 export interface PriceDeps {
+  /** часы фида обмена GGG */
+  feed: FeedHours
   /** GET без cookies аккаунта; бросает при сетевой ошибке */
   getJson: (url: string) => Promise<JsonResponse>
   /** чтение/запись кэша (относительные пути внутри папки кэша цен) */
@@ -59,77 +60,27 @@ export interface PriceSource {
 /** Фид обмена GGG. */
 export class ExchangeFeedSource implements PriceSource {
   readonly id = 'exchange' as const
-  private hours = new Map<number, CompactHour>()
-  private loadedFromDisk = false
-  private lastRefresh = 0
   private names: Record<string, string> | null = null
   private cache = new Map<string, { key: string; prices: ExchangePrices; entries: PriceEntry[] }>()
-  private readonly now: () => number
 
-  constructor(private readonly deps: PriceDeps) {
-    this.now = deps.now ?? Date.now
-  }
+  constructor(private readonly deps: PriceDeps) {}
 
   private async ensureNames(): Promise<Record<string, string>> {
     if (!this.names) this.names = (await this.deps.loadNames())?.names ?? {}
     return this.names
   }
 
-  private async loadDisk(): Promise<void> {
-    if (this.loadedFromDisk) return
-    this.loadedFromDisk = true
-    for (const f of await this.deps.listCache('feed')) {
-      const m = /^(\d{10})\.json$/.exec(f)
-      if (!m) continue
-      const data = (await this.deps.readCache(`feed/${f}`)) as CompactHour | null
-      if (data && Array.isArray(data.trades) && data.hour === Number(m[1])) this.hours.set(data.hour, data)
-    }
-  }
-
-  async refresh(_league: string): Promise<boolean> {
+  async refresh(league: string): Promise<boolean> {
     await this.ensureNames()
-    await this.loadDisk()
-    const now = this.now()
-    if (now - this.lastRefresh < EXCHANGE_MIN_REFRESH_MS && this.hours.size) return true
-    this.lastRefresh = now
-    const current = hourStart(now)
-    let ok = true
-    // от свежего часа к старому: первый (ещё не опубликованный) 404 — не ошибка
-    for (let i = 1; i <= FEED_HOURS; i++) {
-      const hour = current - i * 3600
-      if (this.hours.has(hour)) continue
-      let res: JsonResponse
-      try {
-        res = await this.deps.getJson(`${EXCHANGE_URL}/${hour}`)
-      } catch {
-        ok = false
-        break
-      }
-      if (res.status === 404) continue
-      const compact = res.status === 200 ? compactFeedHour(hour, res.json) : null
-      if (!compact) {
-        ok = false
-        break
-      }
-      this.hours.set(hour, compact)
-      await this.deps.writeCache(`feed/${hour}.json`, compact)
-    }
-    // старые часы — из памяти и с диска
-    for (const hour of [...this.hours.keys()]) {
-      if (hour <= current - FEED_KEEP_H * 3600) {
-        this.hours.delete(hour)
-        await this.deps.removeCache(`feed/${hour}.json`)
-      }
-    }
-    if (!ok) this.deps.log?.('[wealth] фид обмена: сеть недоступна, цены из кэша')
-    return ok
+    return this.deps.feed.refresh(league, FEED_HOURS)
   }
 
   private computed(league: string): { prices: ExchangePrices; entries: PriceEntry[] } {
-    const key = [...this.hours.keys()].sort().join(',')
+    const hours = this.deps.feed.hours(league, FEED_HOURS)
+    const key = hours.map((h) => `${h.hour}:${h.markets.length}`).join(',')
     const hit = this.cache.get(league)
     if (hit && hit.key === key) return hit
-    const prices = computeExchangePrices([...this.hours.values()], league)
+    const prices = computeExchangePrices(hours.map(toCompactHour), league)
     const entries = exchangeEntries(prices, this.names ?? {})
     const v = { key, prices, entries }
     this.cache.set(league, v)
