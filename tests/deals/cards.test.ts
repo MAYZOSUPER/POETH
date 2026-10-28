@@ -40,7 +40,9 @@ describe('activeCards / topCard', () => {
       d({ id: 'sold', status: 'sold' }),
       d({ id: 'out', dir: 'out' })
     ]
-    expect(activeCards(list, cfg, T0).map((x) => x.id)).toEqual(['b', 'a'])
+    // по умолчанию исходящие видны, завершённые — нет
+    expect(activeCards(list, cfg, T0).map((x) => x.id)).toEqual(['b', 'a', 'out'])
+    expect(activeCards(list, { showOutgoing: false, hideAfterSold: true }, T0).map((x) => x.id)).toEqual(['b', 'a'])
     // исходящие и завершённые — по настройкам
     const all = activeCards(list, { showOutgoing: true, hideAfterSold: false }, T0).map((x) => x.id)
     expect(all).toEqual(['b', 'a', 'sold', 'out'])
@@ -62,7 +64,7 @@ describe('activeCards / topCard', () => {
 describe('cardActions / cardEffect', () => {
   it('кнопки по макету: входящая, исходящая, чёрный список', () => {
     expect(cardActions(d({}))).toEqual(['invite', 'trade', 'kick', 'thanks', 'sold', 'wait', 'whois'])
-    expect(cardActions(d({ dir: 'out' }))).toEqual(['still', 'hideout', 'thanks', 'whois'])
+    expect(cardActions(d({ dir: 'out' }))).toEqual(['still', 'hideout', 'trade', 'thanks', 'leave', 'whois'])
     expect(cardActions(d({ blacklist: { account: 'a', reason: 'r', since: '', matchedBy: 'account' } }))).toEqual([
       'invite',
       'whois'
@@ -78,6 +80,11 @@ describe('cardActions / cardEffect', () => {
     expect(cardEffect('thanks', d({}), { hideAfterSold: false })).toEqual({ status: 'traded' })
     expect(cardEffect('sold', d({}), cfg)).toEqual({ status: 'sold', hide: true })
     expect(cardEffect('sold', d({ dir: 'out' }), cfg)).toEqual({})
+    // исходящая: в убежище продавца и обмен — вы в группе; выйти из группы — карточка закрыта
+    expect(cardEffect('hideout', d({ dir: 'out' }), cfg)).toEqual({ status: 'invited' })
+    expect(cardEffect('hideout', d({ dir: 'out', status: 'invited' }), cfg)).toEqual({})
+    expect(cardEffect('trade', d({ dir: 'out' }), cfg)).toEqual({ status: 'invited' })
+    expect(cardEffect('leave', d({ dir: 'out', status: 'invited' }), cfg)).toEqual({ hide: true })
     for (const a of ['wait', 'whois', 'still', 'hideout'] as DealCardAction[]) expect(cardEffect(a, d({}), cfg)).toEqual({})
   })
 
@@ -149,8 +156,9 @@ describe('сделки на общем тейлере gameLog (фикстуры 
     expect(await until(() => newDeals.length === 4)).toBe(true)
     expect(newDeals).toEqual(['MarshWitch', 'GemBuyer', 'BulkGuy', 'MoonWarden'])
     let st = store.getState()
-    // исходящая скрыта (showOutgoing выключен), свежие сверху
-    expect(activeCards(st.deals, st.config, T0).map((x) => x.player)).toEqual(['BulkGuy', 'GemBuyer', 'MarshWitch'])
+    // исходящая тоже карточка (showOutgoing по умолчанию включён), свежие сверху
+    expect(activeCards(st.deals, st.config, T0).map((x) => x.player)).toEqual(['MoonWarden', 'BulkGuy', 'GemBuyer', 'MarshWitch'])
+    expect(activeCards(st.deals, { ...st.config, showOutgoing: false }, T0).map((x) => x.player)).not.toContain('MoonWarden')
     // игрок пригласил покупателя кнопкой → обмен в логе → сделка traded
     const witch = st.deals.find((x) => x.player === 'MarshWitch')!
     await store.cardAction(witch.id, 'invite', () => 'ok')
@@ -202,6 +210,7 @@ describe('DealsStore.cardAction — одна команда на нажатие'
       kick: '/kick MarshWitch',
       whois: '/whois MarshWitch',
       hideout: '/hideout MarshWitch',
+      leave: '/leave',
       thanks: '@MarshWitch Thanks for the trade, good luck!',
       sold: '@MarshWitch Sorry, Storm Stride Two-Toned Boots is already sold.',
       still: '@MarshWitch Hi! Is Storm Stride Two-Toned Boots for 2 divine still available?',
@@ -239,5 +248,64 @@ describe('DealsStore.cardAction — одна команда на нажатие'
     st = await store.hideCard(deal.id)
     expect(st.deals).toHaveLength(1)
     expect(activeCards(st.deals, st.config, T0)).toHaveLength(0)
+  })
+})
+
+describe('исходящая карточка — как у PoE Overlay', () => {
+  // строка @To появляется, когда игрок отправил whisper сам: из окна цены (вставил скопированное или
+  // «Написать»), из live search или со страницы сайта — формат один и тот же
+  const P = '2026/10/28 21:40:30 74519951 cffb0658 [INFO Client 19012] '
+  const OUT_EN =
+    P + '@To MoonWarden: Hi, I would like to buy your Wanderer Path Hubris Circlet listed for 45 chaos in Settlers (stash tab "1"; position: left 2, top 5)'
+  const OUT_RU =
+    P + '@Кому ЛунныйСтраж: Здравствуйте, хочу купить у вас Путь Странника за 45 chaos в лиге Поселенцы (секция "1"; позиция: 2 столбец, 5 ряд)'
+  const OUT_BULK = P + "@To CurrencyShop: Hi, I'd like to buy your 50 Chaos Orb for my 1 Divine Orb in Settlers."
+
+  it.each([
+    ['EN', OUT_EN, 'MoonWarden', 'en'],
+    ['RU', OUT_RU, 'ЛунныйСтраж', 'ru'],
+    ['bulk', OUT_BULK, 'CurrencyShop', 'en']
+  ])('%s: @To → исходящая карточка с кнопками PoE Overlay', async (_name, line, player, lang) => {
+    const store = new DealsStore(path.join(dir, 'd.json'), () => T0)
+    const [deal] = await store.ingestLines([line])
+    expect(deal).toMatchObject({ dir: 'out', player, lang, status: 'new' })
+    const st = store.getState()
+    const cards = activeCards(st.deals, st.config, T0)
+    expect(cards.map((x) => x.id)).toEqual([deal.id])
+    expect(cardActions(cards[0])).toEqual(['still', 'hideout', 'trade', 'thanks', 'leave', 'whois'])
+  })
+
+  it('каждая кнопка исходящей — ровно одна команда; убежище → в группе, выйти из группы → карточки нет', async () => {
+    const store = new DealsStore(path.join(dir, 'd.json'), () => T0)
+    const [deal] = await store.ingestLines([OUT_EN])
+    const run = async (action: DealCardAction): Promise<string[]> => {
+      const sent: string[] = []
+      const r = await store.cardAction(deal.id, action, (c) => {
+        sent.push(c)
+        return 'ok'
+      })
+      expect(r.result, action).toBe('ok')
+      return sent
+    }
+    expect(await run('still')).toEqual(['@MoonWarden Hi! Is Wanderer Path Hubris Circlet for 45 chaos still available?'])
+    expect(await run('whois')).toEqual(['/whois MoonWarden'])
+    expect(await run('hideout')).toEqual(['/hideout MoonWarden'])
+    expect(store.getState().deals[0].status).toBe('invited')
+    expect(await run('trade')).toEqual(['/tradewith MoonWarden'])
+    expect(await run('leave')).toEqual(['/leave'])
+    const st = store.getState()
+    expect(st.deals[0]).toMatchObject({ status: 'invited', cardHidden: true })
+    expect(activeCards(st.deals, st.config, T0)).toEqual([])
+  })
+
+  it('RU-сделка: «Ещё актуально?» — на языке сообщения', async () => {
+    const store = new DealsStore(path.join(dir, 'd.json'), () => T0)
+    const [deal] = await store.ingestLines([OUT_RU])
+    const sent: string[] = []
+    await store.cardAction(deal.id, 'still', (c) => {
+      sent.push(c)
+      return 'ok'
+    })
+    expect(sent).toEqual(['@ЛунныйСтраж Здравствуйте! Ещё продаёте Путь Странника за 45 chaos?'])
   })
 })

@@ -14,6 +14,12 @@ export type {
 export type { FallbackMatch as Poe1FallbackMatch } from '../poe1/pricecheck/fallback'
 export type { CurrencyRate } from '../poe1/pricecheck/currency'
 
+/** Настройки окна цены (Settings v2 `priceCheck`). */
+export interface PriceCheckSettings {
+  /** «Написать» сразу отправляет whisper (Enter); по умолчанию выкл — текст вставляется, Enter жмёт игрок */
+  sendWhisper: boolean
+}
+
 /** Нераспознанная строка мода (ParsedItem.unknownModifiers) для фолбэка data/stats. */
 export interface Poe1UnknownLine {
   text: string

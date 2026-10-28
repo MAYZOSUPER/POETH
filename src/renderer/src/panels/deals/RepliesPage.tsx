@@ -15,6 +15,7 @@ const ACTION_ICONS: Record<DealAction, IcoName> = {
   kick: 'kick',
   whois: 'search',
   hideout: 'home',
+  leave: 'logout',
   thanks: 'heart',
   sold: 'sold',
   still: 'ask',

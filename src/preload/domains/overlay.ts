@@ -12,13 +12,16 @@ export function overlayBridge(): OverlayIpcApi {
       updateInteractiveRects: (rects) => ipcRenderer.send(IPC.overlay.updateInteractiveRects, rects),
       trackAutoHide: (from, threshold) => ipcRenderer.send(IPC.overlay.trackAutoHide, from, threshold),
       typeInChat: (text, opts) => ipcRenderer.invoke(IPC.overlay.typeInChat, text, opts),
-      stashSearch: (text) => ipcRenderer.invoke(IPC.overlay.stashSearch, text)
+      stashSearch: (text) => ipcRenderer.invoke(IPC.overlay.stashSearch, text),
+      hotkeyConflicts: () => ipcRenderer.invoke(IPC.overlay.hotkeyConflicts),
+      openHotkeySettings: () => ipcRenderer.send(IPC.overlay.openHotkeySettings)
     },
     onOverlayFocus: (cb) => subscribe(IPC.events.overlayFocus, cb),
     onOverlayStatus: (cb) => subscribe(IPC.events.overlayStatus, cb),
     onItemCaptured: (cb) => subscribe(IPC.events.overlayItemCaptured, cb),
     onOverlayAutoHide: (cb) => subscribe(IPC.events.overlayAutoHide, () => cb()),
     onOverlayDismiss: (cb) => subscribe(IPC.events.overlayDismiss, () => cb()),
-    onOverlayNotice: (cb) => subscribe(IPC.events.overlayNotice, cb)
+    onOverlayNotice: (cb) => subscribe(IPC.events.overlayNotice, cb),
+    onHotkeyConflicts: (cb) => subscribe(IPC.events.overlayHotkeyConflicts, cb)
   }
 }

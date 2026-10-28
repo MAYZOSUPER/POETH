@@ -119,6 +119,9 @@ function waitFake(pred, ms = 3000) {
   })
 }
 let fakePort = 0
+/** «другая программа», которая держит хоткей (hotkey-squatter.cjs) */
+let squatter = null
+const SQUAT_KEY = 'Alt+3'
 async function fakeCmd(obj) {
   const res = await fetch(`http://127.0.0.1:${fakePort}/`, { method: 'POST', body: JSON.stringify(obj) })
   return res.json()
@@ -223,6 +226,16 @@ async function main() {
   }
   startFake()
   fakePort = (await waitFake((e) => e.evt === 'ready', 15000)).port
+  // «другая программа» держит Alt+3 (хоткей «Убрать» карточки сделки) — как APT с Ctrl+D
+  squatter = spawn(electronPath, [path.join(ROOT, 'tools/overlay/hotkey-squatter.cjs'), SQUAT_KEY], { stdio: ['ignore', 'pipe', 'ignore'] })
+  const squatOk = await new Promise((res) => {
+    let out = ''
+    squatter.stdout.on('data', (d) => {
+      out += String(d)
+      if (/ready|fail/.test(out)) res(out.includes('ready'))
+    })
+    setTimeout(() => res(false), 15000)
+  })
   await fakeCmd({ cmd: 'clipboard-save' })
 
   // команды чата: F5 → /hideout (по умолчанию) и F6 → /invite @last; лог игры — свой файл.
@@ -274,6 +287,21 @@ async function main() {
   check('оверлей прицепился к «Path of Exile»', st.status.attached && st.status.tracking, JSON.stringify(st.status))
   check('hasAccess = true (без прав администратора)', st.status.hasAccess === true)
   check('фокус игры отслеживается', st.focus.game === true)
+
+  // ---- хоткей занят другой программой: предупреждение поверх игры и список для настроек ----
+  if (squatOk) {
+    const conf = await waitFor(async () => {
+      const list = await evaluate('window.overlayApi.overlay.hotkeyConflicts()')
+      return list.find((c) => c.accel === SQUAT_KEY) ? list : null
+    }, 3000)
+    check(`${SQUAT_KEY} занят другой программой — POETH это видит`, !!conf, JSON.stringify(conf))
+    const notice = await waitFor(
+      () => evaluate(`(() => { const n = [...document.querySelectorAll('.ov-notice')].find((e) => e.textContent.includes('${SQUAT_KEY}'));
+        return n ? { text: n.textContent, button: !!n.querySelector('.ov-notice__action') } : null })()`),
+      3000
+    )
+    check('предупреждение поверх игры с кнопкой «Сменить клавишу»', !!notice?.button, notice?.text?.slice(0, 90))
+  } else check(`не удалось занять ${SQUAT_KEY} для проверки конфликта`, false)
 
   const fakeBounds = (await fakeState()).bounds
   const ov = await evaluate('({ x: window.screenX, y: window.screenY, w: window.innerWidth, h: window.innerHeight, dpr: window.devicePixelRatio })')
@@ -349,6 +377,16 @@ async function main() {
   const back2 = await waitFor(async () => (await foreground()) === TITLE.game && !(await overlayState()).focus.overlay)
   check('Shift+Space дважды: в оверлей и обратно в игру', act2 && back2)
 
+  // «другую программу» закрыли — при возврате в игру POETH займёт сочетание сам
+  if (squatter?.pid) {
+    try {
+      execFileSync('taskkill', ['/pid', String(squatter.pid), '/T', '/F'], { stdio: 'ignore' })
+    } catch {
+      /* уже нет */
+    }
+    squatter = null
+  }
+
   // ---- гейтинг: «игра» не в фокусе → Ctrl+D/Shift+Space не перехватываются ----
   if (await activate('other')) {
     await sleep(300)
@@ -369,6 +407,8 @@ async function main() {
   await fakeCmd({ cmd: 'hover', id: 'ru-chaos' })
   await press(K.D, [K.Ctrl])
   check('после возврата фокуса Ctrl+D снова работает', await waitFor(async () => (await widgetText())?.startsWith('Класс предмета: Валюта')))
+  const freed = await waitFor(async () => !(await evaluate('window.overlayApi.overlay.hotkeyConflicts()')).some((c) => c.accel === SQUAT_KEY), 2000)
+  check(`другую программу закрыли — ${SQUAT_KEY} снова у POETH, предупреждение снято`, freed)
 
   // ---- ввод в игру: typeInChat / stashSearch (как по клику в окне POETH) ----
   let r = await evaluate("window.overlayApi.overlay.typeInChat('wtb Chaos Orb', { send: false })")
@@ -423,8 +463,12 @@ async function main() {
     await psCmd(`move ${btn.x} ${btn.y}`)
     await sleep(300)
     check('курсор над виджетом: оверлей не активирован, игра в фокусе', (await foreground()) === TITLE.game && !(await overlayState()).focus.overlay)
+    // диагностика: какие события мыши дошли до страницы оверлея при клике
+    await evaluate(`(() => { window.__ev = []; for (const t of ['pointerdown', 'mousedown', 'mouseup', 'click'])
+      document.addEventListener(t, (e) => __ev.push(t + ':' + (e.target?.closest?.('button')?.getAttribute('aria-label') ?? String(e.target?.className ?? '?'))), true); return 1 })()`)
     await psCmd(`click ${btn.x} ${btn.y}`)
-    check('клик по ✕ виджета закрыл его', await waitFor(async () => (await widgetText()) === null))
+    const closed = await waitFor(async () => (await widgetText()) === null)
+    check('клик по ✕ виджета закрыл его', closed, closed ? '' : `события: ${JSON.stringify(await evaluate('window.__ev'))} · фокус ${JSON.stringify((await overlayState()).focus)} · передний план «${await foreground()}»`)
     check('после клика фокус снова у игры', await waitFor(async () => (await foreground()) === TITLE.game && !(await overlayState()).focus.overlay))
 
     // позиция у курсора: в правой половине окна игры — слева от курсора, в левой — справа;
@@ -520,8 +564,10 @@ async function main() {
     await sleep(400)
     const r1 = await rectOf()
     const s1 = (await evaluate('window.overlayApi.settings.get()')).overlay
-    check('окно перетащили за шапку', Math.abs(r1.left - r0.left - DX) <= 3 && Math.abs(r1.top - r0.top - DY) <= 3,
-      `сдвиг ${r1.left - r0.left},${r1.top - r0.top} из ${DX},${DY}`)
+    // по вертикали высокое окно может упереться в низ окна игры — тогда сдвиг меньше (прижато внутрь)
+    const dy = r1.top - r0.top
+    check('окно перетащили за шапку', Math.abs(r1.left - r0.left - DX) <= 3 && dy >= -3 && dy <= DY + 3,
+      `сдвиг ${r1.left - r0.left},${dy} из ${DX},${DY}`)
     check('позиция запомнилась: «где оставил»', s1.pricePosition === 'saved' && !!s1.priceWindowPos, JSON.stringify(s1))
     await press(K.Escape, [], 'overlay')
     check('Esc закрыл окно, фокус у игры', await waitFor(async () => (await widgetText()) === null && (await foreground()) === TITLE.game))
@@ -540,8 +586,10 @@ async function main() {
     const r3 = await rectOf()
     check('«Вернуть к курсору»: окно снова у курсора, настройка «у курсора»', s2.pricePosition === 'cursor' && (r3.left !== r2.left || r3.top !== r2.top), JSON.stringify(s2))
     // повторный Ctrl+D при активном оверлее (после клика в окно) — закрывает
-    if ((await foreground()) === TITLE.overlay) await press(K.D, [K.Ctrl], 'overlay')
-    check('повторный Ctrl+D в активном окне закрыл его, фокус у игры', await waitFor(async () => (await widgetText()) === null && (await foreground()) === TITLE.game))
+    const fgHome = await foreground()
+    if (fgHome === TITLE.overlay) await press(K.D, [K.Ctrl], 'overlay')
+    check('повторный Ctrl+D в активном окне закрыл его, фокус у игры',
+      await waitFor(async () => (await widgetText()) === null && (await foreground()) === TITLE.game), `до нажатия передний план «${fgHome}»`)
     const [cx, cy] = cursor0.split(',')
     await psCmd(`move ${cx} ${cy}`)
     await fakeCmd({ cmd: 'hover', id: null })
@@ -580,6 +628,13 @@ try {
     /* окно уже закрыто */
   }
   fake?.kill()
+  if (squatter?.pid) {
+    try {
+      execFileSync('taskkill', ['/pid', String(squatter.pid), '/T', '/F'], { stdio: 'ignore' })
+    } catch {
+      /* уже нет */
+    }
+  }
   cdp?.close()
   // electron-vite dev запускает Electron дочерним процессом — гасим всё дерево
   if (poeth?.pid) {

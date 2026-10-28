@@ -189,3 +189,6 @@
 .ov-notice--info > .ui-ico {
   color: var(--info);
 }
+.ov-notice__action {
+  flex: none;
+}

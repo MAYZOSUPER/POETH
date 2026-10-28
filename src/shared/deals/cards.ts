@@ -6,6 +6,7 @@
 // только «что показать» и «что поменять в истории после нажатия игрока».
 
 import type { Deal, DealCardAction, DealDir, DealStatus, DealsConfig } from '../types/deals'
+import { CARD_ACTIONS } from './commands'
 
 /** Карточка висит не дольше этого с последнего события (дальше — только история). */
 export const CARD_TTL_MS = 30 * 60_000
@@ -46,9 +47,9 @@ export function topCard(cards: readonly Deal[], dir?: DealDir): Deal | null {
 
 /** Какие кнопки есть у карточки (порядок — как в макете). */
 export function cardActions(deal: Pick<Deal, 'dir' | 'blacklist'>): DealCardAction[] {
-  if (deal.dir === 'out') return ['still', 'hideout', 'thanks', 'whois']
+  if (deal.dir === 'out') return [...CARD_ACTIONS.out]
   if (deal.blacklist) return ['invite', 'whois']
-  return ['invite', 'trade', 'kick', 'thanks', 'sold', 'wait', 'whois']
+  return [...CARD_ACTIONS.in]
 }
 
 export interface CardEffect {
@@ -58,8 +59,9 @@ export interface CardEffect {
 }
 
 /**
- * Что меняется после успешной команды: «Пригласить»/«Обмен» → в группе; «Спасибо» → сделка
- * состоялась; «Продано» у входящей → продано (предмет в игнор); «Кик» закрывает карточку;
+ * Что меняется после успешной команды: «Пригласить»/«Обмен» → в группе; у исходящей «В убежище
+ * продавца» → в группе (туда пускают только участника группы); «Спасибо» → сделка состоялась;
+ * «Продано» у входящей → продано (предмет в игнор); «Кик» и «Выйти из группы» закрывают карточку;
  * после «Спасибо»/«Продано» карточка закрывается, если так настроено. Остальное — только чат.
  */
 export function cardEffect(
@@ -72,7 +74,10 @@ export function cardEffect(
     case 'invite':
     case 'trade':
       return deal.status === 'new' ? { status: 'invited' } : {}
+    case 'hideout':
+      return deal.dir === 'out' && deal.status === 'new' ? { status: 'invited' } : {}
     case 'kick':
+    case 'leave':
       return { hide: true }
     case 'thanks':
       return { ...(open ? { status: 'traded' as const } : {}), ...(config.hideAfterSold ? { hide: true } : {}) }

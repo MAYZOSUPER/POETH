@@ -24,6 +24,8 @@ describe('chatCommand — одна команда на кнопку', () => {
     expect(chatCommand('kick', base, cfg)).toBe('/kick Ведьма_Ладоги')
     expect(chatCommand('whois', base, cfg)).toBe('/whois Ведьма_Ладоги')
     expect(chatCommand('hideout', { ...base, lang: 'en' }, cfg)).toBe('/hideout Ведьма_Ладоги')
+    // «Выйти из группы» — без ника
+    expect(chatCommand('leave', { ...base, dir: 'out' }, cfg)).toBe('/leave')
   })
 
   it('ответы — на языке сообщения собеседника', () => {
@@ -46,7 +48,8 @@ describe('chatCommand — одна команда на кнопку', () => {
 
   it('кнопки карточек по макету', () => {
     expect(CARD_ACTIONS.in.slice(0, 5)).toEqual(['invite', 'trade', 'kick', 'thanks', 'sold'])
-    expect(CARD_ACTIONS.out).toContain('still')
+    // исходящая — как у PoE Overlay: убежище продавца, обмен, выйти из группы, кто это, «ещё актуально?»
+    expect(CARD_ACTIONS.out).toEqual(['still', 'hideout', 'trade', 'thanks', 'leave', 'whois'])
   })
 })
 

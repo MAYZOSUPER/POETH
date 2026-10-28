@@ -61,6 +61,7 @@ export type IcoName =
   | 'play'
   | 'stop'
   | 'death'
+  | 'logout'
 
 export function Ico({ name, size }: { name: IcoName; size?: 'sm' | 'lg' }) {
   useEffect(() => {

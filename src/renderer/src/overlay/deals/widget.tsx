@@ -25,6 +25,7 @@ const ACTION_ICON: Record<DealCardAction, IconName> = {
   kick: 'kick',
   whois: 'search',
   hideout: 'home',
+  leave: 'logout',
   thanks: 'heart',
   sold: 'sold',
   still: 'ask',
@@ -98,7 +99,7 @@ function DealCard({ deal: d, now }: { deal: Deal; now: number }) {
   const who =
     d.dir === 'in'
       ? t(d.status === 'invited' ? 'deals.card.in.invited' : 'deals.card.in.wants')
-      : t('deals.card.out.waiting')
+      : t(d.status === 'invited' ? 'deals.card.out.invited' : 'deals.card.out.waiting')
 
   const button = (a: DealCardAction): JSX.Element => {
     const label = t(warn && a === 'invite' ? 'deals.card.inviteAnyway' : `deals.cmd.${a}`)
