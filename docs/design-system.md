@@ -5,6 +5,7 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 «Богатство» (S11: тайник, сессия фарма, виджет): https://claude.ai/artifact/MwDu6fzMqo4HMSfQtacTe6.
 «Обмен» (S13: флиппинг валюты): https://claude.ai/artifact/8eEk4CukbHt7XV7a6UnKoE.
 «Прокачка PoE 1» (S14: гид поверх игры, «Кампания»): https://claude.ai/artifact/L6JxNpsHWvWrr7WJDpRUKg.
+«Стратегии фарма» (S16–S17: «Что фармить», редактор, «Поделиться», «Импорт», страница сайта): https://claude.ai/artifact/5gmTJ7i28vYAzjbxY2B8zZ.
 Стиль и бренд: https://claude.ai/artifact/E3pqVxkC8CLw9XHPteKJzT, https://claude.ai/artifact/4M6dmGThWeL58snnyDbqww.
 
 ## Файлы
@@ -82,13 +83,18 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 | `.ui-bars` + `__row` (`--delta`, `--off`), `__name`, `__track` > `i`, `__value`, `__delta` (`--up`, `--down`), `__note` | разбивка по частям тонкими полосами |
 | `.ui-hud` (`--pause`) + `__grip`, `__seg`, `__time`, `__name`, `__lbl`, `__state`, `__sep` | полоса-виджет 34 px поверх игры (внутри `.ui-panel`) |
 | `.ui-divider`, `.ui-empty` + `__title`, `.ui-skeleton`, `.ui-scroll` | орнамент, пустые состояния, загрузка, прокрутка |
+| `.ui-pips--accent` | точки-уровень цветом акцента (сложность, «что нужно билду»), пустая точка — кольцо; рядом всегда слово |
+| `.ui-mech` (`--sm`) + иконка механики | плитка механики 40 px (26 px) в карточке стратегии |
+| `.ui-steps` > `li` > `button` (`aria-current="step"`, `data-state="done"` / `"error"`) + `__n`, `__t` | шаги мастера: номер, «готово» — галочка, «ошибка» — «!» и красный; переход кликом на любой шаг |
+| `.ui-dialog-scrim` > `.ui-dialog` (`role="dialog"`, `aria-modal`) + `__head`, `__title`, `__body`, `__foot` | диалог поверх окна компаньона с затемнением `--scrim` |
+| `.ui-code` (`--line`) + `__text` (`tabindex="0"`) и кнопка | код или ссылка моноширинным (3 строки или одна с многоточием) с копированием |
 
 Иконки: `resources/brand/icons/<имя>.svg` или спрайт `icons-sprite.svg` (`<use href="#i-<имя>"/>`), класс `.ui-ico`
 (`--sm` 13 px, `--lg` 18 px). Список: check, cross, dash, close, min, max, search, star, bolt, external, chat, invite,
 trade, kick, heart, sold, ask, home, grid, help, warn, copy, refresh, support, gear, folder, archive, chev-r, chev-d,
 dots, plus, import, export, pin, lock, shield, logout, keyboard, layers, volume, info, game, pause, trash, edit, map,
 book, coins, compass, seal, history, arrow-up, arrow-down, chart, table, play, stop, death, drag, swap, passive, gem,
-trial, flask, step.
+trial, flask, step, essence, strongbox, expedition, harvest, delirium, abyss, link.
 Новые имена нужно добавить в тип `IconName` (`src/renderer/src/overlay/Icon.tsx`), если иконка берётся оттуда.
 
 ## Графики
@@ -129,6 +135,27 @@ trial, flask, step.
 - **Вкладка «Кампания» (PoE 1):** `.ui-tabs` актов 1–10, маршрут — строки с `.ui-check` и `.ui-reward`, «вы здесь»;
   справа `.ui-box` «Не пропустить за кампанию» (`.ui-meter` пассивов и испытаний, баннер про сопротивления),
   «Награды акта» и «Камни для класса».
+
+## «Стратегии фарма» (S16–S17)
+Образец — макет «Стратегии фарма». Раскладка — в CSS панели (в макете `sf-*`, у S16 — `ad-*`).
+- **Карточка стратегии:** слева `.ui-mech` с иконкой механики (essence, strongbox, expedition, harvest, delirium, abyss),
+  название `--font-display` и метки `.ui-tag`: источник «наша» (`--merchant`), «сообщество» (`--person`),
+  «импорт, не проверена» (`--warn`), «моя» (без варианта); лига «для 3.30» или «может быть устаревшей · 3.29» (`--warn`).
+  Строка «Вход · Сложность · Билду» — сложность `.ui-pips--accent` + слово, в простом режиме «что нужно билду» словами,
+  в эксперте точками. Справа главное число «~X chaos/ч» (`--fs-stat`, обычные цифры), под ним доверие: «замерено
+  трекером: N карт, H ч» (`--good`, иконка `chart`) или «оценка автора» (иконка `edit`), и уверенность `.ui-pips` + слово.
+- **Раскрытая карточка:** «Что вложить / Что получите за карту» — строки с ценой, «своя» и «нет цены» словами; расчёт
+  «прибыль за карту × карт в час = доход в час»; шаги, атлас (ссылка на дерево — с доменом), «Осторожно» — `.ui-banner`;
+  «Мой результат» — `.ui-box` с `.ui-bars` «Оценка / Ваш результат» и выводом словами; кнопка «Начать сессию фарма» — `--primary`.
+- **Фильтры:** `.ui-seg` бюджета (до 10 c / до 1 div / дорого) и сложности, `.ui-chips--include` механик с иконками,
+  `.ui-chips` источника с числом; в эксперте «только замеренные» и «доход от N c/ч».
+- **Редактор:** `.ui-steps` из шести шагов, справа карточка «как увидят другие»; ошибки — `.ui-field__error` под полем,
+  `data-state="error"` на шаге и список на предпросмотре. Поиск предмета — `.ui-input` + `.ui-menu` (имя RU и EN, цена).
+- **«Поделиться» и «Импорт»:** `.ui-dialog`; код и ссылка — `.ui-code` (ссылка — `--line`), «Скопировать код» — `--primary`,
+  после нажатия «Скопировано» с галочкой на 2 с. Замечания импорта — `.ui-banner`, ошибки — `.ui-banner--bad`.
+- **Пустые состояния:** `.ui-empty` с картинкой `resources/brand/empty-route.svg` (свиток с маршрутом, 96–132 px,
+  `<BrandImg file="empty-route.svg">`) — «под фильтры ничего не подошло», «своих стратегий пока нет», «сессий фарма пока нет».
+- **Страницы сайта** (`site/strategies/`) собирает S17 по исходникам макета; стили — поверх `site/styles.css`, классы `st-*`.
 
 ## Кнопка «Поддержать проект»
 Иконка `support` (монета с сердцем, своя, без логотипа Boosty). Места: «О программе» в настройках, пункт меню

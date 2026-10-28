@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 import sprite from '../../../../resources/brand/icons-sprite.svg?raw'
 
-// Иконки дизайн-системы (resources/brand/icons-sprite.svg, 65 линейных иконок, currentColor).
+// Иконки дизайн-системы (resources/brand/icons-sprite.svg, 72 линейные иконки, currentColor).
 // Спрайт вставляется в страницу один раз (<IconSprite/> в OverlayApp), иконка — <use href="#i-…">.
 // Внешний <use href="poeth://…"> не годится: SVG <use> работает только в пределах документа.
 
@@ -13,6 +13,7 @@ export type IconName =
   | 'layers' | 'volume' | 'info' | 'game' | 'pause' | 'trash' | 'edit' | 'map' | 'book' | 'coins'
   | 'compass' | 'seal' | 'history' | 'arrow-up' | 'arrow-down' | 'chart' | 'table' | 'play' | 'stop'
   | 'death' | 'drag' | 'swap' | 'passive' | 'gem' | 'trial' | 'flask' | 'step'
+  | 'essence' | 'strongbox' | 'expedition' | 'harvest' | 'delirium' | 'abyss' | 'link'
 
 /** Спрайт иконок: один раз на страницу, невидимый. */
 export function IconSprite() {
