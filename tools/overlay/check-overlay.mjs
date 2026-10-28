@@ -184,6 +184,27 @@ function evaluate(expression) {
 const overlayState = () => evaluate('window.overlayApi.overlay.getState()')
 // окно цены S4 (демо-виджет S1 удалён): текст предмета — из состояния оверлея, пока окно открыто
 const widgetText = () => evaluate("window.overlayApi.overlay.getState().then(s => document.querySelector('.ov-pricecheck') ? s.lastItem?.text ?? null : null)")
+/**
+ * Центр элемента окна цены (экран, физ. px) — когда окно «успокоилось»: результаты загрузились (нет
+ * скелетона) и два замера подряд совпали. Окно растёт с результатами и прижимается внутрь — ранний
+ * замер попадал мимо кнопки (диагностика 28.10: клик по ✕ пришёлся на «Показать ещё»).
+ */
+async function stableCenter(sel, ms = 4000) {
+  const measure = () =>
+    evaluate(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null;
+      if (document.querySelector('.ov-pricecheck .ui-skeleton')) return 'loading';
+      const r = e.getBoundingClientRect();
+      return { x: Math.round((window.screenX + r.left + r.width / 2) * devicePixelRatio), y: Math.round((window.screenY + r.top + r.height / 2) * devicePixelRatio) } })()`)
+  const until = Date.now() + ms
+  let last = null
+  while (Date.now() < until) {
+    const p = await measure()
+    if (p && p !== 'loading' && last && p.x === last.x && p.y === last.y) return p
+    last = p && p !== 'loading' ? p : null
+    await sleep(200)
+  }
+  return last
+}
 const widgetBadge = () => evaluate("document.querySelector('.ov-pricecheck .pc-item .ui-tag')?.textContent ?? null")
 
 // ---------------------------------------------------------------------------
@@ -466,8 +487,7 @@ async function main() {
     await fakeCmd({ cmd: 'hover', id: 'en-unique' })
     await press(K.D, [K.Ctrl])
     await waitFor(async () => (await widgetText())?.startsWith('Item Class: Rings'))
-    const btn = await evaluate(`(() => { const b = document.querySelector('.ov-pricecheck .ui-panel__head button:last-of-type').getBoundingClientRect();
-      return { x: Math.round((window.screenX + b.left + b.width / 2) * devicePixelRatio), y: Math.round((window.screenY + b.top + b.height / 2) * devicePixelRatio) } })()`)
+    const btn = await stableCenter('.ov-pricecheck .ui-panel__head button:last-of-type')
     // курсор над виджетом → main должен снять «сквозную» мышь, не активируя оверлей
     await psCmd(`move ${btn.x} ${btn.y}`)
     await sleep(300)
@@ -533,9 +553,7 @@ async function main() {
     check('мышь идёт от предмета к виджету — виджет остаётся', (await widgetText()) !== null)
 
     // ---- с окном цены работают (баг 28.10: окно пропадало при клике по галочкам) ----
-    const center = (sel) =>
-      evaluate(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; const r = e.getBoundingClientRect();
-        return { x: Math.round((window.screenX + r.left + r.width / 2) * devicePixelRatio), y: Math.round((window.screenY + r.top + r.height / 2) * devicePixelRatio) } })()`)
+    const center = (sel) => stableCenter(sel)
     const CHK = '.ov-pricecheck [role="checkbox"]'
     const before = await evaluate(`document.querySelector('${CHK}')?.getAttribute('aria-checked') ?? null`)
     const chk = await center(CHK)
