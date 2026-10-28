@@ -101,6 +101,17 @@ describe('хранилище часов фида', () => {
     expect(store.hours('Standard').every((h) => h.markets.length === 1)).toBe(true)
   })
 
+  it('часовое обновление: в начале следующего часа + 5…9 мин; stop — без таймера', () => {
+    const { store } = setup()
+    expect(store.nextAt()).toBeNull()
+    store.start(async () => 'Allflame')
+    const at = store.nextAt()!
+    expect(at).toBeGreaterThanOrEqual((CUR + 3600) * 1000 + 5 * 60_000)
+    expect(at).toBeLessThanOrEqual((CUR + 3600) * 1000 + 9 * 60_000)
+    store.stop()
+    expect(store.nextAt()).toBeNull()
+  })
+
   it('новая лига — её рынки перечитываются с диска без сети', async () => {
     const { store, urls } = setup()
     await store.refresh('Allflame')

@@ -4,8 +4,10 @@
 // Часы фида — общее хранилище (exchange/feedStore.ts): при старте до недели (свежие 24 ч сразу, остальное в
 // фоне), дальше раз в час. После каждого обновления пересчёт: статистика пар за 1/6/24 ч, маршруты и курс
 // divine:chaos. Только оценка по прошлым часам: ордера игрок выставляет сам, никакой автоматизации.
+// Маршруты, отсеянные только трендом, идут в общий список (чип «Без тренда» во вкладке их прячет). Курс вышел
+// из коридора недели — событие для тоста в оверлее (если включено), один раз на час фида.
 
-import type { FlipFilters, FlipState } from '@shared/types/flip'
+import type { FlipAlert, FlipFilters, FlipOptions, FlipRoute, FlipState } from '@shared/types/flip'
 import type { FullHour } from '@shared/flip/feed'
 import { divineTrack } from '@shared/flip/divine'
 import { computeRoutes, DEFAULT_FILTERS } from '@shared/flip/routes'
@@ -21,7 +23,19 @@ export interface FlipFeed {
   hours(league: string, limit?: number): FullHour[]
   onUpdate(cb: () => void): () => void
   hasProblem(): boolean
+  /** следующее плановое обновление (мс) */
+  nextAt?(): number | null
 }
+
+export interface FlipConfig {
+  version: 1
+  filters: FlipFilters
+  options: FlipOptions
+  /** час фида (мс), о котором уже сообщили выходом из коридора */
+  alertedHour?: number
+}
+
+export const DEFAULT_OPTIONS: FlipOptions = { divineAlert: false }
 
 export interface GoldFees {
   fees: Record<string, number>
@@ -37,8 +51,10 @@ export interface FlipDeps {
   /** комиссия в золоте (resources/data/poe1/flip/gold-fees.json) */
   loadFees: () => Promise<GoldFees | null>
   loadConfig: () => Promise<unknown>
-  saveConfig: (cfg: { version: 1; filters: FlipFilters }) => Promise<void>
+  saveConfig: (cfg: FlipConfig) => Promise<void>
   emit: (s: FlipState) => void
+  /** курс вышел из коридора недели — тост в оверлее */
+  alert?: (a: FlipAlert) => void
   log?: (msg: string) => void
 }
 
@@ -64,9 +80,19 @@ export function sanitizeFilters(raw: unknown): FlipFilters {
   }
 }
 
+function sanitizeOptions(raw: unknown): FlipOptions {
+  const r = (raw && typeof raw === 'object' ? raw : {}) as Partial<FlipOptions>
+  return { divineAlert: r.divineAlert === true }
+}
+
+/** Маршрут прошёл все фильтры, кроме, может быть, тренда. */
+const onlyTrend = (r: FlipRoute): boolean => r.rejects.length === 1 && r.rejects[0] === 'trend'
+
 export class FlipManager {
   private league: string | null = null
   private filters: FlipFilters = { ...DEFAULT_FILTERS }
+  private options: FlipOptions = { ...DEFAULT_OPTIONS }
+  private alertedHour: number | undefined
   private names: Record<string, string> = {}
   private fees: GoldFees | null = null
   private loaded = false
@@ -87,8 +113,10 @@ export class FlipManager {
     if (!this.loaded) {
       this.names = await this.deps.loadNames().catch(() => ({}))
       this.fees = await this.deps.loadFees().catch(() => null)
-      const cfg = (await this.deps.loadConfig().catch(() => null)) as { filters?: unknown } | null
+      const cfg = (await this.deps.loadConfig().catch(() => null)) as Partial<FlipConfig> | null
       this.filters = sanitizeFilters(cfg?.filters)
+      this.options = sanitizeOptions(cfg?.options)
+      if (typeof cfg?.alertedHour === 'number') this.alertedHour = cfg.alertedHour
       this.loaded = true
     }
     this.supported = true
@@ -129,12 +157,34 @@ export class FlipManager {
     void this.refresh()
   }
 
+  private save(): Promise<void> {
+    const cfg: FlipConfig = { version: 1, filters: this.filters, options: this.options }
+    if (this.alertedHour !== undefined) cfg.alertedHour = this.alertedHour
+    return this.deps.saveConfig(cfg)
+  }
+
   async setFilters(patch: unknown): Promise<FlipState> {
     const p = (patch && typeof patch === 'object' ? patch : {}) as Partial<FlipFilters>
     this.filters = sanitizeFilters({ ...this.filters, ...p })
-    await this.deps.saveConfig({ version: 1, filters: this.filters })
+    await this.save()
     this.compute()
     return this.state()
+  }
+
+  async setOptions(patch: unknown): Promise<FlipState> {
+    const p = (patch && typeof patch === 'object' ? patch : {}) as Partial<FlipOptions>
+    this.options = sanitizeOptions({ ...this.options, ...p })
+    await this.save()
+    this.emit()
+    return this.state()
+  }
+
+  /** Тост «курс вышел из коридора» — один раз на час фида, только если включено. */
+  private maybeAlert(d: FlipState['divine']): void {
+    if (!this.options.divineAlert || !d?.outside || !d.week || d.hour === this.alertedHour) return
+    this.alertedHour = d.hour
+    void this.save().catch(() => undefined)
+    this.deps.alert?.({ dir: d.outside, rate: d.lastHour, lo: d.week.lo, hi: d.week.hi, hour: d.hour })
   }
 
   /** Пересчёт по часам в памяти (быстро: один проход по рынкам). */
@@ -156,10 +206,13 @@ export class FlipManager {
         lastHour,
         ctx: { rate: divine.current, names: this.names, fees: this.fees.fees, filters: this.filters }
       })
-      routes = r.routes.slice(0, MAX_ROUTES)
-      rejected = r.rejected.slice(0, MAX_ROUTES)
+      // отсеянные только трендом — в общий список (чип «Без тренда» во вкладке)
+      const score = (x: FlipRoute): number => x.confidence * x.perHour
+      routes = [...r.routes, ...r.rejected.filter(onlyTrend)].sort((a, b) => score(b) - score(a)).slice(0, MAX_ROUTES)
+      rejected = r.rejected.filter((x) => !onlyTrend(x)).slice(0, MAX_ROUTES)
     }
     this.snap = { routes, rejected, divine, hours: all.length, lastHour: lastHour === null ? null : lastHour * 1000 }
+    this.maybeAlert(divine)
     this.emit()
   }
 
@@ -176,7 +229,9 @@ export class FlipManager {
       routes: this.snap.routes,
       rejected: this.snap.rejected,
       filters: { ...this.filters },
-      feesFrom: fees ? [fees.source, fees.generatedAt].filter(Boolean).join(', ') || null : null
+      feesFrom: fees ? [fees.source, fees.generatedAt].filter(Boolean).join(', ') || null : null,
+      nextUpdateAt: this.deps.feed.nextAt?.() ?? null,
+      options: { ...this.options }
     }
   }
 

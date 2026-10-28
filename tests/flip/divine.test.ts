@@ -25,12 +25,13 @@ describe('трекер курса divine:chaos', () => {
     expect(t.day && t.day.lo <= t.day.hi).toBe(true)
   })
 
-  it('коридор [P10, P90] и выход последнего часа за коридор недели', () => {
+  it('коридор мин–макс по часам до последнего; последний час вне коридора недели — выход', () => {
     const hs = [hour(0, 4000, 10), ...Array.from({ length: 10 }, (_, i) => hour(i + 1, 3000 + i * 10, 10))]
     const t = divineTrack(hs, 'L')!
     expect(t.lastHour).toBe(400)
     expect(t.outside).toBe('above')
-    expect(t.week!.hi).toBeLessThan(400)
+    expect(t.week).toEqual({ lo: 300, hi: 309 })
+    expect(t.day).toEqual({ lo: 300, hi: 309 })
     // последний час — посередине обычного
     const calm = divineTrack([hour(0, 3050, 10), ...hs.slice(1)], 'L')!
     expect(calm.outside).toBeNull()

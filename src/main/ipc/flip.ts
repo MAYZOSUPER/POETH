@@ -58,6 +58,8 @@ function getManager(): FlipManager {
     loadConfig: () => readJson<unknown>(configFile(), null),
     saveConfig: (cfg) => writeJsonAtomic(configFile(), cfg),
     emit: (s) => broadcast(IPC.events.flipState, s),
+    // тост показывает оверлей (виджет «Обмен» по макету — после утверждения)
+    alert: (a) => broadcast(IPC.events.flipAlert, a),
     log
   })
   return manager
@@ -78,6 +80,7 @@ function register(): void {
     return m().state()
   })
   handle(IPC.flip.setFilters, (patch) => m().setFilters(patch))
+  handle(IPC.flip.setOptions, (patch) => m().setOptions(patch))
 }
 
 async function setupForGame(def: GameDef): Promise<void> {
