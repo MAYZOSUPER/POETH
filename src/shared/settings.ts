@@ -163,7 +163,7 @@ function normalizeHotkeys(src: unknown): HotkeyMap {
   return out
 }
 
-const APP_TABS = ['campaign', 'priceCheck', 'live', 'regex', 'deals']
+const APP_TABS = ['campaign', 'priceCheck', 'live', 'regex', 'deals', 'wealth']
 const UI_LANGS = ['ru', 'en']
 const STASH_GRIDS = ['auto', 'normal', 'quad']
 
