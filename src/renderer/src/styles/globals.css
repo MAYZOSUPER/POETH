@@ -55,6 +55,8 @@ body {
   /* clip, не hidden: hidden остаётся контейнером прокрутки, и focus()/scrollIntoView на чём-то за правым краем
      сдвигал всё окно влево без способа вернуть (S19) */
   overflow: clip;
+  /* длинный код, ссылка, путь или ник без пробелов переносится, а не вылезает за край (S19) */
+  overflow-wrap: break-word;
 }
 
 /* serif gold heading helper */
@@ -213,6 +215,7 @@ button.icon.danger:hover {
 }
 
 /* ---------- top-level app tabs (campaign / price-check) ---------- */
+/* на узком окне строка прокручивается сама (тонкая полоса снизу, колесо мыши — AppTabs.tsx), страницу не раздувает (S19) */
 .app-tabs {
   display: flex;
   gap: 4px;
@@ -220,7 +223,10 @@ button.icon.danger:hover {
   padding: 6px 10px 0;
   background: linear-gradient(180deg, rgba(28, 24, 20, 0.6), transparent);
   border-bottom: 1px solid var(--line);
-  overflow: clip;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll) transparent;
 }
 .app-tab {
   flex: none;
@@ -238,7 +244,8 @@ button.icon.danger:hover {
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  padding: 7px 14px;
+  /* 12 px: 7 вкладок релиза без переноса умещаются в 820 px по умолчанию и на RU, и на EN (S19) */
+  padding: 7px 12px;
   cursor: pointer;
 }
 .app-tab:hover {
@@ -256,34 +263,6 @@ button.icon.danger:hover {
 .app-tab:focus-visible {
   outline: none;
   box-shadow: inset var(--focus-ring);
-}
-/* узкое окно (AppTabs.tsx): compact — плотнее, icons — подпись только у открытой вкладки, bare — одни иконки */
-.app-tabs[data-fit='compact'] {
-  gap: 2px;
-  padding-inline: 6px;
-}
-.app-tabs[data-fit='compact'] .app-tab {
-  gap: 5px;
-  padding-inline: 7px;
-  letter-spacing: 0.2px;
-}
-.app-tabs[data-fit='icons'] .app-tab,
-.app-tabs[data-fit='bare'] .app-tab {
-  padding-inline: 11px;
-}
-/* невидимые копии строки для замера ширины каждого режима */
-.app-tabs-ruler {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-  visibility: hidden;
-  pointer-events: none;
-}
-.app-tabs-ruler > .app-tabs {
-  width: max-content;
 }
 
 /* ---------- game switch (PoE 1 / PoE 2) ---------- */

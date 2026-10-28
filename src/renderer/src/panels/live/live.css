@@ -32,6 +32,12 @@
   border-radius: var(--r-panel);
   background: var(--sunken);
 }
+/* «Последние находки» на 560 px впритык: если не влезет — прокрутка внутри блока (подсказка валюты — в портале) (S19) */
+.live-box:has(> .live-tbl) {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll) transparent;
+}
 .live-add {
   padding: var(--sp-5) var(--sp-6);
 }
