@@ -13,6 +13,7 @@ export const DEAL_ACTIONS: readonly DealAction[] = [
   'kick',
   'whois',
   'hideout',
+  'leave',
   'thanks',
   'sold',
   'still',
@@ -21,10 +22,13 @@ export const DEAL_ACTIONS: readonly DealAction[] = [
 
 export const REPLY_KINDS: ReplyKind[] = ['thanks', 'sold', 'still', 'wait']
 
-/** Кнопки карточки по направлению (макет: входящая / исходящая). */
+/**
+ * Кнопки карточки по направлению (макет: входящая / исходящая). Исходящая — как у PoE Overlay: спросить
+ * «ещё актуально?», в убежище продавца, обмен, спасибо, выйти из группы, кто это.
+ */
 export const CARD_ACTIONS: Record<'in' | 'out', DealAction[]> = {
   in: ['invite', 'trade', 'kick', 'thanks', 'sold', 'wait', 'whois'],
-  out: ['still', 'hideout', 'thanks', 'whois']
+  out: ['still', 'hideout', 'trade', 'thanks', 'leave', 'whois']
 }
 
 /** Язык ответа: настройка или язык сообщения собеседника. */
@@ -68,6 +72,8 @@ export function chatCommand(action: DealAction, deal: Deal, config: DealsConfig)
       return `/whois ${p}`
     case 'hideout':
       return `/hideout ${p}`
+    case 'leave':
+      return '/leave'
     default: {
       const tpl = config.templates[replyLang(deal, config)][action]
       return `@${p} ${renderTemplate(tpl, deal)}`
