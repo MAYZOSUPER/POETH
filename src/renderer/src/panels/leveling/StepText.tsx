@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { LevelingData, LvPart, LvTag } from '@shared/types/leveling'
 import { renderParts } from '@shared/leveling/render'
 
@@ -18,14 +19,29 @@ export function StepText({ parts, data, lang }: { parts: LvPart[]; data: Levelin
   )
 }
 
-/** Теги шага: цвет всегда вместе с текстом (дизайн-система). */
-export function StepTags({ tags, t }: { tags: LvTag[]; t: (k: string) => string }) {
+/**
+ * Теги шага — .ui-reward: цвет всегда вместе с иконкой того же имени и словом (дизайн-система). Иконку рисует
+ * вызывающий: в оверлее спрайт уже в странице (Icon), в компаньоне — Ico.
+ */
+export function StepTags({
+  tags,
+  t,
+  icon,
+  passives = 1
+}: {
+  tags: LvTag[]
+  t: (k: string) => string
+  icon: (tag: LvTag) => ReactNode
+  /** очков пассивов за шаг (stepPassives) — «+2 пассива» вместо «+1 пассив» */
+  passives?: number
+}) {
   if (!tags.length) return null
   return (
     <span className="lv-tags">
       {tags.map((tag) => (
-        <span key={tag} className={`lv-tag lv-tag--${tag}`} title={t(`lev.tag.${tag}.long`)}>
-          {t(`lev.tag.${tag}`)}
+        <span key={tag} className={`ui-reward ui-reward--${tag}`} title={t(`lev.tag.${tag}.long`)}>
+          {icon(tag)}
+          {tag === 'passive' && passives > 1 ? t('lev.tag.passives').replace('{n}', String(passives)) : t(`lev.tag.${tag}`)}
         </span>
       ))}
     </span>

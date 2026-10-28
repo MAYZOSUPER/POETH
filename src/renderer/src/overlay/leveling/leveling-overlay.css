@@ -50,31 +50,44 @@
   padding: var(--sp-5) var(--sp-6) var(--sp-6);
 }
 .lv-ov__text {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
   font-size: var(--fs-lg);
   line-height: 1.4;
+}
+.lv-ov__text > .ui-ico {
+  flex: none;
+  margin-top: 0.2em;
+  color: var(--accent);
 }
 .lv-ov__sub {
   color: var(--fg-muted);
   font-size: var(--fs-sm);
 }
+/* «Важное здесь» — пункт в рамке --border-strong, цвет награды — у иконки того же имени */
 .lv-ov__now {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
   padding: var(--sp-3) var(--sp-5);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border-strong);
   border-radius: var(--r-sm);
   background: var(--accent-soft);
-  color: var(--accent-hi);
+  color: var(--fg);
   font-weight: 600;
 }
-.lv-ov__now--trial {
-  border-color: var(--info);
+.lv-ov__now > .ui-ico {
+  flex: none;
+  color: var(--accent-hi);
+}
+.lv-ov__now--trial > .ui-ico {
   color: var(--info);
 }
-.lv-ov__now--flask {
-  border-color: var(--good);
+.lv-ov__now--flask > .ui-ico {
   color: var(--good);
 }
-.lv-ov__now--gem {
-  border-color: var(--rarity-gem);
+.lv-ov__now--gem > .ui-ico {
   color: var(--rarity-gem);
 }
 .lv-ov__off {
@@ -92,7 +105,7 @@
 .lv-ov__missrow {
   display: flex;
   gap: var(--sp-3);
-  align-items: baseline;
+  align-items: center;
   font-size: var(--fs-sm);
 }
 .lv-ov__missrow .lv-tags {

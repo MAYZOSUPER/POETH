@@ -218,6 +218,24 @@ export function counters(flat: FlatStep[], prog: LevelingProgress, data: Levelin
   return out
 }
 
+/** Очки пассивов за квесты шага — для тега «+N пассива» («Конец голода» даёт 2). */
+export function stepPassives(step: LvStep, data: LevelingData): number {
+  let n = 0
+  for (const p of step.parts) {
+    if (!isFrag(p) || p.k !== 'quest') continue
+    const q = data.quests[p.q]
+    if (q?.passives && (!q.passivesIf || step.cond?.includes(q.passivesIf))) n += q.passives
+  }
+  return n
+}
+
+/** Очки за бандитов во 2 акте: только если убить всех (BANDIT_KILL) — «23 с квестов + 1». */
+export function banditPassives(data: LevelingData): number {
+  let n = 0
+  for (const q of Object.values(data.quests)) if (q.passivesIf) n += q.passives ?? 0
+  return n
+}
+
 /** Пункты «не пропустите» шага (теги в порядке важности). */
 export function stepTags(step: LvStep): LvTag[] {
   const order: LvTag[] = ['passive', 'trial', 'flask', 'gem']

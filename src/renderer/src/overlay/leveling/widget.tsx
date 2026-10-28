@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import type { LvTag } from '@shared/types/leveling'
-import { currentIndex, stepTags } from '@shared/leveling/route'
+import { currentIndex, stepPassives, stepTags } from '@shared/leveling/route'
 import { areaName } from '@shared/leveling/render'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { useLevelingStore } from '../../store/useLevelingStore'
@@ -204,11 +204,17 @@ function Guide({ simple }: { simple: boolean }) {
               </div>
             )}
             {f && nowTags.length > 0 && (
-              <div className={`lv-ov__now lv-ov__now--${nowTags[0]}`}>{t('lev.now').replace('{what}', t(`lev.tag.${nowTags[0]}.long`))}</div>
+              <div className={`lv-ov__now lv-ov__now--${nowTags[0]}`}>
+                <Icon name={nowTags[0]} />
+                <span>{t('lev.now').replace('{what}', t(`lev.tag.${nowTags[0]}.long`))}</span>
+              </div>
             )}
             {f && (
               <div className="lv-ov__text">
-                <StepText parts={f.step.parts} data={data} lang={lang} />
+                <Icon name="step" />
+                <span>
+                  <StepText parts={f.step.parts} data={data} lang={lang} />
+                </span>
               </div>
             )}
             {f && simple && f.step.sub?.[0] && (
@@ -222,7 +228,7 @@ function Guide({ simple }: { simple: boolean }) {
                 <span className="ui-label">{t('lev.dontMiss')}</span>
                 {miss.map((m) => (
                   <div key={m.index} className="lv-ov__missrow">
-                    <StepTags tags={[m.tag]} t={t} />
+                    <StepTags tags={[m.tag]} t={t} icon={(n) => <Icon name={n} />} passives={stepPassives(flat[m.index].step, data)} />
                     <span className="lv-ov__misstext">
                       <StepText parts={flat[m.index].step.parts} data={data} lang={lang} />
                     </span>

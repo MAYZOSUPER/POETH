@@ -120,14 +120,12 @@
   gap: var(--sp-5);
   align-content: start;
 }
-.lv-count {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--sp-4);
-}
-.lv-count b {
-  color: var(--accent-hi);
+.lv-side .ui-meter__row b {
   font-variant-numeric: tabular-nums;
+}
+.lv-meter__hint {
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
 }
 .lv-p {
   margin: 0;
@@ -148,14 +146,15 @@
   color: var(--fg-muted);
   font-size: var(--fs-xs);
 }
+/* атрибут камня — как цвет гнезда в игре, из токенов */
 .lv-attr--strength {
-  color: #e5735e;
+  color: var(--bad);
 }
 .lv-attr--dexterity {
-  color: #80c98c;
+  color: var(--good);
 }
 .lv-attr--intelligence {
-  color: #82b8db;
+  color: var(--info);
 }
 
 /* ---- сегменты текста шага и теги (общие с гидом) ---- */
@@ -188,32 +187,11 @@
   color: var(--accent);
   font-weight: 700;
 }
+/* теги — .ui-reward (иконка + слово) из дизайн-системы; здесь только раскладка ряда */
 .lv-tags {
   display: inline-flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
   margin-left: var(--sp-4);
   vertical-align: 1px;
-}
-.lv-tag {
-  display: inline-block;
-  padding: 0 5px;
-  border: 1px solid currentColor;
-  border-radius: var(--r-sm);
-  font: 700 10px / 1.5 var(--font-ui);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.lv-tag--passive {
-  color: var(--accent-hi);
-}
-.lv-tag--trial {
-  color: var(--info);
-}
-.lv-tag--flask {
-  color: var(--good);
-}
-.lv-tag--gem {
-  color: var(--rarity-gem);
 }

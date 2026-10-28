@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { LevelingData, LvBandit } from '@shared/types/leveling'
-import { counters, currentIndex, stepTags, type FlatStep } from '@shared/leveling/route'
+import { banditPassives, counters, currentIndex, stepPassives, stepTags, type FlatStep } from '@shared/leveling/route'
 import { BASE_CLASSES, baseClass } from '@shared/leveling/classes'
 import { useLang, useT } from '../../i18n'
 import { useLevelingStore } from '../../store/useLevelingStore'
@@ -140,7 +140,7 @@ function Route({ act, flat, data }: { act: number; flat: FlatStep[]; data: Level
                 <div className="lv-row__text">
                   <span className="lv-row__n">{f.actIndex}</span>
                   <StepText parts={f.step.parts} data={data} lang={lang} />
-                  <StepTags tags={stepTags(f.step)} t={t} />
+                  <StepTags tags={stepTags(f.step)} t={t} icon={(n) => <Ico name={n} />} passives={stepPassives(f.step, data)} />
                   {now && <span className="lv-here">{t('lev.here')}</span>}
                   {!simple && zl !== null && <span className="lv-zl">{t('lev.zoneLevel').replace('{n}', String(zl))}</span>}
                 </div>
@@ -160,11 +160,37 @@ function Route({ act, flat, data }: { act: number; flat: FlatStep[]; data: Level
   )
 }
 
+/** Счётчик «Не пропустить за кампанию» — .ui-meter: строка «N / M» и полоса. */
+function Meter({ label, done, total, hint }: { label: string; done: number; total: number; hint?: string }) {
+  return (
+    <div className="ui-meter" style={{ ['--v' as string]: `${total ? Math.round((done / total) * 100) : 0}%` }}>
+      <div className="ui-meter__row">
+        <span>{label}</span>
+        <b>
+          {done} / {total}
+        </b>
+      </div>
+      <div className="ui-meter__bar" />
+      {hint && <span className="lv-meter__hint">{hint}</span>}
+    </div>
+  )
+}
+
 function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: LevelingData }) {
   const t = useT()
   const lang = useLang()
   const state = useLevelingStore((s) => s.state)!
   const c = counters(flat, state.progress, data)
+  // макет v3: «23 с квестов + 1 за бандитов = 24»; при помощи одному из бандитов очка нет
+  const bonus = banditPassives(data)
+  const kill = state.progress.variant.bandit === 'kill'
+  const base = c.passives.total - (kill ? bonus : 0)
+  const passivesHint = !bonus
+    ? undefined
+    : (kill ? t('lev.campaign.passives.kill') : t('lev.campaign.passives.help'))
+        .replace('{base}', String(base))
+        .replace('{bonus}', String(bonus))
+        .replace('{all}', String(base + bonus))
   const profile = state.profiles.find((p) => p.id === state.activeId)!
   const cls = baseClass(profile.className)
   const questsInAct = useMemo(() => {
@@ -205,18 +231,8 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
           <span className="ui-label">{t('lev.campaign.title')}</span>
         </div>
         <div className="ui-box__body">
-          <div className="lv-count">
-            <span>{t('lev.campaign.passives')}</span>
-            <b>
-              {c.passives.done} / {c.passives.total}
-            </b>
-          </div>
-          <div className="lv-count">
-            <span>{t('lev.campaign.trials')}</span>
-            <b>
-              {c.trials.done} / {c.trials.total}
-            </b>
-          </div>
+          <Meter label={t('lev.campaign.passives')} done={c.passives.done} total={c.passives.total} hint={passivesHint} />
+          <Meter label={t('lev.campaign.trials')} done={c.trials.done} total={c.trials.total} />
           <div className="ui-banner">
             <Ico name="warn" />
             <span>{t('lev.campaign.res')}</span>
@@ -233,7 +249,10 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
           ) : (
             passiveQuests.map(({ id, q }) => (
               <div key={id} className="lv-reward">
-                <span className="lv-tag lv-tag--passive">{t('lev.tag.passive')}</span>
+                <span className="ui-reward ui-reward--passive">
+                  <Ico name="passive" />
+                  {(q.passives ?? 1) > 1 ? t('lev.tag.passives').replace('{n}', String(q.passives)) : t('lev.tag.passive')}
+                </span>
                 {lang === 'ru' ? q.ru : q.en}
               </div>
             ))

@@ -4,6 +4,7 @@ import path from 'path'
 import type { LevelingData } from '@shared/types/leveling'
 import {
   DEFAULT_VARIANT,
+  banditPassives,
   counters,
   currentIndex,
   emptyProgress,
@@ -12,6 +13,7 @@ import {
   jumpTo,
   next,
   prev,
+  stepPassives,
   toggle
 } from '@shared/leveling/route'
 import { parseLevelingLine } from '@shared/leveling/log'
@@ -47,6 +49,13 @@ describe('данные маршрута', () => {
     expect(counters(alira, emptyProgress({ leagueStart: true, bandit: 'alira' }), data).passives.total).toBe(23)
     // 6 испытаний для Лабиринта Правителя в актах 1–3 (маршрут «старт лиги»)
     expect(kill.trials.total).toBe(6)
+    // макет v3: «23 с квестов + 1 за бандитов = 24»
+    expect(banditPassives(data)).toBe(1)
+    // тег «+2 пассива» — «Конец голода» в 10 акте
+    const hunger = flat.find((f) => f.step.parts.some((p) => typeof p === 'object' && 'k' in p && p.k === 'quest' && data.quests[p.q]?.en === 'An End to Hunger'))
+    expect(hunger && stepPassives(hunger.step, data)).toBe(2)
+    const bandits = flat.find((f) => f.step.cond?.includes('BANDIT_KILL') && f.step.tags?.includes('passive'))
+    expect(bandits && stepPassives(bandits.step, data)).toBe(1)
   })
 
   it('варианты: без «старта лиги» шагов меньше, первые шаги и зоны после них', () => {
