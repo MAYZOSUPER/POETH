@@ -103,6 +103,10 @@ describe('менеджер флиппинга', () => {
     on.update()
     expect(on.alerts).toEqual([{ dir: 'above', rate: 400, lo: 300, hi: 309, hour: H * 1000 }])
     expect(on.m.state().options.divineAlert).toBe(true)
+    // баннер под графиком: «тост уже отправлен» / «включите уведомление»
+    expect(on.m.state().alertSent).toBe(true)
+    expect(off.m.state().alertSent).toBe(false)
+    expect(off.m.state().divine?.outside).toBe('above')
     expect((on.saved() as { alertedHour?: number }).alertedHour).toBe(H * 1000)
   })
 
