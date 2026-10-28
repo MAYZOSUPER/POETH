@@ -176,4 +176,4 @@ export function Hint({ text }: { text: string }) {
   )
 }
 
-export { blacklistWarning, coinClass, formatDate, formatTime, reasonText, statusTag } from './format'
+export { blacklistWarning, formatDate, formatTime, reasonText, statusTag } from './format'
