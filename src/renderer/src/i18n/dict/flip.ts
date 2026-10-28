@@ -128,11 +128,8 @@ export const flip: DomainDict = {
     'flip.sum.result': 'Итог круга',
     'flip.sum.roi': 'Доходность',
     'flip.sum.fee': 'Комиссия',
-    'flip.sum.chaos': '+{chaos} c',
-    'flip.sum.div': '+{div} div (≈ +{chaos} c)',
-    'flip.how.hint': 'Если в игре курс хуже, чем здесь, не ставьте ордер: прибыль уже съедена. Одновременно можно держать до 10 ордеров.',
-    'flip.baseName.chaos': 'Сфера хаоса',
-    'flip.baseName.divine': 'Божественная сфера'
+    'flip.sum.alt': ' (≈ +{chaos} c)',
+    'flip.how.hint': 'Если в игре курс хуже, чем здесь, не ставьте ордер: прибыль уже съедена. Одновременно можно держать до 10 ордеров.'
   },
   en: {
     'app.flip': 'Exchange',
@@ -259,10 +256,7 @@ export const flip: DomainDict = {
     'flip.sum.result': 'Result per round',
     'flip.sum.roi': 'Return',
     'flip.sum.fee': 'Gold fee',
-    'flip.sum.chaos': '+{chaos} c',
-    'flip.sum.div': '+{div} div (≈ +{chaos} c)',
-    'flip.how.hint': 'If the in-game rate is worse than shown here, do not place the order: the profit is gone. You can hold up to 10 orders at once.',
-    'flip.baseName.chaos': 'Chaos Orb',
-    'flip.baseName.divine': 'Divine Orb'
+    'flip.sum.alt': ' (≈ +{chaos} c)',
+    'flip.how.hint': 'If the in-game rate is worse than shown here, do not place the order: the profit is gone. You can hold up to 10 orders at once.'
   }
 }

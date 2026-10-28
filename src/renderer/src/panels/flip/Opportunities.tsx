@@ -1,7 +1,8 @@
-import type { FlipRoute, FlipState } from '@shared/types'
+import type { FlipRoute, FlipState, UiLang } from '@shared/types'
 import { useT } from '../../i18n'
+import { CoinIcon, Currency } from '../../components/Currency'
 import { Confidence, FIco } from './ui'
-import { clock, fixed, int, KIND_LABEL, num, pct, price, UNIT } from './format'
+import { clock, fixed, int, KIND_LABEL, num, pct, price } from './format'
 import { isTrend, type ViewSort } from './view'
 import { useFlipStore } from './useFlipStore'
 
@@ -33,6 +34,7 @@ export function Opportunities({
   const refresh = useFlipStore((st) => st.refresh)
   const busy = useFlipStore((st) => st.busy)
   const rate = s.divine?.current ?? 0
+  const ul = lang as UiLang
 
   if (s.loading && !s.lastHour) {
     return (
@@ -102,6 +104,7 @@ export function Opportunities({
               {expert && <th className="is-num">{t('flip.col.spread')}</th>}
               <th className="is-num">{sortBtn('perHour', t('flip.col.perHour'))}</th>
               <th className="is-num" title={t('flip.gold.title')}>
+                <CoinIcon tag="gold" lang={ul} />
                 {sortBtn('perGold', t('flip.col.perGold'))}
               </th>
               <th>{t('flip.col.conf')}</th>
@@ -143,22 +146,31 @@ export function Opportunities({
                   </td>
                   {expert && <td className="is-faint fx-kind">{KIND_LABEL[r.kind]}</td>}
                   <td className="is-num">
-                    {price(r.buy.price, lang)} {UNIT[r.buy.base]}
+                    <Currency tag={r.buy.base} text={price(r.buy.price, lang)} lang={ul} />
                   </td>
                   <td className="is-num">
-                    {price(r.sell.price, lang)} {UNIT[r.sell.base]}
+                    <Currency tag={r.sell.base} text={price(r.sell.price, lang)} lang={ul} />
                   </td>
                   {expert && <td className="is-num">{pct(r.spread, lang)}</td>}
-                  <td className="is-num is-good">≈ +{int(r.perHour, lang)} c</td>
+                  <td className="is-num is-good">
+                    <Currency tag="chaos" text={`≈ +${int(r.perHour, lang)}`} lang={ul} />
+                  </td>
                   <td className="is-num">
-                    <i className="ui-coin ui-coin--gold" />
-                    {fixed(r.per1000Gold, 1, lang)} c
+                    <Currency tag="chaos" text={fixed(r.per1000Gold, 1, lang)} lang={ul} />
                   </td>
                   <td>
                     <Confidence value={r.confidence} word={!expert} />
                   </td>
                   <td className="is-num">
-                    <span className="fx-liq">{rate > 0 ? `${num(r.liquidity / rate, lang)} div/${t('flip.h')}` : '—'}</span>
+                    <span className="fx-liq">
+                      {rate > 0 ? (
+                        <>
+                          <Currency tag="divine" text={num(r.liquidity / rate, lang)} lang={ul} />/{t('flip.h')}
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </span>
                   </td>
                   {expert && <td className="is-num is-faint">{r.activeHours}/24</td>}
                 </tr>

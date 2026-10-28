@@ -172,7 +172,7 @@ export function FlipTab() {
               </div>
             )}
           </div>
-          <RateBox s={s} lang={lang} />
+          <RateBox s={s} lang={lang} expert={expert} />
         </div>
         <Opportunities s={s} rows={rows} selected={route?.id ?? null} lang={lang} expert={expert} nameOf={nameOf} />
         {route && !(s.loading && !s.lastHour) && (

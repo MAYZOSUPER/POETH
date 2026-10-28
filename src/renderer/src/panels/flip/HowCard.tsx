@@ -1,7 +1,8 @@
-import type { FlipRoute } from '@shared/types'
+import type { FlipRoute, UiLang } from '@shared/types'
 import { useT } from '../../i18n'
+import { CoinIcon, Currency, useCurrencyNames } from '../../components/Currency'
 import { Confidence, CopyNumber, FIco } from './ui'
-import { fixed, goldTotal, int, pct, price, UNIT } from './format'
+import { fixed, goldTotal, int, pct, price } from './format'
 import { fillHours, orderTotals, roundProfit } from './view'
 
 // Карточка «Как сделать этот флип у Фаустуса» по выбранной строке (макет «Обмен» v2): шаги с готовыми целыми
@@ -10,25 +11,36 @@ import { fillHours, orderTotals, roundProfit } from './view'
 
 export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name: string; lang: string; expert: boolean; divine: number }) {
   const t = useT()
+  const ul = lang as UiLang
+  const names = useCurrencyNames(ul)
   const tot = orderTotals(r)
-  const base1 = t(`flip.baseName.${r.buy.base}`)
-  const base2 = t(`flip.baseName.${r.sell.base}`)
-  const u1 = UNIT[r.buy.base]
-  const u2 = UNIT[r.sell.base]
+  // названия базовой валюты — из данных APT на языке интерфейса (как в окне обмена в игре)
+  const base1 = names.name(r.buy.base)
+  const base2 = names.name(r.sell.base)
   const res = roundProfit(r, divine)
   const fill = fillHours(r)
+  /** «0,7 Сферы хаоса» (простой режим) / «0,7 c» */
+  const per = (v: number, tag: string): string => {
+    const shown = price(v, lang)
+    return `${shown} ${expert ? (tag === 'divine' ? 'div' : 'c') : names.after(tag, shown)}`
+  }
+  const cur = (tag: string, text: string) => <Currency tag={tag} text={text} lang={ul} />
 
+  const coinOf = (n: string) =>
+    n === base1 ? <CoinIcon tag={r.buy.base} lang={ul} /> : n === base2 ? <CoinIcon tag={r.sell.base} lang={ul} /> : null
   const order = (giveName: string, give: number, getName: string, get: number) => (
     <div className="fx-order">
       <span>
-        {t('flip.give')} {giveName}, <b>{int(give, lang)}</b>
+        {t('flip.give')} {coinOf(giveName)}
+        {giveName}, <b>{int(give, lang)}</b>
       </span>
       <CopyNumber value={give} shown={int(give, lang)} />
       <span className="arrow" aria-hidden="true">
         →
       </span>
       <span>
-        {t('flip.want')} {getName}, <b>{int(get, lang)}</b>
+        {t('flip.want')} {coinOf(getName)}
+        {getName}, <b>{int(get, lang)}</b>
       </span>
       <CopyNumber value={get} shown={int(get, lang)} />
     </div>
@@ -45,7 +57,7 @@ export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name:
       <li>
         <div>
           <b>{t('flip.step.2')}</b>
-          <p>{t('flip.step.rate', { price: `${price(r.buy.price, lang)} ${u1}` })}</p>
+          <p>{t('flip.step.rate', { price: per(r.buy.price, r.buy.base) })}</p>
           {order(base1, tot.buyGive, name, tot.units)}
         </div>
       </li>
@@ -58,7 +70,7 @@ export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name:
       <li>
         <div>
           <b>{t('flip.step.4')}</b>
-          <p>{t('flip.step.rate', { price: `${price(r.sell.price, lang)} ${u2}` })}</p>
+          <p>{t('flip.step.rate', { price: per(r.sell.price, r.sell.base) })}</p>
           {order(name, tot.units, base2, tot.sellGet)}
         </div>
       </li>
@@ -69,25 +81,31 @@ export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name:
     <div className="fx-kv">
       <span>{t('flip.kv.buy')}</span>
       <b>
-        {int(tot.buyGive, lang)} {u1} → {int(tot.units, lang)}
+        {cur(r.buy.base, int(tot.buyGive, lang))} → {int(tot.units, lang)}
       </b>
       <span>{t('flip.kv.sell')}</span>
       <b>
-        {int(tot.units, lang)} → {int(tot.sellGet, lang)} {u2}
+        {int(tot.units, lang)} → {cur(r.sell.base, int(tot.sellGet, lang))}
       </b>
       <span>{t('flip.kv.chunk')}</span>
       <b>
-        {r.buy.order.give} {u1} → {r.buy.order.get} · {r.sell.order.give} → {r.sell.order.get} {u2}
+        {cur(r.buy.base, String(r.buy.order.give))} → {r.buy.order.get} · {r.sell.order.give} → {cur(r.sell.base, String(r.sell.order.get))}
       </b>
       <span>{t('flip.kv.fill')}</span>
       <b>{fill === null ? t('flip.kv.fill.hour') : t('flip.kv.fill.hours', { n: fixed(fill, 1, lang) })}</b>
     </div>
   )
 
+  // простой режим — с полным названием: «+12 Сфер хаоса», «+0,08 Божественной сферы (≈ +12 c)»
   const profit =
-    res.div !== null
-      ? t('flip.sum.div', { div: fixed(res.div, 2, lang), chaos: int(res.chaos, lang) })
-      : t('flip.sum.chaos', { chaos: fixed(res.chaos, res.chaos >= 100 ? 0 : 1, lang) })
+    res.div !== null ? (
+      <>
+        <Currency tag="divine" text={`+${fixed(res.div, 2, lang)}`} full={!expert} lang={ul} focusable />
+        {t('flip.sum.alt', { chaos: int(res.chaos, lang) })}
+      </>
+    ) : (
+      <Currency tag="chaos" text={`+${fixed(res.chaos, res.chaos >= 100 ? 0 : 1, lang)}`} full={!expert} lang={ul} focusable />
+    )
 
   return (
     <div className="ui-box">
@@ -110,7 +128,7 @@ export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name:
               <b>{pct(r.roi, lang)}</b>
               <span title={t('flip.gold.title')}>{t('flip.sum.fee')}</span>
               <b>
-                <i className="ui-coin ui-coin--gold" />≈ {int(Math.round(goldTotal(r) / 10) * 10, lang)}
+                <Currency tag="gold" text={`≈ ${int(Math.round(goldTotal(r) / 10) * 10, lang)}`} full={!expert} lang={ul} focusable />
               </b>
               <span>{t('flip.col.conf')}</span>
               <b>

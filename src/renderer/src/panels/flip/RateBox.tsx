@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
-import type { FlipState } from '@shared/types'
+import type { FlipState, UiLang } from '@shared/types'
 import { useT } from '../../i18n'
+import { CoinIcon, RateTipBody, TipAnchor, useCurrencyNames, useRateDeltaText } from '../../components/Currency'
 import { WSwitch } from '../wealth/ui'
 import { FIco } from './ui'
 import { fixed } from './format'
@@ -34,8 +35,11 @@ function chartGeo(v: RateView) {
   }
 }
 
-export function RateBox({ s, lang }: { s: FlipState; lang: string }) {
+export function RateBox({ s, lang, expert }: { s: FlipState; lang: string; expert: boolean }) {
   const t = useT()
+  const ul = lang as UiLang
+  const names = useCurrencyNames(ul)
+  const deltaSay = useRateDeltaText(ul)
   const range = useFlipStore((st) => st.range)
   const setRange = useFlipStore((st) => st.setRange)
   const setOptions = useFlipStore((st) => st.setOptions)
@@ -136,22 +140,39 @@ export function RateBox({ s, lang }: { s: FlipState; lang: string }) {
   const week = d.outside && d.week ? d.week : null
   const sent = s.options.divineAlert ? (s.alertSent ? 'flip.out.sent' : 'flip.out.next') : 'flip.out.off'
   const yLabel = (g: number): string => fixed(g, geo.st < 1 ? 1 : 0, lang)
+  const rateText = f1(d.current)
+  const deltaText = f1(Math.abs(v.delta))
+  const deltaWords = deltaSay(v.delta, deltaText, t(`flip.delta.${range}`))
 
   return (
     <div className="ui-box">
       {head}
       <div className="ui-box__body fx-rate-body">
         <div className="fx-rate">
-          <span className="ui-figure__value" title={t('flip.rate.current.title')}>
-            <i className="ui-coin ui-coin--div" />1 = {f1(d.current)}
-            <small className="ui-figure__unit">chaos</small>
-          </span>
-          <span className="ui-delta">
-            <FIco name={v.delta >= 0 ? 'arrow-up' : 'arrow-down'} />
-            {v.delta >= 0 ? '+' : '−'}
-            {f1(Math.abs(v.delta))} <span>{t(`flip.delta.${range}`)}</span>
-          </span>
+          <TipAnchor
+            className="ui-figure__value ui-cur"
+            focusable
+            tip={<RateTipBody rate={d.current} text={rateText} lang={ul} extra={<span className="ui-cur-tip__faint">{t('flip.rate.current.title')}</span>} />}
+          >
+            <CoinIcon tag="divine" lang={ul} />1 = {rateText}
+            {expert ? <small className="ui-figure__unit">chaos</small> : <CoinIcon tag="chaos" lang={ul} />}
+          </TipAnchor>
+          {expert ? (
+            <span className="ui-delta" title={deltaWords}>
+              <FIco name={v.delta >= 0 ? 'arrow-up' : 'arrow-down'} />
+              {v.delta >= 0 ? '+' : '−'}
+              {deltaText} <span>{t(`flip.delta.${range}`)}</span>
+            </span>
+          ) : (
+            <span className="fx-rate__say">{`1 ${names.after('divine', 1)} = ${rateText} ${names.after('chaos', rateText)}`}</span>
+          )}
         </div>
+        {!expert && (
+          <span className="ui-delta fx-rate__delta">
+            <FIco name={v.delta >= 0 ? 'arrow-up' : 'arrow-down'} />
+            {deltaWords}
+          </span>
+        )}
         <div className="ui-chart">
           <svg
             ref={svgRef}
@@ -210,7 +231,7 @@ export function RateBox({ s, lang }: { s: FlipState; lang: string }) {
                 top: Math.min(band ? geo.y(band.hi) : CH.h, geo.y(hp.rate)) * k + 6
               }}
             >
-              <b>{f1(hp.rate)} chaos</b>{' '}
+              <b>{expert ? `${f1(hp.rate)} chaos` : `${f1(hp.rate)} ${names.after('chaos', f1(hp.rate))}`}</b>{' '}
               <span>{band ? t('flip.chart.tip', { range: corridor, ago: ago(hp.at) }) : ago(hp.at)}</span>
             </div>
           )}

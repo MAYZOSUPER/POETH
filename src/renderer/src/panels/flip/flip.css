@@ -27,6 +27,12 @@
 .fx-rate { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
 .fx-rate .ui-figure__value { font-size: 30px; }
 .fx-rate .ui-coin { width: 20px; height: 20px; margin-right: 6px; vertical-align: -2px; }
+.fx-rate .ui-coin--img { transform: scale(1.3); }
+.fx-rate .ui-figure__value .ui-coin + .ui-coin,
+.fx-rate .ui-figure__value .ui-coin:last-child { margin: 0 0 0 6px; }
+/* простой режим: курс словами под цифрой и изменение за период словами */
+.fx-rate__say { flex-basis: 100%; color: var(--fg); font-size: var(--fs-sm); }
+.fx-rate__delta { color: var(--fg-muted); font-size: var(--fs-sm); font-weight: 500; }
 .fx-rate-wait { display: grid; gap: 10px; }
 .fx-band-l { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; font-size: var(--fs-xs); color: var(--fg-muted); }
 .fx-legend { display: inline-flex; align-items: center; gap: 6px; }
