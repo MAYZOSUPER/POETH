@@ -1,5 +1,5 @@
 import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
-import type { CapturedItem, UiLang } from '@shared/types'
+import type { CapturedItem, GameInputResult, UiLang } from '@shared/types'
 import { ItemCategory, ItemRarity, type ParsedItem } from '@shared/poe1/parser'
 import {
   TRADE_STATUSES,
@@ -22,6 +22,7 @@ import { PopupPositionButton } from '../PopupPosition'
 import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
 import { ageKey, coinClass, currencyLabel, fmtNum, statParts, tierWordKey } from './format'
 import { convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
+import { createClickGuard, lotActions, whisperCommand } from '@shared/poe1/pricecheck/lotActions'
 
 // Окно цены PoE1 по утверждённому макету (docs/design-system.md, классы ui-*): шапка с лигой, предмет,
 // свойства и псевдо-статы с галочками, фильтры предмета, сводка «честной цены», предложения, кнопки.
@@ -46,9 +47,11 @@ function openInTradeWindow(target: TradeWindowTarget): void {
   void window.overlayApi.tradeWindow.open({ game: 'poe1', ...target })
 }
 
-/** «Купить» у лота торговца: сайт сам покажет этот лот (продавец + имя + база + ilvl). */
-function openListing(l: Poe1Listing, siteUrl: string): void {
-  const league = parseTradeUrl(siteUrl)?.league
+/**
+ * «Открыть лот»: трейд-окно поверх игры сразу на этом лоте (продавец + имя + база + ilvl) в лиге поиска.
+ * Лигу берём из окна, а не из адреса: длинные id поиска (H4sI…) адрес избранного не разбирает.
+ */
+function openListing(l: Poe1Listing, siteUrl: string, league: string): void {
   if (!l.baseType || !league) return openInTradeWindow({ url: siteUrl })
   openInTradeWindow({ lot: { account: l.accountName, name: l.itemName, typeLine: l.baseType, ilvl: l.itemLevel }, league })
 }
@@ -563,8 +566,16 @@ function WhyHint({ result, lang, t }: { result: Extract<PcResult, { kind: 'trade
   )
 }
 
+/** Одна защита на окно: двойной клик по «Написать» (даже по разным лотам) — одно сообщение. */
+const writeGuard = createClickGuard()
+
+type WriteNote = { ok: true; sent: boolean } | { ok: false; reason: Exclude<GameInputResult, 'ok'>; copied: boolean }
+
 function ListingRow({ l, siteUrl, lang, t }: { l: Poe1Listing; siteUrl: string; lang: UiLang; t: T }) {
-  const [copied, setCopied] = useState(false)
+  const sendWhisper = usePriceCheckStore((s) => s.sendWhisper)
+  const league = usePriceCheckStore((s) => s.league)
+  const [note, setNote] = useState<WriteNote | null>(null)
+  const acts = lotActions(l)
   const age = ageKey(l.indexed)
   const status =
     l.online === 'online' ? (
@@ -583,20 +594,35 @@ function ListingRow({ l, siteUrl, lang, t }: { l: Poe1Listing; siteUrl: string; 
         {t('pc1.offline')}
       </>
     )
-  const copy = async (): Promise<void> => {
-    if (!l.whisper) return
-    if (await window.overlayApi.trade.copyText(l.whisper)) {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    }
+
+  useEffect(() => {
+    if (!note) return
+    const id = setTimeout(() => setNote(null), note.ok ? 2500 : 6000)
+    return () => clearTimeout(id)
+  }, [note])
+
+  // «Написать»: готовый whisper из ответа fetch → чат игры (S1 typeInChat сам вернёт фокус игре);
+  // ввод в игру недоступен — тот же текст в буфер обмена
+  const write = async (): Promise<void> => {
+    const cmd = whisperCommand(l, sendWhisper)
+    if (!cmd || !writeGuard()) return
+    const res = await window.overlayApi.overlay.typeInChat(cmd.text, { send: cmd.send }).catch((): GameInputResult => 'no-input')
+    if (res === 'ok') return setNote({ ok: true, sent: cmd.send })
+    const copied = await window.overlayApi.trade.copyText(cmd.text).catch(() => false)
+    setNote({ ok: false, reason: res, copied })
   }
+  const open = (): void => openListing(l, siteUrl, league)
+
   return (
     <div className="ui-listing">
       <span className="ui-listing__price">{l.price ? <Price price={l.price} lang={lang} /> : '—'}</span>
       <span className="ui-listing__meta">
         <span className="ui-listing__who">
-          <span className={`ui-tag ui-tag--${l.kind === 'instant' ? 'merchant' : 'person'}`}>
-            {t(l.kind === 'instant' ? 'pc1.tag.merchant' : 'pc1.tag.person')}
+          <span
+            className={`ui-tag ui-tag--${acts.buyout ? 'merchant' : 'person'}`}
+            title={t(acts.buyout ? 'pc1.tag.buyout.help' : 'pc1.tag.person.help')}
+          >
+            {t(acts.buyout ? 'pc1.tag.buyout' : 'pc1.tag.person')}
           </span>{' '}
           {l.characterName || l.accountName}
         </span>
@@ -610,18 +636,50 @@ function ListingRow({ l, siteUrl, lang, t }: { l: Poe1Listing; siteUrl: string; 
             {t('pc1.fee', { n: l.fee.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US') })}
           </span>
         )}
+        {note && (
+          <span className={`pc-lot-note${note.ok ? '' : ' is-bad'}`} role="status">
+            {note.ok
+              ? t(note.sent ? 'pc1.write.sent' : 'pc1.write.pasted')
+              : `${t(`pc1.write.err.${note.reason}`)}${note.copied ? ` ${t('pc1.write.copied')}` : ''}`}
+          </span>
+        )}
       </span>
-      {l.kind === 'instant' ? (
-        <button type="button" className="ui-btn ui-btn--sm ui-btn--primary" title={t('pc1.buy.help')} onClick={() => openListing(l, siteUrl)}>
-          <Icon name="external" />
-          {t('pc1.buy')}
-        </button>
-      ) : (
-        <button type="button" className="ui-btn ui-btn--sm" title={t('pc1.whisper.help')} disabled={!l.whisper} onClick={copy}>
-          <Icon name={copied ? 'check' : 'copy'} />
-          {copied ? t('pc1.whisper.copied') : t('pc1.whisper.copy')}
-        </button>
-      )}
+      <span className="pc-lot-acts">
+        {acts.write && (
+          // без активации оверлея на отпускании кнопки: фокус остаётся у игры, текст уходит в её чат
+          <button
+            type="button"
+            className="ui-btn ui-btn--sm ui-btn--primary"
+            title={t(sendWhisper ? 'pc1.write.help.send' : 'pc1.write.help')}
+            onMouseUp={(e) => e.stopPropagation()}
+            onClick={() => void write()}
+          >
+            <Icon name="chat" />
+            {t('pc1.write')}
+          </button>
+        )}
+        {acts.primary === 'open' ? (
+          <button
+            type="button"
+            className="ui-btn ui-btn--sm ui-btn--primary"
+            title={t(acts.buyout ? 'pc1.lot.open.buyout.help' : 'pc1.lot.open.help')}
+            onClick={open}
+          >
+            <Icon name="external" />
+            {t('pc1.lot.open')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="ui-btn ui-btn--sm ui-btn--icon"
+            title={t('pc1.lot.open.help')}
+            aria-label={t('pc1.lot.open')}
+            onClick={open}
+          >
+            <Icon name="external" />
+          </button>
+        )}
+      </span>
     </div>
   )
 }
@@ -654,6 +712,12 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
         </div>
       )}
       {simple && <WhyHint result={result} lang={lang} t={t} />}
+      {simple && shown.some((l) => lotActions(l).buyout) && (
+        <div className="ui-hint pc-defaults">
+          <Icon name="info" />
+          <span>{t('pc1.buyout.hint')}</span>
+        </div>
+      )}
       <div className="pc-blk">
         <div className="ui-label">
           {t('pc1.listings')}

@@ -72,6 +72,7 @@ export function defaultSettings(): Settings {
     regex: {},
     ui: { simpleMode: true },
     overlay: { pricePosition: 'cursor', priceWindowPos: null },
+    priceCheck: { sendWhisper: false },
     chatCommands: defaultChatCommands(),
     startup: { withWindows: false, minimized: true, firstRunDone: false },
     updates: { check: true }
@@ -188,6 +189,7 @@ function normalize(src: Obj): Settings {
   s.regex = isObj(src.regex) ? { ...src.regex } : {}
   s.ui = mergeSection(def.ui, src.ui)
   s.overlay = mergeSection(def.overlay, src.overlay)
+  s.priceCheck = mergeSection(def.priceCheck, src.priceCheck)
   // нет списка (v1, ранний v2) — пресеты; пустой список — игрок удалил всё сам
   s.chatCommands = normalizeChatCommands(src.chatCommands) ?? def.chatCommands
   s.startup = mergeSection(def.startup, src.startup)

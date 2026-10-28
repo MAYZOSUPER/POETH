@@ -63,6 +63,8 @@ interface PcState {
   /** хост трейда из настроек: ru.pathofexile.com принимает только русские имена предметов */
   siteHost: 'www.pathofexile.com' | 'ru.pathofexile.com'
   simple: boolean
+  /** «Написать» у лота сразу отправляет whisper (Settings.priceCheck.sendWhisper) */
+  sendWhisper: boolean
   searchStatRange: number
   result?: PcResult
   /** фильтры изменены после последнего поиска */
@@ -114,6 +116,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
   status: 'available',
   siteHost: 'www.pathofexile.com',
   simple: true,
+  sendWhisper: false,
   searchStatRange: 10,
   dirty: false,
   rev: 0,
@@ -156,6 +159,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
       league,
       leagues: leagues?.leagues ?? [{ id: league, text: league }],
       simple: settings?.ui.simpleMode ?? true,
+      sendWhisper: settings?.priceCheck?.sendWhisper ?? false,
       siteHost: settings?.siteHost ?? 'www.pathofexile.com',
       presets: pc.presets,
       rate: get().rate?.league === league ? get().rate : null,
