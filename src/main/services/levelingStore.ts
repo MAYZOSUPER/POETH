@@ -256,6 +256,16 @@ export class LevelingStore extends EventEmitter {
     return this.state()
   }
 
+  /**
+   * Хоткей «показать / свернуть гид» (levelingToggle): выключенный гид — включить развёрнутым, иначе
+   * свернуть ↔ развернуть. Одно действие на нажатие.
+   */
+  async toggleGuide(): Promise<LevelingState> {
+    await this.load()
+    const c = this.file_.config
+    return this.setConfig(c.overlay ? { collapsed: !c.collapsed } : { overlay: true, collapsed: false })
+  }
+
   async createProfile(name: string): Promise<LevelingState> {
     await this.load()
     const now = this.now()

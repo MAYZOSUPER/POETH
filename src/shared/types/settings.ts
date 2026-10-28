@@ -42,6 +42,8 @@ export type HotkeyAction =
   | 'dealInvite'
   | 'dealTrade'
   | 'dealDismiss'
+  // прокачка PoE1 (S14): показать / свернуть гид поверх игры
+  | 'levelingToggle'
   // always
   | 'toggleCompanion'
   | 'toggleLock'

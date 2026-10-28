@@ -74,4 +74,13 @@ describe('LevelingStore', () => {
     st = await again.selectProfile(st2.profiles[0].id)
     expect(Object.keys(st.progress.done)).toEqual(['a1-001'])
   })
+
+  it('хоткей «показать / свернуть гид»: свернуть ↔ развернуть, выключенный — включить развёрнутым', async () => {
+    const s = make()
+    await s.load()
+    expect((await s.toggleGuide()).config).toMatchObject({ overlay: true, collapsed: true })
+    expect((await s.toggleGuide()).config).toMatchObject({ overlay: true, collapsed: false })
+    await s.setConfig({ overlay: false, collapsed: true })
+    expect((await s.toggleGuide()).config).toMatchObject({ overlay: true, collapsed: false })
+  })
 })

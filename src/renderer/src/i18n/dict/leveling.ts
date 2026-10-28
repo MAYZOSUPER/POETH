@@ -6,6 +6,7 @@ import type { DomainDict } from '../types'
 export const leveling: DomainDict = {
   ru: {
     'lev.loading': 'Загружаем маршрут…',
+    'set.hk.levelingToggle': 'Прокачка: показать / свернуть гид',
     'lev.act': 'Акт {n}',
     'lev.stepOf': 'Акт {act} · шаг {i} из {n}',
     'lev.level': 'ур. {n}',
@@ -78,6 +79,7 @@ export const leveling: DomainDict = {
   },
   en: {
     'lev.loading': 'Loading the route…',
+    'set.hk.levelingToggle': 'Leveling: show / collapse the guide',
     'lev.act': 'Act {n}',
     'lev.stepOf': 'Act {act} · step {i} of {n}',
     'lev.level': 'lvl {n}',

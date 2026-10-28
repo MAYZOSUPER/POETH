@@ -8,6 +8,7 @@ import { getGameLogStatus, onGameLogStatus, subscribeGameLog } from '../services
 import { resourcesDir } from '../services/questDataset'
 import { sendToOverlay } from '../windows/gameOverlay'
 import { sendToCompanion } from '../windows/companionWindow'
+import { onHotkeyAction } from '../hotkeys'
 import type { IpcDomain } from './types'
 
 // Домен «прокачка PoE1» (main, этап S14). Строки Client.txt — общий тейлер процесса (services/gameLog.ts:
@@ -123,6 +124,8 @@ async function setupForGame(def: GameDef): Promise<void> {
     return
   }
   await getStore().load()
+  // «показать / свернуть гид» — только в PoE1: без обработчика хоткей в PoE2 не регистрируется
+  onHotkeyAction('levelingToggle', () => void getStore().toggleGuide())
   await startLog(def)
 }
 
