@@ -123,37 +123,38 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
   const last = state.runs.find((r) => r.sessionId === state.session?.id) ?? null
   const dur = sessionMs(state, now)
   const perHour = stats && stats.profitChaos !== null && dur >= 60_000 ? stats.profitChaos / (dur / HOUR) : null
-  // доход в div по курсу из прибылей S11a (по макету), без курса — в chaos
-  const divRate = latestDivineRate(state.runs.filter((r) => r.sessionId === state.session?.id))
+  // как на плитке: от 1 div в час — div/ч (курс из прибылей S11a), меньше или без курса — c/ч
+  const rateDiv = latestDivineRate(state.runs.filter((r) => r.sessionId === state.session?.id))
+  const divRate = rateDiv && perHour !== null && Math.abs(perHour / rateDiv) >= 1 ? rateDiv : null
   const incomeText = perHour === null ? '—' : divRate ? rate(perHour / divRate, lang) : chaos(perHour, lang)
 
   let first
   if (paused) {
     first = (
-      <span className="ov-farm__seg">
+      <span className="ui-hud__seg">
         <Icon name="pause" />
-        <span className="ov-farm__state">{t('farm.ov.paused')}</span>
-        <b className="ov-farm__time">{clock(dur)}</b>
+        <span className="ui-hud__state">{t('farm.ov.paused')}</span>
+        <b className="ui-hud__time">{clock(dur, true)}</b>
       </span>
     )
   } else if (run && state.inside) {
     first = (
-      <span className="ov-farm__seg" title={t('farm.ov.map')}>
+      <span className="ui-hud__seg" title={t('farm.ov.map')}>
         <Icon name="map" />
-        {simple && <span className="ov-farm__name">{runName(run)}</span>}
-        <b className="ov-farm__time">{clock(currentRunMs(state, now))}</b>
+        {simple && <span className="ui-hud__name">{runName(run)}</span>}
+        <b className="ui-hud__time">{clock(currentRunMs(state, now))}</b>
       </span>
     )
   } else {
     // в убежище (или вышли из карты через портал): время последней карты
     const lastMs = run ? currentRunMs(state, now) : last?.activeMs
     first = (
-      <span className="ov-farm__seg">
+      <span className="ui-hud__seg">
         <Icon name="home" />
-        <span className="ov-farm__state">{t('farm.ov.hideout')}</span>
+        <span className="ui-hud__state">{t('farm.ov.hideout')}</span>
         {lastMs !== undefined && (
           <>
-            {simple && <span className="ov-farm__lbl">{t('farm.ov.last')}</span>}
+            {simple && <span className="ui-hud__lbl">{t('farm.ov.last')}</span>}
             <b>{clock(lastMs)}</b>
           </>
         )}
@@ -166,25 +167,25 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
       {drag && <div ref={shieldRef} className="ov-farm-shield" />}
       <div
         ref={barRef}
-        className={`ui-panel ov-farm${paused ? ' is-pause' : ''}`}
+        className={`ui-panel ui-hud ov-farm${paused ? ' ui-hud--pause' : ''}`}
         role="status"
         aria-label={t('farm.ov.label')}
         style={{ left: Math.round(cx), top: Math.round(top) }}
       >
-        <span ref={gripRef} className="ov-farm__grip" title={t('farm.ov.drag')} onPointerDown={onGripDown}>
-          <Icon name="dots" />
+        <span ref={gripRef} className="ui-hud__grip ov-farm__grip" title={t('farm.ov.drag')} onPointerDown={onGripDown}>
+          <Icon name="drag" />
         </span>
         {first}
-        <span className="ov-farm__sep" />
-        <span className="ov-farm__seg" title={t('farm.ov.maps.title')}>
-          {simple ? <span className="ov-farm__lbl">{t('farm.ov.maps')}</span> : <Icon name="grid" />}
+        <span className="ui-hud__sep" />
+        <span className="ui-hud__seg" title={t('farm.ov.maps.title')}>
+          {simple ? <span className="ui-hud__lbl">{t('farm.ov.maps')}</span> : <Icon name="grid" />}
           <b>{stats?.maps ?? 0}</b>
         </span>
-        <span className="ov-farm__sep" />
-        <span className="ov-farm__seg" title={t('farm.ov.income.title')}>
+        <span className="ui-hud__sep" />
+        <span className="ui-hud__seg" title={t('farm.ov.income.title')}>
           <i className={`ui-coin ${divRate ? 'ui-coin--div' : 'ui-coin--chaos'}`} />
           <b>{incomeText}</b>
-          <span className="ov-farm__lbl">{`${divRate ? 'div' : 'c'}${t('farm.ov.perHour')}`}</span>
+          <span className="ui-hud__lbl">{`${divRate ? 'div' : 'c'}${t('farm.ov.perHour')}`}</span>
         </span>
         <span ref={btnsRef} className="ov-farm__btns">
           <button
@@ -194,7 +195,7 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
             title={t(paused ? 'farm.ov.resume' : 'farm.ov.pause')}
             onClick={() => void (paused ? resume() : pause()).finally(done)}
           >
-            <Icon name={paused ? 'chev-r' : 'pause'} />
+            <Icon name={paused ? 'play' : 'pause'} />
           </button>
           <button
             type="button"

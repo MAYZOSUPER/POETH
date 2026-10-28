@@ -300,11 +300,17 @@ export class FarmTracker {
   startSession(ts: number): FarmEvent[] {
     const d = this.d
     if (d.session) return []
+    const out: FarmEvent[] = []
     const session: FarmSession = { id: `s${ts.toString(36)}`, startedAt: ts, endedAt: null, pausedAt: null, pausedMs: 0 }
+    if (d.current && !d.current.sessionId) {
+      // начали посреди карты — карта идёт в сессию; в убежище с открытым прошлым забегом — он
+      // закрывается до начала сессии (его время и прибыль к сессии не относятся)
+      if (d.inside) d.current.sessionId = session.id
+      else out.push(this.finishRun(d.lastExit ?? ts, ts))
+    }
     d.session = session
-    // начали посреди карты — карта идёт в сессию
-    if (d.current && !d.current.sessionId) d.current.sessionId = session.id
-    return [{ type: 'session', state: 'start', session: { ...session }, at: ts }]
+    out.push({ type: 'session', state: 'start', session: { ...session }, at: ts })
+    return out
   }
 
   pauseSession(ts: number): FarmEvent[] {

@@ -26,7 +26,8 @@ export const farm: DomainDict = {
     'farm.stat.avg': 'Среднее время карты',
     'farm.stat.avg.sub': 'быстрее всего {time}',
     'farm.stat.deaths': 'Смерти',
-    'farm.stat.deaths.sub': 'в картах: {n} из {of}',
+    'farm.stat.deaths.sub': 'в {n} картах из {of}',
+    'farm.stat.deaths.none': 'без смертей',
     'farm.stat.deaths.q': 'Соло — точно. В группе считаются смерти всех в зоне: журнал игры не различает игроков.',
     'farm.hint.running':
       'Таймер карты запускается, когда вы входите в карту, и останавливается в убежище. Пауза снимается сама, когда вы входите в карту. Прибыль карты видна после снимка тайника: <b>складывайте лут в тайник до входа в следующую карту</b>. Для прибыли с каждой карты выберите 3–5 вкладок, куда кладёте лут.',
@@ -105,7 +106,8 @@ export const farm: DomainDict = {
     'farm.stat.avg': 'Average map time',
     'farm.stat.avg.sub': 'fastest {time}',
     'farm.stat.deaths': 'Deaths',
-    'farm.stat.deaths.sub': 'in maps: {n} of {of}',
+    'farm.stat.deaths.sub': 'in {n} of {of} maps',
+    'farm.stat.deaths.none': 'no deaths',
     'farm.stat.deaths.q': 'Exact when solo. In a party, deaths of everyone in the zone count: the game log does not tell players apart.',
     'farm.hint.running':
       'The map timer starts when you enter a map and stops in your hideout. Pause ends by itself when you enter a map. A map’s profit shows after a stash snapshot: <b>put loot in the stash before you enter the next map</b>. For profit from every map, pick 3–5 stash tabs where you put loot.',

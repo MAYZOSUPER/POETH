@@ -11,7 +11,8 @@ export type IconName =
   | 'warn' | 'copy' | 'refresh' | 'support' | 'gear' | 'folder' | 'archive' | 'chev-r' | 'chev-d'
   | 'dots' | 'plus' | 'import' | 'export' | 'pin' | 'lock' | 'shield' | 'logout' | 'keyboard'
   | 'layers' | 'volume' | 'info' | 'game' | 'pause' | 'trash' | 'edit' | 'map' | 'book' | 'coins'
-  | 'compass' | 'seal' | 'history'
+  | 'compass' | 'seal' | 'history' | 'arrow-up' | 'arrow-down' | 'chart' | 'table' | 'play' | 'stop'
+  | 'death' | 'drag'
 
 /** Спрайт иконок: один раз на страницу, невидимый. */
 export function IconSprite() {
