@@ -1,0 +1,50 @@
+# Форма «Предложить стратегию» (S17). Её открывает кнопка «Отправить в каталог» в POETH
+# («Поделиться») с уже вставленными кодом и названием: ?template=strategy.yml&title=…&code=…
+# Лид проверяет стратегию в игре и добавляет: node tools/advisor/add-strategy.mjs <код> --issue <номер>
+name: Предложить стратегию / Suggest a strategy
+description: Стратегия фарма для каталога POETH — код из «Поделиться» / A farming strategy for the POETH catalog — the code from Share
+title: "Стратегия: "
+labels: ["strategy"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **RU.** Вставьте код из POETH: вкладка «Что фармить» → «Поделиться». Мы проверим стратегию в игре; принятая
+        появится в каталоге на сайте и во вкладке у всех игроков с меткой «сообщество» и вашим ником.
+        В коде нет аккаунта, POESESSID, тайника и истории сессий — только сама стратегия и ник, если вы его указали.
+
+        **EN.** Paste the code from POETH: What to farm → Share. We test the strategy in game; accepted ones appear in the
+        catalog on the site and in everyone's tab, tagged “community” with your nickname.
+        The code has no account, POESESSID, stash or session history — only the strategy and your nickname if you added one.
+  - type: textarea
+    id: code
+    attributes:
+      label: Код стратегии / Strategy code
+      description: Начинается с POETH1:. Можно вставить и ссылку на страницу стратегии. / Starts with POETH1:. A strategy page link works too.
+      placeholder: "POETH1:…"
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: league
+    attributes:
+      label: Лига и версия игры / League and game version
+      placeholder: "3.30, Softcore"
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Что ещё нам знать / Anything else
+      description: Как вы замеряли добычу, на каком билде проверяли, что важно для новичка. / How you measured the loot, what build you used, what a beginner should know.
+    validations:
+      required: false
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Подтверждение / Confirmation
+      options:
+        - label: Стратегию написал(а) я сам(а), тексты и числа не скопированы с чужих сайтов. / I wrote this strategy myself; the texts and numbers are not copied from other sites.
+          required: true
+        - label: Согласен(на), что стратегию опубликуют в каталоге POETH (репозиторий под MIT) с моим ником. / I agree that the strategy is published in the POETH catalog (MIT repository) with my nickname.
+          required: true

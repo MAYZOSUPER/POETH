@@ -14,6 +14,7 @@ import { closeSplash, openSplash } from './windows/serviceWindows'
 import { announceStarted, applyLoginItem, setStartupStep, wasAutostarted } from './services/startup'
 import { startAppUpdates } from './services/appUpdater'
 import { startDataUpdates } from './services/dataUpdater'
+import { handleStrategyArgv, registerStrategyProtocol } from './ipc/advisor'
 
 // dev/test: isolated profile (migration tests, parallel `npm run dev` from several
 // worktrees — the single-instance lock is per userData dir).
@@ -39,12 +40,14 @@ if (!app.requestSingleInstanceLock()) {
   console.log('[main] another instance holds the single-instance lock — quitting')
   app.quit()
 } else {
-  app.on('second-instance', () => {
+  app.on('second-instance', (_e, argv) => {
     const win = getCompanionWindow()
     if (win) {
       if (!win.isVisible()) win.show()
       win.focus()
     }
+    // «Открыть в POETH» на сайте (S17): только poeth-strategy://import#<код>, остальное игнорируется
+    handleStrategyArgv(argv)
   })
 
   app.whenReady().then(bootstrap)
@@ -84,6 +87,9 @@ async function bootstrap(): Promise<void> {
   // Здесь же поднимается игровой оверлей и отслеживание фокуса игры (S1):
   // overlayDomain.setupForGame → initGameOverlay(def) — attach к окну GameDef.windowTitle.
   await setupGame(settings.game)
+  // «Открыть в POETH» (S17): протокол — только установленная версия с советником; ссылка из первого запуска
+  registerStrategyProtocol()
+  handleStrategyArgv(process.argv)
   if (settings.game === 'poe1') {
     setStartupStep('leagues')
     await warmLeagues(3000)

@@ -84,3 +84,159 @@
   .ad-top { grid-template-columns: minmax(0, 1fr); }
   .ad-figure { justify-items: start; text-align: left; }
 }
+
+/* ===== S17: стратегии игроков — редактор, «Поделиться», «Импорт» (раскладка макета sf-*; компоненты ui-* —
+   .ui-steps, .ui-dialog, .ui-code, .ui-mech, .ui-pips--accent — из components.css, ветка дизайнера design/strategies) ===== */
+.ad-host { position: relative; width: 100%; min-width: 0; height: 100%; }
+.ad-host > .advisor-tab { position: absolute; inset: 0; }
+.ad-title .grow,
+.ad-flabel .grow,
+.ad-edfoot .grow,
+.ui-dialog__foot .grow { flex: 1; }
+.ad-chip-n { color: var(--fg-faint); font-size: var(--fs-xs); }
+.ad-by { font-size: var(--fs-xs); color: var(--fg-faint); }
+.ad-foot { flex-wrap: wrap; gap: 6px 10px; }
+.ad-card .ui-box__head .ui-mech { margin-right: 2px; }
+.ad-xs { font-size: var(--fs-xs); }
+.ad-small { font-size: var(--fs-sm); }
+.ad-good { color: var(--good); display: inline-flex; align-items: center; gap: 4px; }
+.ad-inline { display: inline-flex; align-items: center; gap: 6px; }
+.ad-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.ad-row--center { justify-content: center; }
+.ad-self-start { justify-self: start; align-self: flex-start; }
+.ad-self-end { align-self: end; margin: 0; }
+.ad-measure { max-width: 56ch; }
+.ad-empty-img { width: 120px; height: auto; opacity: 0.9; }
+.ad-empty-img--sm { width: 92px; justify-self: center; }
+.ad-empty-sm { padding: 18px 12px; }
+.ad-ok { display: inline-flex; align-items: center; gap: 6px; color: var(--good); font-size: var(--fs-sm); font-weight: 500; }
+.ad-issues { display: grid; gap: 4px; margin: 4px 0 0; padding-left: 18px; }
+.ad-copied { color: var(--good); }
+.ad-linkbtn { padding: 0; border: 0; background: none; color: var(--accent-hi); font: inherit; font-size: var(--fs-xs); text-decoration: underline; cursor: pointer; }
+
+/* редактор */
+.ad-back .ui-ico { transform: rotate(180deg); }
+.ad-ed { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
+.ad-form { display: grid; gap: 14px; min-width: 0; align-content: start; }
+.ad-form--wide { max-width: 860px; }
+/* своя ширина для карточки «как увидят другие»: её container-запросы считаются от колонки, а не от вкладки */
+.ad-aside { position: sticky; top: 0; display: grid; gap: 8px; min-width: 0; container-type: inline-size; }
+.ad-h4 { margin: 0; font: 700 18px / 1.15 var(--font-display); letter-spacing: 0.03em; color: var(--fg); }
+.ad-flabel { display: flex; align-items: baseline; gap: 8px; }
+.ad-cnt { font-size: var(--fs-xs); color: var(--fg-faint); font-variant-numeric: tabular-nums; }
+.ad-cnt--bad { color: var(--bad); }
+.ui-input.ad-ta { height: auto; min-height: 64px; padding: 6px 8px; line-height: 1.4; resize: vertical; }
+.ui-input.ad-ta--step { min-height: 30px; padding: 5px 8px; }
+.advisor-tab .ui-input[aria-invalid="true"] { border-color: var(--bad); }
+.ad-lang { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ad-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ad-irows { display: grid; gap: 4px; }
+.ad-irow { display: grid; grid-template-columns: minmax(0, 1fr) 64px 100px 64px 60px 26px; gap: 8px; align-items: center; padding: 5px 6px 5px 8px; border-radius: var(--r-sm); background: var(--sunken); font-variant-numeric: tabular-nums; }
+.ad-irow--head { padding-block: 0; background: none; font: 600 var(--fs-2xs) / 1.2 var(--font-ui); letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-faint); }
+.ad-irow .ui-input--num { width: 100%; }
+.ad-irow > .ui-item { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ad-irow__price { font-size: var(--fs-sm); color: var(--fg-muted); white-space: nowrap; }
+.ad-irow__sum,
+.ad-right { text-align: right; white-space: nowrap; }
+.ad-irow__own { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--fg-muted); }
+.ad-irow__err { grid-column: 1 / -1; }
+.ad-combo { position: relative; }
+.ad-combo__menu { position: absolute; z-index: 4; left: 0; right: 0; top: 100%; margin-top: 4px; max-height: 280px; overflow: auto; }
+.ad-combo__none { padding: 8px 10px; color: var(--fg-faint); font-size: var(--fs-sm); }
+.ad-opt { grid-template-columns: minmax(0, 1fr) auto; gap: 1px 12px; height: auto; min-height: 30px; padding-block: 6px; }
+.ad-opt small { grid-column: 1; color: var(--fg-faint); font-size: var(--fs-xs); }
+.ad-opt__price { grid-row: 1 / span 2; grid-column: 2; align-self: center; color: var(--fg-muted); font-size: var(--fs-sm); }
+.ad-opt.is-active { background: var(--hover); color: var(--accent-hi); }
+.ad-total { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r-sm); }
+.ad-total b { font-size: var(--fs-lg); color: var(--accent-hi); }
+.ad-trust { display: inline-flex; align-items: center; gap: 5px; font-size: var(--fs-xs); color: var(--fg-muted); }
+.ad-trust--measured { color: var(--good); }
+.ad-sess { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto auto auto; gap: 4px 14px; align-items: center; padding: 7px 10px; border-radius: var(--r-sm); background: var(--sunken); font-variant-numeric: tabular-nums; }
+.ad-sess--off { color: var(--fg-faint); }
+.ad-w90 { width: 90px; }
+.ad-steprow { display: grid; grid-template-columns: 18px 22px minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+.ad-steprow.is-drag { opacity: 0.5; }
+.ad-steprow .ui-steps__n { margin-top: 4px; color: var(--accent-hi); }
+.ad-steprow__act { display: inline-flex; gap: 2px; }
+.ad-drag { margin-top: 6px; color: var(--fg-faint); cursor: grab; }
+.ad-atlasrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+.ad-rcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.ad-rc { display: grid; gap: 4px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--sunken); color: var(--fg); font: inherit; text-align: left; cursor: pointer; }
+.ad-rc:hover { border-color: var(--border-strong); }
+.ad-rc[aria-checked="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.ad-rc span { color: var(--fg-muted); font-size: var(--fs-sm); }
+.ad-rc:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.ad-need { display: grid; gap: 8px; }
+.ad-need__row { display: grid; grid-template-columns: 110px auto; gap: 14px; align-items: center; justify-content: start; }
+.ad-frow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; }
+.ad-ctl { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-sm); color: var(--fg-muted); }
+.ad-check { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+.ad-check li { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.ad-check .ok { color: var(--good); }
+.ad-check .warn { color: var(--warn); }
+.ad-check .bad { color: var(--bad); }
+.ad-edfoot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+/* «Поделиться» и «Импорт» */
+.ad-dialog--wide { width: 660px; }
+.ad-share-in { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; font-size: var(--fs-sm); }
+.ad-share-in ul { display: grid; gap: 3px; margin: 4px 0 0; padding: 0; list-style: none; }
+.ad-share-in li { display: flex; gap: 6px; align-items: baseline; color: var(--fg-muted); }
+.ad-share-in li .ui-ico { flex: none; transform: translateY(2px); }
+.ad-share-in .yes .ui-ico { color: var(--good); }
+.ad-share-in .no .ui-ico { color: var(--fg-faint); }
+.ad-cat { display: grid; gap: 8px; padding: 12px; border: 1px dashed var(--border-strong); border-radius: var(--r-panel); }
+.ad-paste { min-height: 76px; font-family: var(--font-mono); font-size: var(--fs-xs); word-break: break-all; }
+
+@container (max-width: 860px) {
+  .ad-ed { grid-template-columns: minmax(0, 1fr); }
+  .ad-aside { position: static; }
+}
+@container (max-width: 640px) {
+  .ad-grid2,
+  .ad-rcards { grid-template-columns: minmax(0, 1fr); }
+  .ad-irow { grid-template-columns: minmax(0, 1fr) 56px 64px 24px; }
+  .ad-irow__price,
+  .ad-irow--head > :nth-child(3) { display: none; }
+  .ad-irow__own,
+  .ad-irow--head > :nth-child(5) { display: none; }
+}
+
+/* ===== S17: узкое окно компаньона (минимум 560 px) — ничего не выходит за правый край ===== */
+.advisor-tab,
+.ad-host .ui-dialog { overflow-wrap: break-word; }
+.ad-pad > *,
+.ad-form > *,
+.ad-ed > *,
+.ad-title > *,
+.ad-foot > * { min-width: 0; }
+.ad-title h3 { overflow-wrap: anywhere; }
+.ad-fresh { flex-wrap: wrap; }
+.ad-foot .ui-btn { flex: none; }
+/* диалоги лежат вне контейнера вкладки: их тело — свой контейнер (карточка предпросмотра в «Импорте»).
+   Подложка — обычный блок: в гриде подложки колонка растягивалась по содержимому, и узкое окно резало диалог слева */
+.ad-host .ui-dialog-scrim { display: block; }
+.ad-host .ui-dialog { min-width: 0; max-width: 100%; margin-inline: auto; }
+.ad-host .ui-dialog__body { min-width: 0; container-type: inline-size; }
+.ad-cat .ad-xs { overflow-wrap: anywhere; }
+.ad-host .ui-dialog__foot > * { min-width: 0; }
+
+@container (max-width: 640px) {
+  /* мастер: у шагов только номера, подпись — у текущего */
+  .ui-steps button:not([aria-current="step"]) .ui-steps__t { display: none; }
+  .ui-steps > li:has(button[aria-current="step"]) { flex: 4 1 0; }
+  .ad-sess { grid-template-columns: 16px minmax(0, 1fr) auto auto; }
+  .ad-sess > :last-child { grid-column: 2 / -1; }
+  .ad-need__row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .ad-need__row .ui-seg { justify-self: start; }
+  .ad-steprow { grid-template-columns: 22px minmax(0, 1fr) auto; }
+  .ad-steprow .ad-drag { display: none; }
+  .ad-total { padding: 8px; }
+}
+@media (max-width: 640px) {
+  .ad-host .ui-dialog-scrim { padding: 12px 8px; }
+  .ad-host .ui-dialog__body { padding: var(--sp-6); gap: var(--sp-6); }
+  .ad-share-in { grid-template-columns: minmax(0, 1fr); }
+  .ad-host .ui-code { grid-template-columns: minmax(0, 1fr); }
+  .ad-host .ui-code .ui-btn { justify-self: start; }
+}

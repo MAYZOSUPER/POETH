@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { AdvisorGlossaryTerm, AdvisorLine, AdvisorPricedLine, AdvisorStrategy } from '@shared/types'
 import type { FarmState } from '@shared/types/farm'
 import type { UiLang } from '@shared/types'
@@ -15,6 +15,9 @@ import { chaosText, farmButton, hm, itemNs, minutesText, qtyText, tx, versus, ty
 // предупреждения, термины с подсказками, источник (автор, ссылка на оригинал, замер автора) и «Мой результат»
 // с кнопкой сессии фарма. Метки: черновик, «может устареть» (другая версия игры), «написано на английском».
 // Простой режим — меньше цифр.
+// S17: метка источника (наша / сообщество / импорт, не проверена / моя), автор и дата, ссылка на дерево атласа,
+// действия «Поделиться», «Копия», «Изменить», «Удалить»; preview — карточка «как увидят другие» (редактор,
+// импорт): без действий и «Моего результата».
 
 type T = ReturnType<typeof useT>
 type NameOf = (l: { name: string; ns: ReturnType<typeof itemNs> }) => string
@@ -29,6 +32,114 @@ export interface CardProps {
   /** версия игры текущих данных — для «может устареть» */
   currentPatch: string | null
   nameOf: NameOf
+  /** «как увидят другие»: без действий и «Моего результата», раскрытие — снаружи */
+  preview?: boolean
+  onToggle?: () => void
+}
+
+/** Механика стратегии для плитки: первый тег из известных. */
+const MECH_ICONS: readonly AIcoName[] = ['essence', 'strongbox', 'expedition', 'harvest', 'delirium', 'abyss']
+function mechIcon(s: AdvisorStrategy): AIcoName {
+  return (s.tags.find((tag) => (MECH_ICONS as readonly string[]).includes(tag)) as AIcoName | undefined) ?? 'map'
+}
+
+/** Метка источника (макет S17): наша, сообщество, импорт — не проверена, моя, Wealthy Exile. */
+function SourceTag({ kind }: { kind: AdvisorStrategy['source']['kind'] }) {
+  const t = useT()
+  const cls = { official: ' ui-tag--merchant', community: ' ui-tag--person', imported: ' ui-tag--warn', mine: '', wealthy: ' ui-tag--warn' }[kind]
+  return (
+    <span className={`ui-tag${cls}`} title={t(`advisor.src.tip.${kind}`)}>
+      {t(`advisor.src.tag.${kind}`)}
+    </span>
+  )
+}
+
+/** Кто и когда: «POETH · 2026-10», «автор X · проверена …», «импорт … · автор не указан», «создана вами». */
+function byline(row: AdvisorRow, t: T): string {
+  const s = row.strategy
+  const who = s.source.author ? t('advisor.by', { name: s.source.author }) : ''
+  switch (s.source.kind) {
+    case 'official':
+      return t('advisor.by.official', { date: s.source.date })
+    case 'community':
+      return [who, t('advisor.by.checked', { date: row.checked ?? s.source.date })].filter(Boolean).join(' · ')
+    case 'mine':
+      return t('advisor.by.mine')
+    default:
+      return [t('advisor.by.imported', { date: row.addedAt ?? s.source.date }), who || t('advisor.by.noAuthor')].join(' · ')
+  }
+}
+
+/** Ссылка из стратегии: хост из списка — откроется в браузере по клику, иначе — скопировать (домен виден). */
+function OuterLink({ url, label }: { url: string; label: string }) {
+  const t = useT()
+  const [copied, setCopied] = useState(false)
+  let host = ''
+  try {
+    host = new URL(url).hostname.replace(/^www[.]/, '')
+  } catch {
+    host = ''
+  }
+  const open = isAllowedExternalUrl(url)
+  return (
+    <button
+      type="button"
+      className="ui-btn ui-btn--ghost ui-btn--sm"
+      title={`${t(open ? 'advisor.link.open' : 'advisor.link.copy')}: ${url}`}
+      onClick={() => (open ? window.overlayApi.window.openExternal(url) : void navigator.clipboard.writeText(url).then(() => setCopied(true)))}
+    >
+      <AIco name={copied ? 'check' : open ? 'external' : 'copy'} size="sm" />
+      {copied ? t('advisor.src.copied') : label}
+      <span className="ad-faint">{host}</span>
+    </button>
+  )
+}
+
+/** Действия карточки (S17): поделиться; копия — у нашей и из каталога; изменить — у своей; удалить — у своей и импорта. */
+function Actions({ s }: { s: AdvisorStrategy }) {
+  const t = useT()
+  const openShare = useAdvisorStore((st) => st.openShare)
+  const editStrategy = useAdvisorStore((st) => st.editStrategy)
+  const remove = useAdvisorStore((st) => st.remove)
+  const [confirm, setConfirm] = useState(false)
+  useEffect(() => {
+    if (!confirm) return
+    const id = setTimeout(() => setConfirm(false), 4000)
+    return () => clearTimeout(id)
+  }, [confirm])
+  const kind = s.source.kind
+  return (
+    <>
+      <button type="button" className="ui-btn ui-btn--sm" onClick={() => openShare(s.id)}>
+        <AIco name="export" size="sm" />
+        {t('advisor.act.share')}
+      </button>
+      {(kind === 'official' || kind === 'community') && (
+        <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" title={t('advisor.act.copy.title')} onClick={() => editStrategy(s, false)}>
+          <AIco name="copy" size="sm" />
+          {t('advisor.act.copy')}
+        </button>
+      )}
+      {kind === 'mine' && (
+        <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" onClick={() => editStrategy(s, true)}>
+          <AIco name="edit" size="sm" />
+          {t('advisor.act.edit')}
+        </button>
+      )}
+      {(kind === 'mine' || kind === 'imported' || kind === 'wealthy') && (
+        <button
+          type="button"
+          className={`ui-btn ui-btn--sm ${confirm ? 'ui-btn--danger' : 'ui-btn--ghost ui-btn--icon'}`}
+          aria-label={t('advisor.act.delete')}
+          title={t('advisor.act.delete')}
+          onClick={() => (confirm ? void remove(s.id) : setConfirm(true))}
+        >
+          <AIco name="trash" size="sm" />
+          {confirm && t('advisor.act.delete.confirm')}
+        </button>
+      )}
+    </>
+  )
 }
 
 function lineName(l: AdvisorLine, lang: string, nameOf: NameOf): string {
@@ -186,7 +297,12 @@ function MyResult({ row, lang, farm }: { row: AdvisorRow; lang: string; farm: Fa
           </button>
           {answer && <span className={answer === 'unknown' ? 'ad-bad' : 'ad-muted'}>{t(`advisor.farm.${answer}`)}</span>}
         </div>
-        {!answer && btn !== 'running' && <p className="ui-hint ad-hint">{t('advisor.farm.hint')}</p>}
+        {!answer && btn !== 'running' && (
+          <div className="ui-hint ad-hint">
+            <AIco name="help" />
+            <span>{t('advisor.farm.hint')}</span>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -217,6 +333,7 @@ function Source({ s, lang }: { s: AdvisorStrategy; lang: string }) {
           })}
         </p>
       )}
+      {s.atlasTree && <OuterLink url={s.atlasTree} label={t('advisor.atlasTree')} />}
       {url &&
         (isAllowedExternalUrl(url) ? (
           <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" title={url} onClick={() => window.overlayApi.window.openExternal(url)}>
@@ -237,7 +354,7 @@ function Source({ s, lang }: { s: AdvisorStrategy; lang: string }) {
   )
 }
 
-function Details({ row, lang, expert, farm, glossary, nameOf }: Omit<CardProps, 'open' | 'currentPatch'>) {
+function Details({ row, lang, expert, farm, glossary, nameOf, preview }: Omit<CardProps, 'open' | 'currentPatch'>) {
   const t = useT()
   const s = row.strategy
   const e = row.estimate
@@ -315,13 +432,13 @@ function Details({ row, lang, expert, farm, glossary, nameOf }: Omit<CardProps, 
         </div>
       )}
       <Source s={s} lang={lang} />
-      <MyResult row={row} lang={lang} farm={farm} />
+      {!preview && <MyResult row={row} lang={lang} farm={farm} />}
     </div>
   )
 }
 
 export function StrategyCard(props: CardProps) {
-  const { row, lang, expert, open, nameOf, currentPatch } = props
+  const { row, lang, expert, open, nameOf, currentPatch, preview, onToggle } = props
   const t = useT()
   const toggle = useAdvisorStore((s) => s.toggle)
   const s = row.strategy
@@ -330,20 +447,23 @@ export function StrategyCard(props: CardProps) {
     ...s.inputs.filter((l, i) => !l.own && e.inputs[i].total === null),
     ...s.outputs.filter((_, i) => e.outputs[i].total === null)
   ].map((l) => lineName(l, lang, nameOf))
-  const detailsId = `ad-details-${s.id}`
+  const detailsId = `ad-details-${preview ? 'preview-' : ''}${s.id}`
   const foreign = foreignLang(s, lang)
   const outdated = isOutdated(s, currentPatch)
   return (
     <article className={`ui-box ad-card${open ? ' is-open' : ''}`}>
       <div className="ui-box__head">
-        <h4 className="ad-name">{tx(s.name, lang)}</h4>
+        <span className="ui-mech ui-mech--sm" aria-hidden="true">
+          <AIco name={mechIcon(s)} />
+        </span>
+        <h4 className={`ad-name${tx(s.name, lang) ? '' : ' ad-faint'}`}>{tx(s.name, lang) || t('advisor.untitled')}</h4>
+        <SourceTag kind={s.source.kind} />
         {s.draft && <span className="ui-tag ui-tag--warn">{t('advisor.draftTag', { patch: s.patch })}</span>}
         {outdated && (
           <span className="ui-tag ui-tag--warn" title={t('advisor.outdated.title', { patch: s.patch, current: currentPatch ?? '' })}>
             {t('advisor.outdated', { patch: s.patch })}
           </span>
         )}
-        {s.source.kind !== 'official' && <span className="ui-tag">{t(`advisor.src.kind.${s.source.kind}`)}</span>}
         {foreign && <span className="ui-tag">{t(`advisor.lang.${foreign}`)}</span>}
         <span className="ui-label__grow" />
         <span className="ad-diff">
@@ -384,10 +504,23 @@ export function StrategyCard(props: CardProps) {
         )}
       </div>
       <div className="ui-box__foot ad-foot">
-        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" aria-expanded={open} aria-controls={detailsId} onClick={() => toggle(s.id)}>
+        <button
+          type="button"
+          className="ui-btn ui-btn--ghost ui-btn--sm"
+          aria-expanded={open}
+          aria-controls={detailsId}
+          onClick={() => (onToggle ? onToggle() : toggle(s.id))}
+        >
           <AIco name={open ? 'chev-d' : 'chev-r'} size="sm" />
           {t(open ? 'advisor.less' : 'advisor.more')}
         </button>
+        <span className="ad-by">{byline(row, t)}</span>
+        {!preview && (
+          <>
+            <span className="ui-label__grow" />
+            <Actions s={s} />
+          </>
+        )}
       </div>
     </article>
   )

@@ -3,7 +3,8 @@
 //  - неизвестные поля на любом уровне — ошибка (новые поля = новая версия схемы);
 //  - только простой текст: без HTML-тегов, управляющих символов и символов смены направления текста;
 //  - лимиты длины текстов и числа предметов, шагов, тегов;
-//  - ссылка — только https (wealthy — только wealthyexile.com), автор — ник, без аккаунта и персонажа;
+//  - ссылки (оригинал, дерево атласа) — только https без логина (wealthy — только wealthyexile.com),
+//    автор — ник, без аккаунта и персонажа;
 //  - числа конечные и в разумных пределах.
 // Цены в стратегии не хранятся — поле цены будет неизвестным полем.
 
@@ -27,7 +28,7 @@ const PATCH = /^\d{1,2}\.\d{1,2}(\.\d{1,2})?$/
 /** refName предмета: буквы любого алфавита (Mjölner), цифры, пробел и ' , . : - ( ) */
 const REF = /^[\p{L}\p{N}][\p{L}\p{N}' ,.:\-()]*$/u
 const KINDS: readonly AdvisorItemKind[] = ['stackable', 'card', 'map', 'unique', 'gem']
-const SOURCES: readonly AdvisorSourceKind[] = ['official', 'community', 'imported', 'wealthy']
+const SOURCES: readonly AdvisorSourceKind[] = ['official', 'community', 'imported', 'mine', 'wealthy']
 const WEALTHY_HOSTS = ['wealthyexile.com', 'www.wealthyexile.com']
 
 /** Лимиты (символов и штук). */
@@ -155,6 +156,15 @@ function item(v: unknown, what: string): AdvisorItemRef {
   return out
 }
 
+/** Строки «вложить» / «получишь» (для расчёта черновика редактора — без остальной стратегии). */
+export function validateLines(v: unknown, what: string, min: number, max: number): { ok: true; lines: AdvisorLine[] } | { ok: false; error: string } {
+  try {
+    return { ok: true, lines: lines(v, what, min, max) }
+  } catch (e) {
+    return { ok: false, error: e instanceof Bad ? e.message : 'ошибка' }
+  }
+}
+
 function lines(v: unknown, what: string, min: number, max: number): AdvisorLine[] {
   if (!Array.isArray(v) || v.length < min || v.length > max) throw new Bad(`${what}: от ${min} до ${max}`)
   return v.map((x, i) => {
@@ -181,16 +191,22 @@ function build(v: unknown): AdvisorBuildNeeds {
   return out
 }
 
-/** Ссылка на оригинал: https, у wealthy — только сайт Wealthy Exile. */
-export function sourceUrl(v: unknown, kind: AdvisorSourceKind): string {
-  const s = plain(v, 'source.url', LIMITS.url)
+/** Ссылка: только https, без логина и пароля в адресе. */
+function httpsUrl(v: unknown, what: string): URL {
+  const s = plain(v, what, LIMITS.url)
   let u: URL
   try {
     u = new URL(s)
   } catch {
-    throw new Bad('source.url: не ссылка')
+    throw new Bad(`${what}: не ссылка`)
   }
-  if (u.protocol !== 'https:' || u.username || u.password) throw new Bad('source.url: только https')
+  if (u.protocol !== 'https:' || u.username || u.password) throw new Bad(`${what}: только https`)
+  return u
+}
+
+/** Ссылка на оригинал: https, у wealthy — только сайт Wealthy Exile. */
+export function sourceUrl(v: unknown, kind: AdvisorSourceKind): string {
+  const u = httpsUrl(v, 'source.url')
   if (kind === 'wealthy' && !WEALTHY_HOSTS.includes(u.hostname)) throw new Bad('source.url: не wealthyexile.com')
   return u.toString()
 }
@@ -243,6 +259,7 @@ const FIELDS = [
   'source',
   'measured',
   'atlas',
+  'atlasTree',
   'steps',
   'warnings',
   'draft',
@@ -281,6 +298,7 @@ export function validateStrategy(raw: unknown, defaults: StrategyDefaults = {}):
     if (typeof draft !== 'boolean') throw new Bad('draft')
     s.draft = draft
     if (o.measured !== undefined) s.measured = measured(o.measured)
+    if (o.atlasTree !== undefined) s.atlasTree = httpsUrl(o.atlasTree, 'atlasTree').toString()
     if (o.league !== undefined) s.league = plain(o.league, 'league', LIMITS.league)
     return { ok: true, strategy: s }
   } catch (e) {

@@ -16,6 +16,18 @@ export const RELEASES_URL = 'https://github.com/MAYZOSUPER/POETH/releases'
  */
 export const DATA_MANIFEST_URL = 'https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json'
 
+/**
+ * Стратегии игроков (S17): страница стратегии на сайте — код после `#` (браузер не отправляет эту часть на
+ * сервер, страница раскрывает код сама). Ссылку игрок только копирует; в EXTERNAL_HOSTS хоста нет.
+ */
+export const STRATEGY_VIEW_URL = 'https://mayzosuper.github.io/POETH/strategies/view'
+
+/**
+ * Форма «Предложить стратегию» (GitHub Issue, шаблон .github/ISSUE_TEMPLATE/strategy.yml). Открывает только
+ * main отдельной функцией с точным адресом (advisor:submit); github.com для renderer не добавлен.
+ */
+export const STRATEGY_ISSUE_URL = 'https://github.com/MAYZOSUPER/POETH/issues/new'
+
 /** Хосты, с которых main качает публичные данные (сессия без cookies, только https). */
 export const PUBLIC_DATA_HOSTS: readonly string[] = ['raw.githubusercontent.com']
 

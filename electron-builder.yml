@@ -42,6 +42,15 @@ extraResources:
   - from: build/icon.ico
     to: resources/brand/app_icon.ico
 
+# «Открыть в POETH» на странице стратегии сайта (S17): ссылка poeth-strategy://import#POETH1:…
+# Для NSIS electron-builder протоколы не регистрирует (только mac/linux/appx) — в Windows схему ставит само
+# приложение: app.setAsDefaultProtocolClient (src/main/ipc/advisor.ts), только установленная версия с включённым
+# советником; portable не регистрирует. Внутренняя схема poeth:// (файлы окон) — другая, из ОС не открывается.
+protocols:
+  - name: POETH strategy
+    schemes:
+      - poeth-strategy
+
 # «Что нового» релиза (RU/EN): тело релиза на GitHub и releaseNotes в latest.yml → окно обновления.
 releaseInfo:
   releaseNotesFile: build/release-notes.md

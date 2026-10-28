@@ -14,13 +14,32 @@ import { mapTime, myResult, perHour } from '@shared/advisor/time'
 /** По доходу в час, сначала лёгкие, дешёвый вход (стоимость входа за карту). */
 export type AdvisorSort = 'profit' | 'easy' | 'cost'
 
+/** Фильтр источника (S17): все, наши, сообщество, мои (созданные), импорт. */
+export type AdvisorSourceFilter = 'all' | 'official' | 'community' | 'mine' | 'imported'
+export const SOURCE_FILTERS: readonly AdvisorSourceFilter[] = ['all', 'official', 'community', 'mine', 'imported']
+
 export interface AdvisorView {
   sort: AdvisorSort
   /** «Только лёгкие» — сложность 1 */
   easyOnly: boolean
+  src: AdvisorSourceFilter
 }
 
-export const DEFAULT_ADVISOR_VIEW: AdvisorView = { sort: 'profit', easyOnly: false }
+export const DEFAULT_ADVISOR_VIEW: AdvisorView = { sort: 'profit', easyOnly: false, src: 'all' }
+
+/** Подходит ли стратегия под фильтр источника (wealthy — вместе с импортом). */
+export function sourceMatches(kind: AdvisorStrategyView['strategy']['source']['kind'], src: AdvisorSourceFilter): boolean {
+  if (src === 'all') return true
+  if (src === 'imported') return kind === 'imported' || kind === 'wealthy'
+  return kind === src
+}
+
+/** Число стратегий по фильтрам источника (для чипов). */
+export function sourceCounts(views: readonly AdvisorStrategyView[]): Record<AdvisorSourceFilter, number> {
+  const out = { all: 0, official: 0, community: 0, mine: 0, imported: 0 }
+  for (const v of views) for (const f of SOURCE_FILTERS) if (sourceMatches(v.strategy.source.kind, f)) out[f]++
+  return out
+}
 
 export interface AdvisorRow extends AdvisorStrategyView {
   time: AdvisorMapTime | null
@@ -36,7 +55,7 @@ export function buildRows(
   view: AdvisorView
 ): AdvisorRow[] {
   const rows = views
-    .filter((v) => !view.easyOnly || v.strategy.difficulty === 1)
+    .filter((v) => (!view.easyOnly || v.strategy.difficulty === 1) && sourceMatches(v.strategy.source.kind, view.src))
     .map((v): AdvisorRow => {
       const time = mapTime(v.strategy.id, farm, v.strategy.minutesPerMap)
       return { ...v, time, perHour: perHour(v.estimate.profit, time?.minutes), mine: myResult(v.strategy.id, farm) }
