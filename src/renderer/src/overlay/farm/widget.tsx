@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as Reac
 import type { FarmState, FarmWidgetPos } from '@shared/types/farm'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { farmTicking, useFarmStore } from '../../store/useFarmStore'
-import { chaos, clock, currentRunMs, runName, sessionMs } from '../../panels/farm/format'
+import { chaos, clock, currentRunMs, latestDivineRate, rate, runName, sessionMs } from '../../panels/farm/format'
 import { Icon } from '../Icon'
 import { scheduleRectsFlush, useInteractive } from '../interactive'
 import { useOverlayT } from '../useOverlayT'
@@ -123,6 +123,9 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
   const last = state.runs.find((r) => r.sessionId === state.session?.id) ?? null
   const dur = sessionMs(state, now)
   const perHour = stats && stats.profitChaos !== null && dur >= 60_000 ? stats.profitChaos / (dur / HOUR) : null
+  // доход в div по курсу из прибылей S11a (по макету), без курса — в chaos
+  const divRate = latestDivineRate(state.runs.filter((r) => r.sessionId === state.session?.id))
+  const incomeText = perHour === null ? '—' : divRate ? rate(perHour / divRate, lang) : chaos(perHour, lang)
 
   let first
   if (paused) {
@@ -179,9 +182,9 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
         </span>
         <span className="ov-farm__sep" />
         <span className="ov-farm__seg" title={t('farm.ov.income.title')}>
-          <i className="ui-coin ui-coin--chaos" />
-          <b>{perHour !== null ? chaos(perHour, lang) : '—'}</b>
-          <span className="ov-farm__lbl">{`c${t('farm.ov.perHour')}`}</span>
+          <i className={`ui-coin ${divRate ? 'ui-coin--div' : 'ui-coin--chaos'}`} />
+          <b>{incomeText}</b>
+          <span className="ov-farm__lbl">{`${divRate ? 'div' : 'c'}${t('farm.ov.perHour')}`}</span>
         </span>
         <span ref={btnsRef} className="ov-farm__btns">
           <button

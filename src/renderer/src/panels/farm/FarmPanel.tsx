@@ -1,24 +1,44 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { FarmRun, FarmState } from '@shared/types/farm'
 import { useLang, useT } from '../../i18n'
 import { farmTicking, useFarmStore } from '../../store/useFarmStore'
 import { Ico, Rich, Switch, useSimple } from '../deals/common'
-import { chaos, clock, currentRunMs, income, rate, runName, sessionMs, when } from './format'
+import {
+  chaos,
+  clock,
+  currentRunMs,
+  income,
+  latestDivineRate,
+  profitCells,
+  rate,
+  runName,
+  sessionMs,
+  when,
+  type ProfitCell
+} from './format'
 import './farm.css'
 
 // Раздел «Сессия фарма» (S11b) по макету дизайнера «Богатство»: без сессии — «Начать сессию» и
 // прошлые сессии; во время сессии — плитки (доход в час, карт в час, среднее время карты, смерти)
 // и забеги сессии с текущей картой сверху. Ниже — все забеги и включение виджета поверх игры.
 // Самодостаточна (свой стор и словарь dict/farm.ts); ставит S11a во вкладку «Богатство».
-// Доход — по прибыли забегов от учёта богатства S11a; без входа — «нужен вход» (needLogin).
+// Доход — по прибыли забегов от учёта богатства S11a (группой, если снимок между картами не успел).
+
+/** Что нужно плитке дохода S11a (panels/wealth/IncomeTile): прибыль сессии и время без пауз. */
+export interface FarmIncomeInput {
+  /** сумма прибылей забегов сессии; null — ещё ни одной */
+  profitChaos: number | null
+  /** время сессии без пауз (мс) */
+  activeMs: number
+  /** есть завершённые забеги без прибыли — «считаем…» */
+  pending: boolean
+}
 
 export interface FarmPanelProps {
-  /** S11a: тайник не читается без входа — плитка дохода «нужен вход» */
+  /** S11a: своя плитка дохода (курс div и «нужен вход» — из стора S11a); без неё — встроенная */
+  renderIncome?: (input: FarmIncomeInput) => ReactNode
+  /** S11a: тайник не читается без входа — у забегов «—» вместо «считаем…» (и во встроенной плитке) */
   needLogin?: boolean
-  /** S11a: кнопка «Войти» в плитке дохода */
-  onSignIn?: () => void
-  /** S11a: курс div → chaos (доход в div); null — только chaos */
-  chaosPerDivine?: number | null
 }
 
 const HOUR = 3_600_000
@@ -39,6 +59,19 @@ function tierText(run: Pick<FarmRun, 'kind' | 'tier' | 'areaLevel'>, t: ReturnTy
   return run.kind === 'other' ? t('farm.kind.other') : t('farm.level', { level: run.areaLevel })
 }
 
+/** «Виджет поверх игры» — в шапке раздела (по макету); «Скрыть» на виджете выключает его же. */
+function WidgetSwitch({ state }: { state: FarmState }) {
+  const t = useT()
+  const setConfig = useFarmStore((s) => s.setConfig)
+  return (
+    <span title={t('farm.widget.hint')}>
+      <Switch on={state.config.overlayWidget} onChange={(v) => void setConfig({ overlayWidget: v })}>
+        {t('farm.widget.toggle')}
+      </Switch>
+    </span>
+  )
+}
+
 function Deaths({ n }: { n: number }) {
   return n > 0 ? <span className="fm-death">{n}</span> : <span className="fm-zero">0</span>
 }
@@ -53,6 +86,10 @@ function IdleView({ state }: { state: FarmState }) {
   const start = useFarmStore((s) => s.start)
   return (
     <>
+      <div className="fm-sess-top">
+        <span className="fm-grow" />
+        <WidgetSwitch state={state} />
+      </div>
       <div className="ui-empty fm-empty">
         <Ico name="map" size="lg" />
         <span className="ui-empty__title">{t('farm.title')}</span>
@@ -117,28 +154,25 @@ function Kpis({ state, now, props }: { state: FarmState; now: number; props: Far
   const dur = sessionMs(state, now)
   const rated = dur >= 60_000
   const na = '—'
+  const sid = state.session?.id
+  const sessionRuns = state.runs.filter((r) => r.sessionId === sid)
+  const pending = [...profitCells(sessionRuns).values()].some((c) => c.kind === 'pending')
   const perHour = rated && stats.profitChaos !== null ? stats.profitChaos / (dur / HOUR) : null
-  const inc = perHour !== null ? income(perHour, props.chaosPerDivine ?? null, lang) : null
+  const inc = perHour !== null ? income(perHour, latestDivineRate(sessionRuns), lang) : null
   return (
     <div className="fm-kpis">
-      {props.needLogin ? (
+      {props.renderIncome ? (
+        props.renderIncome({ profitChaos: stats.profitChaos, activeMs: dur, pending })
+      ) : props.needLogin ? (
         <div className="fm-kpi fm-kpi--hero fm-kpi--need">
           <span className="ui-label">{t('farm.stat.income')}</span>
           <b>{t('farm.stat.income.login')}</b>
-          {props.onSignIn && (
-            <span>
-              <button type="button" className="ui-btn ui-btn--sm" onClick={props.onSignIn}>
-                <Ico name="external" />
-                {t('farm.signIn')}
-              </button>
-            </span>
-          )}
         </div>
       ) : (
         <div className="fm-kpi fm-kpi--hero" title={inc ? undefined : t('farm.stat.income.wait')}>
           <span className="ui-label">{t('farm.stat.income')}</span>
           <b>{inc ? inc.main : na}</b>
-          <span>{inc ? inc.sub : t('farm.stat.income.waitShort')}</span>
+          <span>{inc ? inc.sub : pending ? t('farm.run.counting') : t('farm.stat.income.waitShort')}</span>
         </div>
       )}
       <div className="fm-kpi">
@@ -152,7 +186,12 @@ function Kpis({ state, now, props }: { state: FarmState; now: number; props: Far
         <span>{stats.fastestMapMs !== null ? t('farm.stat.avg.sub', { time: clock(stats.fastestMapMs) }) : ' '}</span>
       </div>
       <div className="fm-kpi">
-        <span className="ui-label">{t('farm.stat.deaths')}</span>
+        <span className="ui-label">
+          {t('farm.stat.deaths')}
+          <span className="ui-q" title={t('farm.stat.deaths.q')}>
+            ?
+          </span>
+        </span>
         <b>{stats.deaths}</b>
         <span>{t('farm.stat.deaths.sub', { n: stats.mapsWithDeaths, of: stats.maps })}</span>
       </div>
@@ -170,19 +209,35 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
   const total = done.reduce((a, r) => a + (r.profit?.chaos ?? 0), 0)
   const anyProfit = done.some((r) => r.profit) || !!current?.profit
   const expert = !simple
-  const profitCell = (r: FarmRun, open: boolean) => {
-    if (r.profit) {
+  const cells = profitCells(done)
+  const low = (c: { low: boolean }) => (c.low ? t('farm.profit.low') : undefined)
+  const profitCell = (c: ProfitCell | undefined, open: boolean) => {
+    if (!c || c.kind === 'pending') {
+      const text = open ? t('farm.run.running') : props.needLogin ? '—' : t('farm.run.counting')
+      return <td className="fm-num fm-none">{text}</td>
+    }
+    if (c.kind === 'inGroup') {
       return (
-        <td className={`fm-num fm-profit${r.profit.chaos < 0 ? ' fm-loss' : ''}`}>
-          {t('farm.chaos', { n: chaos(r.profit.chaos, lang, true) })}
+        <td className="fm-num fm-none" title={t('farm.profit.inGroup', { n: c.runs })}>
+          ≈{t('farm.chaos', { n: chaos(c.share, lang, true) })}
         </td>
       )
     }
-    const text = open ? t('farm.run.running') : props.needLogin ? '—' : t('farm.run.counting')
-    return <td className="fm-num fm-none">{text}</td>
+    const loss = c.chaos < 0 ? ' fm-loss' : ''
+    const title = [c.kind === 'group' ? t('farm.profit.group', { n: c.runs }) : '', low(c) ?? ''].filter(Boolean).join(' ')
+    return (
+      <td className={`fm-num fm-profit${loss}${c.low ? ' fm-low' : ''}`} title={title || undefined}>
+        {t('farm.chaos', { n: chaos(c.chaos, lang, true) })}
+        {c.kind === 'group' && <span className="fm-group"> {t('farm.profit.groupShort', { n: c.runs })}</span>}
+      </td>
+    )
   }
-  const perMin = (r: FarmRun) =>
-    r.profit && r.activeMs >= 60_000 ? rate(r.profit.chaos / (r.activeMs / 60_000), lang) : '—'
+  /** c в мин: своя прибыль или доля группы ÷ время этой карты */
+  const perMin = (r: FarmRun, c: ProfitCell | undefined) => {
+    if (!c || c.kind === 'pending' || r.activeMs < 60_000) return '—'
+    const v = c.kind === 'own' ? c.chaos : c.share
+    return rate(v / (r.activeMs / 60_000), lang)
+  }
 
   return (
     <>
@@ -220,7 +275,7 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
                     <span className="fm-tier">{tierText(current, t)}</span>
                   </td>
                   <td className="fm-num fm-now__t">{clock(currentRunMs(state, now))}</td>
-                  {profitCell(current, true)}
+                  {profitCell(current.profit ? { kind: 'own', chaos: current.profit.chaos, low: !!current.profit.low } : undefined, true)}
                   {expert && <td className="fm-num">—</td>}
                   <td className="fm-num">
                     <Deaths n={current.deaths} />
@@ -235,8 +290,8 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
                     <span className="fm-tier">{tierText(r, t)}</span>
                   </td>
                   <td className="fm-num">{clock(r.activeMs)}</td>
-                  {profitCell(r, false)}
-                  {expert && <td className="fm-num">{perMin(r)}</td>}
+                  {profitCell(cells.get(r.id), false)}
+                  {expert && <td className="fm-num">{perMin(r, cells.get(r.id))}</td>}
                   <td className="fm-num">
                     <Deaths n={r.deaths} />
                   </td>
@@ -266,6 +321,7 @@ function RunningView({ state, now, props }: { state: FarmState; now: number; pro
           {t(paused ? 'farm.session.paused' : 'farm.session.running')} · <b>{clock(sessionMs(state, now))}</b>
         </span>
         <span className="fm-grow" />
+        <WidgetSwitch state={state} />
         {paused ? (
           <button type="button" className="ui-btn ui-btn--primary ui-btn--sm" disabled={busy} onClick={() => void resume()}>
             {t('farm.session.resume')}
@@ -378,12 +434,10 @@ function AllRuns({ runs }: { runs: FarmRun[] }) {
 
 export function FarmPanel(props: FarmPanelProps = {}) {
   const t = useT()
-  const simple = useSimple()
   const ready = useFarmStore((s) => s.ready)
   const state = useFarmStore((s) => s.state)
   const log = useFarmStore((s) => s.log)
   const init = useFarmStore((s) => s.init)
-  const setConfig = useFarmStore((s) => s.setConfig)
   const now = useNow(farmTicking(state))
 
   useEffect(() => {
@@ -416,13 +470,6 @@ export function FarmPanel(props: FarmPanelProps = {}) {
       {state.session ? <RunningView state={state} now={now} props={props} /> : <IdleView state={state} />}
 
       <AllRuns runs={state.runs} />
-
-      <div className="fm-widget">
-        <Switch on={state.config.overlayWidget} onChange={(v) => void setConfig({ overlayWidget: v })}>
-          {t('farm.widget.toggle')}
-        </Switch>
-        {simple && <p className="fm-p fm-faint">{t('farm.widget.hint')}</p>}
-      </div>
     </div>
   )
 }

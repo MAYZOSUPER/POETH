@@ -191,6 +191,15 @@
 .fm-profit.fm-loss {
   color: var(--bad);
 }
+.fm-low {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+.fm-group {
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+}
 .fm-death {
   color: var(--bad);
   font-weight: 600;
@@ -199,7 +208,7 @@
   color: var(--fg-faint);
 }
 
-/* ---- все забеги, виджет ---- */
+/* ---- все забеги ---- */
 .fm-all {
   display: grid;
   gap: var(--sp-4);
@@ -213,11 +222,4 @@
   align-items: center;
   gap: var(--sp-3) var(--sp-5);
   margin-block: var(--sp-4);
-}
-.fm-widget {
-  display: grid;
-  gap: var(--sp-3);
-  justify-items: start;
-  padding-top: var(--sp-5);
-  border-top: 1px solid var(--border);
 }
