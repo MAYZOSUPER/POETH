@@ -138,9 +138,10 @@ export function AdvisorTab() {
 
   const dialogs = dialog && (
     <>
-      {dialog.kind === 'share' && <ShareDialog id={dialog.id} lang={lang} expert={expert} />}
+      {dialog.kind === 'share' && <ShareDialog key={dialog.id} id={dialog.id} lang={lang} expert={expert} />}
+      {/* новая ссылка «Открыть в POETH» при открытом «Импорте» — диалог заново с её кодом */}
       {dialog.kind === 'import' && (
-        <ImportDialog initial={dialog.text} lang={lang} expert={expert} farm={farm} currentPatch={s.data?.patch ?? null} nameOf={nameOf} />
+        <ImportDialog key={dialog.text} initial={dialog.text} lang={lang} expert={expert} farm={farm} currentPatch={s.data?.patch ?? null} nameOf={nameOf} />
       )}
     </>
   )
