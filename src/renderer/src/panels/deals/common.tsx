@@ -55,6 +55,7 @@ export type IcoName =
   | 'layers'
   | 'map'
   | 'coins'
+  | 'external'
 
 export function Ico({ name, size }: { name: IcoName; size?: 'sm' | 'lg' }) {
   useEffect(() => {

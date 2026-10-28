@@ -75,7 +75,11 @@ export interface FarmStats {
   mapsPerHour: number | null
   /** среднее время в карте по завершённым картам; null — завершённых нет */
   avgMapMs: number | null
+  /** самая быстрая завершённая карта; null — завершённых нет */
+  fastestMapMs: number | null
   deaths: number
+  /** в скольких картах сессии (с текущей) были смерти */
+  mapsWithDeaths: number
   /** сумма прибыли забегов (S11a); null — ни у одного забега нет прибыли */
   profitChaos: number | null
   /** прибыль в час; null — нет прибыли или сессия короче минуты */
@@ -98,10 +102,18 @@ export interface FarmLocation {
   since: number
 }
 
+/** Позиция виджета поверх игры: центр полосы по x и верх по y — доли окна игры (0…1). */
+export interface FarmWidgetPos {
+  x: number
+  y: number
+}
+
 /** Настройки трекера (userData/farm.json, не Settings v2). */
 export interface FarmConfig {
-  /** маленький виджет поверх игры: таймер карты, карт за сессию, доход в час */
+  /** маленький виджет поверх игры во время сессии: таймер карты, карт за сессию, доход в час */
   overlayWidget: boolean
+  /** куда виджет перетащили; null — сверху по центру */
+  widgetPos: FarmWidgetPos | null
 }
 
 export type FarmConfigPatch = Partial<FarmConfig>

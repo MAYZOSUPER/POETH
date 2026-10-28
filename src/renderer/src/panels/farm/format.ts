@@ -36,9 +36,26 @@ export function rate(v: number, lang: 'ru' | 'en'): string {
   return v.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: 1, minimumFractionDigits: v < 10 ? 1 : 0 })
 }
 
-/** Хаосы: целые с разделителем тысяч, знак минуса у убытка. */
-export function chaos(v: number, lang: 'ru' | 'en'): string {
-  return Math.round(v).toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US')
+/** Хаосы: целые с разделителем тысяч; signed — «+» у прибыли (минус у убытка — всегда). */
+export function chaos(v: number, lang: 'ru' | 'en', signed = false): string {
+  const n = Math.round(v)
+  const s = n.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US')
+  return signed && n > 0 ? `+${s}` : s
+}
+
+/**
+ * Доход в час по макету: главная цифра в div (под ней ≈ chaos), пока доход меньше 1 div в час —
+ * наоборот. Без курса div — только chaos.
+ */
+export function income(perHourChaos: number, chaosPerDivine: number | null, lang: 'ru' | 'en'): { main: string; sub: string } {
+  const perHour = lang === 'ru' ? 'в час' : 'per hour'
+  if (!chaosPerDivine || !(chaosPerDivine > 0)) return { main: `${chaos(perHourChaos, lang)} chaos`, sub: perHour }
+  const div = perHourChaos / chaosPerDivine
+  const loc = lang === 'ru' ? 'ru-RU' : 'en-US'
+  const divText = (d: number, digits: number): string => d.toLocaleString(loc, { maximumFractionDigits: digits })
+  return Math.abs(div) >= 1
+    ? { main: `${divText(div, 1)} div`, sub: `≈ ${chaos(perHourChaos, lang)} chaos ${perHour}` }
+    : { main: `${chaos(perHourChaos, lang)} chaos`, sub: `≈ ${divText(div, 2)} div` }
 }
 
 /** «Карта» для строки: имя на языке клиента, иначе id без префикса MapWorlds. */

@@ -108,7 +108,10 @@ describe.each([
       maps: 2,
       runs: 3,
       avgMapMs: (425_000 + 490_000) / 2,
+      fastestMapMs: 425_000,
       deaths: 3,
+      // смерти были в обеих картах; в ограблении — нет
+      mapsWithDeaths: 2,
       profitChaos: null,
       profitPerHour: null
     })
@@ -213,12 +216,23 @@ describe('FarmTracker — сохранение и перезапуск', () => {
     const tr = new FarmTracker()
     tr.startSession(at('21:00:00'))
     tr.ingestLines(fixture('en'), 0)
-    tr.setConfig({ overlayWidget: true })
+    tr.setConfig({ overlayWidget: true, widgetPos: { x: 0.3, y: 0.02 } })
     const copy = new FarmTracker(normalizeFarmData(JSON.parse(JSON.stringify(tr.toData(at('21:31:00'))))))
     expect(copy.snapshot(at('21:40:00'))).toEqual(tr.snapshot(at('21:40:00')))
     expect(copy.toData().savedAt).toBe(at('21:31:00'))
+    expect(copy.snapshot(0).config).toEqual({ overlayWidget: true, widgetPos: { x: 0.3, y: 0.02 } })
+    // позиция за пределами окна — к краю, мусор — по умолчанию (сверху по центру)
+    tr.setConfig({ widgetPos: { x: 1.4, y: -1 } })
+    expect(tr.snapshot(0).config.widgetPos).toEqual({ x: 1, y: 0 })
+    tr.setConfig({ widgetPos: { x: Number.NaN, y: 0.5 } })
+    expect(tr.snapshot(0).config.widgetPos).toBeNull()
     const empty = normalizeFarmData({ runs: 'x', current: { id: 1 }, session: {}, config: null })
-    expect(new FarmTracker(empty).snapshot(5)).toMatchObject({ runs: [], current: null, session: null, config: { overlayWidget: false } })
+    expect(new FarmTracker(empty).snapshot(5)).toMatchObject({
+      runs: [],
+      current: null,
+      session: null,
+      config: { overlayWidget: false, widgetPos: null }
+    })
   })
 
   it('выход из приложения в карте: сессия на паузу; при запуске игрок ещё в карте — снова «внутри»', () => {

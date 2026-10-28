@@ -3,6 +3,7 @@ import path from 'path'
 import { IPC } from '@shared/ipc'
 import type { GameDef, GameId } from '@shared/games'
 import type { FarmConfigPatch, FarmLogStatus } from '@shared/types/farm'
+import { cleanWidgetPos } from '@shared/farm/tracker'
 import { getFarmService } from '../services/farmSession'
 import { getGameLogStatus, onGameLogStatus, readLogTail, subscribeGameLog } from '../services/gameLog'
 import { sendToOverlay } from '../windows/gameOverlay'
@@ -80,7 +81,10 @@ function register(): void {
   ipcMain.handle(IPC.farm.stop, () => farm.stop())
   ipcMain.handle(IPC.farm.setConfig, (_e, patch: unknown) => {
     const p = (patch ?? {}) as FarmConfigPatch
-    return farm.setConfig(typeof p.overlayWidget === 'boolean' ? { overlayWidget: p.overlayWidget } : {})
+    const clean: FarmConfigPatch = {}
+    if (typeof p.overlayWidget === 'boolean') clean.overlayWidget = p.overlayWidget
+    if ('widgetPos' in p) clean.widgetPos = cleanWidgetPos(p.widgetPos)
+    return farm.setConfig(clean)
   })
   ipcMain.handle(IPC.farm.removeRun, (_e, id: unknown) =>
     typeof id === 'string' ? farm.removeRun(id) : farm.state()
