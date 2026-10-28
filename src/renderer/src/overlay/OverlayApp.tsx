@@ -45,7 +45,9 @@ export function OverlayApp() {
   // себе: нажатие внутри уже активировало оверлей (OverlayWidget).
   useEffect(() => {
     const onClick = (e: globalThis.MouseEvent): void => {
-      if ((e.target as Element | null)?.closest?.('[data-keep-focus]')) return
+      // путь события, а не e.target.closest: кнопка могла исчезнуть по своему же клику
+      // («Вернуть к курсору»), и к этому моменту её уже нет в документе
+      if (e.composedPath().some((n) => n instanceof Element && n.hasAttribute('data-keep-focus'))) return
       if (!useOverlayStore.getState().focus.overlay) window.overlayApi.overlay.focusGame()
     }
     document.addEventListener('click', onClick)

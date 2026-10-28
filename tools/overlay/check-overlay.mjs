@@ -229,7 +229,11 @@ async function main() {
   // «другая программа» держит Alt+3 (хоткей «Убрать» карточки сделки) — как APT с Ctrl+D
   squatter = spawn(electronPath, [path.join(ROOT, 'tools/overlay/hotkey-squatter.cjs'), SQUAT_KEY], { stdio: ['ignore', 'pipe', 'ignore'] })
   const squatOk = await new Promise((res) => {
-    squatter.stdout.on('data', (d) => res(String(d).includes('ready')))
+    let out = ''
+    squatter.stdout.on('data', (d) => {
+      out += String(d)
+      if (/ready|fail/.test(out)) res(out.includes('ready'))
+    })
     setTimeout(() => res(false), 15000)
   })
   await fakeCmd({ cmd: 'clipboard-save' })
@@ -560,8 +564,10 @@ async function main() {
     await sleep(400)
     const r1 = await rectOf()
     const s1 = (await evaluate('window.overlayApi.settings.get()')).overlay
-    check('окно перетащили за шапку', Math.abs(r1.left - r0.left - DX) <= 3 && Math.abs(r1.top - r0.top - DY) <= 3,
-      `сдвиг ${r1.left - r0.left},${r1.top - r0.top} из ${DX},${DY}`)
+    // по вертикали высокое окно может упереться в низ окна игры — тогда сдвиг меньше (прижато внутрь)
+    const dy = r1.top - r0.top
+    check('окно перетащили за шапку', Math.abs(r1.left - r0.left - DX) <= 3 && dy >= -3 && dy <= DY + 3,
+      `сдвиг ${r1.left - r0.left},${dy} из ${DX},${DY}`)
     check('позиция запомнилась: «где оставил»', s1.pricePosition === 'saved' && !!s1.priceWindowPos, JSON.stringify(s1))
     await press(K.Escape, [], 'overlay')
     check('Esc закрыл окно, фокус у игры', await waitFor(async () => (await widgetText()) === null && (await foreground()) === TITLE.game))
@@ -580,8 +586,10 @@ async function main() {
     const r3 = await rectOf()
     check('«Вернуть к курсору»: окно снова у курсора, настройка «у курсора»', s2.pricePosition === 'cursor' && (r3.left !== r2.left || r3.top !== r2.top), JSON.stringify(s2))
     // повторный Ctrl+D при активном оверлее (после клика в окно) — закрывает
-    if ((await foreground()) === TITLE.overlay) await press(K.D, [K.Ctrl], 'overlay')
-    check('повторный Ctrl+D в активном окне закрыл его, фокус у игры', await waitFor(async () => (await widgetText()) === null && (await foreground()) === TITLE.game))
+    const fgHome = await foreground()
+    if (fgHome === TITLE.overlay) await press(K.D, [K.Ctrl], 'overlay')
+    check('повторный Ctrl+D в активном окне закрыл его, фокус у игры',
+      await waitFor(async () => (await widgetText()) === null && (await foreground()) === TITLE.game), `до нажатия передний план «${fgHome}»`)
     const [cx, cy] = cursor0.split(',')
     await psCmd(`move ${cx} ${cy}`)
     await fakeCmd({ cmd: 'hover', id: null })
