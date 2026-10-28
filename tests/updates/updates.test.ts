@@ -7,10 +7,13 @@ import {
   loginItemSettings,
   loopbackUrl,
   releaseNotesText,
+  releasePageUrl,
   shouldOfferUpdate,
   validateDataManifest
 } from '@shared/updates'
 import { isAllowedDataUrl, DATA_MANIFEST_URL } from '@shared/links'
+import { readFileSync } from 'fs'
+import path from 'path'
 
 const SHA = 'a'.repeat(64)
 
@@ -64,6 +67,45 @@ describe('releaseNotesText — «что нового»', () => {
     const t = releaseNotesText('x'.repeat(5000))
     expect(t.length).toBeLessThanOrEqual(1200)
     expect(t.endsWith('…')).toBe(true)
+  })
+
+  it('двуязычное описание (build/release-notes.md): в окно — раздел языка интерфейса', () => {
+    const md = readFileSync(path.join(__dirname, '../../build/release-notes.md'), 'utf8')
+    const ru = releaseNotesText(md, 'ru')
+    const en = releaseNotesText(md, 'en')
+    expect(ru.startsWith('• ')).toBe(true)
+    expect(ru).toContain('Как установить: скачайте POETH-Setup-')
+    expect(ru).not.toMatch(/What.s new|\*\*|\]\(|<!--/)
+    expect(en.startsWith('• ')).toBe(true)
+    expect(en).toContain('How to install: download POETH-Setup-')
+    expect(en).not.toMatch(/[а-яё]/i)
+    // без языка — весь текст (оба раздела)
+    expect(releaseNotesText(md)).toMatch(/Что нового[\s\S]*What.s new/)
+  })
+
+  it('HTML описания с GitHub: тоже раздел языка', () => {
+    const html = '<p><strong>POETH v0.2.0</strong></p><h2>Что нового</h2><ul><li>Новое</li></ul><h2>What’s new</h2><ul><li>New</li></ul>'
+    expect(releaseNotesText(html, 'ru')).toBe('• Новое')
+    expect(releaseNotesText(html, 'en')).toBe('• New')
+  })
+
+  it('одноязычное описание — как есть', () => {
+    expect(releaseNotesText('<h2>Что нового</h2><ul><li>Тест</li></ul>', 'en')).toBe('Что нового\n• Тест')
+  })
+})
+
+describe('portable (S10b)', () => {
+  it('«Скачать новую версию» — страница релиза этой версии', () => {
+    expect(releasePageUrl('0.1.1')).toBe('https://github.com/MAYZOSUPER/POETH/releases/tag/v0.1.1')
+    expect(releasePageUrl('v0.2.0-beta.1')).toBe('https://github.com/MAYZOSUPER/POETH/releases/tag/v0.2.0-beta.1')
+    expect(releasePageUrl('../../evil')).toBe('https://github.com/MAYZOSUPER/POETH/releases/latest')
+    expect(releasePageUrl(undefined)).toBe('https://github.com/MAYZOSUPER/POETH/releases/latest')
+  })
+
+  it('автозапуск portable ведёт на сам exe, а не на распакованную копию', () => {
+    const exe = 'D:\\Games\\POETH-Portable-0.1.0.exe'
+    expect(loginItemSettings(true, true, exe)).toEqual({ openAtLogin: true, args: [AUTOSTART_ARG], path: exe })
+    expect(loginItemSettings(false, true, exe)).toEqual({ openAtLogin: false, args: [], path: exe })
   })
 })
 

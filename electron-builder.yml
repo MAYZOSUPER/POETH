@@ -37,19 +37,49 @@ extraResources:
     filter:
       - "**/*"
 
+# «Что нового» релиза (RU/EN): тело релиза на GitHub и releaseNotes в latest.yml → окно обновления.
+releaseInfo:
+  releaseNotesFile: build/release-notes.md
+
 win:
   target:
     - target: nsis
       arch:
         - x64
+    # portable: один exe без установки (S10b); автообновления нет — окно обновления ведёт на релиз
+    - target: portable
+      arch:
+        - x64
   icon: build/icon.ico
 
+# Установщик «как у APT» (S10b): мастер с выбором папки, только для текущего пользователя
+# (%LOCALAPPDATA%\Programs\POETH, без прав администратора), язык мастера — по языку Windows.
+# Страницу «для меня / для всех» скрывает build/installer.nsh (customInstallMode).
 nsis:
   # имя без пробелов — совпадает с url в latest.yml (иначе GitHub переименует файл)
   artifactName: POETH-Setup-${version}.${ext}
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
+  installerLanguages:
+    - en_US
+    - ru_RU
+  multiLanguageInstaller: true
+  displayLanguageSelector: false
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  # картинки мастера — от дизайнера; пока файлов нет, мастер со стандартными
+  # installerSidebar: build/installerSidebar.bmp   # 164×314
+  # uninstallerSidebar: build/installerSidebar.bmp
+  # installerHeader: build/installerHeader.bmp     # 150×57
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: POE Trade Helper
+  uninstallDisplayName: POE Trade Helper ${version}
+  # «Запустить POETH» на последней странице
+  runAfterFinish: true
+  # при удалении настройки, избранное и кэш (%APPDATA%\POETH) остаются
+  deleteAppDataOnUninstall: false
+
+portable:
+  artifactName: POETH-Portable-${version}.${ext}

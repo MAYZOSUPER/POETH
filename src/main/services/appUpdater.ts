@@ -1,11 +1,12 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, shell } from 'electron'
 import { writeFileSync } from 'fs'
 import path from 'path'
 import type { UpdateState } from '@shared/types'
 import { IPC } from '@shared/ipc'
-import { loopbackUrl, releaseNotesText, shouldOfferUpdate } from '@shared/updates'
+import { loopbackUrl, releaseNotesText, releasePageUrl, shouldOfferUpdate } from '@shared/updates'
 import { getSettings } from './settingsStore'
 import { notifyUser } from './notify'
+import { portableExe } from './startup'
 import { closeUpdateWindow, openUpdateWindow } from '../windows/serviceWindows'
 
 // Автообновление приложения (S10a): electron-updater + GitHub Releases (provider github,
@@ -17,13 +18,16 @@ import { closeUpdateWindow, openUpdateWindow } from '../windows/serviceWindows'
 //
 // Проверка без релизов на GitHub: POETH_UPDATE_URL=http://127.0.0.1:<порт>/ — generic-сервер
 // (latest.yml + установщик), работает и в dev (forceDevUpdateConfig). Только loopback.
+//
+// Portable (S10b, POETH-Portable-….exe): electron-updater его не обновляет (поставил бы NSIS-версию
+// в систему). Проверка та же, но «Скачать новую версию» открывает страницу релиза в браузере.
 
 type Updater = typeof import('electron-updater').autoUpdater
 
 const CHECK_EVERY_MS = 6 * 60 * 60 * 1000
 
 let updater: Updater | null = null
-let state: UpdateState = { phase: 'idle', current: '' }
+let state: UpdateState = { phase: 'idle', current: '', portable: !!portableExe() }
 let snoozed: string | null = null
 let timer: NodeJS.Timeout | null = null
 let manualCheck = false
@@ -76,9 +80,13 @@ updaterCacheDirName: poeth-updater-test
   }
 
   u.on('update-available', (info) => {
-    setState({ phase: 'available', version: info.version, notes: releaseNotesText(info.releaseNotes), error: undefined })
     // ручная проверка показывает окно и для отложенной версии
-    if (manualCheck || shouldOfferUpdate(state.current, info.version, snoozed)) openUpdateWindow()
+    const show = manualCheck || shouldOfferUpdate(state.current, info.version, snoozed)
+    // описание релиза двуязычное — в окно раздел языка интерфейса
+    void getSettings().then((s) => {
+      setState({ phase: 'available', version: info.version, notes: releaseNotesText(info.releaseNotes, s.uiLang), error: undefined })
+      if (show) openUpdateWindow()
+    })
   })
   u.on('update-not-available', () => {
     setState({ phase: 'none', error: undefined })
@@ -119,8 +127,14 @@ export async function checkForAppUpdates(manual = false): Promise<UpdateState> {
   return getUpdateState()
 }
 
-/** «Обновить сейчас». */
+/** «Обновить сейчас» (portable — «Скачать новую версию»: страница релиза в браузере). */
 export function installAppUpdate(): void {
+  if (state.portable) {
+    if (state.phase !== 'available' || !state.version) return
+    void shell.openExternal(releasePageUrl(state.version))
+    postponeAppUpdate()
+    return
+  }
   const u = load()
   if (!u || !(state.phase === 'available' || state.phase === 'error') || !state.version) return
   setState({ phase: 'downloading', percent: 0, error: undefined })

@@ -4,8 +4,11 @@
 /** Поддержка проекта. Приложение бесплатное, без платных функций; донат — добровольный. */
 export const BOOSTY_URL = 'https://boosty.to/twistedthreadstudios'
 
-// Ссылку на репозиторий/issues в интерфейс не выводим: MAYZOSUPER/POETH пока приватный.
-// Когда станет публичным — добавить сюда REPO_URL/ISSUES_URL и хост github.com в allowlist.
+/**
+ * Релизы на GitHub (репозиторий открыт). Открывает только main — «Скачать новую версию» у
+ * portable (S10b); github.com в EXTERNAL_HOSTS для renderer не добавлен.
+ */
+export const RELEASES_URL = 'https://github.com/MAYZOSUPER/POETH/releases'
 
 /**
  * Манифест пакета данных (обновление данных без переустановки, S10a): ветка data публичного

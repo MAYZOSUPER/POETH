@@ -4,6 +4,7 @@
 
 import type { DataManifest } from './types/updates'
 import { isGameId, type GameId } from './games'
+import { RELEASES_URL } from './links'
 
 // ---------------------------------------------------------------------------
 // Версии (semver: 1.2.3, 1.2.3-beta.1; «v» в начале допускается)
@@ -60,7 +61,7 @@ const NOTES_MAX = 1200
  * «Что нового» простым текстом: описание релиза GitHub приходит HTML (или массивом заметок
  * по версиям) — убираем теги, сущности и лишние пустые строки, обрезаем по длине.
  */
-export function releaseNotesText(notes: unknown): string {
+export function releaseNotesText(notes: unknown, lang?: 'ru' | 'en'): string {
   let raw = ''
   if (typeof notes === 'string') raw = notes
   else if (Array.isArray(notes)) {
@@ -81,11 +82,38 @@ export function releaseNotesText(notes: unknown): string {
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&')
     .split(/\r?\n/)
-    .map((l) => l.replace(/[ \t]+/g, ' ').trim())
+    .map((l) => markdownLine(l.replace(/[ \t]+/g, ' ').trim()))
     .join('\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim()
-  return text.length > NOTES_MAX ? `${text.slice(0, NOTES_MAX - 1).trimEnd()}…` : text
+  const mine = lang ? notesSection(text, lang) : text
+  return mine.length > NOTES_MAX ? `${mine.slice(0, NOTES_MAX - 1).trimEnd()}…` : mine
+}
+
+/** Markdown (latest.yml с generic-сервера) → простой текст: заголовки, **жирный**, `код`, [ссылка](url), «- ». */
+function markdownLine(l: string): string {
+  return l
+    .replace(/^#{1,6}\s+/, '')
+    .replace(/^[-*]\s+/, '• ')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\[([^\]]+)\]\((?:https?:\/\/|#)[^)]*\)/g, '$1')
+}
+
+const NOTES_HEAD = { ru: /^Что нового:?$/im, en: /^What[’']s new:?$/im }
+
+/**
+ * Описание релиза двуязычное (build/release-notes.md: «Что нового» и «What's new») — в окно
+ * обновления только раздел языка интерфейса, без заголовка (он уже есть в окне). Нет обоих
+ * заголовков — текст как есть.
+ */
+function notesSection(text: string, lang: 'ru' | 'en'): string {
+  const own = NOTES_HEAD[lang].exec(text)
+  const other = NOTES_HEAD[lang === 'ru' ? 'en' : 'ru'].exec(text)
+  if (!own || !other) return text
+  const start = own.index + own[0].length
+  const end = other.index > own.index ? other.index : text.length
+  return text.slice(start, end).trim()
 }
 
 /**
@@ -142,10 +170,20 @@ export const AUTOSTART_ARG = '--autostart'
  */
 export function loginItemSettings(
   withWindows: boolean,
-  isPackaged: boolean
-): { openAtLogin: boolean; args: string[] } | null {
+  isPackaged: boolean,
+  portableExe?: string
+): { openAtLogin: boolean; args: string[]; path?: string } | null {
   if (!isPackaged) return null
-  return { openAtLogin: withWindows, args: withWindows ? [AUTOSTART_ARG] : [] }
+  const opts = { openAtLogin: withWindows, args: withWindows ? [AUTOSTART_ARG] : [] }
+  // portable: process.execPath — распакованная копия во %TEMP%, автозапуск должен вести на сам
+  // POETH-Portable-….exe (PORTABLE_EXECUTABLE_FILE), иначе после очистки TEMP он сломается
+  return portableExe ? { ...opts, path: portableExe } : opts
+}
+
+/** «Скачать новую версию» у portable (автообновления нет): страница релиза этой версии. */
+export function releasePageUrl(version: string | undefined): string {
+  const v = version && parseSemver(version) ? version.replace(/^v?/, 'v') : null
+  return v ? `${RELEASES_URL}/tag/${encodeURIComponent(v)}` : `${RELEASES_URL}/latest`
 }
 
 // ---------------------------------------------------------------------------

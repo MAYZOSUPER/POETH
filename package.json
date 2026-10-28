@@ -23,7 +23,7 @@
     "build:data": "node tools/dataset-build/build.mjs",
     "build:tray-icon": "node tools/make-tray-icon.mjs",
     "validate:data": "node scripts/validate-dataset.mjs",
-    "package": "npm run build && electron-builder --win nsis",
+    "package": "npm run build && electron-builder --win",
     "package:dir": "npm run build && electron-builder --dir"
   },
   "dependencies": {
