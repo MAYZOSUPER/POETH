@@ -127,6 +127,13 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ слит S16 `5b28d3c` (сессия s16-advisor, `5ed186f`…`10e51ae`): советник «что фармить» — вкладка
+  `advisor` (скрыта: `features.advisor=false`, в dev `POETH_ADVISOR=1`), `strategies.json` схема 1 (предметы по `ref`,
+  source official/community/imported/wealthy, patch/«может устареть», тексты `{ru?,en?}`, `measured`), строгий
+  `validateStrategy` для недоверенного импорта, расчёт по ценам учёта богатства (`getPriceIndex`), метка стратегии у
+  сессии фарма, сортировка «Дешёвый вход»; 3 демо-стратегии 3.29. Wealthy Exile: открытого формата и условий нет —
+  импорт не делаем (варианты в `docs/advisor.md`). Тронуты по разрешению: агрегаторы, `tabs.ts`, `App.tsx`, `games.ts`,
+  `AppTab` в settings. Макеты «Стратегий фарма» (S17) — у пользователя на утверждении. 1451 тест.
 - _(лид, 28.10)_ слит S15 `b6b252d` (сессия s15-pc-verdict, `1a15b81`…`6987c1f`): окно цены PoE1 — вердикт «что делать
   с предметом» (хлам / дешёвка / выставьте за ~X + «Скопировать заметку цены» `~price X chaos|divine` / ценная вещь / мало
   данных / таких никто не продаёт) и жёлтые предупреждения «не тот вариант» (связи, Foulborn и зачарование уника,
