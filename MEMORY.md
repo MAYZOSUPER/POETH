@@ -127,6 +127,9 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ слиты `s11b-ui` (`a8cb8ed`: правки дизайнера по трекеру карт, панель/виджет на `ui-*`) и `s10c-toast`
+  (`c52a5dc`: ProductName exe «POE Trade Helper» — один ярлык и шапка тостов, portable без тостов Windows, деинсталлятор чистит
+  ключ `Electron Notification Activator`; следы тестов в «Пуске»/HKCU удалены с разрешения пользователя). 1238 тестов.
 - _(лид, 28.10)_ слиты S11a `0cfd605` (сессия s3-net-auth): учёт богатства — `StashProvider` (legacy стэш на сессии аккаунта),
   `PriceSource` (почасовой фид обмена GGG + poe.watch), снапшоты, «что прибавилось», доход в час и прибыль за карту через трекер
   S11b, вкладка «Богатство» на компонентах `ui-*` (`features.wealth` — только PoE1). И S10c `3bde142` (сессия S1): знак POETH
