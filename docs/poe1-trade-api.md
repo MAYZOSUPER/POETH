@@ -59,6 +59,24 @@ in-person листингов). У лота торговца (`available`/`secura
 ` (проверено в S6;
 разбирается парсером S2).
 
+**Моды предмета (проверено в S21, 29.10.2026, www и ru):** `implicitMods`/`explicitMods` — объекты
+`{description, domain, hash: 'stat.explicit.stat_…', flags?, mods: [{name, tier, level, magnitudes:[{min,max}]}]}`;
+crafted и fractured лежат **внутри** `explicitMods` (`domain: 'crafted' | 'fractured'`). `description` — на языке
+хоста (ru — русский), `magnitudes` — диапазон тира, а не значение (значение — числа в `description`).
+`item.extended.hashes[<домен>] = [[statId, [индексы]]…]` по порядку модов домена — как у классического ответа со
+строками. `item.frameType` — редкость (0 обычный … 3 уник, 9 реликвия), `identified`, `sockets: [{group, attr, sColour}]`.
+`listing.account.online`: объект (`{league, status?: 'afk'}`) — в сети, `false` — не в сети, `null` — у лота торговца.
+POETH сравнивает моды лота с предметом игрока по stat id (`src/shared/poe1/pricecheck/compare.ts`).
+
+### Адрес поиска на сайте = сжатый запрос (проверено в S21)
+Id поиска — не ключ на сервере, а само состояние: **gzip + base64url (без `=`) от JSON `query`** (без обёртки и
+`sort`); POST `search` отдаёт ровно его (`H4sI…` — заголовок gzip). Страница трейда строит адрес так же в браузере
+(`stateUrl` в JS сайта, `CompressionStream('gzip')`). Сервер разбирает состояние из адреса и проверяет запрос; если
+API его бы не принял, страница пишет тостом **«Failed to load search state. The search is no longer valid.»** Так
+ломалось «Открыть лот» в rc.7: запрос с `name` редкого предмета (имя случайное) → API `400 Unknown item name`.
+POETH открывает лот адресом `…/trade/search/<лига>/<состояние>`: исходный поиск окна цены + `trade_filters.account`
+(с `#1234` — работает) + `status: any` + ilvl лота (`src/shared/favorites/lot.ts`).
+
 ### Bulk-обмен (`exchange`) — валюта, фрагменты, карты, карточки
 ```jsonc
 { "query": { "status": { "option": "online" }, "have": ["chaos"], "want": ["divine"], "minimum": 1 },
@@ -71,12 +89,15 @@ Currency Exchange (Фаустус), поэтому bulk для валюты по
 
 ## Статусы (`query.status.option`)
 
-| Значение | Смысл | Как покупать |
-|---|---|---|
-| `online` | продавец в игре (классический трейд) | whisper → обмен лично |
-| `available` | ⚠ «доступно сейчас»: онлайн-продавцы + мерчант-листинги (уточнить точный состав) | по типу листинга |
-| `securable` | только **мерчант-листинги** (асинхронный трейд: предмет во вкладке торговца) | купить на сайте (в трейд-окне), **без whisper**, комиссия в **золоте** |
-| `any` | всё, включая офлайн | — |
+Подписи — из `data/filters` (`status_filters`, проверено в S21 на www и ru):
+
+| Значение | На сайте (EN / RU) | Смысл | Как покупать |
+|---|---|---|---|
+| `available` | Instant Buyout and In Person / Мгновенный выкуп и личный обмен | мерчант-листинги + продавцы в сети | по типу листинга |
+| `securable` | Instant Buyout / Мгновенный выкуп | только **мерчант-листинги** (асинхронный трейд: предмет во вкладке торговца) | купить на сайте (в трейд-окне), **без whisper**, комиссия в **золоте** |
+| `onlineleague` | In Person (Online in League) / Личный обмен (онлайн в лиге) | продавец в игре и в этой лиге | whisper → обмен лично (в POETH не используем) |
+| `online` | In Person (Online) / Личный обмен (онлайн) | продавец в игре (классический трейд) | whisper → обмен лично |
+| `any` | Any / Все | всё, включая офлайн | — |
 
 Мерчант-листинги не имеют `whisper` — в UI вместо кнопки whisper показываем комиссию в золоте и
 «купить в трейд-окне» (открыть поиск в `siteView`). ⚠ Поле комиссии в ответе `fetch` — найти в S4.
