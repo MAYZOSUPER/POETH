@@ -162,6 +162,18 @@ describe('FarmTracker — сессия', () => {
     expect(st.stats).toMatchObject({ maps: 1, runs: 1, avgMapMs: null, mapsPerHour: 1 / (1 / 60) })
   })
 
+  it('«Начать» в убежище с открытым прошлым забегом: он закрывается до сессии и в неё не идёт', () => {
+    const tr = new FarmTracker()
+    tr.ingestLines([zone('20:00:00', 'MapWorldsLair', 77, 5), zone('20:08:00', 'HideoutSpace', 60, 1)], 0)
+    const ev = tr.startSession(at('20:40:00'))
+    expect(types(ev)).toEqual(['runEnd', 'session:start'])
+    expect(ev[0].type === 'runEnd' && ev[0].run).toMatchObject({ endTs: at('20:08:00'), sessionId: null })
+    tr.ingestLines([zone('20:41:00', 'MapWorldsCaldera', 78, 6)], 0)
+    const st = tr.snapshot(at('20:42:00'))
+    expect(st.stats).toMatchObject({ maps: 1, runs: 1 })
+    expect(st.current?.sessionId).toBe(st.session?.id)
+  })
+
   it('кнопки без сессии — без событий', () => {
     const tr = new FarmTracker()
     expect(tr.pauseSession(1)).toEqual([])
