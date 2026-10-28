@@ -92,7 +92,7 @@ export function Opportunities({
         <span className="fx-liq">{t('flip.list.note')}</span>
       </div>
       <div className="fx-scroll ui-scroll">
-        <table className="ui-table fx-table">
+        <table className="ui-table ui-table--pick fx-table">
           <thead>
             <tr>
               <th>{t('flip.col.item')}</th>

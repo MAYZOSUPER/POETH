@@ -20,23 +20,8 @@ export type FIcoName =
   | 'arrow-up'
   | 'arrow-down'
 
-// Иконка «обмен» из макета v2 — пока дизайнер не перенёс её в спрайт (resources/brand/icons-sprite.svg).
-// После слияния его ветки символ уже будет в документе и этот запасной не вставится; тогда удалить.
-const SWAP_FALLBACK =
-  '<svg xmlns="http://www.w3.org/2000/svg"><symbol id="i-swap" viewBox="0 0 24 24"><path d="M5.5 9.5a7 7 0 0 1 12.3-3.6M18.5 14.5a7 7 0 0 1-12.3 3.6"/><path d="M18 2.8v3.6h-3.6M6 21.2v-3.6h3.6"/></symbol></svg>'
-
-function ensureIcons(): void {
-  ensureSprite()
-  if (typeof document === 'undefined' || document.getElementById('i-swap')) return
-  const holder = document.createElement('div')
-  holder.setAttribute('aria-hidden', 'true')
-  holder.style.display = 'none'
-  holder.innerHTML = SWAP_FALLBACK
-  document.body.prepend(holder)
-}
-
 export function FIco({ name, size }: { name: FIcoName; size?: 'sm' | 'lg' }) {
-  ensureIcons()
+  ensureSprite()
   return (
     <svg className={`ui-ico${size ? ` ui-ico--${size}` : ''}`} aria-hidden="true">
       <use href={`#i-${name}`} />

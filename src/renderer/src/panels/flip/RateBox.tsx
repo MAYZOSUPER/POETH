@@ -133,7 +133,6 @@ export function RateBox({ s, lang }: { s: FlipState; lang: string }) {
         ]
   const band = v.lo !== null && v.hi !== null ? { lo: v.lo, hi: v.hi } : null
   const corridor = band ? `${f1(band.lo)}–${f1(band.hi)}` : ''
-  const out = v.outside ? ' fx-out' : ''
   const week = d.outside && d.week ? d.week : null
   const sent = s.options.divineAlert ? (s.alertSent ? 'flip.out.sent' : 'flip.out.next') : 'flip.out.off'
   const yLabel = (g: number): string => fixed(g, geo.st < 1 ? 1 : 0, lang)
@@ -191,8 +190,8 @@ export function RateBox({ s, lang }: { s: FlipState; lang: string }) {
               />
             )}
             <path className="ui-chart__line" d={pts.map((p, i) => `${i ? 'L' : 'M'}${geo.x(p.at).toFixed(1)} ${geo.y(p.rate).toFixed(1)}`).join('')} />
-            <circle className={`ui-chart__dot${out}`} cx={geo.x(last.at)} cy={geo.y(last.rate)} r={4.5} />
-            <text className={`ui-chart__value${out}`} x={geo.x(last.at) + 8} y={geo.y(last.rate) + 4}>
+            <circle className={v.outside ? 'ui-chart__dot ui-chart__dot--warn' : 'ui-chart__dot'} cx={geo.x(last.at)} cy={geo.y(last.rate)} r={4.5} />
+            <text className={v.outside ? 'ui-chart__value ui-chart__value--warn' : 'ui-chart__value'} x={geo.x(last.at) + 8} y={geo.y(last.rate) + 4}>
               {f1(last.rate)}
             </text>
             {hp && (

@@ -1,5 +1,5 @@
 /* Вкладка «Обмен» (S13) — раскладка утверждённого макета «Обмен» v2 (классы fx-*). Компоненты ui-* — из
-   components.css; .ui-chart__band (коридор курса) временно здесь — пока дизайнер не перенёс его в дизайн-систему. */
+   components.css (.ui-chart__band, .ui-table--pick и иконка swap — из дизайн-системы). */
 
 .flip-tab {
   width: 100%;
@@ -29,9 +29,6 @@
 .fx-rate .ui-coin { width: 20px; height: 20px; margin-right: 6px; vertical-align: -2px; }
 .fx-rate-wait { display: grid; gap: 10px; }
 .fx-band-l { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; font-size: var(--fs-xs); color: var(--fg-muted); }
-.ui-chart__band { fill: var(--accent); fill-opacity: 0.1; stroke: none; }
-.ui-chart__dot.fx-out { fill: var(--warn); }
-.ui-chart__value.fx-out { fill: var(--warn); }
 .fx-legend { display: inline-flex; align-items: center; gap: 6px; }
 .fx-legend i { display: inline-block; width: 14px; height: 8px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 22%, transparent); }
 .fx-legend i.ln { height: 2px; background: var(--accent); }
@@ -39,14 +36,6 @@
 
 /* таблица возможностей */
 .fx-scroll { overflow-x: auto; }
-.fx-table tbody tr { cursor: pointer; }
-.fx-table tbody tr:hover td { background: var(--hover); }
-.fx-table tbody tr:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: -2px; }
-.fx-table tbody tr[aria-selected="true"] td { background: var(--selected); }
-.fx-table tbody tr[aria-selected="true"] td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
-.fx-table th button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; }
-.fx-table th button:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; border-radius: 2px; }
-.fx-table th button[aria-pressed="true"] { color: var(--accent-hi); }
 .fx-table .ui-coin { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
 .fx-pair { display: grid; gap: 1px; min-width: 0; }
 .fx-pair b { font-weight: 600; white-space: nowrap; }
