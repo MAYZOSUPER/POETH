@@ -22,24 +22,51 @@ import {
   type Poe1ExchangeOffer,
   type Poe1Listing
 } from '@shared/poe1/pricecheck/results'
+import { chaosRates } from '@shared/poe1/pricecheck/currency'
+import { noVendor, priceVerdict, type Verdict } from '@shared/poe1/pricecheck/verdict'
+import {
+  checkedMods,
+  priceWarnings,
+  searchContext,
+  type PriceWarning,
+  type SearchContext
+} from '@shared/poe1/pricecheck/warnings'
 
 // Окно цены PoE1 (S4) в оверлее: предмет от Ctrl+D (S1) → данные языка (poeth://data/poe1) → парсер (S2)
 // → пресеты фильтров и тело запроса (S4 фаза 1) → поиск через main (шлюз S3, лимиты) → «честная цена».
 // Фильтры — мутабельные объекты APT: UI меняет их и увеличивает `rev`, чтобы перерисоваться.
+// S15: к результату — вердикт «что делать с предметом» и предупреждения «не тот вариант»; считаются по
+// снимку фильтров на момент поиска и пересчитываются, когда приходит курс (честная цена chaos ↔ divine).
 
 export type PcPhase = 'idle' | 'parsing' | 'loading' | 'result' | 'empty' | 'limit' | 'blocked' | 'error'
 
+/** Что было включено в момент поиска — для предупреждений (фильтры потом меняются в UI). */
+export interface PcSearched extends SearchContext {
+  /** Date.now() поиска — возраст лотов */
+  at: number
+  /** сколько свойств было отмечено сразу после Ctrl+D */
+  defaultOn?: number
+}
+
+interface TradeBase {
+  total: number
+  inexact: boolean
+  listings: Poe1Listing[]
+  siteUrl: string
+  cached: boolean
+  searched: PcSearched
+}
+
+interface BulkBase {
+  total: number
+  offers: Poe1ExchangeOffer[]
+  siteUrl: string
+  cached: boolean
+}
+
 export type PcResult =
-  | {
-      kind: 'trade'
-      total: number
-      inexact: boolean
-      listings: Poe1Listing[]
-      honest: HonestPrice
-      siteUrl: string
-      cached: boolean
-    }
-  | { kind: 'bulk'; total: number; offers: Poe1ExchangeOffer[]; siteUrl: string; cached: boolean }
+  | (TradeBase & { kind: 'trade'; honest: HonestPrice; verdict: Verdict; warnings: PriceWarning[] })
+  | (BulkBase & { kind: 'bulk'; verdict: Verdict })
 
 export interface PcLeague {
   id: string
@@ -73,6 +100,8 @@ interface PcState {
   rev: number
   /** курс chaos ↔ divine лиги поиска (фид обмена GGG); null — нет данных, плашка скрыта */
   rate: CurrencyRate | null
+  /** сколько свойств отмечено по умолчанию в каждом пресете (для «поиск слишком широкий») */
+  defaultsOn: Record<string, number>
 
   open: (captured: CapturedItem) => Promise<void>
   close: () => void
@@ -121,6 +150,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
   dirty: false,
   rev: 0,
   rate: null,
+  defaultsOn: {},
 
   open: async (captured) => {
     const my = ++session
@@ -162,6 +192,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
       sendWhisper: settings?.priceCheck?.sendWhisper ?? false,
       siteHost: settings?.siteHost ?? 'www.pathofexile.com',
       presets: pc.presets,
+      defaultsOn: Object.fromEntries(pc.presets.map((p) => [p.id, checkedMods(p).on])),
       rate: get().rate?.league === league ? get().rate : null,
       activePreset: pc.active
     })
@@ -204,6 +235,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
     preset.filters.trade.league = get().league
     preset.filters.trade.status = get().status
     set({ phase: 'loading', netError: undefined, dirty: false })
+    const searched: PcSearched = { ...searchContext(preset), at: Date.now(), defaultOn: get().defaultsOn[preset.id] }
 
     const req = buildRequest(item, data, preset)
     const api = window.overlayApi.trade
@@ -235,24 +267,22 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
       return
     }
 
+    const rate = get().rate?.chaosPerDivine
     if ('offers' in res) {
       set({
         phase: res.offers.length ? 'result' : 'empty',
-        result: { kind: 'bulk', total: res.total, offers: res.offers, siteUrl: res.siteUrl, cached: res.cached }
+        result: analyzeBulk({ total: res.total, offers: res.offers, siteUrl: res.siteUrl, cached: res.cached }, rate)
       })
     } else {
-      set({
-        phase: res.total > 0 ? 'result' : 'empty',
-        result: {
-          kind: 'trade',
-          total: res.total,
-          inexact: res.inexact,
-          listings: res.listings,
-          honest: honestPrice(res.listings, res.total),
-          siteUrl: res.siteUrl,
-          cached: res.cached
-        }
-      })
+      const base: TradeBase = {
+        total: res.total,
+        inexact: res.inexact,
+        listings: res.listings,
+        siteUrl: res.siteUrl,
+        cached: res.cached,
+        searched
+      }
+      set({ phase: res.total > 0 ? 'result' : 'empty', result: analyzeTrade(base, item, rate) })
     }
   },
 
@@ -305,12 +335,42 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
   }
 }))
 
+/** Честная цена, вердикт и предупреждения поиска; курс нужен, чтобы сравнивать chaos и divine. */
+function analyzeTrade(base: TradeBase, item: ParsedItem, rate: number | undefined): PcResult {
+  const { total, inexact, listings, siteUrl, cached, searched } = base
+  const honest = honestPrice(listings, total, chaosRates(rate))
+  return {
+    kind: 'trade',
+    total,
+    inexact,
+    listings,
+    siteUrl,
+    cached,
+    searched,
+    honest,
+    verdict: priceVerdict({ kind: 'trade', total, listings, honest, chaosPerDivine: rate, noVendor: noVendor(item) }),
+    warnings: priceWarnings({ item, ...searched, listings, honest, inexact, now: searched.at })
+  }
+}
+
+function analyzeBulk(base: BulkBase, rate: number | undefined): PcResult {
+  const best = base.offers[0]
+  const each = best && best.itemAmount > 0 ? { amount: best.exchangeAmount / best.itemAmount, currency: best.currency } : undefined
+  return { kind: 'bulk', ...base, verdict: priceVerdict({ kind: 'bulk', total: base.total, each, chaosPerDivine: rate }) }
+}
+
 /** Курс лиги — фоном (первый раз main может докачивать часы фида); устаревший ответ не применяем. */
 function loadRate(league: string, get: () => PcState, set: (p: Partial<PcState>) => void): void {
   void window.overlayApi.trade
     .currencyRate(league)
     .then((rate) => {
-      if (get().league === league) set({ rate })
+      if (get().league !== league) return
+      // результат уже пришёл — пересчитать честную цену и вердикт по курсу
+      const { result, item } = get()
+      const value = rate?.chaosPerDivine
+      const next =
+        result && item ? (result.kind === 'trade' ? analyzeTrade(result, item, value) : analyzeBulk(result, value)) : result
+      set({ rate, result: next })
     })
     .catch(() => undefined)
 }

@@ -15,7 +15,7 @@ import type { LiveAddError } from '@shared/types/live'
 import { parseTradeUrl } from '@shared/favorites/tradeUrl'
 import { fallbackKey } from '@shared/poe1/pricecheck/fallback'
 import { netErrorText } from '../../panels/account/netError'
-import { Icon } from '../Icon'
+import { Icon, type IconName } from '../Icon'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { useOverlayT } from '../useOverlayT'
 import { PopupPositionButton } from '../PopupPosition'
@@ -23,9 +23,12 @@ import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
 import { ageKey, coinClass, currencyLabel, fmtNum, statParts, tierWordKey } from './format'
 import { convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
 import { createClickGuard, lotActions, whisperCommand } from '@shared/poe1/pricecheck/lotActions'
+import type { Verdict, VerdictKind } from '@shared/poe1/pricecheck/verdict'
+import { VISIBLE_WARNINGS, type PriceWarning } from '@shared/poe1/pricecheck/warnings'
 
 // Окно цены PoE1 по утверждённому макету (docs/design-system.md, классы ui-*): шапка с лигой, предмет,
-// свойства и псевдо-статы с галочками, фильтры предмета, сводка «честной цены», предложения, кнопки.
+// свойства и псевдо-статы с галочками, фильтры предмета, вердикт и предупреждения (S15), сводка «честной
+// цены», предложения, кнопки.
 // Состояния: загрузка / результат / лимит с отсчётом / нет совпадений / проверка сайта (+ ошибка).
 
 type T = (key: string, params?: Record<string, string | number>) => string
@@ -684,6 +687,156 @@ function ListingRow({ l, siteUrl, lang, t }: { l: Poe1Listing; siteUrl: string; 
   )
 }
 
+// ---------------------------------------------------------------- вердикт и предупреждения (S15)
+
+const VERDICT_ICON: Record<VerdictKind, IconName> = {
+  none: 'search',
+  valuable: 'star',
+  few: 'help',
+  junk: 'trash',
+  cheap: 'coins',
+  list: 'coins'
+}
+
+/** Цвет плашки: «выставить» — зелёный, «ценная» — золото, «хлам/дешёвка» — приглушённый, прочее — синий. */
+const VERDICT_TONE: Record<VerdictKind, string> = {
+  none: 'info',
+  valuable: 'accent',
+  few: 'info',
+  junk: 'muted',
+  cheap: 'muted',
+  list: 'good'
+}
+
+function verdictText(
+  v: Verdict,
+  ctx: { bulk: boolean; timeless: boolean },
+  lang: UiLang,
+  t: T
+): { title: string; sub?: string; help?: string } {
+  const price = v.price ? priceText(v.price, lang) : ''
+  switch (v.kind) {
+    case 'none':
+      return {
+        title: t('pc1.v.none'),
+        sub: t(ctx.bulk ? 'pc1.v.none.bulk' : ctx.timeless ? 'pc1.timeless.noExact' : 'pc1.v.none.sub')
+      }
+    case 'few':
+      return {
+        title: t('pc1.v.few'),
+        sub: ctx.bulk
+          ? t('pc1.v.few.bulk', { n: v.count, price })
+          : v.price
+            ? t('pc1.v.few.sub', { n: v.count, price })
+            : t('pc1.v.few.noPrice', { n: v.count })
+      }
+    case 'junk':
+      return { title: t('pc1.v.junk'), sub: t('pc1.v.junk.sub', { price }), help: t('pc1.v.junk.help') }
+    case 'cheap':
+      return { title: t('pc1.v.cheap'), sub: t('pc1.v.cheap.sub', { price }) }
+    case 'valuable':
+      return {
+        title: t('pc1.v.valuable'),
+        sub:
+          v.reason === 'spread' && v.range
+            ? t('pc1.v.valuable.spread', { min: priceText(v.range.min, lang), max: priceText(v.range.max, lang) })
+            : v.reason === 'few'
+              ? t('pc1.v.valuable.few', { price, n: v.count })
+              : t('pc1.v.valuable.div', { price }),
+        help: t('pc1.v.valuable.help')
+      }
+    case 'list':
+      return {
+        title: t(ctx.bulk ? 'pc1.v.list.each' : 'pc1.v.list', { price }),
+        sub: t(ctx.bulk ? 'pc1.v.list.bulk' : 'pc1.v.list.sub')
+      }
+  }
+}
+
+/** «Скопировать заметку цены»: `~price X chaos` в буфер — игрок сам вставит её в заметку предмета в игре. */
+function NoteButton({ note, simple, t }: { note: string; simple: boolean; t: T }) {
+  const [state, setState] = useState<ActionState>('idle')
+  useEffect(() => setState('idle'), [note])
+  useEffect(() => {
+    if (state !== 'done' && state !== 'fail') return
+    const id = setTimeout(() => setState('idle'), 2500)
+    return () => clearTimeout(id)
+  }, [state])
+  const copy = async (): Promise<void> => {
+    setState('busy')
+    const ok = await window.overlayApi.trade.copyText(note).catch(() => false)
+    setState(ok ? 'done' : 'fail')
+  }
+  const label = state === 'done' ? t('pc1.v.note.done') : state === 'fail' ? t('pc1.v.note.fail') : t('pc1.v.note')
+  return (
+    <button
+      type="button"
+      className={`ui-btn ui-btn--sm${simple ? '' : ' ui-btn--icon'}`}
+      title={t('pc1.v.note.help', { note })}
+      aria-label={simple ? undefined : label}
+      disabled={state === 'busy'}
+      onClick={() => void copy()}
+    >
+      <Icon name={state === 'done' ? 'check' : 'copy'} />
+      {simple && label}
+    </button>
+  )
+}
+
+/** Вердикт — одна плашка над ценами; в экспертном режиме пояснение уходит в подсказку «?». */
+function VerdictPlate({ v, bulk, timeless, simple, lang, t }: { v: Verdict; bulk: boolean; timeless: boolean; simple: boolean; lang: UiLang; t: T }) {
+  const { title, sub, help } = verdictText(v, { bulk, timeless }, lang, t)
+  const tip = simple ? help : [sub, help].filter(Boolean).join(' ')
+  return (
+    <div className={`pc-verdict pc-verdict--${VERDICT_TONE[v.kind]}`} role="status" data-kind={v.kind}>
+      <Icon name={VERDICT_ICON[v.kind]} />
+      <span className="pc-verdict__text">
+        <b className="pc-verdict__title">{title}</b>
+        {simple && sub && <span className="pc-verdict__sub">{sub}</span>}
+      </span>
+      <span className="pc-verdict__acts">
+        {tip && (
+          <span className="ui-q" title={tip}>
+            ?
+          </span>
+        )}
+        {v.note && <NoteButton note={v.note} simple={simple} t={t} />}
+      </span>
+    </div>
+  )
+}
+
+/** Предупреждения «цена может быть не про ваш предмет»: важные сверху, больше двух — под «Ещё N». */
+function WarningList({ list, t }: { list: PriceWarning[]; t: T }) {
+  const [open, setOpen] = useState(false)
+  if (!list.length) return null
+  const rest = list.length - VISIBLE_WARNINGS
+  const shown = open || rest <= 0 ? list : list.slice(0, VISIBLE_WARNINGS)
+  return (
+    <div className="pc-warns" role="list">
+      {shown.map((w) => (
+        <div className="pc-warn" role="listitem" key={w.key}>
+          <Icon name="warn" />
+          <span>{t(w.key, w.params)}</span>
+          {w.help ? (
+            <span className="ui-q" title={t(w.help)}>
+              ?
+            </span>
+          ) : (
+            <span />
+          )}
+        </div>
+      ))}
+      {rest > 0 && (
+        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm pc-warns__more" onClick={() => setOpen((o) => !o)}>
+          <Icon name={open ? 'chev-d' : 'chev-r'} />
+          {open ? t('pc1.warn.less') : t('pc1.warn.more', { n: rest })}
+        </button>
+      )}
+    </div>
+  )
+}
+
 function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { kind: 'trade' }>; simple: boolean; lang: UiLang; t: T }) {
   const [all, setAll] = useState(false)
   const conf = result.honest.confidence
@@ -692,6 +845,8 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
   const shown = all ? rows : rows.slice(0, SHOW_LISTINGS)
   return (
     <>
+      <VerdictPlate v={result.verdict} bulk={false} timeless={false} simple={simple} lang={lang} t={t} />
+      <WarningList key={result.siteUrl} list={result.warnings} t={t} />
       <div className="ui-summary pc-summary">
         <GroupLine kind="instant" g={result.honest.instant} lang={lang} t={t} />
         <GroupLine kind="person" g={result.honest.person} lang={lang} t={t} />
@@ -705,12 +860,6 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
           {result.cached && <span className="ui-tag">{t('pc1.cached')}</span>}
         </span>
       </div>
-      {result.inexact && (
-        <div className="ui-hint">
-          <Icon name="info" />
-          <span>{t('pc1.inexact')}</span>
-        </div>
-      )}
       {simple && <WhyHint result={result} lang={lang} t={t} />}
       {simple && shown.some((l) => lotActions(l).buyout) && (
         <div className="ui-hint pc-defaults">
@@ -741,11 +890,12 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
   )
 }
 
-function BulkResult({ result, lang, t }: { result: Extract<PcResult, { kind: 'bulk' }>; lang: UiLang; t: T }) {
+function BulkResult({ result, simple, lang, t }: { result: Extract<PcResult, { kind: 'bulk' }>; simple: boolean; lang: UiLang; t: T }) {
   const best = result.offers[0]
   const each = best ? best.exchangeAmount / best.itemAmount : 0
   return (
     <>
+      <VerdictPlate v={result.verdict} bulk timeless={false} simple={simple} lang={lang} t={t} />
       <div className="ui-summary">
         <span className="ui-summary__price">
           {best && (
@@ -886,18 +1036,20 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
     )
   }
   if (phase === 'empty') {
+    // вердикт «таких никто не продаёт» вместо «нет совпадений»: у timeless — своя подсказка про сид,
+    // у опта нечего ослаблять
     const timeless = preset?.timeless?.mode === 'exact'
+    const bulk = result?.kind === 'bulk'
     return (
       <>
-        <div className="ui-empty">
-          <span className="ui-empty__title">{t('pc1.empty.title')}</span>
-          <span>{t(timeless ? 'pc1.timeless.noExact' : 'pc1.empty.text')}</span>
-          <div className="pc-btns">
+        <VerdictPlate v={{ kind: 'none', count: 0, confidence: 0 }} bulk={bulk} timeless={timeless} simple lang={lang} t={t} />
+        {!bulk && (
+          <div className="pc-more pc-more--again">
             <button type="button" className="ui-btn ui-btn--primary" onClick={loosen}>
               {t('pc1.empty.loosen')}
             </button>
           </div>
-        </div>
+        )}
       </>
     )
   }
@@ -907,7 +1059,7 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
         {result.kind === 'trade' ? (
           <TradeResult result={result} simple={simple} lang={lang} t={t} />
         ) : (
-          <BulkResult result={result} lang={lang} t={t} />
+          <BulkResult result={result} simple={simple} lang={lang} t={t} />
         )}
       </>
     )

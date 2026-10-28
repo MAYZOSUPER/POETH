@@ -12,6 +12,7 @@ import {
   linksWarning,
   oldWarning,
   priceWarnings,
+  searchContext,
   variantWarning,
   type PriceWarning
 } from '@shared/poe1/pricecheck/warnings'
@@ -229,7 +230,7 @@ describe('все предупреждения вместе', () => {
     expect(keptListings(listings, honest).map((l) => l.id)).not.toContain('bait')
     const ws = priceWarnings({
       item,
-      preset: preset({ corrupted: { value: false } }),
+      ...searchContext(preset({ corrupted: { value: false } })),
       listings,
       honest,
       inexact: true,
@@ -240,10 +241,19 @@ describe('все предупреждения вместе', () => {
     expect(VISIBLE_WARNINGS).toBe(2)
   })
 
+  it('снимок поиска: снятый фильтр связей, фильтр осквернённости, отмеченные свойства', () => {
+    expect(searchContext(preset({ linkedSockets: { value: 6, disabled: true }, corrupted: { value: false } }))).toEqual({
+      linksOff: true,
+      corruptedFilter: true,
+      mods: { on: 0, all: 0 }
+    })
+    expect(searchContext(preset({ linkedSockets: { value: 6, disabled: false } }))).toMatchObject({ linksOff: false, corruptedFilter: false })
+  })
+
   it('обычная выдача без расхождений — ни одного предупреждения', () => {
     const item = { rarity: ItemRarity.Rare, isCorrupted: false, isUnidentified: false, newMods: [], unknownModifiers: [] } as unknown as ParsedItem
     const listings = Array.from({ length: 10 }, (_, i) => lot(`n${i}`, { amount: 10 + i, days: 2 }))
-    expect(priceWarnings({ item, preset: preset({ corrupted: { value: false } }), listings, inexact: false, now: NOW })).toEqual([])
+    expect(priceWarnings({ item, ...searchContext(preset({ corrupted: { value: false } })), listings, inexact: false, now: NOW })).toEqual([])
   })
 
   it('все ключи и подсказки есть в RU и EN, без неподставленных параметров', () => {

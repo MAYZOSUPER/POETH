@@ -257,9 +257,25 @@ export function broadWarning(args: {
 
 // ---------------------------------------------------------------- все вместе
 
-export interface WarningsInput {
+/** Что было включено в момент поиска (фильтры мутабельны: правки до «Искать заново» старый результат не меняют). */
+export interface SearchContext {
+  /** фильтр «Связи: N» есть, но снят */
+  linksOff: boolean
+  /** у предмета есть фильтр осквернённости (снаряжение, уники, камни) */
+  corruptedFilter: boolean
+  mods: { on: number; all: number }
+}
+
+export function searchContext(preset: Pick<FilterPreset, 'stats' | 'filters'>): SearchContext {
+  return {
+    linksOff: preset.filters.linkedSockets?.disabled === true,
+    corruptedFilter: preset.filters.corrupted != null,
+    mods: checkedMods(preset)
+  }
+}
+
+export interface WarningsInput extends SearchContext {
   item: ParsedItem
-  preset: Pick<FilterPreset, 'stats' | 'filters'>
   listings: readonly Poe1Listing[]
   honest?: HonestPrice
   inexact: boolean
@@ -269,13 +285,13 @@ export interface WarningsInput {
 }
 
 export function priceWarnings(input: WarningsInput): PriceWarning[] {
-  const { item, preset } = input
+  const { item } = input
   const lots = keptListings(input.listings, input.honest)
   const found = [
-    linksWarning(item, preset.filters.linkedSockets?.disabled === true, lots),
+    linksWarning(item, input.linksOff, lots),
     variantWarning(item, lots),
-    corruptedWarning(item, preset.filters.corrupted != null, lots),
-    broadWarning({ inexact: input.inexact, item, mods: checkedMods(preset), defaultOn: input.defaultOn }),
+    corruptedWarning(item, input.corruptedFilter, lots),
+    broadWarning({ inexact: input.inexact, item, mods: input.mods, defaultOn: input.defaultOn }),
     fixingWarning(lots),
     oldWarning(lots, input.now)
   ].filter((w): w is PriceWarning => w != null)
