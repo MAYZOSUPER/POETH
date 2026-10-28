@@ -23,9 +23,10 @@ import {
   type Poe1Listing
 } from '@shared/poe1/pricecheck/results'
 import { chaosRates } from '@shared/poe1/pricecheck/currency'
-import { noVendor, priceVerdict, type Verdict } from '@shared/poe1/pricecheck/verdict'
+import { noVendor, priceVerdict, withCaution, type Verdict } from '@shared/poe1/pricecheck/verdict'
 import {
   checkedMods,
+  hasStrongWarning,
   priceWarnings,
   searchContext,
   type PriceWarning,
@@ -339,6 +340,8 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
 function analyzeTrade(base: TradeBase, item: ParsedItem, rate: number | undefined): PcResult {
   const { total, inexact, listings, siteUrl, cached, searched } = base
   const honest = honestPrice(listings, total, chaosRates(rate))
+  const warnings = priceWarnings({ item, ...searched, listings, honest, inexact, now: searched.at })
+  const verdict = priceVerdict({ kind: 'trade', total, listings, honest, chaosPerDivine: rate, noVendor: noVendor(item) })
   return {
     kind: 'trade',
     total,
@@ -348,8 +351,9 @@ function analyzeTrade(base: TradeBase, item: ParsedItem, rate: number | undefine
     cached,
     searched,
     honest,
-    verdict: priceVerdict({ kind: 'trade', total, listings, honest, chaosPerDivine: rate, noVendor: noVendor(item) }),
-    warnings: priceWarnings({ item, ...searched, listings, honest, inexact, now: searched.at })
+    // выдача про другой вариант (связи, Foulborn, порча) — заметку цены не предлагаем
+    verdict: withCaution(verdict, hasStrongWarning(warnings)),
+    warnings
   }
 }
 

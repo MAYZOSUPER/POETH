@@ -223,7 +223,7 @@ export const trade: DomainDict = {
     // --- S15: вердикт «что делать с предметом» и предупреждения «не тот вариант»
     'pc1.v.none': 'Таких никто не продаёт',
     'pc1.v.none.sub': 'Это не значит, что предмет ничего не стоит: снимите галочки с части свойств и нажмите «Искать заново».',
-    'pc1.v.none.bulk': 'Сейчас никто не продаёт оптом — загляните позже или откройте поиск в трейд-окне.',
+    'pc1.v.none.later': 'Сейчас такой никто не выставил — загляните позже или откройте поиск в трейд-окне.',
     'pc1.v.few': 'Мало данных — цена примерная',
     'pc1.v.few.sub': 'Похожих лотов: {n}, ориентир ~{price}. Снимите часть галочек, чтобы найти больше.',
     'pc1.v.few.noPrice': 'Похожих лотов: {n}, но без цены. Снимите часть галочек, чтобы найти больше.',
@@ -242,6 +242,7 @@ export const trade: DomainDict = {
     'pc1.v.list.each': 'Выставьте за ~{price} за 1 шт.',
     'pc1.v.list.sub': 'Столько просят за самый дешёвый похожий лот (без приманок).',
     'pc1.v.list.bulk': 'Столько просят в самом выгодном предложении обмена.',
+    'pc1.v.caution': 'Сначала посмотрите предупреждения ниже: похожие лоты — другой вариант предмета.',
     'pc1.v.note': 'Скопировать заметку цены',
     'pc1.v.note.done': 'Скопировано',
     'pc1.v.note.fail': 'Не скопировалось',
@@ -488,7 +489,7 @@ export const trade: DomainDict = {
     // --- S15: verdict and "wrong variant" warnings
     'pc1.v.none': 'Nobody is selling one like this',
     'pc1.v.none.sub': 'That does not mean it is worthless: uncheck some of the mods and press “Search again”.',
-    'pc1.v.none.bulk': 'Nobody sells it in bulk right now — check back later or open the search in the trade window.',
+    'pc1.v.none.later': 'Nobody has listed one right now — check back later or open the search in the trade window.',
     'pc1.v.few': 'Not enough data — the price is rough',
     'pc1.v.few.sub': 'Similar listings: {n}, around ~{price}. Uncheck some mods to find more.',
     'pc1.v.few.noPrice': 'Similar listings: {n}, but none has a price. Uncheck some mods to find more.',
@@ -507,6 +508,7 @@ export const trade: DomainDict = {
     'pc1.v.list.each': 'List it for ~{price} each',
     'pc1.v.list.sub': 'That is what the cheapest similar listing asks (bait ignored).',
     'pc1.v.list.bulk': 'That is what the best exchange offer asks.',
+    'pc1.v.caution': 'Check the warnings below first: the similar listings are a different variant of the item.',
     'pc1.v.note': 'Copy price note',
     'pc1.v.note.done': 'Copied',
     'pc1.v.note.fail': 'Could not copy',

@@ -710,7 +710,7 @@ const VERDICT_TONE: Record<VerdictKind, string> = {
 
 function verdictText(
   v: Verdict,
-  ctx: { bulk: boolean; timeless: boolean },
+  ctx: { bulk: boolean; timeless: boolean; noMods?: boolean },
   lang: UiLang,
   t: T
 ): { title: string; sub?: string; help?: string } {
@@ -719,7 +719,8 @@ function verdictText(
     case 'none':
       return {
         title: t('pc1.v.none'),
-        sub: t(ctx.bulk ? 'pc1.v.none.bulk' : ctx.timeless ? 'pc1.timeless.noExact' : 'pc1.v.none.sub')
+        // снимать галочки есть смысл, только если есть свойства; у timeless — подсказка про сид
+        sub: t(ctx.timeless ? 'pc1.timeless.noExact' : ctx.bulk || ctx.noMods ? 'pc1.v.none.later' : 'pc1.v.none.sub')
       }
     case 'few':
       return {
@@ -737,8 +738,9 @@ function verdictText(
     case 'valuable':
       return {
         title: t('pc1.v.valuable'),
-        sub:
-          v.reason === 'spread' && v.range
+        sub: v.caution
+          ? t('pc1.v.caution')
+          : v.reason === 'spread' && v.range
             ? t('pc1.v.valuable.spread', { min: priceText(v.range.min, lang), max: priceText(v.range.max, lang) })
             : v.reason === 'few'
               ? t('pc1.v.valuable.few', { price, n: v.count })
@@ -746,9 +748,11 @@ function verdictText(
         help: t('pc1.v.valuable.help')
       }
     case 'list':
+      // откуда цена — уже в «Почему такая цена?», здесь только в подсказке: окно не растёт
       return {
         title: t(ctx.bulk ? 'pc1.v.list.each' : 'pc1.v.list', { price }),
-        sub: t(ctx.bulk ? 'pc1.v.list.bulk' : 'pc1.v.list.sub')
+        sub: v.caution ? t('pc1.v.caution') : undefined,
+        help: t(ctx.bulk ? 'pc1.v.list.bulk' : 'pc1.v.list.sub')
       }
   }
 }
@@ -784,15 +788,37 @@ function NoteButton({ note, simple, t }: { note: string; simple: boolean; t: T }
 }
 
 /** Вердикт — одна плашка над ценами; в экспертном режиме пояснение уходит в подсказку «?». */
-function VerdictPlate({ v, bulk, timeless, simple, lang, t }: { v: Verdict; bulk: boolean; timeless: boolean; simple: boolean; lang: UiLang; t: T }) {
-  const { title, sub, help } = verdictText(v, { bulk, timeless }, lang, t)
+function VerdictPlate({
+  v,
+  bulk,
+  timeless,
+  noMods,
+  simple,
+  lang,
+  t
+}: {
+  v: Verdict
+  bulk: boolean
+  timeless: boolean
+  noMods?: boolean
+  simple: boolean
+  lang: UiLang
+  t: T
+}) {
+  const { title, sub, help } = verdictText(v, { bulk, timeless, noMods }, lang, t)
   const tip = simple ? help : [sub, help].filter(Boolean).join(' ')
   return (
-    <div className={`pc-verdict pc-verdict--${VERDICT_TONE[v.kind]}`} role="status" data-kind={v.kind}>
+    <div className={`pc-verdict pc-verdict--${v.caution ? 'info' : VERDICT_TONE[v.kind]}`} role="status" data-kind={v.kind}>
       <Icon name={VERDICT_ICON[v.kind]} />
       <span className="pc-verdict__text">
         <b className="pc-verdict__title">{title}</b>
         {simple && sub && <span className="pc-verdict__sub">{sub}</span>}
+        {/* простой режим: кнопка с подписью под пояснением — длинная RU-подпись не сжимает текст */}
+        {simple && v.note && (
+          <span className="pc-verdict__note">
+            <NoteButton note={v.note} simple t={t} />
+          </span>
+        )}
       </span>
       <span className="pc-verdict__acts">
         {tip && (
@@ -800,7 +826,7 @@ function VerdictPlate({ v, bulk, timeless, simple, lang, t }: { v: Verdict; bulk
             ?
           </span>
         )}
-        {v.note && <NoteButton note={v.note} simple={simple} t={t} />}
+        {!simple && v.note && <NoteButton note={v.note} simple={false} t={t} />}
       </span>
     </div>
   )
@@ -1036,14 +1062,26 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
     )
   }
   if (phase === 'empty') {
-    // вердикт «таких никто не продаёт» вместо «нет совпадений»: у timeless — своя подсказка про сид,
-    // у опта нечего ослаблять
+    // вердикт «таких никто не продаёт» вместо «нет совпадений»: у timeless — своя подсказка про сид;
+    // «Ослабить» — только если есть включённые свойства со значениями (у опта и карточек их нет)
     const timeless = preset?.timeless?.mode === 'exact'
     const bulk = result?.kind === 'bulk'
+    const noMods = result?.kind === 'trade' && result.searched.mods.all === 0
+    const canLoosen =
+      !bulk &&
+      !!preset?.stats.some((s) => !s.group && !s.disabled && (typeof s.roll?.min === 'number' || typeof s.roll?.max === 'number'))
     return (
       <>
-        <VerdictPlate v={{ kind: 'none', count: 0, confidence: 0 }} bulk={bulk} timeless={timeless} simple lang={lang} t={t} />
-        {!bulk && (
+        <VerdictPlate
+          v={{ kind: 'none', count: 0, confidence: 0 }}
+          bulk={bulk}
+          timeless={timeless}
+          noMods={noMods}
+          simple
+          lang={lang}
+          t={t}
+        />
+        {canLoosen && (
           <div className="pc-more pc-more--again">
             <button type="button" className="ui-btn ui-btn--primary" onClick={loosen}>
               {t('pc1.empty.loosen')}

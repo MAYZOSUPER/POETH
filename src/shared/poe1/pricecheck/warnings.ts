@@ -284,6 +284,13 @@ export interface WarningsInput extends SearchContext {
   now: number
 }
 
+/** Предупреждения «выдача про другой предмет»: с ними рекомендованной цене верить нельзя. */
+export const STRONG_WARNINGS: ReadonlySet<WarningKind> = new Set<WarningKind>(['links', 'variant', 'corrupted'])
+
+export function hasStrongWarning(ws: readonly PriceWarning[]): boolean {
+  return ws.some((w) => STRONG_WARNINGS.has(w.kind))
+}
+
 export function priceWarnings(input: WarningsInput): PriceWarning[] {
   const { item } = input
   const lots = keptListings(input.listings, input.honest)

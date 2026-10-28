@@ -270,6 +270,10 @@
   color: var(--fg-muted);
   font: 400 var(--fs-xs) / 1.35 var(--font-ui);
 }
+.pc-verdict__note {
+  display: flex;
+  padding-top: var(--sp-2);
+}
 .pc-verdict__acts {
   display: inline-flex;
   flex-wrap: wrap;

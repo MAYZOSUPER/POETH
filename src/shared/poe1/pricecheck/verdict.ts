@@ -50,6 +50,14 @@ export interface Verdict {
   range?: { min: Poe1Price; max: Poe1Price }
   /** текст заметки цены для буфера обмена; нет — кнопки «Скопировать заметку цены» нет */
   note?: string
+  /** выдача, похоже, про другой вариант предмета (сильные предупреждения): сначала их, заметки нет */
+  caution?: boolean
+}
+
+/** Сильные предупреждения (другой вариант предмета) — цену не советуем копировать, просим их посмотреть. */
+export function withCaution(v: Verdict, strongWarning: boolean): Verdict {
+  if (!strongWarning || (v.kind !== 'list' && v.kind !== 'valuable')) return v
+  return { ...v, note: undefined, caution: true }
 }
 
 export type VerdictInput =
@@ -83,10 +91,10 @@ function step(v: number, s: number): number {
   return Math.round(v / s) * s
 }
 
-/** chaos: до 1 — десятые, до 20 — целые, до 100 — по 5, до 1000 — по 10, дальше — по 50. */
+/** chaos: до 1 — сотые (как в сводке опта), до 20 — целые, до 100 — по 5, до 1000 — по 10, дальше — по 50. */
 export function niceChaos(v: number): number {
   if (!(v > 0)) return 0
-  if (v < 1) return Math.max(0.1, Math.round(v * 10) / 10)
+  if (v < 1) return Math.max(0.01, Math.round(v * 100) / 100)
   if (v < 20) return Math.max(1, Math.round(v))
   if (v < 100) return step(v, 5)
   if (v < 1000) return step(v, 10)

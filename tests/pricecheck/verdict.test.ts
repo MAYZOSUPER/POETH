@@ -11,8 +11,10 @@ import {
   priceNote,
   priceVerdict,
   referencePrice,
+  withCaution,
   type Verdict
 } from '@shared/poe1/pricecheck/verdict'
+import { hasStrongWarning } from '@shared/poe1/pricecheck/warnings'
 import { ItemCategory } from '@shared/poe1/parser'
 import { lot, lots, text } from './helpers'
 
@@ -31,8 +33,8 @@ function trade(listings: Poe1Listing[], total = listings.length, opts: { rate?: 
 }
 
 describe('округление до понятных чисел', () => {
-  it('chaos: десятые до 1, целые до 20, по 5 до 100, по 10 до 1000', () => {
-    expect([0.04, 0.44, 1.4, 13.6, 22, 23, 97, 142, 1234].map(niceChaos)).toEqual([0.1, 0.4, 1, 14, 20, 25, 95, 140, 1250])
+  it('chaos: сотые до 1, целые до 20, по 5 до 100, по 10 до 1000', () => {
+    expect([0.004, 0.25, 0.444, 1.4, 13.6, 22, 23, 97, 142, 1234].map(niceChaos)).toEqual([0.01, 0.25, 0.44, 1, 14, 20, 25, 95, 140, 1250])
   })
   it('divine: десятые до 3, по 0.5 до 10, целые до 100', () => {
     expect([1.04, 1.37, 2.96, 4.3, 4.8, 37.4, 123].map(niceDivine)).toEqual([1, 1.4, 3, 4.5, 5, 37, 125])
@@ -156,7 +158,7 @@ describe('вердикт', () => {
   it('опт (bulk): цена за штуку, без заметки; дешёвая валюта — «копите и продавайте пачкой»', () => {
     expect(priceVerdict({ kind: 'bulk', total: 30, each: { amount: 0.25, currency: 'chaos' }, chaosPerDivine: RATE })).toMatchObject({
       kind: 'cheap',
-      price: { amount: 0.3, currency: 'chaos' }
+      price: { amount: 0.25, currency: 'chaos' }
     })
     const list = priceVerdict({ kind: 'bulk', total: 30, each: { amount: 4, currency: 'chaos' }, chaosPerDivine: RATE })
     expect(list).toMatchObject({ kind: 'list', price: { amount: 4 } })
@@ -167,12 +169,24 @@ describe('вердикт', () => {
     expect(priceVerdict({ kind: 'bulk', total: 30, each: { amount: 2, currency: 'divine' }, chaosPerDivine: RATE })).toMatchObject({ kind: 'list' })
   })
 
+  it('сильное предупреждение (связи, другой вариант, порча): без заметки цены, «сначала предупреждения»', () => {
+    const v = trade(lots([13.6, 14, 15, 15, 16, 18]), 12)
+    expect(withCaution(v, true)).toMatchObject({ kind: 'list', caution: true, note: undefined, price: { amount: 14 } })
+    expect(withCaution(v, false)).toBe(v)
+    const junk = trade(lots([0.9, 1, 1, 1, 1]), 10)
+    expect(withCaution(junk, true)).toBe(junk)
+    expect(hasStrongWarning([{ kind: 'old', key: 'pc1.warn.old' }, { kind: 'broad', key: 'pc1.warn.broad.inexact' }])).toBe(false)
+    for (const kind of ['links', 'variant', 'corrupted'] as const) expect(hasStrongWarning([{ kind, key: 'x' }])).toBe(true)
+    expect(text('ru', 'pc1.v.caution')).toContain('предупреждения')
+    expect(text('en', 'pc1.v.caution')).toContain('warnings')
+  })
+
   it('все ключи вердикта есть в RU и EN, параметры подставляются', () => {
     const keys = [
-      'pc1.v.none', 'pc1.v.none.sub', 'pc1.v.none.bulk', 'pc1.v.few', 'pc1.v.few.sub', 'pc1.v.few.noPrice', 'pc1.v.few.bulk',
+      'pc1.v.none', 'pc1.v.none.sub', 'pc1.v.none.later', 'pc1.v.few', 'pc1.v.few.sub', 'pc1.v.few.noPrice', 'pc1.v.few.bulk',
       'pc1.v.junk', 'pc1.v.junk.sub', 'pc1.v.junk.help', 'pc1.v.cheap', 'pc1.v.cheap.sub', 'pc1.v.valuable',
       'pc1.v.valuable.few', 'pc1.v.valuable.spread', 'pc1.v.valuable.div', 'pc1.v.valuable.help', 'pc1.v.list',
-      'pc1.v.list.each', 'pc1.v.list.sub', 'pc1.v.list.bulk', 'pc1.v.note', 'pc1.v.note.done', 'pc1.v.note.fail', 'pc1.v.note.help'
+      'pc1.v.list.each', 'pc1.v.list.sub', 'pc1.v.list.bulk', 'pc1.v.note', 'pc1.v.note.done', 'pc1.v.note.fail', 'pc1.v.note.help', 'pc1.v.caution'
     ]
     const params = { n: 3, price: '7 chaos', min: '1 div', max: '4 div', note: '~price 7 chaos' }
     for (const lang of ['ru', 'en'] as const) {
