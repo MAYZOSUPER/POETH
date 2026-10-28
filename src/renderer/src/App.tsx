@@ -19,6 +19,7 @@ import { LiveTab } from './panels/LiveTab'
 import { RegexTab } from './panels/RegexTab'
 import { DealsTab } from './panels/DealsTab'
 import { WealthTab } from './panels/WealthTab'
+import { FlipTab } from './panels/FlipTab'
 import { ViewToggle } from './components/ViewToggle'
 import { Wizard } from './panels/onboarding/Wizard'
 import { AboutPanel } from './panels/onboarding/AboutPanel'
@@ -71,6 +72,8 @@ function TabBody() {
       return <DealsTab />
     case 'wealth':
       return <WealthTab />
+    case 'flip':
+      return <FlipTab />
     default:
       return null
   }

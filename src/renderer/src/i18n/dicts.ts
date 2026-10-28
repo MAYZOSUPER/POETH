@@ -12,6 +12,7 @@ import { onboarding } from './dict/onboarding'
 import { updates } from './dict/updates'
 import { farm } from './dict/farm'
 import { wealth } from './dict/wealth'
+import { flip } from './dict/flip'
 
 // Строки интерфейса по доменам: этап добавляет ключи только в свой ./dict/<домен>.ts.
 // Этот список ЗАМОРОЖЕН после S0 (новый домен подключает лид; onboarding — S9). Полнота RU/EN и
@@ -29,5 +30,6 @@ export const DOMAIN_DICTS: Record<string, DomainDict> = {
   onboarding,
   updates,
   farm,
-  wealth
+  wealth,
+  flip
 }

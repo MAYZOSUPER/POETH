@@ -27,11 +27,13 @@ describe('GameDef', () => {
       live: true,
       regex: true,
       deals: true,
-      wealth: true
+      wealth: true,
+      flip: true
     })
     expect(poe2.features.campaign).toBe(true)
     expect(poe2.features.priceCheck).toBe(true)
     expect(poe2.features.wealth).toBe(false)
+    expect(poe2.features.flip).toBe(false)
   })
 
   it('isGameId', () => {
