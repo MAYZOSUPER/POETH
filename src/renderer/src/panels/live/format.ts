@@ -17,23 +17,10 @@ export function countdown(ms: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
 
-const COIN: Record<string, string> = {
-  divine: 'div',
-  exalted: 'ex',
-  chaos: 'chaos',
-  gold: 'gold'
-}
-
-/** Класс монеты ui-coin (своя графика) или null для прочей валюты. */
-export function coinClass(currency: string): string | null {
-  const c = COIN[currency]
-  return c ? `ui-coin ui-coin--${c}` : null
-}
-
-export function priceText(price: LiveHit['price']): string {
-  if (!price) return '—'
-  const n = Math.round(price.amount * 100) / 100
-  return `${String(n).replace('.', ',')} ${price.currency}`
+/** Число цены лота: «0,5» в RU, «0.5» в EN (валюту рисует общий <Currency>, S18). */
+export function priceAmount(amount: number, lang: string): string {
+  const n = String(Math.round(amount * 100) / 100)
+  return lang === 'ru' ? n.replace('.', ',') : n
 }
 
 const RARITY_VAR: Record<LiveRarity, string> = {

@@ -9,7 +9,8 @@ import { OverlayWidget } from '../OverlayWidget'
 import { Icon, type IconName } from '../Icon'
 import { useOverlayT } from '../useOverlayT'
 import type { OverlayWidgetDef } from '../registry'
-import { blacklistWarning, coinClass } from '../../panels/deals/format'
+import { blacklistWarning } from '../../panels/deals/format'
+import { DealPrice } from '../../panels/deals/DealPrice'
 import { useDealsOverlay } from './store'
 import './deals-overlay.css'
 
@@ -165,8 +166,7 @@ function DealCard({ deal: d, now }: { deal: Deal; now: number }) {
           </span>
           {d.price && (
             <span className="ui-toast__price">
-              <i className={coinClass(d.priceValue?.currency)} />
-              {d.price}
+              <DealPrice d={d} lang={lang as UiLang} full={simple} />
             </span>
           )}
         </div>

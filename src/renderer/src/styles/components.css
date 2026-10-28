@@ -460,6 +460,39 @@
 .ui-coin--ex { --coin: linear-gradient(135deg, #e9edf2, #8d97a3); }
 .ui-coin--chaos { --coin: linear-gradient(135deg, #e0cfa6, #6f5126); }
 .ui-coin--gold { --coin: linear-gradient(135deg, #ffdf7a, #c4860f); }
+/* настоящая иконка игры (S18: кэш main через poeth://icon); кружок выше — запасной, когда иконки нет.
+   Рамка того же размера, что у кружка (раскладка не сдвигается), картинка нарисована крупнее. */
+.ui-coin--img {
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  object-fit: contain;
+  transform: scale(1.45);
+}
+
+/* валюта: иконка + число (не разрываются) + название; с подсказкой — курсор help */
+.ui-cur__n { white-space: nowrap; }
+.ui-cur[data-tip] { cursor: help; }
+.ui-cur[data-tip]:focus-visible { border-radius: var(--r-sm); outline: 1px solid var(--accent); outline-offset: 2px; }
+/* подсказка новичку о валюте/курсе: поверх всего, не ловит мышь */
+.ui-cur-tip {
+  position: fixed;
+  z-index: 1000;
+  display: grid;
+  gap: var(--sp-2);
+  width: max-content;
+  max-width: 280px;
+  pointer-events: none;
+  letter-spacing: normal;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+}
+.ui-cur-tip::before { left: var(--tip-x, 14px); }
+.ui-cur-tip--up::before { top: auto; bottom: -5px; transform: rotate(225deg); }
+.ui-cur-tip__head { display: flex; align-items: center; gap: var(--sp-2); }
+.ui-cur-tip__head .ui-coin { margin-right: var(--sp-1); }
+.ui-cur-tip__faint { color: var(--fg-muted); font-size: var(--fs-xs); }
 
 /* статус игрока: точка + текст рядом */
 .ui-dot { display: inline-block; flex: none; width: 7px; height: 7px; margin-right: var(--sp-2); vertical-align: 1px; border-radius: 50%; background: var(--good); }

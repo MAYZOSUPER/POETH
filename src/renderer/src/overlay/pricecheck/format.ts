@@ -1,5 +1,6 @@
 import type { UiLang } from '@shared/types'
 import type { StatFilter } from '@shared/poe1/pricecheck'
+import { currencyShort } from '@shared/currency'
 
 // Форматирование для окна цены PoE1: числа (RU — запятая), валюта, возраст лота, текст мода с числом.
 
@@ -8,24 +9,9 @@ export function fmtNum(v: number, lang: UiLang): string {
   return lang === 'ru' ? s.replace('.', ',') : s
 }
 
-const CURRENCY_SHORT: Record<string, string> = {
-  divine: 'div',
-  chaos: 'chaos',
-  exalted: 'ex',
-  mirror: 'mirror',
-  'mirror-shard': 'shard',
-  'chaos-shard': 'chaos shard'
-}
-
+/** Коротко для экспертного режима: div / c / ex (S18: общий список @shared/currency). */
 export function currencyLabel(currency: string): string {
-  return CURRENCY_SHORT[currency] ?? currency
-}
-
-export function coinClass(currency: string): string {
-  if (currency === 'divine') return 'ui-coin ui-coin--div'
-  if (currency === 'chaos') return 'ui-coin ui-coin--chaos'
-  if (currency === 'exalted') return 'ui-coin ui-coin--ex'
-  return 'ui-coin'
+  return currencyShort(currency)
 }
 
 /** Возраст лота: ['pc1.age.m', {n}] и т.п. */

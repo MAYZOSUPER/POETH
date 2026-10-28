@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from 'react'
 import type { AdvisorGlossaryTerm, AdvisorLine, AdvisorPricedLine, AdvisorStrategy } from '@shared/types'
 import type { FarmState } from '@shared/types/farm'
+import type { UiLang } from '@shared/types'
+import { CoinIcon, Currency, CurrencyTipBody, TipAnchor, useCurrencyNames } from '../../components/Currency'
 import { isAllowedExternalUrl } from '@shared/links'
 import { foreignLang, isOutdated } from '@shared/advisor/data'
 import { useT } from '../../i18n'
@@ -35,8 +37,9 @@ function lineName(l: AdvisorLine, lang: string, nameOf: NameOf): string {
 }
 
 /** Главное число: доход в час, «не меньше», убыток или почему его нет. */
-function Headline({ row, lang, names }: { row: AdvisorRow; lang: string; names: string[] }) {
+function Headline({ row, lang, names, expert }: { row: AdvisorRow; lang: string; names: string[]; expert: boolean }) {
   const t = useT()
+  const cur = useCurrencyNames(lang as UiLang)
   const e = row.estimate
   if (e.profit === null) {
     return (
@@ -48,10 +51,21 @@ function Headline({ row, lang, names }: { row: AdvisorRow; lang: string; names: 
   if (row.perHour === null) return <span className="ad-hour ad-hour--none">{t('advisor.perHour.noTime')}</span>
   const v = chaosText(Math.abs(row.perHour), lang)
   const key = row.perHour < 0 ? 'advisor.perHour.loss' : e.incomePartial ? 'advisor.perHour.min' : 'advisor.perHour'
+  // простой режим (S18): число крупно, «Сфер хаоса в час» помельче; эксперт — «~X chaos/ч»; в подсказке — что такое chaos
+  const tip = <CurrencyTipBody tag="chaos" lang={lang as UiLang} extra={<span className="ui-cur-tip__faint">{t('advisor.perHour.title')}</span>} />
   return (
-    <span className={`ad-hour${row.perHour < 0 ? ' ad-hour--bad' : ''}`} title={t('advisor.perHour.title')}>
-      {t(key, { v })}
-    </span>
+    <TipAnchor className={`ad-hour ui-cur${row.perHour < 0 ? ' ad-hour--bad' : ''}`} focusable tip={tip}>
+      <CoinIcon tag="chaos" lang={lang as UiLang} />
+      {expert ? (
+        t(key, { v })
+      ) : (
+        <>
+          {t(`${key}.lead`)}
+          {v}
+          <small className="ad-hour__unit">{t('advisor.perHour.unit', { cur: cur.after('chaos', v) })}</small>
+        </>
+      )}
+    </TipAnchor>
   )
 }
 
@@ -91,7 +105,7 @@ function Lines({
             </span>
             <span className="ad-line__qty">×{qtyText(l.qty, lang)}</span>
             <span className="ad-line__sum" title={unit ?? undefined}>
-              {own ? '' : p.total === null ? <span className="ad-faint">{t('advisor.noPrice')}</span> : t('advisor.chaos', { v: chaosText(p.total, lang) })}
+              {own ? '' : p.total === null ? <span className="ad-faint">{t('advisor.noPrice')}</span> : <Currency tag="chaos" text={`~${chaosText(p.total, lang)}`} lang={lang as UiLang} />}
             </span>
             {expert && (
               <span className="ad-line__unit">
@@ -353,7 +367,7 @@ export function StrategyCard(props: CardProps) {
             {s.build.note && open && <p className="ad-muted">{tx(s.build.note, lang)}</p>}
           </div>
           <div className="ad-figure">
-            <Headline row={row} lang={lang} names={missing} />
+            <Headline row={row} lang={lang} names={missing} expert={expert} />
             {expert && e.profit !== null && (
               <span className="ad-faint">
                 {t('advisor.sum.profit')}: {t(e.incomePartial ? 'advisor.chaos.min' : 'advisor.chaos', { v: chaosText(e.profit, lang) })}
