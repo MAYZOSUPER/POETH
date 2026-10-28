@@ -4,6 +4,8 @@ import path from 'path'
 import { IPC } from '@shared/ipc'
 import type { GameDef } from '@shared/games'
 import type { ExchangeIdNames } from '@shared/wealth/sources'
+import type { PriceIndex } from '@shared/wealth/prices'
+import type { WealthPriceInfo } from '@shared/types/wealth'
 import { isTrustedAppUrl } from '../net/guards'
 import { getAuthStatus, getEffectiveLeague, httpRequest, netLog, onAuthStatus, onLeaguesChanged } from '../net'
 import { onSettingsChange } from '../services/settingsStore'
@@ -130,6 +132,23 @@ export async function getDivineRate(league: string): Promise<{ chaosPerDivine: n
   if (!(rate > 0)) return null
   const hour = prices.exchange.prices(league).lastHour
   return hour !== undefined ? { chaosPerDivine: rate, hour: hour * 1000 } : { chaosPerDivine: rate }
+}
+
+/**
+ * Индекс цен лиги для других доменов (S16: советник «что фармить») — тот же, что у снимков тайника:
+ * фид обмена GGG, poe.watch — если он включён в учёте богатства. Устаревшие источники обновляются (не бросает).
+ */
+export async function getPriceIndex(league: string): Promise<{ index: PriceIndex; info: WealthPriceInfo }> {
+  const m = getManager()
+  const prices = priceService!
+  let poeWatch = false
+  try {
+    poeWatch = m.state().options.poeWatch
+  } catch {
+    // менеджер ещё не загрузил настройки — только фид обмена
+  }
+  await prices.refresh(league, { poeWatch })
+  return { index: prices.index(league, { poeWatch }), info: prices.info(league, { poeWatch }) }
 }
 
 function handle(channel: string, fn: (...args: unknown[]) => unknown): void {

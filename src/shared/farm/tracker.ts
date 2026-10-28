@@ -98,6 +98,11 @@ export function cleanProfit(v: unknown): FarmProfit | null {
 }
 const span = (from: number, to: number): number => Math.max(0, to - from)
 
+/** Метка стратегии советника (S16): id из strategies.json, иначе нет метки. */
+export function cleanStrategy(v: unknown): string | undefined {
+  return typeof v === 'string' && /^[a-z0-9][a-z0-9-]{0,47}$/.test(v) ? v : undefined
+}
+
 function cleanRun(r: unknown): FarmRun | null {
   const x = r as FarmRun
   if (!x || typeof x.id !== 'string' || typeof x.areaId !== 'string' || typeof x.startTs !== 'number') return null
@@ -144,6 +149,8 @@ export function normalizeFarmData(raw: unknown): FarmTrackerData {
       pausedAt: Number.isFinite(s.pausedAt) ? s.pausedAt : null,
       pausedMs: Number.isFinite(s.pausedMs) ? Math.max(0, s.pausedMs) : 0
     }
+    const strategy = cleanStrategy(s.strategy)
+    if (strategy) d.session.strategy = strategy
   }
   if (Array.isArray(x.sessions)) {
     d.sessions = x.sessions
@@ -297,11 +304,14 @@ export class FarmTracker {
   // Сессия: Начать / Пауза / Продолжить / Стоп
   // ---------------------------------------------------------------------------
 
-  startSession(ts: number): FarmEvent[] {
+  /** `strategy` — метка стратегии советника (S16), необязательна. */
+  startSession(ts: number, strategy?: string): FarmEvent[] {
     const d = this.d
     if (d.session) return []
     const out: FarmEvent[] = []
     const session: FarmSession = { id: `s${ts.toString(36)}`, startedAt: ts, endedAt: null, pausedAt: null, pausedMs: 0 }
+    const tag = cleanStrategy(strategy)
+    if (tag) session.strategy = tag
     if (d.current && !d.current.sessionId) {
       // начали посреди карты — карта идёт в сессию; в убежище с открытым прошлым забегом — он
       // закрывается до начала сессии (его время и прибыль к сессии не относятся)
@@ -351,6 +361,16 @@ export class FarmTracker {
     d.session = null
     out.push({ type: 'session', state: 'stop', session: { ...s }, at: ts })
     return out
+  }
+
+  /** Метка стратегии советника (S16) у идущей сессии; null — снять. false — сессии нет. */
+  setSessionStrategy(strategy: string | null): boolean {
+    const s = this.d.session
+    if (!s) return false
+    const tag = cleanStrategy(strategy)
+    if (tag) s.strategy = tag
+    else delete s.strategy
+    return true
   }
 
   /**

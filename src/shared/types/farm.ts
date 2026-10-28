@@ -71,6 +71,8 @@ export interface FarmSession {
   pausedAt: number | null
   /** сумма завершённых пауз (мс) */
   pausedMs: number
+  /** метка стратегии советника «что фармить» (S16) — id из strategies.json */
+  strategy?: string
 }
 
 /** Статистика сессии на момент `FarmState.at` (или на момент «Стоп»). */

@@ -25,6 +25,8 @@ export interface GameFeatures {
   flip: boolean
   /** прокачка PoE1 по маршруту (S14): вкладка «Кампания» и гид поверх игры */
   leveling: boolean
+  /** советник «что фармить» (S16): в v0.1.0 скрыт, в разработке — POETH_ADVISOR=1 (shared/advisor/flag.ts) */
+  advisor: boolean
 }
 
 export interface GameDef {
@@ -53,7 +55,7 @@ export const GAMES: Record<GameId, GameDef> = {
     siteRealm: null,
     logSubdirs: ['Path of Exile/logs', 'PathOfExile/logs'],
     dataDir: 'poe1',
-    features: { campaign: false, priceCheck: true, live: true, regex: true, deals: true, wealth: true, flip: true, leveling: true }
+    features: { campaign: false, priceCheck: true, live: true, regex: true, deals: true, wealth: true, flip: true, leveling: true, advisor: false }
   },
   poe2: {
     id: 'poe2',
@@ -63,7 +65,7 @@ export const GAMES: Record<GameId, GameDef> = {
     siteRealm: 'poe2',
     logSubdirs: ['Path of Exile 2/logs', 'PathOfExile2/logs'],
     dataDir: 'poe2',
-    features: { campaign: true, priceCheck: true, live: false, regex: false, deals: false, wealth: false, flip: false, leveling: false }
+    features: { campaign: true, priceCheck: true, live: false, regex: false, deals: false, wealth: false, flip: false, leveling: false, advisor: false }
   }
 }
 

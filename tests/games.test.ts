@@ -30,13 +30,16 @@ describe('GameDef', () => {
       wealth: true,
       flip: true,
       // прокачка по маршруту (S14) — вкладка «Кампания» в PoE 1
-      leveling: true
+      leveling: true,
+      // советник «что фармить» (S16) в v0.1.0 скрыт (в разработке — POETH_ADVISOR=1)
+      advisor: false
     })
     expect(GAMES.poe2.features.leveling).toBe(false)
     expect(poe2.features.campaign).toBe(true)
     expect(poe2.features.priceCheck).toBe(true)
     expect(poe2.features.wealth).toBe(false)
     expect(poe2.features.flip).toBe(false)
+    expect(poe2.features.advisor).toBe(false)
   })
 
   it('isGameId', () => {
