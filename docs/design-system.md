@@ -2,6 +2,7 @@
 
 Макеты всех окон v0.1 (RU/EN, простой и экспертный режим, заметки для разработки):
 https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице работают ровно эти `tokens.css` и `components.css`.
+«Богатство» (S11: тайник, сессия фарма, виджет): https://claude.ai/artifact/MwDu6fzMqo4HMSfQtacTe6.
 Стиль и бренд: https://claude.ai/artifact/E3pqVxkC8CLw9XHPteKJzT, https://claude.ai/artifact/4M6dmGThWeL58snnyDbqww.
 
 ## Файлы
@@ -32,12 +33,12 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 ## Токены (основные)
 | Группа | Токены |
 |---|---|
-| Поверхности | `--surface`, `--surface-solid`, `--page`, `--raised`, `--sunken`, `--hover`, `--selected`, `--border`, `--border-strong`, `--halo`, `--scrim` |
+| Поверхности | `--surface`, `--surface-solid`, `--page`, `--raised`, `--sunken`, `--inset`, `--hover`, `--selected`, `--border`, `--border-strong`, `--halo`, `--scrim` |
 | Текст | `--fg`, `--fg-muted`, `--fg-faint` |
 | Акцент | `--accent`, `--accent-hi`, `--accent-ink`, `--accent-grad`, `--accent-soft` |
 | Смысл | `--good`, `--warn`, `--bad`, `--info`, `--live` (+ `--on-good`, `--on-bad` для текста на них) |
 | Редкость | `--rarity-normal`, `--rarity-magic`, `--rarity-rare`, `--rarity-unique`, `--rarity-gem`, `--rarity-currency` |
-| Шрифты и кегли | `--font-display/ui/mono`, `--fs-2xs … --fs-price`, `--lh` |
+| Шрифты и кегли | `--font-display/ui/mono`, `--fs-2xs … --fs-price`, `--fs-stat` (26), `--fs-figure` (40, главная цифра), `--lh` |
 | Размеры | `--sp-1 … --sp-8`, `--h-row`, `--h-btn`, `--h-btn-sm`, `--h-input`, `--r-panel`, `--r-sm`, `--r-btn`, `--r-pill`, `--w-pricecheck`, `--w-pricecheck-expert`, `--w-toast` |
 
 Старые имена темы компаса (`--gold`, `--gold-bright`, `--panel`, `--line`, `--text`, `--muted`, `--font-serif`,
@@ -65,13 +66,41 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 | `.ui-meter` (`data-level="warn|over"`, `style="--v:35%"`) + `__row`, `__bar` | счётчик 250 символов, лимит live |
 | `.ui-menu` + `__item` (`--danger`), `__hint`, `__sep` | меню «⋯», контекстные меню |
 | `.ui-credits` + `__head`, `__title`, `__lead`, `__list` (+ `.ui-scroll`), `__name` (имя в `<span>`, `since` — в `title`), `__empty`, `__note` | «Благодарности» в «О программе»: подписчики «Печать» из `resources/supporters.json` |
+| `.ui-box` + `__head`, `__body`, `__foot` | блок внутри окна компаньона (фон `--inset`), в шапке `.ui-label` и действия |
+| `.ui-table` + `.is-num`, `td.is-good` / `.is-bad` / `.is-faint`, `tr.is-now`, `__aside` | таблица: числа вправо табличными цифрами, текущая строка подсвечена |
+| `.ui-item` (`--currency`, `--magic`, `--rare`, `--unique`, `--gem`) | имя предмета цветом редкости |
+| `.ui-tally` (`--bad`, `--zero`) | иконка + число (смерти за карту) |
+| `.ui-figure` + `__value`, `__unit`, `__alt`, `__note` | главная цифра экрана, одна на вид, обычные цифры (не табличные) |
+| `.ui-delta` (`--up`, `--down`) + `<span>` периода | изменение за период: цвет + стрелка `arrow-up/down` + текст |
+| `.ui-stats` (`--lead`: первая плитка шире), `.ui-stat` (`--hero`, `--empty`) + `__value`, `__sub` | плитки показателей; подпись — `.ui-label` |
+| `.ui-chips` (`--include`: выключенный чип зачёркнут) | ряд чипов-фильтров над данными |
+| `.ui-chart` + `__grid`, `__tick`, `__line`, `__dot`, `__value`, `__cross`, `__hit`, `__tip` (вместе с `.ui-tip`), `__table` | график одной серии по времени (SVG), см. «Графики» |
+| `.ui-bars` + `__row` (`--delta`, `--off`), `__name`, `__track` > `i`, `__value`, `__delta` (`--up`, `--down`), `__note` | разбивка по частям тонкими полосами |
+| `.ui-hud` (`--pause`) + `__grip`, `__seg`, `__time`, `__name`, `__lbl`, `__state`, `__sep` | полоса-виджет 34 px поверх игры (внутри `.ui-panel`) |
 | `.ui-divider`, `.ui-empty` + `__title`, `.ui-skeleton`, `.ui-scroll` | орнамент, пустые состояния, загрузка, прокрутка |
 
 Иконки: `resources/brand/icons/<имя>.svg` или спрайт `icons-sprite.svg` (`<use href="#i-<имя>"/>`), класс `.ui-ico`
 (`--sm` 13 px, `--lg` 18 px). Список: check, cross, dash, close, min, max, search, star, bolt, external, chat, invite,
 trade, kick, heart, sold, ask, home, grid, help, warn, copy, refresh, support, gear, folder, archive, chev-r, chev-d,
 dots, plus, import, export, pin, lock, shield, logout, keyboard, layers, volume, info, game, pause, trash, edit, map,
-book, coins, compass, seal, history.
+book, coins, compass, seal, history, arrow-up, arrow-down, chart, table, play, stop, death, drag.
+Новые имена нужно добавить в тип `IconName` (`src/renderer/src/overlay/Icon.tsx`), если иконка берётся оттуда.
+
+## Графики
+Одна серия — одна линия 2 px цвета `--accent`, без легенды (что показано — говорит подпись блока). Сетка в волос
+`--border`, подписи осей `--fg-faint`, значения — цветом текста, не цветом линии. Точка и число на последнем значении.
+Шкала не от нуля, если показываем изменение (стоимость тайника); от нуля — если долю. Наведение и стрелки клавиатуры
+(`svg tabindex="0"`) двигают перекрестие `__cross` и подсказку `__tip`; кнопка «Таблица» показывает те же точки списком.
+Две величины разного масштаба на одном графике не рисуем — два графика.
+
+## «Богатство» (S11)
+Образец — макет «Богатство». Раскладка вкладки (`w-*` на макете) — в CSS панели, компоненты — из таблицы выше.
+- **Тайник:** `.ui-figure` (chaos, рядом ≈ div) + `.ui-delta` за сутки; справа время снимка и «Обновить».
+  Ниже `.ui-chips--include` «Считать», затем `.ui-box` с `.ui-chart` (24 ч / 7 дней / вся лига) и `.ui-box` с `.ui-bars`.
+  Под ними «Что прибавилось с прошлого снимка» — `.ui-table` с `.ui-item`. Рарки — `.ui-tag` «без оценки», в итог не входят.
+- **Сессия фарма:** `.ui-stats--lead` (первая — `.ui-stat--hero` «Доход в час», без входа — `--empty`), «Забеги» —
+  `.ui-table`, текущая карта `tr.is-now` сверху, смерти `.ui-tally`. Переключатель «Виджет поверх игры» выключен по умолчанию.
+- **Виджет:** `.ui-panel.ui-hud`, сверху по центру, тянется за `__grip`; пауза — `.ui-hud--pause`.
 
 ## Кнопка «Поддержать проект»
 Иконка `support` (монета с сердцем, своя, без логотипа Boosty). Места: «О программе» в настройках, пункт меню

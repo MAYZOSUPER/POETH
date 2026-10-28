@@ -718,6 +718,119 @@
 .ui-credits__empty { color: var(--fg-faint); font: 400 var(--fs-sm) / 1.45 var(--font-ui); }
 .ui-credits__note { color: var(--fg-faint); font: 400 var(--fs-xs) / 1.4 var(--font-ui); }
 
+/* ================= блок внутри окна ================= */
+/* Рамка для группы внутри компаньона: шапка с .ui-label и действиями, тело, подвал. */
+.ui-box { min-width: 0; border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--inset); }
+.ui-box__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4); min-height: 38px; padding: var(--sp-3) var(--sp-6); border-bottom: 1px solid var(--border); }
+.ui-box__body { display: grid; gap: var(--sp-4); padding: var(--sp-5) var(--sp-6); }
+.ui-box__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-7); padding: var(--sp-4) var(--sp-6); border-top: 1px solid var(--border); color: var(--fg-muted); font-size: var(--fs-sm); }
+
+/* ================= таблица ================= */
+/* Числа — .is-num (вправо, табличные цифры). Прибыль — .is-good / .is-bad, нет данных — .is-faint. Текущая строка — tr.is-now. */
+.ui-table { width: 100%; border-collapse: collapse; font-size: var(--fs-md); }
+.ui-table th { padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--border); text-align: left; font: 600 var(--fs-2xs) / 1.2 var(--font-ui); letter-spacing: 0.05em; text-transform: uppercase; color: var(--fg-faint); }
+.ui-table td { padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--border); vertical-align: middle; }
+.ui-table tr:last-child td { border-bottom: 0; }
+.ui-table .is-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ui-table td.is-good { color: var(--good); font-weight: 600; }
+.ui-table td.is-bad { color: var(--bad); font-weight: 600; }
+.ui-table td.is-faint { color: var(--fg-faint); font-weight: 400; }
+.ui-table tr.is-now td { background: var(--accent-soft); }
+.ui-table__aside { margin-left: var(--sp-3); color: var(--fg-faint); font-size: var(--fs-xs); }
+
+/* имя предмета цветом редкости */
+.ui-item { display: inline-flex; align-items: center; gap: var(--sp-3); color: var(--rarity-normal); }
+.ui-item--currency { color: var(--rarity-currency); }
+.ui-item--magic { color: var(--rarity-magic); }
+.ui-item--rare { color: var(--rarity-rare); }
+.ui-item--unique { color: var(--rarity-unique); }
+.ui-item--gem { color: var(--rarity-gem); }
+
+/* счётчик с иконкой (смерти за карту): 0 — .ui-tally--zero серым, больше — --bad красным */
+.ui-tally { display: inline-flex; align-items: center; gap: var(--sp-2); font-variant-numeric: tabular-nums; }
+.ui-tally .ui-ico { width: 13px; height: 13px; }
+.ui-tally--bad { color: var(--bad); }
+.ui-tally--zero { color: var(--fg-faint); }
+
+/* ================= главная цифра, изменение, плитки ================= */
+/* Главная цифра экрана — одна на вид, обычные (не табличные) цифры, шрифт интерфейса. */
+.ui-figure { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2) var(--sp-7); }
+.ui-figure__value { font: 600 var(--fs-figure) / 1 var(--font-ui); letter-spacing: -0.01em; color: var(--accent-hi); font-variant-numeric: proportional-nums; }
+.ui-figure__unit { margin-left: var(--sp-2); font-size: 0.5em; font-weight: 500; color: var(--fg-muted); }
+.ui-figure__alt { display: inline-flex; align-items: center; gap: var(--sp-3); font-size: calc(var(--fs-figure) * 0.45); color: var(--fg-muted); }
+.ui-figure__note { color: var(--fg-muted); font-size: var(--fs-sm); }
+
+/* изменение за период: цвет + стрелка + текст, никогда только цвет */
+.ui-delta { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-md); font-weight: 600; font-variant-numeric: tabular-nums; }
+.ui-delta .ui-ico { width: 14px; height: 14px; stroke-width: 2.2; }
+.ui-delta--up { color: var(--good); }
+.ui-delta--down { color: var(--bad); }
+.ui-delta > span { color: var(--fg-muted); font-weight: 400; }
+
+/* плитки показателей: первая может быть --hero (главная цифра), --empty — вместо числа пояснение */
+.ui-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--sp-5); }
+.ui-stats--lead { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); }
+.ui-stat { display: grid; align-content: start; gap: var(--sp-2); min-width: 0; padding: var(--sp-6) var(--sp-7); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--inset); }
+.ui-stat__value { font: 600 var(--fs-stat) / 1.05 var(--font-ui); color: var(--fg); font-variant-numeric: proportional-nums; }
+.ui-stat__sub { color: var(--fg-muted); font-size: var(--fs-xs); }
+.ui-stat--hero { border-color: var(--border-strong); background: var(--accent-soft); }
+.ui-stat--hero .ui-stat__value { font-size: var(--fs-figure); color: var(--accent-hi); }
+.ui-stat--empty .ui-stat__value { font-size: var(--fs-lg); font-weight: 500; line-height: 1.4; color: var(--fg-muted); }
+
+/* ряд чипов-фильтров; --include: выключенный чип зачёркнут (вкладка не входит в итог) */
+.ui-chips { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+.ui-chips > .ui-label { margin-right: var(--sp-2); }
+.ui-chips--include .ui-chip[aria-pressed="false"] { text-decoration: line-through; text-decoration-color: var(--fg-faint); }
+
+/* ================= график по времени (одна серия, SVG) ================= */
+/* Линия 2 px, сетка в волос, точка и значение на конце; наведение и стрелки — перекрестие и .ui-tip. */
+.ui-chart { position: relative; padding: var(--sp-3) var(--sp-2) var(--sp-1); }
+.ui-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.ui-chart svg:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; border-radius: var(--r-sm); }
+.ui-chart__grid { stroke: var(--border); stroke-width: 1; shape-rendering: crispEdges; }
+.ui-chart__tick { fill: var(--fg-faint); font: 500 var(--fs-2xs) / 1 var(--font-ui); font-variant-numeric: tabular-nums; }
+.ui-chart__line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.ui-chart__dot { fill: var(--accent-hi); stroke: var(--page); stroke-width: 2; }
+.ui-chart__value { fill: var(--fg); font: 600 var(--fs-sm) / 1 var(--font-ui); font-variant-numeric: tabular-nums; }
+.ui-chart__cross { stroke: var(--fg-faint); stroke-width: 1; }
+.ui-chart__hit { fill: transparent; cursor: crosshair; }
+.ui-chart__tip { position: absolute; z-index: 3; max-width: none; pointer-events: none; white-space: nowrap; transform: translate(-50%, calc(-100% - 12px)); }
+.ui-chart__tip::before { top: auto; bottom: -5px; left: calc(50% - 4px); transform: rotate(225deg); }
+.ui-chart__tip span { color: var(--fg-muted); }
+.ui-chart__table { max-height: 168px; margin-top: var(--sp-4); border-top: 1px solid var(--border); }
+
+/* ================= полосы: разбивка по частям ================= */
+/* Одна полоса одного цвета на строку, значение у конца. --delta: колонка изменения (эксперт), --off: часть не считается. */
+.ui-bars { display: grid; gap: var(--sp-1); }
+.ui-bars__row { display: grid; grid-template-columns: minmax(86px, 0.9fr) minmax(0, 1.3fr) 72px; gap: var(--sp-5); align-items: center; min-height: 32px; padding: 0 var(--sp-1); }
+.ui-bars__row--delta { grid-template-columns: minmax(86px, 0.9fr) minmax(0, 1fr) 72px 48px; }
+.ui-bars__row--off { color: var(--fg-faint); }
+.ui-bars__name { display: grid; min-width: 0; }
+.ui-bars__name b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 500; }
+.ui-bars__name span { color: var(--fg-faint); font-size: var(--fs-xs); }
+.ui-bars__track { height: 8px; }
+.ui-bars__track > i { display: block; height: 100%; border-radius: 0 var(--r-sm) var(--r-sm) 0; background: var(--accent); }
+.ui-bars__value { text-align: right; white-space: nowrap; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ui-bars__value small { font-weight: 400; color: var(--fg-muted); }
+.ui-bars__note { justify-self: start; }
+.ui-bars__delta { text-align: right; font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
+.ui-bars__delta--up { color: var(--good); }
+.ui-bars__delta--down { color: var(--bad); }
+
+/* ================= полоса-виджет поверх игры (HUD) ================= */
+/* 34 px, сегменты через .ui-hud__sep, справа кнопки .ui-btn--icon. Место на экране задаёт окно оверлея. */
+.ui-hud { display: inline-flex; align-items: center; gap: var(--sp-1); height: 34px; padding: 0 var(--sp-2) 0 var(--sp-1); white-space: nowrap; }
+.ui-hud__grip { display: grid; place-items: center; width: 18px; height: 26px; color: var(--fg-faint); cursor: grab; }
+.ui-hud__seg { display: inline-flex; align-items: center; gap: var(--sp-3); padding: 0 9px; }
+.ui-hud__seg > .ui-ico { color: var(--fg-muted); }
+.ui-hud__seg b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.ui-hud__time { min-width: 3.1em; color: var(--accent-hi); }
+.ui-hud__name { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: var(--fg); }
+.ui-hud__lbl, .ui-hud__state { color: var(--fg-muted); }
+.ui-hud__sep { width: 1px; height: 16px; background: var(--border); }
+.ui-hud--pause .ui-hud__time, .ui-hud--pause .ui-hud__state { color: var(--warn); }
+.ui-hud .ui-btn--icon { margin-left: var(--sp-1); }
+
 /* ================= пустое состояние, загрузка ================= */
 .ui-empty { display: grid; justify-items: center; gap: var(--sp-4); padding: var(--sp-8) var(--sp-6); color: var(--fg-muted); text-align: center; }
 .ui-empty__title { color: var(--fg); font: 700 var(--fs-lg) / 1.2 var(--font-display); letter-spacing: 0.04em; }
