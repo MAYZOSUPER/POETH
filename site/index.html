@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="ru" data-lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>POETH — оверлей для трейда в Path of Exile</title>
+<meta name="description" content="Бесплатный оверлей для трейда в Path of Exile 1 и 2: цена предмета по Ctrl+D прямо поверх игры, трейд-окно с избранным, live-поиск и сделки. Русский и английский клиент.">
+<meta name="theme-color" content="#0f0c0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="POETH">
+<meta property="og:title" content="POETH — оверлей для трейда в Path of Exile">
+<meta property="og:description" content="Цена предмета по Ctrl+D прямо поверх игры. Бесплатно, открытый код, RU и EN.">
+<meta property="og:url" content="https://mayzosuper.github.io/POETH/">
+<meta property="og:image" content="https://mayzosuper.github.io/POETH/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/GolosText-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+<script>
+  // Язык до первой отрисовки: ?lang= → сохранённый выбор → язык браузера (ru, be, kk → RU, остальные → EN).
+  (function () {
+    var l = 'en', q = /[?&]lang=(ru|en)\b/.exec(location.search), s = null;
+    try { s = localStorage.getItem('poeth-lang'); } catch (e) {}
+    if (q) l = q[1];
+    else if (s === 'ru' || s === 'en') l = s;
+    else {
+      var a = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+      for (var i = 0; i < a.length; i++) {
+        var x = String(a[i]).toLowerCase();
+        if (/^(ru|be|kk)\b/.test(x)) { l = 'ru'; break; }
+        if (/^en\b/.test(x)) break;
+      }
+    }
+    document.documentElement.lang = l;
+    document.documentElement.setAttribute('data-lang', l);
+  })();
+</script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-8.5 8.5M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7L3.5 12l5 5M15.5 7l5 5-5 5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5.5" y="10.5" width="13" height="9.5" rx="1.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5l7 3v5.2c0 4.3-3 7.6-7 8.8-4-1.2-7-4.5-7-8.8V6.5z"/><path d="M8.8 12l2.2 2.2 4.2-4.4"/></symbol>
+  <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="1.5"/><path d="M6.5 10h.1M9.5 10h.1M12.5 10h.1M15.5 10h.1M17.5 13.8h-11"/></symbol>
+  <symbol id="i-support" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 16.2s-3.9-2.3-3.9-5.1a2.1 2.1 0 0 1 3.9-1.2 2.1 2.1 0 0 1 3.9 1.2c0 2.8-3.9 5.1-3.9 5.1z"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap top__bar">
+    <a class="brand" href="#top" aria-label="POETH">
+      <img src="assets/brand/mark.svg" alt="" width="30" height="30">
+      <img class="brand__word" src="assets/brand/wordmark.svg" alt="" width="78" height="16">
+    </a>
+    <nav class="nav" aria-label="Разделы / Sections">
+      <a href="#look"><span lang="ru">Как выглядит</span><span lang="en">Screens</span></a>
+      <a href="#install"><span lang="ru">Установка</span><span lang="en">Install</span></a>
+      <a href="#safe"><span lang="ru">Безопасность</span><span lang="en">Safety</span></a>
+      <a href="#features"><span lang="ru">Возможности</span><span lang="en">Features</span></a>
+      <a href="#faq"><span lang="ru">Вопросы</span><span lang="en">FAQ</span></a>
+    </nav>
+    <div class="langs" role="group" aria-label="Язык / Language">
+      <button type="button" data-set-lang="ru" aria-pressed="false">RU</button>
+      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="btn btn--sm btn--primary" href="https://github.com/MAYZOSUPER/POETH/releases/latest">
+      <svg class="ico" aria-hidden="true"><use href="#i-download"/></svg><span lang="ru">Скачать</span><span lang="en">Download</span>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div class="hero__text">
+        <p class="eyebrow">Path of Exile 1 · Path of Exile 2</p>
+        <h1><span lang="ru">Узнайте цену предмета, не выходя из игры</span><span lang="en">Price any item without leaving the game</span></h1>
+        <p class="lead">
+          <span lang="ru">POETH — бесплатный оверлей для трейда в Path of Exile 1 и 2. Наведите курсор на предмет, нажмите <span class="keys"><kbd>Ctrl</kbd>+<kbd>D</kbd></span>, и цена появится прямо поверх игры.</span>
+          <span lang="en">POETH is a free trade overlay for Path of Exile 1 and 2. Hover an item, press <span class="keys"><kbd>Ctrl</kbd>+<kbd>D</kbd></span>, and its price appears right over the game.</span>
+        </p>
+        <p class="lead">
+          <span lang="ru">Работает с русским и английским клиентом. Простой режим и подсказки для новичков, без ботов и авто-покупок.</span>
+          <span lang="en">Works with Russian and English game clients. A simple mode and hints for beginners, no bots and no auto-buying.</span>
+        </p>
+        <div class="cta">
+          <a class="btn btn--primary btn--xl" href="https://github.com/MAYZOSUPER/POETH/releases/latest">
+            <svg class="ico" aria-hidden="true"><use href="#i-download"/></svg><span lang="ru">Скачать для Windows</span><span lang="en">Download for Windows</span>
+          </a>
+          <p class="cta__meta">
+            <span lang="ru">Windows 10 и 11, 64 бита · бесплатно · <a href="https://github.com/MAYZOSUPER/POETH">открытый код</a></span>
+            <span lang="en">Windows 10 and 11, 64-bit · free · <a href="https://github.com/MAYZOSUPER/POETH">open source</a></span>
+          </p>
+        </div>
+      </div>
+      <figure class="hero__shot">
+        <div class="hero__glow" aria-hidden="true"></div>
+        <svg class="hero__rings" viewBox="0 0 200 200" aria-hidden="true">
+          <g fill="none" stroke="#c9a55c">
+            <path d="M100 6L194 100 100 194 6 100z" stroke-opacity=".08" stroke-width=".4"/>
+            <path d="M100 24L176 100 100 176 24 100z" stroke-opacity=".13" stroke-width=".4"/>
+          </g>
+          <g fill="#c9a55c" fill-opacity=".4">
+            <path d="M100 21.5l2.5 2.5-2.5 2.5-2.5-2.5z"/><path d="M178.5 100l-2.5 2.5-2.5-2.5 2.5-2.5z"/><path d="M21.5 100l2.5-2.5 2.5 2.5-2.5 2.5z"/>
+          </g>
+        </svg>
+        <div class="shot">
+          <img lang="ru" src="assets/img/price-ru.webp" width="644" height="926" alt="Окно прайс-чека POETH рядом с курсором: свойства предмета с тирами, цена около 1,4 div и предложения продавцов">
+          <img lang="en" src="assets/img/price-en.webp" width="644" height="883" alt="POETH price check window next to the cursor: item mods with tiers, a price of about 1.4 div and seller listings">
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec sec--band" id="look" aria-labelledby="h-look">
+    <div class="wrap">
+      <div class="sh">
+        <span class="orn" aria-hidden="true"></span>
+        <h2 id="h-look"><span lang="ru">Как это выглядит</span><span lang="en">What it looks like</span></h2>
+        <p>
+          <span lang="ru">Окна POETH тёмные и плотные, чтобы не спорить с игрой. Картинки на этой странице — макеты интерфейса; скриншоты из игры добавим с первым релизом.</span>
+          <span lang="en">POETH windows are dark and compact so they stay out of the game's way. Pictures on this page are interface mockups; in-game screenshots come with the first release.</span>
+        </p>
+      </div>
+      <div class="show">
+        <div class="show__row">
+          <figure class="shot">
+            <img lang="ru" src="assets/img/trade-ru.webp" width="1176" height="734" loading="lazy" alt="Трейд-окно POETH: слева папки избранных поисков и счётчик live-поисков, справа официальный сайт трейда">
+            <img lang="en" src="assets/img/trade-en.webp" width="1176" height="734" loading="lazy" alt="POETH trade window: saved search folders and a live search counter on the left, the official trade site on the right">
+          </figure>
+          <div class="cap">
+            <h3><span lang="ru">Трейд-окно с избранным</span><span lang="en">Trade window with favorites</span></h3>
+            <p>
+              <span lang="ru">Официальный сайт трейда в отдельном окне, а рядом ваши сохранённые поиски.</span>
+              <span lang="en">The official trade site in its own window, with your saved searches next to it.</span>
+            </p>
+            <ul class="ticks">
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span lang="ru">Папки и поиск по избранному</span><span lang="en">Folders and search across favorites</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span lang="ru">Live-поиск одним переключателем</span><span lang="en">Live search with one toggle</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span lang="ru">Импорт из Better Trading</span><span lang="en">Import from Better Trading</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="show__row show__row--flip">
+          <figure class="shot">
+            <img lang="ru" src="assets/img/deals-ru.webp" width="800" height="470" loading="lazy" alt="Карточки сделок POETH: входящая покупка с кнопками «Пригласить», «Обмен», «Спасибо» и подсвеченная ячейка в тайнике">
+            <img lang="en" src="assets/img/deals-en.webp" width="800" height="440" loading="lazy" alt="POETH deal cards: an incoming purchase with Invite, Trade and Thanks buttons and the highlighted stash cell">
+          </figure>
+          <div class="cap">
+            <h3><span lang="ru">Карточка сделки</span><span lang="en">Deal card</span></h3>
+            <p>
+              <span lang="ru">Когда вам пишут «хочу купить», POETH показывает, кто и что покупает, и подсвечивает предмет в тайнике.</span>
+              <span lang="en">When someone whispers to buy, POETH shows who wants what and highlights the item in your stash.</span>
+            </p>
+            <ul class="ticks">
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span lang="ru">Пригласить, обмен, спасибо — кнопками</span><span lang="en">Invite, trade and thanks as buttons</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span lang="ru">Одна кнопка — одна команда в чат</span><span lang="en">One button sends one chat command</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span lang="ru">Входящие и исходящие сделки</span><span lang="en">Incoming and outgoing deals</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="install" aria-labelledby="h-install">
+    <div class="wrap">
+      <div class="sh">
+        <span class="orn" aria-hidden="true"></span>
+        <h2 id="h-install"><span lang="ru">Установка за три шага</span><span lang="en">Install in three steps</span></h2>
+      </div>
+      <div class="install">
+        <ol class="steps">
+          <li>
+            <div>
+              <h3><span lang="ru">Скачайте установщик</span><span lang="en">Download the installer</span></h3>
+              <p>
+                <span lang="ru">Файл <b>POETH-Setup-<i>версия</i>.exe</b> лежит на странице релизов GitHub.</span>
+                <span lang="en">The <b>POETH-Setup-<i>version</i>.exe</b> file is on the GitHub releases page.</span>
+              </p>
+              <a class="btn btn--sm" href="https://github.com/MAYZOSUPER/POETH/releases/latest">
+                <svg class="ico" aria-hidden="true"><use href="#i-external"/></svg><span lang="ru">Открыть релизы</span><span lang="en">Open releases</span>
+              </a>
+            </div>
+          </li>
+          <li>
+            <div>
+              <h3><span lang="ru">Запустите его</span><span lang="en">Run it</span></h3>
+              <p>
+                <span lang="ru">Windows может показать синее окно «Система Windows защитила ваш компьютер». Нажмите <b>«Подробнее»</b>, затем <b>«Выполнить в любом случае»</b>.</span>
+                <span lang="en">Windows may show a blue “Windows protected your PC” window. Click <b>More info</b>, then <b>Run anyway</b>.</span>
+              </p>
+              <p>
+                <span lang="ru">Так Windows встречает программы без платной цифровой подписи. Код POETH открыт, а установщик собирается на GitHub из этого кода.</span>
+                <span lang="en">This is how Windows treats programs without a paid code-signing certificate. POETH is open source, and the installer is built on GitHub from that code.</span>
+              </p>
+            </div>
+          </li>
+          <li>
+            <div>
+              <h3><span lang="ru">Откройте игру и POETH</span><span lang="en">Open the game and POETH</span></h3>
+              <p>
+                <span lang="ru">Поставьте в игре режим «Окно» или «Окно без рамки», запустите POETH и пройдите короткий мастер. Потом наведите курсор на предмет и нажмите <span class="keys"><kbd>Ctrl</kbd>+<kbd>D</kbd></span>.</span>
+                <span lang="en">Set the game to Windowed or Borderless windowed mode, start POETH and go through the short setup. Then hover an item and press <span class="keys"><kbd>Ctrl</kbd>+<kbd>D</kbd></span>.</span>
+              </p>
+            </div>
+          </li>
+        </ol>
+
+        <figure class="ss">
+          <div class="ss__pair">
+            <div class="ss__dlg">
+              <p class="ss__title"><span lang="ru">Система Windows защитила ваш компьютер</span><span lang="en">Windows protected your PC</span></p>
+              <i class="ss__bar"></i><i class="ss__bar ss__bar--s"></i>
+              <span class="ss__link ss__hl"><span lang="ru">Подробнее</span><span lang="en">More info</span><b class="ss__n">1</b></span>
+              <div class="ss__btns"><span class="ss__btn"><span lang="ru">Не выполнять</span><span lang="en">Don't run</span></span></div>
+            </div>
+            <span class="ss__arrow" aria-hidden="true">→</span>
+            <div class="ss__dlg">
+              <p class="ss__title"><span lang="ru">Система Windows защитила ваш компьютер</span><span lang="en">Windows protected your PC</span></p>
+              <p class="ss__kv">
+                <span lang="ru">Приложение: POETH-Setup-0.1.0.exe<br>Издатель: неизвестный издатель</span>
+                <span lang="en">App: POETH-Setup-0.1.0.exe<br>Publisher: Unknown publisher</span>
+              </p>
+              <div class="ss__btns">
+                <span class="ss__btn ss__hl"><span lang="ru">Выполнить в любом случае</span><span lang="en">Run anyway</span><b class="ss__n">2</b></span>
+                <span class="ss__btn"><span lang="ru">Не выполнять</span><span lang="en">Don't run</span></span>
+              </div>
+            </div>
+          </div>
+          <figcaption class="ss__cap">
+            <span lang="ru">Схема окна Windows SmartScreen: сначала «Подробнее», потом «Выполнить в любом случае».</span>
+            <span lang="en">Diagram of the Windows SmartScreen window: first More info, then Run anyway.</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--band" id="safe" aria-labelledby="h-safe">
+    <div class="wrap">
+      <div class="sh">
+        <span class="orn" aria-hidden="true"></span>
+        <h2 id="h-safe"><span lang="ru">Почему это безопасно</span><span lang="en">Why it is safe</span></h2>
+      </div>
+      <div class="safe">
+        <div class="safe__item">
+          <span class="safe__ico"><svg class="ico" aria-hidden="true"><use href="#i-code"/></svg></span>
+          <div>
+            <h3><span lang="ru">Открытый код</span><span lang="en">Open source</span></h3>
+            <p>
+              <span lang="ru">Весь код лежит на GitHub под лицензией MIT. Установщик собирается из него автоматически, и проверить его может любой.</span>
+              <span lang="en">All code is on GitHub under the MIT license. The installer is built from it automatically, and anyone can check it.</span>
+            </p>
+          </div>
+        </div>
+        <div class="safe__item">
+          <span class="safe__ico"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg></span>
+          <div>
+            <h3><span lang="ru">Вход только на сайте GGG</span><span lang="en">Sign-in only on the GGG site</span></h3>
+            <p>
+              <span lang="ru">Вход нужен только для live-поиска. Вы входите на официальной странице pathofexile.com, пароль видит только сайт GGG. Прайс-чек, regex и сделки работают без входа.</span>
+              <span lang="en">You only need to sign in for live search. You sign in on the official pathofexile.com page, and only the GGG site sees your password. Price check, regex and deals work without signing in.</span>
+            </p>
+          </div>
+        </div>
+        <div class="safe__item">
+          <span class="safe__ico"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></span>
+          <div>
+            <h3><span lang="ru">Данные остаются у вас</span><span lang="en">Your data stays with you</span></h3>
+            <p>
+              <span lang="ru">Нет телеметрии, рекламы и своих серверов. POETH обращается только к сайту трейда pathofexile.com, к сервисам цен вроде poe.ninja и к GitHub за обновлениями.</span>
+              <span lang="en">No telemetry, no ads and no servers of our own. POETH only talks to the pathofexile.com trade site, price services such as poe.ninja, and GitHub for updates.</span>
+            </p>
+          </div>
+        </div>
+        <div class="safe__item">
+          <span class="safe__ico"><svg class="ico" aria-hidden="true"><use href="#i-keyboard"/></svg></span>
+          <div>
+            <h3><span lang="ru">Без ботов и авто-покупок</span><span lang="en">No bots, no auto-buying</span></h3>
+            <p>
+              <span lang="ru">Одно ваше действие — одно действие программы. POETH вставляет сообщение в чат игры, а Enter нажимаете вы. Так требуют правила GGG для сторонних программ.</span>
+              <span lang="en">One action from you is one action from the app. POETH pastes a message into game chat, and you press Enter. That is what GGG's rules for third-party tools require.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="features" aria-labelledby="h-features">
+    <div class="wrap">
+      <div class="sh">
+        <span class="orn" aria-hidden="true"></span>
+        <h2 id="h-features"><span lang="ru">Возможности</span><span lang="en">Features</span></h2>
+      </div>
+      <ul class="feats">
+        <li><div><b><span lang="ru">Прайс-чек по Ctrl+D.</span><span lang="en">Price check with Ctrl+D.</span></b> <span lang="ru">Свойства с тирами, похожие предложения и подсказка «почему такая цена».</span><span lang="en">Mods with tiers, similar listings and a “why this price” hint.</span><span class="tag">PoE 1</span><span class="tag">PoE 2</span></div></li>
+        <li><div><b><span lang="ru">Трейд-окно.</span><span lang="en">Trade window.</span></b> <span lang="ru">Официальный сайт трейда и папки избранных поисков рядом.</span><span lang="en">The official trade site with folders of saved searches beside it.</span><span class="tag">PoE 1</span></div></li>
+        <li><div><b><span lang="ru">Live-поиск.</span><span lang="en">Live search.</span></b> <span lang="ru">Уведомление о новой находке поверх игры и «Написать» в один клик.</span><span lang="en">New listings pop up over the game, with a one-click whisper.</span><span class="tag">PoE 1</span></div></li>
+        <li><div><b><span lang="ru">Менеджер сделок.</span><span lang="en">Deal manager.</span></b> <span lang="ru">Входящие и исходящие сделки, подсветка предмета в тайнике.</span><span lang="en">Incoming and outgoing deals, with the item highlighted in your stash.</span><span class="tag">PoE 1</span></div></li>
+        <li><div><b><span lang="ru">Regex для поиска в игре.</span><span lang="en">Regex for in-game search.</span></b> <span lang="ru">Строки для карт и торговца и своя библиотека строк.</span><span lang="en">Strings for maps and vendors, plus your own string library.</span><span class="tag">PoE 1</span></div></li>
+        <li><div><b><span lang="ru">Трекер кампании.</span><span lang="en">Campaign tracker.</span></b> <span lang="ru">Квесты по актам, награды и подсказки по зонам.</span><span lang="en">Quests by act, rewards and zone tips.</span><span class="tag">PoE 2</span></div></li>
+        <li><div><b><span lang="ru">Простой и экспертный режим.</span><span lang="en">Simple and expert modes.</span></b> <span lang="ru">Новичку — подписи и подсказки, опытному — тиры, роллы и min/max.</span><span lang="en">Labels and hints for beginners; tiers, rolls and min/max for veterans.</span></div></li>
+        <li><div><b><span lang="ru">Русский и английский.</span><span lang="en">Russian and English.</span></b> <span lang="ru">Интерфейс на двух языках, понимает предметы из обоих клиентов игры.</span><span lang="en">The interface comes in both languages and reads items from either game client.</span></div></li>
+        <li><div><b><span lang="ru">Обновляется сам.</span><span lang="en">Updates itself.</span></b> <span lang="ru">Новая версия приходит из GitHub Releases, POETH предложит её установить.</span><span lang="en">New versions come from GitHub Releases, and POETH offers to install them.</span></div></li>
+        <li><div><b><span lang="ru">Бесплатно для всех.</span><span lang="en">Free for everyone.</span></b> <span lang="ru">Без рекламы и платных функций, все версии открыты каждому.</span><span lang="en">No ads and no paid features; every version is open to everyone.</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec sec--band" id="faq" aria-labelledby="h-faq">
+    <div class="wrap">
+      <div class="sh">
+        <span class="orn" aria-hidden="true"></span>
+        <h2 id="h-faq"><span lang="ru">Частые вопросы</span><span lang="en">Questions</span></h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary><span><span lang="ru">Оверлей не появляется поверх игры</span><span lang="en">The overlay does not show over the game</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+          <div class="ans">
+            <p lang="ru">Включите в настройках графики игры режим «Окно» или «Окно без рамки». В полноэкранном режиме Windows не даёт другим программам рисовать поверх игры.</p>
+            <p lang="en">In the game's graphics settings, choose Windowed or Borderless windowed mode. In exclusive fullscreen, Windows does not let other programs draw over the game.</p>
+          </div>
+        </details>
+        <details>
+          <summary><span><span lang="ru">Ctrl+D ничего не делает</span><span lang="en">Ctrl+D does nothing</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+          <div class="ans">
+            <p lang="ru">Скорее всего, игра запущена от имени администратора. Windows не даёт обычной программе управлять таким окном. Запустите игру обычным способом или POETH тоже от администратора: правый клик по ярлыку → «Запуск от имени администратора». POETH сам предупредит, если заметит это.</p>
+            <p lang="en">Most likely the game is running as administrator. Windows does not let a normal program control such a window. Start the game normally, or start POETH as administrator too: right-click the shortcut → Run as administrator. POETH warns you when it detects this.</p>
+          </div>
+        </details>
+        <details>
+          <summary><span><span lang="ru">У меня русский клиент игры. Всё будет работать?</span><span lang="en">Does it work with the Russian game client?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+          <div class="ans">
+            <p lang="ru">Да. POETH понимает предметы и в русском, и в английском клиенте. Язык самого POETH выбирается отдельно в настройках.</p>
+            <p lang="en">Yes. POETH reads items from both the Russian and the English client. POETH's own language is set separately in its settings.</p>
+          </div>
+        </details>
+        <details>
+          <summary><span><span lang="ru">Чем отличается работа с PoE 1 и PoE 2?</span><span lang="en">What is the difference between PoE 1 and PoE 2?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+          <div class="ans">
+            <p lang="ru">Игра выбирается переключателем в шапке окна POETH. Для PoE 1 есть все функции трейда, для PoE 2 сейчас прайс-чек и трекер кампании.</p>
+            <p lang="en">You pick the game with the switch in the POETH window header. PoE 1 gets all trade features; PoE 2 currently has price check and the campaign tracker.</p>
+          </div>
+        </details>
+        <details>
+          <summary><span><span lang="ru">Windows пишет, что защитил компьютер. Это вирус?</span><span lang="en">Windows says it protected my PC. Is it a virus?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+          <div class="ans">
+            <p lang="ru">Нет. Так Windows реагирует на программы без платной цифровой подписи. Код POETH открыт, а установщик собирается на GitHub из этого кода. Что нажать, показано в разделе <a href="#install">«Установка»</a>.</p>
+            <p lang="en">No. This is how Windows reacts to programs without a paid code-signing certificate. POETH is open source, and the installer is built on GitHub from that code. See <a href="#install">Install</a> for what to click.</p>
+          </div>
+        </details>
+        <details>
+          <summary><span><span lang="ru">Это правда бесплатно? Что даёт подписка?</span><span lang="en">Is it really free? What does a subscription give?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+          <div class="ans">
+            <p lang="ru">Да, все функции и все версии доступны каждому. Подписка на Boosty только поддерживает разработку: девлоги, голосования и имя в «Благодарностях» в программе. Функций она не открывает.</p>
+            <p lang="en">Yes, every feature and every version is open to everyone. A Boosty subscription only supports development: devlogs, polls and your name in the app's credits. It does not unlock features.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="support" aria-labelledby="h-support">
+    <div class="wrap support">
+      <img class="support__mark" src="assets/brand/mark.svg" alt="" width="84" height="84">
+      <div>
+        <h2 id="h-support"><span lang="ru">Поддержать проект</span><span lang="en">Support the project</span></h2>
+        <p>
+          <span lang="ru">POETH бесплатный: без рекламы и платных функций. Если он помогает вам в игре, разработку можно поддержать на Boosty. Подписка не открывает функций, всё доступно каждому.</span>
+          <span lang="en">POETH is free, with no ads and no paid features. If it helps you in the game, you can support development on Boosty. A subscription unlocks nothing; everything is open to everyone.</span>
+        </p>
+      </div>
+      <a class="btn" href="https://boosty.to/twistedthreadstudios">
+        <svg class="ico" aria-hidden="true"><use href="#i-support"/></svg><span lang="ru">Поддержать на Boosty</span><span lang="en">Support on Boosty</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div>
+      <p lang="ru">POETH — неофициальный фанатский инструмент. Он не связан с Grinding Gear Games и не одобрен компанией. Path of Exile и Path of Exile 2 — товарные знаки Grinding Gear Games.</p>
+      <p lang="en">POETH is an unofficial fan-made tool. It is not affiliated with or endorsed by Grinding Gear Games. Path of Exile and Path of Exile 2 are trademarks of Grinding Gear Games.</p>
+      <p>© 2026 POETH contributors · MIT</p>
+    </div>
+    <nav class="foot__links" aria-label="Ссылки / Links">
+      <a href="https://github.com/MAYZOSUPER/POETH">GitHub</a>
+      <a href="https://github.com/MAYZOSUPER/POETH/releases"><span lang="ru">Релизы</span><span lang="en">Releases</span></a>
+      <a href="https://github.com/MAYZOSUPER/POETH/blob/main/LICENSE"><span lang="ru">Лицензия</span><span lang="en">License</span></a>
+      <a href="https://github.com/MAYZOSUPER/POETH/blob/main/NOTICE.md"><span lang="ru">Атрибуция</span><span lang="en">Notices</span></a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
