@@ -127,6 +127,10 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ исправления по живой проверке пользователя: `s1-popup-fixes` (`8abf290`: окно цены не исчезает при работе,
+  перетаскивание за шапку и «где оставил», тосты Windows в dev выключены), `s4-fixes` (`9218320`: умолчания фильтров по типу,
+  «Искать заново» + Enter, курс chaos↔divine с дробями, IPC `trade.currencyRate`), `s5-fixes` (`9dfae35`: трейд-окно поверх игры
+  по образцу PoE Overlay, вход через Steam внутри окна — подтверждено пользователем). 1267 тестов.
 - _(лид, 28.10)_ слиты `s11b-ui` (`a8cb8ed`: правки дизайнера по трекеру карт, панель/виджет на `ui-*`) и `s10c-toast`
   (`c52a5dc`: ProductName exe «POE Trade Helper» — один ярлык и шапка тостов, portable без тостов Windows, деинсталлятор чистит
   ключ `Electron Notification Activator`; следы тестов в «Пуске»/HKCU удалены с разрешения пользователя). 1238 тестов.
