@@ -65,7 +65,7 @@ export const farm: DomainDict = {
       'Забег — от входа в карту до входа в другую карту: порталы туда-обратно и возвращение после смерти — та же карта. В группе считаются смерти всех, кто в зоне.',
     'farm.widget.toggle': 'Виджет поверх игры',
     'farm.widget.hint':
-      'Во время сессии — тонкая полоса сверху по центру: таймер карты, карт за сессию, доход в час. Тянется за «⋮⋮»; клики проходят в игру везде, кроме двух кнопок.',
+      'Выключен по умолчанию. «Скрыть» на виджете выключает его снова. Во время сессии — полоса сверху по центру: таймер карты, карт за сессию, доход в час; тянется за «⋮⋮», клики проходят в игру везде, кроме двух кнопок.',
     'farm.log.off':
       'Лог игры не найден — трекер не видит входы в карты. Выберите Client.txt во вкладке «Сделки» → История.',
     'farm.log.unsupported': 'Трекер карт пока работает только в PoE 1.',
@@ -142,9 +142,9 @@ export const farm: DomainDict = {
     'farm.runs.remove': 'Remove from history',
     'farm.how':
       'A run lasts from entering a map until you enter a different one: portals back and forth and coming back after a death are the same map. In a party, deaths of everyone in the zone count.',
-    'farm.widget.toggle': 'Overlay widget',
+    'farm.widget.toggle': 'Widget over the game',
     'farm.widget.hint':
-      'During a session — a thin strip at the top centre: map timer, maps this session, income per hour. Drag it by «⋮⋮»; clicks pass through to the game except on its two buttons.',
+      'Off by default. Hide on the widget turns it off again. During a session — a strip at the top centre: map timer, maps this session, income per hour; drag it by «⋮⋮», clicks pass through to the game except on its two buttons.',
     'farm.log.off':
       'Game log not found — the tracker cannot see map entries. Pick Client.txt in the Trades tab → History.',
     'farm.log.unsupported': 'The map tracker works in PoE 1 only for now.',

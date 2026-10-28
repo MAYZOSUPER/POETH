@@ -129,7 +129,9 @@ function IdleView({ state }: { state: FarmState }) {
                   <td className="fm-num-l">{clock(s.stats.durationMs)}</td>
                   <td className="fm-num">{s.stats.maps}</td>
                   <td className="fm-num">
-                    {s.stats.profitPerHour !== null ? t('farm.chaos', { n: chaos(s.stats.profitPerHour, lang) }) : '—'}
+                    {s.stats.profitPerHour !== null
+                      ? income(s.stats.profitPerHour, latestDivineRate(state.runs.filter((r) => r.sessionId === s.id)), lang).main
+                      : '—'}
                   </td>
                   <td className={`fm-num fm-profit${s.stats.profitChaos !== null && s.stats.profitChaos < 0 ? ' fm-loss' : ''}`}>
                     {s.stats.profitChaos !== null ? t('farm.chaos', { n: chaos(s.stats.profitChaos, lang, true) }) : '—'}
