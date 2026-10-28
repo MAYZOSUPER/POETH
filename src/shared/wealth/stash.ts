@@ -51,6 +51,8 @@ export interface StashTabInfo {
   type: string
   colour?: string
   unsupported?: boolean
+  /** вкладка «только изъятие» (после конца лиги) — по умолчанию не считается */
+  removeOnly?: boolean
 }
 
 /** Предмет стэша в нормализованном виде (английские имена). */
@@ -79,6 +81,13 @@ export interface ParsedStash {
 
 /** Типы вкладок, содержимое которых legacy-эндпоинт не отдаёт (или это не вкладка). */
 export const UNSUPPORTED_TAB_TYPES: ReadonlySet<string> = new Set(['MapStash', 'UniqueStash', 'Folder'])
+
+const REMOVE_ONLY_RE = /remove[-\s]?only|только\s+(для\s+)?(изъяти[ея]|сняти[ея]|забрать)/i
+
+/** Вкладка «только изъятие» — по имени (сайт дописывает «(Remove-only)»). */
+export function isRemoveOnlyName(name: string): boolean {
+  return REMOVE_ONLY_RE.test(name)
+}
 
 /** Убрать разметку сайта `<<set:MS>><<set:M>><<set:S>>` из имён. */
 export function cleanName(v: unknown): string {
@@ -177,6 +186,7 @@ export function parseStashTab(raw: RawStashTab): StashTabInfo | null {
   const colour = colourOf(raw.colour)
   if (colour) tab.colour = colour
   if (UNSUPPORTED_TAB_TYPES.has(type)) tab.unsupported = true
+  if (isRemoveOnlyName(tab.name)) tab.removeOnly = true
   return tab
 }
 

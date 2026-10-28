@@ -14,6 +14,8 @@ export interface WealthTab {
   colour?: string
   /** содержимое сайт через legacy-эндпоинт не отдаёт (MapStash, UniqueStash, папка) */
   unsupported?: boolean
+  /** «только изъятие» — по умолчанию не считается */
+  removeOnly?: boolean
   selected: boolean
 }
 
@@ -161,6 +163,11 @@ export interface WealthDiffLine {
   corrupted?: boolean
   qtyDelta: number
   chaosDelta: number
+  /** цена штуки и источник (из снимка «после», для пропавшего — «до») */
+  unit?: number
+  source?: PriceSourceId
+  low?: boolean
+  reason?: UnpricedReason
 }
 
 export interface WealthDiff {
@@ -219,6 +226,20 @@ export interface WealthState {
   nextAutoAt?: number
   /** сессией фарма управляет трекер карт S11b (свои кнопки «Начать/Стоп» не показываем) */
   farmLinked?: boolean
+  /** изменение за сутки (или с первого снимка, если истории меньше суток) */
+  delta?: WealthDelta
+  /** изменение за сутки по вкладкам (id → chaos) */
+  tabDelta?: Record<string, number>
+  /** «Обновить» снова доступно с этого момента (не чаще раза в минуту) */
+  refreshAt?: number
+}
+
+export interface WealthDelta {
+  chaos: number
+  /** в процентах от стоимости в начале; null — начало было 0 */
+  pct: number | null
+  /** от какого момента считали */
+  fromAt: number
 }
 
 export type WealthResult = { ok: true } | { ok: false; error: WealthError }

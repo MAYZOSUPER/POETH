@@ -58,13 +58,14 @@ describe('хранилище учёта богатства', () => {
     expect(a).toMatch(/^[0-9a-z]{9}-[0-9a-z]{4}$/)
   })
 
-  it('настройки: мусор → значения по умолчанию, интервал в пределах 15–60', async () => {
+  it('настройки: мусор → значения по умолчанию (авто включено), интервал в пределах 15–60', async () => {
     const cfg = sanitizeConfig({ options: { autoEnabled: 'yes', autoIntervalMin: 3 }, selected: { L: ['a', 5] }, session: { league: 1 } })
-    expect(cfg.options).toEqual({ autoEnabled: false, autoIntervalMin: 15, poeWatch: true })
+    expect(cfg.options).toEqual({ autoEnabled: true, autoIntervalMin: 15, poeWatch: true })
+    expect(sanitizeConfig({ options: { autoEnabled: false } }).options.autoEnabled).toBe(false)
     expect(cfg.selected).toEqual({ L: ['a'] })
     expect(cfg.session).toBeNull()
     const store = new WealthStore(tmp())
-    expect((await store.loadConfig()).options.autoIntervalMin).toBe(20)
+    expect((await store.loadConfig()).options).toEqual({ autoEnabled: true, autoIntervalMin: 15, poeWatch: true })
     await store.saveConfig({ ...cfg, accountName: 'Exile_Example#1234' })
     expect((await store.loadConfig()).accountName).toBe('Exile_Example#1234')
   })

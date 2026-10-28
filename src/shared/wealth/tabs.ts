@@ -27,7 +27,7 @@ const PRIORITY_TYPES = [
  * по порядку; без вкладок, которые сайт не отдаёт; не больше max.
  */
 export function defaultTabSelection(tabs: readonly StashTabInfo[], max = DEFAULT_MAX_TABS): string[] {
-  const ok = tabs.filter((t) => !t.unsupported)
+  const ok = tabs.filter((t) => !t.unsupported && !t.removeOnly)
   const rank = (t: StashTabInfo): number => {
     const i = PRIORITY_TYPES.indexOf(t.type)
     return i < 0 ? PRIORITY_TYPES.length : i
@@ -50,6 +50,25 @@ export function reconcileSelection(tabs: readonly StashTabInfo[], saved: readonl
     .sort((a, b) => a.index - b.index)
     .slice(0, HARD_MAX_TABS)
     .map((t) => t.id)
+}
+
+/**
+ * Новый список вкладок + прежний выбор: исчезнувшие выпадают, появившиеся вкладки включаются
+ * (кроме «только изъятие» и тех, что сайт не отдаёт) — так по макету «новые вкладки включены».
+ * Выбора ещё не было — выбор по умолчанию.
+ */
+export function mergeTabSelection(
+  prev: readonly StashTabInfo[] | null,
+  next: readonly StashTabInfo[],
+  saved: readonly string[] | null
+): string[] {
+  if (saved === null) return defaultTabSelection(next)
+  const want = new Set(saved)
+  if (prev) {
+    const known = new Set(prev.map((t) => t.id))
+    for (const t of next) if (!known.has(t.id) && !t.unsupported && !t.removeOnly) want.add(t.id)
+  }
+  return reconcileSelection(next, [...want])
 }
 
 // ---------------------------------------------------------------- имя аккаунта
@@ -92,7 +111,8 @@ export const STASH_DEFAULT_WINDOWS: readonly BudgetWindow[] = [
 export const STASH_RESERVE = 0.25
 export const MIN_AUTO_INTERVAL_MIN = 15
 export const MAX_AUTO_INTERVAL_MIN = 60
-export const DEFAULT_AUTO_INTERVAL_MIN = 20
+/** по макету: «раз в 15 минут, пока открыт POETH» (фактически — не чаще лимита сайта) */
+export const DEFAULT_AUTO_INTERVAL_MIN = 15
 
 /**
  * Минимальный интервал авто-снимков (мин), чтобы `requests` запросов на снимок укладывались

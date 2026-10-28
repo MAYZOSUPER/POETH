@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { describe, expect, it } from 'vitest'
-import { cleanName, maxLinks, parseStashResponse } from '../../src/shared/wealth/stash'
+import { cleanName, isRemoveOnlyName, maxLinks, parseStashResponse } from '../../src/shared/wealth/stash'
 
 // Фикстуры — вымышленные вкладки и предметы в формате legacy-эндпоинта (без имён аккаунтов).
 const fixture = (name: string): unknown => JSON.parse(readFileSync(join(__dirname, '../fixtures/wealth', name), 'utf8'))
@@ -56,5 +56,15 @@ describe('разбор ответа стэша', () => {
     expect(cleanName(5)).toBe('')
     expect(maxLinks([{ group: 0 }, { group: 0 }, { group: 1 }, { group: 1 }, { group: 1 }])).toBe(3)
     expect(maxLinks(undefined)).toBe(0)
+  })
+})
+
+describe('вкладки «только изъятие»', () => {
+  it('по имени: EN и RU', () => {
+    expect(isRemoveOnlyName('Dump (Remove-only)')).toBe(true)
+    expect(isRemoveOnlyName('Склад (только изъятие)')).toBe(true)
+    expect(isRemoveOnlyName('Remove')).toBe(false)
+    const r = parseStashResponse({ numTabs: 1, tabs: [{ n: '1 (Remove-only)', i: 0, id: 'abc123', type: 'PremiumStash' }], items: [] })
+    expect(r?.tabs?.[0].removeOnly).toBe(true)
   })
 })

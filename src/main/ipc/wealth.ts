@@ -118,7 +118,7 @@ function register(): void {
   handle(IPC.wealth.setTabs, (ids) => m().setTabs(ids))
   handle(IPC.wealth.setAccount, (name) => m().setAccount(name))
   handle(IPC.wealth.setOptions, (patch) => m().setOptions(patch))
-  handle(IPC.wealth.snapshot, () => m().snapshot(true))
+  handle(IPC.wealth.snapshot, () => m().refresh())
   handle(IPC.wealth.startFarm, () => m().startFarm())
   handle(IPC.wealth.stopFarm, () => m().stopFarm())
   handle(IPC.wealth.detail, (id) => m().detail(id))

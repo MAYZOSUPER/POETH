@@ -137,7 +137,7 @@ export function diffSnapshots(from: WealthSnapshot, to: WealthSnapshot, limit = 
     if (qtyDelta === 0 && Math.abs(chaosDelta) < 0.01) continue
     const src = (b ?? a) as WealthLine
     const line: WealthDiffLine = { key, name: src.name, ns: src.ns, qtyDelta, chaosDelta }
-    for (const f of ['links', 'gemLevel', 'gemQuality', 'mapTier', 'corrupted'] as const) {
+    for (const f of ['links', 'gemLevel', 'gemQuality', 'mapTier', 'corrupted', 'unit', 'source', 'low', 'reason'] as const) {
       if (src[f] !== undefined) (line as unknown as Record<string, unknown>)[f] = src[f]
     }
     lines.push(line)
