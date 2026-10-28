@@ -846,6 +846,7 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
             ))}
           </select>
         )}
+        <PopupPositionButton />
         <button
           type="button"
           className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
@@ -856,7 +857,6 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
         >
           <Icon name="refresh" />
         </button>
-        <PopupPositionButton />
         <button
           type="button"
           className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"

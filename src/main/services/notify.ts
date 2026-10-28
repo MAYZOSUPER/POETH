@@ -47,8 +47,11 @@ export async function noticeText(key: NoticeKey, params?: Record<string, string 
  * Можно ли показывать уведомления Windows. Portable — нет: Electron 40 при первом уведомлении (и уже при
  * Notification.isSupported — он создаёт NotificationPresenter) ставит в «Пуск» ярлык и COM-ключ активатора
  * на распакованную копию во %TEMP% (windows_toast_activator.cc). У portable — только сообщения поверх игры.
+ * POETH_NO_WINDOWS_TOASTS=1 — то же для автопроверок (tools/**): они не оставляют в «Пуске» ярлык на exe из
+ * worktree / dist-release и COM-ключ в реестре пользователя.
  */
 export function windowsToastsAllowed(): boolean {
+  if (process.env.POETH_NO_WINDOWS_TOASTS === '1') return false
   return !portableExe() && Notification.isSupported()
 }
 

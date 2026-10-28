@@ -241,7 +241,8 @@ async function main() {
 
   const appArgs = [`--remote-debugging-port=${CDP_PORT}`, ...CHROMIUM]
   if (SCALE) appArgs.push(`--force-device-scale-factor=${SCALE}`)
-  const env = { ...process.env, POETH_USER_DATA_DIR: PROFILE, POETH_SAVE_CAPTURES: '1', POETH_GAME_LOG: GAME_LOG }
+  // без тостов Windows: Electron при первом тосте ставит в «Пуск» ярлык и COM-ключ на exe проверки
+  const env = { ...process.env, POETH_USER_DATA_DIR: PROFILE, POETH_SAVE_CAPTURES: '1', POETH_GAME_LOG: GAME_LOG, POETH_NO_WINDOWS_TOASTS: '1' }
   if (DEV) {
     // electron-vite dev: dev-сервер renderer + hot reload; аргументы для Electron — после «--»
     poeth = spawn(process.execPath, [path.join(ROOT, 'node_modules/electron-vite/bin/electron-vite.js'), 'dev', '--', ...appArgs], {
@@ -494,7 +495,7 @@ async function main() {
     await sleep(600)
     check('курсор ушёл далеко после работы с окном — окно на месте', (await widgetText()) !== null)
     // кнопка в шапке (обновить) — окно и фокус остаются
-    const refresh = await center('.ov-pricecheck .ui-panel__head button:not(:last-of-type)')
+    const refresh = await center('.ov-pricecheck .ui-panel__head button:has(use[href="#i-refresh"])')
     if (refresh) await psCmd(`click ${refresh.x} ${refresh.y}`)
     await sleep(500)
     check('кнопка в окне нажата — окно и фокус остались', !!refresh && (await widgetText()) !== null && (await overlayState()).focus.overlay)
@@ -529,7 +530,7 @@ async function main() {
     const r2 = await rectOf()
     check('Ctrl+D открыл окно там же, где оставили', Math.abs(r2.left - r1.left) <= 2 && Math.abs(r2.top - r1.top) <= 2, `${r2.left},${r2.top} / ${r1.left},${r1.top}`)
     // «вернуть к курсору» (кнопка видна только у перетащенного окна)
-    const home = await center('.ov-pricecheck .ui-panel__head button:nth-last-of-type(2)')
+    const home = await center('.ov-pricecheck [data-popup-home]')
     if (home) await psCmd(`click ${home.x} ${home.y}`)
     await sleep(400)
     const s2 = (await evaluate('window.overlayApi.settings.get()')).overlay

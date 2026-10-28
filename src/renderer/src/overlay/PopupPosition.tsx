@@ -16,6 +16,7 @@ export function PopupPositionButton() {
       className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
       title={t('overlay.popup.toCursor')}
       aria-label={t('overlay.popup.toCursor')}
+      data-popup-home
       onClick={() => useOverlayStore.getState().setPricePlacement(null)}
     >
       <Icon name="compass" />
