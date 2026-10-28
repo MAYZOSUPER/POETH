@@ -59,6 +59,7 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 | `.ui-chip` | фильтр-переключатель, `aria-pressed` |
 | `.ui-seg` | взаимоисключающий выбор: кнопки внутри с `aria-pressed` |
 | `.ui-input` (`--num`, `--lg`, `--mono`), `.ui-select`, `.ui-field` + `__label`, `__help`, `__error` | `aria-invalid="true"` для ошибки |
+| `button.ui-select` + `.ui-select__value`, `.ui-select__list` (`role="listbox"`) > `.ui-select__opt` (`aria-selected`, `.is-active`) + `__label`, `__hint` | выпадающий список `components/Select.tsx` вместо нативного `<select>` (тот рисует Windows — белый): тёмный, выбранный — золотая галочка, подсказка под пунктом; ↓ ↑ Home End Enter Esc |
 | `.ui-tabs` (`--main` для вкладок компаньона), `.ui-tab`, `.ui-count` (`--live`) | `role="tab" aria-selected`, `aria-disabled` |
 | `.ui-q`, `.ui-tip`, `.ui-hint`, `.ui-banner` (`--bad`, `--info`) | подсказки, объяснения новичку, баннеры лимита/ошибки |
 | `.ui-tier` (`--t1`, `--t3`), `.ui-roll` (`style="--v:78%"`), `.ui-tag` (`--merchant`, `--person`, `--good`, `--warn`, `--bad`), `.ui-coin` (`--div`, `--ex`, `--chaos`, `--gold`), `.ui-dot` (`--afk`, `--off`, `--bad`), `.ui-kbd` | мелкие метки |

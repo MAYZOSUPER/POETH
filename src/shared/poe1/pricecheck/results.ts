@@ -10,6 +10,20 @@ import type { NetError } from '../../types/auth'
 
 export type Poe1ListingKind = 'instant' | 'person'
 
+/** Редкость лота по `item.frameType` (relic — «фольговый» уник, на трейде своя редкость). */
+export type Poe1LotRarity = 'normal' | 'magic' | 'rare' | 'unique' | 'relic' | 'gem' | 'currency' | 'card' | 'other'
+
+/** Откуда мод лота (домен сайта): explicit, implicit, crafted, fractured, enchant… */
+export type LotModKind = 'enchant' | 'scourge' | 'implicit' | 'fractured' | 'explicit' | 'crafted' | 'veiled' | 'other'
+
+/** S21: мод предмета лота — текст на языке сайта и stat id трейда (по нему сравниваем с предметом игрока). */
+export interface LotMod {
+  kind: LotModKind
+  text: string
+  /** «explicit.stat_3299347043» — как id фильтров запроса; нет у модов без привязки к стату */
+  stat?: string
+}
+
 export interface Poe1Price {
   amount: number
   currency: string
@@ -41,6 +55,14 @@ export interface Poe1Listing {
   foulborn?: boolean
   /** S15: есть зачарование (`item.enchantMods`) — лабиринт, помазание и т.п. */
   enchanted?: boolean
+  /** S21: редкость (фильтр редкости в «Открыть лот») */
+  rarity?: Poe1LotRarity
+  /** S21: моды предмета для карточки «что продаёт и похоже ли на ваш» — из того же ответа fetch */
+  mods?: LotMod[]
+  /** S21: гнёзда как в игре: «R-G-B B» (связанные — через дефис) */
+  sockets?: string
+  /** S21: предмет не опознан (модов не видно) */
+  unidentified?: boolean
 }
 
 /** Сырой элемент ответа /api/trade/fetch (только используемые поля). */
@@ -56,15 +78,31 @@ export interface TradeFetchItem {
   item?: {
     ilvl?: number
     corrupted?: boolean
+    identified?: boolean
     name?: string
     typeLine?: string
     baseType?: string
-    sockets?: Array<{ group?: number } | null> | null
+    frameType?: number
+    sockets?: Array<{ group?: number; sColour?: string; attr?: string } | null> | null
     /** PoE1: true у Foulborn-уников (документация GGG, тип Item) */
     mutated?: boolean
-    enchantMods?: string[] | null
+    /**
+     * Моды: строки (классический ответ, stat id — в `extended.hashes[<домен>][i][0]` по порядку) или, как
+     * сейчас отдаёт сайт (проверено 29.10.2026), объекты `{description, domain, hash: 'stat.explicit.stat_…'}`;
+     * в `explicitMods` тогда и fractured, и crafted (по `domain`).
+     */
+    enchantMods?: SiteMod[] | null
+    scourgeMods?: SiteMod[] | null
+    implicitMods?: SiteMod[] | null
+    fracturedMods?: SiteMod[] | null
+    explicitMods?: SiteMod[] | null
+    craftedMods?: SiteMod[] | null
+    veiledMods?: SiteMod[] | null
+    extended?: { hashes?: Record<string, Array<[string, unknown]> | null> | null } | null
   }
 }
+
+type SiteMod = string | { description?: string; domain?: string; hash?: string } | null
 
 /** Самая длинная группа связей: гнёзда с одинаковым `group` связаны между собой. */
 function linksOf(sockets: unknown): number | undefined {
@@ -82,6 +120,72 @@ function siteText(s: unknown): string | undefined {
   if (typeof s !== 'string') return undefined
   const v = s.replace(/<<[^>]*>>/g, '').trim()
   return v || undefined
+}
+
+const FRAME: Record<number, Poe1LotRarity> = { 0: 'normal', 1: 'magic', 2: 'rare', 3: 'unique', 4: 'gem', 5: 'currency', 6: 'card', 9: 'relic' }
+
+/** Поля модов в порядке, как их показывает игра. */
+const MOD_FIELDS = [
+  ['enchantMods', 'enchant'],
+  ['scourgeMods', 'scourge'],
+  ['implicitMods', 'implicit'],
+  ['fracturedMods', 'fractured'],
+  ['explicitMods', 'explicit'],
+  ['craftedMods', 'crafted'],
+  ['veiledMods', 'veiled']
+] as const
+
+const MOD_KINDS = new Set<string>(MOD_FIELDS.map(([, k]) => k))
+/** Сколько модов держим на лот (карточка, сравнение) — защита от странного ответа. */
+const MAX_MODS = 40
+
+/** Текст мода: без разметки сайта (<<set:MS>>, [Тег|Подпись] → Подпись). */
+function modText(s: unknown): string | undefined {
+  return siteText(s)
+    ?.replace(/\[([^\]|]*)\|([^\]]*)\]/g, '$2')
+    .replace(/\[([^\]]*)\]/g, '$1')
+    .slice(0, 200)
+}
+
+/** Моды лота с stat id: из `hash` мода, иначе по порядку из `extended.hashes` того же домена. */
+function modsOf(item: NonNullable<TradeFetchItem['item']>): LotMod[] {
+  const hashes = item.extended?.hashes ?? {}
+  const seen: Record<string, number> = {}
+  const out: LotMod[] = []
+  for (const [field, fieldKind] of MOD_FIELDS) {
+    const list = item[field]
+    if (!Array.isArray(list)) continue
+    for (const m of list) {
+      const obj = typeof m === 'object' && m !== null ? m : null
+      const text = modText(obj ? obj.description : m)
+      if (!text) continue
+      const domain = typeof obj?.domain === 'string' && obj.domain ? obj.domain : fieldKind
+      const i = (seen[domain] = (seen[domain] ?? -1) + 1)
+      const fromList = hashes?.[domain]?.[i]?.[0]
+      const hash = typeof obj?.hash === 'string' && obj.hash ? obj.hash.replace(/^stat\./, '') : fromList
+      const kind = (MOD_KINDS.has(domain) ? domain : 'other') as LotModKind
+      out.push(typeof hash === 'string' && hash ? { kind, text, stat: hash } : { kind, text })
+      if (out.length >= MAX_MODS) return out
+    }
+  }
+  return out
+}
+
+/** Гнёзда как в игре: связанные через дефис, группы через пробел («R-G-B B»). */
+const ATTR_COLOUR: Record<string, string> = { S: 'R', D: 'G', I: 'B', G: 'W', A: 'A', DV: 'DV' }
+function socketsText(sockets: unknown): string | undefined {
+  if (!Array.isArray(sockets) || !sockets.length) return undefined
+  let out = ''
+  let group: unknown
+  for (const s of sockets as Array<{ group?: unknown; sColour?: unknown; attr?: unknown } | null>) {
+    if (!s) continue
+    const colour = typeof s.sColour === 'string' ? s.sColour : ATTR_COLOUR[String(s.attr)]
+    if (!colour) continue
+    out += out ? (s.group === group ? '-' : ' ') : ''
+    out += colour
+    group = s.group
+  }
+  return out || undefined
 }
 
 export function normalizeListing(r: TradeFetchItem): Poe1Listing {
@@ -112,8 +216,19 @@ export function normalizeListing(r: TradeFetchItem): Poe1Listing {
     baseType: siteText(item?.baseType) ?? siteText(item?.typeLine),
     links: linksOf(item?.sockets),
     foulborn: item ? item.mutated === true : undefined,
-    enchanted: item ? Array.isArray(item.enchantMods) && item.enchantMods.length > 0 : undefined
+    enchanted: item ? Array.isArray(item.enchantMods) && item.enchantMods.length > 0 : undefined,
+    ...(item ? lotItem(item) : {})
   }
+}
+
+/** S21: поля карточки лота — редкость, моды с stat id, гнёзда, «не опознан». */
+function lotItem(item: NonNullable<TradeFetchItem['item']>): Pick<Poe1Listing, 'rarity' | 'mods' | 'sockets' | 'unidentified'> {
+  const out: Pick<Poe1Listing, 'rarity' | 'mods' | 'sockets' | 'unidentified'> = { mods: modsOf(item) }
+  if (typeof item.frameType === 'number') out.rarity = FRAME[item.frameType] ?? 'other'
+  const sockets = socketsText(item.sockets)
+  if (sockets) out.sockets = sockets
+  if (item.identified === false) out.unidentified = true
+  return out
 }
 
 export interface PriceGroupSummary {

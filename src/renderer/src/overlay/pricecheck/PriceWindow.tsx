@@ -1,4 +1,4 @@
-import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import type { CapturedItem, GameInputResult, UiLang } from '@shared/types'
 import { ItemCategory, ItemRarity, type ParsedItem } from '@shared/poe1/parser'
 import {
@@ -27,6 +27,9 @@ import { convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck
 import { createClickGuard, lotActions, whisperCommand } from '@shared/poe1/pricecheck/lotActions'
 import type { Verdict, VerdictKind } from '@shared/poe1/pricecheck/verdict'
 import { VISIBLE_WARNINGS, type PriceWarning } from '@shared/poe1/pricecheck/warnings'
+import { compareLot, type LotComparison } from '@shared/poe1/pricecheck/compare'
+import { Select } from '../../components/Select'
+import { LotCard } from './LotCard'
 
 // Окно цены PoE1 по утверждённому макету (docs/design-system.md, классы ui-*): шапка с лигой, предмет,
 // свойства и псевдо-статы с галочками, фильтры предмета, вердикт и предупреждения (S15), сводка «честной
@@ -37,9 +40,10 @@ type T = (key: string, params?: Record<string, string | number>) => string
 
 const SHOW_LISTINGS = 5
 
-/** Поля ввода в пассивном оверлее: активировать оверлей (иначе клавиатура уйдёт в игру). */
+/** Поля ввода и списки в пассивном оверлее: активировать оверлей (иначе клавиатура уйдёт в игру). */
+const activateOverlay = (): void => void window.overlayApi.overlay.activate()
 const inputProps = {
-  onMouseDown: () => window.overlayApi.overlay.activate(),
+  onMouseDown: activateOverlay,
   onClick: (e: MouseEvent) => e.stopPropagation()
 }
 
@@ -52,13 +56,22 @@ function openInTradeWindow(target: TradeWindowTarget): void {
   void window.overlayApi.tradeWindow.open({ game: 'poe1', ...target })
 }
 
+const LOT_RARITY = new Set(['normal', 'magic', 'rare', 'unique'])
+
 /**
- * «Открыть лот»: трейд-окно поверх игры сразу на этом лоте (продавец + имя + база + ilvl) в лиге поиска.
- * Лигу берём из окна, а не из адреса: длинные id поиска (H4sI…) адрес избранного не разбирает.
+ * «Открыть лот»: трейд-окно поверх игры на этом лоте — исходный поиск окна (его сайт уже принял, лот в
+ * выдаче), суженный до продавца и ilvl лота (S21: в rc.7 запрос с именем редкого сайт отвергал). Не вышло
+ * сузить — исходный поиск как есть (url). Лигу берём из окна: длинные id поиска адрес избранного не разбирает.
  */
-function openListing(l: Poe1Listing, siteUrl: string, league: string): void {
+function openListing(l: Poe1Listing, siteUrl: string, league: string, query: unknown): void {
   if (!l.baseType || !league) return openInTradeWindow({ url: siteUrl })
-  openInTradeWindow({ lot: { account: l.accountName, name: l.itemName, typeLine: l.baseType, ilvl: l.itemLevel }, league })
+  const rarity = l.rarity && LOT_RARITY.has(l.rarity) ? (l.rarity as 'normal' | 'magic' | 'rare' | 'unique') : undefined
+  openInTradeWindow({
+    lot: { account: l.accountName, name: l.itemName, typeLine: l.baseType, ilvl: l.itemLevel, rarity },
+    query: typeof query === 'object' && query !== null ? (query as Record<string, unknown>) : undefined,
+    url: siteUrl,
+    league
+  })
 }
 
 /** Название поиска для избранного и live: имя предмета [+ база], как в шапке окна. */
@@ -531,21 +544,17 @@ function ItemFiltersRow({ filters, item, t }: { filters: ItemFilters; item: Pars
             {t(`pc1.f.influence.${inf.value}`)}
           </Chip>
         ))}
-        <label className="pc-status" title={t(`pc1.status.${status}.hint`)}>
+        <span className="pc-status">
           <span className="ui-label">{t('pc1.seller')}</span>
-          <select
-            className="ui-select"
+          {/* S21: свой список вместо нативного — тёмный, с подсказкой к каждому пункту (что за статус сайта) */}
+          <Select<TradeStatus>
             value={status}
-            onChange={(e) => setStatus(e.target.value as TradeStatus)}
-            {...inputProps}
-          >
-            {TRADE_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {t(`pc1.status.${s}`)}
-              </option>
-            ))}
-          </select>
-        </label>
+            label={t('pc1.seller')}
+            options={TRADE_STATUSES.map((s) => ({ value: s, label: t(`pc1.status.${s}`), hint: t(`pc1.status.${s}.hint`) }))}
+            onChange={setStatus}
+            onOpen={activateOverlay}
+          />
+        </span>
       </div>
     </>
   )
@@ -600,9 +609,40 @@ const writeGuard = createClickGuard()
 
 type WriteNote = { ok: true; sent: boolean } | { ok: false; reason: Exclude<GameInputResult, 'ok'>; copied: boolean }
 
-function ListingRow({ l, siteUrl, lang, t }: { l: Poe1Listing; siteUrl: string; lang: UiLang; t: T }) {
+/** S21: строка лота знает о своей карточке: наведение/фокус — показать, клик/Enter по «похоже» — закрепить. */
+interface LotCardProps {
+  cmp?: LotComparison
+  cardId: string
+  /** карточка этого лота сейчас на экране */
+  shown: boolean
+  pinned: boolean
+  onShow: (el: HTMLElement) => void
+  onHide: () => void
+  onTogglePin: (el: HTMLElement) => void
+}
+
+/** Элементы строки со своим действием: клик по ним не закрепляет карточку. */
+const OWN_CLICK = 'button, a, input, [data-tip]'
+
+function ListingRow({
+  l,
+  siteUrl,
+  query,
+  card,
+  lang,
+  t
+}: {
+  l: Poe1Listing
+  siteUrl: string
+  query: unknown
+  card: LotCardProps
+  lang: UiLang
+  t: T
+}) {
   const sendWhisper = usePriceCheckStore((s) => s.sendWhisper)
   const league = usePriceCheckStore((s) => s.league)
+  const simple = usePriceCheckStore((s) => s.simple)
+  const rowRef = useRef<HTMLDivElement>(null)
   const [note, setNote] = useState<WriteNote | null>(null)
   const acts = lotActions(l)
   const age = ageKey(l.indexed)
@@ -640,10 +680,34 @@ function ListingRow({ l, siteUrl, lang, t }: { l: Poe1Listing; siteUrl: string; 
     const copied = await window.overlayApi.trade.copyText(cmd.text).catch(() => false)
     setNote({ ok: false, reason: res, copied })
   }
-  const open = (): void => openListing(l, siteUrl, league)
+  const open = (): void => openListing(l, siteUrl, league, query)
+  const { cmp } = card
+  const toggle = (): void => {
+    if (rowRef.current) card.onTogglePin(rowRef.current)
+  }
+  const simShort = cmp && cmp.total > 0 ? `${cmp.matched}/${cmp.total}` : ''
 
   return (
-    <div className="ui-listing">
+    <div
+      ref={rowRef}
+      className={`ui-listing pc-lot${card.shown ? ' is-shown' : ''}${card.pinned ? ' is-pinned' : ''}`}
+      onMouseEnter={cmp ? (e) => card.onShow(e.currentTarget) : undefined}
+      onMouseLeave={cmp ? card.onHide : undefined}
+      onFocus={cmp ? (e) => card.onShow(e.currentTarget) : undefined}
+      onBlur={cmp ? (e) => !e.currentTarget.contains(e.relatedTarget as Node | null) && card.onHide() : undefined}
+      onClick={cmp ? (e) => !(e.target as Element).closest(OWN_CLICK) && toggle() : undefined}
+      onKeyDown={
+        cmp
+          ? (e) => {
+              if (e.key === 'Escape' && card.pinned) {
+                e.preventDefault()
+                e.stopPropagation()
+                toggle()
+              }
+            }
+          : undefined
+      }
+    >
       <span className="ui-listing__price">{l.price ? <Price price={l.price} lang={lang} /> : '—'}</span>
       <span className="ui-listing__meta">
         <span className="ui-listing__who">
@@ -658,6 +722,25 @@ function ListingRow({ l, siteUrl, lang, t }: { l: Poe1Listing; siteUrl: string; 
         <span>
           {status}
           {age && <> · {t(age[0], age[1])}</>}
+          {cmp && (
+            <>
+              {' · '}
+              {/* «похоже 4/6» — и сводка, и кнопка карточки для клавиатуры (Tab → видно, Enter → закрепить) */}
+              <button
+                type="button"
+                className="pc-sim"
+                data-full={(cmp.total > 0 && cmp.matched === cmp.total) || undefined}
+                aria-expanded={card.pinned}
+                aria-controls={card.shown ? card.cardId : undefined}
+                aria-describedby={card.shown ? card.cardId : undefined}
+                title={t('pc1.lot.sim.help')}
+                onClick={toggle}
+              >
+                <Icon name="layers" />
+                {simShort ? (simple ? t('pc1.lot.sim', { n: cmp.matched, m: cmp.total }) : simShort) : t('pc1.lot.item')}
+              </button>
+            </>
+          )}
         </span>
         {l.fee != null && (
           <TipAnchor className="ui-listing__fee ui-cur" tip={<CurrencyTipBody tag="gold" lang={lang} />}>
@@ -893,12 +976,43 @@ function WarningList({ list, t }: { list: PriceWarning[]; t: T }) {
   )
 }
 
+/** Карточка на экране: лот и строка, напротив которой она стоит. */
+type CardAt = { id: string; el: HTMLElement }
+
 function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { kind: 'trade' }>; simple: boolean; lang: UiLang; t: T }) {
   const [all, setAll] = useState(false)
+  const mine = usePriceCheckStore((s) => s.mine)
+  const readLotValue = usePriceCheckStore((s) => s.readLotValue)
+  // наведение/фокус показывает карточку лота, клик закрепляет; наведение на другой лот закреплённую подменяет
+  const [hover, setHover] = useState<CardAt | null>(null)
+  const [pinned, setPinned] = useState<CardAt | null>(null)
+  const cardDomId = useId()
   const conf = result.honest.confidence
   const outliers = new Set([...result.honest.instant.outliers, ...result.honest.person.outliers])
   const rows = result.listings.filter((l) => !outliers.has(l.id))
   const shown = all ? rows : rows.slice(0, SHOW_LISTINGS)
+  // S21: сравнение лота с предметом игрока — из того же ответа fetch, без запросов
+  const compared = useMemo(
+    () => new Map(result.listings.filter((l) => l.mods).map((l) => [l.id, compareLot(mine, l.mods!, readLotValue)])),
+    [result.listings, mine, readLotValue]
+  )
+  // новый поиск — карточки снимаем
+  useEffect(() => {
+    setHover(null)
+    setPinned(null)
+  }, [result.listings])
+  const card = hover ?? pinned
+  const cardLot = card ? result.listings.find((l) => l.id === card.id) : undefined
+  const cardCmp = card ? compared.get(card.id) : undefined
+  const cardProps = (l: Poe1Listing): LotCardProps => ({
+    cmp: compared.get(l.id),
+    cardId: cardDomId,
+    shown: card?.id === l.id,
+    pinned: pinned?.id === l.id,
+    onShow: (el) => setHover({ id: l.id, el }),
+    onHide: () => setHover((h) => (h?.id === l.id ? null : h)),
+    onTogglePin: (el) => setPinned((p) => (p?.id === l.id ? null : { id: l.id, el }))
+  })
   return (
     <>
       <VerdictPlate v={result.verdict} bulk={false} timeless={false} simple={simple} lang={lang} t={t} />
@@ -931,9 +1045,21 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
         </div>
         <div className="pc-listings ui-scroll">
           {shown.map((l) => (
-            <ListingRow key={l.id} l={l} siteUrl={result.siteUrl} lang={lang} t={t} />
+            <ListingRow key={l.id} l={l} siteUrl={result.siteUrl} query={result.query} card={cardProps(l)} lang={lang} t={t} />
           ))}
         </div>
+        {card && cardLot && cardCmp && (
+          <LotCard
+            id={cardDomId}
+            l={cardLot}
+            cmp={cardCmp}
+            anchor={card.el}
+            pinned={pinned?.id === card.id}
+            simple={simple}
+            lang={lang}
+            t={t}
+          />
+        )}
         {rows.length > SHOW_LISTINGS && (
           <div className="pc-more">
             <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" onClick={() => setAll((v) => !v)}>
@@ -1163,7 +1289,9 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
   // Enter — искать заново с изменёнными фильтрами (клавиши доходят до окна, когда оверлей активен)
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key !== 'Enter' || e.repeat || e.isComposing) return
+      if (e.key !== 'Enter' || e.repeat || e.isComposing || e.defaultPrevented) return
+      // Enter на кнопке (в т.ч. «похоже» у лота) и в списке — их собственное действие, не поиск
+      if (e.target instanceof Element && e.target.closest('button, [role="listbox"]')) return
       const st = usePriceCheckStore.getState()
       if (!st.item || st.phase === 'loading' || st.phase === 'parsing') return
       e.preventDefault()
@@ -1180,19 +1308,14 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
         <span className="ui-panel__title">{t('pc1.title')}</span>
         <RateBadge lang={lang} t={t} />
         {leagues.length > 0 && (
-          <select
-            className="ui-select pc-league"
-            aria-label={t('pc1.league')}
+          <Select
+            className="pc-league"
+            label={t('pc1.league')}
             value={league}
-            onChange={(e) => setLeague(e.target.value)}
-            {...inputProps}
-          >
-            {leagues.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.text}
-              </option>
-            ))}
-          </select>
+            options={leagues.map((l) => ({ value: l.id, label: l.text }))}
+            onChange={setLeague}
+            onOpen={activateOverlay}
+          />
         )}
         <PopupPositionButton />
         <button
