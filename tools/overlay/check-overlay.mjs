@@ -189,21 +189,25 @@ const widgetText = () => evaluate("window.overlayApi.overlay.getState().then(s =
  * скелетона) и два замера подряд совпали. Окно растёт с результатами и прижимается внутрь — ранний
  * замер попадал мимо кнопки (диагностика 28.10: клик по ✕ пришёлся на «Показать ещё»).
  */
-async function stableCenter(sel, ms = 4000) {
+async function stableCenter(sel, ms = 12000) {
   const measure = () =>
     evaluate(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null;
-      if (document.querySelector('.ov-pricecheck .ui-skeleton')) return 'loading';
       const r = e.getBoundingClientRect();
-      return { x: Math.round((window.screenX + r.left + r.width / 2) * devicePixelRatio), y: Math.round((window.screenY + r.top + r.height / 2) * devicePixelRatio) } })()`)
+      return { x: Math.round((window.screenX + r.left + r.width / 2) * devicePixelRatio), y: Math.round((window.screenY + r.top + r.height / 2) * devicePixelRatio),
+        loading: !!document.querySelector('.ov-pricecheck .ui-skeleton') } })()`)
   const until = Date.now() + ms
   let last = null
+  let same = 0
   while (Date.now() < until) {
     const p = await measure()
-    if (p && p !== 'loading' && last && p.x === last.x && p.y === last.y) return p
-    last = p && p !== 'loading' ? p : null
+    if (!p) return null
+    same = last && p.x === last.x && p.y === last.y ? same + 1 : 0
+    last = p
+    // загрузилось и стоит на месте — сразу; сайт трейда медленный — хватит неподвижности 3 замера подряд
+    if ((!p.loading && same >= 1) || same >= 3) return { x: p.x, y: p.y }
     await sleep(200)
   }
-  return last
+  return last && { x: last.x, y: last.y }
 }
 const widgetBadge = () => evaluate("document.querySelector('.ov-pricecheck .pc-item .ui-tag')?.textContent ?? null")
 
