@@ -213,8 +213,12 @@
 .ad-title h3 { overflow-wrap: anywhere; }
 .ad-fresh { flex-wrap: wrap; }
 .ad-foot .ui-btn { flex: none; }
-/* диалоги лежат вне контейнера вкладки: их тело — свой контейнер (карточка предпросмотра в «Импорте») */
+/* диалоги лежат вне контейнера вкладки: их тело — свой контейнер (карточка предпросмотра в «Импорте»).
+   Подложка — обычный блок: в гриде подложки колонка растягивалась по содержимому, и узкое окно резало диалог слева */
+.ad-host .ui-dialog-scrim { display: block; }
+.ad-host .ui-dialog { min-width: 0; max-width: 100%; margin-inline: auto; }
 .ad-host .ui-dialog__body { min-width: 0; container-type: inline-size; }
+.ad-cat .ad-xs { overflow-wrap: anywhere; }
 .ad-host .ui-dialog__foot > * { min-width: 0; }
 
 @container (max-width: 640px) {

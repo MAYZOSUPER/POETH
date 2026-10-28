@@ -261,7 +261,7 @@ function LineRows({
                 {t('advisor.own')}
               </label>
             ) : (
-              <span />
+              <span className="ad-irow__own" />
             )}
             <button type="button" className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm" aria-label={t('advisor.ed.remove')} title={t('advisor.ed.remove')} onClick={() => onChange(lines.filter((_, j) => j !== i))}>
               <AIco name="close" size="sm" />
