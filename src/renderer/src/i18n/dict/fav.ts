@@ -81,8 +81,11 @@ export const fav: DomainDict = {
     'tw.inBrowser': 'В браузере',
     'tw.pin': 'Поверх игры',
     'tw.pin.title': 'Закрепить трейд-окно поверх игры',
+    'tw.close': 'Закрыть и вернуться в игру (Esc)',
+    'tw.side.hide': 'Свернуть избранное',
+    'tw.side.show': 'Показать избранное',
     'tw.blocked.external': 'Ссылка открыта в браузере: {host}',
-    'tw.blocked': 'Переход заблокирован: {host}. В трейд-окне открывается только pathofexile.com.',
+    'tw.blocked': 'Переход заблокирован: {host}. В трейд-окне открываются только pathofexile.com и вход через Steam.',
     'tw.loading': 'Загрузка сайта трейда…'
   },
   en: {
@@ -162,8 +165,11 @@ export const fav: DomainDict = {
     'tw.inBrowser': 'In browser',
     'tw.pin': 'Keep on top',
     'tw.pin.title': 'Keep the trade window above the game',
+    'tw.close': 'Close and return to the game (Esc)',
+    'tw.side.hide': 'Collapse favourites',
+    'tw.side.show': 'Show favourites',
     'tw.blocked.external': 'Link opened in your browser: {host}',
-    'tw.blocked': 'Navigation blocked: {host}. The trade window only opens pathofexile.com.',
+    'tw.blocked': 'Navigation blocked: {host}. The trade window only opens pathofexile.com and Steam sign-in.',
     'tw.loading': 'Loading the trade site…'
   }
 }

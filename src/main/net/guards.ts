@@ -38,14 +38,43 @@ export function isPoeHost(hostname: string): boolean {
 }
 
 /**
- * Можно ли окну сайта (вход, трейд-окно S5) перейти на этот URL в главном фрейме:
- * только https внутри pathofexile.com и страница проверки Cloudflare. Остальное —
- * в системный браузер через allowlist @shared/links (или никуда).
+ * Вход через Steam: кнопка «Sign in through Steam» на странице входа GGG (/login/steam) ведёт
+ * на steamcommunity.com/oauth/login?client_id=…&redirect_uri=https://www.pathofexile.com/login/steam-auth
+ * (OAuth Steam, проверено вживую 28.10.2026; /openid/ — прежний вход OpenID 2.0 у других сайтов).
+ * После входа Steam возвращает на pathofexile.com. Только эти страницы; форма входа Steam
+ * ходит в login.steampowered.com запросами страницы (не навигацией главного фрейма).
  */
-export function isSiteNavigationAllowed(url: unknown): boolean {
+export const STEAM_LOGIN_HOST = 'steamcommunity.com'
+const STEAM_LOGIN_PATHS = ['/oauth/', '/openid/']
+
+/** https://steamcommunity.com/oauth/… или /openid/… — страница входа Steam для сайта GGG. */
+export function isSteamLoginUrl(url: unknown): boolean {
+  const u = parseUrl(url)
+  return (
+    !!u &&
+    u.protocol === 'https:' &&
+    u.hostname.toLowerCase() === STEAM_LOGIN_HOST &&
+    STEAM_LOGIN_PATHS.some((p) => u.pathname.startsWith(p))
+  )
+}
+
+/**
+ * Страница, которую мы сами открываем в окне сайта (адресная строка, «Открыть лот»,
+ * избранное): только https внутри pathofexile.com и страница проверки Cloudflare.
+ */
+export function isSitePageUrl(url: unknown): boolean {
   const u = parseUrl(url)
   if (!u || u.protocol !== 'https:') return false
   return isPoeHost(u.hostname) || u.hostname === CLOUDFLARE_CHALLENGE_HOST
+}
+
+/**
+ * Можно ли окну сайта (вход, трейд-окно S5) перейти на этот URL в главном фрейме по
+ * действию страницы: страницы сайта (isSitePageUrl) и вход через Steam (isSteamLoginUrl).
+ * Остальное — в системный браузер через isSiteExternalUrl (@shared/links) или никуда.
+ */
+export function isSiteNavigationAllowed(url: unknown): boolean {
+  return isSitePageUrl(url) || isSteamLoginUrl(url)
 }
 
 /**

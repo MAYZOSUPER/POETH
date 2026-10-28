@@ -1,20 +1,36 @@
-import { app, BaseWindow, screen, shell, WebContentsView, type Rectangle } from 'electron'
+import { app, BaseWindow, globalShortcut, screen, shell, WebContentsView, type Rectangle } from 'electron'
 import path from 'path'
 import type { TradeSiteState } from '@shared/types'
 import { isAllowedExternalUrl } from '@shared/links'
 import { hardenSiteContents, siteWebPreferences } from '../net/siteContents'
-import { isSiteNavigationAllowed } from '../net/guards'
+import { isSitePageUrl } from '../net/guards'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
-import { ensureGameForeground } from './gameOverlay'
+import { isGameFocused, onGameFocusChange } from '../focus/gameFocus'
+import { ensureGameForeground, getOverlayStatus } from './gameOverlay'
 import { loadRendererPage } from './rendererPage'
+import { boundsOverGame, gameSizeOf, TRADE_MIN_SIZE as MIN_SIZE, type GameSize } from './tradeBounds'
 import { windowIcon } from '../appIcon'
 
-// Трейд-окно (S5): обычное окно с рамкой, слева наш сайдбар (trade-sidebar.html, preload),
-// справа официальный сайт трейда как есть (siteView: без preload, sandbox, сессия аккаунта
-// persist:poe-account, навигация только внутри pathofexile.com — см. net/siteContents.ts).
-// Сайдбар занимает всё окно, siteView лежит поверх него правее колонки избранного и ниже
-// адресной строки (её рисует сайдбар). Закрытие крестиком прячет окно; размер, позиция и
-// «поверх игры» запоминаются в %APPDATA%/POETH/trade-window.json.
+// Трейд-окно (S5): слева наш сайдбар (trade-sidebar.html, preload), справа официальный сайт
+// трейда как есть (siteView: без preload, sandbox, сессия аккаунта persist:poe-account,
+// навигация только внутри pathofexile.com — см. net/siteContents.ts). Сайдбар занимает всё
+// окно, siteView лежит поверх него правее колонки избранного и ниже адресной строки (её рисует
+// сайдбар); колонку избранного можно свернуть.
+// Два вида:
+//  - игра запущена (оверлей S1 прицеплен) — «поверх игры», по образцу встроенного браузера
+//    PoE Overlay Community Fork (MIT, (c) 2020 Nicklas Ronge; v0.9.0, код не переносился):
+//      · размер и положение — browser.service.ts open(): по центру, min(h·1.3, w·0.7) × 0.7·h,
+//        только от клиентской области игры (windows/tradeBounds.ts); растянул — запоминаем долю;
+//      · Esc закрывает окно и тогда, когда фокус уже у игры — как глобальный 'escape' из
+//        dialog/dialog-ref.service.ts (VisibleFlag.Browser): пока окно над игрой и игра в фокусе,
+//        Esc занят нами (syncEsc); в самом окне Esc ловят сайт (before-input-event) и сайдбар;
+//      · закрытие возвращает фокус игре (у них — moveTop оверлея; у нас ensureGameForeground →
+//        focusTarget S1); хоткей при открытом окне прячет его;
+//      · своё: без системной рамки (у них рамка), шапка — адресная строка сайдбара
+//        (перетаскивание, ×), окно над игрой, пока игра или окно в фокусе;
+//  - игры нет — обычное окно с рамкой: размер, позиция и «поверх игры» запоминаются.
+// Всё это — в %APPDATA%/POETH/trade-window.json. Вид меняется при следующем показе окна
+// (рамку у готового окна не переключить — окно создаётся заново на той же странице сайта).
 // ПРАВИЛО (docs/PLAN-POETH.md, риск бана): «Travel to Hideout» и «Direct whisper» — только родные
 // кнопки сайта, которые жмёт игрок. В siteView никаких executeJavaScript, инъекций, программных кликов
 // (sendInputEvent) и своих запросов к эндпоинтам телепорта/whisper. Сторож — tests/fav/siteGuard.test.ts.
@@ -24,23 +40,30 @@ export const SIDEBAR_WIDTH = 300
 export const BAR_HEIGHT = 40
 
 const DEFAULT_BOUNDS = { width: 1280, height: 820 }
-const MIN_SIZE = { width: 900, height: 560 }
 const SAVE_DELAY_MS = 600
 
 interface WindowState {
   bounds?: Rectangle
   maximized?: boolean
   pinned?: boolean
+  /** «поверх игры»: размер окна — доля клиентской области игры (0.4…1) */
+  gameSize?: GameSize
+  /** колонка избранного свёрнута */
+  sidebarCollapsed?: boolean
 }
 
 let win: BaseWindow | null = null
 let sidebar: WebContentsView | null = null
 let site: WebContentsView | null = null
+/** текущее окно открыто «поверх игры» (без рамки, в границах игры) */
+let overGame = false
 let state: WindowState = {}
 let stateLoaded = false
 let saveTimer: ReturnType<typeof setTimeout> | null = null
 let quitting = false
-let quitHooked = false
+let hooked = false
+/** глобальный Esc занят нами (окно над игрой, фокус у игры) */
+let escHeld = false
 let siteState: TradeSiteState = {
   url: '',
   title: '',
@@ -48,7 +71,9 @@ let siteState: TradeSiteState = {
   canGoBack: false,
   canGoForward: false,
   pinned: false,
-  activeSearchId: null
+  activeSearchId: null,
+  overGame: false,
+  sidebarCollapsed: false
 }
 const siteListeners = new Set<(s: TradeSiteState) => void>()
 const blockedListeners = new Set<(url: string) => void>()
@@ -64,11 +89,24 @@ async function loadState(): Promise<void> {
   if (raw && typeof raw === 'object') state = raw
 }
 
+/**
+ * Клиентская область окна игры в координатах Electron (DIP), если оверлей S1 к игре
+ * прицеплен; иначе null — окно открывается обычным. Оверлей отдаёт физические пиксели.
+ */
+function gameArea(): Rectangle | null {
+  const s = getOverlayStatus()
+  const b = s.bounds
+  if (!s.tracking || !s.attached || !b || b.width < 320 || b.height < 240) return null
+  const r = process.platform === 'win32' ? screen.screenToDipRect(null, b) : b
+  return { x: Math.round(r.x), y: Math.round(r.y), width: Math.round(r.width), height: Math.round(r.height) }
+}
+
 function scheduleSave(): void {
   if (saveTimer) clearTimeout(saveTimer)
   saveTimer = setTimeout(() => {
     saveTimer = null
-    if (win && !win.isDestroyed()) {
+    // поверх игры границы не пишем: позиция — всегда по центру, доля — по 'resized' (create)
+    if (win && !win.isDestroyed() && !overGame) {
       state = { ...state, maximized: win.isMaximized() }
       if (!win.isMaximized() && !win.isMinimized()) state.bounds = win.getBounds()
     }
@@ -87,14 +125,19 @@ function restoredBounds(): Partial<Rectangle> {
   return visible ? b : { width: b.width, height: b.height }
 }
 
+function sideWidth(): number {
+  return state.sidebarCollapsed ? 0 : SIDEBAR_WIDTH
+}
+
 function layout(): void {
   if (!win || win.isDestroyed() || !sidebar || !site) return
   const { width, height } = win.getContentBounds()
+  const side = sideWidth()
   sidebar.setBounds({ x: 0, y: 0, width, height })
   site.setBounds({
-    x: SIDEBAR_WIDTH,
+    x: side,
     y: BAR_HEIGHT,
-    width: Math.max(0, width - SIDEBAR_WIDTH),
+    width: Math.max(0, width - side),
     height: Math.max(0, height - BAR_HEIGHT)
   })
 }
@@ -113,6 +156,8 @@ function publishSite(patch: Partial<TradeSiteState> = {}): void {
         }
       : {}),
     pinned: !!state.pinned,
+    overGame,
+    sidebarCollapsed: !!state.sidebarCollapsed,
     ...patch
   }
   if (JSON.stringify(next) === JSON.stringify(siteState)) return
@@ -120,30 +165,65 @@ function publishSite(patch: Partial<TradeSiteState> = {}): void {
   for (const cb of siteListeners) cb(next)
 }
 
-function hookQuit(): void {
-  if (quitHooked) return
-  quitHooked = true
+/**
+ * Esc, когда фокус у игры, а трейд-окно висит над ней (как глобальный 'escape' у PoE Overlay,
+ * dialog-ref.service.ts): прячет окно. Занимаем Esc только на это время; в самом окне Esc ловят
+ * сайт и сайдбар. Если хоткеи перерегистрировались (unregisterAll в hotkeys.ts) — занимаем снова.
+ */
+function syncEsc(): void {
+  const w = win
+  const want = !!w && !w.isDestroyed() && overGame && w.isVisible() && !w.isFocused() && isGameFocused()
+  if (want) {
+    if (escHeld && globalShortcut.isRegistered('Escape')) return
+    escHeld = globalShortcut.register('Escape', () => hideTradeWindow())
+  } else if (escHeld) {
+    escHeld = false
+    globalShortcut.unregister('Escape')
+  }
+}
+
+/** Держать окно над игрой: закреплено, поверх игры или сейчас в фокусе. */
+function keepOnTop(w: BaseWindow): void {
+  w.setAlwaysOnTop(true, 'screen-saver')
+  w.moveTop()
+}
+
+function hookOnce(): void {
+  if (hooked) return
+  hooked = true
   app.on('before-quit', () => {
     quitting = true
   })
+  // поверх игры: окно висит над игрой, пока игра (или само окно) в фокусе; ушли из игры
+  // на рабочий стол/в другое приложение — опускается, чтобы не закрывать чужие окна
+  onGameFocusChange((next) => {
+    syncEsc()
+    const w = win
+    if (!w || w.isDestroyed() || !overGame || !w.isVisible() || state.pinned) return
+    if (next.game) keepOnTop(w)
+    else if (!w.isFocused()) w.setAlwaysOnTop(false)
+  })
 }
 
-async function create(title: string): Promise<BaseWindow> {
+async function create(title: string, area: Rectangle | null): Promise<BaseWindow> {
   await loadState()
-  hookQuit()
+  hookOnce()
+  overGame = !!area
   const w = new BaseWindow({
     title,
     icon: windowIcon(),
-    ...restoredBounds(),
-    minWidth: MIN_SIZE.width,
-    minHeight: MIN_SIZE.height,
+    ...(area ? boundsOverGame(area, state.gameSize) : restoredBounds()),
+    minWidth: area ? Math.min(MIN_SIZE.width, area.width) : MIN_SIZE.width,
+    minHeight: area ? Math.min(MIN_SIZE.height, area.height) : MIN_SIZE.height,
     show: false,
+    // поверх игры — без системной рамки (шапка — адресная строка сайдбара); края тянутся
+    frame: !area,
     autoHideMenuBar: true,
     backgroundColor: '#0f0c0a'
   })
   w.setMenu(null)
-  if (state.maximized) w.maximize()
-  if (state.pinned) w.setAlwaysOnTop(true, 'screen-saver')
+  if (!area && state.maximized) w.maximize()
+  if (area || state.pinned) w.setAlwaysOnTop(true, 'screen-saver')
 
   const side = new WebContentsView({
     webPreferences: {
@@ -170,22 +250,43 @@ async function create(title: string): Promise<BaseWindow> {
   swc.on('did-navigate-in-page', () => publishSite())
   swc.on('page-title-updated', () => publishSite())
   swc.on('render-process-gone', () => publishSite({ loading: false }))
+  // Поверх игры Esc на сайте прячет окно (как Esc у браузера PoE Overlay). Только чтение
+  // нажатия в нашем окне: в страницу ничего не вводим и не исполняем. В сайдбаре Esc
+  // ловит сама страница сайдбара (меню и переименование закрываются первыми).
+  swc.on('before-input-event', (event, input) => {
+    if (!overGame || input.type !== 'keyDown' || input.key !== 'Escape') return
+    if (input.control || input.alt || input.shift || input.meta) return
+    event.preventDefault()
+    hideTradeWindow()
+  })
   if (process.env.OVERLAY_DEVTOOLS === '1') side.webContents.openDevTools({ mode: 'detach' })
 
   w.on('resize', () => {
     layout()
+    if (!overGame) scheduleSave()
+  })
+  // поверх игры: игрок растянул окно сам ('resized' — только ручной ресайз, не setBounds) —
+  // запоминаем долю окна игры; иначе размер как у PoE Overlay
+  w.on('resized', () => {
+    const area = overGame ? gameArea() : null
+    if (!area || w.isDestroyed()) return
+    state.gameSize = gameSizeOf(w.getBounds(), area)
     scheduleSave()
   })
-  w.on('move', scheduleSave)
+  w.on('move', () => {
+    if (!overGame) scheduleSave()
+  })
   // Компаньон висит на уровне screen-saver и закрыл бы трейд-окно. Пока окно в фокусе — оно
-  // поднимается на тот же уровень; ушёл фокус (игра, компаньон) — опускается, если не закреплено.
+  // поднимается на тот же уровень; ушёл фокус (игра, компаньон) — опускается, если не закреплено
+  // и не открыто поверх игры (тогда его опускает только уход из игры, см. hookOnce).
   w.on('focus', () => {
+    syncEsc()
     if (state.pinned || w.isDestroyed()) return
-    w.setAlwaysOnTop(true, 'screen-saver')
-    w.moveTop()
+    keepOnTop(w)
   })
   w.on('blur', () => {
-    if (!state.pinned && !w.isDestroyed()) w.setAlwaysOnTop(false)
+    syncEsc()
+    if (!state.pinned && !overGame && !w.isDestroyed()) w.setAlwaysOnTop(false)
   })
   w.on('maximize', layout)
   w.on('unmaximize', layout)
@@ -211,6 +312,26 @@ async function create(title: string): Promise<BaseWindow> {
   return w
 }
 
+/** Закрыть окно совсем (смена вида); вернуть адрес сайта, чтобы открыть его в новом окне. */
+function destroyWindow(): string {
+  const w = win
+  const views = [sidebar, site]
+  const url = site?.webContents.getURL() ?? ''
+  if (saveTimer) {
+    clearTimeout(saveTimer)
+    saveTimer = null
+    void writeJsonAtomic(stateFile(), state).catch(() => undefined)
+  }
+  win = null
+  sidebar = null
+  site = null
+  if (w && !w.isDestroyed()) w.destroy()
+  syncEsc()
+  // webContents вью BaseWindow сами не закрываются
+  for (const v of views) if (v && !v.webContents.isDestroyed()) v.webContents.close()
+  return url
+}
+
 // ---------------------------------------------------------------------------
 // Публичный API окна (домен fav: src/main/ipc/fav.ts)
 // ---------------------------------------------------------------------------
@@ -223,15 +344,27 @@ export function isTradeWindowVisible(): boolean {
   return isTradeWindowOpen() && win!.isVisible()
 }
 
-/** Показать окно (создать при первом вызове); url — открыть эту страницу сайта. */
+/**
+ * Показать окно (создать при первом вызове); url — открыть эту страницу сайта.
+ * Игра запущена — поверх неё, по центру и в её границах; нет — обычное окно.
+ */
 export async function showTradeWindow(opts: { title: string; url?: string; defaultUrl: () => Promise<string> }): Promise<void> {
-  const w = win && !win.isDestroyed() ? win : await create(opts.title)
+  const area = gameArea()
+  let keepUrl = ''
+  if (win && !win.isDestroyed() && overGame !== !!area) keepUrl = destroyWindow()
+  const w = win && !win.isDestroyed() ? win : await create(opts.title, area)
   const wc = site!.webContents
   if (opts.url) loadSite(opts.url)
-  else if (!wc.getURL()) loadSite(await opts.defaultUrl())
+  else if (!wc.getURL()) loadSite(keepUrl && isSitePageUrl(keepUrl) ? keepUrl : await opts.defaultUrl())
+  if (overGame && area) {
+    // игру могли подвинуть или поменять ей размер — снова по центру
+    w.setBounds(boundsOverGame(area, state.gameSize))
+    keepOnTop(w)
+  }
   if (w.isMinimized()) w.restore()
   w.show()
   w.focus()
+  publishSite()
 }
 
 /** Спрятать окно; если игра запущена — вернуть ей фокус. */
@@ -239,6 +372,7 @@ export function hideTradeWindow(): void {
   if (!win || win.isDestroyed()) return
   scheduleSave()
   win.hide()
+  syncEsc()
   try {
     ensureGameForeground()
   } catch {
@@ -246,10 +380,13 @@ export function hideTradeWindow(): void {
   }
 }
 
-/** Хоткей: скрыто → показать; видно, но не в фокусе → на передний план; в фокусе → спрятать. */
+/**
+ * Хоткей: скрыто → показать; видно поверх игры → спрятать (фокус — игре); обычное окно:
+ * видно, но не в фокусе → на передний план, в фокусе → спрятать.
+ */
 export async function toggleTradeWindow(opts: { title: string; defaultUrl: () => Promise<string> }): Promise<void> {
-  if (win && !win.isDestroyed() && win.isVisible() && !win.isMinimized()) {
-    if (win.isFocused() || sidebar?.webContents.isFocused() || site?.webContents.isFocused()) {
+  if (win && !win.isDestroyed() && win.isVisible() && !win.isMinimized() && overGame === !!gameArea()) {
+    if (overGame || win.isFocused() || sidebar?.webContents.isFocused() || site?.webContents.isFocused()) {
       hideTradeWindow()
       return
     }
@@ -261,7 +398,7 @@ export async function toggleTradeWindow(opts: { title: string; defaultUrl: () =>
 
 /** Открыть страницу сайта в siteView (только pathofexile.com / проверка Cloudflare). */
 export function loadSite(url: string): boolean {
-  if (!site || !isSiteNavigationAllowed(url)) return false
+  if (!site || !isSitePageUrl(url)) return false
   void site.webContents.loadURL(url).catch(() => publishSite({ loading: false }))
   return true
 }
@@ -285,7 +422,15 @@ export function openSiteInBrowser(): boolean {
 
 export function setTradeWindowPinned(pinned: boolean): void {
   state = { ...state, pinned }
-  if (win && !win.isDestroyed()) win.setAlwaysOnTop(pinned, 'screen-saver')
+  if (win && !win.isDestroyed()) win.setAlwaysOnTop(pinned || overGame, 'screen-saver')
+  scheduleSave()
+  publishSite()
+}
+
+/** Свернуть/развернуть колонку избранного (сайт занимает освободившееся место). */
+export function setTradeSidebarCollapsed(collapsed: boolean): void {
+  state = { ...state, sidebarCollapsed: collapsed }
+  layout()
   scheduleSave()
   publishSite()
 }
@@ -300,7 +445,7 @@ export function currentSiteUrl(): string | null {
 }
 
 export function getTradeSiteState(): TradeSiteState {
-  return { ...siteState, pinned: !!state.pinned }
+  return { ...siteState, pinned: !!state.pinned, overGame, sidebarCollapsed: !!state.sidebarCollapsed }
 }
 
 export function setActiveSearch(id: string | null): void {

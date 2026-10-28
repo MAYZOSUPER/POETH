@@ -79,7 +79,7 @@ POETH — одна программа вместо десятка сайтов �
 |---|---|---|---|
 | **Игровой оверлей** (новое) | `BrowserWindow` + `OverlayController.attachByTitle(win, 'Path of Exile')` | По умолчанию пропускает мышь. `Ctrl+D` / `Shift+Space` активируют; `Esc`/`Shift+Space`/клик по фону → `focusTarget()` (фокус в игру) | Окно прайс-чека, тосты live search, карточки сделок, подсветка ячейки стэша |
 | **Компаньон** (существующее, → `companionWindow.ts`) | как сейчас, режим «замок» | как сейчас | Вкладки: Кампания (только PoE2), Live, Regex, Сделки, Настройки |
-| **Трейд-окно** (новое) | `BaseWindow` + 2 view: `sidebarView` (наше избранное, с preload) и `siteView` (pathofexile.com, **без preload**, сессия `persist:poe-account`) | Обычное окно, кнопка «закрепить поверх» (`screen-saver`), хоткей показать/скрыть | Официальный сайт трейда + папки избранного |
+| **Трейд-окно** (новое) | `BaseWindow` + 2 view: `sidebarView` (наше избранное, с preload) и `siteView` (pathofexile.com, **без preload**, сессия `persist:poe-account`) | Игра запущена — поверх игры в её границах (без рамки, по центру, доля окна игры, Esc/хоткей → фокус игре); нет игры — обычное окно, «закрепить поверх» (`screen-saver`); хоткей показать/скрыть | Официальный сайт трейда + папки избранного |
 
 - Карточки сделок кликабельны без активации всего оверлея: main опрашивает курсор (~30 Гц) и сравнивает с прямоугольниками
   виджетов (renderer шлёт `updateInteractiveRects`) → временно `setIgnoreMouseEvents(false)`; после клика — `focusTarget()`.
@@ -109,6 +109,12 @@ cookie сессии — приложение его **не отправляет*
   poe.ninja/poeprices/GitHub — отдельная сессия без cookies.
 - **siteView:** `sandbox:true`, `contextIsolation`, без `nodeIntegration`/preload; навигация только внутри pathofexile.com,
   остальное → системный браузер; `window.open`/загрузки/разрешения запрещены; `webviewTag` выключен.
+  **Вход через Steam (решение лида, 28.10):** по действию страницы главный фрейм может перейти ещё и на
+  `https://steamcommunity.com/oauth/…` (OAuth Steam: `/login/steam` GGG → `steamcommunity.com/oauth/login?client_id=…`
+  → `pathofexile.com/login/steam-auth`; проверено вживую) и `/openid/…`. Пароль Steam и Steam Guard
+  вводятся на странице Steam; её запросы к `login.steampowered.com` — подресурсы, не навигация. Прочие страницы
+  Steam (профиль, магазин, помощь) → системный браузер (`isSiteExternalUrl`). Свои переходы (адресная строка,
+  «Открыть лот») — только pathofexile.com (`isSitePageUrl`). Cookies Steam живут в том же partition, «Выйти» чистит и их.
 - **Hardening:** fuses `RunAsNode=off`, `EnableNodeCliInspectArguments=off`, `OnlyLoadAppFromAsar=on`,
   `EmbeddedAsarIntegrityValidation=on`; CSP в наших окнах; проверка `event.senderFrame` во всех IPC; `openExternal` — https+allowlist.
 - **Выход** чистит partition. Фолбэк «вставить POESESSID» → `cookies.set` в partition + копия в `safeStorage` (уже есть

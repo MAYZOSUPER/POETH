@@ -131,6 +131,10 @@ export interface TradeSiteState {
   pinned: boolean
   /** открыт ли поиск избранного (по slug) */
   activeSearchId: string | null
+  /** окно открыто поверх игры: без системной рамки, шапка — адресная строка (перетаскивание, ×, Esc) */
+  overGame: boolean
+  /** колонка избранного свёрнута */
+  sidebarCollapsed: boolean
 }
 
 /**

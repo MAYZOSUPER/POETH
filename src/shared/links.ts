@@ -48,3 +48,25 @@ export function isAllowedExternalUrl(url: unknown): url is string {
     return false
   }
 }
+
+/**
+ * Steam (решение лида, вход через Steam): ссылки страницы входа Steam, кроме самого входа
+ * (профиль, магазин, «Не могу войти»), main открывает в системном браузере. Только для
+ * переходов из окна сайта; renderer эти хосты открыть не может.
+ */
+export const STEAM_EXTERNAL_HOSTS: readonly string[] = [
+  'steamcommunity.com',
+  'store.steampowered.com',
+  'help.steampowered.com'
+]
+
+/** Переход из окна сайта, который main откроет в системном браузере: allowlist + Steam. */
+export function isSiteExternalUrl(url: unknown): url is string {
+  if (isAllowedExternalUrl(url)) return true
+  try {
+    const parsed = new URL(url as string)
+    return parsed.protocol === 'https:' && STEAM_EXTERNAL_HOSTS.includes(parsed.hostname)
+  } catch {
+    return false
+  }
+}

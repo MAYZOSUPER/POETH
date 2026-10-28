@@ -417,7 +417,10 @@ export function InlineEdit({ value, placeholder, onDone }: { value: string; plac
       onClick={(e) => e.stopPropagation()}
       onKeyDown={(e) => {
         if (e.key === 'Enter') finish(v)
-        if (e.key === 'Escape') finish(value)
+        if (e.key === 'Escape') {
+          e.preventDefault()
+          finish(value)
+        }
       }}
       onBlur={() => finish(v)}
     />

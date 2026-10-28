@@ -1,6 +1,6 @@
 import { app, BrowserWindow, shell, type WebContents, type WebPreferences } from 'electron'
 import type { SiteHost } from '@shared/games'
-import { isAllowedExternalUrl } from '@shared/links'
+import { isSiteExternalUrl } from '@shared/links'
 import { isSiteNavigationAllowed } from './guards'
 import { getAccountSession } from './session'
 import { netLog } from './http'
@@ -9,8 +9,9 @@ import { windowIcon } from '../appIcon'
 // Содержимое официального сайта pathofexile.com в нашем приложении: окно входа (S3) и
 // siteView трейд-окна (S5). Правила одни:
 //  - сессия persist:poe-account; sandbox, contextIsolation, без preload/nodeIntegration/webview;
-//  - главный фрейм ходит только внутри https://*.pathofexile.com (+ проверка Cloudflare);
-//    остальное — в системный браузер через allowlist @shared/links, иначе никуда;
+//  - главный фрейм ходит только внутри https://*.pathofexile.com (+ проверка Cloudflare и
+//    страница входа Steam steamcommunity.com/oauth|openid/…); остальное — в системный браузер
+//    через isSiteExternalUrl (@shared/links: allowlist + прочий Steam), иначе никуда;
 //  - window.open запрещён; загрузки и разрешения запрещены на уровне сессии (session.ts).
 // S5: `new WebContentsView({ webPreferences: siteWebPreferences() })` +
 // `hardenSiteContents(view.webContents)` + `loadURL(siteLoginUrl(host))` для входа.
@@ -37,7 +38,7 @@ export function siteLoginUrl(host: SiteHost): string {
 }
 
 function openOutside(url: string): void {
-  const allowed: boolean = isAllowedExternalUrl(url)
+  const allowed: boolean = isSiteExternalUrl(url)
   if (allowed) void shell.openExternal(url)
   else netLog('debug', 'site: blocked navigation to', url.split('?')[0])
 }

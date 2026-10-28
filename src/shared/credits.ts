@@ -14,6 +14,7 @@ export const CREDITS: readonly CreditEntry[] = [
   { id: 'apt', name: 'Awakened PoE Trade', url: 'github.com/SnosMe/awakened-poe-trade', license: 'MIT' },
   { id: 'repoe', name: 'RePoE fork', url: 'github.com/repoe-fork/repoe-fork', license: 'open data' },
   { id: 'bt', name: 'Better Trading', url: 'github.com/exile-center/better-trading', license: 'MIT' },
+  { id: 'poeoverlay', name: 'PoE Overlay Community Fork', url: 'github.com/PoE-Overlay-Community/PoE-Overlay-Community-Fork', license: 'MIT' },
   { id: 'exileui', name: 'Exile-UI (Lailloken)', url: 'github.com/Lailloken/Exile-UI', license: 'MIT' },
   { id: 'leveling', name: 'exile-leveling, poe2-leveling-overlay', url: 'github.com/HeartofPhos/exile-leveling', license: 'MIT' },
   { id: 'native', name: 'electron-overlay-window, uiohook-napi, ws', url: 'npmjs.com', license: 'MIT' },

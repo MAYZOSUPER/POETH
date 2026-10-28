@@ -354,3 +354,32 @@ body {
   place-items: center;
   color: var(--fg-faint);
 }
+
+/* ---- колонка избранного свёрнута: сайт и адресная строка — на всю ширину ---- */
+.ts--collapsed .ts-side {
+  display: none;
+}
+.ts--collapsed .ts-bar,
+.ts--collapsed .ts-site-wait {
+  left: 0;
+}
+.ts-side-toggle[aria-pressed='true'] {
+  color: var(--accent-hi);
+}
+
+/* ---- поверх игры: окно без системной рамки, адресная строка — его шапка ---- */
+.ts--game {
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+.ts--game .ts-bar,
+.ts--game .ts-head {
+  -webkit-app-region: drag;
+}
+.ts--game .ts-bar button,
+.ts--game .ts-bar .ts-url,
+.ts--game .ts-head select {
+  -webkit-app-region: no-drag;
+}
+.ts-close:hover {
+  color: var(--bad);
+}

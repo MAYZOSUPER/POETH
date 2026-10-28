@@ -11,7 +11,7 @@ Electron 40 (main — CommonJS, без `"type":"module"`), TypeScript, React 18,
 |---|---|---|---|---|
 | **Компаньон** | `src/main/windows/companionWindow.ts`, страница `index.html` | прозрачное always-on-top (`screen-saver`), режим «замок» (сквозные клики) — `clickThrough.ts` | вкладки по игре: PoE2 — Кампания, Прайс-чек; PoE1 — Прайс-чек, Live, Regex, Сделки; Настройки | ✅ |
 | **Игровой оверлей** | `windows/gameOverlay.ts`: `BrowserWindow` + `OverlayController.attachByTitle(win, GameDef.windowTitle)`; страница `overlay.html` | по умолчанию пропускает мышь; `Ctrl+D`/`Shift+Space` активируют; `Esc`/`Shift+Space`/клик по фону → `focusTarget()` | окно прайс-чека, тосты live, карточки сделок, подсветка ячейки стэша | ⏳ S1 |
-| **Трейд-окно** | `windows/tradeWindow.ts`: `BaseWindow` + `sidebarView` (`trade-sidebar.html`, с preload) + `siteView` (pathofexile.com, **без preload**, сессия `persist:poe-account`) | обычное окно, «закрепить поверх», хоткей `toggleTradeWindow` | официальный сайт трейда + папки избранного | ⏳ S5 |
+| **Трейд-окно** | `windows/tradeWindow.ts`: `BaseWindow` + `sidebarView` (`trade-sidebar.html`, с preload) + `siteView` (pathofexile.com, **без preload**, сессия `persist:poe-account`) | игра запущена — **поверх игры** (как браузер PoE Overlay, но в её границах): размер как у браузера PoE Overlay — `min(h·1.3, w·0.7) × 0.7·h` окна игры, по центру (`tradeBounds.ts`; растянул — запоминается доля), без системной рамки, шапка — адресная строка (перетаскивание, ×); Esc (и при фокусе у игры, как у PoE Overlay) / хоткей прячут и возвращают фокус игре (`focusTarget`); игры нет — обычное окно, «закрепить поверх»; колонка избранного сворачивается; хоткей `toggleTradeWindow` | официальный сайт трейда + папки избранного | ⏳ S5 |
 
 - Загрузка страниц: `windows/rendererPage.ts` → `loadRendererPage(win|view, 'index'|'overlay'|'trade-sidebar')`
   (dev-сервер electron-vite или `out/renderer/*.html`).
@@ -89,6 +89,9 @@ lock. `secret.json` компаса (POESESSID, safeStorage) копируется
   poeprices / GitHub — отдельная сессия без cookies.
 - `siteView`: `sandbox`, `contextIsolation`, без `nodeIntegration`/preload; навигация только внутри
   pathofexile.com, остальное → системный браузер; `window.open`/загрузки/разрешения запрещены.
+  Исключение — вход через Steam: по действию страницы можно на `https://steamcommunity.com/oauth/…`
+  и `/openid/…` (`isSteamLoginUrl` в `net/guards.ts`); прочий Steam → системный браузер (`isSiteExternalUrl`, `@shared/links`);
+  свои переходы (адресная строка, «Открыть лот») — только pathofexile.com (`isSitePageUrl`).
 - Hardening (S3/S10): fuses `RunAsNode=off`, `EnableNodeCliInspectArguments=off`, `OnlyLoadAppFromAsar=on`,
   `EmbeddedAsarIntegrityValidation=on`; CSP в наших окнах (✅ есть); проверка `event.senderFrame` во всех IPC;
   `openExternal` — только https + allowlist (✅ есть: `src/shared/links.ts` — `www|ru.pathofexile.com`, `boosty.to`).

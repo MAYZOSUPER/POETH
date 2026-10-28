@@ -28,6 +28,13 @@ whose full history is kept in this repository.
 - **[ForbiddenTroveBlacklist](https://github.com/The-Forbidden-Trove/ForbiddenTroveBlacklist)** (PoE Hub) —
   MIT License. The trade blacklist (`blacklist.csv`) is downloaded at runtime for the trade manager
   and cached locally; it is not redistributed with POETH.
+- **[PoE Overlay Community Fork](https://github.com/PoE-Overlay-Community/PoE-Overlay-Community-Fork)** —
+  MIT License, Copyright (c) 2020 Nicklas Ronge. The **behaviour** of the in-game trade window is
+  modelled on its built-in browser (v0.9.0: `src/app/core/service/browser.service.ts` — centred,
+  `min(h·1.3, w·0.7) × 0.7·h`; `src/app/core/service/dialog/dialog-ref.service.ts` — Esc closes it;
+  `main.ts` `create-browser-window`). No code is copied; POETH sizes it to the game window and keeps
+  its own security rules (isolated session, no preload, navigation allowlist). Its whisper/hideout
+  chat commands (clipboard + Enter + Ctrl+V) match what POETH already does via `typeInChat`.
 - **poe.re is NOT used.** It has no license, so none of its code or data is copied;
   POETH's regex engine is implemented independently.
 - **Native modules** (added in later stages): `electron-overlay-window`, `uiohook-napi`
