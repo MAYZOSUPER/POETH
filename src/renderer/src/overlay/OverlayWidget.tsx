@@ -79,14 +79,23 @@ export function OverlayWidget({ placement, interactive = true, keepFocus = false
     if (interactive) scheduleRectsFlush()
   }, [interactive, pos?.x, pos?.y])
 
+  // окно цены: клик внутри — оверлей активен, фокус не уходит игре (клавиатура для полей тоже).
+  // Активируем на отпускании кнопки, а не на нажатии: focus() окна между mousedown и mouseup срывает
+  // захват мыши в Chromium — mouseup не доходит до кнопки, и её click не срабатывает (проверено на ✕).
+  const activate = (): void => {
+    if (keepFocus && !useOverlayStore.getState().focus.overlay) window.overlayApi.overlay.activate()
+  }
+  const onMouseUp = (e: ReactMouseEvent<HTMLDivElement>): void => {
+    if (e.button === 0) activate()
+  }
+
   const onMouseDown = (e: ReactMouseEvent<HTMLDivElement>): void => {
     if (e.button !== 0) return
-    // окно цены: нажатие внутри — оверлей активен, фокус не уходит игре (клавиатура для полей тоже)
-    if (keepFocus && !useOverlayStore.getState().focus.overlay) window.overlayApi.overlay.activate()
-
     const target = e.target as Element
     if (!placement?.onMoved || !placed || !size || !target.closest('[data-drag-handle]') || target.closest(NO_DRAG)) return
     e.preventDefault()
+    // перетаскивание: мышь нужна оверлею целиком (курсор уходит с прежнего прямоугольника) — сразу
+    activate()
     const start = { x: e.clientX, y: e.clientY }
     const from = placed
     let moved = false
@@ -123,7 +132,8 @@ export function OverlayWidget({ placement, interactive = true, keepFocus = false
       className={`ov-widget${className ? ` ${className}` : ''}${dragPos ? ' is-dragging' : ''}`}
       style={style}
       data-keep-focus={keepFocus || undefined}
-      onMouseDown={keepFocus || placement?.onMoved ? onMouseDown : undefined}
+      onMouseDown={placement?.onMoved ? onMouseDown : undefined}
+      onMouseUp={keepFocus ? onMouseUp : undefined}
     >
       {children}
     </div>
