@@ -19,6 +19,9 @@ export const updates: DomainDict = {
     'upd.error': 'Не удалось скачать обновление: {error}',
     'upd.retry': 'Повторить',
     'upd.hint': 'Обновление ставится в ту же папку, настройки и избранное сохраняются.',
+    'upd.download': 'Скачать новую версию',
+    'upd.hint.portable':
+      'Portable-версия обновляется вручную: скачайте новый POETH-Portable со страницы релиза и запускайте его вместо старого. Настройки и избранное сохранятся.',
     'upd.set.title': 'Запуск и обновления',
     'upd.set.withWindows': 'Запускать вместе с Windows',
     'upd.set.minimized': 'Запускать свёрнутым (в трее, без окна)',
@@ -48,6 +51,9 @@ export const updates: DomainDict = {
     'upd.error': 'Could not download the update: {error}',
     'upd.retry': 'Retry',
     'upd.hint': 'The update installs into the same folder; settings and favorites are kept.',
+    'upd.download': 'Download the new version',
+    'upd.hint.portable':
+      'The portable version is updated manually: download the new POETH-Portable from the release page and run it instead of the old one. Settings and favorites are kept.',
     'upd.set.title': 'Startup and updates',
     'upd.set.withWindows': 'Start with Windows',
     'upd.set.minimized': 'Start minimized (tray only, no window)',

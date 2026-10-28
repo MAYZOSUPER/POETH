@@ -78,7 +78,7 @@ export function UpdateView() {
             <span />
           </div>
         )}
-        <div className="svc-update__hint">{t('upd.hint')}</div>
+        <div className="svc-update__hint">{t(st.portable ? 'upd.hint.portable' : 'upd.hint')}</div>
       </div>
       <footer className="ui-panel__foot svc-update__foot">
         <button
@@ -87,7 +87,7 @@ export function UpdateView() {
           disabled={busy}
           onClick={() => window.overlayApi.updates.install()}
         >
-          {st.phase === 'error' ? t('upd.retry') : t('upd.now')}
+          {st.portable ? t('upd.download') : st.phase === 'error' ? t('upd.retry') : t('upd.now')}
         </button>
         <button type="button" className="ui-btn ui-btn--ghost" disabled={busy} onClick={() => window.overlayApi.updates.later()}>
           {t('upd.later')}

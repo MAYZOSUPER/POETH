@@ -11,6 +11,11 @@ import { notifyUser } from './notify'
 
 let state: StartupState = { step: 'settings', version: '' }
 
+/** Запущен ли portable-exe (S10b): путь к самому POETH-Portable-….exe, не к распакованной копии. */
+export function portableExe(): string | undefined {
+  return process.env.PORTABLE_EXECUTABLE_FILE || undefined
+}
+
 export function wasAutostarted(): boolean {
   return process.argv.includes(AUTOSTART_ARG)
 }
@@ -28,7 +33,7 @@ export function setStartupStep(step: StartupStep): void {
 
 /** Применить «Запускать вместе с Windows» (в dev — ничего: пункт указывал бы на electron.exe). */
 export function applyLoginItem(s: Settings): void {
-  const opts = loginItemSettings(s.startup.withWindows, app.isPackaged)
+  const opts = loginItemSettings(s.startup.withWindows, app.isPackaged, portableExe())
   if (!opts) return
   try {
     app.setLoginItemSettings(opts)

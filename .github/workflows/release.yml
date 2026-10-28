@@ -1,9 +1,10 @@
-# Релиз по тегу v* (S10a): проверки → NSIS-установщик + latest.yml в GitHub Releases
-# (electron-builder.yml → publish: github MAYZOSUPER/POETH). Приложения пользователей видят
-# новую версию через electron-updater. Токен — встроенный GITHUB_TOKEN этого запуска, в
-# сборку он не попадает (только переменная окружения шага публикации).
+# Релиз по тегу v* (S10a, S10b): проверки → в GitHub Releases POETH-Setup-<версия>.exe + .blockmap +
+# latest.yml (автообновление установленной версии) и POETH-Portable-<версия>.exe. Описание релиза —
+# build/release-notes.md (RU/EN, electron-builder.yml → releaseInfo). Токен — встроенный GITHUB_TOKEN
+# этого запуска, в сборку он не попадает (только переменная окружения шага публикации).
 #
-# Выпуск: поднять "version" в package.json → commit → git tag v<версия> → git push --tags.
+# Выпуск: поднять "version" в package.json и обновить build/release-notes.md (версия + «что нового»)
+# → commit → git tag v<версия> → git push --tags.
 name: Release
 
 on:
@@ -29,13 +30,17 @@ jobs:
         run: |
           v="v$(node -p "require('./package.json').version")"
           if [ "$v" != "$GITHUB_REF_NAME" ]; then echo "тег $GITHUB_REF_NAME, а в package.json $v"; exit 1; fi
+      - name: Описание релиза обновлено (build/release-notes.md)
+        shell: bash
+        run: |
+          grep -qF "**POETH $GITHUB_REF_NAME**" build/release-notes.md || { echo "в build/release-notes.md нет «**POETH $GITHUB_REF_NAME**» — обновите «что нового»"; exit 1; }
       - name: Поиск секретов
         run: node tools/ci/scan-secrets.mjs
       - run: npm run typecheck
       - run: npm test
       - run: npm run test:trade
       - run: npm run build
-      - name: Сборка и публикация (NSIS + latest.yml)
-        run: npx electron-builder --win nsis --publish always
+      - name: Сборка и публикация (Setup + blockmap + latest.yml, Portable)
+        run: npx electron-builder --win --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
