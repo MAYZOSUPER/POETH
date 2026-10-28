@@ -231,7 +231,8 @@ export class FlipManager {
       filters: { ...this.filters },
       feesFrom: fees ? [fees.source, fees.generatedAt].filter(Boolean).join(', ') || null : null,
       nextUpdateAt: this.deps.feed.nextAt?.() ?? null,
-      options: { ...this.options }
+      options: { ...this.options },
+      alertSent: !!this.snap.divine?.outside && this.snap.divine.hour === this.alertedHour
     }
   }
 

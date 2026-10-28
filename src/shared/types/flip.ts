@@ -107,6 +107,8 @@ export interface FlipState {
   /** следующее плановое обновление фида (мс) — «обновим в 16:05» */
   nextUpdateAt: number | null
   options: FlipOptions
+  /** тост «курс вышел из коридора недели» за текущий час фида уже отправлен (баннер под графиком) */
+  alertSent: boolean
 }
 
 export interface FlipOptions {
