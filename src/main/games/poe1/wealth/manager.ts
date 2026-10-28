@@ -667,11 +667,11 @@ export class WealthManager {
     const to = typeof toId === 'string' && toId ? await this.deps.store.loadDetail(toId) : await this.detail()
     if (!to) return null
     let from: WealthSnapshot | null = null
-    if (typeof fromId === 'string' && fromId) from = await this.deps.store.loadDetail(fromId)
-    else if (fromId === 'session') {
+    if (fromId === 'session') {
       const s = this.session()
       if (s && s.startId !== to.summary.id) from = await this.deps.store.loadDetail(s.startId)
-    } else {
+    } else if (typeof fromId === 'string' && fromId) from = await this.deps.store.loadDetail(fromId)
+    else {
       // «с прошлого снимка»: предыдущий детализированный снимок той же лиги (id сортируются по времени)
       const ids = this.detailed.filter((id) => id < to.summary.id)
       for (let i = ids.length - 1; i >= 0 && !from; i--) {

@@ -211,7 +211,11 @@ describe('менеджер учёта богатства', () => {
     expect(st.nextAutoAt).toBeUndefined()
     const diff = await m.diff()
     expect(diff?.chaosDelta).toBe(300)
-    expect(diff?.lines[0]).toMatchObject({ name: 'Chaos Orb', qtyDelta: 300 })
+    expect(diff?.lines[0]).toMatchObject({ name: 'Chaos Orb', qtyDelta: 300, unit: 1, source: 'exchange' })
+    // «с начала сессии» — от снимка «Начать», а не по id 'session'
+    const sess = await m.diff('session')
+    expect(sess?.fromId).toBe(st.farm.session?.startId)
+    expect(sess?.chaosDelta).toBe(300)
   })
 
   it('авто-снимок по таймеру не чаще лимита сайта', async () => {
