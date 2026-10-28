@@ -8,7 +8,12 @@
 // параллельно (ошибка источника цен снимок не останавливает).
 // Авто-снимки — если включены в настройках или идёт сессия фарма; интервал не меньше того,
 // что выдерживает лимит сайта при выбранном числе вкладок (tabs.ts).
-// API для трекера карт S11b: onSnapshot(cb), getNetWorthAt(at, league?), takeSnapshot().
+// API для трекера карт S11b: onSnapshot(cb), getNetWorthAt(at, league?), takeSnapshot(), attachFarm(link).
+//
+// Связка с трекером карт (attachFarm): сессия фарма — его (с паузой), здесь — её зеркало по событиям.
+// «Начать» → снимок-отсчёт; runStart(B) сразу после runEnd(A) → снимок «после A» (игрок уже в B,
+// лут A в тайнике), если лимит сайта пускает (minSnapshotSpacingMs), иначе забеги копятся в группу;
+// «Стоп» → финальный снимок. Прибыль группы — qtyProfit (без дрейфа цен) → setRunProfit(последний, {chaos, runs}).
 
 import type {
   FarmSession,
@@ -25,12 +30,13 @@ import type {
   WealthTab
 } from '@shared/types/wealth'
 import { chartPoints, farmView, netWorthAt, startSession, stopSession } from '@shared/wealth/farm'
-import { buildSnapshot, diffSnapshots, type TabItems } from '@shared/wealth/snapshot'
+import { buildSnapshot, diffSnapshots, qtyProfit, type TabItems } from '@shared/wealth/snapshot'
 import {
   DEFAULT_MAX_TABS,
   HARD_MAX_TABS,
   effectiveAutoIntervalMin,
   minAutoIntervalMin,
+  minSnapshotSpacingMs,
   normalizeAccountName,
   reconcileSelection
 } from '@shared/wealth/tabs'
@@ -60,6 +66,26 @@ export interface WealthManagerDeps {
 
 type Pre = { ok: true; account: string; league: string } | { ok: false; error: WealthError }
 
+/** Событие трекера карт S11b (структурно совместимо с FarmEvent из src/shared/types/farm.ts). */
+export type FarmEventLike =
+  | { type: 'runStart'; run: { id: string }; at: number }
+  | { type: 'runEnd'; run: { id: string }; at: number }
+  | { type: 'session'; state: 'start' | 'stop' | 'pause' | 'resume'; at: number }
+
+/** Прибыль забега (или группы из `runs` забегов подряд, последний — runId), chaos. */
+export interface FarmRunProfit {
+  chaos: number
+  runs: number
+  divineRate?: number
+  low?: boolean
+}
+
+/** Что даёт трекер карт: события забегов и приёмник прибыли. */
+export interface FarmLink {
+  onFarmEvent(cb: (e: FarmEventLike) => void): () => void
+  setRunProfit(runId: string, profit: FarmRunProfit | null): void
+}
+
 export class WealthManager {
   private cfg: WealthConfig = sanitizeConfig(null)
   private points = new Map<string, WealthPoint[]>()
@@ -77,6 +103,19 @@ export class WealthManager {
   private startedAt = 0
   private listeners = new Set<(s: WealthSummary) => void>()
   private readonly now: () => number
+  // ---- связка с трекером карт S11b
+  private farm: FarmLink | null = null
+  private farmUnsub: (() => void) | null = null
+  private farmQueue: Promise<void> = Promise.resolve()
+  private farmPaused = false
+  /** снимок-граница: от него считается прибыль следующих забегов */
+  private boundary: { id: string; at: number } | null = null
+  /** забеги, закончившиеся после границы */
+  private pendingRuns: string[] = []
+  /** идущий забег (между runStart и runEnd) */
+  private inRun: string | null = null
+  private finalizing = false
+  private boundaryTimer: ReturnType<typeof setTimeout> | null = null
 
   constructor(private readonly deps: WealthManagerDeps) {
     this.now = deps.now ?? Date.now
@@ -165,7 +204,7 @@ export class WealthManager {
 
   private sessionActive(): boolean {
     const s = this.session()
-    return !!s && s.stoppedAt === undefined
+    return !!s && s.stoppedAt === undefined && !this.farmPaused
   }
 
   state(): WealthState {
@@ -207,6 +246,7 @@ export class WealthManager {
     const tabsAt = league ? this.cfg.tabs[league]?.at : undefined
     if (tabsAt) state.tabsAt = tabsAt
     if (this.nextAutoAt) state.nextAutoAt = this.nextAutoAt
+    if (this.farm) state.farmLinked = true
     return state
   }
 
@@ -310,6 +350,8 @@ export class WealthManager {
     this.inflight = this.doSnapshot(manual).finally(() => {
       this.inflight = null
       this.schedule()
+      // снимок начался ещё в убежище — граница забегов не получилась, пробуем снова
+      if (this.pendingRuns.length && this.inRun !== null) this.tryBoundary()
     })
     return this.inflight
   }
@@ -325,6 +367,7 @@ export class WealthManager {
     const pre = await this.precheck()
     if (!pre.ok) return this.fail(pre.error)
     const { account, league } = pre
+    const runAtStart = this.inRun
     const opts = { poeWatch: this.cfg.options.poeWatch }
     const pricesReady = this.deps.prices.refresh(league, opts)
 
@@ -376,8 +419,10 @@ export class WealthManager {
     await this.deps.store.saveDetail(snap)
     await this.deps.store.appendHistory(snap.summary)
     const pinned = this.cfg.session && this.cfg.session.stoppedAt === undefined ? [this.cfg.session.startId] : []
+    if (this.boundary) pinned.push(this.boundary.id)
     this.detailed = await this.deps.store.pruneDetails(KEEP_DETAILED, pinned)
     this.addSummary(snap.summary)
+    await this.afterFarmSnapshot(snap, runAtStart)
     await this.save()
     this.setStatus({ phase: 'idle' })
     for (const cb of this.listeners) {
@@ -416,6 +461,140 @@ export class WealthManager {
     this.schedule()
     this.emit()
     return r
+  }
+
+  // ------------------------------------------------------------------ трекер карт S11b
+
+  /** Подключить трекер карт (null — отключить, PoE2). Сессией фарма управляет он. */
+  attachFarm(link: FarmLink | null): void {
+    this.farmUnsub?.()
+    this.farmUnsub = null
+    this.clearBoundaryTimer()
+    this.farm = link
+    this.pendingRuns = []
+    this.inRun = null
+    this.farmPaused = false
+    // после перезапуска посреди сессии отсчёт — последний снимок лиги
+    const last = this.league ? this.last.get(this.league) : undefined
+    this.boundary = link && this.sessionActive() && last ? { id: last.id, at: last.at } : null
+    if (link) {
+      this.farmUnsub = link.onFarmEvent((e) => {
+        this.farmQueue = this.farmQueue
+          .then(() => this.onFarmEvent(e))
+          .catch((err: unknown) => this.deps.log?.(`[wealth] farm: ${err instanceof Error ? err.message : 'ошибка'}`))
+      })
+    }
+    this.schedule()
+    this.emit()
+  }
+
+  /** Дождаться обработки уже пришедших событий трекера (тесты, выход). */
+  farmIdle(): Promise<void> {
+    return this.farmQueue
+  }
+
+  private clearBoundaryTimer(): void {
+    if (this.boundaryTimer) clearTimeout(this.boundaryTimer)
+    this.boundaryTimer = null
+  }
+
+  private async onFarmEvent(e: FarmEventLike): Promise<void> {
+    if (!this.farm) return
+    if (e.type === 'runEnd') {
+      if (!this.pendingRuns.includes(e.run.id)) this.pendingRuns.push(e.run.id)
+      if (this.inRun === e.run.id) this.inRun = null
+      this.clearBoundaryTimer()
+      return
+    }
+    if (e.type === 'runStart') {
+      this.inRun = e.run.id
+      this.tryBoundary()
+      return
+    }
+    switch (e.state) {
+      case 'start': {
+        this.farmPaused = false
+        this.pendingRuns = []
+        this.boundary = null
+        const r = await this.snapshot(true)
+        const last = this.league ? this.last.get(this.league) : undefined
+        if (r.ok && last) {
+          this.cfg.session = startSession(last.league, last.at, last.id, last.chaos)
+          this.boundary = { id: last.id, at: last.at }
+          await this.save()
+        }
+        break
+      }
+      case 'pause':
+        this.farmPaused = true
+        this.clearBoundaryTimer()
+        break
+      case 'resume':
+        this.farmPaused = false
+        this.tryBoundary()
+        break
+      case 'stop': {
+        const s = this.session()
+        this.clearBoundaryTimer()
+        if (s && s.stoppedAt === undefined) {
+          this.finalizing = true
+          try {
+            await this.snapshot(true)
+          } finally {
+            this.finalizing = false
+          }
+          const last = this.league ? this.last.get(this.league) : undefined
+          const end = last && last.at >= s.startedAt ? last : null
+          this.cfg.session = end ? stopSession(s, end.at, end.id, end.chaos) : stopSession(s, s.startedAt, s.startId, s.startChaos)
+          await this.save()
+        }
+        this.farmPaused = false
+        this.pendingRuns = []
+        this.inRun = null
+        this.boundary = null
+        break
+      }
+    }
+    this.schedule()
+    this.emit()
+  }
+
+  /** Снимок-граница внутри карты, если есть закончившиеся забеги и лимит сайта пускает. */
+  private tryBoundary(): void {
+    this.clearBoundaryTimer()
+    const league = this.league
+    if (!this.farm || !this.boundary || !this.pendingRuns.length || this.farmPaused || this.inRun === null || !league) return
+    if (!this.deps.loggedIn()) return
+    const spacing = minSnapshotSpacingMs(this.selection(league).length, this.deps.provider.windows())
+    const lastAt = Math.max(this.last.get(league)?.at ?? 0, this.lastAttemptAt, this.boundary.at)
+    const wait = lastAt + spacing - this.now()
+    if (wait <= 0) {
+      if (!this.inflight) void this.snapshot(false)
+      return
+    }
+    const run = this.inRun
+    this.boundaryTimer = setTimeout(() => {
+      this.boundaryTimer = null
+      if (this.inRun === run) this.tryBoundary()
+    }, wait)
+  }
+
+  /** После снимка: прибыль закончившихся забегов — от границы до этого снимка. */
+  private async afterFarmSnapshot(snap: WealthSnapshot, runAtStart: string | null): Promise<void> {
+    if (!this.farm || !this.boundary || !this.pendingRuns.length) return
+    // снимок из убежища (лут, возможно, ещё раскладывают) границей не считается — кроме «Стоп»
+    if (runAtStart === null && !this.finalizing) return
+    if (snap.summary.league !== this.cfg.session?.league) return
+    const base = await this.deps.store.loadDetail(this.boundary.id)
+    const runs = this.pendingRuns
+    this.pendingRuns = []
+    this.boundary = { id: snap.summary.id, at: snap.summary.at }
+    if (!base) return
+    const p = qtyProfit(base, snap)
+    const profit: FarmRunProfit = { chaos: p.chaos, runs: runs.length }
+    if (snap.summary.divineRate > 0) profit.divineRate = snap.summary.divineRate
+    if (p.low) profit.low = true
+    this.farm.setRunProfit(runs[runs.length - 1], profit)
   }
 
   // ------------------------------------------------------------------ детали и разница

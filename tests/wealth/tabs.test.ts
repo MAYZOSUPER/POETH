@@ -5,6 +5,7 @@ import {
   defaultTabSelection,
   effectiveAutoIntervalMin,
   minAutoIntervalMin,
+  minSnapshotSpacingMs,
   normalizeAccountName,
   reconcileSelection
 } from '../../src/shared/wealth/tabs'
@@ -72,5 +73,15 @@ describe('бюджет запросов стэша', () => {
     expect(effectiveAutoIntervalMin(500, 1)).toBe(60)
     // другие окна (после входа сайт может прислать свои)
     expect(minAutoIntervalMin(20, [{ hits: 20, periodSec: 3600 }])).toBe(80)
+  })
+})
+
+describe('промежуток между снимками на границах карт', () => {
+  it('все окна с резервом, не чаще раза в минуту', () => {
+    // 2 вкладки: 2·7200/135 = 106.7 с
+    expect(minSnapshotSpacingMs(2)).toBe(106_667)
+    expect(minSnapshotSpacingMs(5)).toBe(266_667) // ~4,5 мин
+    expect(minSnapshotSpacingMs(25)).toBe(1_333_334) // ~22 мин
+    expect(minSnapshotSpacingMs(0)).toBe(60_000)
   })
 })

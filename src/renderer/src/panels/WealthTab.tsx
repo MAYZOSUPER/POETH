@@ -216,6 +216,8 @@ function Farm({ s, t, lang, now, busy, diff, nameOf, simple }: { s: WealthState;
       ) : (
         <p className="wl-farm__idle">{t('wealth.farm.idle')}</p>
       )}
+      {/* сессией управляет трекер карт (S11b) — его кнопки «Начать/Пауза/Стоп» */}
+      {!s.farmLinked && (
       <div className="wl-farm__act">
         {active ? (
           <button type="button" className="ui-btn ui-btn--danger" disabled={disabled} onClick={() => void stopFarm()}>
@@ -229,6 +231,7 @@ function Farm({ s, t, lang, now, busy, diff, nameOf, simple }: { s: WealthState;
           </button>
         )}
       </div>
+      )}
       {diff && (
         <div className="wl-farm__diff">
           <div className="ui-label">

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { WealthManager } from '../../src/main/games/poe1/wealth/manager'
+import { WealthManager, type FarmEventLike, type FarmRunProfit } from '../../src/main/games/poe1/wealth/manager'
 import { PriceService } from '../../src/main/games/poe1/wealth/priceService'
 import { sanitizeConfig, type WealthConfig } from '../../src/main/games/poe1/wealth/store'
 import type { StashProvider, StashQuery, StashResult } from '../../src/main/games/poe1/wealth/stashProvider'
@@ -224,5 +224,112 @@ describe('менеджер учёта богатства', () => {
     provider.calls = []
     await vi.advanceTimersByTimeAsync(15 * 60_000)
     expect(provider.calls.length).toBe(2)
+  })
+})
+
+function farmLink() {
+  const subs = new Set<(e: FarmEventLike) => void>()
+  const profits: Array<[string, FarmRunProfit | null]> = []
+  return {
+    profits,
+    emit: (e: FarmEventLike) => subs.forEach((cb) => cb(e)),
+    link: {
+      onFarmEvent: (cb: (e: FarmEventLike) => void) => {
+        subs.add(cb)
+        return () => subs.delete(cb)
+      },
+      setRunProfit: (id: string, p: FarmRunProfit | null) => profits.push([id, p])
+    }
+  }
+}
+
+describe('связка с трекером карт S11b', () => {
+  async function linked(loggedIn = true) {
+    const env = setup(loggedIn)
+    const f = farmLink()
+    await env.m.start()
+    env.m.attachFarm(f.link)
+    // время в менеджере и в таймерах идёт вместе
+    const advance = async (ms: number): Promise<void> => {
+      env.tick(ms)
+      await vi.advanceTimersByTimeAsync(ms)
+      await env.m.farmIdle()
+    }
+    const ev = async (e: FarmEventLike): Promise<void> => {
+      f.emit(e)
+      await env.m.farmIdle()
+      await vi.advanceTimersByTimeAsync(0)
+      await env.m.farmIdle()
+    }
+    return { ...env, f, advance, ev }
+  }
+  const run = (type: 'runStart' | 'runEnd', id: string): FarmEventLike => ({ type, run: { id }, at: 0 })
+  const sess = (state: 'start' | 'stop' | 'pause' | 'resume'): FarmEventLike => ({ type: 'session', state, at: 0 })
+
+  it('«Начать» — снимок-отсчёт; граница A→B — снимок «после A» и прибыль A без дрейфа цен', async () => {
+    const { m, provider, f, advance, ev } = await linked()
+    expect(m.state().farmLinked).toBe(true)
+    await ev(sess('start'))
+    expect(m.state().farm.session).toMatchObject({ startChaos: 150 })
+    await ev(run('runStart', 'r1'))
+    expect(provider.calls).toHaveLength(2) // только снимок-отсчёт
+    await advance(5 * 60_000)
+    provider.content[0] = 120 // лут карты r1 (+20 chaos) сложен в тайник
+    await ev(run('runEnd', 'r1'))
+    await ev(run('runStart', 'r2'))
+    expect(provider.calls).toHaveLength(4)
+    expect(f.profits).toEqual([['r1', { chaos: 20, runs: 1, divineRate: 300 }]])
+  })
+
+  it('лимит не пускает снимок на каждой границе — забеги копятся в группу', async () => {
+    const { provider, f, advance, ev } = await linked()
+    await ev(sess('start'))
+    await ev(run('runStart', 'r1'))
+    await advance(30_000)
+    provider.content[0] = 110
+    await ev(run('runEnd', 'r1'))
+    await ev(run('runStart', 'r2')) // рано: 2 вкладки → ≥ 107 с между снимками
+    expect(f.profits).toEqual([])
+    await advance(20_000)
+    provider.content[0] = 125
+    await ev(run('runEnd', 'r2'))
+    await ev(run('runStart', 'r3'))
+    await advance(120_000) // таймер границы
+    expect(f.profits).toEqual([['r2', { chaos: 25, runs: 2, divineRate: 300 }]])
+  })
+
+  it('«Стоп» — финальный снимок даёт прибыль последнего забега; пауза снимков не делает', async () => {
+    const { m, provider, f, advance, ev } = await linked()
+    await ev(sess('start'))
+    await ev(run('runStart', 'r1'))
+    await ev(sess('pause'))
+    await advance(10 * 60_000)
+    await ev(run('runEnd', 'r1'))
+    await ev(run('runStart', 'r2'))
+    expect(provider.calls).toHaveLength(2) // на паузе границ нет
+    await ev(sess('resume'))
+    expect(provider.calls).toHaveLength(4)
+    await advance(10 * 60_000)
+    provider.content[1] = 90
+    await ev(run('runEnd', 'r2'))
+    await ev(sess('stop'))
+    expect(f.profits.map(([id, p]) => [id, p?.chaos])).toEqual([
+      ['r1', 0],
+      ['r2', 40]
+    ])
+    expect(m.state().farm.session?.stoppedAt).toBeDefined()
+    expect(m.state().nextAutoAt).toBeUndefined()
+  })
+
+  it('без входа: сессия трекера идёт, запросов к сайту нет, прибыли нет', async () => {
+    const { provider, f, advance, ev } = await linked(false)
+    await ev(sess('start'))
+    await ev(run('runStart', 'r1'))
+    await advance(10 * 60_000)
+    await ev(run('runEnd', 'r1'))
+    await ev(run('runStart', 'r2'))
+    await ev(sess('stop'))
+    expect(provider.calls).toHaveLength(0)
+    expect(f.profits).toEqual([])
   })
 })
