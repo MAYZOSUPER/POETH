@@ -3,6 +3,8 @@
 Макеты всех окон v0.1 (RU/EN, простой и экспертный режим, заметки для разработки):
 https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице работают ровно эти `tokens.css` и `components.css`.
 «Богатство» (S11: тайник, сессия фарма, виджет): https://claude.ai/artifact/MwDu6fzMqo4HMSfQtacTe6.
+«Обмен» (S13: флиппинг валюты): https://claude.ai/artifact/8eEk4CukbHt7XV7a6UnKoE.
+«Прокачка PoE 1» (S14: гид поверх игры, «Кампания»): https://claude.ai/artifact/L6JxNpsHWvWrr7WJDpRUKg.
 Стиль и бренд: https://claude.ai/artifact/E3pqVxkC8CLw9XHPteKJzT, https://claude.ai/artifact/4M6dmGThWeL58snnyDbqww.
 
 ## Файлы
@@ -68,13 +70,15 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 | `.ui-credits` + `__head`, `__title`, `__lead`, `__list` (+ `.ui-scroll`), `__name` (имя в `<span>`, `since` — в `title`), `__empty`, `__note` | «Благодарности» в «О программе»: подписчики «Печать» из `resources/supporters.json` |
 | `.ui-box` + `__head`, `__body`, `__foot` | блок внутри окна компаньона (фон `--inset`), в шапке `.ui-label` и действия |
 | `.ui-table` + `.is-num`, `td.is-good` / `.is-bad` / `.is-faint`, `tr.is-now`, `__aside` | таблица: числа вправо табличными цифрами, текущая строка подсвечена |
+| `.ui-table--pick` (`tr tabindex="0" aria-selected`), сортировка — `<button aria-pressed>` в `th` | строки выбираются кликом и Enter, выбранная — с золотой чертой слева |
+| `.ui-reward` (`--passive`, `--trial`, `--flask`, `--gem`) + иконка того же имени | тег награды в маршруте прокачки: цвет всегда с иконкой и словом |
 | `.ui-item` (`--currency`, `--magic`, `--rare`, `--unique`, `--gem`) | имя предмета цветом редкости |
 | `.ui-tally` (`--bad`, `--zero`) | иконка + число (смерти за карту) |
 | `.ui-figure` + `__value`, `__unit`, `__alt`, `__note` | главная цифра экрана, одна на вид, обычные цифры (не табличные) |
 | `.ui-delta` (`--up`, `--down`) + `<span>` периода | изменение за период: цвет + стрелка `arrow-up/down` + текст |
 | `.ui-stats` (`--lead`: первая плитка шире), `.ui-stat` (`--hero`, `--empty`) + `__value`, `__sub` | плитки показателей; подпись — `.ui-label` |
 | `.ui-chips` (`--include`: выключенный чип зачёркнут) | ряд чипов-фильтров над данными |
-| `.ui-chart` + `__grid`, `__tick`, `__line`, `__dot`, `__value`, `__cross`, `__hit`, `__tip` (вместе с `.ui-tip`), `__table` | график одной серии по времени (SVG), см. «Графики» |
+| `.ui-chart` + `__grid`, `__tick`, `__line`, `__dot` (`--warn`), `__value` (`--warn`), `__band`, `__cross`, `__hit`, `__tip` (вместе с `.ui-tip`), `__table` | график одной серии по времени (SVG), см. «Графики» |
 | `.ui-bars` + `__row` (`--delta`, `--off`), `__name`, `__track` > `i`, `__value`, `__delta` (`--up`, `--down`), `__note` | разбивка по частям тонкими полосами |
 | `.ui-hud` (`--pause`) + `__grip`, `__seg`, `__time`, `__name`, `__lbl`, `__state`, `__sep` | полоса-виджет 34 px поверх игры (внутри `.ui-panel`) |
 | `.ui-divider`, `.ui-empty` + `__title`, `.ui-skeleton`, `.ui-scroll` | орнамент, пустые состояния, загрузка, прокрутка |
@@ -83,7 +87,8 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 (`--sm` 13 px, `--lg` 18 px). Список: check, cross, dash, close, min, max, search, star, bolt, external, chat, invite,
 trade, kick, heart, sold, ask, home, grid, help, warn, copy, refresh, support, gear, folder, archive, chev-r, chev-d,
 dots, plus, import, export, pin, lock, shield, logout, keyboard, layers, volume, info, game, pause, trash, edit, map,
-book, coins, compass, seal, history, arrow-up, arrow-down, chart, table, play, stop, death, drag.
+book, coins, compass, seal, history, arrow-up, arrow-down, chart, table, play, stop, death, drag, swap, passive, gem,
+trial, flask, step.
 Новые имена нужно добавить в тип `IconName` (`src/renderer/src/overlay/Icon.tsx`), если иконка берётся оттуда.
 
 ## Графики
@@ -92,6 +97,8 @@ book, coins, compass, seal, history, arrow-up, arrow-down, chart, table, play, s
 Шкала не от нуля, если показываем изменение (стоимость тайника); от нуля — если долю. Наведение и стрелки клавиатуры
 (`svg tabindex="0"`) двигают перекрестие `__cross` и подсказку `__tip`; кнопка «Таблица» показывает те же точки списком.
 Две величины разного масштаба на одном графике не рисуем — два графика.
+Коридор — `__band`: горизонтальная полоса мин–макс за период **без последнего часа**; последняя точка вне полосы —
+`__dot--warn` и `__value--warn`. Курс валюты показываем `.ui-delta` без `--up/--down`: рост не «хорошо» и не «плохо».
 
 ## «Богатство» (S11)
 Образец — макет «Богатство». Раскладка вкладки (`w-*` на макете) — в CSS панели, компоненты — из таблицы выше.
@@ -101,6 +108,27 @@ book, coins, compass, seal, history, arrow-up, arrow-down, chart, table, play, s
 - **Сессия фарма:** `.ui-stats--lead` (первая — `.ui-stat--hero` «Доход в час», без входа — `--empty`), «Забеги» —
   `.ui-table`, текущая карта `tr.is-now` сверху, смерти `.ui-tally`. Переключатель «Виджет поверх игры» выключен по умолчанию.
 - **Виджет:** `.ui-panel.ui-hud`, сверху по центру, тянется за `__grip`; пауза — `.ui-hud--pause`.
+
+## «Обмен» (S13)
+Образец — макет «Обмен». Иконка вкладки `swap`. Раскладка (`fx-*`) — в CSS панели.
+- **Шапка:** «данные биржи GGG за 14:00–15:00 · обновим в HH:05» и `.ui-banner--info` «Оценка, не live и не совет» — всегда.
+- **Фильтры:** `.ui-chips` — база (`.ui-seg`), чипы «Только надёжные» и «Без тренда · скрыто N», поиск; пороги — в эксперте.
+- **Таблица:** `.ui-table.ui-table--pick`, цены — `.is-num`, уверенность — `.ui-pips` + слово (в эксперте только точки),
+  золото — `.ui-coin--gold`. Под таблицей в `.ui-box__foot` — дисклеймер.
+- **Карточка «Как сделать этот флип у Фаустуса»:** шаги с готовыми числами «Отдаю / Хочу» и кнопкой копирования, справа итог
+  круга, доходность, комиссия, уверенность. Эксперт — без шагов.
+- **Курс divine : chaos:** `.ui-chart` + `__band`, 24 ч / 7 дн; переключатель «Сообщить, если курс выйдет из коридора недели»
+  выключен по умолчанию и всегда смотрит на коридор 7 дней.
+
+## «Прокачка PoE 1» (S14)
+Образец — макет «Прокачка PoE 1». Раскладка (`lv-*`) — в CSS панели.
+- **Гид поверх игры:** `.ui-panel` ~390 px слева под баффами. Шапка: акт и шаг, зона (`--font-display`), уровень, ◀ ▶, свернуть.
+  Один следующий шаг (иконка `step`), «Не пропустите» — до двух пунктов с иконками `passive`, `trial`, `flask`, `gem`.
+  «Важное здесь» — пункт в рамке `--border-strong`, «Не по маршруту» — `.ui-banner--info` с «Перейти к шагу N»,
+  свёрнуто — `.ui-hud`.
+- **Вкладка «Кампания» (PoE 1):** `.ui-tabs` актов 1–10, маршрут — строки с `.ui-check` и `.ui-reward`, «вы здесь»;
+  справа `.ui-box` «Не пропустить за кампанию» (`.ui-meter` пассивов и испытаний, баннер про сопротивления),
+  «Награды акта» и «Камни для класса».
 
 ## Кнопка «Поддержать проект»
 Иконка `support` (монета с сердцем, своя, без логотипа Boosty). Места: «О программе» в настройках, пункт меню

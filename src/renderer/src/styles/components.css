@@ -737,6 +737,23 @@
 .ui-table td.is-faint { color: var(--fg-faint); font-weight: 400; }
 .ui-table tr.is-now td { background: var(--accent-soft); }
 .ui-table__aside { margin-left: var(--sp-3); color: var(--fg-faint); font-size: var(--fs-xs); }
+/* --pick: строка выбирается кликом или Enter (tr tabindex="0" aria-selected), выбранная — с золотой чертой слева */
+.ui-table--pick tbody tr { cursor: pointer; }
+.ui-table--pick tbody tr:hover td { background: var(--hover); }
+.ui-table--pick tbody tr[aria-selected="true"] td { background: var(--selected); }
+.ui-table--pick tbody tr[aria-selected="true"] td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+.ui-table--pick tbody tr:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: -2px; }
+.ui-table th > button { all: unset; display: inline-flex; align-items: center; gap: 3px; cursor: pointer; }
+.ui-table th > button[aria-pressed="true"] { color: var(--accent-hi); }
+.ui-table th > button:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; border-radius: 2px; }
+
+/* тег награды (прокачка): иконка + слово; цвет всегда вместе с иконкой и текстом */
+.ui-reward { display: inline-flex; align-items: center; gap: var(--sp-2); padding: 1px var(--sp-3); border: 1px solid var(--border); border-radius: var(--r-sm); font: 600 var(--fs-2xs) / 1.4 var(--font-ui); letter-spacing: 0.03em; white-space: nowrap; }
+.ui-reward .ui-ico { width: 12px; height: 12px; }
+.ui-reward--passive { color: var(--accent-hi); border-color: var(--border-strong); }
+.ui-reward--trial { color: var(--info); border-color: color-mix(in srgb, var(--info) 45%, transparent); }
+.ui-reward--flask { color: var(--good); border-color: color-mix(in srgb, var(--good) 45%, transparent); }
+.ui-reward--gem { color: var(--rarity-gem); border-color: color-mix(in srgb, var(--rarity-gem) 45%, transparent); }
 
 /* имя предмета цветом редкости */
 .ui-item { display: inline-flex; align-items: center; gap: var(--sp-3); color: var(--rarity-normal); }
@@ -798,6 +815,10 @@
 .ui-chart__tip::before { top: auto; bottom: -5px; left: calc(50% - 4px); transform: rotate(225deg); }
 .ui-chart__tip span { color: var(--fg-muted); }
 .ui-chart__table { max-height: 168px; margin-top: var(--sp-4); border-top: 1px solid var(--border); }
+/* коридор: горизонтальная полоса мин–макс за период без последнего часа (rect); точка вне коридора — --warn */
+.ui-chart__band { fill: var(--accent); fill-opacity: 0.1; stroke: none; }
+.ui-chart__dot--warn { fill: var(--warn); }
+.ui-chart__value--warn { fill: var(--warn); }
 
 /* ================= полосы: разбивка по частям ================= */
 /* Одна полоса одного цвета на строку, значение у конца. --delta: колонка изменения (эксперт), --off: часть не считается. */
