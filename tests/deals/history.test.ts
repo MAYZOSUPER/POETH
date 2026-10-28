@@ -188,6 +188,17 @@ describe('настройки и файл', () => {
     expect(c.templates.en).toEqual(defaultDealsConfig().templates.en)
   })
 
+  it('«Показывать исходящие» по умолчанию включено; в файле версии 1 включается один раз', () => {
+    expect(defaultDealsConfig().showOutgoing).toBe(true)
+    // старый файл: выключено было значением по умолчанию — карточка после @To не появлялась
+    expect(normalizeDealsFile({ version: 1, config: { showOutgoing: false } }, T0).config.showOutgoing).toBe(true)
+    expect(normalizeDealsFile({ config: { showOutgoing: false } }, T0).config.showOutgoing).toBe(true)
+    // файл версии 2: выбор игрока сохраняется
+    const f = normalizeDealsFile({ version: 2, config: { showOutgoing: false } }, T0)
+    expect(f.config.showOutgoing).toBe(false)
+    expect(f.version).toBe(2)
+  })
+
   it('патч шаблона не трогает остальные', () => {
     const c = applyDealsConfigPatch(defaultDealsConfig(), { templates: { en: { sold: 'gone' } }, sound: false })
     expect(c.templates.en.sold).toBe('gone')

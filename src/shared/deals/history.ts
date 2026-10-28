@@ -13,7 +13,8 @@ import type {
 } from '../types/deals'
 import type { SystemEvent, WhisperEvent } from './whisperParse'
 
-export const DEALS_FILE_VERSION = 1
+/** 2 — «Показывать исходящие» включено по умолчанию (в файлах версии 1 оно включается один раз). */
+export const DEALS_FILE_VERSION = 2
 
 /** Повтор того же сообщения в течение этого времени поднимает старую сделку, а не плодит новую. */
 export const REPEAT_WINDOW_MS = 30 * 60_000
@@ -46,7 +47,7 @@ export function defaultDealsConfig(): DealsConfig {
     hideAfterSold: true,
     checkBlacklist: true,
     highlightStash: true,
-    showOutgoing: false,
+    showOutgoing: true,
     stashInFolder: false,
     historyLimit: DEFAULT_HISTORY_LIMIT,
     replyLang: 'auto',
@@ -140,6 +141,8 @@ function isDeal(v: unknown): v is Deal {
 export function normalizeDealsFile(raw: unknown, now: number): DealsFileData {
   if (!isObj(raw)) return emptyDealsFile()
   const config = normalizeDealsConfig(raw.config)
+  // до версии 2 исходящие были выключены по умолчанию — карточка после @To не появлялась
+  if (!(typeof raw.version === 'number' && raw.version >= 2)) config.showOutgoing = true
   const deals = (Array.isArray(raw.deals) ? raw.deals : []).filter(isDeal).map((d) => ({
     ...d,
     bulk: d.bulk === true,

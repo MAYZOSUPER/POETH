@@ -184,6 +184,8 @@ export type DealCardAction =
   | 'kick'
   | 'whois'
   | 'hideout'
+  /** исходящая: выйти из группы продавца (`/leave`) */
+  | 'leave'
   | 'thanks'
   | 'sold'
   | 'still'
