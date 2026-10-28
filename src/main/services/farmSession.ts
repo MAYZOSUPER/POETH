@@ -105,10 +105,19 @@ export class FarmSessionService extends EventEmitter {
   // Кнопки сессии и история
   // ---------------------------------------------------------------------------
 
-  async start(): Promise<FarmState> {
+  /** `strategy` — метка стратегии советника «что фармить» (S16). */
+  async start(strategy?: string): Promise<FarmState> {
     await this.load()
-    this.dispatch(this.tracker.startSession(this.now()))
+    this.dispatch(this.tracker.startSession(this.now(), strategy))
     return this.state()
+  }
+
+  /** Метка стратегии советника (S16) у идущей сессии; null — снять. false — сессии нет. */
+  async setStrategy(strategy: string | null): Promise<boolean> {
+    await this.load()
+    const ok = this.tracker.setSessionStrategy(strategy)
+    if (ok) this.changed()
+    return ok
   }
 
   async pause(): Promise<FarmState> {
