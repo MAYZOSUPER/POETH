@@ -1,0 +1,89 @@
+/* Вкладка «Обмен» (S13) — раскладка утверждённого макета «Обмен» v2 (классы fx-*). Компоненты ui-* — из
+   components.css (.ui-chart__band, .ui-table--pick и иконка swap — из дизайн-системы). */
+
+.flip-tab {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.fx-pad { display: grid; gap: 14px; padding: 14px 16px 18px; align-content: start; container-type: inline-size; }
+.fx-top { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 14px; align-items: start; }
+.fx-intro { display: grid; gap: 10px; min-width: 0; }
+.fx-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.fx-title h3 { margin: 0; font: 700 22px / 1.1 var(--font-display); letter-spacing: 0.03em; color: var(--accent-hi); }
+.fx-fresh { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sm); color: var(--fg-muted); }
+.fx-banner { border: 1px solid color-mix(in srgb, var(--info) 30%, transparent); border-radius: var(--r-panel); }
+.fx-filters { display: grid; gap: 8px; }
+.fx-num { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sm); color: var(--fg-muted); }
+.fx-num .ui-input { width: 52px; }
+.fx-search { width: 200px; }
+.fx-hint { padding: 0; }
+.fx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* трекер курса */
+.fx-rate-body { display: grid; gap: 8px; }
+.fx-rate { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.fx-rate .ui-figure__value { font-size: 30px; }
+.fx-rate .ui-coin { width: 20px; height: 20px; margin-right: 6px; vertical-align: -2px; }
+.fx-rate-wait { display: grid; gap: 10px; }
+.fx-band-l { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; font-size: var(--fs-xs); color: var(--fg-muted); }
+.fx-legend { display: inline-flex; align-items: center; gap: 6px; }
+.fx-legend i { display: inline-block; width: 14px; height: 8px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.fx-legend i.ln { height: 2px; background: var(--accent); }
+.fx-warn { border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); border-radius: var(--r-sm); }
+
+/* таблица возможностей */
+.fx-scroll { overflow-x: auto; }
+.fx-table .ui-coin { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
+.fx-pair { display: grid; gap: 1px; min-width: 0; }
+.fx-pair b { font-weight: 600; white-space: nowrap; }
+.fx-pair span { font-size: var(--fs-xs); color: var(--fg-faint); }
+.fx-conf { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: var(--fs-xs); color: var(--fg-muted); }
+.fx-liq { font-size: var(--fs-xs); color: var(--fg-muted); white-space: nowrap; }
+.fx-kind,
+.fx-table td.is-num { white-space: nowrap; }
+.fx-pair .fx-trend,
+.fx-trend { color: var(--warn); }
+.fx-empty { padding: 26px 12px; }
+.fx-err { border-top: 0; }
+.ui-box__foot.fx-foot { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 6px; font-size: var(--fs-xs); color: var(--fg-faint); }
+.ui-box__foot.fx-foot .ui-ico { flex: none; margin-top: 1px; }
+
+/* карточка «как сделать» */
+.fx-how-name { font-weight: 600; }
+.fx-how { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.fx-steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; counter-reset: st; }
+.fx-steps > li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; counter-increment: st; }
+.fx-steps > li::before { content: counter(st); display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--border-strong); border-radius: 50%; color: var(--accent-hi); font: 700 12px / 1 var(--font-ui); }
+.fx-steps b { color: var(--fg); }
+.fx-steps p { margin: 2px 0 0; color: var(--fg-muted); }
+.fx-order { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 6px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--sunken); font-variant-numeric: tabular-nums; }
+.fx-order .arrow { color: var(--fg-faint); }
+.fx-order b { color: var(--accent-hi); }
+.fx-sum { display: grid; gap: 10px; }
+.fx-kv { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; font-size: var(--fs-md); }
+.fx-kv span { color: var(--fg-muted); }
+.fx-kv b { text-align: right; font-variant-numeric: tabular-nums; }
+.fx-kv b.good { color: var(--good); }
+.fx-kv .ui-coin { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
+.fx-kv .fx-conf { font-size: var(--fs-sm); }
+
+/* макет рассчитан на компаньон 1040 px; окно уже — по ширине содержимого, а не окна */
+@container (max-width: 720px) {
+  .fx-top { grid-template-columns: minmax(0, 1fr); }
+  .fx-top .ui-chart { max-width: 440px; }
+}
+/* компаньон по умолчанию ~820 px: таблица простого режима без горизонтальной прокрутки */
+@container (max-width: 900px) {
+  .fx-table th,
+  .fx-table td { padding-left: 8px; padding-right: 8px; }
+  .fx-table th.is-num { white-space: normal; }
+  .fx-pair b { white-space: normal; }
+  /* слово уверенности новичку важнее точек — не прячем, а ставим под них */
+  .fx-table .fx-conf { flex-direction: column; align-items: flex-start; gap: 2px; }
+}
+@container (max-width: 640px) {
+  .fx-how { grid-template-columns: minmax(0, 1fr); }
+}

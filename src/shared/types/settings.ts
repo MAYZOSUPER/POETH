@@ -14,7 +14,7 @@ import type { PriceCheckSettings } from './trade'
 export type UiLang = 'ru' | 'en'
 
 /** top-level tab of the companion window */
-export type AppTab = 'campaign' | 'priceCheck' | 'live' | 'regex' | 'deals' | 'wealth'
+export type AppTab = 'campaign' | 'priceCheck' | 'live' | 'regex' | 'deals' | 'wealth' | 'flip'
 
 /**
  * Область хоткея: 'game' — работает только пока окно игры в фокусе (гейтинг — S1),

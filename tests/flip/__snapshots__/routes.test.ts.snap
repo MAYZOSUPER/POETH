@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`маршруты на реальных часах фида (Allflame, 24 ч) > топ флипов стабилен на зафиксированных часах 1`] = `
+[
+  "CXC Harvest Scarab of Doubling ≤121 chaos ≥147 chaos ×27",
+  "CXD Valdo's Puzzle Box ≤270 chaos ≥1 divine ×12",
+  "CXC Stacked Deck ≤5 chaos ≥6 chaos ×670",
+  "DXD Divination Scarab of The Cloister ≤0.0833 divine ≥0.1 divine ×120",
+]
+`;

@@ -31,7 +31,7 @@ export type WIcoName =
   | 'stop'
 
 
-function ensureSprite(): void {
+export function ensureSprite(): void {
   if (typeof document === 'undefined' || document.getElementById('i-check')) return
   const holder = document.createElement('div')
   holder.setAttribute('aria-hidden', 'true')

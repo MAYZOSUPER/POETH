@@ -79,6 +79,7 @@ function memStore() {
 
 function prices(): PriceService {
   const p = new PriceService({
+    feed: { refresh: async () => true, hours: () => [] },
     getJson: async () => ({ status: 404, json: null }),
     readCache: async () => null,
     writeCache: async () => undefined,
