@@ -127,6 +127,16 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 29.10)_ слиты S19 `805ff1b` (сессия s19-narrow): компаньон от 560 px — `.body > * {min-width:0}`, `.app`
+  `overflow:clip`, `overflow-wrap:break-word`, таблицы «Что прибавилось» и находок Live прокручиваются внутри, строка вкладок —
+  прокрутка (минимум до новой навигации), «Кампания» PoE 1 < 900 px; и S17 `bc62500` (сессия s17-strategies): код `POETH1:`
+  (лимиты до/после распаковки, валидатор), свои стратегии в userData, редактор-мастер, «Поделиться» (код, ссылка, ник, форма
+  каталога через main), «Импорт» (7 состояний), протокол `poeth-strategy://` (только импорт, без автодобавления; регистрируется
+  лишь установленной версией с включённым советником), каталог `community/*.json` + `tools/advisor/add-strategy.mjs` + форма
+  issue (метка `strategy` создана), страницы `site/strategies/` (бандл общего кода, только textContent; в меню сайта не
+  ссылаются). Вкладка скрыта флагом. 1608 тестов. Собран rc.7. Долг: ключ `HKCU\Software\Classes\poeth-strategy` при
+  удалении (`build/installer.nsh`) — к включению советника; гонка `profiles:create` ENOENT при первом запуске (на работу не влияет).
+  Макет навигации (3 варианта, рекомендован А — блоки-разделы) — у пользователя на выборе.
 - _(лид, 29.10)_ слиты `design/strategies` `df26ba9` (дизайнер: `ui-steps`, `ui-dialog`, `ui-code`, `ui-mech`, `ui-pips--accent`,
   7 иконок механик, `empty-route.svg`; макеты стратегий утверждены пользователем 28.10) и S18 `d704017` (сессия s18-currency,
   `09bf847`…`ff22efe`): понятная валюта — иконки сфер через кэш main `userData/icons` (только web.poecdn.com, без cookies и
