@@ -9,6 +9,8 @@
 //   catalog.json     — каталог: наши стратегии (advisor/strategies.json) и сообщества (advisor/community/*.json)
 //                      с готовыми кодами POETH1 (кнопка «Скопировать код» и ссылка на просмотр);
 //   names-ru.json    — русские имена предметов обмена по английскому (данные APT), для RU-страницы.
+// Снимок цен site/strategies/prices.json ({ label: {ru, en}, items: PriceEntry[] }) — необязательный: если он
+// лежит рядом, каталог отмечает его, и сайт считает доход в час тем же расчётом, что приложение; нет — «в приложении».
 // Сборки на GitHub Pages нет: файлы лежат в репозитории, `npm test` проверяет, что они не устарели
 // (tests/advisor/site.test.ts). Запускать после правки src/shared/advisor/**, стратегий или каталога —
 // add-strategy.mjs делает это сам.
@@ -51,7 +53,14 @@ export async function buildCatalog(core, communityDir) {
     if (!r.ok) throw new Error(`${path.relative(ROOT, f.file)}: ${r.error}`)
     items.push({ kind: 'community', checked: r.entry.checked, code: await core.encodeStrategyNode(r.entry.strategy), strategy: r.entry.strategy })
   }
-  return { schema: 1, patch: data.data.patch, updatedAt: data.data.updatedAt, strategies: items }
+  const out = { schema: 1, patch: data.data.patch, updatedAt: data.data.updatedAt, strategies: items }
+  // необязательный снимок цен (prices.json рядом): сайт запрашивает его, только если он есть
+  const hasPrices = await fs
+    .access(path.join(SITE_DIR, 'prices.json'))
+    .then(() => true)
+    .catch(() => false)
+  if (hasPrices) out.prices = 'prices.json'
+  return out
 }
 
 /** Русские имена предметов обмена (и всех ref каталога), отсортированы по ключу. */
@@ -99,7 +108,8 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
     const core = await loadAdvisorCore()
     let stale = []
     for (const [name, text] of Object.entries(files)) {
-      const cur = await fs.readFile(path.join(SITE_DIR, name), 'utf8').catch(() => '')
+      // в рабочей копии Windows файлы могут быть с CRLF (core.autocrlf) — сравниваем без него
+      const cur = (await fs.readFile(path.join(SITE_DIR, name), 'utf8').catch(() => '')).replace(/\r\n/g, '\n')
       if (name === 'catalog.json') {
         // коды зависят от версии zlib — сравниваем раскрытые стратегии, а не байты
         const a = JSON.parse(text)
@@ -112,6 +122,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
         const same =
           b &&
           b.patch === a.patch &&
+          b.prices === a.prices &&
           b.strategies.length === a.strategies.length &&
           (await Promise.all(
             a.strategies.map(async (x, i) => {
