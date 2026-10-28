@@ -35,6 +35,13 @@ whose full history is kept in this repository.
   `main.ts` `create-browser-window`). No code is copied; POETH sizes it to the game window and keeps
   its own security rules (isolated session, no preload, navigation allowlist). Its whisper/hideout
   chat commands (clipboard + Enter + Ctrl+V) match what POETH already does via `typeInChat`.
+- **[exile-leveling](https://github.com/HeartofPhos/exile-leveling)** — HeartofPhos, **MIT License**,
+  Copyright (c) 2025 HeartofPhos. The PoE 1 leveling route (acts 1–10), areas, quests with gem rewards
+  and class start gems (`common/data/json/*.json`, `common/data/routes/act-N.txt`, pinned commit
+  `b7b2dd0`) are converted by `tools/leveling/build.mjs` into our own dataset
+  `resources/data/poe1/leveling/leveling.json`; the route syntax handling follows its
+  `common/src/route-processing`. Russian step texts are our own translation; Russian zone, quest and boss
+  names are facts taken from [poedb.tw/ru](https://poedb.tw/ru).
 - **poe.re is NOT used.** It has no license, so none of its code or data is copied;
   POETH's regex engine is implemented independently.
 - **Native modules** (added in later stages): `electron-overlay-window`, `uiohook-napi`
