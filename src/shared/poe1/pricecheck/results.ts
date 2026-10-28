@@ -30,10 +30,17 @@ export interface Poe1Listing {
   /** готовый текст whisper от сайта (у in-person) — игрок копирует его сам */
   whisper?: string
   itemLevel?: number
+  /** осквернён ли лот (сайт пишет `corrupted` только при true); нет `item` в ответе — undefined */
   corrupted?: boolean
   /** имя и база предмета на языке сайта — «Купить» открывает этот лот в трейд-окне (S5, {lot}) */
   itemName?: string
   baseType?: string
+  /** S15: самая длинная группа связанных гнёзд (`item.sockets[].group`); гнёзд нет — undefined */
+  links?: number
+  /** S15: Foulborn-версия уника (`item.mutated`) */
+  foulborn?: boolean
+  /** S15: есть зачарование (`item.enchantMods`) — лабиринт, помазание и т.п. */
+  enchanted?: boolean
 }
 
 /** Сырой элемент ответа /api/trade/fetch (только используемые поля). */
@@ -46,7 +53,28 @@ export interface TradeFetchItem {
     whisper?: string | null
     account?: { name?: string; lastCharacterName?: string; online?: { status?: string } | null } | null
   }
-  item?: { ilvl?: number; corrupted?: boolean; name?: string; typeLine?: string; baseType?: string }
+  item?: {
+    ilvl?: number
+    corrupted?: boolean
+    name?: string
+    typeLine?: string
+    baseType?: string
+    sockets?: Array<{ group?: number } | null> | null
+    /** PoE1: true у Foulborn-уников (документация GGG, тип Item) */
+    mutated?: boolean
+    enchantMods?: string[] | null
+  }
+}
+
+/** Самая длинная группа связей: гнёзда с одинаковым `group` связаны между собой. */
+function linksOf(sockets: unknown): number | undefined {
+  if (!Array.isArray(sockets) || !sockets.length) return undefined
+  const groups = new Map<number, number>()
+  for (const s of sockets) {
+    const g = (s as { group?: unknown } | null)?.group
+    if (typeof g === 'number') groups.set(g, (groups.get(g) ?? 0) + 1)
+  }
+  return groups.size ? Math.max(...groups.values()) : undefined
 }
 
 /** Текст предмета от сайта без разметки вида <<set:MS>>; пусто — undefined. */
@@ -64,6 +92,7 @@ export function normalizeListing(r: TradeFetchItem): Poe1Listing {
       ? { amount: l.price.amount, currency: l.price.currency }
       : null
   const status = l.account?.online ? (l.account.online.status === 'afk' ? 'afk' : 'online') : 'offline'
+  const item = r.item
   return {
     id: r.id,
     kind: fee != null ? 'instant' : 'person',
@@ -75,11 +104,15 @@ export function normalizeListing(r: TradeFetchItem): Poe1Listing {
     // мерчант-листинг доступен всегда (как у APT)
     online: fee != null ? 'online' : status,
     whisper: typeof l.whisper === 'string' && l.whisper ? l.whisper : undefined,
-    itemLevel: r.item?.ilvl,
-    corrupted: r.item?.corrupted,
-    itemName: siteText(r.item?.name),
+    itemLevel: item?.ilvl,
+    // флаги сайт пишет только со значением true: есть предмет без флага — значит false
+    corrupted: item ? item.corrupted === true : undefined,
+    itemName: siteText(item?.name),
     // у магических typeLine с аффиксами — для запроса лота нужна база
-    baseType: siteText(r.item?.baseType) ?? siteText(r.item?.typeLine)
+    baseType: siteText(item?.baseType) ?? siteText(item?.typeLine),
+    links: linksOf(item?.sockets),
+    foulborn: item ? item.mutated === true : undefined,
+    enchanted: item ? Array.isArray(item.enchantMods) && item.enchantMods.length > 0 : undefined
   }
 }
 

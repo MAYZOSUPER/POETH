@@ -77,13 +77,6 @@
   padding: var(--sp-5);
 }
 
-.pc-btns {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--sp-3);
-}
-
 /* «честная цена»: две группы — купить сейчас (торговец) и по whisper (лично) */
 .pc-summary {
   display: grid;
@@ -233,4 +226,82 @@
 }
 .pc-lot-note.is-bad {
   color: var(--warn);
+}
+
+/* S15: вердикт «что делать с предметом» — одна плашка над ценами; цвет дублируется иконкой и текстом */
+.pc-verdict {
+  --tone: var(--accent);
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-6);
+  border-top: 1px solid color-mix(in srgb, var(--tone) 35%, transparent);
+  background: color-mix(in srgb, var(--tone) 9%, transparent);
+}
+.pc-verdict--good {
+  --tone: var(--good);
+}
+.pc-verdict--info {
+  --tone: var(--info);
+}
+.pc-verdict--muted {
+  --tone: var(--fg-muted);
+}
+.pc-verdict > .ui-ico {
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  color: var(--tone);
+}
+.pc-verdict--accent > .ui-ico {
+  color: var(--accent-hi);
+}
+.pc-verdict__text {
+  display: grid;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+.pc-verdict__title {
+  color: var(--fg);
+  font: 700 var(--fs-md) / 1.3 var(--font-ui);
+}
+.pc-verdict__sub {
+  color: var(--fg-muted);
+  font: 400 var(--fs-xs) / 1.35 var(--font-ui);
+}
+.pc-verdict__note {
+  display: flex;
+  padding-top: var(--sp-2);
+}
+.pc-verdict__acts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* предупреждения «не тот вариант»: жёлтые строки под вердиктом, больше двух — под «Ещё N» */
+.pc-warns {
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-6) var(--sp-4);
+  background: color-mix(in srgb, var(--warn) 6%, transparent);
+}
+.pc-warn {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--sp-3);
+  color: var(--warn);
+  font: 500 var(--fs-xs) / 1.35 var(--font-ui);
+}
+.pc-warn > .ui-ico {
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+}
+.pc-warns__more {
+  justify-self: start;
 }
