@@ -41,12 +41,12 @@
   gap: var(--sp-3);
   align-items: center;
 }
+/* базы 320 и 190 px — подсказки RU целиком: на 560 px ссылка занимает строку, название и кнопка переносятся ниже (S19) */
 .live-add-row .ui-input {
-  flex: 3 1 260px;
+  flex: 3 1 320px;
   width: auto;
   min-width: 0;
 }
-/* 190 px — «Название (необязательно)» целиком, иначе подсказка режется на 560 px (S19) */
 .live-add-row .live-add-title {
   flex: 1 1 190px;
 }
