@@ -1,4 +1,5 @@
-/* Вкладка «Обмен» (S13) — по docs/design-system.md, пока нет макета. Компоненты ui-*, здесь только раскладка. */
+/* Вкладка «Обмен» (S13) — раскладка утверждённого макета «Обмен» v2 (классы fx-*). Компоненты ui-* — из
+   components.css; .ui-chart__band (коридор курса) временно здесь — пока дизайнер не перенёс его в дизайн-систему. */
 
 .flip-tab {
   width: 100%;
@@ -7,112 +8,92 @@
   color: var(--fg);
   font: var(--fs-md) / var(--lh) var(--font-ui);
 }
-.fl-pad {
-  display: grid;
-  gap: 14px;
-  align-content: start;
-  padding: 14px 16px 18px;
-}
-.fl-grow {
-  flex: 1;
-}
-.fl-muted {
-  color: var(--fg-muted);
-  font-size: var(--fs-sm);
-}
-.fl-top {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-4) var(--sp-7);
-  align-items: center;
-}
-.fl-rate {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-3) var(--sp-6);
-  align-items: baseline;
-}
-.fl-rate__value {
-  color: var(--accent-hi);
-  font-size: var(--fs-lg);
-  font-weight: 600;
-}
-.fl-rate__meta,
-.fl-feed {
-  color: var(--fg-muted);
-  font-size: var(--fs-sm);
-}
-.fl-banner {
-  border: 1px solid color-mix(in srgb, var(--info) 30%, transparent);
-  border-radius: var(--r-panel);
-}
+.fx-pad { display: grid; gap: 14px; padding: 14px 16px 18px; align-content: start; container-type: inline-size; }
+.fx-top { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 14px; align-items: start; }
+.fx-intro { display: grid; gap: 10px; min-width: 0; }
+.fx-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.fx-title h3 { margin: 0; font: 700 22px / 1.1 var(--font-display); letter-spacing: 0.03em; color: var(--accent-hi); }
+.fx-fresh { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sm); color: var(--fg-muted); }
+.fx-banner { border: 1px solid color-mix(in srgb, var(--info) 30%, transparent); border-radius: var(--r-panel); }
+.fx-filters { display: grid; gap: 8px; }
+.fx-num { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sm); color: var(--fg-muted); }
+.fx-num .ui-input { width: 52px; }
+.fx-search { width: 200px; }
+.fx-hint { padding: 0; }
+.fx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.fl-cards {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+/* трекер курса */
+.fx-rate-body { display: grid; gap: 8px; }
+.fx-rate { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.fx-rate .ui-figure__value { font-size: 30px; }
+.fx-rate .ui-coin { width: 20px; height: 20px; margin-right: 6px; vertical-align: -2px; }
+.fx-rate-wait { display: grid; gap: 10px; }
+.fx-band-l { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; font-size: var(--fs-xs); color: var(--fg-muted); }
+.ui-chart__band { fill: var(--accent); fill-opacity: 0.1; stroke: none; }
+.ui-chart__dot.fx-out { fill: var(--warn); }
+.ui-chart__value.fx-out { fill: var(--warn); }
+.fx-legend { display: inline-flex; align-items: center; gap: 6px; }
+.fx-legend i { display: inline-block; width: 14px; height: 8px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.fx-legend i.ln { height: 2px; background: var(--accent); }
+.fx-warn { border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); border-radius: var(--r-sm); }
+
+/* таблица возможностей */
+.fx-scroll { overflow-x: auto; }
+.fx-table tbody tr { cursor: pointer; }
+.fx-table tbody tr:hover td { background: var(--hover); }
+.fx-table tbody tr:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: -2px; }
+.fx-table tbody tr[aria-selected="true"] td { background: var(--selected); }
+.fx-table tbody tr[aria-selected="true"] td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+.fx-table th button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; }
+.fx-table th button:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; border-radius: 2px; }
+.fx-table th button[aria-pressed="true"] { color: var(--accent-hi); }
+.fx-table .ui-coin { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
+.fx-pair { display: grid; gap: 1px; min-width: 0; }
+.fx-pair b { font-weight: 600; white-space: nowrap; }
+.fx-pair span { font-size: var(--fs-xs); color: var(--fg-faint); }
+.fx-conf { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: var(--fs-xs); color: var(--fg-muted); }
+.fx-liq { font-size: var(--fs-xs); color: var(--fg-muted); white-space: nowrap; }
+.fx-kind,
+.fx-table td.is-num { white-space: nowrap; }
+.fx-pair .fx-trend,
+.fx-trend { color: var(--warn); }
+.fx-empty { padding: 26px 12px; }
+.fx-err { border-top: 0; }
+.ui-box__foot.fx-foot { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 6px; font-size: var(--fs-xs); color: var(--fg-faint); }
+.ui-box__foot.fx-foot .ui-ico { flex: none; margin-top: 1px; }
+
+/* карточка «как сделать» */
+.fx-how-name { font-weight: 600; }
+.fx-how { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.fx-steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; counter-reset: st; }
+.fx-steps > li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; counter-increment: st; }
+.fx-steps > li::before { content: counter(st); display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--border-strong); border-radius: 50%; color: var(--accent-hi); font: 700 12px / 1 var(--font-ui); }
+.fx-steps b { color: var(--fg); }
+.fx-steps p { margin: 2px 0 0; color: var(--fg-muted); }
+.fx-order { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 6px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--sunken); font-variant-numeric: tabular-nums; }
+.fx-order .arrow { color: var(--fg-faint); }
+.fx-order b { color: var(--accent-hi); }
+.fx-sum { display: grid; gap: 10px; }
+.fx-kv { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; font-size: var(--fs-md); }
+.fx-kv span { color: var(--fg-muted); }
+.fx-kv b { text-align: right; font-variant-numeric: tabular-nums; }
+.fx-kv b.good { color: var(--good); }
+.fx-kv .ui-coin { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
+.fx-kv .fx-conf { font-size: var(--fs-sm); }
+
+/* макет рассчитан на компаньон 1040 px; окно уже — по ширине содержимого, а не окна */
+@container (max-width: 720px) {
+  .fx-top { grid-template-columns: minmax(0, 1fr); }
+  .fx-top .ui-chart { max-width: 440px; }
 }
-.fl-card {
-  display: grid;
-  gap: var(--sp-3);
-  padding: var(--sp-5) var(--sp-6);
+/* компаньон по умолчанию ~820 px: таблица простого режима без горизонтальной прокрутки */
+@container (max-width: 900px) {
+  .fx-table th,
+  .fx-table td { padding-left: 8px; padding-right: 8px; }
+  .fx-table th.is-num { white-space: normal; }
+  .fx-pair b { white-space: normal; }
+  .fx-table .fx-conf__w { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
-.fl-card + .fl-card {
-  border-top: 1px solid var(--border);
-}
-.fl-card__head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-3) var(--sp-5);
-  align-items: center;
-}
-.fl-card__name {
-  font-weight: 600;
-}
-.fl-conf {
-  display: inline-flex;
-  gap: var(--sp-3);
-  align-items: center;
-  color: var(--fg-muted);
-  font-size: var(--fs-sm);
-}
-.fl-card__line {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-2) var(--sp-6);
-  align-items: baseline;
-}
-.fl-card__per {
-  color: var(--good);
-}
-.fl-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-1) var(--sp-6);
-  color: var(--fg-muted);
-  font-size: var(--fs-sm);
-}
-.fl-steps {
-  display: grid;
-  gap: var(--sp-2);
-  margin: var(--sp-3) 0 0;
-  padding-left: var(--sp-8);
-  color: var(--fg);
-  font-size: var(--fs-sm);
-}
-.fl-scroll {
-  overflow-x: auto;
-}
-.fl-table td,
-.fl-table th {
-  white-space: nowrap;
-}
-.fl-filters {
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-}
-.fl-note {
-  margin: 0;
-  color: var(--fg-faint);
-  font-size: var(--fs-xs);
+@container (max-width: 640px) {
+  .fx-how { grid-template-columns: minmax(0, 1fr); }
 }

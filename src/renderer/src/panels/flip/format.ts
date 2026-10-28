@@ -1,4 +1,4 @@
-// Форматирование вкладки «Обмен» (S13): цены, ордера, уверенность.
+// Форматирование вкладки «Обмен» (S13): цены, проценты, время, подписи маршрутов.
 
 import type { FlipBase, FlipRoute, FlipRouteKind, WealthItemNs } from '@shared/types'
 
@@ -11,14 +11,28 @@ export function num(v: number, lang: string): string {
   return v.toLocaleString(locale(lang), { maximumFractionDigits: d, minimumFractionDigits: 0 })
 }
 
+/** Число с фиксированными знаками после запятой (курс, коридор). */
+export function fixed(v: number, digits: number, lang: string): string {
+  return v.toLocaleString(locale(lang), { maximumFractionDigits: digits, minimumFractionDigits: 0 })
+}
+
+/** Целое с разрядами (количества, золото); минус — типографский. */
+export function int(v: number, lang: string): string {
+  const s = Math.round(Math.abs(v)).toLocaleString(locale(lang))
+  return v < 0 ? `−${s}` : s
+}
+
+/** Цена штуки: от 100 — целое, меньше — три значащие цифры (0,0833 div; 1,38 c). */
+export function price(v: number, lang: string): string {
+  if (Math.abs(v) >= 100) return int(v, lang)
+  return Number(v.toPrecision(3)).toLocaleString(locale(lang), { maximumFractionDigits: 6 })
+}
+
 export function pct(v: number, lang: string): string {
   return `${(v * 100).toLocaleString(locale(lang), { maximumFractionDigits: 1 })}%`
 }
 
-/** «●●○» — три деления уверенности. */
-export function pips(confidence: number): number {
-  return confidence >= 0.75 ? 3 : confidence >= 0.5 ? 2 : 1
-}
+export const UNIT: Record<FlipBase, string> = { chaos: 'c', divine: 'div' }
 
 export const KIND_LABEL: Record<FlipRouteKind, string> = {
   CXC: 'C → X → C',
@@ -27,16 +41,17 @@ export const KIND_LABEL: Record<FlipRouteKind, string> = {
   DXC: 'D → X → C'
 }
 
-export function baseKey(b: FlipBase): string {
-  return b === 'chaos' ? 'flip.base.chaos' : 'flip.base.divine'
-}
-
 /** Пространство имён предмета фида — для русского имени по данным APT. */
 export function itemNs(route: FlipRoute): WealthItemNs {
   return route.item.startsWith('DivinationCards/') ? 'DIVINATION_CARD' : 'ITEM'
 }
 
-/** Золото на весь флип (размер ордера × золото за штуку). */
+/** Золото на весь флип (размер × золото за штуку). */
 export function goldTotal(r: FlipRoute): number {
   return Math.round(r.goldPerUnit * r.units)
+}
+
+/** «14:00» — местное время часа фида (24 часа и в EN, как в макете). */
+export function clock(ms: number, lang: string): string {
+  return new Date(ms).toLocaleTimeString(locale(lang), { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
 }

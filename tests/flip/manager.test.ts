@@ -99,6 +99,8 @@ describe('менеджер флиппинга', () => {
     const on = setup(feed)
     await on.m.start()
     await on.m.setOptions({ divineAlert: true })
+    // включили, когда курс уже вне коридора, — тост сразу, а не со следующим часом фида
+    expect(on.alerts).toHaveLength(1)
     on.update()
     on.update()
     expect(on.alerts).toEqual([{ dir: 'above', rate: 400, lo: 300, hi: 309, hour: H * 1000 }])

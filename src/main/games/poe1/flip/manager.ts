@@ -175,6 +175,8 @@ export class FlipManager {
     const p = (patch && typeof patch === 'object' ? patch : {}) as Partial<FlipOptions>
     this.options = sanitizeOptions({ ...this.options, ...p })
     await this.save()
+    // включили, когда курс уже вне коридора, — тост сразу (баннер под графиком: «уже отправлен»)
+    this.maybeAlert(this.snap.divine)
     this.emit()
     return this.state()
   }

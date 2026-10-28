@@ -58,7 +58,7 @@ function getManager(): FlipManager {
     loadConfig: () => readJson<unknown>(configFile(), null),
     saveConfig: (cfg) => writeJsonAtomic(configFile(), cfg),
     emit: (s) => broadcast(IPC.events.flipState, s),
-    // тост показывает оверлей (виджет «Обмен» по макету — после утверждения)
+    // тост показывает оверлей: src/renderer/src/overlay/flip/widget.tsx
     alert: (a) => broadcast(IPC.events.flipAlert, a),
     log
   })
