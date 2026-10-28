@@ -16,7 +16,7 @@
 // «Стоп» → финальный снимок. Прибыль группы — qtyProfit (без дрейфа цен) → setRunProfit(последний, {chaos, runs}).
 
 import type {
-  FarmSession,
+  WealthFarmSession,
   WealthAccountResult,
   WealthDiff,
   WealthError,
@@ -197,7 +197,7 @@ export class WealthManager {
     return reconcileSelection(list, saved)
   }
 
-  private session(): FarmSession | null {
+  private session(): WealthFarmSession | null {
     const s = this.cfg.session
     return s && s.league === this.league ? s : null
   }

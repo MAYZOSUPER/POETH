@@ -5,7 +5,7 @@
 // час назад (линейная интерполяция между снимками). Короче 5 минут — «в час» не считаем:
 // одна находка дала бы бессмысленные тысячи в час.
 
-import type { FarmSession, FarmView, WealthPoint } from '../types/wealth'
+import type { WealthFarmSession, WealthFarmView, WealthPoint } from '../types/wealth'
 
 export const MIN_RATE_SPAN_MS = 5 * 60_000
 const HOUR_MS = 3_600_000
@@ -77,13 +77,13 @@ export function ratePerHour(from: WealthPoint, to: WealthPoint): number | null {
  * Состояние фарма по сессии и точкам лиги. Точки сессии — от снимка «Начать» до «Стоп»
  * (или до последнего, если сессия идёт).
  */
-export function farmView(session: FarmSession | null, points: readonly WealthPoint[]): FarmView {
+export function farmView(session: WealthFarmSession | null, points: readonly WealthPoint[]): WealthFarmView {
   if (!session) return { session: null, snapshots: 0 }
   const end = session.stoppedAt ?? Infinity
   const inSession = sortPoints(points).filter((p) => p.at >= session.startedAt && p.at <= end)
   const start: WealthPoint = { at: session.startedAt, chaos: session.startChaos, divineRate: 0 }
   const lastPoint = inSession[inSession.length - 1]
-  const view: FarmView = { session, snapshots: inSession.length }
+  const view: WealthFarmView = { session, snapshots: inSession.length }
   if (!lastPoint || lastPoint.at <= start.at) {
     view.gain = 0
     view.lastHour = null
@@ -100,11 +100,11 @@ export function farmView(session: FarmSession | null, points: readonly WealthPoi
 }
 
 /** Начать сессию со снимка `id` стоимостью `chaos`. */
-export function startSession(league: string, at: number, id: string, chaos: number): FarmSession {
+export function startSession(league: string, at: number, id: string, chaos: number): WealthFarmSession {
   return { league, startedAt: at, startId: id, startChaos: chaos }
 }
 
 /** Остановить сессию на снимке `id`. */
-export function stopSession(s: FarmSession, at: number, id: string, chaos: number): FarmSession {
+export function stopSession(s: WealthFarmSession, at: number, id: string, chaos: number): WealthFarmSession {
   return { ...s, stoppedAt: at, endId: id, endChaos: chaos }
 }

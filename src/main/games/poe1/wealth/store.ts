@@ -10,7 +10,7 @@
 
 import { promises as fs } from 'fs'
 import path from 'path'
-import type { FarmSession, WealthOptions, WealthSnapshot, WealthSummary } from '@shared/types/wealth'
+import type { WealthFarmSession, WealthOptions, WealthSnapshot, WealthSummary } from '@shared/types/wealth'
 import type { StashTabInfo } from '@shared/wealth/stash'
 import { DEFAULT_AUTO_INTERVAL_MIN, MAX_AUTO_INTERVAL_MIN, MIN_AUTO_INTERVAL_MIN } from '@shared/wealth/tabs'
 import { readJson, writeJsonAtomic } from '../../../services/atomicJson'
@@ -26,7 +26,7 @@ export interface WealthConfig {
   selected: Record<string, string[]>
   /** последний список вкладок по лигам */
   tabs: Record<string, { at: number; list: StashTabInfo[] }>
-  session: FarmSession | null
+  session: WealthFarmSession | null
 }
 
 export const DEFAULT_OPTIONS: WealthOptions = {
