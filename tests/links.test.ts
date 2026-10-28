@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BOOSTY_URL, isAllowedExternalUrl } from '@shared/links'
+import { BOOSTY_URL, isAllowedExternalUrl, isSiteExternalUrl } from '@shared/links'
 
 describe('isAllowedExternalUrl', () => {
   it('пропускает https на официальный сайт и Boosty', () => {
@@ -17,5 +17,22 @@ describe('isAllowedExternalUrl', () => {
     expect(isAllowedExternalUrl('javascript:alert(1)')).toBe(false)
     expect(isAllowedExternalUrl('not a url')).toBe(false)
     expect(isAllowedExternalUrl(42)).toBe(false)
+  })
+})
+
+describe('isSiteExternalUrl (переходы из окна сайта)', () => {
+  it('allowlist и прочий Steam — в системный браузер', () => {
+    expect(isSiteExternalUrl(BOOSTY_URL)).toBe(true)
+    expect(isSiteExternalUrl('https://store.steampowered.com/join/')).toBe(true)
+    expect(isSiteExternalUrl('https://help.steampowered.com/wizard/HelpWithLogin')).toBe(true)
+    expect(isSiteExternalUrl('https://steamcommunity.com/id/someone')).toBe(true)
+  })
+
+  it('renderer Steam не открывает; чужие и http — никуда', () => {
+    expect(isAllowedExternalUrl('https://store.steampowered.com/')).toBe(false)
+    expect(isSiteExternalUrl('http://store.steampowered.com/')).toBe(false)
+    expect(isSiteExternalUrl('https://store.steampowered.com.evil.com/')).toBe(false)
+    expect(isSiteExternalUrl('https://evil.example.com/')).toBe(false)
+    expect(isSiteExternalUrl(42)).toBe(false)
   })
 })

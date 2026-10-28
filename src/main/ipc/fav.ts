@@ -1,7 +1,7 @@
 import { clipboard, ipcMain, webContents, type IpcMainInvokeEvent } from 'electron'
 import { IPC } from '@shared/ipc'
 import type { GameDef, GameId } from '@shared/games'
-import { isAllowedExternalUrl } from '@shared/links'
+import { isSiteExternalUrl } from '@shared/links'
 import type {
   CurrentSearchResult,
   FavData,
@@ -298,7 +298,7 @@ function wire(): void {
     } catch {
       host = ''
     }
-    broadcast(IPC.events.favBlocked, { host, external: isAllowedExternalUrl(url) })
+    broadcast(IPC.events.favBlocked, { host, external: isSiteExternalUrl(url) })
   })
   // вошли через страницу /login в трейд-окне — сразу на сайт трейда
   let wasIn = false

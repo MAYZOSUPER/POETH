@@ -89,6 +89,9 @@ lock. `secret.json` компаса (POESESSID, safeStorage) копируется
   poeprices / GitHub — отдельная сессия без cookies.
 - `siteView`: `sandbox`, `contextIsolation`, без `nodeIntegration`/preload; навигация только внутри
   pathofexile.com, остальное → системный браузер; `window.open`/загрузки/разрешения запрещены.
+  Исключение — вход через Steam: по действию страницы можно на `https://steamcommunity.com/oauth/…`
+  и `/openid/…` (`isSteamLoginUrl` в `net/guards.ts`); прочий Steam → системный браузер (`isSiteExternalUrl`, `@shared/links`);
+  свои переходы (адресная строка, «Открыть лот») — только pathofexile.com (`isSitePageUrl`).
 - Hardening (S3/S10): fuses `RunAsNode=off`, `EnableNodeCliInspectArguments=off`, `OnlyLoadAppFromAsar=on`,
   `EmbeddedAsarIntegrityValidation=on`; CSP в наших окнах (✅ есть); проверка `event.senderFrame` во всех IPC;
   `openExternal` — только https + allowlist (✅ есть: `src/shared/links.ts` — `www|ru.pathofexile.com`, `boosty.to`).

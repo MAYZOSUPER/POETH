@@ -6,6 +6,8 @@ import {
   isCloudflareChallenge,
   isPoeHost,
   isSiteNavigationAllowed,
+  isSitePageUrl,
+  isSteamLoginUrl,
   isTrustedAppUrl,
   isValidPoesessid,
   maskHeaders,
@@ -75,10 +77,40 @@ describe('навигация окна сайта', () => {
     expect(isSiteNavigationAllowed('https://challenges.cloudflare.com/cdn-cgi/challenge-platform/x')).toBe(true)
   })
 
+  it('вход через Steam: только steamcommunity.com/oauth/… и /openid/…', () => {
+    // так /login/steam GGG перенаправляет на Steam (вживую, 28.10.2026)
+    const oauth =
+      'https://steamcommunity.com/oauth/login?client_id=638D1D3B' +
+      '&redirect_uri=https%3A%2F%2Fwww.pathofexile.com%2Flogin%2Fsteam-auth&response_type=code'
+    expect(isSteamLoginUrl(oauth)).toBe(true)
+    expect(isSiteNavigationAllowed(oauth)).toBe(true)
+    expect(isSiteNavigationAllowed('https://steamcommunity.com/openid/login?openid.mode=checkid_setup')).toBe(true)
+    for (const url of [
+      'https://steamcommunity.com/',
+      'https://steamcommunity.com/id/someone',
+      'https://steamcommunity.com/openidx',
+      'https://steamcommunity.com/oauthx/login',
+      'https://steamcommunity.com/oauth',
+      'https://steamcommunity.com/login/home/?goto=openid',
+      'http://steamcommunity.com/openid/login',
+      'https://steamcommunity.com.evil.com/openid/login',
+      'https://evil-steamcommunity.com/openid/login',
+      'https://store.steampowered.com/',
+      'https://login.steampowered.com/'
+    ]) {
+      expect(isSiteNavigationAllowed(url), url).toBe(false)
+    }
+  })
+
+  it('свои переходы (адресная строка, «Открыть лот») — без Steam', () => {
+    expect(isSitePageUrl('https://www.pathofexile.com/trade')).toBe(true)
+    expect(isSitePageUrl('https://challenges.cloudflare.com/x')).toBe(true)
+    expect(isSitePageUrl('https://steamcommunity.com/oauth/login')).toBe(false)
+  })
+
   it('всё остальное — нельзя', () => {
     for (const url of [
       'https://pathofexile.com.evil.com/login',
-      'https://steamcommunity.com/openid/login',
       'http://www.pathofexile.com/login',
       'https://cloudflare.com/',
       'file:///C:/Windows/win.ini',

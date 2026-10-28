@@ -109,6 +109,12 @@ cookie сессии — приложение его **не отправляет*
   poe.ninja/poeprices/GitHub — отдельная сессия без cookies.
 - **siteView:** `sandbox:true`, `contextIsolation`, без `nodeIntegration`/preload; навигация только внутри pathofexile.com,
   остальное → системный браузер; `window.open`/загрузки/разрешения запрещены; `webviewTag` выключен.
+  **Вход через Steam (решение лида, 28.10):** по действию страницы главный фрейм может перейти ещё и на
+  `https://steamcommunity.com/oauth/…` (OAuth Steam: `/login/steam` GGG → `steamcommunity.com/oauth/login?client_id=…`
+  → `pathofexile.com/login/steam-auth`; проверено вживую) и `/openid/…`. Пароль Steam и Steam Guard
+  вводятся на странице Steam; её запросы к `login.steampowered.com` — подресурсы, не навигация. Прочие страницы
+  Steam (профиль, магазин, помощь) → системный браузер (`isSiteExternalUrl`). Свои переходы (адресная строка,
+  «Открыть лот») — только pathofexile.com (`isSitePageUrl`). Cookies Steam живут в том же partition, «Выйти» чистит и их.
 - **Hardening:** fuses `RunAsNode=off`, `EnableNodeCliInspectArguments=off`, `OnlyLoadAppFromAsar=on`,
   `EmbeddedAsarIntegrityValidation=on`; CSP в наших окнах; проверка `event.senderFrame` во всех IPC; `openExternal` — https+allowlist.
 - **Выход** чистит partition. Фолбэк «вставить POESESSID» → `cookies.set` в partition + копия в `safeStorage` (уже есть

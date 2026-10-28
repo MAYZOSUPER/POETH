@@ -3,7 +3,7 @@ import path from 'path'
 import type { TradeSiteState } from '@shared/types'
 import { isAllowedExternalUrl } from '@shared/links'
 import { hardenSiteContents, siteWebPreferences } from '../net/siteContents'
-import { isSiteNavigationAllowed } from '../net/guards'
+import { isSitePageUrl } from '../net/guards'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
 import { ensureGameForeground } from './gameOverlay'
 import { loadRendererPage } from './rendererPage'
@@ -261,7 +261,7 @@ export async function toggleTradeWindow(opts: { title: string; defaultUrl: () =>
 
 /** Открыть страницу сайта в siteView (только pathofexile.com / проверка Cloudflare). */
 export function loadSite(url: string): boolean {
-  if (!site || !isSiteNavigationAllowed(url)) return false
+  if (!site || !isSitePageUrl(url)) return false
   void site.webContents.loadURL(url).catch(() => publishSite({ loading: false }))
   return true
 }
