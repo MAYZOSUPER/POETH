@@ -113,6 +113,24 @@ export function minAutoIntervalMin(requests: number, windows: readonly BudgetWin
   return min
 }
 
+/** Не чаще раза в минуту (кнопка «Обновить», границы карт). */
+export const MIN_SNAPSHOT_SPACING_MS = 60_000
+
+/**
+ * Минимальный промежуток между снимками (мс), чтобы `requests` запросов на снимок выдерживали
+ * все окна лимита с резервом: requests · period / capacity. Для снимков на границах карт (S11b) —
+ * без пола авто-снимков: 5 вкладок ≈ 4,5 мин, 25 ≈ 22 мин.
+ */
+export function minSnapshotSpacingMs(requests: number, windows: readonly BudgetWindow[] = STASH_DEFAULT_WINDOWS): number {
+  let ms = MIN_SNAPSHOT_SPACING_MS
+  for (const w of windows) {
+    const cap = Math.floor(w.hits * (1 - STASH_RESERVE))
+    if (cap <= 0 || requests <= 0) continue
+    ms = Math.max(ms, Math.ceil((requests * w.periodSec * 1000) / cap))
+  }
+  return ms
+}
+
 /** Фактический интервал: желаемый пользователем, но не меньше лимита сайта и в пределах 15–60 мин. */
 export function effectiveAutoIntervalMin(wanted: number, requests: number, windows?: readonly BudgetWindow[]): number {
   const w = Number.isFinite(wanted) ? Math.round(wanted) : DEFAULT_AUTO_INTERVAL_MIN

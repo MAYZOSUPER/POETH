@@ -217,6 +217,8 @@ export interface WealthState {
   prices: WealthPriceInfo
   /** когда следующий авто-снимок (мс epoch) */
   nextAutoAt?: number
+  /** сессией фарма управляет трекер карт S11b (свои кнопки «Начать/Стоп» не показываем) */
+  farmLinked?: boolean
 }
 
 export type WealthResult = { ok: true } | { ok: false; error: WealthError }

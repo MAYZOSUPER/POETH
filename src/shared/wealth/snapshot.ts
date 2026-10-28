@@ -99,6 +99,28 @@ export function buildSnapshot(input: BuildSnapshotInput): WealthSnapshot {
 }
 
 /**
+ * Прибыль между снимками без дрейфа цен: Σ (штук после − штук до) × цена штуки (из снимка «после»,
+ * для пропавшего — из «до»). Предметы без цены не входят; low — часть суммы по ценам «мало сделок».
+ */
+export function qtyProfit(from: WealthSnapshot, to: WealthSnapshot): { chaos: number; low: boolean } {
+  const before = new Map(from.lines.map((l) => [l.key, l]))
+  const after = new Map(to.lines.map((l) => [l.key, l]))
+  let chaos = 0
+  let low = false
+  for (const key of new Set([...before.keys(), ...after.keys()])) {
+    const a = before.get(key)
+    const b = after.get(key)
+    const dq = (b?.qty ?? 0) - (a?.qty ?? 0)
+    if (!dq) continue
+    const unit = b?.unit ?? a?.unit
+    if (unit === undefined) continue
+    chaos += dq * unit
+    if ((b ?? a)?.low) low = true
+  }
+  return { chaos: round2(chaos), low }
+}
+
+/**
  * Что изменилось между снимками: по строкам — разница штук и стоимости (по ценам снимка
  * «после»; пропавшее — по ценам снимка «до»). Сортировка — по модулю стоимости.
  */
