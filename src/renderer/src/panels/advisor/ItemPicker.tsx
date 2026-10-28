@@ -1,6 +1,8 @@
 import { useEffect, useId, useState } from 'react'
 import type { AdvisorItemHit } from '@shared/ipc/advisor'
+import type { UiLang } from '@shared/types'
 import { useT } from '../../i18n'
+import { Currency } from '../../components/Currency'
 import { chaosText } from './view'
 
 // Поиск предмета для редактора (S17): по русскому или английскому имени, в подсказке оба имени и цена штуки по
@@ -83,7 +85,9 @@ export function ItemPicker({ lang, onPick, label }: { lang: string; onPick: (hit
             >
               <span>{main(h)}</span>
               {other(h) && <small>{other(h)}</small>}
-              <span className="ad-opt__price">{h.unit === null ? t('advisor.noPrice') : t('advisor.chaos', { v: chaosText(h.unit, lang) })}</span>
+              <span className="ad-opt__price">
+                {h.unit === null ? t('advisor.noPrice') : <Currency tag="chaos" text={`~${chaosText(h.unit, lang)}`} lang={lang as UiLang} noTip />}
+              </span>
             </button>
           ))}
         </div>

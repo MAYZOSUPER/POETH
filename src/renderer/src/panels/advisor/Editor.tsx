@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { AdvisorItemHit } from '@shared/ipc/advisor'
-import type { AdvisorLevel, AdvisorMapEstimate, AdvisorState, AdvisorStrategy, AdvisorText } from '@shared/types'
+import type { AdvisorLevel, AdvisorMapEstimate, AdvisorState, AdvisorStrategy, AdvisorText, UiLang } from '@shared/types'
 import type { FarmSessionSummary, FarmState } from '@shared/types/farm'
 import {
   MECHANICS,
@@ -17,6 +17,7 @@ import {
 import { LIMITS } from '@shared/advisor/validate'
 import { today } from '@shared/advisor/library'
 import { useT } from '../../i18n'
+import { Currency } from '../../components/Currency'
 import { useAdvisorStore } from '../../store/useAdvisorStore'
 import { clock } from '../flip/format'
 import { AIco, type AIcoName } from './ui'
@@ -237,14 +238,20 @@ function LineRows({
                 <span className="ad-faint">—</span>
               ) : p?.unit != null ? (
                 <>
-                  {t('advisor.chaos', { v: chaosText(p.unit, lang) })} <span className="ad-faint">{t('advisor.ed.exchange')}</span>
+                  <Currency tag="chaos" text={`~${chaosText(p.unit, lang)}`} lang={lang as UiLang} /> <span className="ad-faint">{t('advisor.ed.exchange')}</span>
                 </>
               ) : (
                 <span className="ad-faint">{t('advisor.noPrice')}</span>
               )}
             </span>
             <span className="ad-irow__sum">
-              {own ? <span className="ad-faint">{t('advisor.own')}</span> : p?.total != null ? t('advisor.chaos', { v: chaosText(p.total, lang) }) : <span className="ad-faint">—</span>}
+              {own ? (
+                <span className="ad-faint">{t('advisor.own')}</span>
+              ) : p?.total != null ? (
+                <Currency tag="chaos" text={`~${chaosText(p.total, lang)}`} lang={lang as UiLang} />
+              ) : (
+                <span className="ad-faint">—</span>
+              )}
             </span>
             {input ? (
               <label className="ad-irow__own">
@@ -306,7 +313,15 @@ function StepIn({ d, update, err, t, lang, expert, estimate, nameOf }: StepProps
       {d.inputs.length > 0 && (
         <div className="ad-total">
           <span className="ad-muted">{t('advisor.ed.in.total')}</span>
-          <b>{cost == null ? t('advisor.noPrice') : cost === 0 ? t('advisor.ed.in.ownOnly') : t('advisor.chaos', { v: chaosText(cost, lang) })}</b>
+          <b>
+            {cost == null ? (
+              t('advisor.noPrice')
+            ) : cost === 0 ? (
+              t('advisor.ed.in.ownOnly')
+            ) : (
+              <Currency tag="chaos" text={`~${chaosText(cost, lang)}`} full={!expert} lang={lang as UiLang} />
+            )}
+          </b>
           <span className="ad-xs ad-faint">{t('advisor.ed.in.others')}</span>
         </div>
       )}
@@ -316,7 +331,7 @@ function StepIn({ d, update, err, t, lang, expert, estimate, nameOf }: StepProps
 
 // ---------------------------------------------------------------------------- шаг 3: что получаешь
 
-function StepOut({ d, update, err, t, lang, estimate, nameOf, farm, patch }: StepProps & { nameOf: NameOf; farm: FarmState | null; patch: string }) {
+function StepOut({ d, update, err, t, lang, expert, estimate, nameOf, farm, patch }: StepProps & { nameOf: NameOf; farm: FarmState | null; patch: string }) {
   const sessions: FarmSessionSummary[] = (farm?.sessions ?? []).slice(0, 20)
   const pick = (ids: string[]): void => {
     const m = measureSessions(
@@ -401,7 +416,9 @@ function StepOut({ d, update, err, t, lang, estimate, nameOf, farm, patch }: Ste
                 <b>{t('advisor.ed.sess.takenV', { maps: d.measured.maps, hours: minutesText(d.measured.hours, lang) })}</b>
                 <span className="ad-trust ad-trust--measured">
                   <AIco name="chart" size="sm" />
-                  {t('advisor.ed.sess.tag', { maps: d.measured.maps, hours: minutesText(d.measured.hours, lang), v: chaosText(d.measured.perHour, lang) })}
+                  {t('advisor.ed.sess.tag', { maps: d.measured.maps, hours: minutesText(d.measured.hours, lang) })}
+                  <Currency tag="chaos" text={`~${chaosText(d.measured.perHour, lang)}`} full={!expert} lang={lang as UiLang} />
+                  {t('advisor.ed.perHour')}
                 </span>
               </div>
             ) : (
