@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
 import path from 'path'
-import { FARM_RUNS_LIMIT, FarmTracker, normalizeFarmData } from '@shared/farm/tracker'
+import { FARM_RUNS_LIMIT, FarmTracker, cleanProfit, normalizeFarmData } from '@shared/farm/tracker'
+import { profitCells } from '../../src/renderer/src/panels/farm/format'
 import type { FarmEvent } from '@shared/types/farm'
 
 // Забеги и сессия фарма (S11b) на синтетических логах EN и RU (tests/farm/fixtures, ники
@@ -183,9 +184,10 @@ describe('FarmTracker — прибыль от S11a и история', () => {
     )
     const first = (ev.find((e) => e.type === 'runEnd') as Extract<FarmEvent, { type: 'runEnd' }>).run
     const second = (ev.find((e) => e.type === 'runStart' && e.run.seed === '6') as Extract<FarmEvent, { type: 'runStart' }>).run
-    expect(tr.setRunProfit(first.id, { chaos: 120 })).toBe(true)
-    expect(tr.setRunProfit(second.id, { chaos: -20 })).toBe(true)
-    expect(tr.setRunProfit('нет-такого', { chaos: 1 })).toBe(false)
+    expect(tr.setRunProfit(first.id, { chaos: 120, runs: 1, divineRate: 180 })).toBe(true)
+    expect(tr.setRunProfit(second.id, { chaos: -20, runs: 1 })).toBe(true)
+    expect(tr.setRunProfit('нет-такого', { chaos: 1, runs: 1 })).toBe(false)
+    expect(tr.snapshot(at('21:30:00')).runs[0].profit).toEqual({ chaos: 120, runs: 1, divineRate: 180 })
     const stats = tr.snapshot(at('21:30:00')).stats
     expect(stats?.profitChaos).toBe(100)
     expect(stats?.profitPerHour).toBeCloseTo(100 * 2, 6)
@@ -208,6 +210,41 @@ describe('FarmTracker — прибыль от S11a и история', () => {
     tr.clearHistory()
     expect(tr.snapshot(0).runs).toEqual([])
     expect(tr.snapshot(0).current?.seed).toBe(String(1000 + FARM_RUNS_LIMIT + 4))
+  })
+})
+
+describe('прибыль группой (S11a: снимок тайника между картами не успел)', () => {
+  it('cleanProfit: runs ≥ 1, курс и «мало сделок» — только корректные', () => {
+    expect(cleanProfit({ chaos: 50 })).toEqual({ chaos: 50, runs: 1 })
+    expect(cleanProfit({ chaos: 90, runs: 3.7, divineRate: 175, low: true })).toEqual({ chaos: 90, runs: 3, divineRate: 175, low: true })
+    expect(cleanProfit({ chaos: 10, runs: 0, divineRate: -1, low: 'да' })).toEqual({ chaos: 10, runs: 1 })
+    expect(cleanProfit({ chaos: Number.NaN, runs: 1 })).toBeNull()
+    expect(cleanProfit(null)).toBeNull()
+  })
+
+  it('группа из 3 карт: сумма на последней, у двух предыдущих — доля; без прибыли — «считаем…»', () => {
+    const tr = new FarmTracker()
+    tr.startSession(at('21:00:00'))
+    const lines: string[] = []
+    for (let i = 0; i < 5; i++) lines.push(zone(`21:${10 + i * 5}:00`, 'MapWorldsLair', 77, 100 + i), zone(`21:${12 + i * 5}:00`, 'HideoutSpace', 60, 1))
+    lines.push(zone('21:40:00', 'MapWorldsLair', 77, 200))
+    tr.ingestLines(lines, 0)
+    // свежие сверху: [r4, r3, r2, r1, r0]
+    const runs = tr.snapshot(at('21:41:00')).runs
+    expect(runs).toHaveLength(5)
+    tr.setRunProfit(runs[1].id, { chaos: 90, runs: 3, low: true }) // r3 за r1…r3
+    tr.setRunProfit(runs[4].id, { chaos: 20, runs: 1 }) // r0
+    const st = tr.snapshot(at('21:41:00'))
+    const cells = profitCells(st.runs)
+    expect(st.runs.map((r) => cells.get(r.id))).toEqual([
+      { kind: 'pending' },
+      { kind: 'group', chaos: 90, share: 30, runs: 3, low: true },
+      { kind: 'inGroup', share: 30, runs: 3, low: true },
+      { kind: 'inGroup', share: 30, runs: 3, low: true },
+      { kind: 'own', chaos: 20, low: false }
+    ])
+    // в сумме сессии группа — один раз
+    expect(st.stats?.profitChaos).toBe(110)
   })
 })
 

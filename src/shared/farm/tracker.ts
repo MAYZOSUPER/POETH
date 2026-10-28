@@ -81,11 +81,27 @@ export function emptyFarmData(): FarmTrackerData {
 }
 
 const zoneKey = (z: ZoneEnter): string => `${z.areaId}#${z.seed}`
+/** Копия забега наружу (события, снимок): прибыль — тоже копия. */
+const copyRun = (r: FarmRun): FarmRun => (r.profit ? { ...r, profit: { ...r.profit } } : { ...r })
+
+/** Прибыль от S11a: chaos обязателен, runs ≥ 1 (по умолчанию 1); прочее — если корректно. */
+export function cleanProfit(v: unknown): FarmProfit | null {
+  const p = v as Partial<FarmProfit> | null
+  if (!p || typeof p.chaos !== 'number' || !Number.isFinite(p.chaos)) return null
+  const runs = typeof p.runs === 'number' && Number.isFinite(p.runs) && p.runs >= 1 ? Math.floor(p.runs) : 1
+  return {
+    chaos: p.chaos,
+    runs,
+    ...(typeof p.divineRate === 'number' && Number.isFinite(p.divineRate) && p.divineRate > 0 ? { divineRate: p.divineRate } : {}),
+    ...(p.low === true ? { low: true } : {})
+  }
+}
 const span = (from: number, to: number): number => Math.max(0, to - from)
 
 function cleanRun(r: unknown): FarmRun | null {
   const x = r as FarmRun
   if (!x || typeof x.id !== 'string' || typeof x.areaId !== 'string' || typeof x.startTs !== 'number') return null
+  const profit = cleanProfit(x.profit)
   return {
     id: x.id,
     areaId: x.areaId,
@@ -100,7 +116,7 @@ function cleanRun(r: unknown): FarmRun | null {
     entries: Number.isFinite(x.entries) ? x.entries : 1,
     deaths: Number.isFinite(x.deaths) ? x.deaths : 0,
     sessionId: typeof x.sessionId === 'string' ? x.sessionId : null,
-    ...(x.profit && Number.isFinite(x.profit.chaos) ? { profit: { chaos: x.profit.chaos } } : {})
+    ...(profit ? { profit } : {})
   }
 }
 
@@ -224,7 +240,7 @@ export class FarmTracker {
       }
       d.current = run
       d.currentZones = [key]
-      out.push({ type: 'runStart', run: { ...run }, at: ts })
+      out.push({ type: 'runStart', run: copyRun(run), at: ts })
     }
     d.inside = true
     d.enteredAt = d.session?.pausedAt != null ? null : ts
@@ -264,7 +280,7 @@ export class FarmTracker {
     if (d.runs.length > FARM_RUNS_LIMIT) d.runs.length = FARM_RUNS_LIMIT
     d.current = null
     d.currentZones = []
-    return { type: 'runEnd', run: { ...run }, at }
+    return { type: 'runEnd', run: copyRun(run), at }
   }
 
   /** Закрыть открытый забег (смена игры, «Стоп»). Если игрок внутри — конец сейчас. */
@@ -357,11 +373,15 @@ export class FarmTracker {
   // История
   // ---------------------------------------------------------------------------
 
-  /** Прибыль забега от S11a; null — убрать. false — забега нет. */
+  /**
+   * Прибыль забега от S11a (на группу из profit.runs забегов — на последний из них); null или
+   * некорректная — убрать. false — забега нет.
+   */
   setRunProfit(runId: string, profit: FarmProfit | null): boolean {
     const run = this.d.current?.id === runId ? this.d.current : this.d.runs.find((r) => r.id === runId)
     if (!run) return false
-    if (profit && Number.isFinite(profit.chaos)) run.profit = { chaos: profit.chaos }
+    const clean = cleanProfit(profit)
+    if (clean) run.profit = clean
     else delete run.profit
     return true
   }
@@ -419,7 +439,7 @@ export class FarmTracker {
   /** Состояние для renderer и S11a; `runsLimit` — сколько забегов отдать в историю. */
   snapshot(now: number, runsLimit = FARM_RUNS_LIMIT): FarmState {
     const d = this.d
-    const current = d.current ? { ...d.current, activeMs: this.liveActive(d.current, now) } : null
+    const current = d.current ? { ...copyRun(d.current), activeMs: this.liveActive(d.current, now) } : null
     return {
       at: now,
       current,
@@ -428,7 +448,7 @@ export class FarmTracker {
       location: d.location ? { ...d.location } : null,
       session: d.session ? { ...d.session } : null,
       stats: d.session ? this.statsFor(d.session, now) : null,
-      runs: d.runs.slice(0, runsLimit).map((r) => ({ ...r })),
+      runs: d.runs.slice(0, runsLimit).map(copyRun),
       sessions: d.sessions.map((s) => ({ ...s, stats: { ...s.stats } })),
       config: { ...d.config, widgetPos: d.config.widgetPos ? { ...d.config.widgetPos } : null }
     }

@@ -58,6 +58,49 @@ export function income(perHourChaos: number, chaosPerDivine: number | null, lang
     : { main: `${chaos(perHourChaos, lang)} chaos`, sub: `≈ ${divText(div, 2)} div` }
 }
 
+/**
+ * Ячейка «Прибыль» забега. Прибыль от S11a приходит на последний забег группы (profit.runs > 1, когда
+ * лимит сайта не дал снять снимок тайника между картами); предыдущие runs − 1 — «в группе» с долей.
+ */
+export type ProfitCell =
+  | { kind: 'own'; chaos: number; low: boolean }
+  | { kind: 'group'; chaos: number; share: number; runs: number; low: boolean }
+  | { kind: 'inGroup'; share: number; runs: number; low: boolean }
+  | { kind: 'pending' }
+
+/** Ячейки прибыли завершённых забегов; `runs` — свежие сверху (как в истории). */
+export function profitCells(runs: FarmRun[]): Map<string, ProfitCell> {
+  const out = new Map<string, ProfitCell>()
+  let left = 0
+  let group: { share: number; runs: number; low: boolean } | null = null
+  for (const r of runs) {
+    const p = r.profit
+    if (p) {
+      const low = p.low === true
+      if (p.runs > 1) {
+        group = { share: p.chaos / p.runs, runs: p.runs, low }
+        left = p.runs - 1
+        out.set(r.id, { kind: 'group', chaos: p.chaos, ...group })
+      } else {
+        left = 0
+        out.set(r.id, { kind: 'own', chaos: p.chaos, low })
+      }
+    } else if (left > 0 && group) {
+      left -= 1
+      out.set(r.id, { kind: 'inGroup', ...group })
+    } else {
+      out.set(r.id, { kind: 'pending' })
+    }
+  }
+  return out
+}
+
+/** Свежий курс div → chaos из прибылей забегов (S11a кладёт его в каждую прибыль). */
+export function latestDivineRate(runs: FarmRun[]): number | null {
+  for (const r of runs) if (r.profit?.divineRate) return r.profit.divineRate
+  return null
+}
+
 /** «Карта» для строки: имя на языке клиента, иначе id без префикса MapWorlds. */
 export function runName(run: Pick<FarmRun, 'areaName' | 'areaId'>): string {
   if (run.areaName) return run.areaName
