@@ -38,6 +38,34 @@ export function netWorthAt(points: readonly WealthPoint[], at: number, holdLast 
 
 const round2 = (n: number): number => Math.round(n * 100) / 100
 
+const DAY_MS = 24 * HOUR_MS
+
+/**
+ * Точки для графика в renderer: последние 7 дней — все (не больше `max`, иначе каждая n-я),
+ * раньше — последняя точка каждого дня. История итогов хранится вся, в IPC уходит сжатая.
+ */
+export function chartPoints(points: readonly WealthPoint[], now: number, max = 1500): WealthPoint[] {
+  const p = sortPoints(points)
+  const recentFrom = now - 7 * DAY_MS
+  const old: WealthPoint[] = []
+  let lastDay = NaN
+  for (const x of p) {
+    if (x.at >= recentFrom) break
+    const day = Math.floor(x.at / DAY_MS)
+    if (day === lastDay) old[old.length - 1] = x
+    else old.push(x)
+    lastDay = day
+  }
+  let recent = p.filter((x) => x.at >= recentFrom)
+  if (recent.length > max) {
+    const step = Math.ceil(recent.length / max)
+    const last = recent[recent.length - 1]
+    recent = recent.filter((_, i) => i % step === 0)
+    if (recent[recent.length - 1] !== last) recent.push(last)
+  }
+  return [...old, ...recent]
+}
+
 /** Доход в час (chaos/ч) между двумя точками; null — слишком коротко. */
 export function ratePerHour(from: WealthPoint, to: WealthPoint): number | null {
   const span = to.at - from.at
