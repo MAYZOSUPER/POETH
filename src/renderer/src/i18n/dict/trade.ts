@@ -195,7 +195,22 @@ export const trade: DomainDict = {
     'pc1.prop.item.map_item_rarity': 'Редкость предметов: +#%',
     'pc1.prop.item.map_pack_size': 'Размер групп монстров: +#%',
     'pc1.prop.item.chart_sulphur': 'Мертвецкая сера: +#%',
-    'pc1.prop.item.has_empty_modifier': 'Есть свободное или ремесленное свойство'
+    'pc1.prop.item.has_empty_modifier': 'Есть свободное или ремесленное свойство',
+    'pc1.rate': '1 div = {n} c',
+    'pc1.rate.title': 'Курс chaos к divine',
+    'pc1.rate.src': 'Обмен валюты GGG за последний час · {league}',
+    'pc1.conv.toDiv': '{c} c ≈ {d} div',
+    'pc1.conv.toChaos': '{d} div ≈ {c} c',
+    'pc1.search.dirty': 'Фильтры изменены',
+    'pc1.defaults.rare': 'Отмечены моды лучших тиров (T1–T2), суммы сопротивлений и здоровья, у оружия — DPS: от них сильнее всего зависит цена. Минимум — на 10% ниже вашего значения.',
+    'pc1.defaults.rareNone': 'Модов высоких тиров нет — ищем похожие предметы этого типа. Отметьте свойства, которые считаете ценными.',
+    'pc1.defaults.unid': 'Неопознанный предмет — ищем по базе и уровню предмета.',
+    'pc1.defaults.magic': 'Отмечены все свойства: у волшебного предмета их немного, и все влияют на цену.',
+    'pc1.defaults.unique': 'Ищем по названию уника — его свойства известны заранее. Учтены связи и порча.',
+    'pc1.defaults.timeless': 'Цена timeless-джуэла зависит от сида и завоевателя — ищем такой же.',
+    'pc1.defaults.gem': 'Ищем камни того же уровня и качества — от них зависит цена.',
+    'pc1.defaults.map': 'Ищем карты того же уровня (тира).',
+    'pc1.defaults.bulk': 'Ищем по названию; размер стопки можно отметить в фильтрах предмета.'
   },
   en: {
     'soon.priceCheck':
@@ -388,6 +403,21 @@ export const trade: DomainDict = {
     'pc1.prop.item.map_item_rarity': 'Item Rarity: +#%',
     'pc1.prop.item.map_pack_size': 'Monster Pack Size: +#%',
     'pc1.prop.item.chart_sulphur': 'Dead Man\'s Sulphur: +#%',
-    'pc1.prop.item.has_empty_modifier': '1 Empty or Crafted Modifier'
+    'pc1.prop.item.has_empty_modifier': '1 Empty or Crafted Modifier',
+    'pc1.rate': '1 div = {n} c',
+    'pc1.rate.title': 'Chaos to divine rate',
+    'pc1.rate.src': 'GGG currency exchange, last hour · {league}',
+    'pc1.conv.toDiv': '{c} c ≈ {d} div',
+    'pc1.conv.toChaos': '{d} div ≈ {c} c',
+    'pc1.search.dirty': 'Filters changed',
+    'pc1.defaults.rare': 'Top-tier mods (T1–T2), total resistances and life, and DPS for weapons are checked: they drive the price most. The minimum is 10% below your value.',
+    'pc1.defaults.rareNone': 'No top-tier mods — we look for similar items of this type. Check the mods you think are valuable.',
+    'pc1.defaults.unid': 'Unidentified item — we search by base type and item level.',
+    'pc1.defaults.magic': 'All mods are checked: a magic item has few of them and each affects the price.',
+    'pc1.defaults.unique': 'We search by the unique name — its mods are known in advance. Links and corruption are taken into account.',
+    'pc1.defaults.timeless': 'A timeless jewel is priced by its seed and conqueror — we look for the same one.',
+    'pc1.defaults.gem': 'We look for gems of the same level and quality — they set the price.',
+    'pc1.defaults.map': 'We look for maps of the same tier.',
+    'pc1.defaults.bulk': 'We search by name; the stack size can be checked in the item filters.'
   }
 }

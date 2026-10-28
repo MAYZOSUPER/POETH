@@ -8,6 +8,7 @@
 import type { ItemInfluence, ItemCategory } from '../../parser'
 import { ModifierType, ModifierMechanic, type StatCalculated } from '../../parser/modifiers'
 import type { TimelessSearch } from './pseudo/timeless-jewel'
+import type { DefaultsHint } from './defaults'
 
 /**
  * Статус листингов на трейде:
@@ -26,6 +27,8 @@ export interface FilterPreset {
   stats: FilterOrGroup[]
   /** POETH: timeless-джуэл — режим завоевателя, ссылка в калькулятор */
   timeless?: TimelessSearch
+  /** POETH: почему отмечены именно эти фильтры (ключ подсказки pc1.defaults.*) */
+  defaultsHint?: DefaultsHint
 }
 
 interface SearchFilter {

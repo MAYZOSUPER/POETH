@@ -132,3 +132,91 @@
   grid-template-columns: 60px 1fr 70px;
   gap: var(--sp-5);
 }
+
+/* курс chaos ↔ divine в шапке: «1 div = N c», при наведении — дроби */
+.pc-rate {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 22px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--sunken);
+  color: var(--fg-muted);
+  font: 600 var(--fs-xs) / 1 var(--font-ui);
+  white-space: nowrap;
+  cursor: help;
+}
+.pc-rate:hover,
+.pc-rate:focus-visible {
+  border-color: var(--border-strong);
+  color: var(--accent-hi);
+  outline: none;
+}
+.pc-rate__tip {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + var(--sp-3));
+  left: 0;
+  display: none;
+  width: max-content;
+  min-width: 150px;
+  white-space: normal;
+  cursor: default;
+}
+.pc-rate:hover .pc-rate__tip,
+.pc-rate:focus-visible .pc-rate__tip {
+  display: grid;
+  gap: var(--sp-2);
+}
+.pc-rate__rows {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: var(--sp-1) var(--sp-6);
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+.pc-rate__src {
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}
+/* цена с подсказкой-эквивалентом в другой валюте */
+.pc-price[title] {
+  cursor: help;
+}
+
+.pc-defaults {
+  padding-top: 0;
+  color: var(--fg-muted);
+}
+.pc-defaults > .ui-ico {
+  color: var(--info);
+}
+
+/* «Искать заново»: липкая полоса внизу прокручиваемой части окна */
+.pc-again {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-5);
+  padding: var(--sp-4) var(--sp-6);
+  border-top: 1px solid var(--border-strong);
+  background: var(--surface-solid);
+}
+.pc-again__note {
+  color: var(--accent-hi);
+  font: 600 var(--fs-sm) / 1.2 var(--font-ui);
+}
+.pc-again .ui-kbd kbd {
+  min-width: 0;
+  height: 18px;
+  background: transparent;
+  border-color: color-mix(in srgb, var(--accent-ink) 35%, transparent);
+  color: var(--accent-ink);
+}

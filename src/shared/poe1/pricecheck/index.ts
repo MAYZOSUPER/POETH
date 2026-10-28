@@ -12,6 +12,7 @@
 import type { Poe1Data } from '../data/Poe1Data'
 import type { ParsedItem } from '../parser'
 import { createPresets, type CreatePresetsOptions } from './filters/create-presets'
+import { applyDefaultSelection } from './filters/defaults'
 import type { FilterPreset, TradeStatus } from './filters/interfaces'
 import type { TimelessConquerorMode } from './filters/pseudo/timeless-jewel'
 import { apiToSatisfySearch } from './query/common'
@@ -20,6 +21,7 @@ import { createBulkRequest, DEFAULT_BULK_HAVE, type BulkRequest } from './query/
 
 export * from './filters/interfaces'
 export { createPresets, type CreatePresetsOptions } from './filters/create-presets'
+export { applyDefaultSelection, KEY_TIER, type DefaultsHint } from './filters/defaults'
 export { createFilters, type CreateOptions as CreateFiltersOptions } from './filters/create-item-filters'
 export { createExactStatFilters, initUiModFilters, calculatedStatToFilter } from './filters/create-stat-filters'
 export {
@@ -87,7 +89,13 @@ export function createPriceCheck(
   opts: PriceCheckOptions
 ): { presets: FilterPreset[]; active: string } {
   if (item.lang !== d.lang) throw new Error(`Данные ${d.lang} не подходят предмету ${item.lang}`)
-  return createPresets(item, d, resolvePriceCheckOptions(opts))
+  const pc = createPresets(item, d, resolvePriceCheckOptions(opts))
+  // POETH: разумные умолчания «что отмечено» по типу предмета + ключ подсказки «почему»
+  for (const preset of pc.presets) {
+    const hint = applyDefaultSelection(item, preset)
+    if (hint) preset.defaultsHint = hint
+  }
+  return pc
 }
 
 export type PriceCheckRequest =
