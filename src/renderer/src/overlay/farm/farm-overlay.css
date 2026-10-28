@@ -1,0 +1,46 @@
+/* Виджет трекера карт поверх игры (S11b): одна строка в стопке справа сверху. */
+
+.ov-farm {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-4);
+  padding: var(--sp-2) var(--sp-5);
+  border-radius: var(--r-pill);
+  color: var(--fg);
+  font: 500 var(--fs-sm) / 1.3 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: 0.92;
+}
+.ov-farm__timer {
+  color: var(--fg-muted);
+  font-weight: 700;
+}
+.ov-farm--on .ov-farm__timer {
+  color: var(--accent-hi);
+}
+.ov-farm__map {
+  max-width: 220px;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+.ov-farm__tier {
+  margin-left: var(--sp-2);
+  color: var(--fg-faint);
+  font-weight: 500;
+}
+.ov-farm__muted {
+  color: var(--fg-muted);
+}
+.ov-farm__warn {
+  color: var(--warn);
+}
+.ov-farm__gold {
+  color: var(--accent-hi);
+}
+.ov-farm__sep {
+  align-self: stretch;
+  width: 1px;
+  background: var(--border);
+}

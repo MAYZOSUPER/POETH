@@ -1,0 +1,182 @@
+/* Панель «Карты» (S11b) для вкладки «Богатство». Только токены из tokens.css и компоненты ui-*;
+   здесь — раскладка, статистика сессии, текущая карта, таблица забегов. */
+
+.fm {
+  display: grid;
+  gap: var(--sp-5);
+  align-content: start;
+  min-width: 0;
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.fm-p {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+.fm-faint {
+  color: var(--fg-faint);
+}
+.fm-muted {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.fm-grow {
+  flex: 1;
+}
+.fm-nowrap {
+  white-space: nowrap;
+}
+
+/* ---- блок ---- */
+.fm-box {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  background: var(--sunken);
+}
+.fm-box__h {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-4);
+  min-height: 36px;
+  padding: var(--sp-3) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+}
+.fm-box__h > .ui-ico {
+  color: var(--accent);
+}
+.fm-box__b {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6);
+}
+.fm-box__b > .ui-switch {
+  justify-self: start;
+  text-align: left;
+}
+.fm-box__h + .fm-box__b:empty {
+  display: none;
+}
+
+/* ---- статус и статистика сессии ---- */
+.fm-status {
+  color: var(--fg-faint);
+  font-size: var(--fs-sm);
+}
+.fm-status--running {
+  color: var(--good);
+}
+.fm-status--paused {
+  color: var(--warn);
+}
+.fm-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--sp-4);
+}
+.fm-stat {
+  display: grid;
+  gap: var(--sp-1);
+  min-width: 0;
+  padding: var(--sp-4) var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  background: var(--surface);
+}
+.fm-stat__v {
+  color: var(--accent-hi);
+  font: 700 var(--fs-lg) / 1.15 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+.fm-stat__l {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+
+/* ---- текущая карта ---- */
+.fm-current {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2) var(--sp-4);
+  min-width: 0;
+}
+.fm-current__timer {
+  color: var(--fg-muted);
+  font: 700 var(--fs-lg) / 1.1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+.fm-current--in .fm-current__timer {
+  color: var(--accent-hi);
+}
+.fm-current__name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* ---- таблица забегов ---- */
+.fm-tablewrap {
+  max-height: 46vh;
+  overflow: auto;
+}
+.fm-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-md);
+  font-variant-numeric: tabular-nums;
+}
+.fm-tbl th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-solid);
+  color: var(--fg-faint);
+  font: 600 var(--fs-2xs) / 1.2 var(--font-ui);
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+}
+.fm-tbl td {
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.fm-tbl tr:last-child td {
+  border-bottom: 0;
+}
+.fm-tbl tbody tr:hover td {
+  background: var(--hover);
+}
+.fm-row--died td:first-child {
+  box-shadow: inset 3px 0 0 var(--bad);
+}
+.fm-name {
+  min-width: 140px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.fm-num {
+  text-align: right;
+  white-space: nowrap;
+}
+.fm-loss {
+  color: var(--bad);
+}
+
+/* ---- прошлые сессии ---- */
+.fm-sessions > summary {
+  cursor: pointer;
+}
+.fm-sessions ul {
+  display: grid;
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+}
