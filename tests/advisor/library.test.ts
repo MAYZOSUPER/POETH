@@ -144,7 +144,7 @@ describe('советник: файлы каталога сообщества', (
   })
 
   it('строго: лишние поля, другой источник, имя файла ≠ id, битая стратегия — ошибка', () => {
-    const f = json(communityFile(friend, '2026-11-20'))
+    const f = json(communityFile(friend, '2026-11-20')) as Record<string, unknown> & { strategy: Record<string, unknown> }
     expect(parseCommunityFile({ ...f, rating: 5 })).toMatchObject({ ok: false, error: expect.stringContaining('rating') })
     expect(parseCommunityFile({ ...f, checked: 'вчера' })).toMatchObject({ ok: false })
     expect(parseCommunityFile({ ...f, strategy: { ...f.strategy, source: { kind: 'official', date: '2026-11' } } })).toMatchObject({ ok: false, error: expect.stringContaining('community') })

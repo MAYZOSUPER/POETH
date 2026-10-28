@@ -27,6 +27,9 @@ async function readAll(stream: ReadableStream<Uint8Array>, maxBytes: number): Pr
   return out
 }
 
+/** Пара потоков сжатия: типы CompressionStream в lib.dom и @types/node расходятся — приводим к общему виду. */
+type Pair = { readable: ReadableStream<Uint8Array>; writable: WritableStream<Uint8Array> }
+
 function streamOf(bytes: Uint8Array): ReadableStream<Uint8Array> {
   return new ReadableStream<Uint8Array>({
     start(c) {
@@ -37,9 +40,9 @@ function streamOf(bytes: Uint8Array): ReadableStream<Uint8Array> {
 }
 
 export function inflateBrowser(bytes: Uint8Array, maxBytes: number): Promise<Uint8Array> {
-  return readAll(streamOf(bytes).pipeThrough(new DecompressionStream('deflate')), maxBytes)
+  return readAll(streamOf(bytes).pipeThrough(new DecompressionStream('deflate') as unknown as Pair), maxBytes)
 }
 
 export function deflateBrowser(bytes: Uint8Array): Promise<Uint8Array> {
-  return readAll(streamOf(bytes).pipeThrough(new CompressionStream('deflate')), Number.MAX_SAFE_INTEGER)
+  return readAll(streamOf(bytes).pipeThrough(new CompressionStream('deflate') as unknown as Pair), Number.MAX_SAFE_INTEGER)
 }
