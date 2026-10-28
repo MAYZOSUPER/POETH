@@ -68,10 +68,11 @@ nsis:
   displayLanguageSelector: false
   installerIcon: build/icon.ico
   uninstallerIcon: build/icon.ico
-  # картинки мастера — от дизайнера; пока файлов нет, мастер со стандартными
-  # installerSidebar: build/installerSidebar.bmp   # 164×314
-  # uninstallerSidebar: build/installerSidebar.bmp
-  # installerHeader: build/installerHeader.bmp     # 150×57
+  # картинки мастера (дизайнер, BMP 24 бита, без текста кроме «POETH» — годятся для RU и EN):
+  # боковая панель — приветствие и завершение, шапка — справа на внутренних страницах
+  installerSidebar: build/installerSidebar.bmp   # 164×314
+  uninstallerSidebar: build/installerSidebar.bmp
+  installerHeader: build/installerHeader.bmp     # 150×57
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: POE Trade Helper
