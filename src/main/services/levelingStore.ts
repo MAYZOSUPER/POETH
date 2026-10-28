@@ -4,33 +4,44 @@ import { randomUUID } from 'crypto'
 import type {
   LevelingAction,
   LevelingConfig,
+  LevelingCursor,
   LevelingData,
+  LevelingFinished,
   LevelingProfile,
   LevelingProgress,
+  LevelingSession,
+  LevelingShow,
   LevelingState,
   LevelingVariant
 } from '@shared/types/leveling'
 import {
   DEFAULT_VARIANT,
   emptyProgress,
-  enterZone,
   flattenRoute,
   jumpTo,
   next,
   prev,
+  returnIndex,
   toggle,
   type FlatStep
 } from '@shared/leveling/route'
-import { parseLevelingLine } from '@shared/leveling/log'
+import { isAfter, parseLevelingLog } from '@shared/leveling/log'
+import { applyLevel, applyLogin, applyZone, emptySession, guideState, zoneKind, type SyncEnv } from '@shared/leveling/sync'
 import { readJson, writeJsonAtomic } from './atomicJson'
 
-// Прокачка PoE1 в main (S14): персонажи и прогресс по маршруту — userData/leveling.json (свой файл: профили
+// Прокачка PoE1 в main (S14, S22): персонажи и прогресс по маршруту — userData/leveling.json (свой файл: профили
 // компаса PoE2 в profiles.json не трогаем; модель та же — список персонажей + прогресс активного), строки
-// Client.txt (общий тейлер gameLog подписывает домен ipc/leveling.ts) → вход в зону и уровень. Только чтение
-// лога, в игру ничего не отправляется.
+// Client.txt (общий тейлер gameLog подписывает домен ipc/leveling.ts) → вход в игру, зона и уровень
+// (shared/leveling/sync.ts). При запуске — хвост лога после последней учтённой строки (курсор в файле):
+// персонажи, где каждый и пройдена ли кампания. Только чтение лога, в игру ничего не отправляется.
 
-const FILE_VERSION = 1
+const FILE_VERSION = 2
 const SAVE_DELAY_MS = 600
+/** Строки конца хвоста, которые могли прийти и в очередь тейлера, пока читали хвост. */
+const PRIME_OVERLAP = 500
+const MAX_SESSION_ZONES = 100
+const SHOW_MODES: readonly LevelingShow[] = ['auto', 'always', 'never']
+const FINISH_REASONS: readonly LevelingFinished['reason'][] = ['map', 'epilogue', 'endgame', 'level']
 
 interface LevelingFile {
   version: number
@@ -38,20 +49,34 @@ interface LevelingFile {
   activeId: string
   progress: Record<string, LevelingProgress>
   config: LevelingConfig
+  /** текущий вход в игру по журналу */
+  session: LevelingSession
+  /** последняя учтённая строка журнала; null — ещё не читали */
+  cursor: LevelingCursor | null
 }
 
-const DEFAULT_CONFIG: LevelingConfig = { overlay: true, collapsed: false, pos: null }
+const DEFAULT_CONFIG: LevelingConfig = { show: 'auto', collapsed: false, pos: null }
 
 function newProfile(name: string, now: number): LevelingProfile {
   return { id: randomUUID(), name: name.trim() || 'Персонаж', className: null, character: null, createdAt: now, updatedAt: now }
 }
 
 const unit = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : null)
+const num = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v)
 
 function normVariant(v: unknown): LevelingVariant {
   const x = (v ?? {}) as Partial<LevelingVariant>
   const bandit = ['kill', 'alira', 'kraityn', 'oak'].includes(x.bandit as string) ? (x.bandit as LevelingVariant['bandit']) : DEFAULT_VARIANT.bandit
   return { leagueStart: typeof x.leagueStart === 'boolean' ? x.leagueStart : DEFAULT_VARIANT.leagueStart, bandit }
+}
+
+function normFinished(v: unknown): LevelingFinished | null {
+  const x = (v ?? null) as Partial<LevelingFinished> | null
+  if (!x || !FINISH_REASONS.includes(x.reason as LevelingFinished['reason']) || !num(x.at)) return null
+  const out: LevelingFinished = { reason: x.reason as LevelingFinished['reason'], at: x.at }
+  if (typeof x.areaId === 'string') out.areaId = x.areaId
+  if (num(x.level)) out.level = x.level
+  return out
 }
 
 function normProgress(v: unknown, now: number): LevelingProgress {
@@ -64,8 +89,38 @@ function normProgress(v: unknown, now: number): LevelingProgress {
     level: Number.isFinite(x.level) ? Math.max(1, Math.min(100, x.level as number)) : 1,
     areaId: typeof x.areaId === 'string' ? x.areaId : null,
     variant: normVariant(x.variant),
+    finished: normFinished(x.finished),
+    showAnyway: x.showAnyway === true,
     updatedAt: Number.isFinite(x.updatedAt) ? (x.updatedAt as number) : now
   }
+}
+
+function normSession(v: unknown, profileIds: Set<string>, now: number): LevelingSession {
+  const x = (v ?? {}) as Partial<LevelingSession>
+  const snap = x.snapshot
+  return {
+    ...emptySession(),
+    character: typeof x.character === 'string' ? x.character : null,
+    fresh: x.fresh === true,
+    endgame: normFinished(x.endgame),
+    finale: x.finale === true,
+    areaId: typeof x.areaId === 'string' ? x.areaId : null,
+    areaLevel: num(x.areaLevel) ? x.areaLevel : null,
+    snapshot:
+      snap && typeof snap.profileId === 'string' && profileIds.has(snap.profileId)
+        ? { profileId: snap.profileId, progress: normProgress(snap.progress, now) }
+        : null,
+    zones: (Array.isArray(x.zones) ? x.zones : [])
+      .filter((z): z is { areaId: string; level: number } => !!z && typeof z.areaId === 'string' && num(z.level))
+      .slice(-MAX_SESSION_ZONES)
+      .map((z) => ({ areaId: z.areaId, level: z.level }))
+  }
+}
+
+function normShow(c: Partial<LevelingConfig> & { overlay?: unknown }): LevelingShow {
+  if (SHOW_MODES.includes(c.show as LevelingShow)) return c.show as LevelingShow
+  // файл S14: «гид поверх игры» вкл/выкл → авто / никогда
+  return c.overlay === false ? 'never' : DEFAULT_CONFIG.show
 }
 
 export function normalizeLevelingFile(raw: unknown, now: number): LevelingFile {
@@ -87,16 +142,19 @@ export function normalizeLevelingFile(raw: unknown, now: number): LevelingFile {
   const c = (x.config ?? {}) as Partial<LevelingConfig>
   const px = unit(c.pos?.x)
   const py = unit(c.pos?.y)
+  const cur = (x.cursor ?? null) as Partial<LevelingCursor> | null
   return {
     version: FILE_VERSION,
     profiles,
     activeId,
     progress,
     config: {
-      overlay: typeof c.overlay === 'boolean' ? c.overlay : DEFAULT_CONFIG.overlay,
+      show: normShow(c),
       collapsed: c.collapsed === true,
       pos: px !== null && py !== null ? { x: px, y: py } : null
-    }
+    },
+    session: normSession(x.session, new Set(profiles.map((p) => p.id)), now),
+    cursor: cur && num(cur.ts) && num(cur.up) ? { ts: cur.ts, up: cur.up } : null
   }
 }
 
@@ -104,8 +162,11 @@ export class LevelingStore extends EventEmitter {
   private f: LevelingFile | null = null
   private loading: Promise<void> | null = null
   private data: LevelingData | null = null
-  private flatCache: { key: string; flat: FlatStep[] } | null = null
-  private offRoute: number | null = null
+  private flatCache = new Map<string, FlatStep[]>()
+  /** гид показан хоткеем — до входа в другую зону */
+  private forced = false
+  /** строки тейлера, пришедшие, пока читаем хвост лога (prime) */
+  private queue: string[] | null = null
   private log = { connected: false, logPath: null as string | null }
   private saveTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -147,23 +208,52 @@ export class LevelingStore extends EventEmitter {
     f.progress[f.activeId] = p
   }
 
-  flat(): FlatStep[] {
-    const v = this.progress.variant
+  /** Плоский маршрут варианта (у каждого персонажа свой вариант). */
+  flatFor(v: LevelingVariant): FlatStep[] {
     const key = `${v.leagueStart}|${v.bandit}`
-    if (this.flatCache?.key !== key) this.flatCache = { key, flat: flattenRoute(this.getData(), v) }
-    return this.flatCache.flat
+    let flat = this.flatCache.get(key)
+    if (!flat) {
+      flat = flattenRoute(this.getData(), v)
+      this.flatCache.set(key, flat)
+    }
+    return flat
+  }
+
+  flat(): FlatStep[] {
+    return this.flatFor(this.progress.variant)
+  }
+
+  /** Окружение синхронизации; время события — из строки лога (при запуске хвост идёт за миллисекунды). */
+  private env(at?: number): SyncEnv {
+    return { data: this.getData(), flat: (v) => this.flatFor(v), now: at ?? this.now(), newId: () => randomUUID() }
+  }
+
+  private guide(): Omit<LevelingState['guide'], 'forced'> {
+    const f = this.file_
+    return guideState(f.config.show, this.progress, f.session, this.forced, this.flat())
   }
 
   state(): LevelingState {
     const f = this.file_
+    const p = this.progress
+    const s = f.session
     return {
-      profiles: f.profiles.map((p) => ({ ...p })),
+      profiles: f.profiles.map((x) => ({ ...x })),
       activeId: f.activeId,
-      progress: { ...this.progress, done: { ...this.progress.done }, variant: { ...this.progress.variant } },
+      progress: { ...p, done: { ...p.done }, variant: { ...p.variant }, finished: p.finished ? { ...p.finished } : null },
       config: { ...f.config, pos: f.config.pos ? { ...f.config.pos } : null },
       log: { ...this.log },
-      offRoute: this.offRoute
+      offRoute: returnIndex(this.flat(), p),
+      zone: s.areaId ? { areaId: s.areaId, level: s.areaLevel ?? 0, kind: zoneKind(s.areaId, s.areaLevel ?? 0) } : null,
+      character: s.character,
+      guide: { ...this.guide(), forced: this.forced }
     }
+  }
+
+  /** Что журнал знает сейчас (проверки и тесты): вход в игру и последняя учтённая строка. */
+  logState(): { session: LevelingSession; cursor: LevelingCursor | null } {
+    const f = this.file_
+    return { session: { ...f.session, zones: [...f.session.zones] }, cursor: f.cursor ? { ...f.cursor } : null }
   }
 
   setLog(connected: boolean, logPath: string | null): void {
@@ -176,31 +266,67 @@ export class LevelingStore extends EventEmitter {
   // Строки лога
   // ---------------------------------------------------------------------------
 
-  /** Новые строки Client.txt: вход в зону → шаг, повышение уровня своего персонажа → уровень и класс. */
+  /**
+   * Новые строки Client.txt: вход в игру, зона (шаг маршрута, «кампания пройдена»), повышение уровня
+   * (персонаж, уровень, класс). Пока читаем хвост лога при запуске — копятся в очереди.
+   */
   ingestLines(lines: string[]): void {
+    if (this.queue) {
+      this.queue.push(...lines)
+      return
+    }
     if (!this.f) return
+    if (this.ingest(lines)) this.changed()
+  }
+
+  private ingest(lines: string[]): boolean {
     let changed = false
     for (const line of lines) {
-      const e = parseLevelingLine(line)
-      if (!e) continue
-      const now = this.now()
-      if (e.type === 'zone') {
-        const r = enterZone(this.flat(), this.progress, e.areaId, now)
-        this.progress = r.progress
-        this.offRoute = r.offRoute
-        changed = true
+      const r = parseLevelingLog(line)
+      if (!r) continue
+      const f = this.file_
+      if (r.at) f.cursor = r.at
+      const e = r.event
+      if (e.type === 'login') {
+        applyLogin(f)
+        this.forced = false
+      } else if (e.type === 'zone') {
+        applyZone(f, e.areaId, e.level, this.env(r.at?.ts))
+        this.forced = false
       } else {
-        const profile = this.file_.profiles.find((p) => p.id === this.file_.activeId)!
-        // свой персонаж — по имени; пока имя неизвестно, берём первое повышение уровня
-        if (profile.character && profile.character !== e.character) continue
-        if (!profile.character) profile.character = e.character
-        profile.className = e.className
-        profile.updatedAt = now
-        this.progress = { ...this.progress, level: e.level, updatedAt: now }
-        changed = true
+        applyLevel(f, e, this.env(r.at?.ts))
+      }
+      changed = true
+    }
+    return changed
+  }
+
+  /** Копить новые строки до prime(): тейлер может прислать их раньше, чем прочитан хвост. */
+  hold(): void {
+    this.queue = this.queue ?? []
+  }
+
+  /**
+   * Запуск: догнать хвост лога — строки после последней учтённой (при первом запуске — весь хвост): кто
+   * играет, где он и пройдена ли кампания. Строки тейлера, пришедшие тем временем, ждут в очереди.
+   */
+  async prime(readTail: () => Promise<string[]>): Promise<void> {
+    this.queue = this.queue ?? []
+    let overlap = new Set<string>()
+    try {
+      await this.load()
+      const lines = await readTail().catch(() => [] as string[])
+      const c = this.file_.cursor
+      this.ingest(c ? lines.filter((l) => isAfter(l, c)) : lines)
+      overlap = new Set(lines.slice(-PRIME_OVERLAP))
+    } finally {
+      const queued = this.queue ?? []
+      this.queue = null
+      if (this.f) {
+        this.ingest(queued.filter((l) => !overlap.has(l)))
+        this.changed()
       }
     }
-    if (changed) this.changed()
   }
 
   // ---------------------------------------------------------------------------
@@ -228,8 +354,10 @@ export class LevelingStore extends EventEmitter {
       case 'reset':
         this.progress = { ...emptyProgress(p.variant, now), level: p.level, areaId: p.areaId }
         break
+      case 'showAnyway':
+        this.progress = { ...p, showAnyway: a.on, updatedAt: now }
+        break
     }
-    this.offRoute = null
     this.changed()
     return this.state()
   }
@@ -245,7 +373,10 @@ export class LevelingStore extends EventEmitter {
   async setConfig(patch: Partial<LevelingConfig>): Promise<LevelingState> {
     await this.load()
     const c = this.file_.config
-    if (typeof patch.overlay === 'boolean') c.overlay = patch.overlay
+    if (SHOW_MODES.includes(patch.show as LevelingShow) && patch.show !== c.show) {
+      c.show = patch.show as LevelingShow
+      this.forced = false
+    }
     if (typeof patch.collapsed === 'boolean') c.collapsed = patch.collapsed
     if ('pos' in patch) {
       const x = unit(patch.pos?.x)
@@ -257,32 +388,40 @@ export class LevelingStore extends EventEmitter {
   }
 
   /**
-   * Хоткей «показать / свернуть гид» (levelingToggle): выключенный гид — включить развёрнутым, иначе
-   * свернуть ↔ развернуть. Одно действие на нажатие.
+   * Хоткей «показать / свернуть гид» (levelingToggle): скрытый гид (режим, город, кампания пройдена) —
+   * показать развёрнутым до входа в другую зону, видимый — свернуть ↔ развернуть. Одно действие на нажатие.
    */
   async toggleGuide(): Promise<LevelingState> {
     await this.load()
-    const c = this.file_.config
-    return this.setConfig(c.overlay ? { collapsed: !c.collapsed } : { overlay: true, collapsed: false })
+    if (this.guide().visible) return this.setConfig({ collapsed: !this.file_.config.collapsed })
+    this.forced = true
+    return this.setConfig({ collapsed: false })
   }
 
+  /**
+   * Новый персонаж вручную («Новый персонаж», «Начать заново (новый персонаж)»): маршрут с начала, первое
+   * повышение уровня в журнале даст ему имя.
+   */
   async createProfile(name: string): Promise<LevelingState> {
     await this.load()
     const now = this.now()
-    const p = newProfile(name || `Персонаж ${this.file_.profiles.length + 1}`, now)
-    this.file_.profiles.push(p)
-    this.file_.progress[p.id] = emptyProgress(this.progress.variant, now)
-    this.file_.activeId = p.id
-    this.offRoute = null
+    const f = this.file_
+    const p = newProfile(name || `Персонаж ${f.profiles.length + 1}`, now)
+    f.profiles.push(p)
+    f.progress[p.id] = emptyProgress(this.progress.variant, now)
+    f.activeId = p.id
+    f.session = { ...f.session, character: null, fresh: true, endgame: null, finale: false, snapshot: null, zones: [] }
     this.changed()
     return this.state()
   }
 
+  /** Выбор вручную: персонаж входа снова не подтверждён — журнал поправит по повышению уровня. */
   async selectProfile(id: string): Promise<LevelingState> {
     await this.load()
-    if (this.file_.profiles.some((p) => p.id === id)) {
-      this.file_.activeId = id
-      this.offRoute = null
+    const f = this.file_
+    if (f.profiles.some((p) => p.id === id) && id !== f.activeId) {
+      f.activeId = id
+      f.session = { ...f.session, character: null, fresh: false, snapshot: { profileId: id, progress: f.progress[id] } }
       this.changed()
     }
     return this.state()
@@ -307,8 +446,10 @@ export class LevelingStore extends EventEmitter {
     if (f.profiles.length > 1 && f.profiles.some((p) => p.id === id)) {
       f.profiles = f.profiles.filter((p) => p.id !== id)
       delete f.progress[id]
-      if (f.activeId === id) f.activeId = f.profiles[0].id
-      this.offRoute = null
+      if (f.activeId === id) {
+        f.activeId = f.profiles[0].id
+        f.session = { ...f.session, character: null, snapshot: null }
+      } else if (f.session.snapshot?.profileId === id) f.session = { ...f.session, snapshot: null }
       this.changed()
     }
     return this.state()

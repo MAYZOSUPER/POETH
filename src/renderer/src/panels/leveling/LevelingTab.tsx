@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { LevelingData, LvBandit } from '@shared/types/leveling'
+import type { LevelingData, LevelingShow, LevelingState, LvBandit } from '@shared/types/leveling'
 import { banditPassives, counters, currentIndex, stepPassives, stepTags, type FlatStep } from '@shared/leveling/route'
 import { BASE_CLASSES, baseClass } from '@shared/leveling/classes'
+import { areaName } from '@shared/leveling/render'
 import { useLang, useT } from '../../i18n'
 import { useLevelingStore } from '../../store/useLevelingStore'
 import { Ico, Switch, useSimple } from '../deals/common'
@@ -11,9 +12,80 @@ import './leveling.css'
 // Вкладка «Кампания» в PoE 1 (S14) по макету дизайнера «Прокачка PoE 1»: акты 1–10 со счётчиками, маршрут
 // exile-leveling с галочками (сами по журналу игры и вручную), «вы здесь», теги «+1 пассив / испытание /
 // флакон / камень»; справа — «Не пропустить за кампанию», награды акта и камни для класса. Персонажи,
-// вариант маршрута (старт лиги, бандиты) и гид поверх игры — в шапке.
+// вариант маршрута (старт лиги, бандиты) и гид поверх игры — в шапке. S22: шаги, персонаж и «кампания пройдена»
+// — сами по журналу игры; «Показывать гид: авто / всегда / никогда», почему гид сейчас скрыт, баннер «Кампания
+// пройдена — гид скрыт» с «Показать всё равно» и «Начать заново (новый персонаж)».
 
 const BANDITS: LvBandit[] = ['kill', 'alira', 'kraityn', 'oak']
+const SHOW: LevelingShow[] = ['auto', 'always', 'never']
+
+/** Где гид сейчас: виден, показан хоткеем или почему скрыт. */
+function guideText(state: LevelingState, data: LevelingData, lang: 'ru' | 'en', t: (k: string) => string): string {
+  if (state.guide.forced) return t('lev.guide.forced')
+  if (state.guide.visible) return t('lev.guide.visible')
+  const zone = state.zone && data.areas[state.zone.areaId] ? areaName(data, state.zone.areaId, lang) : null
+  switch (state.guide.hidden) {
+    case 'never':
+      return t('lev.guide.never')
+    case 'finished':
+      return t('lev.guide.finished')
+    case 'zone': {
+      // хабы лиг и ограблений — тоже «город» у трекера карт, но не город актов
+      const kind = state.zone?.kind === 'town' && !zone ? 'other' : (state.zone?.kind ?? 'other')
+      return t(`lev.guide.zone.${kind}`).replace('{zone}', zone ?? '')
+    }
+    default:
+      return t('lev.guide.noZone')
+  }
+}
+
+/** «Кампания пройдена — гид скрыт» (или «показан всё равно»); в этом входе — эндгейм неузнанного персонажа. */
+function FinishedBanner() {
+  const t = useT()
+  const state = useLevelingStore((s) => s.state)!
+  const { act, createProfile } = useLevelingStore.getState()
+  const fin = state.progress.finished
+  if (!fin) {
+    if (state.guide.hidden !== 'finished') return null
+    return (
+      <div className="ui-banner ui-banner--info">
+        <Ico name="info" />
+        <span>{t('lev.finished.session')}</span>
+      </div>
+    )
+  }
+  const why = t(`lev.finished.why.${fin.reason}`).replace('{n}', String(fin.level ?? ''))
+  const fresh = (): void => void createProfile(t('lev.profile.newName').replace('{n}', String(state.profiles.length + 1)))
+  if (state.progress.showAnyway) {
+    return (
+      <div className="ui-banner ui-banner--info">
+        <Ico name="check" />
+        <span>
+          <b>{t('lev.finished.shown')}</b> {why}
+        </span>
+        <button type="button" className="ui-btn ui-btn--sm" onClick={() => void act({ type: 'showAnyway', on: false })}>
+          {t('lev.finished.hide')}
+        </button>
+      </div>
+    )
+  }
+  return (
+    <div className="ui-banner ui-banner--info">
+      <Ico name="check" />
+      <span>
+        <b>{t('lev.finished.title')}</b> {why}
+      </span>
+      <span className="lv-banner-btns">
+        <button type="button" className="ui-btn ui-btn--sm" onClick={() => void act({ type: 'showAnyway', on: true })}>
+          {t('lev.finished.show')}
+        </button>
+        <button type="button" className="ui-btn ui-btn--sm" onClick={fresh}>
+          {t('lev.finished.new')}
+        </button>
+      </span>
+    </div>
+  )
+}
 
 function zoneLevel(data: LevelingData, f: FlatStep): number | null {
   const a = data.areas[f.to ?? f.after]
@@ -22,8 +94,10 @@ function zoneLevel(data: LevelingData, f: FlatStep): number | null {
 
 function Header() {
   const t = useT()
+  const lang = useLang()
   const simple = useSimple()
   const state = useLevelingStore((s) => s.state)!
+  const data = useLevelingStore((s) => s.data)!
   const { createProfile, selectProfile, removeProfile, updateProfile, setVariant, setConfig, act } = useLevelingStore.getState()
   const profile = state.profiles.find((p) => p.id === state.activeId)!
   const cls = baseClass(profile.className)
@@ -90,10 +164,18 @@ function Header() {
         </select>
       </label>
       <span className="lv-grow" />
-      <span title={t('lev.overlay.hint')}>
-        <Switch on={state.config.overlay} onChange={(v) => void setConfig({ overlay: v })}>
-          {t('lev.overlay')}
-        </Switch>
+      <div className="lv-field" title={t('lev.show.hint')}>
+        <span className="ui-label">{t('lev.show')}</span>
+        <div className="ui-seg" role="group" aria-label={t('lev.show')}>
+          {SHOW.map((m) => (
+            <button key={m} type="button" aria-pressed={state.config.show === m} onClick={() => void setConfig({ show: m })}>
+              {t(`lev.show.${m}`)}
+            </button>
+          ))}
+        </div>
+      </div>
+      <span className="lv-log" role="status">
+        {guideText(state, data, lang, t)}
       </span>
       {state.log.connected && (
         <span className="lv-log" title={state.log.logPath ?? undefined}>
@@ -314,6 +396,7 @@ export function LevelingTab() {
   return (
     <div className="lv">
       <Header />
+      <FinishedBanner />
       {!state.log.connected && (
         <div className="ui-banner ui-banner--bad">
           <Ico name="warn" />
@@ -337,7 +420,7 @@ export function LevelingTab() {
           )
         })}
       </div>
-      {cur < 0 && <div className="ui-banner ui-banner--info"><Ico name="check" /><span>{t('lev.done')}</span></div>}
+      {cur < 0 && !state.progress.finished && <div className="ui-banner ui-banner--info"><Ico name="check" /><span>{t('lev.done')}</span></div>}
       <div className="lv-body">
         <Route act={shown} flat={flat} data={data} />
         <Side act={shown} flat={flat} data={data} />

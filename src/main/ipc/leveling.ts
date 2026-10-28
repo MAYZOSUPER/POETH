@@ -4,25 +4,30 @@ import { IPC } from '@shared/ipc'
 import type { GameDef, GameId } from '@shared/games'
 import type { LevelingAction, LevelingConfig, LevelingVariant } from '@shared/types/leveling'
 import { LevelingStore } from '../services/levelingStore'
-import { getGameLogStatus, onGameLogStatus, subscribeGameLog } from '../services/gameLog'
+import { getGameLogStatus, onGameLogStatus, readLogTail, subscribeGameLog } from '../services/gameLog'
 import { resourcesDir } from '../services/questDataset'
 import { sendToOverlay } from '../windows/gameOverlay'
 import { sendToCompanion } from '../windows/companionWindow'
 import { onHotkeyAction } from '../hotkeys'
 import type { IpcDomain } from './types'
 
-// Домен «прокачка PoE1» (main, этап S14). Строки Client.txt — общий тейлер процесса (services/gameLog.ts:
-// его же читают команды чата, сделки и трекер карт): вход в зону и уровень → шаг маршрута. Персонажи и
-// прогресс — services/levelingStore.ts (userData/leveling.json). Только чтение лога.
+// Домен «прокачка PoE1» (main, этапы S14, S22). Строки Client.txt — общий тейлер процесса (services/gameLog.ts:
+// его же читают команды чата, сделки и трекер карт): вход в игру, зона и уровень → персонаж, шаг маршрута,
+// «кампания пройдена». При запуске (и при смене файла лога) — хвост лога после последней учтённой строки.
+// Персонажи и прогресс — services/levelingStore.ts (userData/leveling.json). Только чтение лога.
 
 /** Прокачка — только PoE1 (у PoE2 своя кампания — компас). */
 const LEVELING_GAMES: readonly GameId[] = ['poe1']
 const MAX_SIM_LINES = 500
 const MAX_LINE_LEN = 4000
+/** Хвост лога при запуске: недели игры (Client.txt растёт годами, читаем только конец). */
+const TAIL_BYTES = 8 * 1024 * 1024
 
 let store: LevelingStore | null = null
 let logOff: (() => void) | null = null
 let logGame: GameId | null = null
+/** файл лога, хвост которого уже прочитан */
+let primedPath: string | null = null
 
 function getStore(): LevelingStore {
   if (!store) {
@@ -38,15 +43,28 @@ function getStore(): LevelingStore {
   return store
 }
 
+/**
+ * Догнать хвост лога (запуск; другой файл — например, выбранный во вкладке «Сделки»). Без файла — только
+ * отпустить строки, накопленные с подписки.
+ */
+function prime(file: string | null): Promise<void> {
+  if (file && file === primedPath) return Promise.resolve()
+  primedPath = file
+  return getStore().prime(() => (file ? readLogTail(file, TAIL_BYTES) : Promise.resolve([])))
+}
+
 function syncLog(): void {
   const st = getGameLogStatus()
-  getStore().setLog(!!logGame && st.running && !!st.logPath, st.logPath)
+  const connected = !!logOff && !!logGame && st.running && !!st.logPath
+  getStore().setLog(connected, st.logPath)
+  if (connected && st.logPath !== primedPath) void prime(st.logPath)
 }
 
 function stopLog(): void {
   logOff?.()
   logOff = null
   logGame = null
+  primedPath = null
 }
 
 async function startLog(def: GameDef): Promise<void> {
@@ -54,12 +72,16 @@ async function startLog(def: GameDef): Promise<void> {
   stopLog()
   logGame = def.id
   const s = getStore()
+  // строки тейлера до чтения хвоста ждут в очереди: иначе курсор уйдёт вперёд и хвост не догоним
+  s.hold()
   const sub = await subscribeGameLog(def, (lines) => s.ingestLines(lines))
   if (logGame !== def.id) {
     sub.off()
+    await prime(null)
     return
   }
   logOff = sub.off
+  await prime(sub.logPath)
   syncLog()
 }
 
@@ -76,6 +98,8 @@ function cleanAction(a: unknown): LevelingAction | null {
       return typeof a.stepId === 'string' ? { type: 'toggle', stepId: a.stepId } : null
     case 'jump':
       return Number.isInteger(a.index) ? { type: 'jump', index: a.index as number } : null
+    case 'showAnyway':
+      return { type: 'showAnyway', on: a.on === true }
     default:
       return null
   }

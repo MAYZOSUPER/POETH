@@ -1,5 +1,6 @@
-// Маршрут прокачки PoE1 (S14): вариант маршрута → плоский список шагов с зоной после каждого шага;
-// прогресс по входу в зону, ручные галочки, ◀ ▶, «перейти к шагу», счётчики «не пропустить».
+// Маршрут прокачки PoE1 (S14, S22): вариант маршрута → плоский список шагов с зоной после каждого шага;
+// прогресс по входу в зону (вперёд, назад за квестом, обратно к прогрессу), ручные галочки, ◀ ▶,
+// «перейти к шагу», счётчики «не пропустить».
 // Зона после шага считается как в exile-leveling (common/src/route-processing, MIT): {enter} и путевой
 // камень ведут в зону, {logout} и {ascend} — в последний город, портал — туда-обратно.
 
@@ -89,7 +90,7 @@ export function flattenRoute(data: LevelingData, variant: LevelingVariant): Flat
 }
 
 export function emptyProgress(variant: LevelingVariant = DEFAULT_VARIANT, now = Date.now()): LevelingProgress {
-  return { done: {}, current: null, level: 1, areaId: null, variant: { ...variant }, updatedAt: now }
+  return { done: {}, current: null, level: 1, areaId: null, variant: { ...variant }, finished: null, showAnyway: false, updatedAt: now }
 }
 
 /** Номер текущего шага: сохранённый, иначе первый неотмеченный; -1 — маршрут пройден. */
@@ -99,6 +100,42 @@ export function currentIndex(flat: FlatStep[], prog: LevelingProgress): number {
     if (i >= 0) return i
   }
   return flat.findIndex((f) => !prog.done[f.step.id])
+}
+
+/** Где прогресс: первый непройденный шаг; flat.length — пройдено всё. */
+export function progressIndex(flat: FlatStep[], prog: LevelingProgress): number {
+  const i = flat.findIndex((f) => !prog.done[f.step.id])
+  return i < 0 ? flat.length : i
+}
+
+/** Зона, где игрок стоит перед шагом `index` (куда привёл предыдущий шаг). */
+export function zoneAt(flat: FlatStep[], index: number): string {
+  return index > 0 ? flat[index - 1].after : START_AREA
+}
+
+/**
+ * Игрок вернулся назад по маршруту (текущий шаг уже пройден, прогресс дальше) → номер шага прогресса,
+ * куда «вернуться»; иначе null.
+ */
+export function returnIndex(flat: FlatStep[], prog: LevelingProgress): number | null {
+  const i = currentIndex(flat, prog)
+  if (i < 0 || !prog.done[flat[i].step.id]) return null
+  const h = progressIndex(flat, prog)
+  return h > i && h < flat.length ? h : null
+}
+
+/** Акт зоны по id («1_5_3» → 5, «2_7_town» → 7); null — не зона актов. */
+export function actOf(areaId: string): number | null {
+  const m = /^\d+_(\d+)_/.exec(areaId)
+  return m ? Number(m[1]) : null
+}
+
+/** Отметить пройденным всё до `index`, текущий — `index`; отметок не снимает (вход в зону). */
+export function advanceTo(flat: FlatStep[], prog: LevelingProgress, index: number, now: number): LevelingProgress {
+  const done = { ...prog.done }
+  const i = Math.max(0, Math.min(index, flat.length))
+  for (const f of flat.slice(0, i)) done[f.step.id] = done[f.step.id] ?? now
+  return { ...prog, done, current: flat[i]?.step.id ?? null, updatedAt: now }
 }
 
 /** Пройдено всё до `index` (не включая), дальше — нет; текущий — `index`. */
@@ -137,47 +174,64 @@ export function toggle(flat: FlatStep[], prog: LevelingProgress, stepId: string,
   return { ...prog, done, current: n >= 0 ? flat[n].step.id : null, updatedAt: now }
 }
 
+/** Как сдвинулся шаг при входе в зону: вперёд, назад (за квестом), обратно к прогрессу; null — на месте. */
+export type ZoneMove = 'forward' | 'back' | 'progress' | null
+
 export interface ZoneResult {
   progress: LevelingProgress
-  /** шаг сменился сам */
-  advanced: boolean
-  /** игрок в зоне другого шага: номер шага, куда «перейти» */
-  offRoute: number | null
+  moved: ZoneMove
 }
 
 /**
- * Вход в зону. Шаг впереди (до LOOKAHEAD), ведущий в эту зону, → он и все до него пройдены, текущий —
- * следующий за ним. Город, убежище и текущая зона маршрута — без изменений. Иначе — «не по маршруту»:
- * ближайший шаг этой зоны (сначала впереди, потом позади).
+ * Вход в зону кампании → шаг этой зоны (тот, что идёт после входа в неё по маршруту):
+ * - та же зона, где игрок по маршруту, и убежище — без изменений (ручной шаг не сбрасывается);
+ * - зона, где прогресс, после похода назад — обратно к прогрессу;
+ * - шаг впереди (до LOOKAHEAD) — он и всё до него пройдены; город — только если маршрут ведёт туда
+ *   следующим переходом (иначе игрок зашёл продать лут);
+ * - дальше — ближайший шаг этой зоны впереди (всё до него пройдено) или позади (только показать: отметки
+ *   не снимаем, прогресс остаётся — «вернуться к шагу»); город — только впереди и только другого акта.
  */
 export function enterZone(flat: FlatStep[], prog: LevelingProgress, areaId: string, now: number): ZoneResult {
   const progress = { ...prog, areaId, updatedAt: now }
+  const same: ZoneResult = { progress, moved: null }
   const i = currentIndex(flat, prog)
-  if (i < 0) return { progress, advanced: false, offRoute: null }
-  // повторный вход в зону, где игрок и так по маршруту (портал, смерть), и убежище — без изменений
-  const here = i > 0 ? flat[i - 1].after : START_AREA
-  if (areaId === here || /^Hideout/.test(areaId)) return { progress, advanced: false, offRoute: null }
-  // город — только если маршрут ведёт туда следующим переходом (иначе игрок зашёл продать лут)
-  const townLike = /_town$/.test(areaId)
-  for (let j = i; j < Math.min(flat.length, i + LOOKAHEAD); j++) {
-    if (townLike && flat[j].to !== null && flat[j].to !== areaId) break
-    if (flat[j].to === areaId) {
-      const moved = jumpTo(flat, progress, j + 1, now)
-      return { progress: moved, advanced: true, offRoute: null }
-    }
+  if (i < 0) return same
+  if (areaId === zoneAt(flat, i) || /^Hideout/.test(areaId)) return same
+  const h = progressIndex(flat, prog)
+  if (h > i && h < flat.length && zoneAt(flat, h) === areaId) {
+    return { progress: { ...progress, current: flat[h].step.id }, moved: 'progress' }
   }
-  const ahead = flat.findIndex((f, j) => j >= i + LOOKAHEAD && f.to === areaId)
-  let behind = -1
-  for (let j = i - 1; j >= 0; j--) {
+  const town = /_town$/.test(areaId)
+  // ближайший шаг, ведущий в эту зону, впереди и позади
+  let ahead = -1
+  for (let j = i; j < flat.length; j++) {
     if (flat[j].to === areaId) {
-      behind = j
+      ahead = j + 1
       break
     }
   }
-  const target = ahead >= 0 ? ahead + 1 : behind >= 0 ? behind + 1 : -1
-  // в городе, который ещё встретится по маршруту, — не тревожим: игрок просто зашёл за покупками
-  const town = !!flat.find((f) => f.after === areaId) && /_town$/.test(areaId)
-  return { progress, advanced: false, offRoute: target >= 0 && !town ? Math.min(target, flat.length - 1) : null }
+  let behind = areaId === START_AREA ? 0 : -1
+  for (let j = i - 2; j >= 0; j--) {
+    if (flat[j].to === areaId) {
+      behind = j + 1
+      break
+    }
+  }
+  const forward = (t: number): ZoneResult => ({ progress: advanceTo(flat, progress, t, now), moved: 'forward' })
+  if (town) {
+    for (let j = i; j < Math.min(flat.length, i + LOOKAHEAD); j++) {
+      if (flat[j].to === areaId) return forward(j + 1)
+      if (flat[j].to !== null) break
+    }
+    // город следующего акта (вход в игру, путевой камень) — к нему; своего или прошлого — за покупками
+    const act = actOf(areaId)
+    return ahead >= 0 && act !== null && act > flat[i].act ? forward(ahead) : same
+  }
+  if (ahead >= 0 && ahead - i <= LOOKAHEAD) return forward(ahead)
+  if (behind >= 0 && (ahead < 0 || i - behind < ahead - i)) {
+    return { progress: { ...progress, current: flat[behind].step.id }, moved: 'back' }
+  }
+  return ahead >= 0 ? forward(ahead) : same
 }
 
 export interface Counters {
