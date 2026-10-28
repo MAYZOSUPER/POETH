@@ -499,7 +499,7 @@ exports[`запрос по каждой фикстуре > adv-ring: снапш�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_increased_lightning_damage",
                     "value": {
                       "min": 19,
@@ -549,6 +549,9 @@ exports[`запрос по каждой фикстуре > adv-unique-corrupted:
             "filters": {
               "misc_filters": {
                 "filters": {
+                  "corrupted": {
+                    "option": "true",
+                  },
                   "foulborn_item": {
                     "option": "false",
                   },
@@ -666,6 +669,13 @@ exports[`запрос по каждой фикстуре > adv-weapon: снап�
                   },
                   "rarity": {
                     "option": "nonunique",
+                  },
+                },
+              },
+              "weapon_filters": {
+                "filters": {
+                  "pdps": {
+                    "min": 90,
                   },
                 },
               },
@@ -2026,26 +2036,26 @@ exports[`запрос по каждой фикстуре > flask-01: снапш�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_700317374",
                     "value": {
                       "min": -30,
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_1256719186",
                     "value": {
                       "min": -30,
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_3969608626",
                     "value": {},
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_3869628136",
                     "value": {
                       "min": 4,
@@ -2117,26 +2127,26 @@ exports[`запрос по каждой фикстуре > flask-02: снапш�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_700317374",
                     "value": {
                       "min": -30,
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_1256719186",
                     "value": {
                       "min": -30,
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_3969608626",
                     "value": {},
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_182714578",
                     "value": {
                       "min": 4,
@@ -2208,7 +2218,7 @@ exports[`запрос по каждой фикстуре > flask-03: снапш�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_962725504",
                     "value": {
                       "min": 20,
@@ -2280,7 +2290,7 @@ exports[`запрос по каждой фикстуре > flask-04: снапш�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_182714578",
                     "value": {
                       "min": 4,
@@ -2352,14 +2362,14 @@ exports[`запрос по каждой фикстуре > flask-05: снапш�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_3196823591",
                     "value": {
                       "min": 32,
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_299054775",
                     "value": {
                       "min": 75,
@@ -2505,14 +2515,14 @@ exports[`запрос по каждой фикстуре > flask-07: снапш�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_700317374",
                     "value": {
                       "min": 50,
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_173226756",
                     "value": {
                       "min": -33,
@@ -2584,7 +2594,7 @@ exports[`запрос по каждой фикстуре > flask-08: снапш�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_3182498570",
                     "value": {
                       "min": 25,
@@ -2656,7 +2666,7 @@ exports[`запрос по каждой фикстуре > flask-09: снапш�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_962725504",
                     "value": {
                       "min": 30,
@@ -2728,7 +2738,7 @@ exports[`запрос по каждой фикстуре > flask-10: снапш�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_3256116097",
                     "value": {
                       "min": 12,
@@ -2769,6 +2779,9 @@ exports[`запрос по каждой фикстуре > gem-01: снапшо�
                 "filters": {
                   "corrupted": {
                     "option": "false",
+                  },
+                  "gem_level": {
+                    "min": 1,
                   },
                 },
               },
@@ -2821,6 +2834,12 @@ exports[`запрос по каждой фикстуре > gem-02: снапшо�
                   "corrupted": {
                     "option": "false",
                   },
+                  "gem_level": {
+                    "min": 1,
+                  },
+                  "quality": {
+                    "min": 10,
+                  },
                 },
               },
               "trade_filters": {
@@ -2871,6 +2890,9 @@ exports[`запрос по каждой фикстуре > gem-03: снапшо�
                 "filters": {
                   "corrupted": {
                     "option": "false",
+                  },
+                  "gem_level": {
+                    "min": 12,
                   },
                 },
               },
@@ -2923,6 +2945,9 @@ exports[`запрос по каждой фикстуре > gem-04: снапшо�
                   "corrupted": {
                     "option": "false",
                   },
+                  "gem_level": {
+                    "min": 1,
+                  },
                 },
               },
               "trade_filters": {
@@ -2973,6 +2998,9 @@ exports[`запрос по каждой фикстуре > gem-05: снапшо�
                 "filters": {
                   "corrupted": {
                     "option": "false",
+                  },
+                  "gem_level": {
+                    "min": 1,
                   },
                 },
               },
@@ -3025,6 +3053,9 @@ exports[`запрос по каждой фикстуре > gem-06: снапшо�
                   "corrupted": {
                     "option": "false",
                   },
+                  "gem_level": {
+                    "min": 1,
+                  },
                 },
               },
               "trade_filters": {
@@ -3075,6 +3106,9 @@ exports[`запрос по каждой фикстуре > gem-07: снапшо�
                 "filters": {
                   "corrupted": {
                     "option": "false",
+                  },
+                  "gem_level": {
+                    "min": 1,
                   },
                 },
               },
@@ -3127,6 +3161,9 @@ exports[`запрос по каждой фикстуре > gem-08: снапшо�
                   "corrupted": {
                     "option": "false",
                   },
+                  "gem_level": {
+                    "min": 4,
+                  },
                 },
               },
               "trade_filters": {
@@ -3178,6 +3215,9 @@ exports[`запрос по каждой фикстуре > gem-09: снапшо�
                   "corrupted": {
                     "option": "false",
                   },
+                  "gem_level": {
+                    "min": 1,
+                  },
                 },
               },
               "trade_filters": {
@@ -3228,6 +3268,12 @@ exports[`запрос по каждой фикстуре > gem-10: снапшо�
                 "filters": {
                   "corrupted": {
                     "option": "false",
+                  },
+                  "gem_level": {
+                    "min": 1,
+                  },
+                  "quality": {
+                    "min": 9,
                   },
                 },
               },
@@ -9537,6 +9583,13 @@ exports[`запрос по каждой фикстуре > weapon-05: снапш
                   },
                   "rarity": {
                     "option": "nonunique",
+                  },
+                },
+              },
+              "weapon_filters": {
+                "filters": {
+                  "pdps": {
+                    "min": 135,
                   },
                 },
               },
