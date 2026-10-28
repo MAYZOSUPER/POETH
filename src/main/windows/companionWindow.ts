@@ -1,6 +1,7 @@
 import { BrowserWindow } from 'electron'
 import path from 'path'
 import { loadRendererPage } from './rendererPage'
+import { windowIcon } from '../appIcon'
 
 // Companion window (бывш. «оверлей» компаса): прозрачное always-on-top окно с
 // вкладками (кампания PoE2 / прайс-чек / live / regex / сделки / настройки).
@@ -21,6 +22,7 @@ export function sendToCompanion(channel: string, payload?: unknown): void {
 export function createCompanionWindow(opts: { show?: boolean } = {}): BrowserWindow {
   win = new BrowserWindow({
     title: 'POE Trade Helper',
+    icon: windowIcon(),
     width: 820,
     height: 720,
     minWidth: 560,

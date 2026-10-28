@@ -36,6 +36,9 @@ extraResources:
     to: resources
     filter:
       - "**/*"
+  # иконка окон (S10c, src/main/appIcon.ts): тот же ico, что у exe, — 16…256 px для панели задач и Alt+Tab
+  - from: build/icon.ico
+    to: resources/brand/app_icon.ico
 
 # «Что нового» релиза (RU/EN): тело релиза на GitHub и releaseNotes в latest.yml → окно обновления.
 releaseInfo:

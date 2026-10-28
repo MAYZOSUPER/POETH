@@ -1,5 +1,6 @@
 import type { BrowserWindow } from 'electron'
 import path from 'path'
+import { windowIcon } from '../appIcon'
 
 // Маленькие служебные окна (S10a) — та же страница index.html с параметром ?view=…
 // (src/renderer/src/main.tsx выбирает экран): отдельная страница в electron-vite не нужна.
@@ -27,6 +28,7 @@ export function serviceWindowOptions(width: number, height: number): Electron.Br
     skipTaskbar: true,
     show: false,
     center: true,
+    icon: windowIcon(),
     backgroundColor: '#0f0c0a', // = --page дизайн-системы: без белой вспышки до загрузки
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),

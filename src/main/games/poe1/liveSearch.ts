@@ -35,6 +35,7 @@ import { toLiveHit } from './live/hits'
 import { parseLiveInput } from './live/tradeUrl'
 import { cleanTitle, DEFAULT_OPTIONS, loadLiveFile, newSearchId, saveLiveFile, type StoredSearch } from './live/store'
 import { favLiveState, type FavLiveStateS6 } from './live/favState'
+import { notificationIcon } from '../../appIcon'
 import { createWindowTransport, createWsTransport, preferredTransport, type LiveConnection, type LiveTransport } from './wsTransport'
 
 // Менеджер live search PoE1 (S6). Только main: соединения, cookies, fetch.
@@ -332,7 +333,7 @@ export class LiveManager {
     const name = [hit.name, hit.typeLine].filter(Boolean).join(' ')
     const price = hit.price ? `${hit.price.amount} ${hit.price.currency}` : ''
     const body = [name, price, hit.merchant ? tx.merchant : ''].filter(Boolean).join(' · ')
-    new Notification({ title: `${tx.title}: ${hit.searchTitle}`, body, silent: true }).show()
+    new Notification({ title: `${tx.title}: ${hit.searchTitle}`, body, icon: notificationIcon(), silent: true }).show()
   }
 
   // ---------------------------------------------------------------- команды UI

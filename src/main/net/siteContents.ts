@@ -4,6 +4,7 @@ import { isAllowedExternalUrl } from '@shared/links'
 import { isSiteNavigationAllowed } from './guards'
 import { getAccountSession } from './session'
 import { netLog } from './http'
+import { windowIcon } from '../appIcon'
 
 // Содержимое официального сайта pathofexile.com в нашем приложении: окно входа (S3) и
 // siteView трейд-окна (S5). Правила одни:
@@ -88,6 +89,7 @@ export function openLoginWindow(opts: LoginWindowOptions): BrowserWindow {
   }
   const win = new BrowserWindow({
     title: opts.title ?? 'Path of Exile — вход',
+    icon: windowIcon(),
     width: 1000,
     height: 820,
     minWidth: 480,

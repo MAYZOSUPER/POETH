@@ -7,6 +7,7 @@ import { isSiteNavigationAllowed } from '../net/guards'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
 import { ensureGameForeground } from './gameOverlay'
 import { loadRendererPage } from './rendererPage'
+import { windowIcon } from '../appIcon'
 
 // Трейд-окно (S5): обычное окно с рамкой, слева наш сайдбар (trade-sidebar.html, preload),
 // справа официальный сайт трейда как есть (siteView: без preload, sandbox, сессия аккаунта
@@ -132,6 +133,7 @@ async function create(title: string): Promise<BaseWindow> {
   hookQuit()
   const w = new BaseWindow({
     title,
+    icon: windowIcon(),
     ...restoredBounds(),
     minWidth: MIN_SIZE.width,
     minHeight: MIN_SIZE.height,
