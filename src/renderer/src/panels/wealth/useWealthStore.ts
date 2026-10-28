@@ -1,18 +1,19 @@
 import { create } from 'zustand'
-import type { WealthDiff, WealthOptions, WealthSnapshot, WealthState } from '@shared/types'
+import type { WealthDiff, WealthOptions, WealthState } from '@shared/types'
 
 // Состояние вкладки «Богатство» (компаньон, S11a). Источник — main (wealth:state + event:wealth.state);
-// детали последнего снимка и «что прибавилось» перечитываются, когда появляется новый снимок.
+// «что прибавилось» (с прошлого снимка и с начала сессии) перечитывается, когда появляется новый снимок.
 
 interface WealthStore {
   state: WealthState | null
-  detail: WealthSnapshot | null
+  /** с прошлого снимка */
   diff: WealthDiff | null
+  /** с начала сессии фарма */
+  sessionDiff: WealthDiff | null
   busy: boolean
   accountError: boolean
   init: () => void
-  snapshot: () => Promise<void>
-  refreshTabs: () => Promise<void>
+  refresh: () => Promise<void>
   setTabs: (ids: string[]) => Promise<void>
   setAccount: (name: string | null) => Promise<boolean>
   setOptions: (patch: Partial<WealthOptions>) => Promise<void>
@@ -21,28 +22,26 @@ interface WealthStore {
 }
 
 let subscribed = false
-let lastDetailId: string | null = null
-let lastSessionKey = ''
+let lastKey = ''
 
-async function reloadDetails(set: (p: Partial<WealthStore>) => void, s: WealthState): Promise<void> {
-  const id = s.latest?.id ?? null
-  const sessionKey = s.farm.session ? `${s.farm.session.startId}:${s.farm.session.endId ?? ''}` : ''
-  if (id === lastDetailId && sessionKey === lastSessionKey) return
-  lastDetailId = id
-  lastSessionKey = sessionKey
-  if (!id) {
-    set({ detail: null, diff: null })
+async function reloadDiffs(set: (p: Partial<WealthStore>) => void, s: WealthState): Promise<void> {
+  const session = s.farm.session
+  const key = `${s.latest?.id ?? ''}|${session ? `${session.startId}:${session.endId ?? ''}` : ''}`
+  if (key === lastKey) return
+  lastKey = key
+  if (!s.latest) {
+    set({ diff: null, sessionDiff: null })
     return
   }
   const api = window.overlayApi.wealth
-  const [detail, diff] = await Promise.all([api.detail(), api.diff()])
-  set({ detail, diff })
+  const [diff, sessionDiff] = await Promise.all([api.diff(), session ? api.diff('session') : Promise.resolve(null)])
+  set({ diff, sessionDiff })
 }
 
 export const useWealthStore = create<WealthStore>((set) => {
   const apply = (state: WealthState): void => {
     set({ state })
-    void reloadDetails(set, state)
+    void reloadDiffs(set, state)
   }
   const run = async (fn: () => Promise<unknown>): Promise<void> => {
     set({ busy: true })
@@ -54,8 +53,8 @@ export const useWealthStore = create<WealthStore>((set) => {
   }
   return {
     state: null,
-    detail: null,
     diff: null,
+    sessionDiff: null,
     busy: false,
     accountError: false,
 
@@ -67,8 +66,7 @@ export const useWealthStore = create<WealthStore>((set) => {
       void api.wealth.state().then(apply)
     },
 
-    snapshot: () => run(() => window.overlayApi.wealth.snapshot()),
-    refreshTabs: () => run(() => window.overlayApi.wealth.refreshTabs()),
+    refresh: () => run(() => window.overlayApi.wealth.snapshot()),
     setTabs: async (ids) => {
       await window.overlayApi.wealth.setTabs(ids)
     },
