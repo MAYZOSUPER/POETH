@@ -73,7 +73,14 @@ function WidgetSwitch({ state }: { state: FarmState }) {
 }
 
 function Deaths({ n }: { n: number }) {
-  return n > 0 ? <span className="fm-death">{n}</span> : <span className="fm-zero">0</span>
+  return n > 0 ? (
+    <span className="ui-tally ui-tally--bad">
+      <Ico name="death" />
+      {n}
+    </span>
+  ) : (
+    <span className="ui-tally ui-tally--zero">0</span>
+  )
 }
 
 // ---------------------------------------------------------------- без сессии
@@ -95,6 +102,7 @@ function IdleView({ state }: { state: FarmState }) {
         <span className="ui-empty__title">{t('farm.title')}</span>
         <span className="fm-empty__text">{t('farm.idle.text')}</span>
         <button type="button" className="ui-btn ui-btn--primary" disabled={busy} onClick={() => void start()}>
+          <Ico name="play" />
           {t('farm.session.start')}
         </button>
         {simple && <span className="fm-empty__hint">{t('farm.idle.hint')}</span>}
@@ -111,29 +119,29 @@ function IdleView({ state }: { state: FarmState }) {
       {state.sessions.length === 0 ? (
         <p className="fm-p">{t('farm.sessions.empty')}</p>
       ) : (
-        <div className="fm-box fm-tablewrap">
-          <table className="fm-tbl">
+        <div className="ui-box fm-tablewrap">
+          <table className="ui-table">
             <thead>
               <tr>
                 <th>{t('farm.past.when')}</th>
                 <th>{t('farm.past.length')}</th>
-                <th className="fm-r">{t('farm.past.maps')}</th>
-                <th className="fm-r">{t('farm.past.perHour')}</th>
-                <th className="fm-r">{t('farm.past.total')}</th>
+                <th className="is-num">{t('farm.past.maps')}</th>
+                <th className="is-num">{t('farm.past.perHour')}</th>
+                <th className="is-num">{t('farm.past.total')}</th>
               </tr>
             </thead>
             <tbody>
               {state.sessions.map((s) => (
                 <tr key={s.id}>
                   <td className="fm-nowrap">{when(s.startedAt, lang)}</td>
-                  <td className="fm-num-l">{clock(s.stats.durationMs)}</td>
-                  <td className="fm-num">{s.stats.maps}</td>
-                  <td className="fm-num">
+                  <td className="fm-nowrap">{clock(s.stats.durationMs)}</td>
+                  <td className="is-num">{s.stats.maps}</td>
+                  <td className="is-num">
                     {s.stats.profitPerHour !== null
                       ? income(s.stats.profitPerHour, latestDivineRate(state.runs.filter((r) => r.sessionId === s.id)), lang).main
                       : '—'}
                   </td>
-                  <td className={`fm-num fm-profit${s.stats.profitChaos !== null && s.stats.profitChaos < 0 ? ' fm-loss' : ''}`}>
+                  <td className={`is-num ${s.stats.profitChaos === null ? 'is-faint' : s.stats.profitChaos < 0 ? 'is-bad' : 'is-good'}`}>
                     {s.stats.profitChaos !== null ? t('farm.chaos', { n: chaos(s.stats.profitChaos, lang, true) }) : '—'}
                   </td>
                 </tr>
@@ -162,40 +170,40 @@ function Kpis({ state, now, props }: { state: FarmState; now: number; props: Far
   const perHour = rated && stats.profitChaos !== null ? stats.profitChaos / (dur / HOUR) : null
   const inc = perHour !== null ? income(perHour, latestDivineRate(sessionRuns), lang) : null
   return (
-    <div className="fm-kpis">
+    <div className="ui-stats ui-stats--lead">
       {props.renderIncome ? (
         props.renderIncome({ profitChaos: stats.profitChaos, activeMs: dur, pending })
       ) : props.needLogin ? (
-        <div className="fm-kpi fm-kpi--hero fm-kpi--need">
+        <div className="ui-stat ui-stat--hero ui-stat--empty">
           <span className="ui-label">{t('farm.stat.income')}</span>
-          <b>{t('farm.stat.income.login')}</b>
+          <b className="ui-stat__value">{t('farm.stat.income.login')}</b>
         </div>
       ) : (
-        <div className="fm-kpi fm-kpi--hero" title={inc ? undefined : t('farm.stat.income.wait')}>
+        <div className="ui-stat ui-stat--hero" title={inc ? undefined : t('farm.stat.income.wait')}>
           <span className="ui-label">{t('farm.stat.income')}</span>
-          <b>{inc ? inc.main : na}</b>
-          <span>{inc ? inc.sub : pending ? t('farm.run.counting') : t('farm.stat.income.waitShort')}</span>
+          <b className="ui-stat__value">{inc ? inc.main : na}</b>
+          <span className="ui-stat__sub">{inc ? inc.sub : pending ? t('farm.run.counting') : t('farm.stat.income.waitShort')}</span>
         </div>
       )}
-      <div className="fm-kpi">
+      <div className="ui-stat">
         <span className="ui-label">{t('farm.stat.perHour')}</span>
-        <b>{rated ? rate(stats.maps / (dur / HOUR), lang) : na}</b>
-        <span>{t('farm.stat.perHour.sub', { n: stats.maps })}</span>
+        <b className="ui-stat__value">{rated ? rate(stats.maps / (dur / HOUR), lang) : na}</b>
+        <span className="ui-stat__sub">{t('farm.stat.perHour.sub', { n: stats.maps })}</span>
       </div>
-      <div className="fm-kpi">
+      <div className="ui-stat">
         <span className="ui-label">{t('farm.stat.avg')}</span>
-        <b>{stats.avgMapMs !== null ? clock(stats.avgMapMs) : na}</b>
-        <span>{stats.fastestMapMs !== null ? t('farm.stat.avg.sub', { time: clock(stats.fastestMapMs) }) : ' '}</span>
+        <b className="ui-stat__value">{stats.avgMapMs !== null ? clock(stats.avgMapMs) : na}</b>
+        <span className="ui-stat__sub">{stats.fastestMapMs !== null ? t('farm.stat.avg.sub', { time: clock(stats.fastestMapMs) }) : ' '}</span>
       </div>
-      <div className="fm-kpi">
+      <div className="ui-stat">
         <span className="ui-label">
           {t('farm.stat.deaths')}
           <span className="ui-q" title={t('farm.stat.deaths.q')}>
             ?
           </span>
         </span>
-        <b>{stats.deaths}</b>
-        <span>
+        <b className="ui-stat__value">{stats.deaths}</b>
+        <span className="ui-stat__sub">
           {stats.deaths > 0
             ? t('farm.stat.deaths.sub', { n: stats.mapsWithDeaths, of: stats.maps })
             : t('farm.stat.deaths.none')}
@@ -220,19 +228,19 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
   const profitCell = (c: ProfitCell | undefined, open: boolean) => {
     if (!c || c.kind === 'pending') {
       const text = open ? t('farm.run.running') : props.needLogin ? '—' : t('farm.run.counting')
-      return <td className="fm-num fm-none">{text}</td>
+      return <td className="is-num is-faint">{text}</td>
     }
     if (c.kind === 'inGroup') {
       return (
-        <td className="fm-num fm-none" title={t('farm.profit.inGroup', { n: c.runs })}>
+        <td className="is-num is-faint" title={t('farm.profit.inGroup', { n: c.runs })}>
           ≈{t('farm.chaos', { n: chaos(c.share, lang, true) })}
         </td>
       )
     }
-    const loss = c.chaos < 0 ? ' fm-loss' : ''
+    const tone = c.chaos < 0 ? 'is-bad' : 'is-good'
     const title = [c.kind === 'group' ? t('farm.profit.group', { n: c.runs }) : '', low(c) ?? ''].filter(Boolean).join(' ')
     return (
-      <td className={`fm-num fm-profit${loss}${c.low ? ' fm-low' : ''}`} title={title || undefined}>
+      <td className={`is-num ${tone}${c.low ? ' fm-low' : ''}`} title={title || undefined}>
         {t('farm.chaos', { n: chaos(c.chaos, lang, true) })}
         {c.kind === 'group' && <span className="fm-group"> {t('farm.profit.groupShort', { n: c.runs })}</span>}
       </td>
@@ -260,30 +268,30 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
       {!current && done.length === 0 ? (
         <p className="fm-p">{t('farm.runs.sessionEmpty')}</p>
       ) : (
-        <div className="fm-box fm-tablewrap">
-          <table className="fm-tbl">
+        <div className="ui-box fm-tablewrap">
+          <table className="ui-table">
             <thead>
               <tr>
                 <th className="fm-n">#</th>
                 <th>{t('farm.col.map')}</th>
-                <th className="fm-r">{t('farm.col.time')}</th>
-                <th className="fm-r">{t('farm.col.profit')}</th>
-                {expert && <th className="fm-r">{t('farm.col.perMin')}</th>}
-                <th className="fm-r">{t('farm.col.deaths')}</th>
+                <th className="is-num">{t('farm.col.time')}</th>
+                <th className="is-num">{t('farm.col.profit')}</th>
+                {expert && <th className="is-num">{t('farm.col.perMin')}</th>}
+                <th className="is-num">{t('farm.col.deaths')}</th>
               </tr>
             </thead>
             <tbody>
               {current && (
-                <tr className="fm-now">
+                <tr className="is-now">
                   <td className="fm-n">{done.length + 1}</td>
                   <td>
                     {runName(current)}
-                    <span className="fm-tier">{tierText(current, t)}</span>
+                    <span className="ui-table__aside">{tierText(current, t)}</span>
                   </td>
-                  <td className="fm-num fm-now__t">{clock(currentRunMs(state, now))}</td>
+                  <td className="is-num fm-now-time">{clock(currentRunMs(state, now))}</td>
                   {profitCell(current.profit ? { kind: 'own', chaos: current.profit.chaos, low: !!current.profit.low } : undefined, true)}
-                  {expert && <td className="fm-num">—</td>}
-                  <td className="fm-num">
+                  {expert && <td className="is-num">—</td>}
+                  <td className="is-num">
                     <Deaths n={current.deaths} />
                   </td>
                 </tr>
@@ -293,12 +301,12 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
                   <td className="fm-n">{done.length - i}</td>
                   <td>
                     {runName(r)}
-                    <span className="fm-tier">{tierText(r, t)}</span>
+                    <span className="ui-table__aside">{tierText(r, t)}</span>
                   </td>
-                  <td className="fm-num">{clock(r.activeMs)}</td>
+                  <td className="is-num">{clock(r.activeMs)}</td>
                   {profitCell(cells.get(r.id), false)}
-                  {expert && <td className="fm-num">{perMin(r, cells.get(r.id))}</td>}
-                  <td className="fm-num">
+                  {expert && <td className="is-num">{perMin(r, cells.get(r.id))}</td>}
+                  <td className="is-num">
                     <Deaths n={r.deaths} />
                   </td>
                 </tr>
@@ -330,6 +338,7 @@ function RunningView({ state, now, props }: { state: FarmState; now: number; pro
         <WidgetSwitch state={state} />
         {paused ? (
           <button type="button" className="ui-btn ui-btn--primary ui-btn--sm" disabled={busy} onClick={() => void resume()}>
+            <Ico name="play" />
             {t('farm.session.resume')}
           </button>
         ) : (
@@ -346,6 +355,7 @@ function RunningView({ state, now, props }: { state: FarmState; now: number; pro
           </button>
         )}
         <button type="button" className="ui-btn ui-btn--sm" disabled={busy} onClick={() => void stop()}>
+          <Ico name="stop" />
           {t('farm.session.stop')}
         </button>
       </div>
@@ -394,18 +404,18 @@ function AllRuns({ runs }: { runs: FarmRun[] }) {
           {t('farm.runs.clear')}
         </button>
       </div>
-      <div className="fm-box fm-tablewrap">
-        <table className="fm-tbl">
+      <div className="ui-box fm-tablewrap">
+        <table className="ui-table">
           <thead>
             <tr>
               <th>{t('farm.col.when')}</th>
               <th>{t('farm.col.map')}</th>
-              <th className="fm-r">{t('farm.col.time')}</th>
-              <th className="fm-r" title={t('farm.col.entries.title')}>
+              <th className="is-num">{t('farm.col.time')}</th>
+              <th className="is-num" title={t('farm.col.entries.title')}>
                 {t('farm.col.entries')}
               </th>
-              <th className="fm-r">{t('farm.col.profit')}</th>
-              <th className="fm-r">{t('farm.col.deaths')}</th>
+              <th className="is-num">{t('farm.col.profit')}</th>
+              <th className="is-num">{t('farm.col.deaths')}</th>
               <th aria-label={t('farm.runs.remove')} />
             </tr>
           </thead>
@@ -415,14 +425,14 @@ function AllRuns({ runs }: { runs: FarmRun[] }) {
                 <td className="fm-nowrap fm-faint">{when(r.startTs, lang)}</td>
                 <td>
                   {runName(r)}
-                  <span className="fm-tier">{tierText(r, t)}</span>
+                  <span className="ui-table__aside">{tierText(r, t)}</span>
                 </td>
-                <td className="fm-num">{clock(r.activeMs)}</td>
-                <td className="fm-num">{r.entries}</td>
-                <td className={`fm-num${r.profit ? ' fm-profit' : ' fm-none'}${r.profit && r.profit.chaos < 0 ? ' fm-loss' : ''}`}>
+                <td className="is-num">{clock(r.activeMs)}</td>
+                <td className="is-num">{r.entries}</td>
+                <td className={`is-num ${!r.profit ? 'is-faint' : r.profit.chaos < 0 ? 'is-bad' : 'is-good'}`}>
                   {r.profit ? t('farm.chaos', { n: chaos(r.profit.chaos, lang, true) }) : '—'}
                 </td>
-                <td className="fm-num">
+                <td className="is-num">
                   <Deaths n={r.deaths} />
                 </td>
                 <td>

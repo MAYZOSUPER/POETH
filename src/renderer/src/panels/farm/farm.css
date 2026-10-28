@@ -1,5 +1,5 @@
-/* Раздел «Сессия фарма» (S11b) вкладки «Богатство» по макету дизайнера (там классы w-*: перенос в
-   components.css — после утверждения макета). Только токены из tokens.css и компоненты ui-*. */
+/* Раздел «Сессия фарма» (S11b) вкладки «Богатство». Компоненты — из дизайн-системы (ui-stats, ui-stat,
+   ui-box, ui-table, ui-tally); здесь — только раскладка раздела по макету «Богатство» (docs/design-system.md). */
 
 .fm {
   display: grid;
@@ -24,12 +24,6 @@
 .fm-nowrap {
   white-space: nowrap;
 }
-.fm-box {
-  min-width: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--r-panel);
-  background: rgba(0, 0, 0, 0.16);
-}
 
 /* ---- без сессии ---- */
 .fm-empty {
@@ -45,7 +39,7 @@
   font-size: var(--fs-sm);
 }
 
-/* ---- сессия идёт ---- */
+/* ---- шапка сессии ---- */
 .fm-sess-top {
   display: flex;
   flex-wrap: wrap;
@@ -62,49 +56,10 @@
   color: var(--accent-hi);
   font-variant-numeric: tabular-nums;
 }
-.fm-kpis {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
-  gap: var(--sp-5);
-}
 @media (max-width: 760px) {
-  .fm-kpis {
+  .fm .ui-stats--lead {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-.fm-kpi {
-  display: grid;
-  gap: var(--sp-2);
-  align-content: start;
-  min-width: 0;
-  padding: var(--sp-6) 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-panel);
-  background: rgba(0, 0, 0, 0.16);
-}
-.fm-kpi > b {
-  color: var(--fg);
-  font: 600 26px / 1.05 var(--font-ui);
-  font-variant-numeric: proportional-nums;
-  overflow-wrap: anywhere;
-}
-.fm-kpi > span:last-child {
-  color: var(--fg-muted);
-  font-size: var(--fs-xs);
-}
-.fm-kpi--hero {
-  border-color: var(--border-strong);
-  background: var(--accent-soft);
-}
-.fm-kpi--hero > b {
-  color: var(--accent-hi);
-  font-size: 34px;
-}
-.fm-kpi--need > b {
-  color: var(--fg-muted);
-  font-size: var(--fs-lg);
-  font-weight: 500;
-  line-height: 1.4;
 }
 .fm-hint {
   padding-inline: 0;
@@ -117,79 +72,28 @@
 .fm-total b {
   color: var(--good);
 }
+.fm-total b.fm-loss {
+  color: var(--bad);
+}
 
-/* ---- таблицы ---- */
+/* ---- таблицы: прокрутка с липкой шапкой, номер забега, таймер текущей карты ---- */
 .fm-tablewrap {
   max-height: 46vh;
   overflow: auto;
 }
-.fm-tbl {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--fs-md);
-  font-variant-numeric: tabular-nums;
-}
-.fm-tbl th {
+.fm-tablewrap .ui-table th {
   position: sticky;
   top: 0;
   z-index: 1;
-  padding: var(--sp-4) var(--sp-5);
-  border-bottom: 1px solid var(--border);
   background: var(--surface-solid);
-  color: var(--fg-faint);
-  font: 600 var(--fs-2xs) / 1.2 var(--font-ui);
-  letter-spacing: 0.05em;
-  text-align: left;
-  text-transform: uppercase;
-}
-.fm-tbl td {
-  padding: var(--sp-4) var(--sp-5);
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
-.fm-tbl tr:last-child td {
-  border-bottom: 0;
-}
-.fm-tbl tbody tr:hover td {
-  background: var(--hover);
-}
-.fm-tbl th.fm-r,
-.fm-num {
-  text-align: right;
-  white-space: nowrap;
-}
-.fm-num-l {
-  white-space: nowrap;
 }
 .fm-n {
   width: 28px;
   color: var(--fg-faint);
 }
-.fm-tier {
-  margin-left: var(--sp-3);
-  color: var(--fg-faint);
-  font-size: var(--fs-xs);
-}
-.fm-now td {
-  background: var(--accent-soft);
-}
-.fm-tbl tbody tr.fm-now:hover td {
-  background: var(--accent-soft);
-}
-.fm-now__t {
+.fm-now-time {
   color: var(--accent-hi);
   font-weight: 600;
-}
-.fm-profit {
-  color: var(--good);
-  font-weight: 600;
-}
-.fm-none {
-  color: var(--fg-faint);
-}
-.fm-loss,
-.fm-profit.fm-loss {
-  color: var(--bad);
 }
 .fm-low {
   text-decoration: underline dotted;
@@ -199,13 +103,6 @@
   color: var(--fg-faint);
   font-size: var(--fs-xs);
   font-weight: 400;
-}
-.fm-death {
-  color: var(--bad);
-  font-weight: 600;
-}
-.fm-zero {
-  color: var(--fg-faint);
 }
 
 /* ---- все забеги ---- */
@@ -221,5 +118,4 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-3) var(--sp-5);
-  margin-block: var(--sp-4);
 }
