@@ -14,7 +14,7 @@
 // Мы только добавляем «невидимые» нам хиты (с других устройств/вкладок сайта) и
 // никогда не уменьшаем свой счёт — так безопаснее (резерв лимитов — политика GGG).
 
-export type PolicyKind = 'search' | 'fetch' | 'exchange' | 'live-fetch' | 'data'
+export type PolicyKind = 'search' | 'fetch' | 'exchange' | 'live-fetch' | 'data' | 'stash'
 
 /** interactive — действие пользователя (Ctrl+D), background — live search и прочий фон. */
 export type Priority = 'interactive' | 'background'
@@ -42,7 +42,9 @@ export const DEFAULT_RULES: Record<PolicyKind, string> = {
   'live-fetch': '12:4:10,16:12:300,50:300:300,1000:21600:1800',
   // data/leagues, data/stats… отдаются из кэша Cloudflare без заголовков лимитов —
   // держим свой скромный потолок.
-  data: '10:60:60'
+  data: '10:60:60',
+  // стэш (S11a, legacy character-window): политика backend-item-request-limit, отдельный шлюз
+  stash: '30:60:120,90:1800:600,180:7200:3600'
 }
 
 /** Фоновый запрос разрешён, только если в каждом окне после него остаётся ≥ 25 %. */
