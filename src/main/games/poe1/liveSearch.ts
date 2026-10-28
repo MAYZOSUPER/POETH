@@ -329,7 +329,10 @@ export class LiveManager {
   private notifyWindows(hit: LiveHit): void {
     // игра в фокусе — хватит тоста в оверлее
     if (!isFocusTracking() || getGameFocus().game || getGameFocus().overlay) return
-    if (!windowsToastsAllowed()) return
+    if (!windowsToastsAllowed()) {
+      console.log(`[live] находка «${hit.searchTitle}»: ${[hit.name, hit.typeLine].filter(Boolean).join(' ')}`)
+      return
+    }
     const tx = NOTIFY_TEXT[this.lang]
     const name = [hit.name, hit.typeLine].filter(Boolean).join(' ')
     const price = hit.price ? `${hit.price.amount} ${hit.price.currency}` : ''
