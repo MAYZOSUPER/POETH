@@ -288,6 +288,15 @@ async function main() {
   check('hasAccess = true (без прав администратора)', st.status.hasAccess === true)
   check('фокус игры отслеживается', st.focus.game === true)
 
+  // хоткеи, которыми пользуется проверка, держит кто-то ещё (второй POETH другой сессии, APT…) —
+  // дальше всё было бы ложными провалами: прервать с понятной причиной
+  const busy = (await evaluate('window.overlayApi.overlay.hotkeyConflicts()')).filter((c) =>
+    ['priceCheck', 'overlayToggle', 'chat:hideout', 'chat:invite'].includes(c.action)
+  )
+  if (busy.length) {
+    throw new Error(`хоткеи проверки заняты другой программой (${busy.map((c) => c.accel).join(', ')}) — закройте второй POETH / APT / Sidekick и запустите снова`)
+  }
+
   // ---- хоткей занят другой программой: предупреждение поверх игры и список для настроек ----
   if (squatOk) {
     const conf = await waitFor(async () => {
