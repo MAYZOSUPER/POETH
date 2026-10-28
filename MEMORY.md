@@ -127,6 +127,10 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 28.10)_ слиты: `s1-hotkey-conflict` (`42d8415`: предупреждение «хоткей занят другой программой» — APT/Sidekick,
+  повторный Ctrl+D закрывает окно), `s4-lot-actions` (`5cbb061`: «Написать» = whisper в чат через `typeInChat` без Enter
+  или сразу по настройке, «Открыть лот» → трейд-окно, «Выкуп» для instant buyout), `s8-outgoing` (`94c1d38`: исходящая
+  карточка как у PoE Overlay — убежище продавца, обмен, выйти из группы), `s12-data-channel` (`07c110f`, `92bd194`: ветка`n  `data` с манифестом опубликована, workflow «Data», `tools/data/league-day.mjs`, сквозная проверка 16/16). 1291 тест.
 - _(лид, 28.10)_ исправления по живой проверке пользователя: `s1-popup-fixes` (`8abf290`: окно цены не исчезает при работе,
   перетаскивание за шапку и «где оставил», тосты Windows в dev выключены), `s4-fixes` (`9218320`: умолчания фильтров по типу,
   «Искать заново» + Enter, курс chaos↔divine с дробями, IPC `trade.currencyRate`), `s5-fixes` (`9dfae35`: трейд-окно поверх игры
