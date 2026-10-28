@@ -1,0 +1,81 @@
+/* Вкладка «Богатство» (S11a) по макету «Богатство». Компоненты — ui-* из components.css (дизайн-система),
+   здесь только раскладка вкладки (w-* как на макете) и свои мелочи wl-*. Только токены. */
+
+.wealth-tab {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.wl-subtabs {
+  padding: 0 var(--sp-7);
+}
+.wl-body {
+  min-height: 0;
+}
+
+.wl-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.wl-banner {
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+  border-radius: var(--r-panel);
+}
+.wl-banner > .ui-btn {
+  align-self: center;
+}
+.wl-account {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+}
+.wl-account .ui-input {
+  flex: 0 1 220px;
+  width: auto;
+}
+.wl-note {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  margin: 0;
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}
+.wl-why {
+  max-width: 56ch;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.wl-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-5) var(--sp-8);
+  align-items: center;
+}
+.wl-muted {
+  color: var(--fg-muted);
+}
+
+/* раскладка вкладки (на макете — w-*); компоненты — ui-* из components.css */
+.w-pad { display: grid; gap: 14px; padding: 14px 16px 18px; align-content: start; }
+.w-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 24px; align-items: end; }
+.w-total { display: grid; gap: 6px; min-width: 0; }
+.w-wait { color: var(--fg-muted); font-size: var(--fs-sm); }
+.w-snap { display: grid; justify-items: end; gap: 6px; font-size: var(--fs-sm); color: var(--fg-muted); text-align: right; }
+.w-snap .wl-btns { justify-content: flex-end; }
+.w-rate { font-size: var(--fs-xs); color: var(--fg-faint); }
+.w-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.wealth-tab .ui-box__head > .ui-label,
+.wealth-tab .ui-box__head .ui-seg > button { white-space: nowrap; }
+
+@media (max-width: 760px) {
+  .w-grid { grid-template-columns: minmax(0, 1fr); }
+  .w-top { grid-template-columns: minmax(0, 1fr); }
+  .w-snap { justify-items: start; text-align: left; }
+}

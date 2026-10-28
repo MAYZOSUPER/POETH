@@ -18,6 +18,7 @@ import { Poe1PriceCheckTab } from './panels/Poe1PriceCheckTab'
 import { LiveTab } from './panels/LiveTab'
 import { RegexTab } from './panels/RegexTab'
 import { DealsTab } from './panels/DealsTab'
+import { WealthTab } from './panels/WealthTab'
 import { ViewToggle } from './components/ViewToggle'
 import { Wizard } from './panels/onboarding/Wizard'
 import { AboutPanel } from './panels/onboarding/AboutPanel'
@@ -68,6 +69,8 @@ function TabBody() {
       return <RegexTab />
     case 'deals':
       return <DealsTab />
+    case 'wealth':
+      return <WealthTab />
     default:
       return null
   }

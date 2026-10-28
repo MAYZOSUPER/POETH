@@ -19,6 +19,8 @@ export interface GameFeatures {
   live: boolean
   regex: boolean
   deals: boolean
+  /** учёт богатства (S11a) */
+  wealth: boolean
 }
 
 export interface GameDef {
@@ -47,7 +49,7 @@ export const GAMES: Record<GameId, GameDef> = {
     siteRealm: null,
     logSubdirs: ['Path of Exile/logs', 'PathOfExile/logs'],
     dataDir: 'poe1',
-    features: { campaign: false, priceCheck: true, live: true, regex: true, deals: true }
+    features: { campaign: false, priceCheck: true, live: true, regex: true, deals: true, wealth: true }
   },
   poe2: {
     id: 'poe2',
@@ -57,7 +59,7 @@ export const GAMES: Record<GameId, GameDef> = {
     siteRealm: 'poe2',
     logSubdirs: ['Path of Exile 2/logs', 'PathOfExile2/logs'],
     dataDir: 'poe2',
-    features: { campaign: true, priceCheck: true, live: false, regex: false, deals: false }
+    features: { campaign: true, priceCheck: true, live: false, regex: false, deals: false, wealth: false }
   }
 }
 

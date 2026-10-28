@@ -1,0 +1,51 @@
+{
+  "numTabs": 6,
+  "items": [
+    {
+      "w": 2, "h": 3, "id": "item-chest-1", "name": "<<set:MS>><<set:M>><<set:S>>Doppelgänger Guise", "typeLine": "Sadist Garb",
+      "baseType": "Sadist Garb", "identified": true, "ilvl": 84, "frameType": 3, "corrupted": false,
+      "sockets": [
+        { "group": 0, "attr": "S", "sColour": "R" }, { "group": 0, "attr": "D", "sColour": "G" },
+        { "group": 0, "attr": "D", "sColour": "G" }, { "group": 0, "attr": "I", "sColour": "B" },
+        { "group": 0, "attr": "I", "sColour": "B" }, { "group": 0, "attr": "S", "sColour": "R" }
+      ],
+      "socketedItems": [
+        {
+          "id": "gem-1", "name": "", "typeLine": "Vaal Grace", "baseType": "Vaal Grace", "identified": true, "frameType": 4,
+          "corrupted": true, "socket": 0,
+          "properties": [
+            { "name": "Vaal, Aura, Spell, AoE", "values": [], "displayMode": 0 },
+            { "name": "Level", "values": [["21 (Max)", 0]], "displayMode": 0, "type": 5 },
+            { "name": "Quality", "values": [["+20%", 1]], "displayMode": 0, "type": 6 }
+          ]
+        }
+      ]
+    },
+    {
+      "w": 1, "h": 1, "id": "item-gem-2", "name": "", "typeLine": "Added Fire Damage Support", "baseType": "Added Fire Damage Support",
+      "identified": true, "frameType": 4,
+      "properties": [
+        { "name": "Support", "values": [], "displayMode": 0 },
+        { "name": "Level", "values": [["18", 0]], "displayMode": 0, "type": 5 },
+        { "name": "Quality", "values": [["+13%", 1]], "displayMode": 0, "type": 6 }
+      ]
+    },
+    {
+      "w": 1, "h": 1, "id": "item-ring-1", "name": "Doom Loop", "typeLine": "Amethyst Ring", "baseType": "Amethyst Ring",
+      "identified": true, "ilvl": 80, "frameType": 2
+    },
+    {
+      "w": 1, "h": 1, "id": "item-map-1", "name": "", "typeLine": "Fecund Cemetery Map of Exposure", "baseType": "Cemetery Map",
+      "identified": true, "ilvl": 79, "frameType": 1,
+      "properties": [
+        { "name": "Map Tier", "values": [["14", 1]], "displayMode": 0, "type": 1 },
+        { "name": "Item Quantity", "values": [["+19%", 1]], "displayMode": 0 }
+      ]
+    },
+    {
+      "w": 1, "h": 1, "id": "item-card-1", "name": "", "typeLine": "The Apothecary", "baseType": "The Apothecary",
+      "identified": true, "frameType": 6, "stackSize": 2, "maxStackSize": 5
+    },
+    { "w": 1, "h": 1, "id": "broken", "frameType": 0 }
+  ]
+}
