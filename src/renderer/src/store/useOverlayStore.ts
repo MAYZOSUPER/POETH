@@ -4,6 +4,7 @@ import type {
   OverlayFocusState,
   OverlayNotice,
   OverlayStatus,
+  PopupPoint,
   PricePopupPosition,
   UiLang
 } from '@shared/types'
@@ -26,6 +27,8 @@ interface OverlayStore {
   toggleKey: string
   /** «Позиция окна цены» для окон слоя popup (Settings.overlay.pricePosition) */
   pricePosition: PricePopupPosition
+  /** куда окно цены перетащили (Settings.overlay.priceWindowPos) — для 'saved' */
+  priceWindowPos: PopupPoint | null
   focus: OverlayFocusState
   status: OverlayStatus | null
   /** предмет для демо-виджета «текст предмета» (null — виджет закрыт) */
@@ -44,6 +47,8 @@ interface OverlayStore {
   refreshSettings: () => Promise<void>
   /** Закрыть всплывающие окна (без возврата фокуса — это делает вызывающий). */
   dismissPopups: () => void
+  /** Окно цены перетащили (p) или вернули к курсору (null): сразу на экране и в настройках. */
+  setPricePlacement: (p: PopupPoint | null) => void
 }
 
 const api = (): Window['overlayApi'] => window.overlayApi
@@ -53,6 +58,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
   lang: 'ru',
   toggleKey: 'Shift+Space',
   pricePosition: 'cursor',
+  priceWindowPos: null,
   focus: { game: false, overlay: false, usingHotkey: false },
   status: null,
   item: null,
@@ -91,9 +97,16 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
     set({
       lang: s.uiLang,
       toggleKey: s.hotkeys.overlayToggle?.accel ?? '',
-      pricePosition: s.overlay?.pricePosition ?? 'cursor'
+      pricePosition: s.overlay?.pricePosition ?? 'cursor',
+      priceWindowPos: s.overlay?.priceWindowPos ?? null
     })
   },
 
-  dismissPopups: () => set((s) => ({ item: null, popupDismissSeq: s.popupDismissSeq + 1 }))
+  dismissPopups: () => set((s) => ({ item: null, popupDismissSeq: s.popupDismissSeq + 1 })),
+
+  setPricePlacement: (p) => {
+    const overlay = p ? { pricePosition: 'saved' as const, priceWindowPos: p } : { pricePosition: 'cursor' as const, priceWindowPos: null }
+    set(overlay)
+    void api().settings.set({ overlay })
+  }
 }))

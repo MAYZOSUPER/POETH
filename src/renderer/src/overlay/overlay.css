@@ -11,10 +11,25 @@
   color: var(--fg);
 }
 
-/* Активный оверлей (Shift+Space): лёгкое затемнение — видно, что ввод сейчас у POETH,
-   и у окна гарантированно есть «пиксели» для клика по пустому фону. */
+/* Активный оверлей: у окна должны быть «пиксели» для клика по пустому фону (иначе Windows отдаст
+   клик игре сквозь прозрачное окно) — почти невидимый фон. Включили хоткеем (Shift+Space) —
+   лёгкое затемнение: видно, что ввод сейчас у POETH. Клик в окно цены экран не затемняет. */
 .ov-root.is-active {
+  background: rgb(0 0 0 / 0.01);
+}
+.ov-root.is-active.is-dim {
   background: color-mix(in srgb, var(--scrim) 25%, transparent);
+}
+
+/* окно цены перетаскивают за шапку (data-drag-handle, OverlayWidget) */
+.ov-widget [data-drag-handle] {
+  cursor: move;
+}
+.ov-widget [data-drag-handle] :is(button, a, input, select, label, [role='checkbox']) {
+  cursor: pointer;
+}
+.ov-widget.is-dragging {
+  user-select: none;
 }
 
 .ov-layer {

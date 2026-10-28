@@ -2,7 +2,7 @@ import { globalShortcut } from 'electron'
 import { IPC } from '@shared/ipc'
 import type { HotkeyAction, HotkeyMap } from '@shared/types'
 import { sendToCompanion } from './windows/companionWindow'
-import { sendToOverlay, setOverlayToggleAccel } from './windows/gameOverlay'
+import { sendToOverlay, setOverlayPriceCheckAccel, setOverlayToggleAccel } from './windows/gameOverlay'
 import { isGameFocused, onGameFocusChange } from './focus/gameFocus'
 import {
   planHotkeys,
@@ -123,6 +123,7 @@ export function registerHotkeys(map: HotkeyMap): void {
     console.warn(`[hotkeys] "${s.accel}" (${s.action}) not registered: ${s.reason}`)
   }
   setOverlayToggleAccel(plan.game.find((h) => h.action === 'overlayToggle')?.accel ?? '')
+  setOverlayPriceCheckAccel(plan.game.find((h) => h.action === 'priceCheck')?.accel ?? '')
   for (const h of plan.always) register(h)
   syncGameHotkeys()
 }

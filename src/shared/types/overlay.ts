@@ -34,15 +34,23 @@ export interface CapturedItem {
   at: number
 }
 
-/** Где открывать окно цены (popup) по Ctrl+D. */
-export type PricePopupPosition = 'cursor' | 'left' | 'right'
+/** Где открывать окно цены (popup) по Ctrl+D; 'saved' — там, куда игрок перетащил окно в прошлый раз. */
+export type PricePopupPosition = 'cursor' | 'left' | 'right' | 'saved'
 
-export const PRICE_POPUP_POSITIONS: readonly PricePopupPosition[] = ['cursor', 'left', 'right']
+export const PRICE_POPUP_POSITIONS: readonly PricePopupPosition[] = ['cursor', 'left', 'right', 'saved']
 
-/** Раздел настроек оверлея (`Settings.overlay`, дефолт `{ pricePosition: 'cursor' }`). */
+/** Точка в окне оверлея (= клиентская область игры), DIP. */
+export interface PopupPoint {
+  x: number
+  y: number
+}
+
+/** Раздел настроек оверлея (`Settings.overlay`, дефолт `{ pricePosition: 'cursor', priceWindowPos: null }`). */
 export interface OverlaySettings {
-  /** «Позиция окна цены»: у курсора / у левого края / у правого края */
+  /** «Позиция окна цены»: у курсора / у левого края / у правого края / где оставил */
   pricePosition: PricePopupPosition
+  /** левый верхний угол окна цены, куда его перетащили (для 'saved'); null — ещё не перетаскивали */
+  priceWindowPos: PopupPoint | null
 }
 
 /** Кто сейчас в фокусе: игра, активированный оверлей (Shift+Space) или что-то третье. */

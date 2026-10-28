@@ -5,6 +5,7 @@
 #   activate <title>   → ok | notfound | fail (окно с точным заголовком)
 #   cursor             → x,y курсора (физические пиксели)
 #   click <x> <y>      → переместить курсор и кликнуть левой кнопкой
+#   down <x> <y> / up <x> <y> → переместить курсор и нажать / отпустить левую кнопку (перетаскивание)
 #   move <x> <y>       → переместить курсор
 #   shot <x> <y> <w> <h> <file.png> → снимок области экрана (физические пиксели)
 #   idle               → сколько мс не было ввода с клавиатуры/мыши (за ПК кто-то работает?)
@@ -65,6 +66,8 @@ while ($true) {
       [Fg]::mouse_event(2, 0, 0, 0, 0); Start-Sleep -Milliseconds 40; [Fg]::mouse_event(4, 0, 0, 0, 0)
       [Console]::Out.WriteLine('ok')
     }
+    'down' { $xy = $parts[1].Split(' '); [void][Fg]::SetCursorPos([int]$xy[0], [int]$xy[1]); Start-Sleep -Milliseconds 150; [Fg]::mouse_event(2, 0, 0, 0, 0); [Console]::Out.WriteLine('ok') }
+    'up' { $xy = $parts[1].Split(' '); [void][Fg]::SetCursorPos([int]$xy[0], [int]$xy[1]); Start-Sleep -Milliseconds 60; [Fg]::mouse_event(4, 0, 0, 0, 0); [Console]::Out.WriteLine('ok') }
     'shot' {
       $a = $parts[1].Split(' ', 5)
       $bmp = New-Object System.Drawing.Bitmap ([int]$a[2]), ([int]$a[3])

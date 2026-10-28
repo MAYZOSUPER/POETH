@@ -28,7 +28,7 @@ describe('defaultSettings', () => {
     expect(s.deals).toEqual({ enabled: true, stashGrid: 'auto', calibration: null })
     expect(s.regex).toEqual({})
     expect(s.ui).toEqual({ simpleMode: true })
-    expect(s.overlay).toEqual({ pricePosition: 'cursor' })
+    expect(s.overlay).toEqual({ pricePosition: 'cursor', priceWindowPos: null })
     expect(s.startup).toEqual({ withWindows: false, minimized: true, firstRunDone: false })
     expect(s.updates).toEqual({ check: true })
     expect(s.chatCommands.find((c) => c.id === 'hideout')).toMatchObject({ text: '/hideout', hotkey: 'F5', send: true })
@@ -191,21 +191,21 @@ describe('applySettingsPatch', () => {
 
 describe('overlay.pricePosition («Позиция окна цены»)', () => {
   it('v1 компаса и v2 без раздела overlay → «у курсора»', () => {
-    expect(migrateSettings(fixture('v1-exile-companion.json')).overlay).toEqual({ pricePosition: 'cursor' })
+    expect(migrateSettings(fixture('v1-exile-companion.json')).overlay).toEqual({ pricePosition: 'cursor', priceWindowPos: null })
     const v2old: Record<string, unknown> = { ...defaultSettings() }
     delete v2old.overlay
-    expect(migrateSettings(v2old).overlay).toEqual({ pricePosition: 'cursor' })
+    expect(migrateSettings(v2old).overlay).toEqual({ pricePosition: 'cursor', priceWindowPos: null })
   })
 
   it('сохранённое значение переживает миграцию', () => {
-    for (const p of ['cursor', 'left', 'right'] as const) {
+    for (const p of ['cursor', 'left', 'right', 'saved'] as const) {
       expect(migrateSettings({ ...defaultSettings(), overlay: { pricePosition: p } }).overlay.pricePosition).toBe(p)
     }
   })
 
   it('мусор → «у курсора»', () => {
     for (const bad of [{ pricePosition: 'top' }, { pricePosition: 3 }, 'left', null, []]) {
-      expect(migrateSettings({ ...defaultSettings(), overlay: bad }).overlay).toEqual({ pricePosition: 'cursor' })
+      expect(migrateSettings({ ...defaultSettings(), overlay: bad }).overlay).toEqual({ pricePosition: 'cursor', priceWindowPos: null })
     }
   })
 
@@ -214,6 +214,17 @@ describe('overlay.pricePosition («Позиция окна цены»)', () => {
     expect(a.overlay.pricePosition).toBe('left')
     const b = applySettingsPatch(a, { overlay: { pricePosition: 'middle' as 'left' } })
     expect(b.overlay.pricePosition).toBe('cursor')
+  })
+
+  it('«Где оставил»: позиция окна сохраняется и округляется, мусор → null', () => {
+    const a = applySettingsPatch(defaultSettings(), { overlay: { pricePosition: 'saved', priceWindowPos: { x: 412.6, y: 88.2 } } })
+    expect(a.overlay).toEqual({ pricePosition: 'saved', priceWindowPos: { x: 413, y: 88 } })
+    // патч только позиции режима не теряет точку, и наоборот
+    expect(applySettingsPatch(a, { overlay: { pricePosition: 'cursor' } }).overlay.priceWindowPos).toEqual({ x: 413, y: 88 })
+    for (const bad of [{ x: 1 }, { x: 'a', y: 2 }, { x: Infinity, y: 0 }, { x: 1e9, y: 0 }, [1, 2], 'x']) {
+      const s = migrateSettings({ ...defaultSettings(), overlay: { pricePosition: 'saved', priceWindowPos: bad } })
+      expect(s.overlay).toEqual({ pricePosition: 'saved', priceWindowPos: null })
+    }
   })
 })
 

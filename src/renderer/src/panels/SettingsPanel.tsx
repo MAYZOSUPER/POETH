@@ -232,6 +232,7 @@ export function SettingsPanel() {
           </select>
         </div>
       )}
+      {game === 'poe1' && <div className="hint small muted">{t('overlay.set.pricePosition.hint')}</div>}
 
       {game === 'poe1' && <AccountPanel />}
 
