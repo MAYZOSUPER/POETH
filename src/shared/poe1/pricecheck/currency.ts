@@ -38,6 +38,18 @@ export function rateFractions(chaosPerDivine: number): Array<{ div: number; chao
 const CHAOS = new Set(['chaos'])
 const DIVINE = new Set(['divine'])
 
+/** Курсы для «честной цены» (сравнение chaos и divine в одном списке); без курса — undefined. */
+export function chaosRates(chaosPerDivine: number | undefined): Record<string, number> | undefined {
+  return chaosPerDivine && chaosPerDivine > 0 ? { chaos: 1, divine: chaosPerDivine } : undefined
+}
+
+/** Цена в chaos: chaos как есть, divine — по курсу; прочие валюты (и divine без курса) — undefined. */
+export function toChaos(price: Poe1Price, chaosPerDivine: number | undefined): number | undefined {
+  if (CHAOS.has(price.currency)) return price.amount
+  if (DIVINE.has(price.currency) && chaosPerDivine && chaosPerDivine > 0) return price.amount * chaosPerDivine
+  return undefined
+}
+
 /** Цена в другой валюте: chaos → divine, divine → chaos; прочие валюты — null. */
 export function convertPrice(price: Poe1Price, chaosPerDivine: number | undefined): Poe1Price | null {
   if (!chaosPerDivine || !(chaosPerDivine > 0) || !(price.amount > 0)) return null
