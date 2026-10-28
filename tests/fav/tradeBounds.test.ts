@@ -2,29 +2,27 @@ import { describe, expect, it } from 'vitest'
 import {
   boundsOverGame,
   gameSizeOf,
-  GAME_SIZE_DEFAULT,
   normalizeGameSize,
+  poeOverlaySize,
   TRADE_MIN_SIZE
 } from '../../src/main/windows/tradeBounds'
 
-// Трейд-окно «поверх игры»: по центру клиентской области игры, размер — доля окна игры.
+// Трейд-окно «поверх игры»: по центру клиентской области игры; размер — как у браузера
+// PoE Overlay (min(h·1.3, w·0.7) × 0.7·h), пока игрок не растянул окно сам.
 
 const FHD = { x: 0, y: 0, width: 1920, height: 1080 }
 
 describe('boundsOverGame', () => {
-  it('по умолчанию — доля окна игры, по центру', () => {
-    const b = boundsOverGame(FHD)
-    expect(b.width).toBe(Math.round(1920 * GAME_SIZE_DEFAULT.w))
-    expect(b.height).toBe(Math.round(1080 * GAME_SIZE_DEFAULT.h))
-    // по центру с точностью до пикселя округления
-    expect(Math.abs(b.x * 2 + b.width - 1920)).toBeLessThanOrEqual(1)
-    expect(Math.abs(b.y * 2 + b.height - 1080)).toBeLessThanOrEqual(1)
+  it('по умолчанию — размер браузера PoE Overlay, по центру игры', () => {
+    expect(poeOverlaySize(FHD)).toEqual({ width: 1344, height: 756 })
+    expect(boundsOverGame(FHD)).toEqual({ x: 288, y: 162, width: 1344, height: 756 })
+    // 21:9 — ширину ограничивает 1.3·высоты
+    expect(poeOverlaySize({ width: 3440, height: 1440 })).toEqual({ width: 1872, height: 1008 })
   })
 
   it('игра на втором мониторе и в окне — внутри её клиентской области', () => {
     const area = { x: 2200, y: 140, width: 1600, height: 900 }
-    const b = boundsOverGame(area, { w: 0.75, h: 0.8 })
-    expect(b).toEqual({ x: 2400, y: 230, width: 1200, height: 720 })
+    expect(boundsOverGame(area, { w: 0.75, h: 0.8 })).toEqual({ x: 2400, y: 230, width: 1200, height: 720 })
   })
 
   it('не меньше минимума трейд-окна, но и не больше самой игры', () => {
@@ -34,10 +32,12 @@ describe('boundsOverGame', () => {
     expect(boundsOverGame(small)).toEqual({ x: 10, y: 40, width: 800, height: 560 })
   })
 
-  it('мусор в файле — доля по умолчанию; пределы 0.4…1', () => {
-    expect(normalizeGameSize(null)).toEqual(GAME_SIZE_DEFAULT)
-    expect(normalizeGameSize({ w: 'x', h: Number.NaN })).toEqual(GAME_SIZE_DEFAULT)
+  it('мусор в файле — как у PoE Overlay; пределы доли 0.4…1', () => {
+    expect(normalizeGameSize(null)).toBeNull()
+    expect(normalizeGameSize({ w: 'x', h: 0.5 })).toBeNull()
+    expect(normalizeGameSize({ w: 0.5, h: Number.NaN })).toBeNull()
     expect(normalizeGameSize({ w: 5, h: 0.1 })).toEqual({ w: 1, h: 0.4 })
+    expect(boundsOverGame(FHD, { w: 'x' })).toEqual(boundsOverGame(FHD))
   })
 
   it('ресайз запоминается долей и даёт тот же размер в следующий раз', () => {

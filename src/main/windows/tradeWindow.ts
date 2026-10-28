@@ -1,11 +1,11 @@
-import { app, BaseWindow, screen, shell, WebContentsView, type Rectangle } from 'electron'
+import { app, BaseWindow, globalShortcut, screen, shell, WebContentsView, type Rectangle } from 'electron'
 import path from 'path'
 import type { TradeSiteState } from '@shared/types'
 import { isAllowedExternalUrl } from '@shared/links'
 import { hardenSiteContents, siteWebPreferences } from '../net/siteContents'
 import { isSitePageUrl } from '../net/guards'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
-import { onGameFocusChange } from '../focus/gameFocus'
+import { isGameFocused, onGameFocusChange } from '../focus/gameFocus'
 import { ensureGameForeground, getOverlayStatus } from './gameOverlay'
 import { loadRendererPage } from './rendererPage'
 import { boundsOverGame, gameSizeOf, TRADE_MIN_SIZE as MIN_SIZE, type GameSize } from './tradeBounds'
@@ -16,10 +16,18 @@ import { windowIcon } from '../appIcon'
 // навигация только внутри pathofexile.com — см. net/siteContents.ts). Сайдбар занимает всё
 // окно, siteView лежит поверх него правее колонки избранного и ниже адресной строки (её рисует
 // сайдбар); колонку избранного можно свернуть.
-// Два вида (как встроенный браузер PoE Overlay, но в границах окна игры):
-//  - игра запущена (оверлей S1 прицеплен) — «поверх игры»: без системной рамки, по центру
-//    клиентской области игры, размер — доля окна игры; шапка — адресная строка сайдбара
-//    (перетаскивание, ×). Esc или хоткей прячут окно и возвращают фокус игре (focusTarget);
+// Два вида:
+//  - игра запущена (оверлей S1 прицеплен) — «поверх игры», по образцу встроенного браузера
+//    PoE Overlay Community Fork (MIT, (c) 2020 Nicklas Ronge; v0.9.0, код не переносился):
+//      · размер и положение — browser.service.ts open(): по центру, min(h·1.3, w·0.7) × 0.7·h,
+//        только от клиентской области игры (windows/tradeBounds.ts); растянул — запоминаем долю;
+//      · Esc закрывает окно и тогда, когда фокус уже у игры — как глобальный 'escape' из
+//        dialog/dialog-ref.service.ts (VisibleFlag.Browser): пока окно над игрой и игра в фокусе,
+//        Esc занят нами (syncEsc); в самом окне Esc ловят сайт (before-input-event) и сайдбар;
+//      · закрытие возвращает фокус игре (у них — moveTop оверлея; у нас ensureGameForeground →
+//        focusTarget S1); хоткей при открытом окне прячет его;
+//      · своё: без системной рамки (у них рамка), шапка — адресная строка сайдбара
+//        (перетаскивание, ×), окно над игрой, пока игра или окно в фокусе;
 //  - игры нет — обычное окно с рамкой: размер, позиция и «поверх игры» запоминаются.
 // Всё это — в %APPDATA%/POETH/trade-window.json. Вид меняется при следующем показе окна
 // (рамку у готового окна не переключить — окно создаётся заново на той же странице сайта).
@@ -54,6 +62,8 @@ let stateLoaded = false
 let saveTimer: ReturnType<typeof setTimeout> | null = null
 let quitting = false
 let hooked = false
+/** глобальный Esc занят нами (окно над игрой, фокус у игры) */
+let escHeld = false
 let siteState: TradeSiteState = {
   url: '',
   title: '',
@@ -95,15 +105,10 @@ function scheduleSave(): void {
   if (saveTimer) clearTimeout(saveTimer)
   saveTimer = setTimeout(() => {
     saveTimer = null
-    if (win && !win.isDestroyed()) {
-      if (overGame) {
-        // поверх игры запоминается только доля окна игры (позиция — всегда по центру)
-        const area = gameArea()
-        if (area) state.gameSize = gameSizeOf(win.getBounds(), area)
-      } else {
-        state = { ...state, maximized: win.isMaximized() }
-        if (!win.isMaximized() && !win.isMinimized()) state.bounds = win.getBounds()
-      }
+    // поверх игры границы не пишем: позиция — всегда по центру, доля — по 'resized' (create)
+    if (win && !win.isDestroyed() && !overGame) {
+      state = { ...state, maximized: win.isMaximized() }
+      if (!win.isMaximized() && !win.isMinimized()) state.bounds = win.getBounds()
     }
     void writeJsonAtomic(stateFile(), state).catch(() => undefined)
   }, SAVE_DELAY_MS)
@@ -160,6 +165,23 @@ function publishSite(patch: Partial<TradeSiteState> = {}): void {
   for (const cb of siteListeners) cb(next)
 }
 
+/**
+ * Esc, когда фокус у игры, а трейд-окно висит над ней (как глобальный 'escape' у PoE Overlay,
+ * dialog-ref.service.ts): прячет окно. Занимаем Esc только на это время; в самом окне Esc ловят
+ * сайт и сайдбар. Если хоткеи перерегистрировались (unregisterAll в hotkeys.ts) — занимаем снова.
+ */
+function syncEsc(): void {
+  const w = win
+  const want = !!w && !w.isDestroyed() && overGame && w.isVisible() && !w.isFocused() && isGameFocused()
+  if (want) {
+    if (escHeld && globalShortcut.isRegistered('Escape')) return
+    escHeld = globalShortcut.register('Escape', () => hideTradeWindow())
+  } else if (escHeld) {
+    escHeld = false
+    globalShortcut.unregister('Escape')
+  }
+}
+
 /** Держать окно над игрой: закреплено, поверх игры или сейчас в фокусе. */
 function keepOnTop(w: BaseWindow): void {
   w.setAlwaysOnTop(true, 'screen-saver')
@@ -175,6 +197,7 @@ function hookOnce(): void {
   // поверх игры: окно висит над игрой, пока игра (или само окно) в фокусе; ушли из игры
   // на рабочий стол/в другое приложение — опускается, чтобы не закрывать чужие окна
   onGameFocusChange((next) => {
+    syncEsc()
     const w = win
     if (!w || w.isDestroyed() || !overGame || !w.isVisible() || state.pinned) return
     if (next.game) keepOnTop(w)
@@ -240,6 +263,14 @@ async function create(title: string, area: Rectangle | null): Promise<BaseWindow
 
   w.on('resize', () => {
     layout()
+    if (!overGame) scheduleSave()
+  })
+  // поверх игры: игрок растянул окно сам ('resized' — только ручной ресайз, не setBounds) —
+  // запоминаем долю окна игры; иначе размер как у PoE Overlay
+  w.on('resized', () => {
+    const area = overGame ? gameArea() : null
+    if (!area || w.isDestroyed()) return
+    state.gameSize = gameSizeOf(w.getBounds(), area)
     scheduleSave()
   })
   w.on('move', () => {
@@ -249,10 +280,12 @@ async function create(title: string, area: Rectangle | null): Promise<BaseWindow
   // поднимается на тот же уровень; ушёл фокус (игра, компаньон) — опускается, если не закреплено
   // и не открыто поверх игры (тогда его опускает только уход из игры, см. hookOnce).
   w.on('focus', () => {
+    syncEsc()
     if (state.pinned || w.isDestroyed()) return
     keepOnTop(w)
   })
   w.on('blur', () => {
+    syncEsc()
     if (!state.pinned && !overGame && !w.isDestroyed()) w.setAlwaysOnTop(false)
   })
   w.on('maximize', layout)
@@ -293,6 +326,7 @@ function destroyWindow(): string {
   sidebar = null
   site = null
   if (w && !w.isDestroyed()) w.destroy()
+  syncEsc()
   // webContents вью BaseWindow сами не закрываются
   for (const v of views) if (v && !v.webContents.isDestroyed()) v.webContents.close()
   return url
@@ -338,6 +372,7 @@ export function hideTradeWindow(): void {
   if (!win || win.isDestroyed()) return
   scheduleSave()
   win.hide()
+  syncEsc()
   try {
     ensureGameForeground()
   } catch {
