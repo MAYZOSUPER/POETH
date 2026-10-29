@@ -2,13 +2,14 @@ import type { FlipRoute, FlipState, UiLang } from '@shared/types'
 import { useT } from '../../i18n'
 import { CoinIcon, Currency } from '../../components/Currency'
 import { Confidence, FIco } from './ui'
-import { clock, fixed, int, KIND_LABEL, num, pct, price } from './format'
+import { clock, fixed, int, KIND_LABEL, num, pct, price, rangeText } from './format'
 import { isTrend, type ViewSort } from './view'
 import { useFlipStore } from './useFlipStore'
 
 // Таблица «Возможности» по макету «Обмен» v2: строка кликается (и Enter) — ниже карточка «как сделать»;
 // сортировка — по заголовкам «Прибыль в час» и «На 1000 золота». Простой режим — 7 колонок, эксперт — ещё
-// маршрут, спред и активные часы. Под таблицей — дисклеймер, при сбое фида — красный баннер с «Повторить».
+// маршрут, спред и активные часы. Под ценой — мелко диапазон «в игре, скорее всего» (S25). Под таблицей —
+// дисклеймер, при сбое фида — красный баннер с «Повторить».
 
 const SKELETON_ROWS = 6
 
@@ -147,9 +148,15 @@ export function Opportunities({
                   {expert && <td className="is-faint fx-kind">{KIND_LABEL[r.kind]}</td>}
                   <td className="is-num">
                     <Currency tag={r.buy.base} text={price(r.buy.price, lang)} lang={ul} />
+                    <span className="fx-range" title={t('flip.range.title')}>
+                      {rangeText(r.buy.range, r.buy.base, lang)}
+                    </span>
                   </td>
                   <td className="is-num">
                     <Currency tag={r.sell.base} text={price(r.sell.price, lang)} lang={ul} />
+                    <span className="fx-range" title={t('flip.range.title')}>
+                      {rangeText(r.sell.range, r.sell.base, lang)}
+                    </span>
                   </td>
                   {expert && <td className="is-num">{pct(r.spread, lang)}</td>}
                   <td className="is-num is-good">

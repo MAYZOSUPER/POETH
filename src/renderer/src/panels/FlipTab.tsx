@@ -15,7 +15,8 @@ import './flip/flip.css'
 // Вкладка «Обмен» (PoE1, S13) по утверждённому макету «Обмен» v2: помощник по флиппингу валюты у Фаустуса по
 // почасовому фиду биржи GGG. Слева — заголовок со свежестью данных, дисклеймер и фильтры, справа — курс
 // divine : chaos с коридором; ниже — таблица возможностей и карточка «как сделать» по выбранной строке.
-// Только оценка по прошлому часу: ордера игрок ставит сам, никаких авто-ордеров и опроса трейда.
+// Цены — реалистичные по последним часам (S25), но это оценка, не live: курс из игры игрок может ввести в
+// карточке. Ордера игрок ставит сам, никаких авто-ордеров и опроса трейда.
 
 type T = ReturnType<typeof useT>
 
@@ -176,7 +177,14 @@ export function FlipTab() {
         </div>
         <Opportunities s={s} rows={rows} selected={route?.id ?? null} lang={lang} expert={expert} nameOf={nameOf} />
         {route && !(s.loading && !s.lastHour) && (
-          <HowCard r={route} name={nameOf(route)} lang={lang} expert={expert} divine={s.divine?.current ?? 0} />
+          <HowCard
+            r={route}
+            name={nameOf(route)}
+            lang={lang}
+            expert={expert}
+            divine={s.divine?.current ?? 0}
+            minSpread={s.filters.minSpread}
+          />
         )}
       </div>
     </div>

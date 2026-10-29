@@ -4,12 +4,28 @@ import { CoinIcon, Currency, useCurrencyNames } from '../../components/Currency'
 import { Confidence, CopyNumber, FIco } from './ui'
 import { fixed, goldTotal, int, pct, price } from './format'
 import { fillHours, orderTotals, roundProfit } from './view'
+import { GameCheck } from './GameCheck'
 
 // Карточка «Как сделать этот флип у Фаустуса» по выбранной строке (макет «Обмен» v2): шаги с готовыми целыми
-// числами для окна обмена (кнопки копируют число, чтобы вставить его в игре), справа — итог круга, доходность,
-// комиссия в золоте и уверенность. В эксперте вместо шагов — покупка, продажа и шаг ордера. Ордера ставит игрок.
+// числами для окна обмена (кнопки копируют число, чтобы вставить его в игре) и диапазоном «в игре, скорее всего»,
+// справа — итог круга, доходность, комиссия в золоте и уверенность; ниже — «Цена в игре сейчас» (S25): курс из
+// игры вручную и пересчёт прибыли. В эксперте вместо шагов — покупка, продажа и шаг ордера. Ордера ставит игрок.
 
-export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name: string; lang: string; expert: boolean; divine: number }) {
+export function HowCard({
+  r,
+  name,
+  lang,
+  expert,
+  divine,
+  minSpread
+}: {
+  r: FlipRoute
+  name: string
+  lang: string
+  expert: boolean
+  divine: number
+  minSpread: number
+}) {
   const t = useT()
   const ul = lang as UiLang
   const names = useCurrencyNames(ul)
@@ -23,6 +39,12 @@ export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name:
   const per = (v: number, tag: string): string => {
     const shown = price(v, lang)
     return `${shown} ${expert ? (tag === 'divine' ? 'div' : 'c') : names.after(tag, shown)}`
+  }
+  /** «286–317 Сфер хаоса» / «286–317 c»; края совпали — одно число */
+  const span = (rg: { lo: number; hi: number }, tag: string): string => {
+    const lo = price(rg.lo, lang)
+    const hi = price(rg.hi, lang)
+    return `${lo === hi ? lo : `${lo}–${hi}`} ${expert ? (tag === 'divine' ? 'div' : 'c') : names.after(tag, hi)}`
   }
   const cur = (tag: string, text: string) => <Currency tag={tag} text={text} lang={ul} />
 
@@ -57,7 +79,7 @@ export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name:
       <li>
         <div>
           <b>{t('flip.step.2')}</b>
-          <p>{t('flip.step.rate', { price: per(r.buy.price, r.buy.base) })}</p>
+          <p>{t('flip.step.rate', { price: per(r.buy.price, r.buy.base), range: span(r.buy.range, r.buy.base) })}</p>
           {order(base1, tot.buyGive, name, tot.units)}
         </div>
       </li>
@@ -70,7 +92,7 @@ export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name:
       <li>
         <div>
           <b>{t('flip.step.4')}</b>
-          <p>{t('flip.step.rate', { price: per(r.sell.price, r.sell.base) })}</p>
+          <p>{t('flip.step.rate', { price: per(r.sell.price, r.sell.base), range: span(r.sell.range, r.sell.base) })}</p>
           {order(name, tot.units, base2, tot.sellGet)}
         </div>
       </li>
@@ -83,10 +105,14 @@ export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name:
       <b>
         {cur(r.buy.base, int(tot.buyGive, lang))} → {int(tot.units, lang)}
       </b>
+      <span>{t('flip.kv.buyRange')}</span>
+      <b>{span(r.buy.range, r.buy.base)}</b>
       <span>{t('flip.kv.sell')}</span>
       <b>
         {int(tot.units, lang)} → {cur(r.sell.base, int(tot.sellGet, lang))}
       </b>
+      <span>{t('flip.kv.sellRange')}</span>
+      <b>{span(r.sell.range, r.sell.base)}</b>
       <span>{t('flip.kv.chunk')}</span>
       <b>
         {cur(r.buy.base, String(r.buy.order.give))} → {r.buy.order.get} · {r.sell.order.give} → {cur(r.sell.base, String(r.sell.order.get))}
@@ -143,6 +169,7 @@ export function HowCard({ r, name, lang, expert, divine }: { r: FlipRoute; name:
             )}
           </div>
         </div>
+        <GameCheck key={r.id} r={r} name={name} lang={lang} divine={divine} minSpread={minSpread} />
       </div>
     </div>
   )

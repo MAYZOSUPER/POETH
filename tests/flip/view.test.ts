@@ -3,9 +3,13 @@ import type { DivineTrack, FlipBase, FlipLeg, FlipRoute } from '../../src/shared
 import {
   DEFAULT_VIEW,
   fillHours,
+  gameCheck,
+  gameKey,
+  gameRatio,
   hiddenByTrend,
   niceStep,
   orderTotals,
+  parseGameRatio,
   pickRoute,
   pips,
   rateView,
@@ -131,6 +135,75 @@ describe('числа для окна обмена', () => {
     expect(fillHours(route({ id: 'B', profit: 1, units: 669, perHour: 469 }))).toBe(1.5)
     expect(fillHours(route({ id: 'C', profit: 2, units: 100, perHour: 20 }))).toBe(10)
     expect(fillHours(route({ id: 'D', profit: 0, units: 100, perHour: 0 }))).toBeNull()
+  })
+})
+
+describe('цена в игре сейчас (S25)', () => {
+  it('курс «Хочу : Имею» как в игре → цена штуки: покупка и продажа, одно число, запятая, «<» из стакана', () => {
+    expect(parseGameRatio('1:296', 'buy', 301)).toBe(296)
+    expect(parseGameRatio(' 1 : 296 ', 'buy', 301)).toBe(296)
+    expect(parseGameRatio('296', 'buy', 301)).toBe(296)
+    expect(parseGameRatio('<1:318', 'buy', 301)).toBe(318)
+    // продажа Valdo за divine: хочу 1 div, имею 1,04 шт.
+    expect(parseGameRatio('1:1,04', 'sell', 0.96)).toBeCloseTo(1 / 1.04, 6)
+    expect(parseGameRatio('1.04', 'sell', 0.96)).toBeCloseTo(1 / 1.04, 6)
+    expect(parseGameRatio('24:25', 'sell', 0.96)).toBe(0.96)
+    // продажа за chaos: хочу 455 c, имею 1 шт.
+    expect(parseGameRatio('455:1', 'sell', 455)).toBe(455)
+    for (const bad of ['', 'abc', '1:', ':5', '0', '1:0', '-3']) expect(parseGameRatio(bad, 'buy', 100)).toBeNull()
+  })
+
+  it('курс, записанный наоборот, понимаем по оценке; рядом с 1 — читаем как в игре', () => {
+    // «455» на продаже за chaos: «1 : 455» дал бы 0,0022 c — в сотни раз дальше от оценки, чем 455
+    expect(parseGameRatio('455', 'sell', 455)).toBe(455)
+    // «1:5,9» на покупке дешёвой валюты за divine (0,17 div): 5,9 div за штуку — неправдоподобно
+    expect(parseGameRatio('1:5.9', 'buy', 0.17)).toBeCloseTo(1 / 5.9, 6)
+    // 1,04 против 0,96 — обе правдоподобны: остаётся прочтение игры
+    expect(parseGameRatio('1.04', 'sell', 1.04)).toBeCloseTo(1 / 1.04, 6)
+  })
+
+  it('подсказка в поле — курс так, как его покажет игра (меньшая сторона — 1)', () => {
+    expect(gameRatio(301, 'buy')).toEqual({ want: 1, have: 301 })
+    expect(gameRatio(0.02, 'buy')).toEqual({ want: 50, have: 1 })
+    expect(gameRatio(0.96, 'sell').want).toBe(1)
+    expect(gameRatio(0.96, 'sell').have).toBeCloseTo(1.0417, 4)
+    expect(gameRatio(455, 'sell')).toEqual({ want: 455, have: 1 })
+  })
+
+  it('пересчёт по курсу из игры: прибыль, в час, на 1000 золота, вывод', () => {
+    // Valdo C→X→D: оценка ≤ 301 c, ≥ 0,96 div; 1 div = 339,5 c; золото: 300 за Valdo + 250 за каждый div
+    const r = route({
+      id: 'Valdo',
+      kind: 'CXD',
+      buy: leg('chaos', 301, 301, 1),
+      sell: leg('divine', 0.96, 25, 24),
+      gold: { x: 300, base: 250 },
+      units: 25,
+      flow: 15
+    })
+    const est = gameCheck(r, 339.5, null, null, 0.03)
+    expect(est.profit).toBeCloseTo(0.96 * 339.5 - 301, 6)
+    expect(est.verdict).toBe('good')
+    // в игре 303: тоньше, но ещё выгодно
+    const at303 = gameCheck(r, 339.5, 303, null, 0.03)
+    expect(at303.profit).toBeCloseTo(22.92, 2)
+    expect(at303.perHour).toBeCloseTo(22.92 * 15, 1)
+    expect(at303.total).toBeCloseTo(22.92 * 25, 1)
+    expect(at303.per1000Gold).toBeCloseTo((22.92 / 540) * 1000, 1)
+    expect(at303.verdict).toBe('good')
+    // по 318 и продажа по 0,96: +7,9 c — маржа 2,5 % ниже порога 3 %
+    expect(gameCheck(r, 339.5, 318, null, 0.03).verdict).toBe('thin')
+    // продать удастся только по 0,91 div — минус
+    const bad = gameCheck(r, 339.5, 318, 0.91, 0.03)
+    expect(bad.profit).toBeLessThan(0)
+    expect(bad.verdict).toBe('bad')
+  })
+
+  it('ключ курса — нога, предмет и база: покупка Valdo за chaos общая у C→X→C и C→X→D', () => {
+    const a = route({ id: 'Valdo', kind: 'CXC' })
+    const b = route({ id: 'Valdo', kind: 'CXD', sell: leg('divine', 0.96, 25, 24) })
+    expect(gameKey(a, 'buy')).toBe(gameKey(b, 'buy'))
+    expect(gameKey(a, 'sell')).not.toBe(gameKey(b, 'sell'))
   })
 })
 

@@ -3,7 +3,7 @@ import type { FlipFilters, FlipOptions, FlipState } from '@shared/types'
 import { DEFAULT_VIEW, type FlipView, type RateRange } from './view'
 
 // Состояние вкладки «Обмен» (компаньон, S13). Источник — main (flip:state + event:flip.state); фильтры простого
-// режима, сортировка, выбранная строка и окно графика — только вид, живут до перезапуска.
+// режима, сортировка, выбранная строка, окно графика и курсы, введённые из игры, — только вид, живут до перезапуска.
 
 interface FlipStore {
   state: FlipState | null
@@ -11,6 +11,9 @@ interface FlipStore {
   view: FlipView
   selected: string | null
   range: RateRange
+  /** «Цена в игре сейчас» как введена: ключ — gameKey (нога + предмет + база) */
+  game: Record<string, string>
+  setGame: (key: string, text: string) => void
   init: () => void
   refresh: () => Promise<void>
   setFilters: (patch: Partial<FlipFilters>) => Promise<void>
@@ -28,6 +31,14 @@ export const useFlipStore = create<FlipStore>((set) => ({
   view: DEFAULT_VIEW,
   selected: null,
   range: '24h',
+  game: {},
+  setGame: (key, text) =>
+    set((s) => {
+      const game = { ...s.game }
+      if (text.trim()) game[key] = text
+      else delete game[key]
+      return { game }
+    }),
   init: () => {
     if (subscribed) return
     subscribed = true

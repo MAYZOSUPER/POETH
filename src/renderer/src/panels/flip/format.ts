@@ -28,6 +28,13 @@ export function price(v: number, lang: string): string {
   return Number(v.toPrecision(3)).toLocaleString(locale(lang), { maximumFractionDigits: 6 })
 }
 
+/** Диапазон «в игре, скорее всего»: «286–317 c»; если края совпали после округления — одно число. */
+export function rangeText(range: { lo: number; hi: number }, base: FlipBase, lang: string): string {
+  const lo = price(range.lo, lang)
+  const hi = price(range.hi, lang)
+  return `${lo === hi ? lo : `${lo}–${hi}`} ${UNIT[base]}`
+}
+
 export function pct(v: number, lang: string): string {
   return `${(v * 100).toLocaleString(locale(lang), { maximumFractionDigits: 1 })}%`
 }
