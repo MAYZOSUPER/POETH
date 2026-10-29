@@ -40,10 +40,10 @@ export const REGEX_PRESETS: readonly RegexPreset[] = [
   { id: 'links4', page: 'vendor', starter: true, vendor: { links: 4 } },
   { id: 'links5', page: 'vendor', vendor: { links: 5 } },
   { id: 'jeweller', page: 'vendor', vendor: { sixSockets: true } },
-  { id: 'moveSpeed', page: 'vendor', starter: true, vendor: { movementSpeed: 10 } },
+  { id: 'moveSpeed', page: 'vendor', starter: true, vendor: { mods: { moveSpeed: 10 } } },
   { id: 'plusGems', page: 'vendor', vendor: { plusGemLevel: true } },
   { id: 'gemQuality', page: 'vendor', vendor: { quality: 1 } },
-  { id: 'leveling', page: 'vendor', vendor: { links: 3, movementSpeed: 10, plusGemLevel: true } }
+  { id: 'leveling', page: 'vendor', vendor: { links: 3, mods: { moveSpeed: 10 }, plusGemLevel: true } }
 ]
 
 /** Текст пресета для языка клиента; null — нет данных карт для пресета карт. */

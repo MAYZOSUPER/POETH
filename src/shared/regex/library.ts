@@ -14,7 +14,7 @@ import type {
 } from '../types/regex'
 import { REGEX_LIMIT } from './format'
 import { MAP_LABEL_KEYS, emptyMapQuery } from './maps'
-import { emptyVendorQuery } from './vendor'
+import { VENDOR_ITEM_CLASSES, VENDOR_MOD_KEYS, VENDOR_RARITIES, emptyVendorQuery, isThresholdMod } from './vendor'
 
 export const LIBRARY_EXPORT_FORMAT = 'poeth-regex'
 export const NAME_MAX = 80
@@ -82,10 +82,20 @@ function normalizeVendorQuery(raw: unknown): VendorQuery {
   q.rgb = raw.rgb === true
   q.colorCount = num(raw.colorCount, 6)
   q.color = raw.color === 'r' || raw.color === 'g' || raw.color === 'w' ? raw.color : 'b'
-  q.movementSpeed = num(raw.movementSpeed, 99)
+  if (isObj(raw.mods)) {
+    for (const k of VENDOR_MOD_KEYS) {
+      const n = num(raw.mods[k], 999)
+      if (n > 0) q.mods[k] = isThresholdMod(k) ? n : 1
+    }
+  }
+  // до S27 скорость передвижения была отдельным полем
+  const ms = num(raw.movementSpeed, 99)
+  if (ms > 0 && !q.mods.moveSpeed) q.mods.moveSpeed = ms
   q.quality = num(raw.quality, 30)
   q.plusGemLevel = raw.plusGemLevel === true
   q.gemLevel = num(raw.gemLevel, 40)
+  q.itemClass = VENDOR_ITEM_CLASSES.find((c) => c === raw.itemClass) ?? ''
+  q.rarity = Array.isArray(raw.rarity) ? VENDOR_RARITIES.filter((r) => (raw.rarity as unknown[]).includes(r)) : []
   q.mode = raw.mode === 'all' ? 'all' : 'any'
   return q
 }

@@ -11,6 +11,11 @@
 
 export interface AtLeastOptions {
   digit?: '.' | '\\d'
+  /**
+   * Число целиком: слева от него стоит текст («\+» в «+25% to Fire Resistance»), поэтому длинное число
+   * «хвостом» уже не совпадёт — добавляем все длины до 3 цифр (S27, «Торговец»).
+   */
+  whole?: boolean
 }
 
 /** Класс цифр a..b: «8», «[89]», «[5-9]», «.» (0–9). */
@@ -35,10 +40,11 @@ function sameLength(s: string, any: string): string[] {
 export function atLeast(n: number, opts: AtLeastOptions = {}): string {
   const any = opts.digit ?? '.'
   if (!Number.isInteger(n) || n < 0 || n > 999) throw new RangeError(`atLeast: n=${n} вне 0…999`)
-  if (n === 0) return '\\d'
+  if (n === 0) return opts.whole ? '\\d+' : '\\d'
   const s = String(n)
   const alts = sameLength(s, any)
   // числа длиннее n: первая цифра — \d (не «.», чтобы не схватить «+» или пробел)
   if (s.length < 3) alts.push('\\d' + any.repeat(s.length))
+  if (opts.whole) for (let len = s.length + 2; len <= 3; len++) alts.push('\\d' + any.repeat(len - 1))
   return alts.length === 1 ? alts[0] : `(${alts.join('|')})`
 }

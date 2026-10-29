@@ -8,13 +8,27 @@ export { MAP_LABEL_KEYS, buildMapRegex, emptyMapQuery, thresholdTerm } from './m
 export {
   RGB_PATTERN,
   SIX_SOCKETS_PATTERN,
+  VENDOR_ITEM_CLASSES,
+  VENDOR_MOD_KEYS,
+  VENDOR_PRESETS,
+  VENDOR_RARITIES,
   VENDOR_TEXTS,
   buildVendorRegex,
   colorLinkPattern,
   emptyVendorQuery,
+  isPresetQuery,
+  isThresholdMod,
   linkPattern,
-  vendorParts
+  presetQuery,
+  selectedMods,
+  vendorModPattern,
+  vendorModText,
+  vendorParts,
+  type VendorBuildResult,
+  type VendorPreset
 } from './vendor'
+export { VENDOR_DATA, VENDOR_DATA_META } from './vendorData'
+export type { VendorData, VendorLangData, VendorModPattern, VendorSideReason } from './vendorTypes'
 export { REGEX_PRESETS, presetText, type RegexPreset } from './presets'
 export {
   LIBRARY_EXPORT_FORMAT,

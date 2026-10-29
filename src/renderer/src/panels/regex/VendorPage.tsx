@@ -25,7 +25,7 @@ export function VendorPage() {
     sixSockets: t('regex.vendor.sixSockets'),
     rgb: t('regex.vendor.rgb'),
     color: t('regex.vendor.color'),
-    movementSpeed: t('regex.vendor.move'),
+    'mod.moveSpeed': t('regex.vendor.move'),
     quality: t('regex.vendor.quality'),
     plusGemLevel: t('regex.vendor.plusGem')
   }
@@ -56,9 +56,9 @@ export function VendorPage() {
           <NumberRow
             id="rx-ms"
             label={t('regex.vendor.moveAtLeast')}
-            value={q.movementSpeed}
+            value={q.mods.moveSpeed ?? 0}
             max={99}
-            onChange={(n) => setQuery({ movementSpeed: n })}
+            onChange={(n) => setQuery({ mods: { ...q.mods, moveSpeed: n } })}
           />
           <Switch on={q.plusGemLevel} onChange={(v) => setQuery({ plusGemLevel: v })}>
             {t('regex.vendor.plusGem')}
@@ -136,7 +136,7 @@ function summarize(q: VendorQuery, labels: Record<string, string>): string {
   if (q.rgb) parts.push('R-G-B')
   if (q.sixSockets) parts.push('6S')
   if (q.colorCount >= 2) parts.push(`${q.colorCount}×${q.color.toUpperCase()}`)
-  if (q.movementSpeed) parts.push(`${labels.movementSpeed} ${q.movementSpeed}%+`)
+  if (q.mods.moveSpeed) parts.push(`${labels['mod.moveSpeed']} ${q.mods.moveSpeed}%+`)
   if (q.quality) parts.push(`Q${q.quality}%+`)
   if (q.plusGemLevel) parts.push('+gem')
   if (q.gemLevel) parts.push(`gem ${q.gemLevel}+`)
