@@ -26,6 +26,17 @@ describe('BuildTakenTracker', () => {
     expect(t.snapshot(false).taken).toEqual(['a'])
   })
 
+  it('уровень и класс — только своего персонажа (дерево S38 выбирает этап по уровню)', () => {
+    const t = new BuildTakenTracker()
+    expect(t.character()).toBeNull()
+    t.ingest([login, lvl('Моя', 5), lvl('Чужой', 30)])
+    expect(t.character()).toEqual({ name: 'Моя', className: 'Witch', level: 5 })
+    expect(t.ingest([lvlRu('Моя', 6)])).toBe(true)
+    expect(t.character()).toEqual({ name: 'Моя', className: 'Ведьма', level: 6 })
+    t.ingest([login])
+    expect(t.character()).toBeNull()
+  })
+
   it('новый вход другим персонажем — свои ноды у каждого', () => {
     const t = new BuildTakenTracker()
     t.ingest([login, lvl('Один', 3), alloc('a', 'A')])

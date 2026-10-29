@@ -1,14 +1,14 @@
 import type { GameDef } from '@shared/games'
-import { BuildTakenTracker } from '@shared/build/takenLog'
+import { BuildTakenTracker, type TakenCharacter } from '@shared/build/takenLog'
 import { isAfter } from '@shared/leveling/log'
 import { splitLogLine } from '@shared/deals/whisperParse'
 import type { BuildTaken } from '@shared/types/build'
 import { getGameLogStatus, readLogTail, subscribeGameLog } from '../services/gameLog'
 
-// «Взято ✓» вкладки «Билд» (S39): вложение и снятие нод по Client.txt у персонажа текущего входа. Журнал
-// подписывается, только когда вкладку открыли (первый запрос) — без вкладки POETH лог ради неё не читает. Хвост
-// журнала при старте — вложения за последние часы игры; что взято раньше, вкладка честно не отмечает.
-// Только чтение журнала, на диск ничего не пишется.
+// «Взято ✓» вкладки «Билд» (S39) и дерева поверх игры (S38, treeOverlay.ts): вложение и снятие нод по Client.txt у
+// персонажа текущего входа. Журнал подписывается, только когда вкладку открыли (первый запрос) или дерево показали
+// хоткеем — без них POETH лог ради этого не читает. Хвост журнала при старте — вложения за последние часы игры; что
+// взято раньше, вкладка честно не отмечает. Только чтение журнала, на диск ничего не пишется.
 
 /** Хвост журнала: как у гида прокачки — часы игры, а не годы. */
 const TAIL_BYTES = 8 * 1024 * 1024
@@ -72,6 +72,11 @@ export function stopTaken(): void {
 export async function getTaken(def: GameDef): Promise<BuildTaken> {
   await startTaken(def)
   return tracker ? tracker.snapshot(logOk) : { character: null, taken: [], removed: [], log: false }
+}
+
+/** Персонаж текущего входа и его уровень (этап дерева по уровню); null — ещё не знаем. */
+export function takenCharacter(): TakenCharacter | null {
+  return tracker?.character() ?? null
 }
 
 export function onTaken(cb: Listener): () => void {

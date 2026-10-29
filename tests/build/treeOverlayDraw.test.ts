@@ -15,7 +15,8 @@ import {
   type TreeDrawNode,
   type TreeDrawing
 } from '@shared/build/treeOverlayDraw'
-import { TreeLogTracker } from '@shared/build/treeOverlayLog'
+import { BuildTakenTracker } from '@shared/build/takenLog'
+import { takenHashes } from '@shared/build/treeOverlayLog'
 import { treeBuildFromPob, treeStageFor } from '@shared/build/treeOverlayStages'
 import { importPobCode } from '@shared/pob/import'
 import { fixtureCode } from '../pob/fixtures'
@@ -179,37 +180,54 @@ describe('этапы дерева из кода PoB', () => {
 })
 
 describe('«взято» по журналу', () => {
+  // подсчёт общий с вкладкой «Билд» (BuildTakenTracker, S39); здесь — перевод id → hash и персонаж для этапа
   const L = (time: string, text: string) => `2026/10/30 ${time} 68950031 cffb0658 [INFO Client 19012] ${text}`
   const login = L('10:00:00', 'Async connecting to fra.login.pathofexile.com:20488')
-  const level = (name: string, n: number) => L('10:00:05', `: ${name} (Witch) is now level ${n}`)
+  const level = (name: string, n: number, cls = 'Witch') => L('10:00:05', `: ${name} (${cls}) is now level ${n}`)
   const alloc = (id: string, on = true) => L('10:00:06', `Successfully ${on ? 'allocated' : 'unallocated'} passive skill id: ${id}, name: x`)
   const path = pathFrom(witchStart, 4).map((h) => tree.nodes.get(h)!)
+  const hashes = (t: BuildTakenTracker) => takenHashes(tree, t.snapshot(true))
 
-  it('вложение и снятие — у персонажа последнего повышения уровня', () => {
-    const t = new TreeLogTracker(tree)
-    expect(t.nodes()).toBeNull()
+  it('вложение и снятие — в hash нод персонажа текущего входа', () => {
+    const t = new BuildTakenTracker()
+    expect(hashes(t)).toBeNull()
     t.ingest([login, level('Alice', 2), alloc(path[0].id), alloc(path[1].id), alloc(path[1].id, false)])
     expect(t.character()).toEqual({ name: 'Alice', className: 'Witch', level: 2 })
-    const n = t.nodes()!
+    const n = hashes(t)!
     expect([...n.taken]).toEqual([path[0].hash])
     expect([...n.removed]).toEqual([path[1].hash])
   })
 
-  it('до первого повышения после входа — копим и отдаём этому персонажу', () => {
-    const t = new TreeLogTracker(tree)
-    t.ingest([login, alloc(path[2].id)])
-    expect(t.character()).toBeNull()
-    expect([...t.nodes()!.taken]).toEqual([path[2].hash])
-    t.ingest([level('Bob', 5)])
-    expect([...t.nodes()!.taken]).toEqual([path[2].hash])
+  it('журнал группы: чужое «is now level» не уводит ни «взято», ни уровень к другому игроку', () => {
+    const t = new BuildTakenTracker()
+    t.ingest([login, level('Моя', 5), level('Чужой', 30, 'Marauder'), alloc(path[0].id)])
+    expect(t.character()).toEqual({ name: 'Моя', className: 'Witch', level: 5 })
+    expect([...hashes(t)!.taken]).toEqual([path[0].hash])
+    t.ingest([level('Моя', 6), level('Чужой', 31, 'Marauder'), alloc(path[1].id)])
+    expect(t.character()?.level).toBe(6)
+    expect([...hashes(t)!.taken]).toEqual([path[0].hash, path[1].hash])
+    // вход другим персонажем — у него свои ноды, у первого всё на месте
+    t.ingest([login, level('Вторая', 9), alloc(path[2].id)])
+    expect([...hashes(t)!.taken]).toEqual([path[2].hash])
+    t.ingest([login, level('Моя', 7)])
+    expect([...hashes(t)!.taken]).toEqual([path[0].hash, path[1].hash])
   })
 
-  it('другой персонаж — свои ноды; атлас и неизвестные id не считаются', () => {
-    const t = new TreeLogTracker(tree)
-    t.ingest([login, level('Alice', 2), alloc(path[0].id), login, level('Bob', 9), alloc('atlas_path_39'), alloc('no_such_node')])
-    expect(t.nodes()).toBeNull()
-    t.ingest([login, level('Alice', 3)])
-    expect([...t.nodes()!.taken]).toEqual([path[0].hash])
+  it('до первого повышения после входа — копим и отдаём этому персонажу', () => {
+    const t = new BuildTakenTracker()
+    t.ingest([login, alloc(path[2].id)])
+    expect(t.character()).toBeNull()
+    expect([...hashes(t)!.taken]).toEqual([path[2].hash])
+    t.ingest([level('Bob', 5)])
+    expect([...hashes(t)!.taken]).toEqual([path[2].hash])
+  })
+
+  it('атлас и id не из этих данных дерева не считаются', () => {
+    const t = new BuildTakenTracker()
+    t.ingest([login, level('Bob', 9), alloc('atlas_path_39'), alloc('no_such_node')])
+    expect(t.snapshot(true).taken).toEqual(['no_such_node'])
+    expect(hashes(t)).toBeNull()
+    expect(takenHashes(tree, null)).toBeNull()
   })
 })
 
