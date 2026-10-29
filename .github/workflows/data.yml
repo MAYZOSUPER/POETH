@@ -7,6 +7,11 @@
 # Запуск: Actions → «Data» → Run workflow (версия пакета, пусто — дата данных APT из data.meta.json)
 # или тег: git tag data-3.30.0-1 && git push origin data-3.30.0-1 (версия = тег без «data-»).
 # Регламент — docs/league-update.md, весь «день лиги» — tools/data/league-day.mjs.
+#
+# S33: job `prices` раз в час снимает цены уников poe.ninja (tools/data/ninja-snapshot.mjs) и заменяет
+# ветку `prices` одним коммитом (tools/data/push-prices-branch.mjs). К poe.ninja ходит только этот
+# запуск, а не приложение у каждого игрока (poe.ninja просит десктоп-приложения ходить через свой бэкенд).
+# Вручную: Actions → «Data» → Run workflow с галочкой «Только снимок цен».
 name: Data
 
 on:
@@ -16,20 +21,26 @@ on:
         description: 'Версия пакета данных (например 3.30.0-1); пусто — дата данных APT'
         required: false
         default: ''
+      prices:
+        description: 'Только снимок цен poe.ninja (ветка prices), пакет данных не публиковать'
+        type: boolean
+        required: false
+        default: false
   push:
     tags: ['data-*']
+  schedule:
+    - cron: '17 * * * *'
 
 permissions:
   contents: write
 
-concurrency:
-  group: data-publish
-  cancel-in-progress: false
-
 jobs:
   publish:
-    # только из main или по тегу data-* — не из рабочих веток
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/data-')
+    # только из main или по тегу data-* — не из рабочих веток; расписание и «только цены» — не сюда
+    if: github.event_name != 'schedule' && !inputs.prices && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/data-'))
+    concurrency:
+      group: data-publish
+      cancel-in-progress: false
     runs-on: windows-latest
     timeout-minutes: 25
     steps:
@@ -71,3 +82,32 @@ jobs:
             sleep 15
           done
           echo "CDN raw.githubusercontent.com ещё отдаёт прежний манифест — проверьте позже" && exit 1
+
+  prices:
+    # снимок цен уников poe.ninja раз в час (и вручную); только из main
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.prices)
+    concurrency:
+      group: prices-publish
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Прошлый снимок (ETag для условных запросов)
+        shell: bash
+        run: |
+          mkdir -p prev-prices
+          if git fetch --quiet --depth=1 origin prices; then git archive FETCH_HEAD | tar -x -C prev-prices; fi
+      - name: Снимок poe.ninja
+        run: node tools/data/ninja-snapshot.mjs --out dist-prices --prev prev-prices
+      - name: Опубликовать в ветку prices
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: node tools/data/push-prices-branch.mjs --dir dist-prices
