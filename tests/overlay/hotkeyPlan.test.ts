@@ -15,7 +15,8 @@ describe('planHotkeys', () => {
       'dealTrade',
       'dealDismiss',
       'levelingToggle',
-      'bookRead'
+      'bookRead',
+      'buildTree'
     ])
     expect(plan.always.map((h) => h.action)).toEqual([
       'toggleCompanion',
@@ -55,7 +56,8 @@ describe('planHotkeys', () => {
       'dealTrade',
       'dealDismiss',
       'levelingToggle',
-      'bookRead'
+      'bookRead',
+      'buildTree'
     ])
   })
 
@@ -81,6 +83,7 @@ describe('planHotkeys', () => {
       'dealDismiss',
       'levelingToggle',
       'bookRead',
+      'buildTree',
       'chat:hideout'
     ])
     expect(plan.skipped).toEqual([

@@ -43,29 +43,110 @@ export function isGameInputAvailable(): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Глобальный хук мыши — только пока он кому-то нужен
+// Глобальный хук мыши и клавиатуры — только пока он кому-то нужен. Только слушаем: в игру отсюда
+// ничего не уходит. Подписчики: окно Ctrl+D (клик мимо закрывает окно), наложение дерева билда (S38:
+// панорама вслед за мышью, калибровка средней кнопкой, Esc закрывает).
 // ---------------------------------------------------------------------------
 
-type MouseDownListener = (screenPhysical: OverlayPoint) => void
+/** Кнопка мыши uiohook: 1 — левая, 2 — правая, 3 — средняя. */
+export type GlobalMouseButton = number
 
-const mouseListeners = new Set<MouseDownListener>()
-let hookRunning = false
+type MouseListener = (screenPhysical: OverlayPoint, button: GlobalMouseButton) => void
+/** rotation > 0 — колесо к себе, < 0 — от себя */
+type WheelListener = (screenPhysical: OverlayPoint, rotation: number) => void
 
-function handleHookMouseDown(e: { x: number; y: number }): void {
-  for (const cb of [...mouseListeners]) {
+export interface GlobalKey {
+  /** keycode uiohook (UiohookKey) */
+  keycode: number
+  alt: boolean
+  ctrl: boolean
+  shift: boolean
+  meta: boolean
+}
+
+type KeyListener = (key: GlobalKey) => void
+
+type HookMouse = import('uiohook-napi').UiohookMouseEvent
+type HookWheel = import('uiohook-napi').UiohookWheelEvent
+type HookKey = import('uiohook-napi').UiohookKeyboardEvent
+
+function emit<A extends unknown[]>(name: string, set: ReadonlySet<(...a: A) => void>, ...args: A): void {
+  for (const cb of [...set]) {
     try {
-      cb({ x: e.x, y: e.y })
+      cb(...args)
     } catch (err) {
-      console.error('[input] mousedown listener failed:', err)
+      console.error(`[input] ${name} listener failed:`, err)
     }
   }
 }
 
+const mouseDown = new Set<MouseListener>()
+const mouseUp = new Set<MouseListener>()
+const mouseMove = new Set<MouseListener>()
+const wheel = new Set<WheelListener>()
+const keyDown = new Set<KeyListener>()
+
+const point = (e: { x: number; y: number }): OverlayPoint => ({ x: e.x, y: e.y })
+
+// обработчик события uiohook висит, только пока у него есть подписчики: движение мыши — сотни событий в секунду
+const HOOK_EVENTS = [
+  { event: 'mousedown', set: mouseDown, fn: (e: HookMouse) => emit('mousedown', mouseDown, point(e), Number(e.button)) },
+  { event: 'mouseup', set: mouseUp, fn: (e: HookMouse) => emit('mouseup', mouseUp, point(e), Number(e.button)) },
+  { event: 'mousemove', set: mouseMove, fn: (e: HookMouse) => emit('mousemove', mouseMove, point(e), Number(e.button)) },
+  { event: 'wheel', set: wheel, fn: (e: HookWheel) => emit('wheel', wheel, point(e), e.rotation) },
+  {
+    event: 'keydown',
+    set: keyDown,
+    fn: (e: HookKey) =>
+      emit('keydown', keyDown, { keycode: e.keycode, alt: e.altKey, ctrl: e.ctrlKey, shift: e.shiftKey, meta: e.metaKey })
+  }
+] as const
+
+let hookRunning = false
+const attached = new Set<string>()
+
+type AnyHookListener = (e: never) => void
+
+function syncHook(): void {
+  const k = hookLib
+  if (!k) return
+  const hook = k.uIOhook as unknown as {
+    on(event: string, fn: AnyHookListener): void
+    removeListener(event: string, fn: AnyHookListener): void
+  }
+  for (const h of HOOK_EVENTS) {
+    const want = h.set.size > 0
+    if (want && !attached.has(h.event)) {
+      hook.on(h.event, h.fn as AnyHookListener)
+      attached.add(h.event)
+    } else if (!want && attached.has(h.event)) {
+      hook.removeListener(h.event, h.fn as AnyHookListener)
+      attached.delete(h.event)
+    }
+  }
+  const need = attached.size > 0
+  if (need && !hookRunning) {
+    k.uIOhook.start()
+    hookRunning = true
+  } else if (!need && hookRunning) {
+    k.uIOhook.stop()
+    hookRunning = false
+  }
+}
+
 function stopHook(): void {
-  if (!hookRunning || !hookLib) return
-  hookLib.uIOhook.removeListener('mousedown', handleHookMouseDown)
-  hookLib.uIOhook.stop()
-  hookRunning = false
+  for (const h of HOOK_EVENTS) h.set.clear()
+  syncHook()
+}
+
+function listen<T>(set: Set<T>, cb: T): () => void {
+  if (!loadHook()) return () => undefined
+  set.add(cb)
+  syncHook()
+  return () => {
+    if (!set.delete(cb)) return
+    syncHook()
+  }
 }
 
 /**
@@ -73,19 +154,33 @@ function stopHook(): void {
  * запускается с первым подписчиком и останавливается с последним — пока открыто окно
  * Ctrl+D (клик мимо него закрывает окно, как в макете и в APT). В игру мы ничего не шлём.
  */
-export function onGlobalMouseDown(cb: MouseDownListener): () => void {
+export function onGlobalMouseDown(cb: MouseListener): () => void {
+  return listen(mouseDown, cb)
+}
+
+export function onGlobalMouseUp(cb: MouseListener): () => void {
+  return listen(mouseUp, cb)
+}
+
+/** Движение мыши (физические пиксели) — подписываться только на время, пока оно действительно нужно. */
+export function onGlobalMouseMove(cb: MouseListener): () => void {
+  return listen(mouseMove, cb)
+}
+
+export function onGlobalWheel(cb: WheelListener): () => void {
+  return listen(wheel, cb)
+}
+
+/** Нажатие клавиши (keycode uiohook и модификаторы); само нажатие уходит в игру как обычно. */
+export function onGlobalKeyDown(cb: KeyListener): () => void {
+  return listen(keyDown, cb)
+}
+
+/** Keycode uiohook клавиши по имени UiohookKey (`Escape`, `P`); null — модуля нет или имени. */
+export function hookKeycode(name: string): number | null {
   const k = loadHook()
-  if (!k) return () => undefined
-  mouseListeners.add(cb)
-  if (!hookRunning) {
-    k.uIOhook.on('mousedown', handleHookMouseDown)
-    k.uIOhook.start()
-    hookRunning = true
-  }
-  return () => {
-    mouseListeners.delete(cb)
-    if (mouseListeners.size === 0) stopHook()
-  }
+  const code = k ? (k.UiohookKey as unknown as Record<string, number>)[name] : undefined
+  return typeof code === 'number' ? code : null
 }
 
 app.on('will-quit', stopHook)

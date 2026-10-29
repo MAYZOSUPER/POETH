@@ -36,6 +36,8 @@ export const HOTKEY_DEFAULTS: Readonly<Record<HotkeyAction, HotkeyBinding>> = {
   // стакан (S28): таблица «Курс / Кол-во» видна, пока зажат Alt, — второе нажатие той же рукой; D в игре
   // по умолчанию свободна, у APT такого сочетания нет; пара к Ctrl+D (цена предмета)
   bookRead: { accel: 'Alt+D', scope: 'game' },
+  // дерево этапа поверх игры (S38): P открывает дерево пассивок в PoE1 — Alt+P рядом, игрой не занят, пара к Alt+D
+  buildTree: { accel: 'Alt+P', scope: 'game' },
   toggleCompanion: { accel: 'Control+Shift+O', scope: 'always' },
   toggleLock: { accel: 'Control+Shift+L', scope: 'always' },
   toggleTradeWindow: { accel: 'Control+Shift+T', scope: 'always' },

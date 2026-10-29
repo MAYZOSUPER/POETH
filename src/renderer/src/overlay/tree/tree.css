@@ -1,0 +1,146 @@
+/* Дерево этапа поверх игрового дерева пассивок (S38). Рисунок на всё окно оверлея и не ловит мышь;
+   ловит только плашка этапа сверху по центру. Цвета — токены дизайн-системы: взять — --good, снять — --bad,
+   были — --fg, уже взяты — --fg-muted, круг класса (опора калибровки) — --accent-hi. */
+
+.bt-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bt-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transition: opacity var(--t-med);
+}
+/* масштаб изменился — рисунок ещё не совпадает: приглушить до новой калибровки */
+.bt-svg.is-drift {
+  opacity: 0.35;
+}
+
+.bt-node {
+  fill: none;
+  stroke-width: 2.5px;
+}
+.bt-node.bt-k--notable,
+.bt-node.bt-k--keystone,
+.bt-node.bt-k--jewel {
+  stroke-width: 3px;
+}
+.bt-node.bt-k--mastery {
+  stroke-dasharray: 4 3;
+}
+.bt-edge {
+  fill: none;
+  stroke-width: 3px;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.bt--take {
+  stroke: var(--good);
+  color: var(--good);
+}
+.bt--keep {
+  stroke: var(--fg);
+  color: var(--fg);
+}
+.bt--taken {
+  stroke: var(--fg-muted);
+  color: var(--fg-muted);
+}
+.bt-node.bt--taken,
+.bt-edge.bt--taken {
+  opacity: 0.6;
+}
+.bt--remove {
+  stroke: var(--bad);
+  color: var(--bad);
+}
+.bt-edge.bt--remove {
+  stroke-dasharray: 6 5;
+}
+.bt--start {
+  stroke: var(--accent-hi);
+  stroke-width: 2px;
+}
+
+.bt-label {
+  fill: currentColor;
+  stroke: rgb(0 0 0 / 0.85);
+  stroke-width: 3px;
+  paint-order: stroke;
+  font: 600 var(--fs-sm) / 1 var(--font-ui);
+  dominant-baseline: middle;
+}
+
+/* ---- плашка этапа ---- */
+
+.bt-panel {
+  position: absolute;
+  top: var(--sp-7);
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  gap: var(--sp-2);
+  max-width: calc(100vw - 2 * var(--sp-7));
+  padding: var(--sp-2) var(--sp-3);
+  pointer-events: auto;
+}
+.bt-panel__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  white-space: nowrap;
+}
+.bt-panel__title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  min-width: 0;
+  overflow: hidden;
+}
+.bt-panel__title > .ui-ico {
+  align-self: center;
+  color: var(--accent);
+}
+.bt-panel__title b {
+  overflow: hidden;
+  color: var(--fg);
+  text-overflow: ellipsis;
+}
+.bt-panel__of {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.bt-flip .ui-ico {
+  transform: scaleX(-1);
+}
+.bt-legend {
+  display: inline-flex;
+  gap: var(--sp-2);
+  margin-left: var(--sp-2);
+}
+.bt-chip {
+  padding: 0 var(--sp-3);
+  border: 1px solid currentColor;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+}
+.bt-panel__hint {
+  max-width: 640px;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  white-space: normal;
+}
+.bt-panel__hint.is-warn {
+  color: var(--warn);
+}
+.bt-panel__problem {
+  color: var(--fg-muted);
+  white-space: normal;
+}
