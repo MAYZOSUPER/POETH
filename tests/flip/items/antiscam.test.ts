@@ -66,6 +66,17 @@ describe('антискам: разбор лотов одной проверки'
     expect(out.lots.map((l) => l.verdict)).toEqual(['thin', 'thin', 'thin', 'thin'])
   })
 
+  it('лоты дороже порога по нашему курсу — «дороже порога», в «рынок ниже» не идут (живая проверка 29.10)', () => {
+    // сайт отдал Headhunter по 9–10 div на порог 2366 c: его «chaos-эквивалент» считает divine дешевле рынка
+    const dear = [9, 9, 10, 10, 10, 10].map((d) => lot(0, { kind: 'instant', fee: 42520, price: { amount: d, currency: 'divine' } }))
+    const out = checkLots(dear, HH, { rates, now: NOW, maxChaos: 2366 })
+    expect(out.lots.map((l) => l.verdict)).toEqual(['over', 'over', 'over', 'over', 'over', 'over'])
+    expect(out.market).toBeNull()
+    expect(out.sell).toBe(3211)
+    // в пределах 2 % — округление порога, не «дороже»
+    expect(checkLots([lot(2400)], HH, { rates, now: NOW, maxChaos: 2366 }).lots[0].verdict).toBe('deal')
+  })
+
   it('один-два дешёвых лота — не «рынок»: выгодно по ожидаемой цене', () => {
     const out = checkLots([lot(2000), lot(2300)], HH, { rates, now: NOW })
     expect(out.market).toBeNull()

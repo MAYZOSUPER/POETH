@@ -1,6 +1,6 @@
 import type { ItemCheckResult, ItemFlipState, ItemLot, ItemRow, UiLang } from '@shared/types'
 import { useT } from '../../../i18n'
-import { CoinIcon, Currency } from '../../../components/Currency'
+import { CoinIcon } from '../../../components/Currency'
 import { Confidence } from '../ui'
 import { useItemsStore } from './useItemsStore'
 import { daysText, money, signed, useUniqueName } from './format'
@@ -123,7 +123,7 @@ export function CheckCard({ row, s, lang, expert }: { row: ItemRow; s: ItemFlipS
         {res?.ok && (
           <>
             <p className="fi-note">
-              {t('flip.items.check.total', { n: res.total })} <Currency tag="chaos" text={`≤ ${res.maxChaos}`} lang={lang} />
+              {t('flip.items.check.total', { n: res.total })} <Price chaos={res.maxChaos} divine={s.divine} lang={lang} prefix="≤ " />
               {deals.length > 0 ? ` · ${t('flip.items.check.deals', { n: deals.length })}` : ''}
             </p>
             {res.market && (

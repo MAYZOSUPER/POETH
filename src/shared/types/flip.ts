@@ -341,7 +341,8 @@ export interface ItemFlipState {
 
 /**
  * Итог проверки лота: выгодно; выгода мала; приманка (в разы дешевле соседей, лично); старый (> 7 дней);
- * другой вариант / порча / связи / имплициты; продавец в списке price-fixer'ов PoE Hub; цена в непонятной валюте.
+ * другой вариант / порча / связи / имплициты; продавец в списке price-fixer'ов PoE Hub; цена в непонятной валюте;
+ * дороже порога по курсу divine приложения (сайт сравнивает цены по своему курсу).
  */
 export type ItemLotVerdict =
   | 'deal'
@@ -354,6 +355,7 @@ export type ItemLotVerdict =
   | 'implicits'
   | 'fixer'
   | 'currency'
+  | 'over'
 
 export interface ItemLot {
   id: string

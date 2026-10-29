@@ -20,7 +20,7 @@ export function maxPriceOf(row: Pick<ItemRow, 'chaos'>, k: number): number {
   return Math.max(1, Math.floor(row.chaos * clampK(k)))
 }
 
-type QueryRow = Pick<ItemRow, 'name' | 'base' | 'links' | 'unlinked' | 'foulborn'> & {
+type QueryRow = Pick<ItemRow, 'name' | 'base' | 'links' | 'unlinked' | 'foulborn' | 'chaos'> & {
   trade?: readonly ItemTradeStat[]
   corrupted?: boolean
 }
@@ -30,18 +30,26 @@ export interface ItemSearchBody {
   sort: { price: 'asc' }
 }
 
+/** Порог в валюте, в которой такой уник обычно продают: от 1 div — в divine (до сотых вниз), дешевле — в chaos. */
+export function priceFilter(row: Pick<ItemRow, 'chaos'>, maxChaos: number, divine: number): { option: 'divine' | 'chaos'; max: number } {
+  if (divine > 0 && row.chaos >= divine) return { option: 'divine', max: Math.max(0.01, Math.floor((maxChaos / divine) * 100) / 100) }
+  return { option: 'chaos', max: Math.max(1, Math.floor(maxChaos)) }
+}
+
 /**
- * Тело POST /api/trade/search. Цена — без валюты (сайт сравнивает в chaos-эквиваленте), статус «available»
- * (мгновенный выкуп и личный обмен с продавцом в сети), «indexed: 1week» — только лоты за неделю.
+ * Тело POST /api/trade/search. Статус «available» (мгновенный выкуп и личный обмен с продавцом в сети), «indexed:
+ * 1week» — только лоты за неделю. Цена — с валютой: без неё сайт сравнивает в своём «chaos-эквиваленте» по своему
+ * курсу divine, а он далёк от рынка (проверено 29.10.2026: порог 2366 c пропустил лоты Headhunter по 10 div при
+ * курсе 340 c) — поэтому порог в divine или chaos, как обычно выставляют этот уник.
  */
-export function buildItemQuery(row: QueryRow, maxChaos: number): ItemSearchBody {
+export function buildItemQuery(row: QueryRow, maxChaos: number, divine: number): ItemSearchBody {
   const misc: Record<string, unknown> = {
     corrupted: { option: row.corrupted ? 'true' : 'false' },
     foulborn_item: { option: row.foulborn ? 'true' : 'false' }
   }
   const filters: Record<string, unknown> = {
     misc_filters: { filters: misc },
-    trade_filters: { filters: { price: { max: Math.max(1, Math.floor(maxChaos)) }, indexed: { option: '1week' } } }
+    trade_filters: { filters: { price: priceFilter(row, maxChaos, divine), indexed: { option: '1week' } } }
   }
   if (row.links === 6) filters.socket_filters = { filters: { links: { min: 6 } } }
   else if (row.links === 5) filters.socket_filters = { filters: { links: { min: 5, max: 5 } } }
@@ -67,11 +75,12 @@ export function buildItemQuery(row: QueryRow, maxChaos: number): ItemSearchBody 
   return { query, sort: { price: 'asc' } }
 }
 
-/** Название поиска в live search: «Shavronne's Wrappings 6L ≤ 210 c». */
-export function watchTitle(row: Pick<ItemRow, 'name' | 'links' | 'foulborn' | 'variant'>, maxChaos: number): string {
+/** Название поиска в live search: «Shavronne's Wrappings 6L ≤ 210 c», «Headhunter ≤ 6.95 div». */
+export function watchTitle(row: Pick<ItemRow, 'name' | 'links' | 'foulborn' | 'variant' | 'chaos'>, maxChaos: number, divine: number): string {
   const parts = [row.foulborn ? `Foulborn ${row.name}` : row.name]
   if (row.variant) parts.push(`(${row.variant})`)
   if (row.links) parts.push(`${row.links}L`)
-  parts.push(`≤ ${Math.floor(maxChaos)} c`)
+  const p = priceFilter(row, maxChaos, divine)
+  parts.push(`≤ ${p.max} ${p.option === 'divine' ? 'div' : 'c'}`)
   return parts.join(' ').slice(0, 120)
 }

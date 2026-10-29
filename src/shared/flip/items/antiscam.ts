@@ -6,6 +6,7 @@
 //  - вариант: Foulborn, stat-фильтры poe.ninja (заменённое свойство), порча, связи, имплициты — как у строки
 //    poe.ninja, иначе «другой вариант» (это цена другого предмета);
 //  - продавец в pricefixers.csv PoE Hub — «price-fixer»;
+//  - дороже порога по нашему курсу divine — «дороже порога» (сайт сравнивает цены по своему курсу);
 //  - приманка: лот дешевле 0,5 × медианы следующих 5 лотов. У личного обмена такой лот — приманка (продавец не
 //    продаст), у мгновенного выкупа приманки не бывает (купить можно сразу) — лот остаётся, но с пометкой
 //    «в разы дешевле — сверьте предмет»;
@@ -51,6 +52,8 @@ export type LotExpect = Pick<ItemRow, 'links' | 'unlinked' | 'foulborn' | 'sell'
 export interface CheckContext {
   /** chaos за единицу валюты лота ('chaos' → 1, 'divine' → курс…) */
   rates: Readonly<Record<string, number>>
+  /** порог поиска, chaos: дороже (по нашему курсу) — «дороже порога» */
+  maxChaos?: number
   now: number
   isFixer?: (account: string) => boolean
 }
@@ -149,6 +152,8 @@ export function checkLots(input: readonly LotInput[], want: LotExpect, ctx: Chec
     else if (ctx.isFixer?.(l.accountName)) lot.verdict = 'fixer'
     else if (problem) lot.verdict = problem
     else if ((lot.ageDays ?? 0) > MAX_AGE_DAYS) lot.verdict = 'old'
+    // сайт пересчитывает валюту по своему курсу — проверяем порог по нашему (+2 % на округление)
+    else if (ctx.maxChaos !== undefined && chaos > ctx.maxChaos * 1.02) lot.verdict = 'over'
     return lot
   })
 

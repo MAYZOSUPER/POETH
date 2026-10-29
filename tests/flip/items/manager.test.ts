@@ -62,7 +62,7 @@ describe('«Предметы» в main', () => {
     expect(t.searches).toHaveLength(1)
     expect(t.searches[0].league).toBe('Allflame')
     const filters = t.searches[0].body.query.filters as { trade_filters: { filters: { price: { max: number } } } }
-    expect(filters.trade_filters.filters.price.max).toBe(2366)
+    expect(filters.trade_filters.filters.price).toEqual({ option: 'divine', max: 7.01 })
     expect(t.fetches).toEqual([{ ids: FETCH.map((x) => x.id).concat(['x1', 'x2']), searchId: 'H4sIqry' }])
     expect(r.ok).toBe(true)
     if (!r.ok) return
@@ -77,7 +77,7 @@ describe('«Предметы» в main', () => {
     await t.m.refresh()
     await t.m.check('headhunter-leather-belt', 0.5)
     const filters = t.searches[0].body.query.filters as { trade_filters: { filters: { price: { max: number } } } }
-    expect(filters.trade_filters.filters.price.max).toBe(1690)
+    expect(filters.trade_filters.filters.price).toEqual({ option: 'divine', max: 5.01 })
     expect(t.saved()).toBeNull()
   })
 

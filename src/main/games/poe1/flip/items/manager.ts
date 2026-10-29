@@ -189,7 +189,7 @@ export class ItemFlipManager {
 
   private query(row: ItemRow, line: ItemLine, k: number): { body: ItemSearchBody; maxChaos: number } {
     const maxChaos = maxPriceOf(row, k)
-    return { body: buildItemQuery({ ...row, trade: line.trade, corrupted: line.corrupted }, maxChaos), maxChaos }
+    return { body: buildItemQuery({ ...row, trade: line.trade, corrupted: line.corrupted }, maxChaos, this.s.divine), maxChaos }
   }
 
   /** «Проверить сейчас»: один поиск и один fetch до 10 лотов, разбор антискамом. */
@@ -225,7 +225,7 @@ export class ItemFlipManager {
       const out = checkLots(
         input,
         { ...t.row, trade: t.line.trade, corrupted: t.line.corrupted, implicits: t.line.implicits },
-        { rates: lotRates(divine, exalted ? { exalted } : {}), now: this.now(), isFixer: this.deps.isFixer }
+        { rates: lotRates(divine, exalted ? { exalted } : {}), now: this.now(), isFixer: this.deps.isFixer, maxChaos }
       )
       return { ok: true, rowId: id, at: this.now(), total: Number(total) || 0, maxChaos, sell: out.sell, market: out.market, lots: out.lots, siteUrl }
     } finally {
@@ -242,7 +242,7 @@ export class ItemFlipManager {
     const { body, maxChaos } = this.query(t.row, t.line, kArg === undefined ? this.config.k : clampK(kArg))
     const search = await this.deps.search(league, body)
     if (!search.ok) return { ok: false, ...checkError(search.error) }
-    return { ok: true, siteUrl: await this.deps.siteUrl(league, search.data.id), title: watchTitle(t.row, maxChaos) }
+    return { ok: true, siteUrl: await this.deps.siteUrl(league, search.data.id), title: watchTitle(t.row, maxChaos, this.s.divine) }
   }
 
   /** Снимок цен — раз в час (только GitHub, не трейд). */
