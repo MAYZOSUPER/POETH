@@ -36,6 +36,17 @@ describe('LevelingStore.flushSync — на выходе', () => {
   })
 })
 
+describe('смена игры — штатный выход', () => {
+  it('relaunch + app.quit (before-quit сохраняет гид и фарм), нигде нет app.exit', () => {
+    const src = readFileSync(path.join(__dirname, '../../src/main/ipc/app.ts'), 'utf8')
+    const fn = src.slice(src.indexOf('async function switchGame'))
+    const body = fn.slice(0, fn.indexOf('\n}')).replace(/\/\/.*$/gm, '')
+    expect(body.indexOf('app.relaunch()')).toBeGreaterThan(0)
+    expect(body.indexOf('app.quit()')).toBeGreaterThan(body.indexOf('app.relaunch()'))
+    expect(body).not.toMatch(/app\.exit\(/)
+  })
+})
+
 describe('ipc/leveling: before-quit — синхронная запись', () => {
   it('обработчик зовёт flushSync, а не асинхронный flush', () => {
     const src = readFileSync(path.join(__dirname, '../../src/main/ipc/leveling.ts'), 'utf8')
