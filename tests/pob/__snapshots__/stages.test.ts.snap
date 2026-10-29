@@ -1,0 +1,226 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`этапы на настоящих кодах > nostats-pobbin-crit 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - Crit → tree: Crit; gems: crit; items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pastebin-acts-lv 1`] = `
+{
+  "primary": "spec",
+  "stages": [
+    "L   1 Act 1 Lv 1-13 → tree: Act 1 Lv 1-13; gems: (default) § -------------------- ACT 1--------------------; items: End Act 1 Set",
+    "L  14 Act 2 Lv 14-22 → tree: Act 2 Lv 14-22; gems: (default) § -------------------- ACT 2--------------------; items: End Act 2 Set",
+    "L  23 Act 3 Lv 23-32 → tree: Act 3 Lv 23-32; gems: (default) § -------------------- ACT 3--------------------; items: End Act 2 Set",
+    "L  33 Act 4 Lv 33-37 → tree: Act 4 Lv 33-37; gems: (default) § -------------------- Act 4--------------------; items: End Act 2 Set",
+    "L  38 Act 5 Lv 38-43 → tree: Act 5 Lv 38-43; gems: (default) § -------------------- Act 5--------------------; items: End Act 2 Set",
+    "L  44 Act 6 Lv 44-49 → tree: Act 6 Lv 44-49; gems: (default) § -------------------- Act 6--------------------; items: End Act 2 Set",
+    "L  50 Act 7 Lv 50-54 → tree: Act 7 Lv 50-54; gems: (default) § -------------------- Act 7--------------------; items: End Act 2 Set",
+    "L  55 Act 8 Lv 55-59 → tree: Act 8 Lv 55-59; gems: (default) § -------------------- Act 8 - 10--------------; items: End Act 2 Set",
+    "L  60 Act 9 Lv 60-62 → tree: Act 9 Lv 60-62; gems: (default) § -------------------- Act 8 - 10--------------; items: End Act 2 Set",
+    "L  63 Act 10 Lv 63-64 → tree: Act 10 Lv 63-64; gems: (default) § -------------------- Act 8 - 10--------------; items: End Act 2 Set",
+    "L  65 Act 10 65+ My Thoughts → tree: Act 10 65+ My Thoughts; gems: (default) § -------------------- Act 8 - 10--------------; items: End Act 2 Set",
+    "E  77 LV 77+ Follow AllStars CI Tree → tree: LV 77+ Follow AllStars CI Tree; gems: (default) § -------------------- Act 8 - 10--------------; items: End Act 2 Set",
+    "E   - (default) → tree: (default); gems: (default) § Nothing changed at all; items: End Act 1 Set",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pob-spec-occvortex 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-acts-all-axes 1`] = `
+{
+  "primary": "spec",
+  "stages": [
+    "L   1 Act 1 → tree: Act 1; gems: Act 1; items: Act 1",
+    "L  14 Act 2 → tree: Act 2; gems: Act 2; items: Act 2",
+    "L  24 Act 3 → tree: Act 3; gems: Act 3; items: Act 3",
+    "L  34 Act 4 → tree: Act 4; gems: Act 4; items: Act 4",
+    "L  41 Act 5 → tree: Act 5; gems: Act 5; items: Act 5",
+    "L  46 Act 6 → tree: Act 6; gems: Act 6; items: Act 6",
+    "L  51 Act 7 → tree: Act 7; gems: Act 7; items: Act 7",
+    "L  55 Act 8 → tree: Act 8; gems: Act 8; items: Act 8",
+    "L  61 Act 9 → tree: Act 9; gems: Act 9; items: Act 9",
+    "L  65 Act 10 → tree: Act 10; gems: Act 10; items: Act 10",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-acts-level-gems 1`] = `
+{
+  "primary": "spec",
+  "stages": [
+    "L   1 Act 1 - Level 12 (14 Points with Quests) → tree: Act 1 - Level 12 (14 Points with Quests); gems: (default) § ----- Act 1 Leveling Gems -----; items: (default)",
+    "L  14 Act 2 - Level 22 (27 Points with Quests) → tree: Act 2 - Level 22 (27 Points with Quests); gems: (default) § ----- Act 2 Leveling Gems -----; items: (default)",
+    "L  24 Act 3 - Level 32 (39 Points with Quests) → tree: Act 3 - Level 32 (39 Points with Quests); gems: (default) § ----- Act 3 Leveling Gems -----; items: (default)",
+    "L  34 Act 4 - Level 40 (48 Points with Quests) → tree: Act 4 - Level 40 (48 Points with Quests); gems: (default) § ----- Act 4 Leveling Gems -----; items: (default)",
+    "L  41 Act 5 - Level 45 (55 Points with Quests) → tree: Act 5 - Level 45 (55 Points with Quests); gems: (default) § ----- Act 4 Leveling Gems -----; items: (default)",
+    "L  46 Act 6 - Level 50 (63 Points with Quests) → tree: Act 6 - Level 50 (63 Points with Quests); gems: (default) § ----- Act 4 Leveling Gems -----; items: (default)",
+    "L  51 Act 7 - Level 55 (71 Points with Quests) → tree: Act 7 - Level 55 (71 Points with Quests); gems: (default) § ----- Act 4 Leveling Gems -----; items: (default)",
+    "L  55 Act 8 - Level 60 (79 Points with Quests) → tree: Act 8 - Level 60 (79 Points with Quests); gems: (default) § ----- Act 4 Leveling Gems -----; items: (default)",
+    "L  61 Act 9 - Level 64 (85 Points with Quests) → tree: Act 9 - Level 64 (85 Points with Quests); gems: (default) § ----- Act 9 Leveling Gems -----; items: (default)",
+    "L  65 Act 10 - Level 68 (92 Points with Quests) → tree: Act 10 - Level 68 (92 Points with Quests); gems: (default) § ----- Act 9 Leveling Gems -----; items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-crit 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - Crit → tree: Crit; gems: crit; items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-death-oath-328 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-guardian 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-huge 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-leveling-acts 1`] = `
+{
+  "primary": "spec",
+  "stages": [
+    "L   1 Acts 1-2 → tree: Acts 1-2; gems: Maps - Lvling gems in Notes; items: (default)",
+    "L  24 Acts 3-4 → tree: Acts 3-4; gems: Maps - Lvling gems in Notes; items: (default)",
+    "L  41 Acts 5-6 → tree: Acts 5-6; gems: Maps - Lvling gems in Notes; items: (default)",
+    "L  51 Acts 7- Early Maps → tree: Acts 7- Early Maps; gems: Maps - Lvling gems in Notes; items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-leveling-endgame-variants 1`] = `
+{
+  "primary": "spec",
+  "stages": [
+    "L   1 Leveling (1-13) {1} → tree: Leveling (1-13) {1}; gems: Leveling (1-13) {1}; items: Leveling {1,2,3,4,5}",
+    "L  13 Leveling (13-22) {2} → tree: Leveling (13-22) {2}; gems: Leveling (13-22) {2}; items: Leveling {1,2,3,4,5}",
+    "L  22 Leveling (22-38) {3} → tree: Leveling (22-38) {3}; gems: Leveling (22-38) {3}; items: Leveling {1,2,3,4,5}",
+    "L  38 Leveling (38-54): Cruel Lab + Warcries } {4} → tree: Leveling (38-54): Cruel Lab + Warcries } {4}; gems: Leveling (38-54): Cruel Lab + Warcries {4}; items: Leveling {1,2,3,4,5}",
+    "L  54 Leveling (54-67): Merciless Lab {5} → tree: Leveling (54-67): Merciless Lab {5}; gems: Leveling (54-67): Merciless Lab {5}; items: Leveling {1,2,3,4,5}",
+    "L  67 Leveling (67+, Mapping): Uber Lab + Max Resists + Jewel Sockets {6} → tree: Leveling (67+, Mapping): Uber Lab + Max Resists + Jewel Sockets {6}; gems: Leveling (67+, Mapping): Uber Lab + Max Resists + Jewel Sockets {6}; items: Leveling {1,2,3,4,5}",
+    "E  90 Mace Endgame (100) {8} → tree: Mace Endgame (100) {8}; gems: Cluster Jewel Setup (96) {7,8}; items: Mace Switch {7,8}",
+    "E  90 Crit Staff Endgame (100) {9} → tree: Crit Staff Endgame (100) {9}; gems: Cluster Jewel Setup (96) {7,8}; items: Mace Switch {7,8}",
+    "E  90 Crit Staff Endgame Alternate (100) {10} → tree: Crit Staff Endgame Alternate (100) {10}; gems: Cluster Jewel Setup (96) {7,8}; items: Mace Switch {7,8}",
+    "E   - Cluster Jewel Setup (96) {7} → tree: Cluster Jewel Setup (96) {7}; gems: Cluster Jewel Setup (96) {7,8}; items: Mace Switch {7,8}",
+    "E   - Cluster Jewel Setup Axe (96) {11} → tree: Cluster Jewel Setup Axe (96) {11}; gems: Cluster Jewel Setup Axe (96) {11}; items: Mace Switch {7,8}",
+    "E   - Tectonic Slam of Cataclysm (100) {12} → tree: Tectonic Slam of Cataclysm (100) {12}; gems: Tectonic Slam of Cataclysm (100) {12}; items: Mace Switch {7,8}",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-leveling-ranges 1`] = `
+{
+  "primary": "spec",
+  "stages": [
+    "L   1 Leveling 1 - 12 → tree: Leveling 1 - 12; gems: Leveling 1 - 12; items: Leveling 1 - 27",
+    "L  13 Leveling 13 - 25 → tree: Leveling 13 - 25; gems: Leveling 13 - 27; items: Leveling 1 - 27",
+    "L  26 Leveling 26 - 38 → tree: Leveling 26 - 38; gems: Leveling 13 - 27; items: Leveling 1 - 27",
+    "L  39 Leveling 39 - 51 → tree: Leveling 39 - 51; gems: Leveling 38 - Budget Endgame; items: Leveling 28 - 67",
+    "L  52 Leveling 52 - 64 → tree: Leveling 52 - 64; gems: Leveling 38 - Budget Endgame; items: Leveling 28 - 67",
+    "L  65 Leveling 65 - 77 → tree: Leveling 65 - 77; gems: Leveling 38 - Budget Endgame; items: Leveling 28 - 67",
+    "E  78 Leveling 78 - 90 → tree: Leveling 78 - 90; gems: Leveling 38 - Budget Endgame; items: Leveling 68 - Budget Endgame",
+    "E  90 Final Tree → tree: Final Tree; gems: $$$ - Endgame Setup; items: $$$ - Endgame Setup",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-short-acts 1`] = `
+{
+  "primary": "spec",
+  "stages": [
+    "L   1 A1 → tree: A1; gems: leveling; items: Leveling",
+    "L   1 Recommended Leveling Tree below sucked imo → tree: Recommended Leveling Tree below sucked imo; gems: leveling; items: Leveling",
+    "L  14 A2 → tree: A2; gems: leveling; items: Leveling",
+    "L  24 A3 → tree: A3; gems: leveling; items: Leveling",
+    "L  34 A4 → tree: A4; gems: leveling; items: Leveling",
+    "L  41 A5 → tree: A5; gems: leveling; items: Leveling",
+    "L  46 A6 → tree: A6; gems: leveling; items: Leveling",
+    "L  51 A7 → tree: A7; gems: leveling; items: Leveling",
+    "L  55 A8 → tree: A8; gems: leveling; items: Leveling",
+    "L  61 A9 → tree: A9; gems: leveling; items: Leveling",
+    "L  65 A10 → tree: A10; gems: leveling; items: Leveling",
+    "E   - YellowMaps - Go MoM when appropriate ES → tree: YellowMaps - Go MoM when appropriate ES; gems: leveling; items: (default)",
+    "E   - ------------------------------------------------- → tree: -------------------------------------------------; gems: leveling; items: (default)",
+    "E   - (default) → tree: (default); gems: leveling; items: (default)",
+    "E   - A3ArmBrandSwap → tree: A3ArmBrandSwap; gems: leveling; items: (default)",
+    "E   - level → tree: level; gems: leveling; items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-three-trees 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobbin-two-variants 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - AG/zealotry → tree: AG/zealotry; gems: AG/zealotry; items: AG/zealotry",
+    "E   - i83 sanctum +1totem 30% reserve shield → tree: i83 sanctum +1totem 30% reserve shield; gems: i83 sanctum +1totem 30% reserve shield; items: i83 sanctum +1totem 30% reserve shield",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > pobcodes-nightblade 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+  ],
+}
+`;
+
+exports[`этапы на настоящих кодах > poedb-deadeye 1`] = `
+{
+  "primary": "none",
+  "stages": [
+    "E   - (default) → tree: (default); gems: (default); items: (default)",
+  ],
+}
+`;

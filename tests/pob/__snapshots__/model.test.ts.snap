@@ -1,0 +1,947 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`модель: настоящие коды PoB 1 > nostats-pobbin-crit 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / New Item / Dragonscale Doublet",
+  "class": "Templar/Hierophant",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 8,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Armageddon Brand of Recall 20/0 Metadata/Items/Gems/SkillGemArmageddonBrand [ArmageddonBrandAltY]",
+    "Arcane Surge 20/0 Metadata/Items/Gems/SupportGemArcaneSurge [SupportArcaneSurge]",
+    "Immolate 20/0 Metadata/Items/Gems/SupportGemImmolate [SupportImmolate]",
+  ],
+  "itemSets": [
+    "(default) | slots 14 | other 1",
+  ],
+  "items": 18,
+  "level": 92,
+  "mainSocketGroup": 1,
+  "notes": "",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "(default) | groups 6 | gems 16",
+    "crit | groups 6 | gems 11",
+  ],
+  "specs": [
+    "Crit | 3_27 | nodes 125 | mastery 8 | jewels 6",
+  ],
+  "stats": {
+    "ChaosResist": undefined,
+    "EnergyShield": undefined,
+    "FireResist": undefined,
+    "Life": undefined,
+    "LifeInc": undefined,
+    "count": 0,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pastebin-acts-lv 1`] = `
+{
+  "activeItemSet": 1,
+  "activeSkillSet": 0,
+  "activeSpec": 1,
+  "bandit": "Alira",
+  "bodyArmour": "Rarity: MAGIC / Chainmail Tunic of the Brute / Armour: 61",
+  "class": "Templar/Guardian",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 0,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Ancestral Protector 4/0 Metadata/Items/Gems/SkillGemMeleeTotem",
+    "Added Fire Damage 3/0 Metadata/Items/Gems/SupportGemAddedFireDamage",
+    "Splitting Steel 5/0 Metadata/Items/Gems/SkillGemSplittingSteel",
+  ],
+  "itemSets": [
+    "(default) | slots 0 | other 0",
+    "End Act 1 Set | slots 14 | other 0",
+    "End Act 2 Set | slots 0 | other 0",
+  ],
+  "items": 16,
+  "level": 43,
+  "mainSocketGroup": 3,
+  "notes": "",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "(default) | groups 60 | gems 88",
+  ],
+  "specs": [
+    "(default) | 3_16 | nodes 10 | mastery 0 | jewels 0",
+    "Act 1 Lv 1-13 | 3_16 | nodes 16 | mastery 0 | jewels 0",
+    "Act 2 Lv 14-22 | 3_16 | nodes 26 | mastery 0 | jewels 0",
+    "Act 3 Lv 23-32 | 3_16 | nodes 38 | mastery 1 | jewels 0",
+    "Act 4 Lv 33-37 | 3_16 | nodes 45 | mastery 1 | jewels 0",
+    "Act 5 Lv 38-43 | 3_16 | nodes 52 | mastery 1 | jewels 0",
+    "Act 6 Lv 44-49 | 3_16 | nodes 60 | mastery 1 | jewels 0",
+    "Act 7 Lv 50-54 | 3_16 | nodes 70 | mastery 1 | jewels 0",
+    "Act 8 Lv 55-59 | 3_16 | nodes 78 | mastery 1 | jewels 0",
+    "Act 9 Lv 60-62 | 3_16 | nodes 84 | mastery 1 | jewels 0",
+    "Act 10 Lv 63-64 | 3_16 | nodes 90 | mastery 1 | jewels 0",
+    "Act 10 65+ My Thoughts | 3_16 | nodes 98 | mastery 4 | jewels 0",
+    "LV 77+ Follow AllStars CI Tree | 3_16 | nodes 2 | mastery 0 | jewels 0",
+  ],
+  "stats": {
+    "ChaosResist": -60,
+    "EnergyShield": 27,
+    "FireResist": -29,
+    "Life": 581,
+    "LifeInc": 0,
+    "count": 81,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pob-spec-occvortex 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / Gale Ward / Quilted Jacket",
+  "class": "Witch/Occultist",
+  "config": {
+    "enemyIsBoss": "Shaper",
+    "inputs": 10,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Flame Dash 20/20 Metadata/Items/Gems/SkillGemFlameDash",
+    "Increased Area of Effect 20/20 Metadata/Items/Gems/SupportGemIncreasedAreaOfEffect",
+    "Clarity 5/0 Metadata/Items/Gems/SkillGemClarity",
+  ],
+  "itemSets": [
+    "(default) | slots 15 | other 0",
+  ],
+  "items": 18,
+  "level": 99,
+  "mainSocketGroup": 5,
+  "notes": "",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "(default) | groups 6 | gems 23",
+  ],
+  "specs": [
+    "(default) | 3_13 | nodes 132 | mastery 0 | jewels 3",
+  ],
+  "stats": {
+    "ChaosResist": 68,
+    "EnergyShield": 1659,
+    "FireResist": 75,
+    "Life": 6728,
+    "LifeInc": 201,
+    "count": 70,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-acts-all-axes 1`] = `
+{
+  "activeItemSet": 9,
+  "activeSkillSet": 9,
+  "activeSpec": 9,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / Soul Coat / Gladiator Plate",
+  "class": "Duelist/Champion",
+  "config": {
+    "enemyIsBoss": "Boss",
+    "inputs": 11,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Ancestral Cry 16/0 Metadata/Items/Gems/SkillGemAncestralCry [AncestralCry]",
+    "Warlord's Mark 16/0 Metadata/Items/Gems/SkillGemWarlordsMark [WarlordsMark]",
+    "Corrupting Fever 16/0 Metadata/Items/Gems/SkillGemCorruptingFever [CorruptingFever]",
+  ],
+  "itemSets": [
+    "Act 1 | slots 14 | other 0",
+    "Act 2 | slots 14 | other 0",
+    "Act 3 | slots 14 | other 0",
+    "Act 4 | slots 14 | other 0",
+    "Act 5 | slots 14 | other 0",
+    "Act 6 | slots 14 | other 0",
+    "Act 7 | slots 14 | other 0",
+    "Act 8 | slots 14 | other 0",
+    "Act 9 | slots 14 | other 0",
+    "Act 10 | slots 14 | other 0",
+  ],
+  "items": 58,
+  "level": 68,
+  "mainSocketGroup": 4,
+  "notes": "",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "Act 1 | groups 4 | gems 8",
+    "Act 2 | groups 5 | gems 10",
+    "Act 3 | groups 7 | gems 14",
+    "Act 4 | groups 7 | gems 15",
+    "Act 5 | groups 5 | gems 14",
+    "Act 6 | groups 6 | gems 15",
+    "Act 7 | groups 7 | gems 15",
+    "Act 8 | groups 5 | gems 15",
+    "Act 9 | groups 5 | gems 15",
+    "Act 10 | groups 5 | gems 16",
+  ],
+  "specs": [
+    "Act 1 | 3_26 | nodes 18 | mastery 0 | jewels 0",
+    "Act 2 | 3_26 | nodes 28 | mastery 1 | jewels 0",
+    "Act 3 | 3_26 | nodes 43 | mastery 3 | jewels 0",
+    "Act 4 | 3_26 | nodes 51 | mastery 4 | jewels 0",
+    "Act 5 | 3_26 | nodes 58 | mastery 4 | jewels 0",
+    "Act 6 | 3_26 | nodes 67 | mastery 4 | jewels 0",
+    "Act 7 | 3_26 | nodes 78 | mastery 6 | jewels 0",
+    "Act 8 | 3_26 | nodes 86 | mastery 7 | jewels 0",
+    "Act 9 | 3_26 | nodes 90 | mastery 8 | jewels 0",
+    "Act 10 | 3_26 | nodes 99 | mastery 10 | jewels 0",
+  ],
+  "stats": {
+    "ChaosResist": -19,
+    "EnergyShield": 26,
+    "FireResist": 76,
+    "Life": 2717,
+    "LifeInc": 64,
+    "count": 93,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-acts-level-gems 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "None",
+  "bodyArmour": "Rarity: UNIQUE / Tabula Rasa / Simple Robe",
+  "class": "Witch/Occultist",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 0,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Freezing Pulse 20/0 Metadata/Items/Gems/SkillGemFreezingPulse",
+    "Volley 20/0 Metadata/Items/Gems/SupportGemParallelProjectiles",
+    "Frost Bomb 20/0 Metadata/Items/Gems/SkillGemFrostBomb",
+  ],
+  "itemSets": [
+    "(default) | slots 14 | other 0",
+  ],
+  "items": 14,
+  "level": 69,
+  "mainSocketGroup": 8,
+  "notes": "",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "(default) | groups 21 | gems 42",
+  ],
+  "specs": [
+    "Act 1 - Level 12 (14 Points with Quests) | 3_22 | nodes 16 | mastery 0 | jewels 0",
+    "Act 2 - Level 22 (27 Points with Quests) | 3_22 | nodes 29 | mastery 1 | jewels 0",
+    "Act 3 - Level 32 (39 Points with Quests) | 3_22 | nodes 43 | mastery 2 | jewels 0",
+    "Act 4 - Level 40 (48 Points with Quests) | 3_22 | nodes 52 | mastery 3 | jewels 0",
+    "Act 5 - Level 45 (55 Points with Quests) | 3_22 | nodes 59 | mastery 4 | jewels 0",
+    "Act 6 - Level 50 (63 Points with Quests) | 3_22 | nodes 67 | mastery 4 | jewels 0",
+    "Act 7 - Level 55 (71 Points with Quests) | 3_22 | nodes 75 | mastery 4 | jewels 0",
+    "Act 8 - Level 60 (79 Points with Quests) | 3_22 | nodes 85 | mastery 4 | jewels 0",
+    "Act 9 - Level 64 (85 Points with Quests) | 3_22 | nodes 90 | mastery 4 | jewels 0",
+    "Act 10 - Level 68 (92 Points with Quests) | 3_22 | nodes 100 | mastery 4 | jewels 0",
+  ],
+  "stats": {
+    "ChaosResist": -60,
+    "EnergyShield": 49,
+    "FireResist": 50,
+    "Life": 1288,
+    "LifeInc": 20,
+    "count": 95,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-crit 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / New Item / Dragonscale Doublet",
+  "class": "Templar/Hierophant",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 8,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Armageddon Brand of Recall 20/0 Metadata/Items/Gems/SkillGemArmageddonBrand [ArmageddonBrandAltY]",
+    "Arcane Surge 20/0 Metadata/Items/Gems/SupportGemArcaneSurge [SupportArcaneSurge]",
+    "Immolate 20/0 Metadata/Items/Gems/SupportGemImmolate [SupportImmolate]",
+  ],
+  "itemSets": [
+    "(default) | slots 14 | other 1",
+  ],
+  "items": 18,
+  "level": 92,
+  "mainSocketGroup": 1,
+  "notes": "",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "(default) | groups 6 | gems 16",
+    "crit | groups 6 | gems 11",
+  ],
+  "specs": [
+    "Crit | 3_27 | nodes 125 | mastery 8 | jewels 6",
+  ],
+  "stats": {
+    "ChaosResist": -38,
+    "EnergyShield": 138,
+    "FireResist": 75,
+    "Life": 3801,
+    "LifeInc": 108,
+    "count": 96,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-death-oath-328 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "Alira",
+  "bodyArmour": "Rarity: UNIQUE / Death's Oath / Astral Plate",
+  "class": "Witch/Occultist",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 7,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Void Manipulation 21/20 Metadata/Items/Gems/SupportGemVoidManipulation [SupportVoidManipulation]",
+    "Efficacy 21/20 Metadata/Items/Gems/SupportGemEfficacy [SupportEfficacy]",
+    "Concentrated Effect 21/20 Metadata/Items/Gems/SupportGemConcentratedEffect [SupportConcentratedEffect]",
+  ],
+  "itemSets": [
+    "(default) | slots 14 | other 1",
+  ],
+  "items": 25,
+  "level": 96,
+  "mainSocketGroup": 10,
+  "notes": "",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "(default) | groups 11 | gems 25",
+  ],
+  "specs": [
+    "(default) | 3_28 | nodes 129 | mastery 5 | jewels 10",
+  ],
+  "stats": {
+    "ChaosResist": 90,
+    "EnergyShield": 187,
+    "FireResist": 75,
+    "Life": 4500,
+    "LifeInc": 104,
+    "count": 91,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-guardian 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 1,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / New Item / Saintly Chainmail",
+  "class": "Templar/Guardian",
+  "config": {
+    "enemyIsBoss": "Boss",
+    "inputs": 20,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Dominating Blow 20/20 Metadata/Items/Gems/SkillGemDominatingBlow [DominatingBlow]",
+    "Faster Attacks 20/20 Metadata/Items/Gems/SupportGemFasterAttack [SupportFasterAttacks]",
+    "Minion Speed 20/20 Metadata/Items/Gems/SupportGemMinionSpeed [SupportMinionSpeed]",
+  ],
+  "itemSets": [
+    "(default) | slots 9 | other 0",
+  ],
+  "items": 12,
+  "level": 92,
+  "mainSocketGroup": 1,
+  "notes": "",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "(default) | groups 17 | gems 26",
+  ],
+  "specs": [
+    "(default) | 3_27 | nodes 125 | mastery 6 | jewels 0",
+    "(default) | 3_28 | nodes 125 | mastery 6 | jewels 0",
+  ],
+  "stats": {
+    "ChaosResist": 75,
+    "EnergyShield": 634,
+    "FireResist": 85,
+    "Life": 4642,
+    "LifeInc": 142,
+    "count": 93,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-huge 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 2,
+  "bandit": "Alira",
+  "bodyArmour": "Rarity: RARE / Pain Salvation / Exquisite Leather",
+  "class": "Ranger/Deadeye",
+  "config": {
+    "enemyIsBoss": "Uber",
+    "inputs": 29,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Frenzy 20/20 Metadata/Items/Gems/SkillGemFrenzy [Frenzy]",
+    "Manaforged Arrows 21/20 Metadata/Items/Gems/SupportGemManaforgedArrows [ManaforgedArrowsSupport]",
+    "Returning Projectiles 21/20 Metadata/Items/Gems/SupportGemReturningProjectiles [ReturningProjectilesSupport]",
+  ],
+  "itemSets": [
+    "(default) | slots 17 | other 0",
+  ],
+  "items": 151,
+  "level": 99,
+  "mainSocketGroup": 8,
+  "notes": "",
+  "pantheon": [
+    "TheBrineKing",
+    "Shakari",
+  ],
+  "skillSets": [
+    "(default) | groups 10 | gems 34",
+  ],
+  "specs": [
+    "(default) | 3_21 | nodes 107 | mastery 5 | jewels 0",
+    "(default) | 3_22 | nodes 99 | mastery 5 | jewels 0",
+    "(default) | 3_23 | nodes 130 | mastery 6 | jewels 10",
+  ],
+  "stats": {
+    "ChaosResist": -22,
+    "EnergyShield": 0,
+    "FireResist": 75,
+    "Life": 3813,
+    "LifeInc": 114,
+    "count": 94,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-leveling-acts 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / New Item / Triumphant Lamellar",
+  "class": "Witch/-",
+  "config": {
+    "enemyIsBoss": "Pinnacle",
+    "inputs": 10,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Vortex 21/20 Metadata/Items/Gems/SkillGemFrostBoltNova [FrostBoltNova]",
+    "Creeping Frost 21/20 Metadata/Items/Gems/SkillGemArcticBreath [ArcticBreath]",
+    "Efficacy 20/20 Metadata/Items/Gems/SupportGemEfficacy [EfficacySupport]",
+  ],
+  "itemSets": [
+    "(default) | slots 15 | other 0",
+  ],
+  "items": 17,
+  "level": 23,
+  "mainSocketGroup": 1,
+  "notes": "> Forum Guide:  https://www.pathofexile.com/forum/view-thread/2661120
+> Discord ",
+  "pantheon": [
+    "TheBrineKing",
+    "Garukhan",
+  ],
+  "skillSets": [
+    "Maps - Lvling gems in Notes | groups 6 | gems 24",
+  ],
+  "specs": [
+    "Acts 1-2 | 3_23 | nodes 28 | mastery 1 | jewels 0",
+    "Acts 3-4 | 3_23 | nodes 51 | mastery 2 | jewels 0",
+    "Acts 5-6 | 3_23 | nodes 73 | mastery 2 | jewels 0",
+    "Acts 7- Early Maps | 3_23 | nodes 113 | mastery 3 | jewels 0",
+  ],
+  "stats": {
+    "ChaosResist": 36,
+    "EnergyShield": 280,
+    "FireResist": 75,
+    "Life": 1160,
+    "LifeInc": 43,
+    "count": 93,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-leveling-endgame-variants 1`] = `
+{
+  "activeItemSet": 2,
+  "activeSkillSet": 7,
+  "activeSpec": 6,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / Basic Armour / Gladiator Plate",
+  "class": "Marauder/Chieftain",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 15,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Tectonic Slam 20/20 Metadata/Items/Gems/SkillGemTectonicSlam [TectonicSlam]",
+    "Melee Physical Damage 20/0 Metadata/Items/Gems/SupportGemMeleePhysicalDamage [SupportMeleePhysicalDamage]",
+    "Overexertion 20/0 Metadata/Items/Gems/SupportGemOverexertion [SupportOverexertion]",
+  ],
+  "itemSets": [
+    "Leveling {1,2,3,4,5} | slots 14 | other 1",
+    "Axe Setup {6,11} | slots 14 | other 1",
+    "Mace Switch {7,8} | slots 14 | other 1",
+    "Crit Staff {9,10} | slots 14 | other 1",
+    "Tectonic Slam of Cataclysm {12} | slots 14 | other 1",
+  ],
+  "items": 44,
+  "level": 96,
+  "mainSocketGroup": 1,
+  "notes": "This Leveling POB was inspired by Zizaran's 3.25 and 3.26 League Starters. Check",
+  "pantheon": [
+    "TheBrineKing",
+    null,
+  ],
+  "skillSets": [
+    "READ GEM SECTION IN NOTES FIRST | groups 0 | gems 0",
+    "Leveling (1-13) {1} | groups 6 | gems 9",
+    "Leveling (13-22) {2} | groups 9 | gems 13",
+    "Leveling (22-38) {3} | groups 11 | gems 17",
+    "Leveling (38-54): Cruel Lab + Warcries {4} | groups 10 | gems 19",
+    "Leveling (54-67): Merciless Lab {5} | groups 9 | gems 20",
+    "Leveling (67+, Mapping): Uber Lab + Max Resists + Jewel Sockets {6} | groups 8 | gems 24",
+    "Cluster Jewel Setup (96) {7,8} | groups 7 | gems 26",
+    "Crit Setup (100) {9} | groups 7 | gems 28",
+    "Crit Setup Alternate (100) {10} | groups 7 | gems 28",
+    "Cluster Jewel Setup Axe (96) {11} | groups 7 | gems 27",
+    "Tectonic Slam of Cataclysm (100) {12} | groups 7 | gems 26",
+  ],
+  "specs": [
+    "Leveling (1-13) {1} | 3_26 | nodes 13 | mastery 0 | jewels 0",
+    "Leveling (13-22) {2} | 3_26 | nodes 24 | mastery 1 | jewels 0",
+    "Leveling (22-38) {3} | 3_26 | nodes 48 | mastery 2 | jewels 0",
+    "Leveling (38-54): Cruel Lab + Warcries } {4} | 3_26 | nodes 75 | mastery 5 | jewels 0",
+    "Leveling (54-67): Merciless Lab {5} | 3_26 | nodes 97 | mastery 7 | jewels 0",
+    "Leveling (67+, Mapping): Uber Lab + Max Resists + Jewel Sockets {6} | 3_26 | nodes 126 | mastery 11 | jewels 4",
+    "Cluster Jewel Setup (96) {7} | 3_26 | nodes 129 | mastery 9 | jewels 9",
+    "Mace Endgame (100) {8} | 3_26 | nodes 133 | mastery 8 | jewels 12",
+    "Crit Staff Endgame (100) {9} | 3_26 | nodes 133 | mastery 7 | jewels 12",
+    "Crit Staff Endgame Alternate (100) {10} | 3_26 | nodes 133 | mastery 7 | jewels 12",
+    "Cluster Jewel Setup Axe (96) {11} | 3_26 | nodes 129 | mastery 9 | jewels 12",
+    "Tectonic Slam of Cataclysm (100) {12} | 3_26 | nodes 133 | mastery 8 | jewels 12",
+  ],
+  "stats": {
+    "ChaosResist": 40,
+    "EnergyShield": 0,
+    "FireResist": 90,
+    "Life": 5291,
+    "LifeInc": 148,
+    "count": 95,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-leveling-ranges 1`] = `
+{
+  "activeItemSet": 3,
+  "activeSkillSet": 4,
+  "activeSpec": 7,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / Endgame / Vaal Regalia",
+  "class": "Witch/Occultist",
+  "config": {
+    "enemyIsBoss": "Pinnacle",
+    "inputs": 22,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Clarity 1/0 Metadata/Items/Gems/SkillGemClarity",
+    "Summon Skitterbots 21/20 Metadata/Items/Gems/SkillGemSummonSkitterbots",
+    "Enlighten 3/0 Metadata/Items/Gems/SupportGemAdditionalXP",
+  ],
+  "itemSets": [
+    "Leveling 1 - 27 | slots 10 | other 2",
+    "Leveling 28 - 67 | slots 10 | other 2",
+    "Leveling 68 - Budget Endgame | slots 15 | other 2",
+    "$$$ - Endgame Setup | slots 15 | other 2",
+  ],
+  "items": 64,
+  "level": 100,
+  "mainSocketGroup": 4,
+  "notes": "Winter Orb - Sanctum
+
+Videos - 1. Pob Explained - https://youtu.be/_W3UJcTBQtA
+2",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "Leveling 1 - 12 | groups 5 | gems 9",
+    "Leveling 13 - 27 | groups 5 | gems 12",
+    "Leveling 28 - 37 | groups 6 | gems 18",
+    "Leveling 38 - Budget Endgame | groups 11 | gems 26",
+    "$$$ - Endgame Setup | groups 7 | gems 25",
+  ],
+  "specs": [
+    "Leveling 1 - 12 | 3_21 | nodes 15 | mastery 0 | jewels 0",
+    "Leveling 13 - 25 | 3_21 | nodes 31 | mastery 1 | jewels 0",
+    "Leveling 26 - 38 | 3_21 | nodes 46 | mastery 1 | jewels 0",
+    "Leveling 39 - 51 | 3_21 | nodes 65 | mastery 2 | jewels 0",
+    "Leveling 52 - 64 | 3_21 | nodes 88 | mastery 4 | jewels 1",
+    "Leveling 65 - 77 | 3_21 | nodes 108 | mastery 4 | jewels 4",
+    "Leveling 78 - 90 | 3_21 | nodes 123 | mastery 6 | jewels 14",
+    "Final Tree | 3_21 | nodes 133 | mastery 6 | jewels 19",
+  ],
+  "stats": {
+    "ChaosResist": 75,
+    "EnergyShield": 2248,
+    "FireResist": 75,
+    "Life": 3965,
+    "LifeInc": 48,
+    "count": 93,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-short-acts 1`] = `
+{
+  "activeItemSet": 1,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / New Item / Saintly Chainmail",
+  "class": "Templar/Hierophant",
+  "config": {
+    "enemyIsBoss": "Pinnacle",
+    "inputs": 21,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Rolling Magma 7/0 Metadata/Items/Gems/SkillGemMagmaOrb",
+    "Elemental Proliferation 7/0 Metadata/Items/Gems/SupportGemElementalProliferation off",
+    "Combustion 5/0 Metadata/Items/Gems/SupportGemChanceToIgnite",
+  ],
+  "itemSets": [
+    "Leveling | slots 5 | other 0",
+    "(default) | slots 12 | other 1",
+  ],
+  "items": 22,
+  "level": 13,
+  "mainSocketGroup": 3,
+  "notes": "The leveling skills section has some gems unchecked. These are what are used in ",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "leveling | groups 13 | gems 38",
+    "(default) | groups 6 | gems 27",
+  ],
+  "specs": [
+    "A1 | 3_21 | nodes 16 | mastery 0 | jewels 0",
+    "A2 | 3_21 | nodes 27 | mastery 1 | jewels 0",
+    "A3 | 3_21 | nodes 38 | mastery 2 | jewels 0",
+    "A4 | 3_21 | nodes 51 | mastery 4 | jewels 0",
+    "A5 | 3_21 | nodes 54 | mastery 4 | jewels 0",
+    "A6 | 3_21 | nodes 63 | mastery 5 | jewels 0",
+    "A7 | 3_21 | nodes 73 | mastery 5 | jewels 0",
+    "A8 | 3_21 | nodes 81 | mastery 5 | jewels 0",
+    "A9 | 3_21 | nodes 89 | mastery 5 | jewels 0",
+    "A10 | 3_21 | nodes 98 | mastery 7 | jewels 0",
+    "YellowMaps - Go MoM when appropriate ES | 3_21 | nodes 108 | mastery 7 | jewels 0",
+    "------------------------------------------------- | 3_21 | nodes 2 | mastery 0 | jewels 0",
+    "(default) | 3_21 | nodes 132 | mastery 8 | jewels 5",
+    "Recommended Leveling Tree below sucked imo | 3_21 | nodes 2 | mastery 0 | jewels 0",
+    "A3ArmBrandSwap | 3_21 | nodes 42 | mastery 2 | jewels 0",
+    "level | 3_21 | nodes 69 | mastery 3 | jewels 0",
+  ],
+  "stats": {
+    "ChaosResist": 75,
+    "EnergyShield": 1160,
+    "FireResist": 75,
+    "Life": 1132,
+    "LifeInc": 15,
+    "count": 94,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-three-trees 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 2,
+  "bandit": "Alira",
+  "bodyArmour": "Rarity: UNIQUE / Death's Oath / Astral Plate",
+  "class": "Witch/Occultist",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 5,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Void Manipulation 20/0 Metadata/Items/Gems/SupportGemVoidManipulation [SupportVoidManipulation]",
+    "Efficacy 20/0 Metadata/Items/Gems/SupportGemEfficacy [SupportEfficacy]",
+    "Concentrated Effect 20/0 Metadata/Items/Gems/SupportGemConcentratedEffect [SupportConcentratedEffect]",
+  ],
+  "itemSets": [
+    "(default) | slots 14 | other 0",
+  ],
+  "items": 14,
+  "level": 90,
+  "mainSocketGroup": 9,
+  "notes": "",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "(default) | groups 11 | gems 23",
+  ],
+  "specs": [
+    "(default) | 3_26 | nodes 122 | mastery 6 | jewels 0",
+    "(default) | 3_27 | nodes 122 | mastery 6 | jewels 0",
+    "(default) | 3_28 | nodes 122 | mastery 6 | jewels 0",
+  ],
+  "stats": {
+    "ChaosResist": 55,
+    "EnergyShield": 74,
+    "FireResist": 79,
+    "Life": 4698,
+    "LifeInc": 132,
+    "count": 91,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobbin-two-variants 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / Dire Sanctuary / Holy Chainmail",
+  "class": "Templar/Hierophant",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 15,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Animate Guardian 20/20 Metadata/Items/Gems/SkillGemAnimateArmour [AnimateGuardian]",
+    "Guardian's Blessing 20/20 Metadata/Items/Gems/SupportGemGuardiansBlessing [SupportGuardiansBlessing]",
+    "Meat Shield 20/20 Metadata/Items/Gems/SupportGemMeatShield [SupportMeatShield]",
+  ],
+  "itemSets": [
+    "AG/zealotry | slots 17 | other 0",
+    "i83 sanctum +1totem 30% reserve shield | slots 17 | other 0",
+  ],
+  "items": 25,
+  "level": 85,
+  "mainSocketGroup": 6,
+  "notes": "",
+  "pantheon": [
+    "TheBrineKing",
+    "Abberath",
+  ],
+  "skillSets": [
+    "AG/zealotry | groups 7 | gems 24",
+    "i83 sanctum +1totem 30% reserve shield | groups 7 | gems 24",
+  ],
+  "specs": [
+    "AG/zealotry | 3_25 | nodes 118 | mastery 10 | jewels 5",
+    "i83 sanctum +1totem 30% reserve shield | 3_25 | nodes 121 | mastery 9 | jewels 6",
+  ],
+  "stats": {
+    "ChaosResist": 29,
+    "EnergyShield": 721,
+    "FireResist": 75,
+    "Life": 3191,
+    "LifeInc": 80,
+    "count": 95,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > pobcodes-nightblade 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "None",
+  "bodyArmour": "Rarity: UNIQUE / Cospri's Will / Assassin's Garb",
+  "class": "Shadow/Assassin",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 13,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Blade Flurry 21/20 Metadata/Items/Gems/SkillGemChargedAttack [BladeFlurry]",
+    "Void Manipulation 20/20 Metadata/Items/Gems/SupportGemVoidManipulation [SupportVoidManipulation]",
+    "Infused Channelling 20/20 Metadata/Items/Gems/SupportGemStormBarrier [SupportInfusedChannelling]",
+  ],
+  "itemSets": [
+    "(default) | slots 15 | other 0",
+  ],
+  "items": 21,
+  "level": 97,
+  "mainSocketGroup": 1,
+  "notes": "",
+  "pantheon": [
+    "TheBrineKing",
+    "Tukohama",
+  ],
+  "skillSets": [
+    "(default) | groups 7 | gems 24",
+  ],
+  "specs": [
+    "(default) | 3_29 | nodes 132 | mastery 7 | jewels 6",
+  ],
+  "stats": {
+    "ChaosResist": 75,
+    "EnergyShield": 0,
+    "FireResist": 75,
+    "Life": 4987,
+    "LifeInc": 193,
+    "count": 96,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
+
+exports[`модель: настоящие коды PoB 1 > poedb-deadeye 1`] = `
+{
+  "activeItemSet": 0,
+  "activeSkillSet": 0,
+  "activeSpec": 0,
+  "bandit": "None",
+  "bodyArmour": "Rarity: RARE / Corpse Curtain / Assassin's Garb",
+  "class": "Ranger/Deadeye",
+  "config": {
+    "enemyIsBoss": null,
+    "inputs": 13,
+    "resistancePenalty": -60,
+  },
+  "firstGems": [
+    "Purity of Elements 20/20 Metadata/Items/Gems/SkillGemPurity",
+    "Enlighten 3/0 Metadata/Items/Gems/SupportGemAdditionalXP",
+    "Hatred 17/0 Metadata/Items/Gems/SkillGemHatred",
+  ],
+  "itemSets": [
+    "(default) | slots 16 | other 0",
+  ],
+  "items": 26,
+  "level": 95,
+  "mainSocketGroup": 6,
+  "notes": "COST
+BOW 40 DIV
+QUIVER 10 DIV
+HELMET 27 DIV
+AMULET 4 DIV
+BODY 20 DIV
+BOOTS 1 DIV",
+  "pantheon": [
+    null,
+    null,
+  ],
+  "skillSets": [
+    "(default) | groups 6 | gems 23",
+  ],
+  "specs": [
+    "(default) | 3_22 | nodes 131 | mastery 8 | jewels 8",
+  ],
+  "stats": {
+    "ChaosResist": 75,
+    "EnergyShield": 49,
+    "FireResist": 75,
+    "Life": 3013,
+    "LifeInc": 62,
+    "count": 94,
+  },
+  "target": "3_0",
+  "warnings": [],
+}
+`;
