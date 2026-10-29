@@ -82,13 +82,28 @@
 .fx-check { display: grid; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
 .fx-check__head { display: flex; align-items: center; gap: 6px; color: var(--fg); }
 /* подписи разной длины: поля и подсказки обеих ног — на одной высоте (subgrid по трём строкам поля) */
-.fx-check__legs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto auto; gap: 6px 14px; }
-.fx-check__leg { grid-row: span 3; grid-template-rows: subgrid; align-items: end; }
+.fx-check__legs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto auto auto; gap: 6px 14px; }
+.fx-check__leg { grid-row: span 4; grid-template-rows: subgrid; align-items: end; }
 .fx-check__input { width: 100%; max-width: 220px; font-variant-numeric: tabular-nums; }
 .fx-check__res { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-variant-numeric: tabular-nums; }
 .fx-check__res .ui-coin { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
 .fx-check__res .ui-btn { margin-left: auto; }
 .fx-check__note { color: var(--fg-muted); font-size: var(--fs-sm); }
+
+/* стакан из игры (S28): как считать, вопрос «покупка или продажа», таблица ноги с правкой */
+.fx-book__how { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: var(--fs-sm); color: var(--fg); }
+.fx-book__askBody { display: grid; gap: 6px; }
+.fx-book { align-self: start; display: grid; gap: 6px; margin-top: 4px; padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--sunken); }
+.fx-book__head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: var(--fs-xs); color: var(--fg-muted); }
+.fx-book .fx-book__table { width: auto; min-width: min(100%, 220px); font-size: var(--fs-sm); }
+.fx-book .fx-book__table th,
+.fx-book .fx-book__table td { padding: var(--sp-2) var(--sp-5); }
+.fx-book__q { margin-left: 3px; color: var(--warn); font-weight: 700; }
+.fx-book__input { width: 96px; height: var(--h-btn-sm); padding: 0 6px; text-align: right; font-variant-numeric: tabular-nums; }
+.fx-book__input--stock { width: 64px; }
+.fx-book__res { font-size: var(--fs-sm); color: var(--fg); font-variant-numeric: tabular-nums; }
+.fx-book__res .ui-ico { color: var(--warn); vertical-align: -2px; }
+.fx-book__actions { display: flex; flex-wrap: wrap; gap: 6px; }
 
 /* макет рассчитан на компаньон 1040 px; окно уже — по ширине содержимого, а не окна */
 @container (max-width: 720px) {

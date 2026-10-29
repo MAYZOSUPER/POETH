@@ -41,6 +41,14 @@ export function pct(v: number, lang: string): string {
 
 export const UNIT: Record<FlipBase, string> = { chaos: 'c', divine: 'div' }
 
+/** 'Alt+D' → 'Alt + D', 'Control+Shift+B' → 'Ctrl + Shift + B' (как в настройках хоткеев). */
+export function accelText(accel: string): string {
+  return accel
+    .split('+')
+    .map((p) => (p === 'Control' ? 'Ctrl' : p === 'Super' ? 'Win' : p))
+    .join(' + ')
+}
+
 export const KIND_LABEL: Record<FlipRouteKind, string> = {
   CXC: 'C → X → C',
   DXD: 'D → X → D',

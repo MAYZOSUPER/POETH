@@ -64,6 +64,8 @@ export type HotkeyAction =
   | 'dealDismiss'
   // прокачка PoE1 (S14): показать / свернуть гид поверх игры
   | 'levelingToggle'
+  // «Обмен» (S28): считать стакан «Курс / Кол-во» с экрана, пока игрок держит Alt над «Рыночным курсом»
+  | 'bookRead'
   // always
   | 'toggleCompanion'
   | 'toggleLock'

@@ -42,6 +42,12 @@ whose full history is kept in this repository.
   `resources/data/poe1/leveling/leveling.json`; the route syntax handling follows its
   `common/src/route-processing`. Russian step texts are our own translation; Russian zone, quest and boss
   names are facts taken from [poedb.tw/ru](https://poedb.tw/ru).
+- **[tesseract.js-core](https://github.com/naptha/tesseract.js-core)** 6.1.2 — **Apache License 2.0**
+  (Tesseract OCR compiled to WebAssembly). The unmodified `tesseract-core-simd-lstm.{js,wasm}` and the
+  `eng.traineddata` model (`4.0.0_best_int` from [tessdata](https://github.com/naptha/tessdata), based on
+  [tessdata_best](https://github.com/tesseract-ocr/tessdata_best), Apache 2.0) ship in `resources/ocr/`
+  with the license text. They read the digits of the in-game «Ratio / Stock» list on the player's PC only
+  (hotkey, no network); files are checked by SHA-256 before loading.
 - **poe.re is NOT used.** It has no license, so none of its code or data is copied;
   POETH's regex engine is implemented independently.
 - **Native modules** (added in later stages): `electron-overlay-window`, `uiohook-napi`

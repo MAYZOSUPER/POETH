@@ -135,3 +135,56 @@ export interface FlipAlert {
   /** час фида (мс) */
   hour: number
 }
+
+// ---------------------------------------------------------------------------
+// Стакан «Курс / Кол-во» из игры (S28): Alt над «Рыночным курсом» → хоткей → распознавание на этом ПК
+// ---------------------------------------------------------------------------
+
+/**
+ * Строка стакана как в игре: курс «Хочу : Имею» и запас («Кол-во» — сколько штук того, что хочу, можно
+ * получить по этому курсу).
+ */
+export interface BookRow {
+  want: number
+  have: number
+  stock: number
+  /** «‹ 1 : 318» — всё, что дальше по цене, одной строкой: курс здесь — граница, дальше только хуже */
+  beyond?: boolean
+}
+
+export type BookCell = 'want' | 'have' | 'stock'
+
+export interface BookDoubt {
+  row: number
+  cell: BookCell
+}
+
+export interface BookReading {
+  /** когда считано (мс) */
+  at: number
+  rows: BookRow[]
+  /**
+   * ячейки, в которых распознаватель не уверен: подсветить, в расчёт — только после проверки игроком
+   * (проверки самих строк — shared/flip/book bookDoubts — считаются отдельно, по числам)
+   */
+  doubt: BookDoubt[]
+  /** 'screen' — с экрана как есть, 'manual' — поправлено или подтверждено игроком */
+  source: 'screen' | 'manual'
+}
+
+/**
+ * Почему не считали: нет окна игры (запасной режим оверлея) или курсор вне игры; таблицы на снимке нет
+ * (не зажат Alt, курсор не над «Рыночным курсом»); таблица есть, но цифры не читаются; уже читаем; сбой.
+ */
+export type BookReadFail = 'no-game' | 'no-table' | 'unreadable' | 'busy' | 'error'
+
+export type BookReadResult =
+  | { ok: true; reading: BookReading; ms: number }
+  | { ok: false; reason: BookReadFail; at: number }
+
+/** Событие «стакан считан / не удалось» (компаньон — в карточку, оверлей — тост у курсора). */
+export interface FlipBookEvent {
+  result: BookReadResult
+  /** курсор в координатах окна оверлея (CSS px) в момент снимка; null — неизвестно */
+  cursor: { x: number; y: number } | null
+}

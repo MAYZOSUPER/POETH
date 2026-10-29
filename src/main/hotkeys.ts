@@ -40,6 +40,11 @@ export interface HotkeyContext {
 type Handler = (ctx: HotkeyContext) => void | Promise<void>
 
 const handlers = new Map<HotkeyId, Handler>()
+/**
+ * Действия, которые ничего не вводят в игру и не должны «отпускать» клавиши игрока: стакан «Курс / Кол-во»
+ * (S28) виден, пока игрок держит Alt, — синтетический Alt up спрятал бы его до снимка.
+ */
+const keepKeys = new Set<HotkeyId>()
 /** хоткеи вне HotkeyMap — команды чата (src/main/input/chatCommands.ts) */
 let extras: ExtraHotkey[] = []
 let currentMap: HotkeyMap | null = null
@@ -77,9 +82,14 @@ function emitConflicts(): void {
   for (const cb of conflictListeners) cb(list)
 }
 
-/** Назначить main-обработчик действия (заменяет прежний). */
-export function onHotkeyAction(action: HotkeyId, handler: Handler): void {
+/**
+ * Назначить main-обработчик действия (заменяет прежний). keepKeys — не отпускать клавиши сочетания перед
+ * обработчиком (действие ничего не шлёт в игру и смотрит на экран, пока игрок их держит).
+ */
+export function onHotkeyAction(action: HotkeyId, handler: Handler, opts: { keepKeys?: boolean } = {}): void {
   handlers.set(action, handler)
+  if (opts.keepKeys) keepKeys.add(action)
+  else keepKeys.delete(action)
 }
 
 /** Есть ли уже обработчик (домены не перебивают друг друга, см. ipc/overlay.ts). */
@@ -91,9 +101,14 @@ export function hasHotkeyAction(action: HotkeyId): boolean {
 export function clearHotkeyActions(prefix?: string): void {
   if (!prefix) {
     handlers.clear()
+    keepKeys.clear()
     return
   }
-  for (const id of [...handlers.keys()]) if (id.startsWith(prefix)) handlers.delete(id)
+  for (const id of [...handlers.keys()])
+    if (id.startsWith(prefix)) {
+      handlers.delete(id)
+      keepKeys.delete(id)
+    }
 }
 
 /**
@@ -122,7 +137,7 @@ function register(h: PlannedHotkey): void {
   try {
     const ok = globalShortcut.register(h.accel, () => {
       // игрок ещё держит клавиши хоткея — «отпустить» их до нашего ввода в игру (Ctrl+C…)
-      if (h.scope === 'game') releaseAcceleratorKeys(h.accel)
+      if (h.scope === 'game' && !keepKeys.has(h.action)) releaseAcceleratorKeys(h.accel)
       void dispatchHotkey(h.action, h.accel)
     })
     if (!ok) console.warn(`[hotkeys] "${h.accel}" (${h.action}) is taken by another application`)

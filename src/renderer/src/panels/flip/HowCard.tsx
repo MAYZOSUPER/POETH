@@ -169,7 +169,7 @@ export function HowCard({
             )}
           </div>
         </div>
-        <GameCheck key={r.id} r={r} name={name} lang={lang} divine={divine} minSpread={minSpread} />
+        <GameCheck key={r.id} r={r} name={name} lang={lang} divine={divine} minSpread={minSpread} expert={expert} />
       </div>
     </div>
   )

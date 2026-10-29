@@ -1,2 +1,6 @@
 # Снапшоты vitest пишутся с LF — без этого на Windows они выглядят изменёнными
 *.snap text eol=lf
+# Распознаватель стакана (S28): файлы tesseract сверяются по SHA-256 при загрузке — без перевода строк
+resources/ocr/*.js binary
+resources/ocr/*.wasm binary
+resources/ocr/*.traineddata binary
