@@ -4,6 +4,7 @@ import { banditPassives, counters, currentIndex, stepPassives, stepTags, type Fl
 import { BASE_CLASSES, baseClass } from '@shared/leveling/classes'
 import { areaName } from '@shared/leveling/render'
 import { useLang, useT } from '../../i18n'
+import { useGameLang } from '../../gameLang'
 import { useLevelingStore } from '../../store/useLevelingStore'
 import { Ico, Switch, useSimple } from '../deals/common'
 import { StepTags, StepText } from './StepText'
@@ -261,6 +262,8 @@ function Meter({ label, done, total, hint }: { label: string; done: number; tota
 function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: LevelingData }) {
   const t = useT()
   const lang = useLang()
+  // камни — предметы: названия как в игре, у торговца (S26)
+  const gameLang = useGameLang(lang)
   const state = useLevelingStore((s) => s.state)!
   const c = counters(flat, state.progress, data)
   // макет v3: «23 с квестов + 1 за бандитов = 24»; при помощи одному из бандитов очка нет
@@ -355,7 +358,7 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
               const gem = data.gems[g.gem]
               return (
                 <div key={g.gem} className="lv-gem">
-                  <span className={`lv-gem__name lv-attr--${gem?.attr ?? 'none'}`}>{gem ? (lang === 'ru' ? gem.ru : gem.en) : g.gem}</span>
+                  <span className={`lv-gem__name lv-attr--${gem?.attr ?? 'none'}`}>{gem ? (gameLang === 'ru' ? gem.ru : gem.en) : g.gem}</span>
                   <span className="lv-gem__how">{g.how}</span>
                 </div>
               )

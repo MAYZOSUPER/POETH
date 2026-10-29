@@ -17,6 +17,7 @@ import {
 import { LIMITS } from '@shared/advisor/validate'
 import { today } from '@shared/advisor/library'
 import { useT } from '../../i18n'
+import { useGameLang } from '../../gameLang'
 import { Currency } from '../../components/Currency'
 import { useAdvisorStore } from '../../store/useAdvisorStore'
 import { clock } from '../flip/format'
@@ -196,6 +197,8 @@ function LineRows({
   nameOf: NameOf
 }) {
   const set = (i: number, patch: Partial<DraftLine>): void => onChange(lines.map((l, j) => (j === i ? { ...l, ...patch } : l)))
+  // предметы — как в игре (S26); своя подпись строки (label) — на языке интерфейса
+  const gameLang = useGameLang(lang === 'en' ? 'en' : 'ru')
   return (
     <div className="ad-irows">
       <div className="ad-irow ad-irow--head">
@@ -209,7 +212,7 @@ function LineRows({
       {lines.map((l, i) => {
         const p = priced?.[i]
         const e = err(`${field}.${i}`)
-        const name = l.label ? tx(l.label, lang) : lang === 'ru' && l.ru ? l.ru : l.ref ? nameOf({ name: l.ref, ns: itemNs({ kind: l.kind }) }) : ''
+        const name = l.label ? tx(l.label, lang) : gameLang === 'ru' && l.ru ? l.ru : l.ref ? nameOf({ name: l.ref, ns: itemNs({ kind: l.kind }) }) : ''
         const own = input && l.own
         return (
           <div key={l.key} className="ad-irow">
