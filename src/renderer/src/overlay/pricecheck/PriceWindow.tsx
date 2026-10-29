@@ -1304,6 +1304,10 @@ function SiteOffers({ result, lang, t }: { result: Extract<PcResult, { kind: 'fa
   const site = result.site
   const [open, setOpen] = useState(site.phase !== 'idle')
   const now = useNow(open && site.phase === 'limit')
+  // новый предмет — объявления не загружены: свёрнуто (сами не грузим — только по кнопке)
+  useEffect(() => {
+    if (site.phase === 'idle') setOpen(false)
+  }, [site.phase])
   const toggle = (): void => {
     setOpen((o) => !o)
     if (!open && site.phase === 'idle') void load()
