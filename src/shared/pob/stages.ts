@@ -223,6 +223,8 @@ export interface PobStageEdits {
   /** этап, выбранный игроком как текущий; нет — по уровню и акту */
   current?: string | null
   stages?: Record<string, PobStageEdit>
+  /** S40: ручная метка «ключевой» у предметов (`u:<имя уника>` / `i:<id PoB>` → true — ключевой, false — снять) */
+  marks?: Record<string, boolean>
 }
 
 export interface PobStagePlan {
