@@ -9,6 +9,7 @@ import { StepTags, StepText } from '../../panels/leveling/StepText'
 import { Icon } from '../Icon'
 import { scheduleRectsFlush, useInteractive } from '../interactive'
 import { useOverlayT } from '../useOverlayT'
+import { BuildLines, useBuildLines } from './buildLine'
 import type { OverlayWidgetDef } from '../registry'
 import '../../panels/leveling/leveling.css'
 import './leveling-overlay.css'
@@ -123,7 +124,9 @@ function Guide({ simple }: { simple: boolean }) {
       if (tags.length) miss.push({ tag: tags[0], index: x.index })
     }
   }
-  const nowTags = f ? stepTags(f.step) : []
+  // S39: камень билда этого шага («Билд: возьмите … / купите …») вместо общего «Сейчас: награда-камень»
+  const build = useBuildLines(f?.step.parts ?? null, state.progress, gameLang)
+  const nowTags = f ? stepTags(f.step).filter((tag) => tag !== 'gem' || build.lines.length === 0) : []
   const off = state.offRoute !== null ? flat[state.offRoute] : null
   const btn = (name: 'prev' | 'next' | 'collapse'): JSX.Element => {
     const label = t(name === 'prev' ? 'lev.prev' : name === 'next' ? 'lev.next' : collapsed ? 'lev.expand' : 'lev.collapse')
@@ -230,6 +233,7 @@ function Guide({ simple }: { simple: boolean }) {
               </div>
             )}
             {f?.step.lvl && <div className="lv-ov__sub">{t('lev.recLevel').replace('{lvl}', f.step.lvl)}</div>}
+            {build.lines.length > 0 && <BuildLines lines={build.lines} simple={simple} />}
             {miss.length > 0 && (
               <div className="lv-ov__miss">
                 <span className="ui-label">{t('lev.dontMiss')}</span>

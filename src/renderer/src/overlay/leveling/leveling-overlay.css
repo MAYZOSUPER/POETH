@@ -121,3 +121,39 @@
   cursor: grabbing;
   pointer-events: auto;
 }
+
+/* S39: строка «Билд: …» — тот же .lv-item гида, пометка «Билд» и цвет камня (макет v0.2, раздел 2) */
+.lv-item {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  color: var(--fg);
+}
+.lv-item > .ui-ico {
+  margin-top: 1px;
+}
+.lv-item span {
+  color: var(--fg-muted);
+}
+.lv-item.is-gem > .ui-ico {
+  color: var(--rarity-gem);
+}
+.lv-build {
+  padding: 7px 9px;
+  border: 1px solid color-mix(in srgb, var(--rarity-gem) 40%, transparent);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--rarity-gem) 7%, transparent);
+}
+.lv-build .ui-tag {
+  margin-right: var(--sp-2);
+  color: var(--rarity-gem);
+  border-color: color-mix(in srgb, var(--rarity-gem) 50%, transparent);
+  vertical-align: 1px;
+}
+.lv-build b {
+  color: var(--rarity-gem);
+  font-weight: 600;
+}
