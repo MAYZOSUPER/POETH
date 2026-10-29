@@ -21,7 +21,7 @@
 //
 // Это dev-инструмент: страница локальная, nodeIntegration включён намеренно.
 
-const { app, BrowserWindow, clipboard, ipcMain } = require('electron')
+const { app, BrowserWindow, clipboard, ClipboardItem, ipcMain } = require('electron')
 const http = require('http')
 const path = require('path')
 
@@ -47,7 +47,7 @@ function emit(obj) {
 
 let game = null
 let other = null
-/** буфер пользователя на время автопроверки */
+/** буфер пользователя на время автопроверки: MIME → Blob (API буфера Electron 44 — W3C, на Promise) */
 let savedClipboard = null
 
 function lockTitle(win, title) {
@@ -100,6 +100,8 @@ document.getElementById('log').textContent += k + '\\n'; ipcRenderer.send('evt',
 }
 
 ipcMain.on('evt', (_e, payload) => emit(payload))
+// «игра» кладёт текст предмета в буфер (в Electron 44 clipboard в renderer недоступен — пишет main)
+ipcMain.handle('clipboard-write', (_e, text) => clipboard.writeText(String(text)))
 
 const pending = new Map()
 let seq = 0
@@ -137,28 +139,28 @@ async function handleCommand(msg) {
       return { ok: true }
     case 'state':
       return getState()
-    case 'clipboard':
-      return { text: clipboard.readText(), formats: clipboard.availableFormats() }
+    case 'clipboard': {
+      const [item] = await clipboard.read()
+      return { text: await clipboard.readText(), formats: item ? item.types : [] }
+    }
     case 'clipboard-set':
-      clipboard.writeText(String(msg.text ?? ''))
+      await clipboard.writeText(String(msg.text ?? ''))
       return { ok: true }
     case 'clipboard-save': {
-      // буфер пользователя — сохранить до проверки и вернуть после
-      const image = clipboard.readImage()
-      savedClipboard = {
-        text: clipboard.readText(),
-        html: clipboard.readHTML(),
-        image: image.isEmpty() ? undefined : image
+      // буфер пользователя — сохранить до проверки и вернуть после (прочитать сразу: элемент read() ленивый)
+      const [item] = await clipboard.read()
+      savedClipboard = {}
+      for (const type of ['text/plain', 'text/html', 'image/png']) {
+        const has = type === 'image/png' ? item?.types.some((t) => t.startsWith('image/')) : item?.types.includes(type)
+        if (!has) continue
+        const blob = await item.getType(type)
+        if (blob.size > 0) savedClipboard[type] = blob
       }
       return { ok: true }
     }
     case 'clipboard-restore': {
       if (!savedClipboard) return { ok: false }
-      const data = {}
-      if (savedClipboard.text) data.text = savedClipboard.text
-      if (savedClipboard.html) data.html = savedClipboard.html
-      if (savedClipboard.image) data.image = savedClipboard.image
-      if (Object.keys(data).length) clipboard.write(data)
+      if (Object.keys(savedClipboard).length) await clipboard.write([new ClipboardItem(savedClipboard)])
       else clipboard.clear()
       return { ok: true }
     }

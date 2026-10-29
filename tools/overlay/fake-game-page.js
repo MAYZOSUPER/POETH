@@ -1,7 +1,7 @@
 // Страница тестового окна «Path of Exile» (см. fake-game.cjs). Поведение как у игры:
 // Ctrl+C над предметом → текст в буфер (CRLF), Enter — чат, Ctrl+F — поиск в стэше.
 /* eslint-disable */
-const { clipboard, ipcRenderer } = require('electron')
+const { ipcRenderer } = require('electron')
 
 const COPY_DELAY = Number(new URLSearchParams(location.search).get('delay') || 30)
 const items = window.FAKE_ITEMS
@@ -65,7 +65,7 @@ function copyItem() {
   // игра кладёт текст в буфер не мгновенно
   setTimeout(() => {
     const text = it.text.join('\r\n')
-    clipboard.writeText(text)
+    void ipcRenderer.invoke('clipboard-write', text)
     lastCopied = text
     $('copied').textContent = text
     log(`Ctrl+C: ${it.id}`)
