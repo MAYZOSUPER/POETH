@@ -12,12 +12,14 @@
     }
   };
 
+  // У других страниц (гайд) свои заголовок и описание: data-ru / data-en у <title> и meta description.
   function apply(lang) {
     root.lang = lang;
     root.setAttribute('data-lang', lang);
-    document.title = META[lang].title;
+    var t = document.querySelector('title');
     var d = document.querySelector('meta[name="description"]');
-    if (d) d.setAttribute('content', META[lang].desc);
+    document.title = (t && t.getAttribute('data-' + lang)) || META[lang].title;
+    if (d) d.setAttribute('content', (d.getAttribute('data-' + lang)) || META[lang].desc);
     document.querySelectorAll('[data-set-lang]').forEach(function (b) {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-set-lang') === lang));
     });
