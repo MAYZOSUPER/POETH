@@ -4,6 +4,7 @@
 // Одна строка — одна папка; при импорте строк может быть несколько (через пробел/перевод строки).
 
 import type { GameId, TradeSiteKind } from '../games'
+import { isTradeSlug } from './slug'
 
 export const BT_PREFIX = '3:'
 
@@ -48,11 +49,11 @@ function fromBase64(b64: string): string | null {
 const verOf = (game: GameId): string => (game === 'poe2' ? '2' : '1')
 const gameOf = (ver: unknown): GameId => (String(ver) === '2' ? 'poe2' : 'poe1')
 
-/** "1:search:Lk9a2bQ" → игра, тип, slug; null — не поиск сайта трейда. */
+/** "1:search:Lk9a2bQ" (или новый id «H4sI…» с - и _) → игра, тип, slug; null — не поиск сайта трейда. */
 export function parseBtLocation(loc: unknown): BtLocation | null {
   if (typeof loc !== 'string') return null
-  const m = /^([12]):(search|exchange):([A-Za-z0-9]+)$/.exec(loc.trim())
-  if (!m) return null
+  const m = /^([12]):(search|exchange):([^:]+)$/.exec(loc.trim())
+  if (!m || !isTradeSlug(m[3])) return null
   return { game: gameOf(m[1]), type: m[2] as TradeSiteKind, slug: m[3] }
 }
 

@@ -75,7 +75,26 @@ describe('Better Trading', () => {
   it('loc: версия трейда, тип, slug', () => {
     expect(parseBtLocation('2:search:abc')).toEqual({ game: 'poe2', type: 'search', slug: 'abc' })
     expect(parseBtLocation('1:bulk:abc')).toBeNull()
-    expect(parseBtLocation('1:search:a-b')).toBeNull()
+    // новый id поиска — base64url с - и _
+    expect(parseBtLocation('1:search:a-b_c')).toEqual({ game: 'poe1', type: 'search', slug: 'a-b_c' })
+    expect(parseBtLocation('1:search:a/b')).toBeNull()
+    expect(parseBtLocation('1:search:a:b')).toBeNull()
+    expect(parseBtLocation('1:search:a b')).toBeNull()
+    expect(parseBtLocation('1:search:')).toBeNull()
+  })
+
+  it('туда-обратно с длинным id поиска (как его сейчас отдаёт сайт)', () => {
+    const long = 'H4sIAAAAAAAAA3WOsQ7CMAxEfwUda4dKDFTdYOYfkFWMsEidKHFQqyr_TsLUhVv8zvLJtyEZWU4YN_hg4hUjSFeUDrYGru7GZC-Ohys7Q4enOOP4C1ikB993ix3SNPms1lA05Aq4KL1Fj_1w7lFKfTBLmv7ExX1cm7PUQsOp3tLSoDR9ATKElH-1AAAA'
+    const str = exportBtFolder({ title: 'Ремни', game: 'poe1' }, [
+      { title: 'Ремень на здоровье', type: 'search', slug: long, game: 'poe1' },
+      { title: 'Старый поиск', type: 'search', slug: 'Lk9a2bQ', game: 'poe1' }
+    ])
+    // в тексте рядом с другими строками — находится целиком
+    expect(splitBtStrings(`вот: ${str} и ещё`)).toEqual([str])
+    expect(importBtFolder(str)!.searches.map((s) => s.slug)).toEqual([long, 'Lk9a2bQ'])
+    // и строку расширения с таким loc мы тоже читаем
+    const ext = btString({ icn: '', tit: 'BT', ver: '1', trs: [{ tit: 'x', loc: `1:search:${long}` }] })
+    expect(importBtFolder(ext)!.searches[0].slug).toBe(long)
   })
 
   it('несколько строк в одном тексте', () => {
