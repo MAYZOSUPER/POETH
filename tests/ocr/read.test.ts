@@ -41,7 +41,9 @@ const read = (img: Bitmap, k: number): TableRead | null => readTable(k === 1 ? i
 describe('файлы распознавателя', () => {
   it('хэши в OCR_FILES совпадают с resources/ocr (иначе приложение откажется грузить)', () => {
     for (const f of Object.values(OCR_FILES)) {
-      const sha = createHash('sha256').update(readFileSync(path.join(OCR_DIR, f.name))).digest('hex')
+      const sha = createHash('sha256')
+        .update(readFileSync(path.join(OCR_DIR, f.name)))
+        .digest('hex')
       expect(sha, f.name).toBe(f.sha256)
     }
   })

@@ -16,7 +16,7 @@ export function readPng(file: string): Bitmap {
   let color = 0
   let interlace = 0
   const idat: Buffer[] = []
-  for (let p = 8; p < buf.length; ) {
+  for (let p = 8; p < buf.length;) {
     const len = buf.readUInt32BE(p)
     const type = buf.toString('latin1', p + 4, p + 8)
     const data = buf.subarray(p + 8, p + 8 + len)

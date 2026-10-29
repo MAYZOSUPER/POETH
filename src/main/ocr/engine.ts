@@ -49,7 +49,11 @@ interface TessModule {
   TessBaseAPI: new () => TessApi
 }
 
-type CoreFactory = (opts: { wasmBinary: Uint8Array; print?: (s: string) => void; printErr?: (s: string) => void }) => Promise<TessModule>
+type CoreFactory = (opts: {
+  wasmBinary: Uint8Array
+  print?: (s: string) => void
+  printErr?: (s: string) => void
+}) => Promise<TessModule>
 
 function readVerified(dir: string, f: { name: string; sha256: string }): Buffer {
   const buf = readFileSync(path.join(dir, f.name))

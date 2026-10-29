@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import type { BookReading, BookRow, FlipBase, FlipLeg, FlipRoute } from '../../src/shared/types'
 import {
+  allDoubts,
   BOOK_STALE_MS,
+  confirmBook,
+  editBook,
   bookDoubts,
   bookLevels,
   bookUsable,
@@ -23,7 +26,7 @@ const VALDO: BookRow[] = [
   { want: 1, have: 318, stock: 200, beyond: true }
 ]
 
-const reading = (rows: BookRow[], at = 0): BookReading => ({ at, rows, doubt: bookDoubts(rows), source: 'screen' })
+const reading = (rows: BookRow[], at = 0): BookReading => ({ at, rows, doubt: [], source: 'screen' })
 
 function leg(base: FlipBase, price: number): FlipLeg {
   return { base, price, order: { give: 1, get: 1 }, range: { lo: price, hi: price } }
@@ -106,7 +109,13 @@ describe('цена исполнения по глубине', () => {
     expect(unitsWithin(lv, 'buy', 303)).toBe(19)
     expect(unitsWithin(lv, 'buy', 400)).toBe(26)
     expect(unitsWithin(lv, 'buy', 290)).toBe(0)
-    const sell = bookLevels([{ want: 290, have: 1, stock: 580 }, { want: 288, have: 1, stock: 2880 }], 'sell')
+    const sell = bookLevels(
+      [
+        { want: 290, have: 1, stock: 580 },
+        { want: 288, have: 1, stock: 2880 }
+      ],
+      'sell'
+    )
     expect(unitsWithin(sell, 'sell', 289)).toBe(2)
   })
 
@@ -155,6 +164,25 @@ describe('проверка строк', () => {
         { want: 288, have: 1, stock: 900, beyond: true }
       ])
     ).toEqual([])
+  })
+
+  it('поправка игрока снимает сомнение ячейки, «Верно» — все сомнения распознавателя', () => {
+    const r: BookReading = {
+      ...reading(VALDO),
+      doubt: [
+        { row: 0, cell: 'want' },
+        { row: 4, cell: 'have' }
+      ]
+    }
+    expect(bookUsable(r)).toBe(false)
+    const e = editBook(r, 0, { want: 1 })
+    expect(e.doubt).toEqual([{ row: 4, cell: 'have' }])
+    expect(e.source).toBe('manual')
+    expect(bookUsable(confirmBook(e))).toBe(true)
+    // поправка сделала курс не по порядку — проверка строк ловит и после «Верно»
+    const bad = confirmBook(editBook(r, 4, { have: 300 }))
+    expect(allDoubts(bad).map((d) => d.row)).toEqual([3, 3, 4, 4])
+    expect(bookUsable(bad)).toBe(false)
   })
 
   it('стакан устаревает через 5 минут', () => {

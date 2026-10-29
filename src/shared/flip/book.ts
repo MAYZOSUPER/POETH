@@ -73,9 +73,29 @@ export function bookDoubts(rows: readonly BookRow[]): BookDoubt[] {
   return out.sort((a, b) => a.row - b.row || a.cell.localeCompare(b.cell))
 }
 
+/** Все ячейки на проверку: неуверенные при распознавании и не прошедшие проверку строк. */
+export function allDoubts(r: BookReading): BookDoubt[] {
+  const out = [...r.doubt]
+  for (const d of bookDoubts(r.rows)) if (!out.some((x) => x.row === d.row && x.cell === d.cell)) out.push(d)
+  return out.sort((a, b) => a.row - b.row || a.cell.localeCompare(b.cell))
+}
+
 /** Стакан годится в расчёт: строки есть и ни одной сомнительной ячейки. */
 export function bookUsable(r: BookReading | null | undefined): r is BookReading {
-  return !!r && r.rows.length > 0 && r.doubt.length === 0
+  return !!r && r.rows.length > 0 && allDoubts(r).length === 0
+}
+
+/** Поправка игрока в строке: сомнения распознавателя по этим ячейкам снимаются, проверки строк — заново. */
+export function editBook(r: BookReading, row: number, patch: Partial<Pick<BookRow, 'want' | 'have' | 'stock'>>): BookReading {
+  if (!r.rows[row]) return r
+  const cells = Object.keys(patch)
+  const rows = r.rows.map((x, i) => (i === row ? { ...x, ...patch } : x))
+  return { ...r, rows, doubt: r.doubt.filter((d) => d.row !== row || !cells.includes(d.cell)), source: 'manual' }
+}
+
+/** «Верно»: игрок сверил стакан с игрой — сомнения распознавателя сняты (проверки строк остаются). */
+export function confirmBook(r: BookReading): BookReading {
+  return { ...r, doubt: [], source: 'manual' }
 }
 
 export interface BookFill {

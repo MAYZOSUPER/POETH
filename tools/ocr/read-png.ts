@@ -23,7 +23,9 @@ async function main(): Promise<void> {
   const mark = (c: { text: string; sure: boolean }): string => `${c.text || '—'}${c.sure ? '' : '?'}`
   for (const r of t.rows) console.log(`${r.beyond ? '‹ ' : '  '}${mark(r.want)} : ${mark(r.have)}\t${mark(r.stock)}`)
   const book = bookFromTable(t, Date.now())
-  console.log(`высота цифр ${t.glyphH}, вызовов ${t.calls}, ${Date.now() - t0} мс; на проверку: ${book ? book.doubt.length : 'всё'}`)
+  console.log(
+    `высота цифр ${t.glyphH}, вызовов ${t.calls}, ${Date.now() - t0} мс; на проверку: ${book ? book.doubt.length : 'всё'}`
+  )
 }
 
 void main()

@@ -4,7 +4,6 @@
 // с разметкой. Неуверенную ячейку показываем игроку на проверку, а в расчёт без подтверждения не берём.
 
 import type { BookDoubt, BookReading, BookRow } from '../types/flip'
-import { bookDoubts } from '../flip/book'
 import type { Bitmap } from './bitmap'
 import { cellImage, COMBO_VARIANTS, countGlyphs, glyphsOf, VARIANTS, type Glyph, type GlyphCount, type Gray } from './cells'
 import { compareTo, glyphVector, nearest, type Sample } from './glyphs'
@@ -222,16 +221,17 @@ export function readTable(img: Bitmap, hint: number, ocr: OcrFn): TableRead | nu
     t,
     states.flatMap((r) => [r.want, r.have, r.stock])
   )
-  const rows = states.map(
-    (r): RowRead => ({ beyond: r.beyond, want: r.want.read, have: r.have.read, stock: r.stock.read })
-  )
+  const rows = states.map((r): RowRead => ({ beyond: r.beyond, want: r.want.read, have: r.have.read, stock: r.stock.read }))
   return { rows, glyphH: t.glyphH, calls: count.calls }
 }
 
 /** Доля сомнительных ячеек, выше которой стакан не показываем вовсе («не удалось прочитать, повторите»). */
 const UNREADABLE_SHARE = 0.5
 
-/** Прочитанная таблица → стакан: числа, сомнения распознавателя и проверки строк (shared/flip/book). */
+/**
+ * Прочитанная таблица → стакан: числа и неуверенные ячейки (проверки строк — shared/flip/book bookDoubts).
+ * null — сомнительна больше половины ячеек: «не удалось прочитать, повторите».
+ */
 export function bookFromTable(t: TableRead, at: number): BookReading | null {
   const rows: BookRow[] = t.rows.map((r) => ({
     want: r.want.value ?? 0,
@@ -244,7 +244,5 @@ export function bookFromTable(t: TableRead, at: number): BookReading | null {
     for (const cell of ['want', 'have', 'stock'] as const) if (!r[cell].sure) doubt.push({ row, cell })
   })
   if (!rows.length || doubt.length > rows.length * 3 * UNREADABLE_SHARE) return null
-  for (const d of bookDoubts(rows)) if (!doubt.some((x) => x.row === d.row && x.cell === d.cell)) doubt.push(d)
-  doubt.sort((a, b) => a.row - b.row || a.cell.localeCompare(b.cell))
   return { at, rows, doubt, source: 'screen' }
 }

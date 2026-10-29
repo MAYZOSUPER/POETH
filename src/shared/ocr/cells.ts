@@ -142,12 +142,7 @@ export function glyphsOf(parts: readonly Box[], gh: number, y0: number, y1: numb
   const band = y1 - y0
   return clusters.map((c) => ({
     box: c,
-    kind:
-      boxH(c) >= gh * 0.5
-        ? 'digit'
-        : (c.y0 + c.y1) / 2 >= y0 + band * 0.55 && boxW(c) <= gh * 0.45
-          ? 'dot'
-          : 'junk'
+    kind: boxH(c) >= gh * 0.5 ? 'digit' : (c.y0 + c.y1) / 2 >= y0 + band * 0.55 && boxW(c) <= gh * 0.45 ? 'dot' : 'junk'
   }))
 }
 
