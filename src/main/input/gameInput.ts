@@ -182,9 +182,8 @@ export async function captureItemText(): Promise<ItemTextCapture | null> {
   // фокус отслеживается, а игра не в фокусе — Ctrl+C ушёл бы в чужое окно
   if (isFocusTracking() && !isGameFocused()) return null
 
-  const reading = hostClipboard.readItemText() // снимок + очистка буфера — синхронно
-  pressCopyKeys(k)
-  const text = await reading
+  // снимок + очистка буфера, затем Ctrl+C (сам HostClipboard: буфер в Electron 44 асинхронный)
+  const text = await hostClipboard.readItemText(() => pressCopyKeys(k))
   if (!text) return null
 
   const lang = detectItemLang(text)
@@ -231,10 +230,11 @@ export function typeInChat(input: string, opts: { send?: boolean } = {}): GameIn
   const { uIOhook, UiohookKey: Key } = k
   const send = !!opts.send
 
-  const done = hostClipboard.restoreShortly((clipboard) => {
+  // запись в буфер — до первой клавиши: Ctrl+V должен вставить уже нашу строку
+  const done = hostClipboard.restoreShortly(async (clipboard) => {
     const modifiers = process.platform === 'darwin' ? [Key.Meta] : [Key.Ctrl]
 
-    clipboard.writeText(text)
+    await clipboard.writeText(text)
     uIOhook.keyTap(Key.Enter)
     if (!AUTO_CLEAR.includes(text[0])) {
       uIOhook.keyTap(Key.A, modifiers)
@@ -266,8 +266,8 @@ export function stashSearch(input: string, opts: { submit?: boolean } = {}): Gam
   if (typeof k === 'string') return k
   const { uIOhook, UiohookKey: Key } = k
 
-  const done = hostClipboard.restoreShortly((clipboard) => {
-    clipboard.writeText(text)
+  const done = hostClipboard.restoreShortly(async (clipboard) => {
+    await clipboard.writeText(text)
     uIOhook.keyTap(Key.F, [Key.Ctrl])
     uIOhook.keyTap(Key.V, [process.platform === 'darwin' ? Key.Meta : Key.Ctrl])
     if (opts.submit !== false) uIOhook.keyTap(Key.Enter)

@@ -47,7 +47,7 @@ import type { IpcDomain } from './types'
 
 /** Ctrl+D (PoE2): копируем предмет под курсором; не вышло — то, что игрок скопировал сам. */
 async function priceCheckClipboard(): Promise<void> {
-  const text = (await captureItemText())?.text ?? clipboard.readText()
+  const text = (await captureItemText())?.text ?? (await clipboard.readText())
   try {
     const result = await trade.priceCheck(text)
     sendToCompanion(IPC.events.priceResult, result)

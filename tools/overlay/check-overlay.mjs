@@ -11,6 +11,8 @@
 //   node tools/overlay/check-overlay.mjs --shot=<file.png> # снимок игры с виджетом (прозрачность)
 //   node tools/overlay/check-overlay.mjs --dev            # dev-сервер (electron-vite dev) вместо out/
 //   node tools/overlay/check-overlay.mjs --force          # не ждать, пока за ПК никого не будет
+//   node tools/overlay/check-overlay.mjs --abort-on-input # прервать при первом настоящем вводе человека
+//                                                         # (tools/overlay/real-input.ps1; без --mouse)
 //
 // Не запускается, если последние 2 минуты за ПК был ввод (клавиатура/мышь), — чтобы не
 // перехватить фокус у работающего человека (--force — запустить всё равно).
@@ -46,6 +48,7 @@ const CHROMIUM = typeof opt('chromium') === 'string' ? String(opt('chromium')).s
 const SHOT = opt('shot')
 const DEV = !!opt('dev')
 const FORCE = !!opt('force')
+const ABORT_ON_INPUT = !!opt('abort-on-input') && !MOUSE
 const IDLE_REQUIRED_MS = 120000
 const CDP_PORT = 9333 + Math.floor(Math.random() * 500)
 const PROFILE = mkdtempSync(path.join(tmpdir(), 'poeth-s1-check-'))
@@ -77,6 +80,30 @@ function psCmd(line) {
   })
 }
 const foreground = () => psCmd('fg')
+
+// сторож: первый настоящий (не injected) ввод человека → больше ничего не жмём, сценарий прерывается,
+// finally возвращает буфер и закрывает свои процессы
+let realInput = null
+let guardProc = null
+let guardReady = Promise.resolve(true)
+if (ABORT_ON_INPUT) {
+  guardProc = spawn('powershell', ['-NoProfile', '-Command', readFileSync(path.join(ROOT, 'tools/overlay/real-input.ps1'), 'utf8')], {
+    stdio: ['ignore', 'pipe', 'inherit']
+  })
+  guardReady = new Promise((resolve) => {
+    readline.createInterface({ input: guardProc.stdout }).on('line', (line) => {
+      if (line.trim() === 'ready') resolve(true)
+      else if (line.startsWith('REAL')) {
+        realInput = line.trim()
+        console.log(`! ввод пользователя (${realInput}) — прерываю проверку`)
+      }
+    })
+    guardProc.on('exit', () => resolve(false))
+  })
+}
+function guard() {
+  if (realInput) throw new Error(`прервано: ввод пользователя (${realInput})`)
+}
 
 // ---------------------------------------------------------------------------
 // тестовое окно
@@ -216,6 +243,7 @@ const widgetBadge = () => evaluate("document.querySelector('.ov-pricecheck .pc-i
 // ---------------------------------------------------------------------------
 
 async function activate(win) {
+  guard()
   if ((await foreground()) === TITLE[win]) return true
   await psCmd(`activate ${TITLE[win]}`)
   await sleep(300)
@@ -223,7 +251,9 @@ async function activate(win) {
 }
 
 async function press(key, mods = [], win = 'game') {
+  guard()
   const fg = await foreground()
+  guard()
   if (fg !== TITLE[win]) throw new Error(`не жму клавиши: на переднем плане «${fg}», а не «${TITLE[win]}»`)
   uIOhook.keyTap(key, mods)
 }
@@ -249,6 +279,7 @@ async function main() {
   if (!FORCE && !(idle >= IDLE_REQUIRED_MS)) {
     throw new Error(`за ПК работают (ввод ${Math.round(idle / 1000)} с назад) — запустите позже или с --force`)
   }
+  if (ABORT_ON_INPUT && !(await guardReady)) throw new Error('сторож ввода (real-input.ps1) не запустился')
   startFake()
   fakePort = (await waitFake((e) => e.evt === 'ready', 15000)).port
   // «другая программа» держит Alt+3 (хоткей «Убрать» карточки сделки) — как APT с Ctrl+D
@@ -677,6 +708,7 @@ try {
   }
   ps.stdin.end()
   ps.kill()
+  guardProc?.kill()
   try {
     writeFileSync(path.join(PROFILE, 'poeth.log'), poethLog.join(''))
   } catch {
@@ -688,4 +720,5 @@ try {
 const bad = results.filter((r) => !r.ok)
 console.log(`\n${results.length - bad.length}/${results.length} проверок пройдено${failed ? ' (сценарий прерван)' : ''}`)
 console.log(`профиль и лог POETH: ${PROFILE}`)
-process.exit(bad.length || failed ? 1 : 0)
+if (realInput) console.log('прервано вводом пользователя — повторить при простое')
+process.exit(realInput ? 2 : bad.length || failed ? 1 : 0)
