@@ -83,7 +83,7 @@
 | Вариант, шаги, переходы, счётчики | `src/shared/leveling/route.ts` |
 | Строки журнала (вход в игру, зона, уровень) | `src/shared/leveling/log.ts` |
 | Персонаж входа, «кампания пройдена», видимость гида | `src/shared/leveling/sync.ts` |
-| Текст шага RU/EN | `src/shared/leveling/render.ts` |
+| Текст шага (язык интерфейса) и имена (язык клиента игры, S31) | `src/shared/leveling/render.ts` |
 | Main: хранилище, домен IPC | `src/main/services/levelingStore.ts`, `src/main/ipc/leveling.ts` |
 | Вкладка «Кампания» PoE1 | `src/renderer/src/panels/leveling/*` |
 | Гид поверх игры | `src/renderer/src/overlay/leveling/*` |

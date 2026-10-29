@@ -40,8 +40,9 @@ whose full history is kept in this repository.
   and class start gems (`common/data/json/*.json`, `common/data/routes/act-N.txt`, pinned commit
   `b7b2dd0`) are converted by `tools/leveling/build.mjs` into our own dataset
   `resources/data/poe1/leveling/leveling.json`; the route syntax handling follows its
-  `common/src/route-processing`. Russian step texts are our own translation; Russian zone, quest and boss
-  names are facts taken from [poedb.tw/ru](https://poedb.tw/ru).
+  `common/src/route-processing`. Russian step texts are our own translation. Zone, quest, boss, NPC and
+  item names (EN and RU) are facts read by `tools/leveling/game-names.mjs` from the PoE 1 client tables
+  exported by [repoe-fork/dat-export](https://github.com/repoe-fork/dat-export) (pinned commit; names only).
 - **[tesseract.js-core](https://github.com/naptha/tesseract.js-core)** 6.1.2 — **Apache License 2.0**
   (Tesseract OCR compiled to WebAssembly). The unmodified `tesseract-core-simd-lstm.{js,wasm}` and the
   `eng.traineddata` model (`4.0.0_best_int` from [tessdata](https://github.com/naptha/tessdata), based on
