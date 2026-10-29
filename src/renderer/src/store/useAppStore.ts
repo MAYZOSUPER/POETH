@@ -99,6 +99,19 @@ let nameToExileId: Record<string, string> = {}
 // init() runs twice (React 18 StrictMode double-invokes effects in development).
 let listenersWired = false
 
+// Первый запуск (S32): оба вызова init() видят пустой список — профиль по умолчанию создаёт только первый,
+// второй ждёт его же. Не удалось — следующий init() попробует снова.
+let firstProfile: Promise<ProfileMeta> | null = null
+
+function createFirstProfile(): Promise<ProfileMeta> {
+  return (firstProfile ??= api()
+    .profiles.create('Персонаж 1')
+    .catch((e: unknown) => {
+      firstProfile = null
+      throw e
+    }))
+}
+
 // Linear campaign route (ordered zones across all acts/interludes) for "What's Next".
 export type RouteStep = {
   index: number
@@ -266,10 +279,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     let activeProfileId = settings.activeProfileId
     if (!activeProfileId || !profiles.some((p) => p.id === activeProfileId)) {
-      if (profiles.length === 0) {
-        const created = await api().profiles.create('Персонаж 1')
-        profiles = [created]
-      }
+      if (profiles.length === 0) profiles = [await createFirstProfile()]
       activeProfileId = profiles[0].id
       await api().profiles.setActive(activeProfileId)
     }

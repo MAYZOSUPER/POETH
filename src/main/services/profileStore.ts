@@ -15,8 +15,31 @@ function progressFile(id: string): string {
   return path.join(app.getPath('userData'), 'progress', `${id}.json`)
 }
 
-export async function listProfiles(): Promise<ProfileMeta[]> {
+// Все чтения и изменения profiles.json и файлов прогресса — строго по очереди (S32). writeJsonAtomic пишет
+// через общий `<файл>.tmp`: две одновременные записи одного файла делили его, и rename второй падал с ENOENT
+// (первый запуск: компаньон дважды зовёт init() и создаёт профиль), а запись, прочитавшая список до соседней,
+// её затирала. Внутри очереди — только внутренние функции (readProfiles, loadProgress, addProfile), не экспорт.
+let queue: Promise<unknown> = Promise.resolve()
+
+function serial<T>(run: () => Promise<T>): Promise<T> {
+  const result = queue.then(run, run)
+  queue = result.catch(() => undefined)
+  return result
+}
+
+/** Каталог — до записи (userData из POETH_USER_DATA_DIR может ещё не существовать), запись — атомарная. */
+async function save(file: string, data: unknown): Promise<void> {
+  await fs.mkdir(path.dirname(file), { recursive: true })
+  await writeJsonAtomic(file, data)
+}
+
+function readProfiles(): Promise<ProfileMeta[]> {
   return readJson<ProfileMeta[]>(profilesFile(), [])
+}
+
+/** Список ждёт идущие изменения: запрошенный во время создания профиля уже видит его. */
+export function listProfiles(): Promise<ProfileMeta[]> {
+  return serial(readProfiles)
 }
 
 function defaultProgress(profileId: string): ProgressState {
@@ -34,8 +57,8 @@ function defaultProgress(profileId: string): ProgressState {
   }
 }
 
-export async function createProfile(name: string, className?: string): Promise<ProfileMeta> {
-  const profiles = await listProfiles()
+async function addProfile(name: string, className?: string): Promise<ProfileMeta> {
+  const profiles = await readProfiles()
   const now = Date.now()
   const meta: ProfileMeta = {
     id: randomUUID(),
@@ -45,44 +68,54 @@ export async function createProfile(name: string, className?: string): Promise<P
     updatedAt: now
   }
   profiles.push(meta)
-  await writeJsonAtomic(profilesFile(), profiles)
-  await writeJsonAtomic(progressFile(meta.id), defaultProgress(meta.id))
+  await save(profilesFile(), profiles)
+  await save(progressFile(meta.id), defaultProgress(meta.id))
   return meta
 }
 
-export async function renameProfile(id: string, name: string): Promise<ProfileMeta[]> {
-  const profiles = await listProfiles()
-  const p = profiles.find((x) => x.id === id)
-  if (p) {
-    p.name = name.trim() || p.name
-    p.updatedAt = Date.now()
-    await writeJsonAtomic(profilesFile(), profiles)
-  }
-  return profiles
+export function createProfile(name: string, className?: string): Promise<ProfileMeta> {
+  return serial(() => addProfile(name, className))
 }
 
-export async function setProfileClass(id: string, className: string): Promise<ProfileMeta[]> {
-  const profiles = await listProfiles()
-  const p = profiles.find((x) => x.id === id)
-  if (p) {
-    p.className = className.trim() || undefined
-    p.updatedAt = Date.now()
-    await writeJsonAtomic(profilesFile(), profiles)
-  }
-  return profiles
-}
-
-export async function deleteProfile(id: string): Promise<ProfileMeta[]> {
-  const profiles = (await listProfiles()).filter((x) => x.id !== id)
-  await writeJsonAtomic(profilesFile(), profiles)
-  for (const f of [progressFile(id), `${progressFile(id)}.bak`]) {
-    try {
-      await fs.rm(f)
-    } catch {
-      // already gone
+export function renameProfile(id: string, name: string): Promise<ProfileMeta[]> {
+  return serial(async () => {
+    const profiles = await readProfiles()
+    const p = profiles.find((x) => x.id === id)
+    if (p) {
+      p.name = name.trim() || p.name
+      p.updatedAt = Date.now()
+      await save(profilesFile(), profiles)
     }
-  }
-  return profiles
+    return profiles
+  })
+}
+
+export function setProfileClass(id: string, className: string): Promise<ProfileMeta[]> {
+  return serial(async () => {
+    const profiles = await readProfiles()
+    const p = profiles.find((x) => x.id === id)
+    if (p) {
+      p.className = className.trim() || undefined
+      p.updatedAt = Date.now()
+      await save(profilesFile(), profiles)
+    }
+    return profiles
+  })
+}
+
+export function deleteProfile(id: string): Promise<ProfileMeta[]> {
+  return serial(async () => {
+    const profiles = (await readProfiles()).filter((x) => x.id !== id)
+    await save(profilesFile(), profiles)
+    for (const f of [progressFile(id), `${progressFile(id)}.bak`]) {
+      try {
+        await fs.rm(f)
+      } catch {
+        // already gone
+      }
+    }
+    return profiles
+  })
 }
 
 function migrateProgress(profileId: string, p: ProgressState): ProgressState {
@@ -99,100 +132,91 @@ function migrateProgress(profileId: string, p: ProgressState): ProgressState {
   }
 }
 
-export async function getProgress(profileId: string): Promise<ProgressState> {
+async function loadProgress(profileId: string): Promise<ProgressState> {
   const loaded = await readJson<ProgressState>(progressFile(profileId), defaultProgress(profileId))
   return migrateProgress(profileId, loaded)
 }
 
+export function getProgress(profileId: string): Promise<ProgressState> {
+  return serial(() => loadProgress(profileId))
+}
+
 async function saveProgress(p: ProgressState): Promise<ProgressState> {
   p.updatedAt = Date.now()
-  await writeJsonAtomic(progressFile(p.profileId), p)
+  await save(progressFile(p.profileId), p)
   return p
 }
 
-export async function setQuestDone(
-  profileId: string,
-  questId: string,
-  done: boolean
-): Promise<ProgressState> {
-  const p = await getProgress(profileId)
-  if (done) p.completedQuestIds[questId] = true
-  else delete p.completedQuestIds[questId]
-  // A manual toggle "claims" the tick — drop any auto-progression flag on it.
-  delete p.autoCompletedQuestIds[questId]
-  return saveProgress(p)
+/** Прочитать прогресс, изменить и сохранить — одним шагом очереди (без потерянных обновлений). */
+function editProgress(profileId: string, edit: (p: ProgressState) => void): Promise<ProgressState> {
+  return serial(async () => {
+    const p = await loadProgress(profileId)
+    edit(p)
+    return saveProgress(p)
+  })
+}
+
+export function setQuestDone(profileId: string, questId: string, done: boolean): Promise<ProgressState> {
+  return editProgress(profileId, (p) => {
+    if (done) p.completedQuestIds[questId] = true
+    else delete p.completedQuestIds[questId]
+    // A manual toggle "claims" the tick — drop any auto-progression flag on it.
+    delete p.autoCompletedQuestIds[questId]
+  })
 }
 
 /** Auto-progression batch: mark each id done AND flag it auto-completed. Add-only
  * (never unchecks). Single atomic write. */
-export async function setQuestsDone(
-  profileId: string,
-  questIds: string[]
-): Promise<ProgressState> {
-  const p = await getProgress(profileId)
-  for (const id of questIds) {
-    p.completedQuestIds[id] = true
-    p.autoCompletedQuestIds[id] = true
-  }
-  return saveProgress(p)
+export function setQuestsDone(profileId: string, questIds: string[]): Promise<ProgressState> {
+  return editProgress(profileId, (p) => {
+    for (const id of questIds) {
+      p.completedQuestIds[id] = true
+      p.autoCompletedQuestIds[id] = true
+    }
+  })
 }
 
 /** Manual batch set/clear (e.g. "mark act done/clear"). Treated as manual — clears
  * the auto-completed flag either way. Single atomic write. */
-export async function setManyQuests(
-  profileId: string,
-  questIds: string[],
-  done: boolean
-): Promise<ProgressState> {
-  const p = await getProgress(profileId)
-  for (const id of questIds) {
-    if (done) p.completedQuestIds[id] = true
-    else delete p.completedQuestIds[id]
-    delete p.autoCompletedQuestIds[id]
-  }
-  return saveProgress(p)
+export function setManyQuests(profileId: string, questIds: string[], done: boolean): Promise<ProgressState> {
+  return editProgress(profileId, (p) => {
+    for (const id of questIds) {
+      if (done) p.completedQuestIds[id] = true
+      else delete p.completedQuestIds[id]
+      delete p.autoCompletedQuestIds[id]
+    }
+  })
 }
 
-export async function setAct(profileId: string, act: number): Promise<ProgressState> {
-  const p = await getProgress(profileId)
-  p.currentAct = act
-  return saveProgress(p)
+export function setAct(profileId: string, act: number): Promise<ProgressState> {
+  return editProgress(profileId, (p) => {
+    p.currentAct = act
+  })
 }
 
-export async function setLevel(profileId: string, level: number): Promise<ProgressState> {
-  const p = await getProgress(profileId)
-  p.level = Math.max(1, Math.min(100, Math.round(level)))
-  return saveProgress(p)
+export function setLevel(profileId: string, level: number): Promise<ProgressState> {
+  return editProgress(profileId, (p) => {
+    p.level = Math.max(1, Math.min(100, Math.round(level)))
+  })
 }
 
-export async function setRewardChoice(
-  profileId: string,
-  questId: string,
-  optionIndex: number
-): Promise<ProgressState> {
-  const p = await getProgress(profileId)
-  p.rewardChoices[questId] = optionIndex
-  return saveProgress(p)
+export function setRewardChoice(profileId: string, questId: string, optionIndex: number): Promise<ProgressState> {
+  return editProgress(profileId, (p) => {
+    p.rewardChoices[questId] = optionIndex
+  })
 }
 
-export async function setTrialDone(
-  profileId: string,
-  trialId: string,
-  done: boolean
-): Promise<ProgressState> {
-  const p = await getProgress(profileId)
-  if (done) p.completedTrialIds[trialId] = true
-  else delete p.completedTrialIds[trialId]
-  return saveProgress(p)
+export function setTrialDone(profileId: string, trialId: string, done: boolean): Promise<ProgressState> {
+  return editProgress(profileId, (p) => {
+    if (done) p.completedTrialIds[trialId] = true
+    else delete p.completedTrialIds[trialId]
+  })
 }
 
-export async function setAscendancy(
-  profileId: string,
-  ascendancyId: string | null
-): Promise<ProgressState> {
-  const p = await getProgress(profileId)
-  p.ascendancyId = ascendancyId || null
-  return saveProgress(p)
+export function setAscendancy(profileId: string, ascendancyId: string | null): Promise<ProgressState> {
+  return editProgress(profileId, (p) => {
+    p.ascendancyId = ascendancyId || null
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -222,10 +246,14 @@ export interface ProfileBundle {
 }
 
 /** Build the portable bundle for a profile, or null if it doesn't exist. */
-export async function getProfileBundle(id: string): Promise<ProfileBundle | null> {
-  const meta = (await listProfiles()).find((p) => p.id === id)
+export function getProfileBundle(id: string): Promise<ProfileBundle | null> {
+  return serial(() => buildBundle(id))
+}
+
+async function buildBundle(id: string): Promise<ProfileBundle | null> {
+  const meta = (await readProfiles()).find((p) => p.id === id)
   if (!meta) return null
-  const progress = await getProgress(id)
+  const progress = await loadProgress(id)
   return {
     format: EXPORT_FORMAT,
     formatVersion: EXPORT_VERSION,
@@ -316,7 +344,11 @@ function sanitizeBundle(raw: unknown): ProfileBundle | null {
 export async function importProfileBundle(raw: unknown): Promise<ProfileMeta | null> {
   const bundle = sanitizeBundle(raw)
   if (!bundle) return null
-  const meta = await createProfile(bundle.profile.name, bundle.profile.className)
+  return serial(() => addImported(bundle))
+}
+
+async function addImported(bundle: ProfileBundle): Promise<ProfileMeta> {
+  const meta = await addProfile(bundle.profile.name, bundle.profile.className)
   const progress: ProgressState = {
     profileId: meta.id,
     schemaVersion: PROGRESS_VERSION,
@@ -329,6 +361,6 @@ export async function importProfileBundle(raw: unknown): Promise<ProfileMeta | n
     ascendancyId: bundle.progress.ascendancyId,
     updatedAt: Date.now()
   }
-  await writeJsonAtomic(progressFile(meta.id), progress)
+  await save(progressFile(meta.id), progress)
   return meta
 }
