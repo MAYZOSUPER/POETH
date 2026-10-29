@@ -304,11 +304,8 @@ function CardsBox({ config }: { config: DealsConfig }) {
         {sound && !sound.enabled && (
           <>
             <span className="dl-muted">{t('deals.sound.globalOff')}</span>
-            <button
-              type="button"
-              className="ui-btn ui-btn--sm ui-btn--ghost"
-              onClick={() => void patchSettings({ sound: { enabled: true } })}
-            >
+            <button type="button" className="ui-btn ui-btn--sm" onClick={() => void patchSettings({ sound: { enabled: true } })}>
+              <Ico name="volume" />
               {t('deals.sound.turnOn')}
             </button>
           </>

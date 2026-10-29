@@ -1,4 +1,5 @@
-/* Вкладка «Прайс-чек» PoE 1 в компаньоне (S37): как пользоваться окном цены. Только токены и ui-*. */
+/* Вкладка «Прайс-чек» PoE 1 в компаньоне (S37): как пользоваться окном цены. Только токены и ui-*.
+   components.css подключается позже этого файла — поверх ui-* правила пишем с родителем. */
 
 .pct-tab {
   display: grid;
@@ -26,11 +27,11 @@
 .pct-grow {
   flex: 1 1 auto;
 }
-.pct-banner {
+.pct-tab > .pct-banner {
   border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
   border-radius: var(--r-panel);
 }
-.pct-banner > .ui-btn {
+.pct-tab > .pct-banner > .ui-btn {
   align-self: center;
 }
 .pct-actions {
@@ -88,13 +89,13 @@
 }
 
 /* экспертный режим: короткий список */
-.pct-list {
+.ui-box__body.pct-list {
   margin: 0;
   padding-left: calc(var(--sp-6) + var(--sp-5));
   color: var(--fg-muted);
   font-size: var(--fs-sm);
 }
-.pct-hint {
+.pct-tab > .pct-hint {
   padding: 0;
   color: var(--fg-muted);
 }

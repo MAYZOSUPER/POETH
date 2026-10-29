@@ -44,7 +44,7 @@ export const auth: DomainDict = {
     'auth.paste.err.invalid-format': 'Это не похоже на POESESSID: нужно ровно 32 символа 0–9 и a–f.',
     'auth.paste.err.not-logged-in':
       'Сайт не узнал аккаунт по этому POESESSID — возможно, сессия устарела. Скопируйте свежий.',
-    'auth.paste.err.network': 'Нет связи с pathofexile.com. Сессия сохранена, проверим позже.',
+    'auth.paste.err.network': 'Нет связи с pathofexile.com. Сессия сохранена — нажмите «Проверить», когда сеть появится.',
     'auth.paste.err.blocked': 'Сайт просит пройти проверку. Сессия сохранена — откройте окно сайта и пройдите её.',
     'net.err.rate-limited':
       'Сайт трейда просит подождать: повторите через {sec} с. Аккаунту ничего не грозит — это защита сайта от частых запросов.',
@@ -100,7 +100,7 @@ export const auth: DomainDict = {
     'auth.paste.err.invalid-format': 'That does not look like a POESESSID: exactly 32 characters 0–9 and a–f.',
     'auth.paste.err.not-logged-in':
       'The site did not recognise an account for this POESESSID — it may have expired. Copy a fresh one.',
-    'auth.paste.err.network': 'No connection to pathofexile.com. The session is saved; we will check later.',
+    'auth.paste.err.network': 'No connection to pathofexile.com. The session is saved — press “Check” once you are back online.',
     'auth.paste.err.blocked': 'The site wants a quick check. The session is saved — open the site window and pass it.',
     'net.err.rate-limited':
       'The trade site asks us to wait: retry in {sec} s. Your account is safe — the site limits frequent requests.',

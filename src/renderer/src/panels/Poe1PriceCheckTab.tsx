@@ -85,7 +85,7 @@ export function Poe1PriceCheckTab() {
       {(!accel || taken) && (
         <div className="ui-banner pct-banner" role="alert">
           <Ico name="warn" />
-          <span>{!accel ? t('pc1.tab.key.noneText') : t('overlay.hk.conflict', { key: accelKeys(accel).join('+') })}</span>
+          <span>{!accel ? t('pc1.tab.key.noneText') : t('pc1.tab.key.taken', { key: accelKeys(accel).join('+') })}</span>
           <button type="button" className="ui-btn ui-btn--sm" onClick={openHotkeySettings}>
             {t(accel ? 'pc1.tab.key.change' : 'pc1.tab.key.set')}
           </button>

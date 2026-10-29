@@ -100,7 +100,7 @@ export const flip: DomainDict = {
     'flip.trend.pct': 'тренд {n}',
     'flip.empty.title': 'Выгодных флипов под эти фильтры нет',
     'flip.empty':
-      'По реальным ценам флип внутри одного рынка почти не окупается — ищем расхождения рынков chaos и divine. Выберите базу «Все», поднимите бюджет или загляните после следующего обновления.',
+      'По реальным ценам флип внутри одного рынка почти не окупается — ищем расхождения рынков chaos и divine. Выберите базу «Все» или загляните после следующего обновления данных. Бюджет и пороги — в экспертном режиме.',
     'flip.foot':
       'Это оценка по данным биржи GGG за последние часы, а не живые цены и не финансовый совет. Перед сделкой посмотрите стакан в игре: наведите на «Рыночный курс» и зажмите Alt.',
     'flip.conf.1': 'низкая',
@@ -290,7 +290,7 @@ export const flip: DomainDict = {
     'flip.trend.pct': 'trend {n}',
     'flip.empty.title': 'No profitable flips under these filters',
     'flip.empty':
-      'At real prices a flip inside one market rarely pays off, so we look for gaps between the chaos and divine markets. Pick “All” as the base, raise the budget or check back after the next update.',
+      'At real prices a flip inside one market rarely pays off, so we look for gaps between the chaos and divine markets. Pick “All” as the base or check back after the next data update. Budget and thresholds are in expert mode.',
     'flip.foot':
       'This is an estimate from the last hours of GGG exchange data, not live prices and not financial advice. Before you trade, look at the order book in game: hover over “Market Ratio” and hold Alt.',
     'flip.conf.1': 'low',
