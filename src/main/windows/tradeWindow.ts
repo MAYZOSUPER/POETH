@@ -230,7 +230,7 @@ async function create(title: string, area: Rectangle | null): Promise<BaseWindow
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false
+      sandbox: true
     }
   })
   const siteView = new WebContentsView({ webPreferences: siteWebPreferences() })

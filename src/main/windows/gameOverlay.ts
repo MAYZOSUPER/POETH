@@ -346,7 +346,7 @@ export function initGameOverlay(def: GameDef): BrowserWindow {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
       // таймеры/анимации оверлея не должны засыпать, пока окно «невидимо» для Chromium
       backgroundThrottling: false,
       spellcheck: false

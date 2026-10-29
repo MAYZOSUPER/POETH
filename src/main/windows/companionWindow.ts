@@ -42,7 +42,7 @@ export function createCompanionWindow(opts: { show?: boolean } = {}): BrowserWin
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false
+      sandbox: true
     }
   })
 

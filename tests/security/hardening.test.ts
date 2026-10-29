@@ -58,7 +58,7 @@ describe('main: webPreferences окон', () => {
     for (const f of MAIN) expect(re.test(code(f)), name(f)).toBe(false)
   })
 
-  it('каждое webPreferences с preload — с contextIsolation: true и nodeIntegration: false', () => {
+  it('каждое webPreferences с preload — в песочнице, с contextIsolation: true и nodeIntegration: false', () => {
     let seen = 0
     for (const f of MAIN) {
       const src = code(f)
@@ -67,6 +67,8 @@ describe('main: webPreferences окон', () => {
         seen++
         expect(m[1], name(f)).toMatch(/contextIsolation:\s*true/)
         expect(m[1], name(f)).toMatch(/nodeIntegration:\s*false/)
+        // собранный preload требует только «electron» (проверка ниже) — песочнице этого хватает
+        expect(m[1], name(f)).toMatch(/sandbox:\s*true/)
       }
     }
     // компаньон, оверлей, сайдбар трейд-окна, служебные окна
@@ -83,6 +85,15 @@ describe('main: webPreferences окон', () => {
 })
 
 describe('preload: только узкий мост', () => {
+  it('preload в песочнице: из модулей — только electron и свои исходники', () => {
+    for (const f of PRELOAD) {
+      for (const m of code(f).matchAll(/^import\s+(?!type\b)[^'"]*from\s+'([^']+)'/gm)) {
+        expect(m[1], name(f)).toMatch(/^(electron|\.{1,2}\/|@shared\/)/)
+      }
+      expect(code(f), name(f)).not.toMatch(/\brequire\(/)
+    }
+  })
+
   it('в renderer уходит один объект overlayApi', () => {
     const exposed = PRELOAD.flatMap((f) => [...code(f).matchAll(/exposeInMainWorld\(\s*'([^']+)'/g)].map((m) => m[1]))
     expect(exposed).toEqual(['overlayApi'])
