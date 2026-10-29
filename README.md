@@ -16,6 +16,8 @@
 
 <h2 align="center"><a href="https://github.com/MAYZOSUPER/POETH/releases/latest">⬇ Скачать для Windows</a></h2>
 
+<p align="center"><b><a href="https://mayzosuper.github.io/POETH/guide/">Гайд по всем функциям</a></b> — как пользоваться каждой функцией, по шагам · <a href="docs/FAQ.md">Частые вопросы</a></p>
+
 ## Как установить
 
 1. Скачайте **`POETH-Setup-<версия>.exe`** со страницы [последнего релиза](https://github.com/MAYZOSUPER/POETH/releases/latest).
@@ -30,6 +32,8 @@ Windows показал «Система Windows защитила ваш комп
 Что-то не работает? Загляните в [частые вопросы](docs/FAQ.md).
 
 ## Возможности
+
+Как пользоваться каждой функцией по шагам — в [гайде на сайте](https://mayzosuper.github.io/POETH/guide/).
 
 <table>
   <tr>

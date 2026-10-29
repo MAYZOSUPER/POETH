@@ -16,6 +16,8 @@
 
 <h2 align="center"><a href="https://github.com/MAYZOSUPER/POETH/releases/latest">⬇ Download for Windows</a></h2>
 
+<p align="center"><b><a href="https://mayzosuper.github.io/POETH/guide/?lang=en">Guide to every feature</a></b> — how to use each feature, step by step · <a href="docs/FAQ.en.md">FAQ</a></p>
+
 ## How to install
 
 1. Download **`POETH-Setup-<version>.exe`** from the [latest release](https://github.com/MAYZOSUPER/POETH/releases/latest).
@@ -30,6 +32,8 @@ No install: `POETH-Portable-<version>.exe` runs right away; download new version
 Something not working? See the [FAQ](docs/FAQ.en.md).
 
 ## Features
+
+How to use each feature step by step — see the [guide on the website](https://mayzosuper.github.io/POETH/guide/?lang=en).
 
 <table>
   <tr>

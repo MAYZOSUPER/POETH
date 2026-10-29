@@ -141,7 +141,8 @@ clicks or buys anything by itself. No bots, no auto-buying.
   snapshots, the icon cache, updated game data, and the trade window sign-in.
 - **The program itself** is in `%LOCALAPPDATA%\Programs\POETH` by default.
 
-Uninstalling keeps the `%APPDATA%\POETH` folder, so a reinstall loses nothing.
+Uninstalling keeps the `%APPDATA%\POETH` folder, so a reinstall loses nothing. What is inside and what is
+encrypted is listed in [docs/security.md](security.md#что-хранится-на-компьютере) (in Russian).
 
 To remove everything:
 

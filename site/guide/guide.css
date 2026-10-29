@@ -1,0 +1,166 @@
+/* Гайд по функциям POETH: страница site/guide/. Токены и общие блоки (шапка, кнопки, .faq, .tag, kbd) —
+   из ../styles.css; здесь — только то, чего нет на главной: оглавление, схема окна, карточки функций. */
+
+.g-hero { padding-block: clamp(36px, 5vw, 64px) clamp(28px, 4vw, 44px); }
+.g-hero__text { display: grid; gap: 18px; justify-items: start; max-width: 46rem; }
+.g-hero h1 { font-size: clamp(38px, 5vw, 60px); }
+
+/* ===== оглавление ===== */
+.g-toc { display: grid; gap: 26px; }
+.g-toc__group { display: grid; gap: 10px; }
+.g-toc__label {
+  color: var(--gold);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.g-toc__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; padding: 0; list-style: none; }
+.g-toc__list a {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  height: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--card);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.g-toc__list a:hover { border-color: var(--gold); background: #211a14; color: var(--fg); }
+.g-toc__list b { display: block; font-weight: 600; line-height: 1.3; }
+.g-toc__list small { display: block; margin-top: 2px; color: var(--fg-3); font-size: var(--fs-xs); line-height: 1.4; }
+.g-ico {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gold-soft);
+  color: var(--gold-hi);
+}
+.g-ico .ico { width: 19px; height: 19px; }
+
+/* ===== с чего начать ===== */
+.g-start { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(28px, 4vw, 56px); align-items: start; }
+.g-start h3 { font-size: 19px; font-weight: 600; line-height: 1.3; }
+.g-start p { color: var(--fg-2); }
+.g-list { display: grid; gap: 10px; padding: 0; list-style: none; color: var(--fg-2); }
+.g-list li { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 12px; }
+.g-list li::before { content: ""; width: 6px; height: 6px; margin-top: 10px; background: var(--gold); transform: rotate(45deg); }
+.g-list b { color: var(--fg); font-weight: 600; }
+
+/* схема окна POETH: шапка + рельс слева (как в приложении), без скриншота */
+.g-win {
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: #0c0a08;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+}
+.g-win__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  background: var(--card);
+}
+.g-win__brand { display: inline-flex; align-items: center; gap: 8px; margin-right: auto; color: var(--gold-hi); font-weight: 600; }
+.g-win__brand img { width: 20px; height: 20px; }
+.g-win__game { padding: 2px 8px; border: 1px solid var(--line-2); border-radius: 999px; color: var(--fg-2); font-size: 12px; white-space: nowrap; }
+.g-win__btn { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; color: var(--fg-2); }
+.g-win__btn .ico { width: 17px; height: 17px; }
+.g-win__body { display: grid; grid-template-columns: 190px minmax(0, 1fr); min-height: 300px; }
+.g-win__rail { display: grid; align-content: start; gap: 2px; padding: 10px 8px; border-right: 1px solid var(--line); background: #120f0c; }
+.g-win__sec { margin: 8px 8px 2px; color: var(--gold); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+.g-win__sec:first-child { margin-top: 0; }
+.g-win__tab { display: flex; align-items: center; gap: 9px; padding: 6px 8px; border-radius: 6px; color: var(--fg-2); }
+.g-win__tab .ico { width: 17px; height: 17px; color: var(--gold); }
+.g-win__tab--on { background: var(--gold-soft); color: var(--gold-hi); }
+.g-win__main { display: grid; align-content: start; gap: 10px; padding: 16px; color: var(--fg-3); font-size: 13px; }
+.g-win__line { height: 8px; border-radius: 4px; background: rgba(201, 165, 92, 0.12); }
+.g-win__line--s { width: 60%; }
+.g-win__cap { padding: 10px 12px; border-top: 1px solid var(--line); color: var(--fg-3); font-size: var(--fs-xs); }
+
+/* клавиши */
+.g-keys-block { max-width: 50rem; margin-top: clamp(36px, 5vw, 56px); }
+.g-keys__title { margin-bottom: 12px; font-size: 19px; font-weight: 600; line-height: 1.3; }
+.g-keys__note { margin-top: 12px; }
+.g-keys { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.g-keys th, .g-keys td { padding: 9px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.g-keys th { padding-right: 16px; color: var(--fg); font-weight: 500; }
+.g-keys td { color: var(--fg-2); white-space: nowrap; text-align: right; }
+
+/* ===== функции ===== */
+.g-feats { display: grid; gap: clamp(56px, 7vw, 88px); }
+.g-feat { display: grid; gap: 22px; scroll-margin-top: 80px; }
+.g-feat__head { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 16px; align-items: center; }
+.g-feat__head .g-ico { width: 52px; height: 52px; }
+.g-feat__head .g-ico .ico { width: 25px; height: 25px; }
+.g-feat h2 { font: 700 clamp(28px, 3.4vw, 38px) / 1.05 var(--font-display); letter-spacing: 0.02em; color: var(--gold-hi); }
+.g-feat__tags { margin-top: 6px; }
+.g-feat__tags .tag { margin: 0 6px 0 0; }
+.tag--good { border-color: rgba(128, 201, 140, 0.45); color: var(--good); }
+.tag--info { border-color: rgba(130, 184, 219, 0.45); color: var(--info); }
+.g-feat__lead { max-width: 46em; font-size: 18px; }
+.g-feat__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px, 4vw, 48px); align-items: start; }
+.g-feat__grid--one { grid-template-columns: minmax(0, 1fr); max-width: 50rem; }
+.g-feat h3 { margin-bottom: 12px; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--fg); }
+.g-feat p { color: var(--fg-2); }
+.g-feat p + p { margin-top: 10px; }
+
+/* «где найти» и «что нужно» */
+.g-where { display: grid; gap: 8px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); font-size: var(--fs-sm); }
+.g-where div { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; }
+.g-where dt { color: var(--fg-3); }
+.g-where dd { margin: 0; color: var(--fg); }
+
+/* шаги */
+.g-steps { display: grid; gap: 14px; padding: 0; list-style: none; counter-reset: gs; }
+.g-steps > li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; counter-increment: gs; color: var(--fg-2); }
+.g-steps > li::before {
+  content: counter(gs);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 1L27 14 14 27 1 14z' fill='%231b1612' stroke='%23c9a55c' stroke-width='1.1'/%3E%3C/svg%3E") center / contain no-repeat;
+  color: var(--gold-hi);
+  font: 700 14px/1 var(--font-ui);
+}
+.g-steps b { color: var(--fg); font-weight: 600; }
+.g-steps code, .g-where code, .g-note code, .g-keys code, .faq code, .sh code {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgba(201, 165, 92, 0.1);
+  color: var(--gold-hi);
+  font: 500 0.9em/1.4 ui-monospace, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+.g-steps ul { display: grid; gap: 6px; margin-top: 6px; padding-left: 18px; }
+
+.g-side { display: grid; gap: 16px; min-width: 0; }
+.g-note { padding: 14px 16px; border-left: 2px solid var(--gold); border-radius: 0 var(--r-sm) var(--r-sm) 0; background: var(--gold-soft); color: var(--fg); font-size: var(--fs-sm); }
+.g-feat .faq { max-width: none; }
+.g-feat .faq summary { padding: 13px 16px; font-size: var(--fs-sm); }
+.g-feat .faq .ans { padding: 0 16px 14px; font-size: var(--fs-sm); }
+.g-back { justify-self: start; color: var(--fg-3); font-size: var(--fs-xs); }
+
+@media (max-width: 980px) {
+  .g-start, .g-feat__grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .g-win__body { grid-template-columns: minmax(0, 1fr); }
+  .g-win__rail { border-right: 0; }
+  .g-win__main { display: none; }
+  .g-win__game { display: none; }
+  .g-where div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .g-keys td { white-space: normal; }
+  .g-feat__head { grid-template-columns: 44px minmax(0, 1fr); gap: 12px; }
+  .g-feat__head .g-ico { width: 44px; height: 44px; }
+}

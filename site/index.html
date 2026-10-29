@@ -52,6 +52,7 @@
   <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="1.5"/><path d="M6.5 10h.1M9.5 10h.1M12.5 10h.1M15.5 10h.1M17.5 13.8h-11"/></symbol>
   <symbol id="i-support" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 16.2s-3.9-2.3-3.9-5.1a2.1 2.1 0 0 1 3.9-1.2 2.1 2.1 0 0 1 3.9 1.2c0 2.8-3.9 5.1-3.9 5.1z"/></symbol>
   <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 5.5a1.5 1.5 0 0 1 1.5-1.5H19v14H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></symbol>
 </svg>
 
 <header class="top">
@@ -60,11 +61,12 @@
       <img src="assets/brand/mark.svg" alt="" width="30" height="30">
       <img class="brand__word" src="assets/brand/wordmark.svg" alt="" width="78" height="16">
     </a>
-    <nav class="nav" aria-label="Разделы / Sections">
+    <nav class="nav nav--guide" aria-label="Разделы / Sections">
       <a href="#look"><span lang="ru">Как выглядит</span><span lang="en">Screens</span></a>
       <a href="#install"><span lang="ru">Установка</span><span lang="en">Install</span></a>
       <a href="#safe"><span lang="ru">Безопасность</span><span lang="en">Safety</span></a>
       <a href="#features"><span lang="ru">Возможности</span><span lang="en">Features</span></a>
+      <a class="nav__guide" href="guide/"><span lang="ru">Гайд</span><span lang="en">Guide</span></a>
       <a href="#faq"><span lang="ru">Вопросы</span><span lang="en">FAQ</span></a>
     </nav>
     <div class="langs" role="group" aria-label="Язык / Language">
@@ -331,6 +333,9 @@
         <li><div><b><span lang="ru">Можно без установки.</span><span lang="en">Works without installing.</span></b> <span lang="ru">Portable-версия запускается сразу из одного файла.</span><span lang="en">The portable version runs straight from a single file.</span></div></li>
         <li><div><b><span lang="ru">Бесплатно для всех.</span><span lang="en">Free for everyone.</span></b> <span lang="ru">Без рекламы и платных функций, все версии открыты каждому.</span><span lang="en">No ads and no paid features; every version is open to everyone.</span></div></li>
       </ul>
+      <p class="feats__more">
+        <a class="btn" href="guide/"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span lang="ru">Гайд: как пользоваться каждой функцией</span><span lang="en">Guide: how to use every feature</span></a>
+      </p>
     </div>
   </section>
 
