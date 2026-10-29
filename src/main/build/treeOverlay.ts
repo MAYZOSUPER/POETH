@@ -35,6 +35,7 @@ import type { PobBuild } from '@shared/pob/model'
 import type { PobStagePlan } from '@shared/pob/stages'
 import type { GameLang } from '@shared/types/settings'
 import { parseLevelingLine } from '@shared/leveling/log'
+import { getGameFocus, onGameFocusChange } from '../focus/gameFocus'
 import { onHotkeyAction } from '../hotkeys'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
 import { readLogTail, subscribeGameLog } from '../services/gameLog'
@@ -51,7 +52,8 @@ import { startTreeInput } from './treeOverlayInput'
 // Снимков экрана здесь нет; таймеров, которые что-то делают в игре, тоже.
 //
 // Откуда билд: вкладка «Билд» (B3) вызовет setTreeBuild(); пока её нет — в разработке файл с кодом PoB из
-// POETH_TREE_POB (только в незапакованной сборке, как devEnv S29).
+// POETH_TREE_POB (только в незапакованной сборке, как devEnv S29). POETH_TREE_SHOW=1 (тоже только в разработке) —
+// показать наложение, как только окно игры в фокусе: стенд tools/tree-bench проверяет его без нажатий клавиш.
 
 const CALIBRATION_FILE = 'build-tree.json'
 /** Хвост журнала при первом показе: вложения нод за последние часы игры. */
@@ -81,6 +83,8 @@ let offInput: (() => void) | null = null
 let offLog: (() => void) | null = null
 let logPath: string | null = null
 let tailRead = false
+let offFocus: (() => void) | null = null
+let devShown = false
 
 function dataBases(game: GameDef): string[] {
   return [path.join(app.getPath('userData'), 'data', game.dataDir), path.join(resourcesDir(), 'data', game.dataDir)]
@@ -375,11 +379,28 @@ export async function setupTreeOverlay(game: GameDef): Promise<void> {
   enabled = buildOn(game, buildDevFlag(process.env))
   offLog?.()
   offLog = null
+  offFocus?.()
+  offFocus = null
   if (!enabled) {
     hide()
     return
   }
   onHotkeyAction('buildTree', () => toggleTreeOverlay(), { keepKeys: true })
+  const devShow = !app.isPackaged && process.env.POETH_TREE_SHOW === '1'
+  // окно игры появилось или вернулось в фокус: положение — для его нынешнего размера
+  const onFocus = (game: boolean): void => {
+    if (!game) return
+    if (devShow && !devShown && !visible) {
+      devShown = true
+      void show()
+    } else if (visible) {
+      ensureView()
+      push()
+    }
+  }
+  offFocus = onGameFocusChange((f) => onFocus(f.game))
+  // игра могла получить фокус раньше, чем домен настроился (оверлей цепляется к окну до нас)
+  onFocus(getGameFocus().game)
   const sub = await subscribeGameLog(game, (lines) => {
     if (tailRead) ingest(lines)
   })
