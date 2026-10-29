@@ -4,11 +4,11 @@
   var META = {
     ru: {
       title: 'POETH — оверлей для трейда в Path of Exile',
-      desc: 'Бесплатный оверлей для трейда в Path of Exile 1 и 2: цена предмета по Ctrl+D прямо поверх игры, трейд-окно с избранным, live-поиск и сделки. Русский и английский клиент.'
+      desc: 'Бесплатный оверлей для трейда в Path of Exile 1 и 2: цена предмета по Ctrl+D прямо поверх игры, трейд-окно, live-поиск, сделки, обмен валюты, учёт богатства и гид прокачки. Русский и английский клиент.'
     },
     en: {
       title: 'POETH — trade overlay for Path of Exile',
-      desc: 'A free trade overlay for Path of Exile 1 and 2: item prices with Ctrl+D right over the game, a trade window with favorites, live search and deals. Russian and English clients.'
+      desc: 'A free trade overlay for Path of Exile 1 and 2: item prices with Ctrl+D right over the game, a trade window, live search, deals, currency exchange, wealth tracking and a leveling guide. Russian and English clients.'
     }
   };
 
