@@ -16,6 +16,7 @@ import { bookFromTable } from '@shared/ocr/read'
 import type { BookReadResult, FlipBookEvent } from '@shared/types'
 import { captureBook, saveFixtureShot } from '../ocr/capture'
 import { readBookImage, stopBookReader } from '../ocr/reader'
+import { itemFlipLeagueChanged, registerItemFlip, setupItemFlip } from '../games/poe1/flip/items/ipc'
 import type { IpcDomain } from './types'
 
 // Домен «помощник по флиппингу» (main, S13): часы фида обмена GGG из общего хранилища (его же берут учёт
@@ -129,6 +130,7 @@ function register(): void {
   })
   handle(IPC.flip.setFilters, (patch) => m().setFilters(patch))
   handle(IPC.flip.setOptions, (patch) => m().setOptions(patch))
+  registerItemFlip(handle, broadcast)
 }
 
 async function setupForGame(def: GameDef): Promise<void> {
@@ -140,14 +142,20 @@ async function setupForGame(def: GameDef): Promise<void> {
     feed.stop()
     m.stop()
     stopBookReader()
+    await setupItemFlip(def)
     return
   }
   onHotkeyAction('bookRead', () => readBookNow(), { keepKeys: true })
-  unsubs.push(onLeaguesChanged(() => void m.onLeagueChanged()))
-  unsubs.push(onSettingsChange(() => void m.onLeagueChanged()))
+  const leagueChanged = (): void => {
+    void m.onLeagueChanged()
+    itemFlipLeagueChanged()
+  }
+  unsubs.push(onLeaguesChanged(leagueChanged))
+  unsubs.push(onSettingsChange(leagueChanged))
   // часы фида — раз в час для всех (учёт богатства, курс окна цены, флиппинг)
   feed.start(() => getEffectiveLeague().catch(() => null), FEED_WANT_HOURS)
   await m.start()
+  await setupItemFlip(def)
 }
 
 export const flipDomain: IpcDomain = { register, setupForGame }
