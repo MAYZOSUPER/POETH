@@ -1,8 +1,7 @@
 import type { UiLang } from '@shared/types'
-import type { StatFilter } from '@shared/poe1/pricecheck'
 import { currencyShort } from '@shared/currency'
 
-// Форматирование для окна цены PoE1: числа (RU — запятая), валюта, возраст лота, текст мода с числом.
+// Форматирование для окна цены PoE1: числа (RU — запятая), валюта, возраст лота.
 
 export function fmtNum(v: number, lang: UiLang): string {
   const s = String(Math.round(v * 100) / 100)
@@ -24,19 +23,6 @@ export function ageKey(indexed: string | undefined, now = Date.now()): [string, 
   const h = Math.round(min / 60)
   if (h < 48) return ['pc1.age.h', { n: h }]
   return ['pc1.age.d', { n: Math.round(h / 24) }]
-}
-
-/** Текст фильтра частями: [до #, число, после #]; без # или с несколькими # — как есть + число отдельно. */
-export function statParts(
-  f: StatFilter,
-  lang: UiLang,
-  text = f.text
-): { before: string; value?: string; after: string } {
-  const value = f.roll ? fmtNum(f.roll.value, lang) : undefined
-  const first = text.indexOf('#')
-  if (first === -1 || value === undefined) return { before: text.replace(/#/g, '…'), after: '' }
-  if (text.indexOf('#', first + 1) !== -1) return { before: text.replace(/#/g, '…') + ' · ', value, after: '' }
-  return { before: text.slice(0, first), value, after: text.slice(first + 1) }
 }
 
 /** T1 → лучший … T4+ → низкий */

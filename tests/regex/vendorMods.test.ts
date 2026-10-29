@@ -238,7 +238,10 @@ function normLine(s: string): string {
 
 describe.each(LANGS)('фикстуры предметов %s', (lang) => {
   const dir = resolve(__dirname, `../fixtures/poe1/${lang}`)
-  const files = readdirSync(dir).filter((f) => f.endsWith('.txt') && !f.startsWith('adv-'))
+  // как в генераторе: без расширенной копии («{ … }», диапазоны) — так подсказку игра не показывает
+  const files = readdirSync(dir).filter(
+    (f) => f.endsWith('.txt') && !f.startsWith('adv-') && !/^\{ /m.test(readFileSync(resolve(dir, f), 'utf8'))
+  )
 
   it.each(VENDOR_MOD_KEYS)('%s: подсвечивает предмет ⇔ у него есть своя строка (или допустимая побочная)', (key) => {
     const match = compileSearch(buildVendorRegex(lang, modQuery(key, 1)).text, { foldYo: true })

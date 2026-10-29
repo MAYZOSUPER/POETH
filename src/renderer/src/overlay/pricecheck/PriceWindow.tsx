@@ -21,7 +21,7 @@ import { useOverlayT } from '../useOverlayT'
 import { PopupPositionButton } from '../PopupPosition'
 import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
 import { ageKey, currencyLabel, fmtNum, tierWordKey } from './format'
-import { modText, modTextParts } from '@shared/poe1/pricecheck/filters/mod-text'
+import { modText, modTextParts, modTextString, type ModText } from '@shared/poe1/pricecheck/filters/mod-text'
 import { CoinIcon, Currency, CurrencyTipBody, RateTipBody, TipAnchor, useCurrencyNames } from '../../components/Currency'
 import type { RuCase } from '@shared/currency'
 import { chaosRates, convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
@@ -236,15 +236,20 @@ function ItemHead({ item, captured, t }: { item: ParsedItem | null; captured: Ca
 
 // ---------------------------------------------------------------- строки свойств
 
+/** S23: строка свойства как в игре — «Adds 3 to 34 …», «+40 to …» (у строк окна и у «Цена может быть выше»). */
+function filterModText(f: StatFilter, rawText: string | undefined, t: T): ModText {
+  // свойства предмета (броня, DPS, IIQ карты…) в данных — английские ключи; переводим по trade id
+  const propKey = `pc1.prop.${f.tradeId[0]}`
+  const propText = f.tag === 'property' || f.tradeId[0]?.startsWith('item.') ? t(propKey) : undefined
+  return modText(propText && propText !== propKey ? propText : f.text, f.statRef, f.roll?.value, f.sources, rawText)
+}
+
 function ModRow({ f, rawText, expert, lang, t }: { f: StatFilter; rawText: string; expert: boolean; lang: UiLang; t: T }) {
   const touch = usePriceCheckStore((s) => s.touch)
   const pseudo = f.tag === 'pseudo'
   const tier = f.sources[0]?.modifier.info.tier
-  // свойства предмета (броня, DPS, IIQ карты…) в данных — английские ключи; переводим по trade id
-  const propKey = `pc1.prop.${f.tradeId[0]}`
-  const propText = f.tag === 'property' || f.tradeId[0]?.startsWith('item.') ? t(propKey) : undefined
-  // S23: как в игре — «Adds 3 to 34 …», «+40 to …»; среднее «от # до #» (его ищет фильтр) — приглушённо
-  const shown = modText(propText && propText !== propKey ? propText : f.text, f.statRef, f.roll?.value, f.sources, rawText)
+  // среднее «от # до #» (его ищет фильтр) — приглушённо
+  const shown = filterModText(f, rawText, t)
   const parts = modTextParts(shown, (n) => fmtNum(n, lang))
   const label = parts.map((p) => p.text).join('')
   const avg = shown.avg !== undefined ? fmtNum(shown.avg, lang) : undefined
@@ -662,12 +667,10 @@ function HigherLine({ hint, lang, t }: { hint: HigherHint; lang: UiLang; t: T })
   usePriceCheckStore((s) => s.rev)
   const considerMore = usePriceCheckStore((s) => s.considerMore)
   const phase = usePriceCheckStore((s) => s.phase)
+  const item = usePriceCheckStore((s) => s.item)
   const left = hint.filters.filter((f) => f.disabled)
   if (!left.length) return null
-  const names = left.map((f) => {
-    const p = statParts(f, lang)
-    return `${p.before}${p.value ?? ''}${p.after}`.replace(/\s*·\s*$/, '').trim()
-  })
+  const names = left.map((f) => modTextString(filterModText(f, item?.rawText, t), (n) => fmtNum(n, lang)))
   return (
     <div className="pc-higher" role="note">
       <Icon name="arrow-up" />

@@ -5,7 +5,7 @@
 // Источник — открытые данные RePoE fork (как у карт, тот же кэш tools/regex/sources/): mods,
 // stat_translations EN/RU, base_items EN/RU, item_classes EN/RU. Метки свойств предмета («Quality: »,
 // «Rarity: », «Item Class: »…) — client_strings из данных APT (resources/data/poe1/{en,ru}), строки
-// настоящих подсказок — фикстуры парсера tests/fixtures/poe1/{en,ru} (кроме adv-*: там Ctrl+Alt+C с
+// настоящих подсказок — фикстуры парсера tests/fixtures/poe1/{en,ru} (кроме adv-* и любых в расширенном формате: там Ctrl+Alt+C с
 // диапазонами, в поиске игры их нет).
 //
 // Что ищет поиск игры (PoE 1, с 3.14): каждую строку текста предмета как при Ctrl+C, без учёта регистра,
@@ -52,6 +52,8 @@ const SRC_DIR = path.join(ROOT, 'tools/regex/sources')
 const OUT_TS = path.join(ROOT, 'src/shared/regex/vendorData.ts')
 const OUT_CORPUS = path.join(ROOT, 'tests/regex/fixtures')
 const FIXTURES = path.join(ROOT, 'tests/fixtures/poe1')
+/** фикстура в расширенном формате копии: строка-заголовок мода «{ Prefix Modifier … }» */
+const ADVANCED_COPY = /^\{ /m
 const APT_DATA = path.join(ROOT, 'resources/data/poe1')
 const LANGS = ['en', 'ru']
 
@@ -278,7 +280,10 @@ function fixtureLines(lang) {
   const lines = []
   for (const f of fs.readdirSync(dir).sort()) {
     if (!f.endsWith('.txt') || f.startsWith('adv-')) continue
-    for (const l of fs.readFileSync(path.join(dir, f), 'utf8').split(/\r?\n/)) {
+    const text = fs.readFileSync(path.join(dir, f), 'utf8')
+    // расширенная копия (заголовки «{ … }», диапазоны «28(24-32)») — так подсказку игра не показывает
+    if (ADVANCED_COPY.test(text)) continue
+    for (const l of text.split(/\r?\n/)) {
       const n = normLine(l)
       if (n && n !== '--------') lines.push(n)
     }
