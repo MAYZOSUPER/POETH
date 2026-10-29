@@ -9,6 +9,7 @@ import { getGameFocus, isOverlayActive, onGameFocusChange, setGameFocus } from '
 import { getSettings } from '../services/settingsStore'
 import { isDevServer } from '../gameContext'
 import { windowIcon } from '../appIcon'
+import { devEnv } from '../devEnv'
 
 // Игровой оверлей (S1): прозрачное окно поверх клиентской области игры.
 // electron-overlay-window (OverlayController) следит за окном с заголовком
@@ -174,14 +175,11 @@ export function toggleOverlay(viaHotkey = false): void {
 
 /**
  * Перед вводом в игру (чат, поиск в стэше): убедиться, что фокус у игры.
- * false — игра не найдена (или в запасном режиме в фокусе наше окно) — вводить нельзя,
- * иначе клавиши уйдут в чужое окно.
+ * false — игра не найдена или нет нативного модуля оверлея — вводить нельзя, иначе клавиши уйдут в чужое окно.
  */
 export function ensureGameForeground(): boolean {
-  if (!lib) {
-    // запасной режим: фокус игры не знаем; не печатаем в собственные окна POETH
-    return BrowserWindow.getFocusedWindow() === null
-  }
+  // запасной режим (модуль оверлея не загрузился): какое окно в фокусе — не знаем, значит не вводим (S29)
+  if (!lib) return false
   if (!status.attached) return false
   const f = getGameFocus()
   if (f.game && !f.overlay) return true
@@ -346,7 +344,7 @@ export function initGameOverlay(def: GameDef): BrowserWindow {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
       // таймеры/анимации оверлея не должны засыпать, пока окно «невидимо» для Chromium
       backgroundThrottling: false,
       spellcheck: false
@@ -369,7 +367,7 @@ export function initGameOverlay(def: GameDef): BrowserWindow {
   onGameFocusChange((focus) => sendToOverlay(IPC.events.overlayFocus, focus))
 
   loadRendererPage(w, 'overlay')
-  if (process.env.POETH_OVERLAY_DEVTOOLS === '1') w.webContents.openDevTools({ mode: 'detach', activate: false })
+  if (devEnv('POETH_OVERLAY_DEVTOOLS') === '1') w.webContents.openDevTools({ mode: 'detach', activate: false })
 
   if (lib) attachToGame(w, lib, def.windowTitle)
   else showFallback(w)

@@ -17,18 +17,20 @@ import { WealthStore } from '../games/poe1/wealth/store'
 import { getDivineTrack, getFeedStore } from '../games/poe1/exchange/feedService'
 import { onFarmEvent, setRunProfit } from '../services/farmSession'
 import type { IpcDomain } from './types'
+import { devEnv } from '../devEnv'
+import { isAppPageUrl } from '../security'
 
 // Домен «учёт богатства» (main, S11a): стэш через legacy-эндпоинты на сессии аккаунта
 // (только main, cookies в renderer не уходят), цены — фид обмена GGG и poe.watch, снимки —
 // userData/wealth. Звать каналы могут только наши страницы; события — только им.
 
 function devServerUrl(): string | undefined {
-  return process.env.ELECTRON_RENDERER_URL
+  return devEnv('ELECTRON_RENDERER_URL')
 }
 
 function broadcast(channel: string, payload: unknown): void {
   for (const wc of webContents.getAllWebContents()) {
-    if (wc.isDestroyed() || !isTrustedAppUrl(wc.getURL(), devServerUrl())) continue
+    if (wc.isDestroyed() || !isAppPageUrl(wc.getURL())) continue
     wc.send(channel, payload)
   }
 }

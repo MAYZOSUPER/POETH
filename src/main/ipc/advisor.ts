@@ -57,6 +57,8 @@ import { getFeedStore } from '../games/poe1/exchange/feedService'
 import { getCompanionWindow } from '../windows/companionWindow'
 import { getPriceIndex } from './wealth'
 import type { IpcDomain } from './types'
+import { devEnv } from '../devEnv'
+import { isAppPageUrl } from '../security'
 
 // Домен «Советник: что фармить» (main, S16 + S17). Стратегии — данные (advisor/strategies.json: сначала
 // обновлённые в userData/data, затем встроенные), каталог сообщества (advisor/community/*.json, тем же каналом
@@ -72,12 +74,12 @@ import type { IpcDomain } from './types'
 const STALE_MS = 15 * 60_000
 
 function devServerUrl(): string | undefined {
-  return process.env.ELECTRON_RENDERER_URL
+  return devEnv('ELECTRON_RENDERER_URL')
 }
 
 function broadcast(channel: string, payload: unknown): void {
   for (const wc of webContents.getAllWebContents()) {
-    if (wc.isDestroyed() || !isTrustedAppUrl(wc.getURL(), devServerUrl())) continue
+    if (wc.isDestroyed() || !isAppPageUrl(wc.getURL())) continue
     wc.send(channel, payload)
   }
 }

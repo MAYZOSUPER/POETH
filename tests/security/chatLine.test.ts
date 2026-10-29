@@ -68,4 +68,19 @@ describe('gameInput: каждый ввод в игру идёт через toGam
     // в буфер обмена уходит только проверенная строка
     expect(own).not.toMatch(/writeText\(input\)/)
   })
+
+  it('typeInChat не разбирает «@last»: ответ последнему (Ctrl+Enter) чужой текст не включит', () => {
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+    expect(code).not.toMatch(/@last|PLACEHOLDER_LAST/)
+    expect(code).not.toMatch(/keyTap\(Key\.Enter,\s*modifiers\)/)
+  })
+})
+
+describe('«@last» подставляют только команды из настроек', () => {
+  it('resolveChatText: «@last» → ник из Client.txt до ввода в игру; неизвестен — команда не уходит', async () => {
+    const { resolveChatText } = await import('@shared/chatCommands')
+    expect(resolveChatText('@last ty', { lastWhisperFrom: 'Seller', character: null })).toEqual({ ok: true, text: '@Seller ty' })
+    expect(resolveChatText('/invite @last', { lastWhisperFrom: 'Seller', character: null })).toEqual({ ok: true, text: '/invite Seller' })
+    expect(resolveChatText('@last ty', { lastWhisperFrom: null, character: null })).toEqual({ ok: false, missing: 'last' })
+  })
 })

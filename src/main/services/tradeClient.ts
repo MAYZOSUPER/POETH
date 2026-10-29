@@ -57,7 +57,13 @@ function request(opts: {
   jsonBody?: unknown
 }): Promise<NetResponse> {
   return new Promise((resolve, reject) => {
-    const req = net.request({ url: opts.url, method: opts.method })
+    // POESESSID ставится заголовком руками: на редиректе Chromium перенёс бы его на новый адрес (и другой
+    // хост). API трейда не редиректит — любой редирект обрываем, ключ дальше не уходит.
+    const req = net.request({ url: opts.url, method: opts.method, redirect: 'manual' })
+    req.on('redirect', () => {
+      req.abort()
+      reject(new Error('trade2: redirect blocked'))
+    })
     req.setHeader('User-Agent', app.userAgentFallback)
     req.setHeader('Accept', 'application/json')
     if (opts.poesessid) req.setHeader('Cookie', `POESESSID=${opts.poesessid}`)
