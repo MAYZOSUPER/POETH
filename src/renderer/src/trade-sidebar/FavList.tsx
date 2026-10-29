@@ -195,7 +195,7 @@ function SearchRow({ search, folders, data }: { search: FavSearch; folders: FavF
     if (!r.ok) {
       if (r.reason === 'limit') setNotice('fav.live.limit', { max: live.max }, 'warn')
       else if (r.reason === 'auth') setNotice('fav.live.auth', undefined, 'warn')
-      else if (r.reason === 'unsupported') setNotice('fav.live.soon', undefined, 'warn')
+      else if (r.reason === 'unsupported') setNotice('fav.live.unsupported', undefined, 'warn')
     }
   }
 
@@ -219,17 +219,18 @@ function SearchRow({ search, folders, data }: { search: FavSearch; folders: FavF
     void fav().moveSearch(sid, search.folderId, where === 'after' ? idx + 1 : idx)
   }
 
+  const moveTargets = folders.filter((f) => f.id !== search.folderId)
   const items: MenuItem[] = [
     { icon: 'edit', label: t('fav.menu.rename'), onClick: () => setEditing('title') },
     { icon: 'book', label: t('fav.menu.notes'), onClick: () => setEditing('notes') },
     {
       icon: 'folder',
       label: t('fav.menu.move'),
+      // других папок нет — пустое подменю было бы мёртвым пунктом
+      disabled: moveTargets.length === 0,
       step: {
         title: t('fav.menu.move'),
-        items: folders
-          .filter((f) => f.id !== search.folderId)
-          .map((f) => ({ icon: 'folder' as const, label: folderTitle(f, t), onClick: () => void fav().moveSearch(search.id, f.id) }))
+        items: moveTargets.map((f) => ({ icon: 'folder' as const, label: folderTitle(f, t), onClick: () => void fav().moveSearch(search.id, f.id) }))
       }
     },
     {
@@ -301,7 +302,7 @@ function SearchRow({ search, folders, data }: { search: FavSearch; folders: FavF
         aria-pressed={liveOn}
         data-state={liveOn ? state : 'off'}
         aria-label={t('fav.live')}
-        title={live.available ? t(liveOn ? LIVE_TITLE[state] : 'fav.live.off') : t('fav.live.soon')}
+        title={live.available ? t(liveOn ? LIVE_TITLE[state] : 'fav.live.off') : t('fav.live.unsupported')}
         aria-disabled={!live.available}
         onClick={() => void toggleLive()}
       >

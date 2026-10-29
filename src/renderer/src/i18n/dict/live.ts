@@ -4,8 +4,6 @@ import type { DomainDict } from '../types'
 
 export const live: DomainDict = {
   ru: {
-    'soon.live':
-      'Live search: до 10 поисков с сайта трейда, уведомление и звук о новой находке, whisper последней находки по хоткею (вставляется в чат, но не отправляется).',
     // --- вкладка
     'live.opt.enabled': 'Live search включён',
     'live.opt.sound': 'Звук',
@@ -21,7 +19,7 @@ export const live: DomainDict = {
     'live.add.btn': 'Следить',
     'live.add.help': 'Откройте поиск на pathofexile.com/trade и скопируйте адрес страницы. Лига берётся из ссылки, без неё — текущая.',
     'live.add.err.bad-url': 'Это не ссылка на поиск трейда PoE 1. Нужна страница вида …/trade/search/<лига>/<код>.',
-    'live.add.err.poe2': 'Это поиск PoE 2 — live search для PoE 2 появится позже.',
+    'live.add.err.poe2': 'Это поиск PoE 2, а live search в POETH работает только с PoE 1.',
     'live.add.err.exchange': 'У массового обмена (exchange) на сайте нет live search — нужен обычный поиск.',
     'live.add.err.duplicate': 'Этот поиск уже в списке.',
     'live.add.off': 'Поиск добавлен выключенным: включено максимум поисков ({max}).',
@@ -91,8 +89,6 @@ export const live: DomainDict = {
     'live.fact.gem': 'ур. {n} · {q}%'
   },
   en: {
-    'soon.live':
-      'Live search: up to 10 trade-site searches, a notification and sound on every new hit, whisper the last hit with a hotkey (pasted into chat, never sent).',
     'live.opt.enabled': 'Live search on',
     'live.opt.sound': 'Sound',
     'live.opt.notify': 'Windows notifications when the game is in background',
@@ -107,7 +103,7 @@ export const live: DomainDict = {
     'live.add.btn': 'Watch',
     'live.add.help': 'Open a search on pathofexile.com/trade and copy the page address. The league comes from the link, otherwise the current one.',
     'live.add.err.bad-url': 'This is not a PoE 1 trade search link. Use a page like …/trade/search/<league>/<code>.',
-    'live.add.err.poe2': 'This is a PoE 2 search — live search for PoE 2 comes later.',
+    'live.add.err.poe2': 'This is a PoE 2 search, and live search in POETH works only with PoE 1.',
     'live.add.err.exchange': 'Bulk exchange has no live search on the site — use a regular search.',
     'live.add.err.duplicate': 'This search is already in the list.',
     'live.add.off': 'Added switched off: the maximum number of searches ({max}) is already on.',

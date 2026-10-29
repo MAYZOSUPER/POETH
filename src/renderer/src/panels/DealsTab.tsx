@@ -61,7 +61,8 @@ export function DealsTab() {
         <Switch on={enabled} onChange={(v) => void patchSettings({ deals: { enabled: v } })}>
           {t('deals.enabled')}
         </Switch>
-        <Switch on={!simple} onChange={(v) => void patchSettings({ ui: { simpleMode: !v } })}>
+        {/* режим общий (Settings.ui.simpleMode) — подсказка говорит, где ещё он меняется */}
+        <Switch on={!simple} title={t('deals.expert.title')} onChange={(v) => void patchSettings({ ui: { simpleMode: !v } })}>
           {t('deals.expert')}
         </Switch>
       </div>

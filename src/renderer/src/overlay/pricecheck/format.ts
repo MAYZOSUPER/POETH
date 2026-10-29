@@ -25,6 +25,12 @@ export function ageKey(indexed: string | undefined, now = Date.now()): [string, 
   return ['pc1.age.d', { n: Math.round(h / 24) }]
 }
 
+/** Обратный отсчёт до повтора после лимита сайта: 45 → «0:45», 120 → «2:00». */
+export function waitClock(sec: number): string {
+  const s = Math.max(0, Math.ceil(sec))
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+}
+
 /** T1 → лучший … T4+ → низкий */
 export function tierWordKey(tier: number): string {
   return `pc1.tier.${Math.min(Math.max(tier, 1), 4)}`

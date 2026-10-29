@@ -20,7 +20,7 @@ import { useOverlayStore } from '../../store/useOverlayStore'
 import { useOverlayT } from '../useOverlayT'
 import { PopupPositionButton } from '../PopupPosition'
 import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
-import { ageKey, currencyLabel, fmtNum, tierWordKey } from './format'
+import { ageKey, currencyLabel, fmtNum, tierWordKey, waitClock } from './format'
 import { modText, modTextParts, modTextString, type ModText } from '@shared/poe1/pricecheck/filters/mod-text'
 import { CoinIcon, Currency, CurrencyTipBody, RateTipBody, TipAnchor, useCurrencyNames } from '../../components/Currency'
 import type { RuCase } from '@shared/currency'
@@ -1345,7 +1345,7 @@ function SiteOffers({ result, lang, t }: { result: Extract<PcResult, { kind: 'fa
       )}
       {open && site.phase === 'limit' && (
         <span className="pc-site__note">
-          {t('pc1.s24.site.limit', { time: `0:${String(Math.max(0, Math.ceil((site.retryAt - now) / 1000))).padStart(2, '0')}` })}{' '}
+          {t('pc1.s24.site.limit', { time: waitClock((site.retryAt - now) / 1000) })}{' '}
           {now >= site.retryAt && (
             <button type="button" className="ui-btn ui-btn--sm" onClick={() => void load()}>
               <Icon name="refresh" />
@@ -1398,8 +1398,7 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
     )
   }
   if (phase === 'limit') {
-    const sec = Math.max(0, Math.ceil(((retryAt ?? now) - now) / 1000))
-    const time = `0:${String(sec).padStart(2, '0')}`
+    const time = waitClock(((retryAt ?? now) - now) / 1000)
     return (
       <>
         <div className="ui-banner" role="status">

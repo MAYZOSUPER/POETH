@@ -14,6 +14,7 @@ export const regex: DomainDict = {
     'regex.lang.en': 'English',
     'regex.lang.ru': 'Русский',
     'regex.expert': 'Экспертный режим',
+    'regex.expert.title': 'Режим общий для всего POETH: окно цены, Сделки, Regex, Обмен, Богатство, Live.',
 
     'regex.result.title': 'Строка для поиска в игре',
     'regex.result.empty': 'Выберите моды или условия — строка появится здесь.',
@@ -231,7 +232,7 @@ export const regex: DomainDict = {
     'regex.vendor.side.gems': 'камни проклятий с тем же текстом («Уязвимость»)',
 
     'regex.lib.howTitle': 'Как вставлять:',
-    'regex.lib.how': 'в игре нажмите Ctrl+F, затем горячую клавишу строки. Строка вставится в поле поиска.',
+    'regex.lib.how': 'откройте в игре тайник или окно торговца и нажмите горячую клавишу строки — POETH сам нажмёт Ctrl+F и вставит строку в поле поиска.',
     'regex.lib.mine': 'Мои строки',
     'regex.lib.new': 'Новая строка',
     'regex.lib.edit': 'Изменить',
@@ -241,7 +242,7 @@ export const regex: DomainDict = {
     'regex.lib.slotNone': 'без клавиши',
     'regex.lib.slotN': 'Слот {n}',
     'regex.lib.slotHint':
-      'Клавиши слотов назначаются в Настройках → Хоткеи («Вставить строку поиска 1–5»).',
+      'Клавиши слотов назначаются в Настройках → Горячие клавиши («Вставить строку поиска 1–5»).',
     'regex.lib.freeSlot': 'Свободный слот. Сохраните строку с вкладки «Карты» или «Торговец».',
     'regex.lib.freeSlotPick': 'Свободный слот. Выберите слот у строки ниже или сохраните новую.',
     'regex.lib.other': 'Без горячей клавиши',
@@ -298,6 +299,7 @@ export const regex: DomainDict = {
     'regex.lang.en': 'English',
     'regex.lang.ru': 'Russian',
     'regex.expert': 'Expert mode',
+    'regex.expert.title': 'One mode for all of POETH: the price window, Trades, Regex, Exchange, Wealth, Live.',
 
     'regex.result.title': 'In-game search string',
     'regex.result.empty': 'Pick mods or conditions — the string appears here.',
@@ -514,7 +516,7 @@ export const regex: DomainDict = {
     'regex.vendor.side.gems': 'curse gems with the same text (Vulnerability)',
 
     'regex.lib.howTitle': 'How to paste:',
-    'regex.lib.how': 'in game press Ctrl+F, then the string hotkey. The string lands in the search box.',
+    'regex.lib.how': 'open your stash or a vendor window in the game and press the string hotkey — POETH presses Ctrl+F itself and pastes the string into the search box.',
     'regex.lib.mine': 'My strings',
     'regex.lib.new': 'New string',
     'regex.lib.edit': 'Edit',

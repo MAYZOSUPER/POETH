@@ -90,12 +90,14 @@ export function Switch({
   on,
   onChange,
   children,
-  disabled
+  disabled,
+  title
 }: {
   on: boolean
   onChange: (v: boolean) => void
   children: ReactNode
   disabled?: boolean
+  title?: string
 }) {
   return (
     <button
@@ -104,6 +106,7 @@ export function Switch({
       role="switch"
       aria-checked={on}
       disabled={disabled}
+      title={title}
       onClick={() => onChange(!on)}
     >
       <span className="ui-switch__track" />

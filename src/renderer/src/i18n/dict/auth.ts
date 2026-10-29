@@ -12,17 +12,17 @@ export const auth: DomainDict = {
     'auth.in.p1': 'Пароль вы вводили только на сайте GGG. POETH его не видит и не хранит.',
     'auth.in.p1.pasted': 'Сессия из вставленного POESESSID. Пароль POETH не видит и не хранит.',
     'auth.in.p2': 'Сессия зашифрована на этом компьютере и отделена от остальных окон приложения.',
-    'auth.in.p3': 'Вход нужен для live search и чтобы пользоваться сайтом трейда в трейд-окне (кнопки сайта нажимаете вы сами).',
+    'auth.in.p3': 'Вход нужен для live search, «Богатства» (POETH только читает тайник) и чтобы пользоваться сайтом трейда в трейд-окне (кнопки сайта нажимаете вы сами).',
     'auth.logout': 'Выйти',
     'auth.logout.hint':
       '«Выйти» стирает сессию только в POETH. «Выйти» на сайте GGG завершает все ваши сессии — после этого войдите в POETH заново.',
     'auth.out.title': 'Вход не выполнен',
     'auth.out.p1': 'Прайс-чек, regex и сделки работают и без входа.',
-    'auth.out.p2': 'Для live search войдите на официальной странице сайта GGG — пароль вводится только там.',
+    'auth.out.p2': 'Для live search и «Богатства» войдите на официальной странице сайта GGG — пароль вводится только там.',
     'auth.login': 'Войти на сайте GGG',
     'auth.openTrade': 'Открыть трейд-окно',
     'auth.login.hint':
-      'Код двухфакторной защиты (2FA) вводится там же, на странице GGG. Вход через Steam, Xbox или PlayStation в окне не работает — войдите по почте и паролю или вставьте POESESSID.',
+      'Код двухфакторной защиты (2FA) вводится там же, на странице GGG. Вход через Steam тоже работает — кнопка Steam на этой странице. Через Xbox и PlayStation в окне войти нельзя — войдите по почте и паролю или вставьте POESESSID.',
     'auth.recheck': 'Проверить',
     'auth.net.title': 'Нет связи с pathofexile.com.',
     'auth.net.text': 'Вход не проверен — нажмите «Проверить», когда сеть появится.',
@@ -44,7 +44,7 @@ export const auth: DomainDict = {
     'auth.paste.err.invalid-format': 'Это не похоже на POESESSID: нужно ровно 32 символа 0–9 и a–f.',
     'auth.paste.err.not-logged-in':
       'Сайт не узнал аккаунт по этому POESESSID — возможно, сессия устарела. Скопируйте свежий.',
-    'auth.paste.err.network': 'Нет связи с pathofexile.com. Сессия сохранена, проверим позже.',
+    'auth.paste.err.network': 'Нет связи с pathofexile.com. Сессия сохранена — нажмите «Проверить», когда сеть появится.',
     'auth.paste.err.blocked': 'Сайт просит пройти проверку. Сессия сохранена — откройте окно сайта и пройдите её.',
     'net.err.rate-limited':
       'Сайт трейда просит подождать: повторите через {sec} с. Аккаунту ничего не грозит — это защита сайта от частых запросов.',
@@ -68,17 +68,17 @@ export const auth: DomainDict = {
     'auth.in.p1': 'You typed your password only on the GGG site. POETH never sees or stores it.',
     'auth.in.p1.pasted': 'Session from a pasted POESESSID. POETH never sees or stores your password.',
     'auth.in.p2': 'The session is encrypted on this computer and isolated from other app windows.',
-    'auth.in.p3': 'Sign-in is needed for live search and for using the trade site in the trade window (you press the site buttons yourself).',
+    'auth.in.p3': 'Sign-in is needed for live search, Wealth (POETH only reads your stash) and for using the trade site in the trade window (you press the site buttons yourself).',
     'auth.logout': 'Sign out',
     'auth.logout.hint':
       '“Sign out” erases the session in POETH only. “Log out” on the GGG site ends all your sessions — then sign in to POETH again.',
     'auth.out.title': 'Not signed in',
     'auth.out.p1': 'Price check, regex and trades work without signing in.',
-    'auth.out.p2': 'For live search, sign in on the official GGG site page — that is the only place you type your password.',
+    'auth.out.p2': 'For live search and Wealth, sign in on the official GGG site page — that is the only place you type your password.',
     'auth.login': 'Sign in on the GGG site',
     'auth.openTrade': 'Open trade window',
     'auth.login.hint':
-      'The two-factor (2FA) code is entered on the same GGG page. Steam, Xbox or PlayStation sign-in does not work in the window — use your email and password, or paste a POESESSID.',
+      'The two-factor (2FA) code is entered on the same GGG page. Steam sign-in works too — use the Steam button on that page. Xbox and PlayStation sign-in does not work in the window — use your email and password, or paste a POESESSID.',
     'auth.recheck': 'Check',
     'auth.net.title': 'No connection to pathofexile.com.',
     'auth.net.text': 'Sign-in not verified — press “Check” once you are back online.',
@@ -100,7 +100,7 @@ export const auth: DomainDict = {
     'auth.paste.err.invalid-format': 'That does not look like a POESESSID: exactly 32 characters 0–9 and a–f.',
     'auth.paste.err.not-logged-in':
       'The site did not recognise an account for this POESESSID — it may have expired. Copy a fresh one.',
-    'auth.paste.err.network': 'No connection to pathofexile.com. The session is saved; we will check later.',
+    'auth.paste.err.network': 'No connection to pathofexile.com. The session is saved — press “Check” once you are back online.',
     'auth.paste.err.blocked': 'The site wants a quick check. The session is saved — open the site window and pass it.',
     'net.err.rate-limited':
       'The trade site asks us to wait: retry in {sec} s. Your account is safe — the site limits frequent requests.',
