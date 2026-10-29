@@ -74,6 +74,46 @@ export function amountName(name: string, value: number | string, lang: CurrencyL
 }
 
 /**
+ * Название (на языке nameLang) после числа в тексте на языке textLang (S26: имена — на языке клиента игры, текст —
+ * на языке интерфейса). Языки совпадают — по правилам языка (amountName). Английское имя в русском тексте — как в
+ * игре, без падежей и окончаний: «1 Divine Orb = 340 Chaos Orb». Русское имя в английском тексте согласуется с
+ * числом, но всегда в именительном (предлоги в тексте английские): «for 14 Сфер хаоса».
+ */
+export function amountNameIn(
+  name: string,
+  value: number | string,
+  nameLang: CurrencyLang,
+  textLang: CurrencyLang,
+  tag = '',
+  c: RuCase = 'nom'
+): string {
+  if (nameLang === textLang) return amountName(name, value, nameLang, tag, c)
+  return nameLang === 'ru' ? declineRu(name, ruCount(value), 'nom') : name
+}
+
+/** Язык названия валюты: предметы игры — на языке клиента, золото (слово, а не предмет) — на языке текста. */
+export function currencyNameLang(tag: string, gameLang: CurrencyLang, textLang: CurrencyLang): CurrencyLang {
+  return tag in EXTRA ? textLang : gameLang
+}
+
+export interface CurrencyNames {
+  /** полное название в именительном: на языке клиента игры («Divine Orb»), золото — на языке текста */
+  name(tag: string): string
+  /** название после числа в тексте на языке интерфейса: «149 Сфер хаоса», «340 Chaos Orb», «за 1 Сферу хаоса» */
+  after(tag: string, value: number | string, c?: RuCase): string
+}
+
+/** Имена валют для текста на языке textLang; table — таблица языка клиента игры gameLang (null — ещё грузится). */
+export function currencyNames(table: CurrencyTable | null, gameLang: CurrencyLang, textLang: CurrencyLang): CurrencyNames {
+  const name = (tag: string): string =>
+    currencyName(table, tag, currencyNameLang(tag, gameLang, textLang)) ?? currencyShort(tag)
+  return {
+    name,
+    after: (tag, value, c = 'nom') => amountNameIn(name(tag), value, currencyNameLang(tag, gameLang, textLang), textLang, tag, c)
+  }
+}
+
+/**
  * Тег валюты по свободному тексту (цена из шёпота: «chaos», «divine», «Сфера хаоса», «div»): точное совпадение
  * с тегом или именем в таблицах, затем сленг. Неизвестное — null.
  */

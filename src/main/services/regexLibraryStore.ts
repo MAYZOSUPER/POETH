@@ -12,6 +12,7 @@ import type {
 import {
   assignSlot,
   importEntries,
+  legacyGameLang,
   normalizeLibrary,
   pasteText,
   patchPrefs,
@@ -27,6 +28,8 @@ import { resourcesDir } from './questDataset'
 
 let cache: RegexLibrary | null = null
 let writing: Promise<void> = Promise.resolve()
+/** prefs.gameLang из файла до S26 — ждёт переноса в Settings.gameLang (ipc/gameLang.ts) */
+let legacyLang: RegexLang | null = null
 
 function libraryFile(): string {
   return path.join(app.getPath('userData'), 'regex-library.json')
@@ -35,8 +38,25 @@ function libraryFile(): string {
 const newId = (): string => randomUUID()
 
 export async function getLibrary(): Promise<RegexLibrary> {
-  if (!cache) cache = normalizeLibrary(await readJson<unknown>(libraryFile(), null), newId)
+  if (!cache) {
+    const raw = await readJson<unknown>(libraryFile(), null)
+    legacyLang = legacyGameLang(raw)
+    cache = normalizeLibrary(raw, newId)
+  }
   return cache
+}
+
+/** Язык клиента игры из файла до S26 (prefs.gameLang); null — его нет или уже перенесён. */
+export async function getLegacyGameLang(): Promise<RegexLang | null> {
+  await getLibrary()
+  return legacyLang
+}
+
+/** Старое значение перенесено в общую настройку — переписать файл без него (перенос — один раз). */
+export async function dropLegacyGameLang(): Promise<void> {
+  if (!legacyLang) return
+  legacyLang = null
+  commit(await getLibrary())
 }
 
 /** Запомнить и записать (записи идут по очереди — частые правки настроек не гоняются). */

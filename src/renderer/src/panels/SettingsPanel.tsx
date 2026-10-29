@@ -12,6 +12,7 @@ import { useT } from '../i18n'
 import { AccountPanel } from './account/AccountPanel'
 import { ChatCommandsPanel } from './chat/ChatCommandsPanel'
 import { UpdatesSettings } from '../updates/UpdatesSettings'
+import { GameLangSetting } from '../components/GameLangSetting'
 
 const BOTH: GameId[] = ['poe1', 'poe2']
 
@@ -180,6 +181,7 @@ export function SettingsPanel() {
           <option value="en">English</option>
         </select>
       </div>
+      {game === 'poe1' && <GameLangSetting />}
 
       {hasCampaign && (
         <>

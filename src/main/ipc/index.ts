@@ -19,6 +19,7 @@ import { wealthDomain } from './wealth'
 import { flipDomain } from './flip'
 import { levelingDomain } from './leveling'
 import { advisorDomain } from './advisor'
+import { gameLangDomain } from './gameLang'
 
 // Реестр доменов main-IPC. ЗАМОРОЖЕН после S0: новый домен подключает лид.
 const DOMAINS: IpcDomain[] = [
@@ -36,7 +37,8 @@ const DOMAINS: IpcDomain[] = [
   wealthDomain,
   flipDomain,
   levelingDomain,
-  advisorDomain
+  advisorDomain,
+  gameLangDomain
 ]
 
 /** Register every domain's ipcMain handlers (once, at startup). */

@@ -4,7 +4,6 @@ import type { GameId, SiteHost } from '@shared/games'
 import { BOOSTY_URL } from '@shared/links'
 import { useT } from '../../i18n'
 import { useAppStore } from '../../store/useAppStore'
-import { useRegexStore } from '../../store/useRegexStore'
 import { BrandImg } from '../../components/BrandImg'
 import { Ico } from '../regex/Ico'
 import { Kbd } from './Kbd'
@@ -24,7 +23,9 @@ export function Wizard({ onClose }: { onClose: () => void }) {
   const settings = useAppStore((s) => s.settings)
   const patchSettings = useAppStore((s) => s.patchSettings)
   const [game, setGame] = useState<GameId>(settings?.game ?? 'poe1')
-  const [clientLang, setClientLang] = useState<UiLang>(settings?.uiLang ?? 'ru')
+  // язык клиента: если POETH уже узнал его по журналу игры — сразу он (S26), иначе как интерфейс
+  const detectedLang = settings?.gameLang.detected?.lang
+  const [clientLang, setClientLang] = useState<UiLang>(detectedLang ?? settings?.uiLang ?? 'ru')
   const [i, setI] = useState(0)
   const [auth, setAuth] = useState<AuthStatus | null>(null)
   const [overlay, setOverlay] = useState<OverlayStatus | null>(null)
@@ -55,10 +56,8 @@ export function Wizard({ onClose }: { onClose: () => void }) {
   const finish = async (): Promise<void> => {
     setBusy(true)
     try {
-      const regex = useRegexStore.getState()
-      if (regex.ready) regex.setPrefs({ gameLang: clientLang })
-      else await window.overlayApi.regex.setPrefs({ gameLang: clientLang })
-      await patchSettings({ startup: { firstRunDone: true } })
+      // язык клиента игры — общая настройка (S26): названия предметов и валют, строки regex
+      await patchSettings({ gameLang: { choice: clientLang }, startup: { firstRunDone: true } })
       onClose()
       if (game !== running) await window.overlayApi.app.switchGame(game)
     } finally {
@@ -93,7 +92,7 @@ export function Wizard({ onClose }: { onClose: () => void }) {
             ]}
             onChange={(v) => {
               void patchSettings({ uiLang: v as UiLang })
-              setClientLang(v as UiLang)
+              setClientLang(detectedLang ?? (v as UiLang))
             }}
           />
         </Field>
@@ -114,7 +113,10 @@ export function Wizard({ onClose }: { onClose: () => void }) {
       <>
         <h3>{t('wiz.client.h')}</h3>
         <p className="onb-lead">{t('wiz.client.lead')}</p>
-        <Field label={t('wiz.client.lang')}>
+        <Field
+          label={t('wiz.client.lang')}
+          help={detectedLang ? t('wiz.client.detected', { lang: detectedLang === 'ru' ? 'Русский' : 'English' }) : undefined}
+        >
           <Seg
             value={clientLang}
             options={[

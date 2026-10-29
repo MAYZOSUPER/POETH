@@ -13,6 +13,26 @@ import type { PriceCheckSettings } from './trade'
 
 export type UiLang = 'ru' | 'en'
 
+/** Язык клиента игры (S26): на нём названия предметов, валют и баз (не путать с языком интерфейса). */
+export type GameLang = 'ru' | 'en'
+
+/** Откуда узнали язык клиента: текст предмета по Ctrl+D или строки Client.txt (шёпот, вход в зону…). */
+export type GameLangSource = 'item' | 'log'
+
+export interface GameLangDetected {
+  lang: GameLang
+  by: GameLangSource
+  /** когда узнали, мс */
+  at: number
+}
+
+export interface GameLangSettings {
+  /** 'auto' — по игре (src/shared/gameLang.ts), пока не узнали — как язык интерфейса */
+  choice: 'auto' | GameLang
+  /** что узнали по игре; хранится и при ручном выборе — для подсказки «похоже, игра на другом языке» */
+  detected: GameLangDetected | null
+}
+
 /** top-level tab of the companion window */
 export type AppTab = 'campaign' | 'priceCheck' | 'live' | 'regex' | 'deals' | 'wealth' | 'flip' | 'advisor'
 
@@ -83,6 +103,8 @@ export interface Settings {
   uiLang: UiLang
   /** language for game zone/boss names (independent of uiLang) */
   nameLang: UiLang
+  /** язык клиента игры PoE1 (S26): названия предметов и валют, строки regex */
+  gameLang: GameLangSettings
   /** 0.2 .. 1.0 */
   opacity: number
   /** force full click-through (companion never steals clicks) */

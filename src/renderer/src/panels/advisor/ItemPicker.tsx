@@ -2,6 +2,7 @@ import { useEffect, useId, useState } from 'react'
 import type { AdvisorItemHit } from '@shared/ipc/advisor'
 import type { UiLang } from '@shared/types'
 import { useT } from '../../i18n'
+import { useGameLang } from '../../gameLang'
 import { Currency } from '../../components/Currency'
 import { chaosText } from './view'
 
@@ -42,8 +43,10 @@ export function ItemPicker({ lang, onPick, label }: { lang: string; onPick: (hit
     setHits([])
     setOpen(false)
   }
-  const main = (h: AdvisorItemHit): string => (lang === 'ru' && h.ru ? h.ru : h.ref)
-  const other = (h: AdvisorItemHit): string => (lang === 'ru' ? (h.ru ? h.ref : '') : (h.ru ?? ''))
+  // главное имя — как в игре (S26), второе — на другом языке
+  const gameLang = useGameLang(lang === 'en' ? 'en' : 'ru')
+  const main = (h: AdvisorItemHit): string => (gameLang === 'ru' && h.ru ? h.ru : h.ref)
+  const other = (h: AdvisorItemHit): string => (gameLang === 'ru' ? (h.ru ? h.ref : '') : (h.ru ?? ''))
 
   return (
     <div className="ad-combo">
