@@ -1,0 +1,100 @@
+/* Вкладка «Прайс-чек» PoE 1 в компаньоне (S37): как пользоваться окном цены. Только токены и ui-*. */
+
+.pct-tab {
+  display: grid;
+  gap: var(--sp-5);
+  align-content: start;
+  width: 100%;
+  max-width: 760px;
+  height: 100%;
+  padding: var(--sp-6) var(--sp-7);
+  color: var(--fg);
+  font: var(--fs-md) / var(--lh) var(--font-ui);
+}
+.pct-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-5);
+}
+.pct-title {
+  margin: 0;
+  color: var(--accent-hi);
+  font: 700 var(--fs-title) / 1.2 var(--font-display);
+  letter-spacing: 0.04em;
+}
+.pct-grow {
+  flex: 1 1 auto;
+}
+.pct-banner {
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+  border-radius: var(--r-panel);
+}
+.pct-banner > .ui-btn {
+  align-self: center;
+}
+.pct-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+/* шаги «как пользоваться» */
+.pct-steps {
+  margin: 0;
+  list-style: none;
+}
+.pct-steps > li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--sp-4);
+}
+.pct-n {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-pill);
+  color: var(--accent-hi);
+  font: 600 var(--fs-xs) / 1 var(--font-ui);
+}
+.pct-steps .ui-kbd {
+  vertical-align: 1px;
+}
+
+/* «что покажет окно цены» */
+.pct-shows {
+  margin: 0;
+  list-style: none;
+}
+.pct-shows > li {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: var(--sp-4);
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.pct-shows > li > .ui-ico {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  color: var(--accent);
+}
+.pct-shows b {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+/* экспертный режим: короткий список */
+.pct-list {
+  margin: 0;
+  padding-left: calc(var(--sp-6) + var(--sp-5));
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.pct-hint {
+  padding: 0;
+  color: var(--fg-muted);
+}

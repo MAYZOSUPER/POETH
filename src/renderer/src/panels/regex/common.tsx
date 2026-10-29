@@ -50,9 +50,19 @@ export function Seg<T extends string | number>({
 }
 
 /** Переключатель .ui-switch. */
-export function Switch({ on, onChange, children }: { on: boolean; onChange: (v: boolean) => void; children: ReactNode }) {
+export function Switch({
+  on,
+  onChange,
+  children,
+  title
+}: {
+  on: boolean
+  onChange: (v: boolean) => void
+  children: ReactNode
+  title?: string
+}) {
   return (
-    <button type="button" className="ui-switch" role="switch" aria-checked={on} onClick={() => onChange(!on)}>
+    <button type="button" className="ui-switch" role="switch" aria-checked={on} title={title} onClick={() => onChange(!on)}>
       <span className="ui-switch__track" />
       {children}
     </button>
