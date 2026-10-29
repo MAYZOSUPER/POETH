@@ -16,6 +16,10 @@
 
 <h2 align="center"><a href="https://github.com/MAYZOSUPER/POETH/releases/latest">⬇ Download for Windows</a></h2>
 
+> [!NOTE]
+> **Demo version.** A demo version is available now so you can try POETH: expect some bugs. The full release is on
+> November 11, 2026, and the installed version updates to it by itself. The portable version will need to be downloaded again.
+
 <p align="center"><b><a href="https://mayzosuper.github.io/POETH/guide/?lang=en">Guide to every feature</a></b> — how to use each feature, step by step · <a href="docs/FAQ.en.md">FAQ</a></p>
 
 ## How to install
