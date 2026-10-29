@@ -14,8 +14,10 @@ import './leveling-overlay.css'
 
 // Гид прокачки поверх игры (S14) по макету «Прокачка PoE 1»: слева сверху под баффами, тянется за шапку
 // (позиция — LevelingConfig.pos). Один следующий шаг крупно; «Сейчас: …», если награда в этом шаге; «Не
-// пропустите» — до двух пунктов впереди в акте; «Не по маршруту» с «Перейти к шагу»; свёрнуто — полоса
-// .ui-hud. Мышь ловят только шапка и кнопки — остальное проходит в игру. Только PoE 1.
+// пропустите» — до двух пунктов впереди в акте; вернулся назад за квестом — «Вернуться к шагу» прогресса;
+// свёрнуто — полоса .ui-hud. Мышь ловят только шапка и кнопки — остальное проходит в игру. Только PoE 1.
+// Виден, когда main решил (S22, LevelingState.guide): режим «авто» — только в зонах кампании, пока она не
+// пройдена; хоткей — до входа в другую зону.
 
 const DEFAULT_POS = { left: 16, top: 112 }
 const MAX_MISS = 2
@@ -105,9 +107,11 @@ function Guide({ simple }: { simple: boolean }) {
 
   const cur = currentIndex(flat, state.progress)
   const f = cur >= 0 ? flat[cur] : null
-  const zone = state.progress.areaId ? areaName(data, state.progress.areaId, lang) : f ? areaName(data, f.after, lang) : ''
-  const zl = state.progress.areaId ? data.areas[state.progress.areaId]?.level : undefined
-  const nextZone = f ? flat.slice(cur).find((x) => x.to && x.to !== state.progress.areaId)?.to ?? null : null
+  // где игрок: зона из журнала, если она в данных маршрута (убежище, карта — нет), иначе — по маршруту
+  const zoneId = state.zone && data.areas[state.zone.areaId] ? state.zone.areaId : (f?.after ?? null)
+  const zone = zoneId ? areaName(data, zoneId, lang) : ''
+  const zl = state.zone && state.zone.areaId === zoneId ? state.zone.level : undefined
+  const nextZone = f ? flat.slice(cur).find((x) => x.to && x.to !== zoneId)?.to ?? null : null
   const miss: { tag: LvTag; index: number }[] = []
   if (f) {
     for (const x of flat.slice(cur + 1)) {
@@ -193,13 +197,13 @@ function Guide({ simple }: { simple: boolean }) {
               <div className="ui-banner lv-ov__off">
                 <Icon name="warn" />
                 <span>
-                  {t('lev.offRoute')
+                  {t('lev.back')
                     .replace('{zone}', zone)
                     .replace('{act}', String(off.act))
                     .replace('{n}', String(off.actIndex))}
                 </span>
                 <button ref={bodyBtnRef} type="button" className="ui-btn ui-btn--sm" onClick={() => void act({ type: 'jump', index: off.index }).finally(done)}>
-                  {t('lev.goTo').replace('{n}', String(off.actIndex))}
+                  {t('lev.back.go').replace('{n}', String(off.actIndex))}
                 </button>
               </div>
             )}
@@ -259,7 +263,7 @@ function LevelingWidget() {
     }
   }, [init])
 
-  if (!poe1 || !ready || !state?.config.overlay) return null
+  if (!poe1 || !ready || !state?.guide.visible) return null
   return <Guide simple={simple} />
 }
 

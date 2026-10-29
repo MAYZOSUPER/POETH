@@ -13,13 +13,16 @@ import {
   jumpTo,
   next,
   prev,
+  progressIndex,
+  returnIndex,
   stepPassives,
-  toggle
+  toggle,
+  zoneAt
 } from '@shared/leveling/route'
-import { parseLevelingLine } from '@shared/leveling/log'
+import { isAfter, parseLevelingLine, parseLevelingLog } from '@shared/leveling/log'
 import { plainText, renderParts } from '@shared/leveling/render'
 
-// Прокачка PoE1 (S14) на настоящих данных (resources/data/poe1/leveling/leveling.json, маршрут exile-leveling)
+// Прокачка PoE1 (S14, S22) на настоящих данных (resources/data/poe1/leveling/leveling.json, маршрут exile-leveling)
 // и синтетических строках Client.txt EN/RU: зоны, уровень, переход шагов, «не по маршруту», счётчики.
 
 const data = JSON.parse(
@@ -109,14 +112,28 @@ describe.each([
     expect(parseLevelingLine(zone('1_1_2', 2))).toEqual({ type: 'zone', areaId: '1_1_2', level: 2 })
     expect(parseLevelingLine(`${P('INFO')}: ${who} has been slain.`)).toBeNull()
   })
+
+  it('вход в игру — служебная строка движка (как в настоящем Client.txt); время и счётчик строки', () => {
+    const login = '2026/10/29 02:03:27 265719328 890d9dbc [INFO Client 45552] Async connecting to fra.login.pathofexile.com:20488'
+    expect(parseLevelingLog(login)).toEqual({ event: { type: 'login' }, at: { ts: new Date(2026, 9, 29, 2, 3, 27).getTime(), up: 265719328 } })
+    // «Connected to …» и подключение к серверу зоны — не вход
+    expect(parseLevelingLine('2026/10/29 02:03:27 265719437 890d9d3b [INFO Client 45552] Connected to fra.login.pathofexile.com in 31ms.')).toBeNull()
+    expect(parseLevelingLine('2026/10/29 02:03:34 265726359 ca3a6b7d [INFO Client 45552] Connecting to instance server at 67.58.99.211:6112')).toBeNull()
+    const at = { ts: new Date(2026, 9, 29, 2, 3, 27).getTime(), up: 265719328 }
+    expect(isAfter(login, at)).toBe(false)
+    expect(isAfter('2026/10/29 02:03:27 265719437 890d9d3b [INFO Client 45552] x', at)).toBe(true)
+    expect(isAfter('2026/10/29 02:03:26 999999999 890d9d3b [INFO Client 45552] x', at)).toBe(false)
+  })
 })
 
 describe('переход шагов по входу в зону', () => {
+  const after = (areaId: string, from = 0): number => flat.findIndex((f, j) => j >= from && f.to === areaId) + 1
+
   it('вход в город после Хиллока → шаги 1–2 пройдены, текущий — «Сдайте квест»', () => {
     let prog = emptyProgress()
     expect(currentIndex(flat, prog)).toBe(0)
     const r = enterZone(flat, prog, '1_1_town', T)
-    expect(r).toMatchObject({ advanced: true, offRoute: null })
+    expect(r.moved).toBe('forward')
     prog = r.progress
     expect(Object.keys(prog.done)).toEqual(['a1-001', 'a1-002'])
     expect(prog.current).toBe('a1-003')
@@ -126,22 +143,55 @@ describe('переход шагов по входу в зону', () => {
     expect(prog.done['a1-003']).toBe(T)
   })
 
-  it('та же зона, убежище, город по пути — без изменений и без «не по маршруту»', () => {
+  it('та же зона (ручной шаг не сбрасывается), убежище, город по пути — без изменений', () => {
     const prog = jumpTo(flat, emptyProgress(), 4, T)
-    expect(enterZone(flat, prog, '1_1_2', T)).toMatchObject({ advanced: false, offRoute: null })
-    expect(enterZone(flat, prog, 'HideoutSpace', T)).toMatchObject({ advanced: false, offRoute: null })
-    expect(enterZone(flat, prog, '1_1_town', T)).toMatchObject({ advanced: false, offRoute: null })
+    expect(enterZone(flat, prog, '1_1_2', T).moved).toBeNull()
+    expect(enterZone(flat, prog, 'HideoutSpace', T).moved).toBeNull()
+    expect(enterZone(flat, prog, '1_1_town', T).moved).toBeNull()
+    // ▶ вручную на шаг дальше в той же зоне, вход туда же (портал, смерть) — шаг остаётся
+    const manual = next(flat, prog, T)
+    expect(zoneAt(flat, currentIndex(flat, manual))).toBe('1_1_2')
+    const r = enterZone(flat, manual, '1_1_2', T)
+    expect(r.moved).toBeNull()
+    expect(r.progress.current).toBe(manual.current)
   })
 
-  it('зона далеко впереди → «не по маршруту» с номером шага; «перейти к шагу»', () => {
+  it('зона далеко впереди (запуск посреди кампании, другой акт) → сразу её шаг', () => {
     const prog = jumpTo(flat, emptyProgress(), 4, T)
-    const target = flat.findIndex((f) => f.to === '1_2_2') // акт 2
+    const target = after('1_2_2') // акт 2
     const r = enterZone(flat, prog, '1_2_2', T)
-    expect(r.advanced).toBe(false)
-    expect(r.offRoute).toBe(target + 1)
-    const moved = jumpTo(flat, r.progress, r.offRoute!, T)
-    expect(currentIndex(flat, moved)).toBe(target + 1)
-    expect(Object.keys(moved.done)).toHaveLength(target + 1)
+    expect(r.moved).toBe('forward')
+    expect(currentIndex(flat, r.progress)).toBe(target)
+    expect(Object.keys(r.progress.done)).toHaveLength(target)
+  })
+
+  it('назад за квестом: шаг той зоны, отметки и прогресс остаются; «вернуться» — обратно', () => {
+    const h = after('1_1_7_2') // Склеп Мерволла, уровень 2
+    const prog = jumpTo(flat, emptyProgress(), h, T)
+    const r = enterZone(flat, prog, '1_1_3', T) // Приливный остров — раньше по маршруту
+    expect(r.moved).toBe('back')
+    const back = currentIndex(flat, r.progress)
+    expect(back).toBe(after('1_1_3'))
+    expect(Object.keys(r.progress.done)).toHaveLength(h)
+    expect(returnIndex(flat, r.progress)).toBe(h)
+    expect(progressIndex(flat, r.progress)).toBe(h)
+    // зона прогресса — обратно к нему
+    const ret = enterZone(flat, r.progress, '1_1_7_2', T)
+    expect(ret.moved).toBe('progress')
+    expect(currentIndex(flat, ret.progress)).toBe(h)
+    expect(returnIndex(flat, ret.progress)).toBeNull()
+    // или кнопкой «вернуться к шагу»
+    expect(currentIndex(flat, jumpTo(flat, r.progress, h, T))).toBe(h)
+  })
+
+  it('город: следующего акта — к нему (вход в игру), своего или прошлого — без изменений (за покупками)', () => {
+    const prog = jumpTo(flat, emptyProgress(), 4, T)
+    const r = enterZone(flat, prog, '1_5_town', T)
+    expect(r.moved).toBe('forward')
+    expect(currentIndex(flat, r.progress)).toBe(after('1_5_town'))
+    const act5 = jumpTo(flat, emptyProgress(), after('1_5_3'), T)
+    expect(enterZone(flat, act5, '1_5_town', T).moved).toBeNull()
+    expect(enterZone(flat, act5, '1_1_town', T).moved).toBeNull()
   })
 
   it('◀ ▶ и ручные галочки', () => {
