@@ -7,7 +7,8 @@
 .ui-rail--drawer .ui-rail__item:has(> .ui-count) {
   grid-template-columns: 20px minmax(0, 1fr) auto;
 }
-/* свёрнутый: значок в правом верхнем углу иконки */
+/* свёрнутый: значок в правом верхнем углу иконки. Цвет значка — тот же полупрозрачный, что у .ui-count, но на
+   непрозрачной основе и с кольцом цвета фона: линии иконки под значком не просвечивают */
 .ui-rail:not(.ui-rail--wide):not(.ui-rail--drawer) .ui-rail__item > .ui-count {
   position: absolute;
   top: 2px;
@@ -15,6 +16,13 @@
   min-width: 15px;
   height: 14px;
   padding: 0 3px;
+  background: linear-gradient(var(--sunken), var(--sunken)), var(--surface-solid);
+  box-shadow: 0 0 0 1px var(--surface-solid);
+}
+.ui-rail:not(.ui-rail--wide):not(.ui-rail--drawer) .ui-rail__item > .ui-count--live {
+  background:
+    linear-gradient(color-mix(in srgb, var(--live) 22%, transparent), color-mix(in srgb, var(--live) 22%, transparent)),
+    var(--surface-solid);
 }
 
 /* строка со счётчиком в подсказке свёрнутого рельса */

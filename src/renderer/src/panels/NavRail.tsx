@@ -97,7 +97,7 @@ function useRailCounts(hasLive: boolean, hasDeals: boolean, viewingDeals: boolea
   return {
     live: dev?.live ?? (hasLive ? liveCount(snap) : 0),
     // на открытой вкладке всё уже видно — без мигания «1», пока эффект не отметил новое просмотренным
-    deals: dev?.deals ?? (hasDeals && !viewingDeals ? dealsCount(deals, seen) : 0)
+    deals: viewingDeals ? 0 : (dev?.deals ?? (hasDeals ? dealsCount(deals, seen) : 0))
   }
 }
 
