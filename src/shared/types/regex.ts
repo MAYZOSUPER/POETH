@@ -78,6 +78,79 @@ export interface MapQuery {
 
 export type SocketColor = 'r' | 'g' | 'b' | 'w'
 
+/**
+ * Свойство предмета в «Торговце» (S27). Фрагменты строят tools/regex/build-vendor-data.mjs →
+ * src/shared/regex/vendorData.ts; порядок — как на странице (защита, сопротивления, камни, урон, скорость,
+ * характеристики).
+ */
+export type VendorModKey =
+  | 'life'
+  | 'mana'
+  | 'energyShield'
+  | 'resFire'
+  | 'resCold'
+  | 'resLightning'
+  | 'resChaos'
+  | 'resAll'
+  | 'gemAll'
+  | 'gemSpell'
+  | 'gemFire'
+  | 'gemCold'
+  | 'gemLightning'
+  | 'gemChaos'
+  | 'gemPhys'
+  | 'gemMinion'
+  | 'gemBow'
+  | 'gemMelee'
+  | 'spellDamage'
+  | 'physDamage'
+  | 'eleAttack'
+  | 'addAttackPhys'
+  | 'addAttackFire'
+  | 'addAttackCold'
+  | 'addAttackLightning'
+  | 'addAttackChaos'
+  | 'addSpellPhys'
+  | 'addSpellFire'
+  | 'addSpellCold'
+  | 'addSpellLightning'
+  | 'addSpellChaos'
+  | 'moveSpeed'
+  | 'attackSpeed'
+  | 'castSpeed'
+  | 'critChance'
+  | 'str'
+  | 'dex'
+  | 'int'
+  | 'allAttributes'
+
+/** Класс предмета («Item Class: Boots») — фильтр «И» в «Торговце». */
+export type VendorItemClass =
+  | 'boots'
+  | 'gloves'
+  | 'helmet'
+  | 'bodyArmour'
+  | 'shield'
+  | 'quiver'
+  | 'ring'
+  | 'amulet'
+  | 'belt'
+  | 'wand'
+  | 'sceptre'
+  | 'staff'
+  | 'dagger'
+  | 'claw'
+  | 'bow'
+  | 'sword1h'
+  | 'axe1h'
+  | 'mace1h'
+  | 'sword2h'
+  | 'axe2h'
+  | 'mace2h'
+
+/** Редкость («Rarity: Magic») — фильтр «И» в «Торговце». */
+export type VendorRarity = 'normal' | 'magic' | 'rare'
+
 /** Запрос «Торговец». */
 export interface VendorQuery {
   /** Минимальная связь гнёзд (0 — неважно). */
@@ -89,14 +162,21 @@ export interface VendorQuery {
   /** N гнёзд одного цвета в одной связке (0 — неважно). */
   colorCount: number
   color: SocketColor
-  /** Скорость передвижения ≥ N % (0 — неважно). */
-  movementSpeed: number
+  /**
+   * Свойства предметов (S27): ключ → порог «≥ N» (у свойств без порога — 1); нет ключа или 0 — не выбрано.
+   * Скорость передвижения — mods.moveSpeed (раньше — поле movementSpeed, библиотека переносит).
+   */
+  mods: Partial<Record<VendorModKey, number>>
   /** Качество ≥ N % (0 — неважно). */
   quality: number
-  /** Моды «+# к уровню камней» (прокачка). */
+  /** Моды «+# к уровню камней» любого типа (прокачка). */
   plusGemLevel: boolean
   /** Камни уровня ≥ N (0 — неважно); всегда отдельным условием «И». */
   gemLevel: number
+  /** Класс предмета ('' — любой); отдельное условие «И». */
+  itemClass: VendorItemClass | ''
+  /** Редкость (пусто — любая; несколько — любая из них); отдельное условие «И». */
+  rarity: VendorRarity[]
   mode: 'any' | 'all'
 }
 

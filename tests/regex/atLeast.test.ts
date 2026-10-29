@@ -47,6 +47,17 @@ describe('atLeast', () => {
     }
   })
 
+  it('whole: число целиком между контекстом слева и справа («\\+…% to fire») — n 0–999, v 0–999', () => {
+    for (const digit of ['.', '\\d'] as const) {
+      for (let n = 0; n <= 999; n++) {
+        const re = new RegExp(`\\+${atLeast(n, { digit, whole: true })}% to fire r`, 'i')
+        for (let v = 0; v <= 999; v++) check(n, v, re, `+${v}% to Fire Resistance\n-${v + 50}% to Fire Resistance`)
+      }
+    }
+    expect(atLeast(5, { whole: true })).toBe('([5-9]|\\d.|\\d..)')
+    expect(atLeast(0, { whole: true })).toBe('\\d+')
+  })
+
   it('вне диапазона — ошибка', () => {
     expect(() => atLeast(-1)).toThrow()
     expect(() => atLeast(1000)).toThrow()

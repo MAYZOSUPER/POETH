@@ -18,14 +18,14 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
+export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const TOOL_DIR = path.join(ROOT, 'tools/regex')
 const SRC_DIR = path.join(TOOL_DIR, 'sources')
 const OUT_DIR = path.join(ROOT, 'resources/data/poe1/regex')
 const BASE_URL = 'https://repoe-fork.github.io/'
-const DEFAULT_PATCH = '3.29'
+export const DEFAULT_PATCH = '3.29'
 
 const SOURCES = {
   mods: 'mods.min.json',
@@ -119,7 +119,7 @@ function cacheName(rel) {
   return rel.replace(/\//g, '_')
 }
 
-async function ensureSources(refresh) {
+export async function ensureSources(refresh) {
   fs.mkdirSync(SRC_DIR, { recursive: true })
   const infoFile = path.join(SRC_DIR, 'sources.json')
   const info = fs.existsSync(infoFile) ? JSON.parse(fs.readFileSync(infoFile, 'utf8')) : {}
@@ -138,12 +138,12 @@ async function ensureSources(refresh) {
   return info
 }
 
-function readSource(key) {
+export function readSource(key) {
   return JSON.parse(fs.readFileSync(path.join(SRC_DIR, cacheName(SOURCES[key])), 'utf8'))
 }
 
 /** Дата данных = самая свежая Last-Modified источников (не время сборки — воспроизводимость). */
-function sourcesDate(info) {
+export function sourcesDate(info) {
   let best = null
   for (const rel of Object.values(SOURCES)) {
     const lm = info[rel]?.lastModified
@@ -165,7 +165,7 @@ function sourcesDate(info) {
 // ---------------------------------------------------------------------------
 
 /** stat id → записи перевода, в которых он участвует; ключ ids → запись. */
-function indexTranslations(list) {
+export function indexTranslations(list) {
   const byStat = new Map()
   const byIds = new Map()
   for (const t of list) {
@@ -192,12 +192,12 @@ function conditionOk(cond, v) {
   return cond.negated ? !ok : ok
 }
 
-function pickVariant(variants, vals) {
+export function pickVariant(variants, vals) {
   return variants?.find((variant) => variant.condition.every((c, i) => conditionOk(c, vals[i]))) ?? null
 }
 
 /** Подставить «#» вместо чисел, снять разметку [Ключ|Текст] и <тег>{текст}. */
-function renderVariant(variant, vals, info = {}) {
+export function renderVariant(variant, vals, info = {}) {
   let s = variant.string.replace(/\{(\d+)(?::[^}]*)?\}/g, (_, idx) => {
     const i = Number(idx)
     const fmt = variant.format[i] ?? '#'
@@ -225,12 +225,12 @@ export function normLine(s, lower = true) {
 }
 
 /** ё и е в поиске игры могут не различаться — уникальность проверяем «со свёрткой». */
-function fold(s) {
+export function fold(s) {
   return s.replace(/ё/g, 'е')
 }
 
 /** Видимые строки мода (скрытые статы вроде IIQ карты пропускаются) и id видимых статов. */
-function renderMod(mod, trEn, trRu) {
+export function renderMod(mod, trEn, trRu) {
   const stats = new Map(mod.stats.map((s) => [s.id, s]))
   const used = new Set()
   const out = { en: [], ru: [], displayEn: [], displayRu: [], ids: [], decimal: false }
@@ -278,7 +278,7 @@ function renderMod(mod, trEn, trRu) {
 // Выбор модов карт
 // ---------------------------------------------------------------------------
 
-function positiveTags(mod) {
+export function positiveTags(mod) {
   return mod.spawn_weights.filter((w) => w.weight > 0).map((w) => w.tag.trim())
 }
 
@@ -406,7 +406,7 @@ export function toRegex(raw) {
  * Оценка кандидата: короче (в символах регулярки) — лучше; спецсимволы, ё, пробелы и
  * буквы, бывшие заглавными в подсказке (регистр кириллицы в игре не проверен), — штраф.
  */
-function score(raw, caseLines) {
+export function score(raw, caseLines) {
   const esc = toRegex(raw)
   const special = esc.length - raw.length
   const yo = (raw.match(/ё/g) ?? []).length
@@ -419,7 +419,7 @@ function score(raw, caseLines) {
  * Все подстроки строк `lines` длиной lo..hi: без кавычек и !, без пробелов и # по краям;
  * # (число) внутри — только если allowNum. Сортировка — по оценке, затем по алфавиту.
  */
-function substrings(lines, lo, hi, { allowNum = false, caseLines = null } = {}) {
+export function substrings(lines, lo, hi, { allowNum = false, caseLines = null } = {}) {
   const out = new Set()
   for (const line of lines) {
     for (let i = 0; i < line.length; i++) {
@@ -577,7 +577,10 @@ async function main() {
   }
 }
 
-main().catch((e) => {
-  console.error(e)
-  process.exit(1)
-})
+// запуск как скрипт; при импорте (генератор торговца) — только помощники
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  main().catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+}

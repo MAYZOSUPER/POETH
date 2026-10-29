@@ -4,7 +4,18 @@ import { buildVendorRegex, colorLinkPattern, compileSearch, emptyVendorQuery, li
 
 // Торговец: синтетические подсказки предметов EN/RU через эмулятор поиска.
 
-const TX: Record<RegexLang, { sockets: string; move: (n: number) => string; quality: (n: number) => string; ilvl: string; gem: (n: number) => string; plus: string; life: string }> = {
+const TX: Record<
+  RegexLang,
+  {
+    sockets: string
+    move: (n: number) => string
+    quality: (n: number) => string
+    ilvl: string
+    gem: (n: number) => string
+    plus: string
+    life: string
+  }
+> = {
   en: {
     sockets: 'Sockets: ',
     move: (n) => `${n}% increased Movement Speed`,
@@ -101,7 +112,7 @@ describe.each(['en', 'ru'] as RegexLang[])('торговец %s', (lang) => {
 
   it('скорость передвижения ≥ 10 / ≥ 15', () => {
     for (const n of [10, 15]) {
-      const match = run({ movementSpeed: n })
+      const match = run({ mods: { moveSpeed: n } })
       for (const v of [5, 9, 10, 14, 15, 20, 25, 30, 35]) {
         expect(match(item(lang, { lines: [tx.move(v)] })), `${n} на ${v}`).toBe(v >= n)
       }
@@ -130,11 +141,14 @@ describe.each(['en', 'ru'] as RegexLang[])('торговец %s', (lang) => {
     expect(match(gem(19))).toBe(false)
     expect(match(gem(1))).toBe(false)
     expect(match(item(lang, {}))).toBe(false)
+    // у снаряжения «Level: 64» / «Уровень: 64» в требованиях — не камень (S27: в RU раньше совпадало)
+    const req = lang === 'en' ? ['Requirements:', 'Level: 64'] : ['Требования:', 'Уровень: 64']
+    expect(match(item(lang, { lines: req }))).toBe(false)
   })
 
   it('«любое из» / «всё сразу»', () => {
-    const any = run({ links: 4, movementSpeed: 15 })
-    const all = run({ links: 4, movementSpeed: 15, mode: 'all' })
+    const any = run({ links: 4, mods: { moveSpeed: 15 } })
+    const all = run({ links: 4, mods: { moveSpeed: 15 }, mode: 'all' })
     const fourL = item(lang, { sockets: 'R-G-B-B' })
     const fast = item(lang, { lines: [tx.move(20)] })
     const both = item(lang, { sockets: 'R-G-B-B', lines: [tx.move(20)] })
