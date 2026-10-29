@@ -295,3 +295,176 @@
 .pc-warns__more {
   justify-self: start;
 }
+
+/* S21: строка лота с карточкой «что продаёт и похоже ли на ваш» — наведение, клик закрепляет (золотая черта) */
+.pc-lot {
+  cursor: default;
+}
+.pc-lot.is-shown {
+  background: var(--hover);
+}
+.pc-lot.is-pinned {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+/* «похоже 4/6» — сводка и кнопка карточки в строке статуса лота */
+.pc-sim {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 0 var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: none;
+  color: var(--fg-muted);
+  font: 600 var(--fs-2xs) / 16px var(--font-ui);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.pc-sim .ui-ico {
+  width: 11px;
+  height: 11px;
+}
+.pc-sim:hover,
+.pc-sim[aria-expanded='true'] {
+  border-color: var(--accent);
+  color: var(--accent-hi);
+}
+.pc-sim:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.pc-sim[data-full] {
+  color: var(--good);
+}
+
+/* карточка лота: сбоку от окна (окно не растёт), только показ */
+.pc-lotcard {
+  position: fixed;
+  z-index: 1000;
+  display: grid;
+  gap: var(--sp-3);
+  width: 300px;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 16px);
+  padding: var(--sp-5) var(--sp-6);
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-panel);
+  background: var(--surface-solid);
+  box-shadow: var(--halo);
+  color: var(--fg);
+  font: 400 var(--fs-sm) / 1.35 var(--font-ui);
+  pointer-events: none;
+}
+.pc-lotcard.is-pinned {
+  border-color: var(--accent);
+}
+.pc-lotcard__head {
+  display: grid;
+  gap: var(--sp-1);
+}
+.pc-lotcard__name {
+  font: 600 var(--fs-md) / 1.25 var(--font-ui);
+  overflow-wrap: anywhere;
+}
+.pc-lotcard__base {
+  color: var(--fg);
+}
+.pc-lotcard__meta {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.pc-lotcard__sum {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-sm);
+  background: var(--accent-soft);
+  color: var(--accent-hi);
+}
+.pc-lotcard__sum b {
+  color: inherit;
+  font-weight: 600;
+}
+.pc-lotcard__sum[data-full] {
+  background: color-mix(in srgb, var(--good) 14%, transparent);
+  color: var(--good);
+}
+.pc-lotcard__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-5);
+  font-size: var(--fs-xs);
+}
+.pc-lotcard__legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.pc-lotcard__mods {
+  display: grid;
+  gap: var(--sp-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pc-lotcard__sep {
+  height: 1px;
+  margin: var(--sp-1) 0;
+  background: var(--border);
+}
+.pc-lotcard__label {
+  color: var(--fg-muted);
+  font: 600 var(--fs-2xs) / 1.2 var(--font-ui);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.pc-lotcard__empty {
+  color: var(--fg-muted);
+}
+.pc-lotcard__note {
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--border);
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}
+/* мод лота: цвет итога всегда вместе с иконкой (галочка / стрелка вниз / крестик / черта) */
+.pc-lotmod {
+  display: grid;
+  grid-template-columns: 13px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--sp-3);
+}
+.pc-lotmod > .ui-ico {
+  width: 13px;
+  height: 13px;
+  margin-top: 2px;
+}
+.pc-lotmod__text {
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+.pc-lotmod__kind,
+.pc-lotmod__yours {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.pc-lotcard [data-status='match'] > .ui-ico,
+.pc-lotmod[data-status='match'] {
+  color: var(--good);
+}
+.pc-lotcard [data-status='worse'] > .ui-ico,
+.pc-lotmod[data-status='worse'] {
+  color: var(--warn);
+}
+.pc-lotcard [data-status='missing'] > .ui-ico,
+.pc-lotmod[data-status='missing'] {
+  color: var(--bad);
+}
+.pc-lotmod[data-status='extra'] > .ui-ico {
+  color: var(--fg-faint);
+}
+.pc-lotcard__legend [data-status] {
+  color: var(--fg-muted);
+}

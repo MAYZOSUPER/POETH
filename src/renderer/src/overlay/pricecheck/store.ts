@@ -23,6 +23,7 @@ import {
   type Poe1Listing
 } from '@shared/poe1/pricecheck/results'
 import { chaosRates } from '@shared/poe1/pricecheck/currency'
+import { dataValueReader, playerStatsOf, type ModValueReader, type PlayerStat } from '@shared/poe1/pricecheck/compare'
 import { noVendor, priceVerdict, withCaution, type Verdict } from '@shared/poe1/pricecheck/verdict'
 import {
   checkedMods,
@@ -56,6 +57,8 @@ interface TradeBase {
   siteUrl: string
   cached: boolean
   searched: PcSearched
+  /** S21: тело поиска, которое приняло API, — «Открыть лот» сужает его до продавца */
+  query: unknown
 }
 
 interface BulkBase {
@@ -103,6 +106,10 @@ interface PcState {
   rate: CurrencyRate | null
   /** сколько свойств отмечено по умолчанию в каждом пресете (для «поиск слишком широкий») */
   defaultsOn: Record<string, number>
+  /** S21: свойства предмета игрока для карточки лота «похоже ли на ваш» */
+  mine: PlayerStat[]
+  /** S21: чтение значений модов лота данными языка сайта (www — en, ru — ru); нет данных — по числам */
+  readLotValue?: ModValueReader
 
   open: (captured: CapturedItem) => Promise<void>
   close: () => void
@@ -152,6 +159,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
   rev: 0,
   rate: null,
   defaultsOn: {},
+  mine: [],
 
   open: async (captured) => {
     const my = ++session
@@ -195,10 +203,12 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
       presets: pc.presets,
       defaultsOn: Object.fromEntries(pc.presets.map((p) => [p.id, checkedMods(p).on])),
       rate: get().rate?.league === league ? get().rate : null,
-      activePreset: pc.active
+      activePreset: pc.active,
+      mine: playerStatsOf(item)
     })
 
     loadRate(league, get, set)
+    loadSiteData(my, get().siteHost === 'ru.pathofexile.com' ? 'ru' : 'en', set)
 
     // моды, которых нет в данных APT (новый патч) → статы сайта; фильтры добавляются выключенными,
     // поэтому на первый поиск не влияют и ждать их не нужно
@@ -241,12 +251,13 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
     const req = buildRequest(item, data, preset)
     const api = window.overlayApi.trade
     let res
+    let body: unknown = req.body
     if (req.api === 'bulk') {
       res = await api.poe1Exchange({ league: req.league, body: req.body })
     } else {
       // запрос строится на английских именах; ru.pathofexile.com их не принимает («Unknown item name»)
       const hostData = get().siteHost === 'ru.pathofexile.com' ? await dataStore.ensureLanguage('ru').catch(() => null) : null
-      const body = hostData ? localizeTradeRequest(req.body as TradeRequest, hostData) : req.body
+      if (hostData) body = localizeTradeRequest(req.body as TradeRequest, hostData)
       if (my !== session) return
       res = await api.poe1Search({ league: req.league, body })
     }
@@ -281,7 +292,8 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
         listings: res.listings,
         siteUrl: res.siteUrl,
         cached: res.cached,
-        searched
+        searched,
+        query: body
       }
       set({ phase: res.total > 0 ? 'result' : 'empty', result: analyzeTrade(base, item, rate) })
     }
@@ -338,7 +350,7 @@ export const usePriceCheckStore = create<PcState>((set, get) => ({
 
 /** Честная цена, вердикт и предупреждения поиска; курс нужен, чтобы сравнивать chaos и divine. */
 function analyzeTrade(base: TradeBase, item: ParsedItem, rate: number | undefined): PcResult {
-  const { total, inexact, listings, siteUrl, cached, searched } = base
+  const { total, inexact, listings, siteUrl, cached, searched, query } = base
   const honest = honestPrice(listings, total, chaosRates(rate))
   const warnings = priceWarnings({ item, ...searched, listings, honest, inexact, now: searched.at })
   const verdict = priceVerdict({ kind: 'trade', total, listings, honest, chaosPerDivine: rate, noVendor: noVendor(item) })
@@ -350,6 +362,7 @@ function analyzeTrade(base: TradeBase, item: ParsedItem, rate: number | undefine
     siteUrl,
     cached,
     searched,
+    query,
     honest,
     // выдача про другой вариант (связи, Foulborn, порча) — заметку цены не предлагаем
     verdict: withCaution(verdict, hasStrongWarning(warnings)),
@@ -361,6 +374,20 @@ function analyzeBulk(base: BulkBase, rate: number | undefined): PcResult {
   const best = base.offers[0]
   const each = best && best.itemAmount > 0 ? { amount: best.exchangeAmount / best.itemAmount, currency: best.currency } : undefined
   return { kind: 'bulk', ...base, verdict: priceVerdict({ kind: 'bulk', total: base.total, each, chaosPerDivine: rate }) }
+}
+
+/**
+ * S21: данные языка сайта трейда — моды лота приходят на нём; значения читаем тем же разбором, что и предмет.
+ * Обычно уже в памяти (предзагрузка обоих языков); нет — карточка лота читает числа текста.
+ */
+function loadSiteData(my: number, lang: Poe1Lang, set: (p: Partial<PcState>) => void): void {
+  set({ readLotValue: undefined })
+  void dataStore
+    .ensureLanguage(lang)
+    .then((d) => {
+      if (my === session) set({ readLotValue: dataValueReader(d) })
+    })
+    .catch(() => undefined)
 }
 
 /** Курс лиги — фоном (первый раз main может докачивать часы фида); устаревший ответ не применяем. */

@@ -1,4 +1,5 @@
 import { clipboard, ipcMain, webContents, type IpcMainInvokeEvent } from 'electron'
+import { gzipSync } from 'zlib'
 import { IPC } from '@shared/ipc'
 import type { GameDef, GameId } from '@shared/games'
 import { isSiteExternalUrl } from '@shared/links'
@@ -14,8 +15,8 @@ import type {
   TradeWindowTarget
 } from '@shared/types'
 import * as model from '@shared/favorites/model'
-import { buildQueryUrl, buildTradeUrl, parseTradeUrl } from '@shared/favorites/tradeUrl'
-import { lotQuery, queryParam } from '@shared/favorites/lot'
+import { buildTradeUrl, parseTradeUrl } from '@shared/favorites/tradeUrl'
+import { searchStateId, targetQuery } from '@shared/favorites/lot'
 import { getFavorites, newFavId, onFavoritesChanged, updateFavorites } from '../services/favoritesStore'
 import { getSettings } from '../services/settingsStore'
 import { getRunningGame } from '../gameContext'
@@ -29,7 +30,8 @@ import type { IpcDomain } from './types'
 
 // Домен «избранное и трейд-окно» (S5). Для других этапов (только main):
 //   openTradeWindow({url} | {query} | {lot} | {slug, type}) [+ league?, game?] — S4 прайс-чек, S6 live
-//                                 вместо openExternal; {lot:{account,name,typeLine,ilvl}} — «Открыть лот»;
+//                                 вместо openExternal; {lot, query?, url?} — «Открыть лот» (исходный поиск
+//                                 query, суженный до продавца; не вышло — url);
 //   addFavorite(input)            — кнопка «В избранное» из прайс-чека;
 //   openTradeLogin()              — вход (S3: auth.login открывает трейд-окно на /login);
 //   registerFavLiveAdapter(a)     — S6: live search поисков избранного (молния в сайдбаре).
@@ -136,14 +138,14 @@ async function windowTitle(): Promise<string> {
 }
 
 async function resolveTarget(target: TradeWindowTarget): Promise<string | undefined> {
-  if (typeof target.url === 'string' && target.url) return target.url
   const game = target.game === 'poe2' || target.game === 'poe1' ? target.game : getRunningGame()
   const type = target.type === 'exchange' ? 'exchange' : 'search'
   const league = typeof target.league === 'string' && target.league ? target.league : await currentLeague(game)
-  // запрос (или лот → запрос) сайт выполнит сам: …/search/<лига>?q=<JSON>
-  const lot = target.lot && typeof target.lot === 'object' ? lotQuery(target.lot) : null
-  const json = queryParam(target.query ?? lot)
-  if (json) return buildQueryUrl(await siteHost(), game, 'search', league, json)
+  // лот (или запрос) сайт выполнит сам: …/search/<лига>/<состояние>, состояние — сжатый запрос, как у сайта.
+  // Не вышло (нет продавца, запрос слишком длинный) — адрес из url: у «Открыть лот» это исходный поиск.
+  const state = searchStateId(targetQuery(target), (json) => gzipSync(json))
+  if (state) return buildTradeUrl(await siteHost(), game, 'search', league, state)
+  if (typeof target.url === 'string' && target.url) return target.url
   if (typeof target.slug === 'string' && /^[A-Za-z0-9]+$/.test(target.slug)) {
     return buildTradeUrl(await siteHost(), game, type, league, target.slug)
   }
