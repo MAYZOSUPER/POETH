@@ -10,7 +10,8 @@ npm install
 npm run dev      # запуск с hot-reload
 ```
 
-Если `npm install` не докачал бинарь Electron, запустите установку бинаря вручную:
+Бинарь Electron (с версии 42) при `npm install` не скачивается: он докачивается при первом запуске
+(`npm run dev`, `npx electron`). Скачать заранее:
 
 ```bash
 node node_modules/electron/install.js
@@ -35,6 +36,11 @@ node tools/ci/scan-secrets.mjs   # поиск секретов (как в CI)
 Живые проверки на тестовом окне «Path of Exile» (настоящие нажатия клавиш, запускать, когда за ПК
 никто не работает): `node tools/overlay/check-overlay.mjs`; обновления без клавиатуры —
 `node tools/updates/check-updates.mjs [--exe=dist-release/win-unpacked/POETH.exe]`.
+После смены версии Electron: `npx electron tools/electron/check-runtime.cjs [--app=…/app.asar] [--interactive]`
+(нативные модули, attach и снимок окна, поток OCR, safeStorage, буфер обмена) и
+`node tools/electron/check-live.mjs --exe=dist-release/win-unpacked/POETH.exe` (собранная версия через CDP:
+вкладки, оверлей, трейд-окно и вход GGG, проверки отправителя IPC; `--seed`/`--expect` — cookies и секрет
+профиля прошлой версии).
 
 ## Сборка
 
