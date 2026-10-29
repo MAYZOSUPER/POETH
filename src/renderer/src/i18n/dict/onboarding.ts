@@ -48,7 +48,8 @@ export const onboarding: DomainDict = {
     'wiz.window.fullscreenNow': 'Сейчас игра в эксклюзивном полноэкранном режиме — переключите на «Окно без рамки».',
 
     'wiz.account.h': 'Вход в аккаунт — по желанию',
-    'wiz.account.p1': 'Нужен только для live search — мгновенных уведомлений о новых лотах.',
+    'wiz.account.p1':
+      'Нужен для live search (мгновенные уведомления о новых лотах) и «Богатства» (POETH только читает ваш тайник, ничего в нём не меняет).',
     'wiz.account.p2': 'Прайс-чек, regex и сделки работают без входа.',
     'wiz.account.p3': 'Пароль вводится только на официальной странице GGG в трейд-окне — POETH его не видит.',
     'wiz.account.login': 'Войти через трейд-окно',
@@ -97,7 +98,8 @@ export const onboarding: DomainDict = {
     'about.credit.fonts': 'шрифты интерфейса',
     'about.credit.electron': 'основа приложения',
     'about.wizard': 'Пройти мастер первого запуска снова',
-    'about.privacy': 'Без телеметрии и своих серверов: POETH обращается только к pathofexile.com.',
+    'about.privacy':
+      'Без телеметрии и своих серверов. На pathofexile.com уходят ваши поиски трейда и ключ входа — только туда. Ещё POETH скачивает общие данные, ничего не сообщая о вас: курсы и иконки валюты (web.poecdn.com, сервер GGG), цены для «Богатства» (api.poe.watch), обновления программы и данных, чёрный список PoE Hub (GitHub). Подробно — docs/security.md в репозитории POETH на GitHub.',
 
     'set.about': 'О программе',
     'set.wizard': 'Мастер первого запуска'
@@ -145,7 +147,8 @@ export const onboarding: DomainDict = {
     'wiz.window.fullscreenNow': 'The game is in exclusive fullscreen right now — switch to “Windowed Fullscreen”.',
 
     'wiz.account.h': 'Account sign-in — optional',
-    'wiz.account.p1': 'Only needed for live search — instant alerts about new listings.',
+    'wiz.account.p1':
+      'Needed for live search (instant alerts about new listings) and Wealth (POETH only reads your stash and never changes it).',
     'wiz.account.p2': 'Price check, regex and trades work without signing in.',
     'wiz.account.p3': 'You type your password only on the official GGG page in the trade window — POETH never sees it.',
     'wiz.account.login': 'Sign in via the trade window',
@@ -194,7 +197,8 @@ export const onboarding: DomainDict = {
     'about.credit.fonts': 'interface fonts',
     'about.credit.electron': 'the app foundation',
     'about.wizard': 'Run the first-run wizard again',
-    'about.privacy': 'No telemetry and no servers of our own: POETH only talks to pathofexile.com.',
+    'about.privacy':
+      'No telemetry and no servers of our own. Your trade searches and sign-in key go to pathofexile.com — and only there. POETH also downloads shared data without sending anything about you: currency rates and icons (web.poecdn.com, a GGG server), Wealth prices (api.poe.watch), app and data updates and the PoE Hub blacklist (GitHub). Details: docs/security.md in the POETH repository on GitHub.',
 
     'set.about': 'About',
     'set.wizard': 'First-run wizard'
