@@ -65,14 +65,45 @@ export function vendorModText(lang: RegexLang, key: VendorModKey): string[] {
   return VENDOR_DATA[lang].mods[key].text
 }
 
-/** Фрагмент регулярки свойства: порог — <pre><atLeast(N)><post>, без порога — готовый токен. */
+interface Threshold {
+  pre: string
+  digit: '.' | '\\d'
+  n: number
+  posts: string[]
+}
+
+function threshold(lang: RegexLang, key: VendorModKey, n: number): Threshold {
+  const d = VENDOR_DATA[lang].mods[key]
+  return { pre: d.pre ?? '', digit: d.digit ?? '\\d', n: Math.max(0, Math.min(999, Math.round(n))), posts: d.posts ?? [] }
+}
+
+/** Хвосты после числа одной группой: без повторов и «покрытых» (a — начало b), общее начало — за скобку. */
+export function joinPosts(posts: string[]): string {
+  const uniq = [...new Set(posts)]
+  const list = uniq.filter((p) => !uniq.some((q) => q !== p && p.startsWith(q)))
+  if (list.length === 1) return list[0]
+  let lcp = list.reduce((a, b) => {
+    let i = 0
+    while (i < a.length && i < b.length && a[i] === b[i]) i++
+    return a.slice(0, i)
+  })
+  // не резать посреди \d, \+ и не оставлять квантификатор в начале альтернативы
+  while (lcp && (/(^|[^\\])(\\\\)*\\$/.test(lcp) || list.some((p) => /^[+*?{]/.test(p.slice(lcp.length))))) {
+    lcp = lcp.slice(0, -1)
+  }
+  if (lcp.length < 2) return `(${list.join('|')})`
+  return `${lcp}(${list.map((p) => p.slice(lcp.length)).join('|')})`
+}
+
+function thresholdBody(t: Threshold): string {
+  // с контекстом слева («\+») число должно совпасть целиком, без него хватает «хвоста»
+  return `${t.pre}${atLeast(t.n, { digit: t.digit, whole: t.pre !== '' })}${joinPosts(t.posts)}`
+}
+
+/** Фрагмент регулярки свойства: порог — <pre><atLeast(N)>(<posts>), без порога — готовый токен. */
 export function vendorModPattern(lang: RegexLang, key: VendorModKey, n = 0): string {
   const d = VENDOR_DATA[lang].mods[key]
-  if (d.token !== undefined) return d.token
-  const pre = d.pre ?? ''
-  // с контекстом слева («\+») число должно совпасть целиком, без него хватает «хвоста»
-  const num = atLeast(Math.max(0, Math.min(999, Math.round(n))), { digit: d.digit ?? '\\d', whole: pre !== '' })
-  return `${pre}${num}${d.post ?? ''}`
+  return d.token !== undefined ? d.token : thresholdBody(threshold(lang, key, n))
 }
 
 // Буква гнезда между дефисами — \w, а не «.»: иначе шаблон схватит разделитель «--------».
@@ -119,6 +150,8 @@ interface Part {
   /** ключ для подсказки «что убрать»: links, quality… или mod.<VendorModKey> */
   key: string
   body: string
+  /** порог свойства: в режиме «любое» пороги с тем же pre, цифрой и числом сливаются в одну группу */
+  thr?: Threshold
 }
 
 /** Части запроса, которые можно объединять через ИЛИ. */
@@ -132,9 +165,35 @@ export function vendorParts(lang: RegexLang, q: VendorQuery): Part[] {
   if (q.quality > 0) parts.push({ key: 'quality', body: `${tx.quality}.*${atLeast(q.quality)}%` })
   if (q.plusGemLevel) parts.push({ key: 'plusGemLevel', body: tx.plusGem })
   for (const key of selectedMods(q)) {
-    parts.push({ key: `mod.${key}`, body: vendorModPattern(lang, key, isThresholdMod(key) ? (q.mods[key] ?? 0) : 0) })
+    if (!isThresholdMod(key)) {
+      parts.push({ key: `mod.${key}`, body: vendorModPattern(lang, key) })
+      continue
+    }
+    const thr = threshold(lang, key, q.mods[key] ?? 0)
+    parts.push({ key: `mod.${key}`, body: thresholdBody(thr), thr })
   }
   return parts
+}
+
+/**
+ * Режим «любое»: части через | в один терм. Пороги с одинаковыми pre, цифрой и числом — одной группой
+ * («\+(1[5-9]|…)% to (fire r|cold r|lightning r|…)» вместо трёх atLeast): сопротивления на всё влезают в 250.
+ */
+function anyBody(parts: Part[]): string {
+  const out: string[] = []
+  const groups = new Map<string, { index: number; thr: Threshold }>()
+  for (const p of parts) {
+    if (!p.thr) {
+      out.push(p.body)
+      continue
+    }
+    const id = `${p.thr.pre}|${p.thr.digit}|${p.thr.n}`
+    const g = groups.get(id)
+    if (g) g.thr = { ...g.thr, posts: [...g.thr.posts, ...p.thr.posts] }
+    else groups.set(id, { index: out.push('') - 1, thr: p.thr })
+  }
+  for (const g of groups.values()) out[g.index] = thresholdBody(g.thr)
+  return out.join('|')
 }
 
 export interface VendorBuildResult extends RegexBuildResult {
@@ -144,14 +203,13 @@ export interface VendorBuildResult extends RegexBuildResult {
   side: VendorSideReason[]
 }
 
-export function buildVendorRegex(lang: RegexLang, q: VendorQuery): VendorBuildResult {
+function vendorText(lang: RegexLang, q: VendorQuery, parts: Part[]): string {
   const tx = VENDOR_TEXTS[lang]
   const data = VENDOR_DATA[lang]
-  const parts = vendorParts(lang, q)
   const terms: Term[] = []
   if (parts.length) {
     if (q.mode === 'all') for (const p of parts) terms.push({ negate: false, body: p.body })
-    else terms.push({ negate: false, body: parts.map((p) => p.body).join('|') })
+    else terms.push({ negate: false, body: anyBody(parts) })
   }
   // класс и редкость — отдельные условия «И»: «ботинки» и «со скоростью»
   if (q.itemClass) terms.push({ negate: false, body: data.classes[q.itemClass] })
@@ -164,7 +222,13 @@ export function buildVendorRegex(lang: RegexLang, q: VendorQuery): VendorBuildRe
     terms.push({ negate: false, body: `${tx.gemLevel}${atLeast(Math.min(q.gemLevel, 999), { digit: '\\d' })}` })
     terms.push({ negate: true, body: data.notItemLevel })
   }
-  const text = joinTerms(terms)
+  return joinTerms(terms)
+}
+
+export function buildVendorRegex(lang: RegexLang, q: VendorQuery): VendorBuildResult {
+  const data = VENDOR_DATA[lang]
+  const parts = vendorParts(lang, q)
+  const text = vendorText(lang, q, parts)
   const chosen = selectedMods(q)
   const also = new Set<VendorModKey>()
   const side = new Set<VendorSideReason>()
@@ -182,7 +246,12 @@ export function buildVendorRegex(lang: RegexLang, q: VendorQuery): VendorBuildRe
   }
   if (!result.ok) {
     const by = text.length - REGEX_LIMIT
-    const items: OverflowItem[] = parts.map((p) => ({ kind: 'option', key: p.key, saves: p.body.length + 1 }))
+    // сколько символов даст удаление части — пересборкой без неё (пороги в группе экономят меньше своей длины)
+    const items: OverflowItem[] = parts.map((p) => ({
+      kind: 'option',
+      key: p.key,
+      saves: text.length - vendorText(lang, q, parts.filter((x) => x !== p)).length
+    }))
     result.overflow = { by, suggest: suggestRemovals(items, by) }
   }
   return result

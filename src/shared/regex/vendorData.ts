@@ -17,49 +17,49 @@ export const VENDOR_DATA: VendorData = {
       life: {
         text: ['+# to maximum Life'],
         pre: '',
-        post: ' to maximum l',
+        posts: [' to maximum l'],
         digit: '\\d'
       },
       mana: {
         text: ['+# to maximum Mana'],
         pre: '',
-        post: ' to maximum m',
+        posts: [' to maximum m'],
         digit: '\\d'
       },
       energyShield: {
         text: ['+# to maximum Energy Shield'],
         pre: '',
-        post: ' to maximum ene',
+        posts: [' to maximum ene'],
         digit: '\\d'
       },
       resFire: {
         text: ['+#% to Fire Resistance', '+#% to Fire and Cold Resistances', '+#% to Fire and Lightning Resistances'],
         pre: '\\+',
-        post: '(% to fire and co|% to fire and l|% to fire r)',
+        posts: ['% to fire and co', '% to fire and l', '% to fire r'],
         digit: '.'
       },
       resCold: {
         text: ['+#% to Cold Resistance', '+#% to Fire and Cold Resistances', '+#% to Cold and Lightning Resistances'],
         pre: '\\+',
-        post: '(% to cold and l|% to cold r|% to fire and co)',
+        posts: ['% to cold and l', '% to cold r', '% to fire and co'],
         digit: '.'
       },
       resLightning: {
         text: ['+#% to Lightning Resistance', '+#% to Fire and Lightning Resistances', '+#% to Cold and Lightning Resistances'],
         pre: '\\+',
-        post: '(% to cold and l|% to fire and l|% to lightning r)',
+        posts: ['% to cold and l', '% to fire and l', '% to lightning r'],
         digit: '.'
       },
       resChaos: {
         text: ['+#% to Chaos Resistance'],
         pre: '\\+',
-        post: '% to chaos r',
+        posts: ['% to chaos r'],
         digit: '.'
       },
       resAll: {
         text: ['+#% to all Elemental Resistances'],
         pre: '',
-        post: '% to all e',
+        posts: ['% to all e'],
         digit: '.',
         side: ['minions']
       },
@@ -106,20 +106,20 @@ export const VENDOR_DATA: VendorData = {
       spellDamage: {
         text: ['#% increased Spell Damage'],
         pre: '',
-        post: '% increased spell d',
+        posts: ['% increased spell d'],
         digit: '.'
       },
       physDamage: {
         text: ['#% increased Physical Damage'],
         pre: '',
-        post: '% increased physical d',
+        posts: ['% increased physical d'],
         digit: '.',
         side: ['gems']
       },
       eleAttack: {
         text: ['#% increased Elemental Damage with Attack Skills'],
         pre: '',
-        post: '% increased elemental damage w',
+        posts: ['% increased elemental damage w'],
         digit: '.'
       },
       addAttackPhys: {
@@ -170,53 +170,53 @@ export const VENDOR_DATA: VendorData = {
       moveSpeed: {
         text: ['#% increased Movement Speed'],
         pre: '',
-        post: '% increased mo',
+        posts: ['% increased mo'],
         digit: '.',
         side: ['minions']
       },
       attackSpeed: {
         text: ['#% increased Attack Speed'],
         pre: '',
-        post: '% increased attack s',
+        posts: ['% increased attack s'],
         digit: '.',
         side: ['minions']
       },
       castSpeed: {
         text: ['#% increased Cast Speed'],
         pre: '',
-        post: '% increased ca',
+        posts: ['% increased ca'],
         digit: '.',
         side: ['minions']
       },
       critChance: {
         text: ['#% increased Critical Strike Chance', '#% increased Global Critical Strike Chance'],
         pre: '',
-        post: '(% increased cr|% increased global c)',
+        posts: ['% increased cr', '% increased global c'],
         digit: '.',
         side: ['minions']
       },
       str: {
         text: ['+# to Strength', '+# to Strength and Dexterity', '+# to Strength and Intelligence'],
         pre: '',
-        post: ' to s',
+        posts: [' to s'],
         digit: '\\d'
       },
       dex: {
         text: ['+# to Dexterity', '+# to Strength and Dexterity', '+# to Dexterity and Intelligence'],
         pre: '',
-        post: '( to d| to strength and d)',
+        posts: [' to d', ' to strength and d'],
         digit: '\\d'
       },
       int: {
         text: ['+# to Intelligence', '+# to Strength and Intelligence', '+# to Dexterity and Intelligence'],
         pre: '',
-        post: '( to dexterity a| to i| to strength and i)',
+        posts: [' to dexterity a', ' to i', ' to strength and i'],
         digit: '\\d'
       },
       allAttributes: {
         text: ['+# to all Attributes'],
         pre: '',
-        post: ' to al',
+        posts: [' to al'],
         digit: '\\d'
       }
     },
@@ -255,49 +255,49 @@ export const VENDOR_DATA: VendorData = {
       life: {
         text: ['+# к максимуму здоровья'],
         pre: '',
-        post: ' к максимуму зд',
+        posts: [' к максимуму зд'],
         digit: '\\d'
       },
       mana: {
         text: ['+# к максимуму маны'],
         pre: '',
-        post: ' к максимуму м',
+        posts: [' к максимуму м'],
         digit: '\\d'
       },
       energyShield: {
         text: ['+# к максимуму энергетического щита'],
         pre: '',
-        post: ' к максимуму э',
+        posts: [' к максимуму э'],
         digit: '\\d'
       },
       resFire: {
         text: ['+#% к сопротивлению огню', '+#% к сопротивлению огню и холоду', '+#% к сопротивлению огню и молнии'],
         pre: '\\+',
-        post: '% к сопротивлению о',
+        posts: ['% к сопротивлению о'],
         digit: '.'
       },
       resCold: {
         text: ['+#% к сопротивлению холоду', '+#% к сопротивлению огню и холоду', '+#% к сопротивлению холоду и молнии'],
         pre: '\\+',
-        post: '(% к сопротивлению огню и х|% к сопротивлению хо)',
+        posts: ['% к сопротивлению огню и х', '% к сопротивлению хо'],
         digit: '.'
       },
       resLightning: {
         text: ['+#% к сопротивлению молнии', '+#% к сопротивлению огню и молнии', '+#% к сопротивлению холоду и молнии'],
         pre: '\\+',
-        post: '(% к сопротивлению м|% к сопротивлению огню и м|% к сопротивлению холоду и)',
+        posts: ['% к сопротивлению м', '% к сопротивлению огню и м', '% к сопротивлению холоду и'],
         digit: '.'
       },
       resChaos: {
         text: ['+#% к сопротивлению хаосу'],
         pre: '\\+',
-        post: '% к сопротивлению ха',
+        posts: ['% к сопротивлению ха'],
         digit: '.'
       },
       resAll: {
         text: ['+#% к сопротивлению всем стихиям'],
         pre: '',
-        post: '% к сопротивлению в',
+        posts: ['% к сопротивлению в'],
         digit: '.',
         side: ['minions']
       },
@@ -347,19 +347,19 @@ export const VENDOR_DATA: VendorData = {
       spellDamage: {
         text: ['#% увеличение урона от чар'],
         pre: '',
-        post: '% увеличение урона от ч',
+        posts: ['% увеличение урона от ч'],
         digit: '.'
       },
       physDamage: {
         text: ['#% увеличение физического урона'],
         pre: '',
-        post: '% увеличение ф',
+        posts: ['% увеличение ф'],
         digit: '.'
       },
       eleAttack: {
         text: ['#% увеличение урона от стихий от умений атак'],
         pre: '',
-        post: '% увеличение урона от стихий о',
+        posts: ['% увеличение урона от стихий о'],
         digit: '.'
       },
       addAttackPhys: {
@@ -410,53 +410,53 @@ export const VENDOR_DATA: VendorData = {
       moveSpeed: {
         text: ['#% повышение скорости передвижения'],
         pre: '',
-        post: '% повышение скорости перед',
+        posts: ['% повышение скорости перед'],
         digit: '.',
         side: ['minions']
       },
       attackSpeed: {
         text: ['#% повышение скорости атаки'],
         pre: '',
-        post: '% повышение скорости а',
+        posts: ['% повышение скорости а'],
         digit: '.',
         side: ['minions']
       },
       castSpeed: {
         text: ['#% повышение скорости сотворения чар'],
         pre: '',
-        post: '% повышение скорости со',
+        posts: ['% повышение скорости со'],
         digit: '.',
         side: ['minions']
       },
       critChance: {
         text: ['#% повышение шанса критического удара', '#% повышение глобального шанса критического удара'],
         pre: '',
-        post: '(% повышение глобальног|% повышение ш)',
+        posts: ['% повышение глобальног', '% повышение ш'],
         digit: '.',
         side: ['minions']
       },
       str: {
         text: ['+# к силе', '+# к силе и ловкости', '+# к силе и интеллекту'],
         pre: '',
-        post: ' к с',
+        posts: [' к с'],
         digit: '\\d'
       },
       dex: {
         text: ['+# к ловкости', '+# к силе и ловкости', '+# к ловкости и интеллекту'],
         pre: '',
-        post: '( к л| к силе и л)',
+        posts: [' к л', ' к силе и л'],
         digit: '\\d'
       },
       int: {
         text: ['+# к интеллекту', '+# к силе и интеллекту', '+# к ловкости и интеллекту'],
         pre: '',
-        post: '( к ин| к ловкости и| к силе и и)',
+        posts: [' к ин', ' к ловкости и', ' к силе и и'],
         digit: '\\d'
       },
       allAttributes: {
         text: ['+# ко всем характеристикам'],
         pre: '',
-        post: ' ко',
+        posts: [' ко'],
         digit: '\\d'
       }
     },

@@ -11,9 +11,9 @@ export type VendorSideReason = 'minions' | 'negative' | 'gems'
 export interface VendorModPattern {
   /** Свои строки свойства как в подсказке игры (числа → #) — для подсказки в UI. */
   text: string[]
-  /** Порог «≥ N»: <pre><atLeast(N)><post>; digit — чем обозначать цифру в atLeast. */
+  /** Порог «≥ N»: <pre><atLeast(N)>(<posts>); digit — чем обозначать цифру в atLeast. */
   pre?: string
-  post?: string
+  posts?: string[]
   digit?: '.' | '\\d'
   /** Свойство без порога: готовый фрагмент (может быть «a|b»). */
   token?: string

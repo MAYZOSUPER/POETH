@@ -552,11 +552,12 @@ function buildLang(lang, ctx, ownByKey) {
       if (r.hits?.length) throw new Error(`${lang}/${prop.key}: хвост «${r.posts[0]}» задевает ${r.hits.slice(0, 5).join(' / ')}`)
       const post = r.posts.map(toRegex)
       entry.pre = toRegex(r.pre)
-      entry.post = post.length === 1 ? post[0] : `(${post.join('|')})`
+      // хвосты — списком: движок соберёт (a|b) и объединит пороги с тем же pre и числом
+      entry.posts = post
       // «.» вместо цифры — только когда сразу после числа «%» (как в порогах карт)
       entry.digit = r.posts.every((p) => p.startsWith('%')) ? '.' : '\\d'
       hits = (line) => r.posts.some((p) => fold(line).includes(fold(r.pre) + '#' + fold(p)))
-      report.push(`${prop.key}: ${entry.pre}#${entry.post}`)
+      report.push(`${prop.key}: ${entry.pre}#(${entry.posts.join('|')})`)
     } else {
       const r = findToken(prop, lang, own, displays, others)
       entry.token = r.tokens.map((t) => t.out).join('|')

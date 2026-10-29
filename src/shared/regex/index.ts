@@ -18,6 +18,7 @@ export {
   emptyVendorQuery,
   isPresetQuery,
   isThresholdMod,
+  joinPosts,
   linkPattern,
   presetQuery,
   selectedMods,

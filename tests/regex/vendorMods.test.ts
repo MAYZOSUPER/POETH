@@ -14,6 +14,7 @@ import {
   emptyVendorQuery,
   isPresetQuery,
   isThresholdMod,
+  joinPosts,
   normalizeLibrary,
   presetQuery,
   type EmulatorOptions,
@@ -110,7 +111,7 @@ describe('данные торговца', () => {
     for (const lang of LANGS) {
       const d = VENDOR_DATA[lang]
       const all = [
-        ...Object.values(d.mods).flatMap((m) => [m.pre ?? '', m.post ?? '', m.token ?? '']),
+        ...Object.values(d.mods).flatMap((m) => [m.pre ?? '', ...(m.posts ?? []), m.token ?? '']),
         ...Object.values(d.classes),
         ...Object.values(d.rarity),
         d.notItemLevel
@@ -316,6 +317,34 @@ describe('готовые наборы торговца', () => {
       expect(isPresetQuery(p, presetQuery(p))).toBe(true)
       expect(isPresetQuery(p, { ...presetQuery(p), mode: 'all' })).toBe(true)
       expect(isPresetQuery(p, { ...presetQuery(p), links: 4 })).toBe(false)
+    }
+  })
+})
+
+describe('режим «любое»: пороги одной группой', () => {
+  it('joinPosts: общее начало за скобку, без повторов и покрытых хвостов, не режет \d+ и \+', () => {
+    expect(joinPosts(['% to fire r'])).toBe('% to fire r')
+    expect(joinPosts(['% to fire r', '% to cold r', '% to fire r'])).toBe('% to (fire r|cold r)')
+    expect(joinPosts(['% к сопротивлению о', '% к сопротивлению огню и х'])).toBe('% к сопротивлению о')
+    expect(joinPosts(['\d+ a', '\d+ b'])).toBe('\d+ (a|b)')
+    expect(joinPosts(['\+x', '\.y'])).toBe('(\+x|\.y)')
+    expect(joinPosts(['\d+x', '\dy'])).toBe('(\d+x|\dy)')
+  })
+
+  it.each(LANGS)('%s: сопротивления с разными и одинаковыми порогами — та же логика, что по отдельности', (lang) => {
+    const t = (k: VendorModKey, v: number): string => item(lang, [fill(VENDOR_DATA[lang].mods[k].text[0], v)])
+    for (const mods of [
+      { resFire: 15, resCold: 15, resLightning: 15 },
+      { resFire: 15, resCold: 30, resLightning: 15, resAll: 6 },
+      { life: 40, mana: 40, resFire: 40 }
+    ] as Partial<Record<VendorModKey, number>>[]) {
+      const any = compileSearch(buildVendorRegex(lang, q({ mods })).text)
+      const sep = Object.entries(mods).map(([k, n]) => compileSearch(buildVendorRegex(lang, modQuery(k as VendorModKey, n)).text))
+      for (const k of ['resFire', 'resCold', 'resLightning', 'resAll', 'life', 'mana'] as VendorModKey[]) {
+        for (const v of [3, 6, 14, 15, 16, 29, 30, 39, 40, 41, 120]) {
+          expect(any(t(k, v)), `${JSON.stringify(mods)} ${k}=${v}`).toBe(sep.some((m) => m(t(k, v))))
+        }
+      }
     }
   })
 })
