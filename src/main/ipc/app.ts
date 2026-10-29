@@ -74,8 +74,10 @@ async function switchGame(game: GameId): Promise<void> {
     await softRestart(game)
     return
   }
+  // Штатный выход (S29): before-quit сохраняет гид и фарм синхронно, will-quit снимает хоткеи и трей.
+  // app.exit(0) пропускал оба — шаги гида и время фарма после последней отложенной записи терялись.
   app.relaunch()
-  app.exit(0)
+  app.quit()
 }
 
 function register(): void {

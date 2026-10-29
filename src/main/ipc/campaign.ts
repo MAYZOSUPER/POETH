@@ -13,6 +13,10 @@ import { getCompanionWindow, sendToCompanion } from '../windows/companionWindow'
 import { onHotkeyAction } from '../hotkeys'
 import { getRunningGameDef } from '../gameContext'
 import type { IpcDomain } from './types'
+import { readImportJson } from '../services/importFile'
+
+/** Файл профиля кампании — прогресс по квестам, десятки КБ; размер проверяется до чтения (S29). */
+const PROFILE_IMPORT_MAX_BYTES = 1024 * 1024
 
 // Домен «кампания PoE2» (компас): профили, прогресс, датасет, лейауты, тейлер лога.
 // Работает только когда у запущенной игры features.campaign (PoE2).
@@ -100,13 +104,8 @@ function register(): void {
     }
     const result = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
     if (result.canceled || result.filePaths.length === 0) return { status: 'canceled' as const }
-    let raw: unknown
-    try {
-      const text = await fs.readFile(result.filePaths[0], 'utf8')
-      raw = JSON.parse(text.charCodeAt(0) === 0xfeff ? text.slice(1) : text)
-    } catch {
-      return { status: 'invalid' as const }
-    }
+    const raw = await readImportJson(result.filePaths[0], PROFILE_IMPORT_MAX_BYTES)
+    if (raw === undefined) return { status: 'invalid' as const }
     const meta = await profiles.importProfileBundle(raw)
     if (!meta) return { status: 'invalid' as const }
     return { status: 'created' as const, profile: meta, profiles: await profiles.listProfiles() }
