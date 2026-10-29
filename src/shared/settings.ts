@@ -6,6 +6,7 @@ import { isGameId, isSiteHost } from './games'
 import { PRICE_POPUP_POSITIONS, type PopupPoint } from './types/overlay'
 import { defaultChatCommands, normalizeChatCommands } from './chatCommands'
 import type {
+  GameLangSettings,
   HotkeyAction,
   HotkeyBinding,
   HotkeyMap,
@@ -57,6 +58,7 @@ export function defaultSettings(): Settings {
     activeProfileId: null,
     uiLang: 'ru',
     nameLang: 'en',
+    gameLang: { choice: 'auto', detected: null },
     opacity: 0.95,
     locked: false,
     overlayVisible: true,
@@ -177,6 +179,25 @@ function normalizeHotkeys(src: unknown): HotkeyMap {
 const APP_TABS = ['campaign', 'priceCheck', 'live', 'regex', 'deals', 'wealth', 'flip', 'advisor']
 const UI_LANGS = ['ru', 'en']
 const STASH_GRIDS = ['auto', 'normal', 'quad']
+const GAME_LANG_SOURCES = ['item', 'log']
+
+/** Язык клиента игры (S26): выбор 'auto' | 'ru' | 'en' и то, что узнали по игре (или null). */
+function normalizeGameLang(v: unknown): GameLangSettings {
+  const out: GameLangSettings = { choice: 'auto', detected: null }
+  if (!isObj(v)) return out
+  if (v.choice === 'ru' || v.choice === 'en') out.choice = v.choice
+  const d = v.detected
+  if (
+    isObj(d) &&
+    (d.lang === 'ru' || d.lang === 'en') &&
+    GAME_LANG_SOURCES.includes(d.by as string) &&
+    typeof d.at === 'number' &&
+    Number.isFinite(d.at)
+  ) {
+    out.detected = { lang: d.lang, by: d.by as 'item' | 'log', at: d.at }
+  }
+  return out
+}
 
 function normalize(src: Obj): Settings {
   const def = defaultSettings()
@@ -197,6 +218,8 @@ function normalize(src: Obj): Settings {
   s.startup = mergeSection(def.startup, src.startup)
   s.updates = mergeSection(def.updates, src.updates)
   s.hotkeys = normalizeHotkeys(src.hotkeys)
+  // нет поля (до S26) — 'auto'; перенос старого выбора из вкладки Regex — в main (ipc/gameLang.ts)
+  s.gameLang = normalizeGameLang(src.gameLang)
 
   // перечисления и диапазоны
   if (!isGameId(s.game)) s.game = def.game
