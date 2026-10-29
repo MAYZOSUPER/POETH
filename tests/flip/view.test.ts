@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { DivineTrack, FlipRoute } from '../../src/shared/types'
+import type { DivineTrack, FlipBase, FlipLeg, FlipRoute } from '../../src/shared/types'
 import {
   DEFAULT_VIEW,
   fillHours,
@@ -15,18 +15,25 @@ import {
 
 // Вид вкладки «Обмен» (макет v2): фильтры простого режима, сортировка, числа для окна обмена, ряд курса.
 
+/** нога маршрута: диапазон «в игре» — сама цена */
+function leg(base: FlipBase, price: number, give: number, get: number): FlipLeg {
+  return { base, price, order: { give, get }, range: { lo: price, hi: price } }
+}
+
 function route(p: Partial<FlipRoute> & { id: string }): FlipRoute {
   return {
     kind: 'CXC',
     item: `Currency/${p.id}`,
     name: p.id,
-    buy: { base: 'chaos', price: 1, order: { give: 1, get: 1 } },
-    sell: { base: 'chaos', price: 1.1, order: { give: 1, get: 1 } },
+    buy: leg('chaos', 1, 1, 1),
+    sell: leg('chaos', 1.1, 1, 1),
     profit: 0.1,
     roi: 0.1,
     goldPerUnit: 20,
+    gold: { x: 5, base: 15 },
     per1000Gold: 5,
     units: 100,
+    flow: 100,
     perHour: 10,
     confidence: 0.8,
     liquidity: 2000,
@@ -43,8 +50,8 @@ const div = (id: string, p: Partial<FlipRoute> = {}): FlipRoute =>
   route({
     id,
     kind: 'DXD',
-    buy: { base: 'divine', price: 0.1, order: { give: 1, get: 10 } },
-    sell: { base: 'divine', price: 0.11, order: { give: 9, get: 1 } },
+    buy: leg('divine', 0.1, 1, 10),
+    sell: leg('divine', 0.11, 9, 1),
     ...p
   })
 
@@ -98,15 +105,15 @@ describe('числа для окна обмена', () => {
     // 6 c за 1 шт., продажа 5 шт. за 33 c; размер 30 шт.
     const r = route({
       id: 'Deck',
-      buy: { base: 'chaos', price: 6, order: { give: 6, get: 1 } },
-      sell: { base: 'chaos', price: 6.6, order: { give: 5, get: 33 } },
+      buy: leg('chaos', 6, 6, 1),
+      sell: leg('chaos', 6.6, 5, 33),
       units: 30
     })
     expect(orderTotals(r)).toEqual({ buyGive: 180, units: 30, sellGet: 198 })
     // D→X→D: 1 div за 6 шт., продажа 5 шт. за 1 div; 60 шт.
     const d = div('Orb', {
-      buy: { base: 'divine', price: 1 / 6, order: { give: 1, get: 6 } },
-      sell: { base: 'divine', price: 0.2, order: { give: 5, get: 1 } },
+      buy: leg('divine', 1 / 6, 1, 6),
+      sell: leg('divine', 0.2, 5, 1),
       units: 60
     })
     expect(orderTotals(d)).toEqual({ buyGive: 10, units: 60, sellGet: 12 })
