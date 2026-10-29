@@ -2,6 +2,7 @@ import { BrowserWindow } from 'electron'
 import path from 'path'
 import { loadRendererPage } from './rendererPage'
 import { windowIcon } from '../appIcon'
+import { devEnv } from '../devEnv'
 
 // Companion window (бывш. «оверлей» компаса): прозрачное always-on-top окно с
 // вкладками (кампания PoE2 / прайс-чек / live / regex / сделки / настройки).
@@ -42,7 +43,7 @@ export function createCompanionWindow(opts: { show?: boolean } = {}): BrowserWin
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false
+      sandbox: true
     }
   })
 
@@ -53,7 +54,7 @@ export function createCompanionWindow(opts: { show?: boolean } = {}): BrowserWin
 
   if (opts.show !== false) win.once('ready-to-show', () => win?.show())
 
-  if (process.env.OVERLAY_DEVTOOLS === '1') {
+  if (devEnv('OVERLAY_DEVTOOLS') === '1') {
     win.webContents.openDevTools({ mode: 'detach' })
   }
 

@@ -35,11 +35,14 @@
 | **S26** | Названия предметов на языке игры: общая настройка «язык клиента игры» (авто/RU/EN) отдельно от языка интерфейса | ∥ с 29.10 | сессия s26-game-lang | `s26-game-lang` | ✅ слит 29.10 |
 | **S27** | Regex торговца: свойства предметов (жизнь, сопротивления, «+ к уровню камней» по типам, урон, скорость атаки/чар…) на EN и RU | ∥ с 29.10 | сессия s27-vendor-mods | `s27-vendor-mods` | ✅ слит 29.10 |
 | **S28** | «Обмен»: стакан Market Ratio с экрана по хоткею (держишь Alt над «Рыночным курсом» — POETH распознаёт «Курс / Кол-во» локально, без действий в игре) → цена исполнения ордера по глубине стакана, обе стороны | с 29.10 | сессия s28-ratio-ocr | `s28-ratio-ocr` | ✅ слит 29.10 (бета) |
-| **S29** | Аудит безопасности и приватности перед релизом: сеть, диск, hardening Electron, XSS → опасный IPC, обновления, `docs/security.md` | с 29.10 | сессия s29-security-audit | `s29-security-audit` | ⏳ в работе |
-| **S30** | Тексты к релизу: README RU/EN, FAQ RU/EN, черновик заметок v0.1.0, тексты сайта | с 29.10 | сессия s30-release-docs | `s30-release-docs` | ✅ готов, сливается вместе с S29 |
+| **S29** | Аудит безопасности и приватности перед релизом: сеть, диск, hardening Electron, XSS → опасный IPC, обновления, `docs/security.md` | с 29.10 | сессия s29-security-audit | `s29-security-audit` | ✅ этап 1 слит 29.10 · ⏳ этап 2 (средние/низкие, обновление демо → v0.1.0) |
+| **S30** | Тексты к релизу: README RU/EN, FAQ RU/EN, черновик заметок v0.1.0, тексты сайта | с 29.10 | сессия s30-release-docs | `s30-release-docs` | ✅ этап 1 слит 29.10 · ⏳ этап 2 (гайд на сайте, пометка «демо», заметки rc.11) |
 | **S31** | Имена на языке клиента игры: гид прокачки (зоны, квесты, NPC, боссы) и находки live | с 29.10 | сессия s31-names-game-lang | `s31-names-game-lang` | ✅ слит 29.10 |
-| **S32** | Рельс: счётчики на иконках и плашка «Сквозной режим»; гонка `profiles:create` при первом запуске | с 29.10 | сессия s32-rail-profiles | `s32-rail-profiles` | ⏳ в работе |
+| **S32** | Рельс: счётчики на иконках и плашка «Сквозной режим»; гонка `profiles:create` при первом запуске | с 29.10 | сессия s32-rail-profiles | `s32-rail-profiles` | ✅ слит 29.10 |
 | **S33** | Флиппинг предметов (v0.2 заранее, скрыт флагом): тиры уников, «ниже рынка» по клику, 6L, антискам | с 29.10 | сессия s33-item-flip | `s33-item-flip` | ⏳ в работе |
+| **S34** | Electron 40 → поддерживаемая ветка (44): исправления безопасности Chromium, проверка нативных модулей, OCR, fuses | с 29.10 | сессия s34-electron-44 | `s34-electron-44` | ⏳ в работе |
+| **S35** | Вкладка «Билд» (v0.2, скрыта флагом), B1: разбор кода PoB (безопасный XML), модель, этапы прокачки, ссылки на билды | с 29.10 | сессия s35-pob-parser | `s35-pob-parser` | ⏳ в работе |
+| **S36** | Вкладка «Билд», B2: данные дерева и камней (skilltree-export + RePoE RU), строки лога (вложение пассивок, `/passives`) | с 29.10 | сессия s36-build-data | `s36-build-data` | ⏳ в работе |
 | **S10** | Hardening + релиз: матрица EN/RU, DPI, NSIS, тег v0.1.0 | Д13–15 | лид | `main` | S10a ✅ · репо открыт 28.10 ✅ · ⏳ живые проверки, тег v0.1.0 |
 
 ∥ — параллельно с другими этапами, каждый в своём git worktree. Последовательные S1 → S4 → S6 —
@@ -104,6 +107,9 @@
 | **S31** | `panels/leveling/**`, `overlay/leveling/**`, `src/shared/leveling/**`, `resources/data/poe1/leveling/**`, `tools/leveling/**`, `i18n/dict/leveling.ts`; live — `src/shared/live/names.ts`, `panels/live/**`, `panels/LiveTab.tsx`, `overlay/live/**`; `tests/leveling/**`, `tests/live/**`. |
 | **S32** | `panels/NavRail.tsx` + стили, `tabs.ts` (метаданные разделов), `services/profileStore.ts`, обработчик `profiles.create` в `src/main/ipc/campaign.ts`, место создания профиля в `useAppStore.ts`, словарь рельса, тесты. Сторы сделок и live — только чтение. |
 | **S33** | `src/shared/flip/items/**`, `src/main/games/poe1/flip/items/**`, `panels/flip/items/**` (+ минимальное встраивание в `panels/flip/**`), ключи `flip.items.*` в `i18n/dict/flip.ts`, новые методы домена `flip` (shared/main/preload/types), `tests/flip/items/**`; снимок цен — `tools/data/**` и правка `.github/workflows/data.yml` (дифф — лиду). |
+| **S34** | `package.json`, `package-lock.json`, правки под смену API Electron, тестовое окно «Path of Exile» и скрипты проверки. Файлы S29 (этап 2) — только если без этого не обойтись. |
+| **S35** | `src/shared/pob/**`, `src/shared/build/flag.ts`, `src/main/pob/**`, `tests/pob/**`, `tests/fixtures/pob/**`, `docs/pob.md`, строка в `NOTICE.md`. IPC — через лида. |
+| **S36** | `tools/build-data/**`, `resources/data/poe1/build/**`, `src/shared/build/**` (кроме `flag.ts`), `src/shared/leveling/log.ts`, `tests/build-data/**`, строки в `NOTICE.md` и `docs/league-update.md`. |
 
 ## Замороженные общие файлы (меняет только лид)
 

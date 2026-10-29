@@ -3,13 +3,14 @@ import { mkdir, writeFile } from 'fs/promises'
 import path from 'path'
 import type { ItemLang } from '@shared/types'
 import { captureFileName } from './captureName'
+import { devEnv } from '../devEnv'
 
 // Dev-флаг POETH_SAVE_CAPTURES=1: каждый захваченный по Ctrl+D текст предмета
 // сохраняется в userData/captures/<lang>/<дата>-<время>-<название>.txt — заготовки
 // фикстур для парсера (S2) и прайс-чека (S4). Текст пишется как есть (CRLF игры).
 
 export function isCaptureLogEnabled(): boolean {
-  return process.env.POETH_SAVE_CAPTURES === '1'
+  return devEnv('POETH_SAVE_CAPTURES') === '1'
 }
 
 /** Сохранить захват (ошибки только в лог — захват не должен из-за этого падать). */

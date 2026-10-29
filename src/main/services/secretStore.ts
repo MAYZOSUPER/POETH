@@ -1,4 +1,5 @@
 import { app, safeStorage } from 'electron'
+import { promises as fs } from 'fs'
 import path from 'path'
 import { readJson, writeJsonAtomic } from './atomicJson'
 
@@ -73,5 +74,7 @@ export async function setSession(poesessid: string): Promise<void> {
 
 export async function clearSession(): Promise<void> {
   await writeJsonAtomic(secretFile(), {})
+  // writeJsonAtomic оставил прежний шифротекст в .bak — после «забыть ключ» на диске его быть не должно (S29)
+  await fs.rm(`${secretFile()}.bak`, { force: true })
   cache = null
 }

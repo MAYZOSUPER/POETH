@@ -12,6 +12,7 @@ import type {
 } from '@shared/types'
 import { exportPayload } from '@shared/regex/library'
 import * as store from '../services/regexLibraryStore'
+import { readImportJson } from '../services/importFile'
 import { getCompanionWindow } from '../windows/companionWindow'
 import type { IpcDomain } from './types'
 
@@ -53,6 +54,9 @@ async function exportLibrary(): Promise<RegexExportResult> {
   return { status: 'saved', path: result.filePath }
 }
 
+/** Файл библиотеки regex: сотни строк по ≤250 символов — это десятки КБ (S29). */
+const REGEX_IMPORT_MAX_BYTES = 2 * 1024 * 1024
+
 async function importLibrary(): Promise<RegexImportResult> {
   const win = getCompanionWindow()
   const opts = {
@@ -62,13 +66,8 @@ async function importLibrary(): Promise<RegexImportResult> {
   }
   const result = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
   if (result.canceled || result.filePaths.length === 0) return { status: 'canceled' }
-  let raw: unknown
-  try {
-    const text = await fs.readFile(result.filePaths[0], 'utf8')
-    raw = JSON.parse(text.charCodeAt(0) === 0xfeff ? text.slice(1) : text)
-  } catch {
-    return { status: 'invalid' }
-  }
+  const raw = await readImportJson(result.filePaths[0], REGEX_IMPORT_MAX_BYTES)
+  if (raw === undefined) return { status: 'invalid' }
   const res = await store.importLibraryData(raw)
   if (!res) return { status: 'invalid' }
   return { status: 'imported', added: res.added, library: res.library }

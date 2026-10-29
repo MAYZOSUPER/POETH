@@ -8,6 +8,8 @@ import { isTradeSlug } from './slug'
 
 export const TITLE_MAX = 120
 export const NOTES_MAX = 2000
+/** Вставка Better Trading целиком (S29): все папки — десятки КБ; больше — не разбираем (не вешать main). */
+export const BT_IMPORT_MAX = 1_000_000
 
 type Obj = Record<string, unknown>
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v)
@@ -317,6 +319,7 @@ export function importBt(
   let folders = 0
   let searches = 0
   let invalid = 0
+  if (text.length > BT_IMPORT_MAX) return { data, folders: 0, searches: 0, invalid: 1 }
   const known = new Set(data.searches.map((s) => `${s.game}:${s.type}:${s.slug}`))
   for (const str of splitBtStrings(text)) {
     const bt = importBtFolder(str)

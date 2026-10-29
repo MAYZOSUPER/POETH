@@ -28,6 +28,7 @@ import * as secret from '../services/secretStore'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
 import { getSettings } from '../services/settingsStore'
 import { tradeRequest } from '../net'
+import { isValidPoesessid } from '../net/guards'
 import { captureItemText } from '../input/gameInput'
 import { getDivineRate } from './wealth'
 import { getFeedStore } from '../games/poe1/exchange/feedService'
@@ -347,8 +348,11 @@ async function poe1Faustus(args: unknown): Promise<Poe1FaustusResult> {
 
 function register(): void {
   ipcMain.handle(IPC.trade.priceCheck, (_e, text: string) => trade.priceCheck(text))
-  ipcMain.handle(IPC.trade.setSession, async (_e, poesessid: string) => {
-    await secret.setSession(poesessid)
+  ipcMain.handle(IPC.trade.setSession, async (_e, poesessid: unknown) => {
+    // пусто — забыть ключ; иначе только формат POESESSID (32 hex) — в заголовок Cookie не попадёт ничего другого
+    const value = typeof poesessid === 'string' ? poesessid.trim() : ''
+    if (value && !isValidPoesessid(value)) return secret.hasSession()
+    await secret.setSession(value)
     return secret.hasSession()
   })
   ipcMain.handle(IPC.trade.hasSession, () => secret.hasSession())

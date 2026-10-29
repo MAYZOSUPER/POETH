@@ -46,6 +46,21 @@ describe('main: защита окон ставится до IPC и окон', ()
   })
 })
 
+describe('main: события доменов — только нашим страницам', () => {
+  it('рассылка по webContents фильтрует isAppPageUrl (папка renderer + имя страницы), а не «любой file://»', () => {
+    let seen = 0
+    for (const f of MAIN.filter((x) => /src[\\/]main[\\/]ipc[\\/]/.test(x))) {
+      const src = code(f)
+      expect(src, name(f)).not.toMatch(/isTrustedAppUrl\(wc\.getURL\(\)/)
+      if (/getAllWebContents\(\)/.test(src)) {
+        seen++
+        expect(src, name(f)).toMatch(/!isAppPageUrl\(wc\.getURL\(\)\)/)
+      }
+    }
+    expect(seen).toBeGreaterThanOrEqual(6)
+  })
+})
+
 describe('main: webPreferences окон', () => {
   it.each([
     [/webSecurity:\s*false/, 'webSecurity: false'],
@@ -58,7 +73,7 @@ describe('main: webPreferences окон', () => {
     for (const f of MAIN) expect(re.test(code(f)), name(f)).toBe(false)
   })
 
-  it('каждое webPreferences с preload — с contextIsolation: true и nodeIntegration: false', () => {
+  it('каждое webPreferences с preload — в песочнице, с contextIsolation: true и nodeIntegration: false', () => {
     let seen = 0
     for (const f of MAIN) {
       const src = code(f)
@@ -67,6 +82,8 @@ describe('main: webPreferences окон', () => {
         seen++
         expect(m[1], name(f)).toMatch(/contextIsolation:\s*true/)
         expect(m[1], name(f)).toMatch(/nodeIntegration:\s*false/)
+        // собранный preload требует только «electron» (проверка ниже) — песочнице этого хватает
+        expect(m[1], name(f)).toMatch(/sandbox:\s*true/)
       }
     }
     // компаньон, оверлей, сайдбар трейд-окна, служебные окна
@@ -83,6 +100,15 @@ describe('main: webPreferences окон', () => {
 })
 
 describe('preload: только узкий мост', () => {
+  it('preload в песочнице: из модулей — только electron и свои исходники', () => {
+    for (const f of PRELOAD) {
+      for (const m of code(f).matchAll(/^import\s+(?!type\b)[^'"]*from\s+'([^']+)'/gm)) {
+        expect(m[1], name(f)).toMatch(/^(electron|\.{1,2}\/|@shared\/)/)
+      }
+      expect(code(f), name(f)).not.toMatch(/\brequire\(/)
+    }
+  })
+
   it('в renderer уходит один объект overlayApi', () => {
     const exposed = PRELOAD.flatMap((f) => [...code(f).matchAll(/exposeInMainWorld\(\s*'([^']+)'/g)].map((m) => m[1]))
     expect(exposed).toEqual(['overlayApi'])
@@ -102,6 +128,22 @@ describe('preload: только узкий мост', () => {
         expect(m[1], `${name(f)}: ${m[0]}`).toMatch(/^IPC\.events\./)
       }
     }
+  })
+})
+
+describe('renderer: CSP всех страниц', () => {
+  it.each(['index.html', 'overlay.html', 'trade-sidebar.html'])('%s', (page) => {
+    const html = readFileSync(join(ROOT, 'src/renderer', page), 'utf8')
+    const csp = /http-equiv="Content-Security-Policy"\s+content="([^"]+)"/.exec(html)?.[1] ?? ''
+    const dir = (n: string): string => csp.split(';').map((s) => s.trim()).find((s) => s.startsWith(`${n} `)) ?? ''
+    expect(dir('default-src')).toBe("default-src 'self'")
+    expect(dir('script-src')).toBe("script-src 'self'")
+    expect(dir('object-src')).toBe("object-src 'none'")
+    expect(dir('base-uri')).toBe("base-uri 'none'")
+    expect(dir('form-action')).toBe("form-action 'none'")
+    // картинки: свои, data: и poeth:// (иконки, бренд) — не любой файл с диска и не сеть
+    expect(dir('img-src')).toBe("img-src 'self' data: poeth:")
+    expect(csp).not.toMatch(/unsafe-eval|https?:|\*/)
   })
 })
 

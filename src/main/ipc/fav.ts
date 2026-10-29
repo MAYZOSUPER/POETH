@@ -28,6 +28,8 @@ import { isTrustedAppUrl } from '../net/guards'
 import { onHotkeyAction } from '../hotkeys'
 import * as tw from '../windows/tradeWindow'
 import type { IpcDomain } from './types'
+import { devEnv } from '../devEnv'
+import { isAppPageUrl } from '../security'
 
 // Домен «избранное и трейд-окно» (S5). Для других этапов (только main):
 //   openTradeWindow({url} | {query} | {lot} | {slug, type}) [+ league?, game?] — S4 прайс-чек, S6 live
@@ -191,12 +193,12 @@ async function toggle(): Promise<void> {
 // ---------------------------------------------------------------------------
 
 function devServerUrl(): string | undefined {
-  return process.env.ELECTRON_RENDERER_URL
+  return devEnv('ELECTRON_RENDERER_URL')
 }
 
 function broadcast(channel: string, payload: unknown): void {
   for (const wc of webContents.getAllWebContents()) {
-    if (wc.isDestroyed() || !isTrustedAppUrl(wc.getURL(), devServerUrl())) continue
+    if (wc.isDestroyed() || !isAppPageUrl(wc.getURL())) continue
     wc.send(channel, payload)
   }
 }

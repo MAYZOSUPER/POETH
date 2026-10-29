@@ -7,6 +7,7 @@ import { loopbackUrl, releaseNotesText, releasePageUrl, shouldOfferUpdate } from
 import { getSettings } from './settingsStore'
 import { notifyUser } from './notify'
 import { portableExe } from './portable'
+import { stableReleasesOnly } from './updaterPolicy'
 import { closeUpdateWindow, openUpdateWindow } from '../windows/serviceWindows'
 
 // Автообновление приложения (S10a): electron-updater + GitHub Releases (provider github,
@@ -57,6 +58,8 @@ function load(): Updater | null {
     return null
   }
   const u = updater
+  // демо 0.1.0-rc.N должно увидеть v0.1.0: только обычные релизы (updaterPolicy.ts)
+  stableReleasesOnly(u)
   u.autoDownload = false
   u.autoInstallOnAppQuit = false
   u.logger = {

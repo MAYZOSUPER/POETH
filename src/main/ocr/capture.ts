@@ -3,6 +3,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { crop, type Bitmap, type Rect } from '@shared/ocr/bitmap'
 import { getOverlayStatus } from '../windows/gameOverlay'
+import { devEnv } from '../devEnv'
 
 // Снимок стакана у курсора (S28). Только по хоткею: копия клиентской области окна игры с экрана
 // (electron-overlay-window, OverlayController.screenshot — BitBlt рабочего стола, как OCR гемов в APT),
@@ -58,7 +59,7 @@ export function captureBook(): BookShot | ShotFail {
  * await: буфер снимка следом уходит в поток распознавания (transfer) и здесь становится пустым.
  */
 export async function saveFixtureShot(shot: BookShot): Promise<void> {
-  if (process.env.POETH_OCR_FIXTURES !== '1') return
+  if (devEnv('POETH_OCR_FIXTURES') !== '1') return
   const png = nativeImage
     .createFromBitmap(Buffer.from(shot.img.data.buffer, shot.img.data.byteOffset, shot.img.data.byteLength), {
       width: shot.img.width,

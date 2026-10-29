@@ -11,14 +11,18 @@ function profilesFile(): string {
   return path.join(app.getPath('userData'), 'profiles.json')
 }
 
+/** id профиля — имя файла прогресса (randomUUID); приходит из renderer, поэтому никаких путей и «..» (S29). */
+const PROFILE_ID = /^[A-Za-z0-9_-]{1,64}$/
+
 function progressFile(id: string): string {
+  if (typeof id !== 'string' || !PROFILE_ID.test(id)) throw new Error('profile: bad id')
   return path.join(app.getPath('userData'), 'progress', `${id}.json`)
 }
 
-// Все чтения и изменения profiles.json и файлов прогресса — строго по очереди (S32). writeJsonAtomic пишет
-// через общий `<файл>.tmp`: две одновременные записи одного файла делили его, и rename второй падал с ENOENT
-// (первый запуск: компаньон дважды зовёт init() и создаёт профиль), а запись, прочитавшая список до соседней,
-// её затирала. Внутри очереди — только внутренние функции (readProfiles, loadProgress, addProfile), не экспорт.
+// Все чтения и изменения profiles.json и файлов прогресса — строго по очереди (S32). Раньше writeJsonAtomic
+// писал через общий `<файл>.tmp`, и rename второй из двух одновременных записей падал с ENOENT (первый запуск:
+// компаньон дважды зовёт init() и создаёт профиль); теперь временные файлы свои (S29), но очередь нужна и так:
+// запись, прочитавшая список до соседней, её затирала бы. Внутри очереди — только внутренние функции (readProfiles, loadProgress, addProfile), не экспорт.
 let queue: Promise<unknown> = Promise.resolve()
 
 function serial<T>(run: () => Promise<T>): Promise<T> {
@@ -105,9 +109,10 @@ export function setProfileClass(id: string, className: string): Promise<ProfileM
 
 export function deleteProfile(id: string): Promise<ProfileMeta[]> {
   return serial(async () => {
+    const file = progressFile(id) // плохой id — отказ до любой записи
     const profiles = (await readProfiles()).filter((x) => x.id !== id)
     await save(profilesFile(), profiles)
-    for (const f of [progressFile(id), `${progressFile(id)}.bak`]) {
+    for (const f of [file, `${file}.bak`]) {
       try {
         await fs.rm(f)
       } catch {
