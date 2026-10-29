@@ -281,6 +281,7 @@ function CardsBox({ config }: { config: DealsConfig }) {
   const t = useT()
   const setConfig = useDealsStore((s) => s.setConfig)
   const sound = useAppStore((s) => s.settings?.sound)
+  const patchSettings = useAppStore((s) => s.patchSettings)
   return (
     <Box title={t('deals.cards.title')} icon="layers">
       <LogRow />
@@ -299,7 +300,19 @@ function CardsBox({ config }: { config: DealsConfig }) {
           <Ico name="volume" />
           {t('deals.sound.test')}
         </button>
-        {sound && !sound.enabled && <span className="dl-muted">{t('deals.sound.globalOff')}</span>}
+        {/* общий звук (Settings.sound) — без переключателя в настройках; включить можно здесь */}
+        {sound && !sound.enabled && (
+          <>
+            <span className="dl-muted">{t('deals.sound.globalOff')}</span>
+            <button
+              type="button"
+              className="ui-btn ui-btn--sm ui-btn--ghost"
+              onClick={() => void patchSettings({ sound: { enabled: true } })}
+            >
+              {t('deals.sound.turnOn')}
+            </button>
+          </>
+        )}
       </div>
     </Box>
   )

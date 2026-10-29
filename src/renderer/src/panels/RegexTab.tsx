@@ -80,7 +80,12 @@ export function RegexTab() {
             ))}
           </select>
         </label>
-        <Switch on={!simple} onChange={(expert) => void patchSettings({ ui: { simpleMode: !expert } })}>
+        {/* режим общий (Settings.ui.simpleMode) — подсказка говорит, где ещё он меняется */}
+        <Switch
+          on={!simple}
+          title={t('regex.expert.title')}
+          onChange={(expert) => void patchSettings({ ui: { simpleMode: !expert } })}
+        >
           {t('regex.expert')}
         </Switch>
       </div>
