@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { currentStage, resolveStages, type PobStagePlan } from '@shared/pob/stages'
+import type { PobStagePlan } from '@shared/pob/stages'
 import { mainSkill, sourceHost } from '@shared/build/library'
 import {
   buildChecks,
   stageChecklist,
   stageChips,
   stageGems,
-  stageLevel,
   stageLinks,
   stageTree,
   vendorSearch,
@@ -15,7 +14,6 @@ import {
   type NodeRow,
   type StageGems
 } from '@shared/build/view'
-import { actOf } from '@shared/leveling/route'
 import type { GameLang } from '@shared/types/settings'
 import type { StoredBuild } from '@shared/types/build'
 import { useLang, useT } from '../../i18n'
@@ -27,6 +25,7 @@ import type { IconName } from '../../overlay/Icon'
 import { formatAccel } from '../../overlay/useOverlayT'
 import { ascOrClass, buildTitle, mainSkillName } from './names'
 import { StagesDialog } from './StagesDialog'
+import { useProgress, useStage } from './useStage'
 import { BIco, classLine, CopyLine, slotLabel, Sock, stageLabels } from './ui'
 
 // Открытый билд (макет v0.2, раздел 1): шапка с этапами, «Камни сейчас», «Связки», «Дерево: следующие ноды»,
@@ -34,20 +33,6 @@ import { BIco, classLine, CopyLine, slotLabel, Sock, stageLabels } from './ui'
 // «Предметы этапа» (S40) встают в левую колонку после «Связок».
 
 type T = ReturnType<typeof useT>
-
-/** Уровень, акт и «кампания пройдена» — из гида прокачки (S22, журнал игры). */
-function useProgress(): { level: number | null; act: number | null; done: boolean; fromLog: boolean } {
-  const st = useLevelingStore((s) => s.state)
-  if (!st) return { level: null, act: null, done: false, fromLog: false }
-  const p = st.progress
-  const fromLog = st.log.connected || p.level > 1
-  return {
-    level: fromLog ? p.level : null,
-    act: p.areaId ? actOf(p.areaId) : null,
-    done: !!p.finished,
-    fromLog
-  }
-}
 
 // ---------------------------------------------------------------------------- шапка
 
@@ -662,17 +647,10 @@ export function BuildView({ build, expert }: { build: StoredBuild; expert: boole
   const t = useT()
   const lang = useLang()
   const gameLang = useGameLang(lang)
-  const view = useBuildStore((s) => s.view)
   const data = useBuildStore((s) => s.gems)
-  const progress = useProgress()
   const [dialog, setDialog] = useState(false)
-  const plan = useMemo(() => resolveStages(build.build, build.edits), [build])
-  const current = currentStage(plan, { level: progress.level, act: progress.act, campaignDone: progress.done }, build.edits)
-  const firstLeveling = plan.stages.findIndex((s) => s.leveling)
-  const cur = current.index ?? (firstLeveling >= 0 ? firstLeveling : plan.stages.length ? 0 : null)
-  const shown = view !== null && view < plan.stages.length ? view : (cur ?? 0)
+  const { plan, current: cur, manual, shown, level } = useStage(build)
   const labels = useMemo(() => stageLabels(plan.stages, t), [plan, t])
-  const level = stageLevel(plan, shown, cur, progress.level)
   const gems = useMemo(() => stageGems(build.build, plan, shown, data, gameLang, level), [build, plan, shown, data, gameLang, level])
 
   return (
@@ -682,7 +660,7 @@ export function BuildView({ build, expert }: { build: StoredBuild; expert: boole
         plan={plan}
         shown={shown}
         current={cur}
-        manual={current.source === 'manual'}
+        manual={manual}
         labels={labels}
         expert={expert}
         onStages={() => setDialog(true)}
