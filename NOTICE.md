@@ -43,6 +43,20 @@ whose full history is kept in this repository.
   `common/src/route-processing`. Russian step texts are our own translation. Zone, quest, boss, NPC and
   item names (EN and RU) are facts read by `tools/leveling/game-names.mjs` from the PoE 1 client tables
   exported by [repoe-fork/dat-export](https://github.com/repoe-fork/dat-export) (pinned commit; names only).
+- **[Path of Building Community](https://github.com/PathOfBuildingCommunity/PathOfBuilding)** — **MIT License**,
+  Copyright (c) 2016 David Gowor. The «Build» tab reads PoB build codes with its own parser (`src/shared/pob/`); no
+  PoB code is copied. Knowledge of the format comes from PoB: the code is base64url(zlib(XML)) (`ImportTab.lua`),
+  XML sections and attributes (`Build.lua`, `PassiveSpec.lua`, `SkillsTab.lua`, `ItemsTab.lua`), equipment slot names,
+  the `resistancePenalty` option (`ConfigOptions.lua`) and the list of build-sharing sites with their raw-code URLs
+  (`src/Modules/BuildSiteTools.lua`). The MIT test build `spec/TestBuilds/3.13/OccVortex.xml` is used as a test fixture.
+- **[Piety](https://github.com/sethryder/piety)** — **MIT License**, Copyright (c) 2026 Seth Ryder. The idea of matching
+  PoB tree/gem/item sets to leveling stages by their titles («Act N», «Level N», «Early Maps», «Endgame») and the table
+  of typical character levels at the end of acts 1–10 (`src/shared/trees.ts`) are reimplemented in
+  `src/shared/pob/stages.ts`.
+- **Public PoB builds as test data** — `tests/fixtures/pob/` holds a few build codes that their authors shared publicly
+  (pobb.in, pob.codes, pastebin, poedb, PoB's own tests; no content from guide sites); sources are listed in
+  `tests/fixtures/pob/README.md`. Character import data (`<Import>`) is removed. They are used only by unit tests and
+  are not shipped with the app.
 - **[tesseract.js-core](https://github.com/naptha/tesseract.js-core)** 6.1.2 — **Apache License 2.0**
   (Tesseract OCR compiled to WebAssembly). The unmodified `tesseract-core-simd-lstm.{js,wasm}` and the
   `eng.traineddata` model (`4.0.0_best_int` from [tessdata](https://github.com/naptha/tessdata), based on
