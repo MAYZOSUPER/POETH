@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import type { DivineTrack, FlipRoute } from '../../src/shared/types'
+import type { DivineTrack, FlipBase, FlipLeg, FlipRoute } from '../../src/shared/types'
 import {
   DEFAULT_VIEW,
   fillHours,
+  gameCheck,
+  gameKey,
+  gameRatio,
   hiddenByTrend,
   niceStep,
   orderTotals,
+  parseGameRatio,
   pickRoute,
   pips,
   rateView,
@@ -15,18 +19,25 @@ import {
 
 // Вид вкладки «Обмен» (макет v2): фильтры простого режима, сортировка, числа для окна обмена, ряд курса.
 
+/** нога маршрута: диапазон «в игре» — сама цена */
+function leg(base: FlipBase, price: number, give: number, get: number): FlipLeg {
+  return { base, price, order: { give, get }, range: { lo: price, hi: price } }
+}
+
 function route(p: Partial<FlipRoute> & { id: string }): FlipRoute {
   return {
     kind: 'CXC',
     item: `Currency/${p.id}`,
     name: p.id,
-    buy: { base: 'chaos', price: 1, order: { give: 1, get: 1 } },
-    sell: { base: 'chaos', price: 1.1, order: { give: 1, get: 1 } },
+    buy: leg('chaos', 1, 1, 1),
+    sell: leg('chaos', 1.1, 1, 1),
     profit: 0.1,
     roi: 0.1,
     goldPerUnit: 20,
+    gold: { x: 5, base: 15 },
     per1000Gold: 5,
     units: 100,
+    flow: 100,
     perHour: 10,
     confidence: 0.8,
     liquidity: 2000,
@@ -43,8 +54,8 @@ const div = (id: string, p: Partial<FlipRoute> = {}): FlipRoute =>
   route({
     id,
     kind: 'DXD',
-    buy: { base: 'divine', price: 0.1, order: { give: 1, get: 10 } },
-    sell: { base: 'divine', price: 0.11, order: { give: 9, get: 1 } },
+    buy: leg('divine', 0.1, 1, 10),
+    sell: leg('divine', 0.11, 9, 1),
     ...p
   })
 
@@ -98,15 +109,15 @@ describe('числа для окна обмена', () => {
     // 6 c за 1 шт., продажа 5 шт. за 33 c; размер 30 шт.
     const r = route({
       id: 'Deck',
-      buy: { base: 'chaos', price: 6, order: { give: 6, get: 1 } },
-      sell: { base: 'chaos', price: 6.6, order: { give: 5, get: 33 } },
+      buy: leg('chaos', 6, 6, 1),
+      sell: leg('chaos', 6.6, 5, 33),
       units: 30
     })
     expect(orderTotals(r)).toEqual({ buyGive: 180, units: 30, sellGet: 198 })
     // D→X→D: 1 div за 6 шт., продажа 5 шт. за 1 div; 60 шт.
     const d = div('Orb', {
-      buy: { base: 'divine', price: 1 / 6, order: { give: 1, get: 6 } },
-      sell: { base: 'divine', price: 0.2, order: { give: 5, get: 1 } },
+      buy: leg('divine', 1 / 6, 1, 6),
+      sell: leg('divine', 0.2, 5, 1),
       units: 60
     })
     expect(orderTotals(d)).toEqual({ buyGive: 10, units: 60, sellGet: 12 })
@@ -124,6 +135,75 @@ describe('числа для окна обмена', () => {
     expect(fillHours(route({ id: 'B', profit: 1, units: 669, perHour: 469 }))).toBe(1.5)
     expect(fillHours(route({ id: 'C', profit: 2, units: 100, perHour: 20 }))).toBe(10)
     expect(fillHours(route({ id: 'D', profit: 0, units: 100, perHour: 0 }))).toBeNull()
+  })
+})
+
+describe('цена в игре сейчас (S25)', () => {
+  it('курс «Хочу : Имею» как в игре → цена штуки: покупка и продажа, одно число, запятая, «<» из стакана', () => {
+    expect(parseGameRatio('1:296', 'buy', 301)).toBe(296)
+    expect(parseGameRatio(' 1 : 296 ', 'buy', 301)).toBe(296)
+    expect(parseGameRatio('296', 'buy', 301)).toBe(296)
+    expect(parseGameRatio('<1:318', 'buy', 301)).toBe(318)
+    // продажа Valdo за divine: хочу 1 div, имею 1,04 шт.
+    expect(parseGameRatio('1:1,04', 'sell', 0.96)).toBeCloseTo(1 / 1.04, 6)
+    expect(parseGameRatio('1.04', 'sell', 0.96)).toBeCloseTo(1 / 1.04, 6)
+    expect(parseGameRatio('24:25', 'sell', 0.96)).toBe(0.96)
+    // продажа за chaos: хочу 455 c, имею 1 шт.
+    expect(parseGameRatio('455:1', 'sell', 455)).toBe(455)
+    for (const bad of ['', 'abc', '1:', ':5', '0', '1:0', '-3']) expect(parseGameRatio(bad, 'buy', 100)).toBeNull()
+  })
+
+  it('курс, записанный наоборот, понимаем по оценке; рядом с 1 — читаем как в игре', () => {
+    // «455» на продаже за chaos: «1 : 455» дал бы 0,0022 c — в сотни раз дальше от оценки, чем 455
+    expect(parseGameRatio('455', 'sell', 455)).toBe(455)
+    // «1:5,9» на покупке дешёвой валюты за divine (0,17 div): 5,9 div за штуку — неправдоподобно
+    expect(parseGameRatio('1:5.9', 'buy', 0.17)).toBeCloseTo(1 / 5.9, 6)
+    // 1,04 против 0,96 — обе правдоподобны: остаётся прочтение игры
+    expect(parseGameRatio('1.04', 'sell', 1.04)).toBeCloseTo(1 / 1.04, 6)
+  })
+
+  it('подсказка в поле — курс так, как его покажет игра (меньшая сторона — 1)', () => {
+    expect(gameRatio(301, 'buy')).toEqual({ want: 1, have: 301 })
+    expect(gameRatio(0.02, 'buy')).toEqual({ want: 50, have: 1 })
+    expect(gameRatio(0.96, 'sell').want).toBe(1)
+    expect(gameRatio(0.96, 'sell').have).toBeCloseTo(1.0417, 4)
+    expect(gameRatio(455, 'sell')).toEqual({ want: 455, have: 1 })
+  })
+
+  it('пересчёт по курсу из игры: прибыль, в час, на 1000 золота, вывод', () => {
+    // Valdo C→X→D: оценка ≤ 301 c, ≥ 0,96 div; 1 div = 339,5 c; золото: 300 за Valdo + 250 за каждый div
+    const r = route({
+      id: 'Valdo',
+      kind: 'CXD',
+      buy: leg('chaos', 301, 301, 1),
+      sell: leg('divine', 0.96, 25, 24),
+      gold: { x: 300, base: 250 },
+      units: 25,
+      flow: 15
+    })
+    const est = gameCheck(r, 339.5, null, null, 0.03)
+    expect(est.profit).toBeCloseTo(0.96 * 339.5 - 301, 6)
+    expect(est.verdict).toBe('good')
+    // в игре 303: тоньше, но ещё выгодно
+    const at303 = gameCheck(r, 339.5, 303, null, 0.03)
+    expect(at303.profit).toBeCloseTo(22.92, 2)
+    expect(at303.perHour).toBeCloseTo(22.92 * 15, 1)
+    expect(at303.total).toBeCloseTo(22.92 * 25, 1)
+    expect(at303.per1000Gold).toBeCloseTo((22.92 / 540) * 1000, 1)
+    expect(at303.verdict).toBe('good')
+    // по 318 и продажа по 0,96: +7,9 c — маржа 2,5 % ниже порога 3 %
+    expect(gameCheck(r, 339.5, 318, null, 0.03).verdict).toBe('thin')
+    // продать удастся только по 0,91 div — минус
+    const bad = gameCheck(r, 339.5, 318, 0.91, 0.03)
+    expect(bad.profit).toBeLessThan(0)
+    expect(bad.verdict).toBe('bad')
+  })
+
+  it('ключ курса — нога, предмет и база: покупка Valdo за chaos общая у C→X→C и C→X→D', () => {
+    const a = route({ id: 'Valdo', kind: 'CXC' })
+    const b = route({ id: 'Valdo', kind: 'CXD', sell: leg('divine', 0.96, 25, 24) })
+    expect(gameKey(a, 'buy')).toBe(gameKey(b, 'buy'))
+    expect(gameKey(a, 'sell')).not.toBe(gameKey(b, 'sell'))
   })
 })
 

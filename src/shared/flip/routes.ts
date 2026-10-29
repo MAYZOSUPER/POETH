@@ -1,13 +1,16 @@
 // Маршруты флипа C→X→C, D→X→D, C→X→D, D→X→C по статистике пар (чистый модуль; tests/flip/routes.test.ts).
 //
-// Покупка X — по нижней границе (lo) рынка покупки, продажа — по верхней (hi) рынка продажи (оценка по прошлым
-// часам, не live). Прибыль — в chaos; комиссия биржи — в золоте за каждую купленную единицу (сначала X, потом
-// валюта, которую получаем при продаже), поэтому отдельно «прибыль на 1000 золота»: продавать в divine дешевле
-// по золоту, чем в chaos. Размер ордера — целые «делящиеся» соотношения; не больше 1/5 глубины стакана.
+// Цены — реалистичные «сейчас» (stats.realPrices, S25): покупка X — сколько реально заплатить по последним часам
+// (от свежего VWAP к стороне продавцов), продажа — сколько реально получить (к стороне покупателей). Не лучшая
+// сделка за сутки: такой ордер почти не исполняется. Поэтому флип внутри одного рынка (C→X→C, D→X→D) по
+// реалистичным ценам обычно невыгоден и отсеивается — остаются расхождения рынков chaos и divine.
+// Прибыль — в chaos; комиссия биржи — в золоте за каждую купленную единицу (сначала X, потом валюта, которую
+// получаем при продаже), поэтому отдельно «прибыль на 1000 золота»: продавать в divine дешевле по золоту, чем
+// в chaos. Размер ордера — целые «делящиеся» соотношения; не больше 1/5 глубины стакана.
 
 import type { FlipBase, FlipFilters, FlipLeg, FlipReject, FlipRoute, FlipRouteKind } from '../types/flip'
 import type { FullHour } from './feed'
-import { indexPairs, pairStats, type PairStats } from './stats'
+import { indexPairs, pairStats, realPrices, type PairStats, type RealPrices, type RealSide } from './stats'
 
 export const DEFAULT_FILTERS: FlipFilters = {
   minLiquidityDiv: 2,
@@ -25,7 +28,8 @@ export const MAX_ORDERS = 10
 export const MAX_FLIPS = MAX_ORDERS / 2
 /** Доля часового объёма, которую реально занять за час своим ордером. */
 const HOURLY_SHARE = 0.1
-const MAX_DEN = 50
+/** До 200 штук X в шаге: дешёвую валюту за divine иначе не выразить без завышения цены (1 div : 50 шт. вместо 54). */
+const MAX_DEN = 200
 
 export interface RatioOrder {
   /** штук базы */
@@ -36,7 +40,7 @@ export interface RatioOrder {
 
 /**
  * Целое соотношение m базы : n штук X для цены `price` (базы за штуку): покупка — не дороже цены (m/n ≤ price),
- * продажа — не дешевле (m/n ≥ price). Наименьшее n, при котором ошибка ≤ 0,5 %, иначе самое точное из n ≤ 50.
+ * продажа — не дешевле (m/n ≥ price). Наименьшее n, при котором ошибка ≤ 0,5 %, иначе самое точное из n ≤ 200.
  */
 export function ratioOrder(price: number, side: 'buy' | 'sell', maxDen = MAX_DEN): RatioOrder | null {
   if (!(price > 0)) return null
@@ -68,10 +72,11 @@ export interface RouteContext {
   filters: FlipFilters
 }
 
-interface Market {
+export interface Market {
   base: FlipBase
   s24: PairStats
   s6: PairStats
+  real: RealPrices
 }
 
 const KINDS: Array<[FlipRouteKind, FlipBase, FlipBase]> = [
@@ -98,10 +103,10 @@ export function buildRoute(kind: FlipRouteKind, item: string, buyM: Market, sell
   const name = ctx.names[item]
   if (!name) return null
   const chaosOf = (b: FlipBase): number => (b === 'chaos' ? 1 : ctx.rate)
-  const buyPrice = buyM.s24.lo
-  const sellPrice = sellM.s24.hi
-  const buyOrder = ratioOrder(buyPrice, 'buy')
-  const sellOrder = ratioOrder(sellPrice, 'sell')
+  const buyReal = buyM.real.buy
+  const sellReal = sellM.real.sell
+  const buyOrder = ratioOrder(buyReal.at, 'buy')
+  const sellOrder = ratioOrder(sellReal.at, 'sell')
   if (!buyOrder || !sellOrder || !(ctx.rate > 0)) return null
   // цены — как в целых ордерах (ровно то, что выставит игрок)
   const buyEff = buyOrder.m / buyOrder.n
@@ -109,15 +114,15 @@ export function buildRoute(kind: FlipRouteKind, item: string, buyM: Market, sell
   const buyChaos = buyEff * chaosOf(buyM.base)
   const sellChaos = sellEff * chaosOf(sellM.base)
   const profit = sellChaos - buyChaos
-  const feeX = ctx.fees[name] ?? 0
-  const goldPerUnit = feeX + sellEff * (ctx.fees[BASE_NAME[sellM.base]] ?? 0)
+  const gold = { x: ctx.fees[name] ?? 0, base: ctx.fees[BASE_NAME[sellM.base]] ?? 0 }
+  const goldPerUnit = gold.x + sellEff * gold.base
 
   const f = ctx.filters
-  const same = buyM === sellM
   const liquidity = Math.min(buyM.s24.liquidity, sellM.s24.liquidity)
   const activeHours = Math.min(buyM.s24.activeHours, sellM.s24.activeHours)
   const volatility = Math.max(buyM.s24.volatility, sellM.s24.volatility)
-  const spread = same ? buyM.s24.spread : buyChaos > 0 ? profit / buyChaos : 0
+  // спред — реалистичная маржа круга: (продажа − покупка) / покупка
+  const spread = buyChaos > 0 ? profit / buyChaos : 0
   const trend = Math.abs(trendOf(buyM)) >= Math.abs(trendOf(sellM)) ? trendOf(buyM) : trendOf(sellM)
 
   // размер: кратно обоим ордерам, не больше 1/depthMultiple глубины и часового объёма тонкой ноги
@@ -127,7 +132,8 @@ export function buildRoute(kind: FlipRouteKind, item: string, buyM: Market, sell
   const budgetCap = buyChaos > 0 ? (f.budgetDiv * ctx.rate) / buyChaos : 0
   const cap = Math.min(depthCap, Math.max(hourlyVol, step), budgetCap)
   const units = cap >= step ? Math.floor(cap / step) * step : 0
-  const perHour = units > 0 ? profit * Math.min(units, Math.max(HOURLY_SHARE * hourlyVol, 1)) : 0
+  const flow = units > 0 ? Math.min(units, Math.max(HOURLY_SHARE * hourlyVol, 1)) : 0
+  const perHour = profit * flow
 
   const rejects: FlipReject[] = []
   if (liquidity < f.minLiquidityDiv * ctx.rate) rejects.push('liquidity')
@@ -139,28 +145,37 @@ export function buildRoute(kind: FlipRouteKind, item: string, buyM: Market, sell
   if (Math.abs(trend) > f.maxTrend) rejects.push('trend')
   if (!(profit > 0)) rejects.push('profit')
 
-  // уверенность: активность, ликвидность, спокойствие цены, устойчивость спреда, отсутствие тренда
+  // уверенность: активность, ликвидность, спокойствие цены, запас прочности, отсутствие тренда
   const act = activeHours / 24
   const liq = Math.sqrt(clamp01(liquidity / (5 * f.minLiquidityDiv * ctx.rate)))
   const calm = clamp01(1 - volatility / f.maxVolatility)
-  const s6 = same ? buyM.s6.spread : spread
-  const stab = same && buyM.s24.spread > 0 ? clamp01(1 - Math.abs(s6 / buyM.s24.spread - 1)) : 0.5
+  // запас прочности: сколько прибыли останется, если в игре обе цены окажутся на худшем краю диапазона
+  // (½ — худший край ровно в ноль)
+  const slack = (buyReal.hi - buyReal.at) * chaosOf(buyM.base) + (sellReal.at - sellReal.lo) * chaosOf(sellM.base)
+  const safe = profit > 0 ? clamp01(profit / (profit + Math.max(slack, 0))) : 0
   const flat = clamp01(1 - Math.abs(trend) / f.maxTrend)
-  const confidence = round(0.3 * act + 0.2 * liq + 0.2 * calm + 0.15 * stab + 0.15 * flat)
+  const confidence = round(0.3 * act + 0.2 * liq + 0.2 * calm + 0.15 * safe + 0.15 * flat)
 
-  const leg = (base: FlipBase, price: number, give: number, get: number): FlipLeg => ({ base, price: round(price, 4), order: { give, get } })
+  const leg = (base: FlipBase, price: number, give: number, get: number, real: RealSide): FlipLeg => ({
+    base,
+    price: round(price, 4),
+    order: { give, get },
+    range: { lo: round(real.lo, 4), hi: round(real.hi, 4) }
+  })
   return {
     id: `${kind}:${item}`,
     kind,
     item,
     name,
-    buy: leg(buyM.base, buyEff, buyOrder.m, buyOrder.n),
-    sell: leg(sellM.base, sellEff, sellOrder.n, sellOrder.m),
+    buy: leg(buyM.base, buyEff, buyOrder.m, buyOrder.n, buyReal),
+    sell: leg(sellM.base, sellEff, sellOrder.n, sellOrder.m, sellReal),
     profit: round(profit, 3),
     roi: round(buyChaos > 0 ? profit / buyChaos : 0, 4),
     goldPerUnit: round(goldPerUnit, 1),
+    gold,
     per1000Gold: round(goldPerUnit > 0 ? (profit / goldPerUnit) * 1000 : 0, 2),
     units,
+    flow: round(flow, 2),
     perHour: round(perHour, 1),
     confidence,
     liquidity: round(liquidity, 1),
@@ -192,8 +207,9 @@ export function computeRoutes(input: ComputeInput): { routes: FlipRoute[]; rejec
       if (!ph?.length) continue
       const bc = base === 'chaos' ? 1 : ctx.rate
       const s24 = pairStats(ph, lastHour, 24, bc)
-      if (!(s24.lo > 0 && s24.hi > 0)) continue
-      markets[base] = { base, s24, s6: pairStats(ph, lastHour, 6, bc) }
+      const real = realPrices(ph, lastHour, 24)
+      if (!(s24.lo > 0 && s24.hi > 0) || !real) continue
+      markets[base] = { base, s24, s6: pairStats(ph, lastHour, 6, bc), real }
     }
     for (const [kind, b1, b2] of KINDS) {
       const m1 = markets[b1]

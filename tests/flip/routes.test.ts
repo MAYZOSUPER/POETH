@@ -2,9 +2,10 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import { describe, expect, it } from 'vitest'
 import { leagueHour, parseFeedHour, type FullHour } from '../../src/shared/flip/feed'
-import { buildRoute, computeRoutes, DEFAULT_FILTERS, lcm, MAX_FLIPS, ratioOrder, topFlips, type RouteContext } from '../../src/shared/flip/routes'
+import { buildRoute, computeRoutes, DEFAULT_FILTERS, lcm, MAX_FLIPS, ratioOrder, topFlips, type Market, type RouteContext } from '../../src/shared/flip/routes'
 import { divineTrack } from '../../src/shared/flip/divine'
-import type { PairStats } from '../../src/shared/flip/stats'
+import type { PairStats, RealPrices } from '../../src/shared/flip/stats'
+import type { FlipBase, FlipRoute } from '../../src/shared/types/flip'
 
 const ROOT = join(__dirname, '../..')
 const names = JSON.parse(readFileSync(join(ROOT, 'resources/data/poe1/wealth/exchange-ids.json'), 'utf8')).names as Record<string, string>
@@ -32,48 +33,74 @@ describe('целые ордера', () => {
 function stats(p: Partial<PairStats>): PairStats {
   return { window: 24, vwap: 100, lo: 95, hi: 105, spread: 0.1, liquidity: 50_000, activeHours: 24, volatility: 0.02, depth: 1000, volume: 24_000, ...p }
 }
+/** реалистичные цены рынка: свежий VWAP, покупка [VWAP, hi] и продажа [lo, VWAP], цели — посередине */
+function real(mid: number, lo: number, hi: number): RealPrices {
+  return { mid, buy: { at: (mid + hi) / 2, lo: mid, hi }, sell: { at: (mid + lo) / 2, lo, hi: mid } }
+}
+function market(base: FlipBase, r: RealPrices, s24: Partial<PairStats> = {}, s6: Partial<PairStats> = {}): Market {
+  return { base, s24: stats({ vwap: r.mid, ...s24 }), s6: stats({ vwap: r.mid, ...s6 }), real: r }
+}
 const ctx: RouteContext = {
   rate: 300,
   names: { 'Scarabs/X': 'Test Scarab' },
   fees: { 'Test Scarab': 30, 'Chaos Orb': 15, 'Divine Orb': 250 },
   filters: { ...DEFAULT_FILTERS, budgetDiv: 100 }
 }
+// X за chaos: VWAP 100, сделки 95–105; за divine: VWAP 0,37 (111 c), сделки 0,35–0,38
+const C = market('chaos', real(100, 95, 105))
+const D = market('divine', real(0.37, 0.35, 0.38))
 
-describe('маршрут и комиссии в золоте', () => {
-  it('C→X→C: прибыль со штуки, золото = комиссия X + chaos при продаже × 15', () => {
-    const m = { base: 'chaos' as const, s24: stats({}), s6: stats({}) }
-    const r = buildRoute('CXC', 'Scarabs/X', m, m, ctx)!
-    expect(r.buy).toEqual({ base: 'chaos', price: 95, order: { give: 95, get: 1 } })
-    expect(r.sell).toEqual({ base: 'chaos', price: 105, order: { give: 1, get: 105 } })
-    expect(r.profit).toBe(10)
-    expect(r.goldPerUnit).toBe(30 + 105 * 15)
-    expect(r.per1000Gold).toBeCloseTo((10 / 1605) * 1000, 2)
+describe('маршрут по реалистичным ценам и комиссии в золоте', () => {
+  it('C→X→D: покупка — к стороне продавцов, продажа — к стороне покупателей; золото и прибыль по курсу', () => {
+    const r = buildRoute('CXD', 'Scarabs/X', C, D, ctx)!
+    // покупка: цель 102,5 → ордер 102 : 1; продажа: цель 0,36 → 9 div : 25 шт.
+    expect(r.buy).toEqual({ base: 'chaos', price: 102, order: { give: 102, get: 1 }, range: { lo: 100, hi: 105 } })
+    expect(r.sell).toEqual({ base: 'divine', price: 0.36, order: { give: 25, get: 9 }, range: { lo: 0.35, hi: 0.37 } })
+    expect(r.profit).toBeCloseTo(0.36 * 300 - 102, 3)
+    expect(r.spread).toBeCloseTo(6 / 102, 4)
+    expect(r.gold).toEqual({ x: 30, base: 250 })
+    expect(r.goldPerUnit).toBe(30 + 0.36 * 250)
+    expect(r.per1000Gold).toBeCloseTo((6 / 120) * 1000, 2)
+    expect(r.units % 25).toBe(0)
+    expect(r.perHour).toBeCloseTo(r.profit * r.flow, 1)
     expect(r.rejects).toEqual([])
-    expect(r.units).toBeGreaterThan(0)
-    expect(r.units % 1).toBe(0)
   })
 
-  it('C→X→D: продать за divine дешевле по золоту, прибыль считается по курсу', () => {
-    const c = { base: 'chaos' as const, s24: stats({}), s6: stats({}) }
-    const d = { base: 'divine' as const, s24: stats({ vwap: 0.35, lo: 0.33, hi: 0.36, spread: 0.08 }), s6: stats({ vwap: 0.35 }) }
-    const r = buildRoute('CXD', 'Scarabs/X', c, d, ctx)!
-    // продажа: 0.36 div = 9 : 25 → 108 chaos за штуку
-    expect(r.sell.order).toEqual({ give: 25, get: 9 })
-    expect(r.profit).toBeCloseTo(0.36 * 300 - 95, 3)
-    expect(r.goldPerUnit).toBe(30 + 0.36 * 250)
-    expect(r.per1000Gold).toBeGreaterThan(50)
+  it('C→X→C: покупка не дешевле VWAP, продажа не дороже — в одном рынке прибыли нет, маршрут отсеян', () => {
+    const r = buildRoute('CXC', 'Scarabs/X', C, C, ctx)!
+    expect(r.buy.price).toBeGreaterThanOrEqual(C.real.mid - 0.5)
+    expect(r.sell.price).toBeLessThanOrEqual(C.real.mid + 0.5)
+    expect(r.profit).toBeLessThan(0)
+    expect(r.rejects).toContain('profit')
+    expect(r.rejects).toContain('spread')
+  })
+
+  it('старая цель «lo суток» дала бы прибыль на пустом месте — новая нет', () => {
+    // сутки: lo 95, hi 105 (лучшие сделки), но торгуют по 100 — флип внутри рынка не исполнить
+    const lucky = { ...C, real: { mid: 100, buy: { at: 95, lo: 95, hi: 95 }, sell: { at: 105, lo: 105, hi: 105 } } }
+    expect(buildRoute('CXC', 'Scarabs/X', lucky, lucky, ctx)!.profit).toBe(10)
+    expect(buildRoute('CXC', 'Scarabs/X', C, C, ctx)!.profit).toBeLessThan(0)
+  })
+
+  it('запас прочности: чем шире диапазон в игре против прибыли, тем ниже уверенность', () => {
+    const narrow = buildRoute('CXD', 'Scarabs/X', market('chaos', real(100, 99, 101)), D, ctx)!
+    const wide = buildRoute('CXD', 'Scarabs/X', market('chaos', real(100, 80, 104)), D, ctx)!
+    expect(narrow.profit).toBeGreaterThan(wide.profit)
+    expect(narrow.confidence).toBeGreaterThan(wide.confidence)
   })
 
   it('фильтры: ликвидность, активность, спред, волатильность, тренд, бюджет', () => {
-    const bad = { base: 'chaos' as const, s24: stats({ liquidity: 100, activeHours: 5, spread: 0.5, volatility: 0.5, vwap: 100 }), s6: stats({ vwap: 130 }) }
-    const r = buildRoute('CXC', 'Scarabs/X', bad, bad, { ...ctx, filters: { ...ctx.filters, budgetDiv: 0.1 } })!
+    const bad = { liquidity: 100, activeHours: 5, volatility: 0.5 }
+    const c = market('chaos', real(100, 95, 105), { ...bad, vwap: 100 }, { vwap: 130 })
+    // продажа за divine на 50 % дороже — маржа выше потолка спреда
+    const d = market('divine', real(0.5, 0.49, 0.52), bad)
+    const r = buildRoute('CXD', 'Scarabs/X', c, d, { ...ctx, filters: { ...ctx.filters, budgetDiv: 0.1 } })!
     expect(r.rejects).toEqual(['liquidity', 'activity', 'spread', 'volatility', 'budget', 'trend'])
     expect(r.confidence).toBeLessThan(0.5)
   })
 
   it('без имени предмета — маршрута нет', () => {
-    const m = { base: 'chaos' as const, s24: stats({}), s6: stats({}) }
-    expect(buildRoute('CXC', 'Scarabs/Unknown', m, m, ctx)).toBeNull()
+    expect(buildRoute('CXC', 'Scarabs/Unknown', C, C, ctx)).toBeNull()
   })
 })
 
@@ -106,5 +133,30 @@ describe('маршруты на реальных часах фида (Allflame, 
   it('каждый маршрут — либо прошёл, либо с причинами', () => {
     for (const r of rejected) expect(r.rejects.length).toBeGreaterThan(0)
     expect(new Set([...routes, ...rejected].map((r) => r.id)).size).toBe(routes.length + rejected.length)
+  })
+})
+
+describe('Valdo’s Puzzle Box на часах 29.10 (живая проверка rc.8)', () => {
+  const hours = JSON.parse(readFileSync(join(__dirname, '../fixtures/flip/valdo-29oct.json'), 'utf8')) as FullHour[]
+  const lastHour = hours[hours.length - 1].hour
+  const rate = divineTrack(hours, 'Allflame')!.current
+  const valdo = (budgetDiv: number) =>
+    computeRoutes({ hours, league: 'Allflame', lastHour, ctx: { rate, names, fees, filters: { ...DEFAULT_FILTERS, budgetDiv } } })
+  const find = (rs: { routes: FlipRoute[]; rejected: FlipRoute[] }) => [...rs.routes, ...rs.rejected].find((r) => r.id === 'CXD:Currency/CurrencyValdoPuzzleBox')!
+
+  it('было «купить ≤ 272 c, продать ≥ 1 div, +65 c»; стало «≤ 301 c (в игре 286–317), ≥ 0,96 div»', () => {
+    expect(rate).toBeCloseTo(339.5, 1)
+    const r = find(valdo(25))
+    expect(r.buy).toEqual({ base: 'chaos', price: 301, order: { give: 301, get: 1 }, range: { lo: 286.0028, hi: 317 } })
+    expect(r.sell.price).toBe(0.96)
+    expect(r.sell.order).toEqual({ give: 25, get: 24 })
+    expect(r.profit).toBeCloseTo(0.96 * rate - 301, 2)
+    expect(r.rejects).toEqual([])
+  })
+
+  it('при бюджете 10 div честный ордер на продажу (24 div : 25 шт.) не влезает — строки нет', () => {
+    const rs = valdo(10)
+    expect(rs.routes.some((r) => r.item === 'Currency/CurrencyValdoPuzzleBox')).toBe(false)
+    expect(find(rs).rejects).toEqual(['budget'])
   })
 })

@@ -52,6 +52,8 @@
 .fx-table td.is-num { white-space: nowrap; }
 .fx-pair .fx-trend,
 .fx-trend { color: var(--warn); }
+/* диапазон «в игре, скорее всего» под ценой (S25) */
+.fx-range { display: block; margin-top: 1px; font-size: var(--fs-xs); color: var(--fg-faint); font-variant-numeric: tabular-nums; }
 .fx-empty { padding: 26px 12px; }
 .fx-err { border-top: 0; }
 .ui-box__foot.fx-foot { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 6px; font-size: var(--fs-xs); color: var(--fg-faint); }
@@ -76,6 +78,18 @@
 .fx-kv .ui-coin { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
 .fx-kv .fx-conf { font-size: var(--fs-sm); }
 
+/* «Цена в игре сейчас» (S25): курс из игры вручную и пересчёт */
+.fx-check { display: grid; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.fx-check__head { display: flex; align-items: center; gap: 6px; color: var(--fg); }
+/* подписи разной длины: поля и подсказки обеих ног — на одной высоте (subgrid по трём строкам поля) */
+.fx-check__legs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto auto; gap: 6px 14px; }
+.fx-check__leg { grid-row: span 3; grid-template-rows: subgrid; align-items: end; }
+.fx-check__input { width: 100%; max-width: 220px; font-variant-numeric: tabular-nums; }
+.fx-check__res { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-variant-numeric: tabular-nums; }
+.fx-check__res .ui-coin { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
+.fx-check__res .ui-btn { margin-left: auto; }
+.fx-check__note { color: var(--fg-muted); font-size: var(--fs-sm); }
+
 /* макет рассчитан на компаньон 1040 px; окно уже — по ширине содержимого, а не окна */
 @container (max-width: 720px) {
   .fx-top { grid-template-columns: minmax(0, 1fr); }
@@ -92,4 +106,6 @@
 }
 @container (max-width: 640px) {
   .fx-how { grid-template-columns: minmax(0, 1fr); }
+  .fx-check__legs { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: 10px; }
+  .fx-check__leg { grid-row: auto; grid-template-rows: none; }
 }

@@ -1,6 +1,8 @@
+import { readFileSync } from 'fs'
+import { join } from 'path'
 import { describe, expect, it } from 'vitest'
-import { leagueHour, parseFeedHour, toCompactHour, type FullMarket } from '../../src/shared/flip/feed'
-import { indexPairs, normalizeMarket, pairHours, pairStats, weightedMedian, type PairHour } from '../../src/shared/flip/stats'
+import { leagueHour, parseFeedHour, toCompactHour, type FullHour, type FullMarket } from '../../src/shared/flip/feed'
+import { indexPairs, normalizeMarket, pairHours, pairStats, realPrices, weightedMedian, type PairHour, type RealSide } from '../../src/shared/flip/stats'
 import { CHAOS_ID, DIVINE_ID } from '../../src/shared/wealth/exchange'
 
 const M = 'Metadata/Items/'
@@ -108,5 +110,96 @@ describe('статистика пары', () => {
     expect([...idx.keys()]).toEqual([X])
     expect(idx.get(X)?.chaos).toEqual(pairHours([a], 'L', X, 'chaos'))
     expect(idx.get(X)?.divine?.[0]).toMatchObject({ volX: 30, volBase: 1, lo: 1 / 30, hi: 1 / 25 })
+  })
+})
+
+describe('реалистичная цена «сейчас» (S25)', () => {
+  /** час пары: i часов назад, объём, VWAP, lo, hi */
+  const ph = (i: number, price: number, lo: number, hi: number, volX = 10): PairHour => ({
+    hour: H - i * 3600,
+    volX,
+    volBase: volX * price,
+    lo,
+    hi,
+    stockX: 100,
+    stockBase: 100 * price
+  })
+  const day = (f: (i: number) => PairHour): PairHour[] => Array.from({ length: 24 }, (_, i) => f(23 - i))
+  /** цель и диапазон с точностью до 1e-6 */
+  const near = (side: RealSide, at: number, lo: number, hi: number): void => {
+    expect(side.at).toBeCloseTo(at, 6)
+    expect(side.lo).toBeCloseTo(lo, 6)
+    expect(side.hi).toBeCloseTo(hi, 6)
+  }
+
+  it('последние часы весят больше суток', () => {
+    const hs = day((i) => (i < 3 ? ph(i, 120, 118, 123) : ph(i, 100, 98, 103)))
+    const r = realPrices(hs, H)!
+    // VWAP суток — 102,5; свежий — ближе к 120
+    expect(pairStats(hs, H, 24, 1).vwap).toBeCloseTo(102.5, 6)
+    expect(r.mid).toBeGreaterThan(110)
+    expect(r.buy.at).toBeGreaterThan(r.mid)
+  })
+
+  it('lo часа — одна глубокая сделка: цель покупки не lo, а между свежим VWAP и hi', () => {
+    // каждый час кто-то один раз продал дёшево (lo 80), основная торговля — по 100
+    const hs = day((i) => ph(i, 100, 80, 104))
+    const r = realPrices(hs, H)!
+    expect(pairStats(hs, H, 24, 1).lo).toBe(80)
+    near(r.buy, 102, 100, 104)
+    near(r.sell, 90, 80, 100)
+  })
+
+  it('выброс в одном часе (lo 10, hi 400) не сдвигает ни покупку, ни продажу', () => {
+    const calm = day((i) => ph(i, 100, 98, 103))
+    const spiked = calm.map((h, k) => (k === calm.length - 1 ? { ...h, lo: 10, hi: 400 } : h))
+    expect(realPrices(spiked, H)).toEqual(realPrices(calm, H))
+    expect(realPrices(calm, H)!.buy.at).toBeCloseTo(101.5, 6)
+    expect(realPrices(calm, H)!.sell.at).toBeCloseTo(99, 6)
+  })
+
+  it('покупка не дешевле VWAP, продажа не дороже; цель внутри диапазона; без сделок — null', () => {
+    // hi ниже VWAP (данные кривые) — диапазон покупки сжимается в VWAP
+    const r = realPrices(day((i) => ph(i, 100, 101, 99)), H)!
+    near(r.buy, 100, 100, 100)
+    near(r.sell, 100, 100, 100)
+    expect(realPrices(day((i) => ({ ...ph(i, 100, 0, 0), volX: 0, volBase: 0 })), H)).toBeNull()
+    expect(realPrices([], H)).toBeNull()
+  })
+
+  it('Valdo’s Puzzle Box, 29.10 (живая проверка rc.8): в игре стакан 296–318 — у нас 286–317, а не 272', () => {
+    // часы фида Allflame до 04:00–05:00 МСК — те, что видел пользователь; стакан снят в игре в следующем часу
+    const hours = JSON.parse(readFileSync(join(__dirname, '../fixtures/flip/valdo-29oct.json'), 'utf8')) as FullHour[]
+    const last = hours[hours.length - 1].hour
+    const valdo = pairHours(hours, 'Allflame', 'Currency/CurrencyValdoPuzzleBox', 'chaos')
+    const r = realPrices(valdo, last)!
+    // в игре: Ratio 1:296 ×2, 1:299 ×1, 1:303 ×16, 1:310 ×1, 1:318 ×6, дороже — ещё 200
+    const book: Array<[number, number]> = [
+      [296, 2],
+      [299, 1],
+      [303, 16],
+      [310, 1],
+      [318, 6]
+    ]
+    let need = 12
+    let cost = 0
+    for (const [p, n] of book) {
+      const k = Math.min(n, need)
+      cost += k * p
+      need -= k
+    }
+    const per12 = cost / 12
+    expect(per12).toBe(301.5)
+    // старая цель (медиана lo за сутки) ниже самой дешёвой строки стакана
+    expect(pairStats(valdo, last, 24, 1).lo).toBeLessThan(book[0][0] * 0.95)
+    // новая — в пределах 1 % от цены 12 штук прямо сейчас; диапазон накрывает стакан
+    expect(Math.abs(r.buy.at / per12 - 1)).toBeLessThan(0.01)
+    expect(r.buy.lo).toBeCloseTo(286, 0)
+    expect(r.buy.hi).toBe(317)
+    // продать за divine — к стороне покупателей: 0,91–1,01 div, цель 0,96
+    const inDiv = realPrices(pairHours(hours, 'Allflame', 'Currency/CurrencyValdoPuzzleBox', 'divine'), last)!
+    expect(inDiv.sell.at).toBeCloseTo(0.96, 2)
+    expect(inDiv.sell.lo).toBeCloseTo(0.91, 2)
+    expect(inDiv.sell.hi).toBeCloseTo(1.01, 2)
   })
 })

@@ -146,6 +146,57 @@ export function pairStats(ph: readonly PairHour[], lastHour: number, window: num
   }
 }
 
+/** Полураспад веса часа, ч: последние 1–3 часа весят больше суток. */
+export const RECENT_HALF_LIFE = 2
+/**
+ * Доля пути от свежего VWAP к краю сделок (hi для покупки, lo для продажи), где ставить цель ордера.
+ * Подобрано по неделе фида Allflame (28.10–29.10, 38 тыс. рынко-часов с ликвидностью ≥ 2 div/ч): цель покупки
+ * не ниже цены следующего часа в 71 % часов (старая цель «медиана lo за сутки» — в 19 %), переплата к VWAP
+ * следующего часа — медиана 6 %.
+ */
+export const REAL_PUSH = 0.5
+
+/** Цель ордера и диапазон «в игре, скорее всего» (база за штуку X). */
+export interface RealSide {
+  at: number
+  lo: number
+  hi: number
+}
+
+/** Реалистичные цены пары «сейчас»: покупка X — от VWAP к стороне продавцов, продажа — к стороне покупателей. */
+export interface RealPrices {
+  /** свежий VWAP: часы по объёму, вес часа падает вдвое каждые RECENT_HALF_LIFE часов */
+  mid: number
+  buy: RealSide
+  sell: RealSide
+}
+
+/**
+ * Сколько реально заплатить за штуку X и сколько за неё получить по последним часам фида.
+ *
+ * lowest/highest_ratio часа — крайние соотношения за час; по данным похоже, что hi — покупка сразу у продавцов
+ * (сторона запаса X), lo — продажа сразу покупателям (часами держится одна «стена» заявок, напр. Valdo 1:273).
+ * Медиана lo за сутки — не цена «сейчас»: свежий ордер на покупку по ней почти не исполняется. Поэтому покупка —
+ * между свежим VWAP и hi (цель — посередине), продажа — между lo и VWAP.
+ * hi и lo часов — взвешенные медианы (один выброс-час не сдвигает цену), веса — объём × спад по давности.
+ * Запас стакана (lowest/highest_stock) — только на размер ордера: на бэктесте он цену не уточнил.
+ */
+export function realPrices(ph: readonly PairHour[], lastHour: number, window = 24): RealPrices | null {
+  const from = lastHour - (window - 1) * 3600
+  const hs = ph.filter((h) => h.hour >= from && h.hour <= lastHour && h.volX > 0 && h.volBase > 0)
+  const w = (h: PairHour): number => h.volX * 0.5 ** ((lastHour - h.hour) / 3600 / RECENT_HALF_LIFE)
+  const wx = hs.reduce((s, h) => s + w(h), 0)
+  if (!(wx > 0)) return null
+  const mid = hs.reduce((s, h) => s + (h.volBase / h.volX) * w(h), 0) / wx
+  const ask = Math.max(mid, weightedMedian(hs.map((h) => ({ v: h.hi, w: w(h) }))))
+  const bid = Math.min(mid, weightedMedian(hs.map((h) => ({ v: h.lo, w: w(h) }))) || mid)
+  return {
+    mid,
+    buy: { at: mid + REAL_PUSH * (ask - mid), lo: mid, hi: ask },
+    sell: { at: mid - REAL_PUSH * (mid - bid), lo: bid, hi: mid }
+  }
+}
+
 /**
  * Все пары лиги за один проход: предмет → база → часы пары (от старых к новым). Сама база и вторая база
  * предметом не считаются (рынок chaos↔divine — у трекера курса).
