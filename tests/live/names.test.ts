@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import type { LiveHit, LiveRarity } from '@shared/types'
 import type { Poe1Data } from '@shared/poe1/data'
-import { hitNameIn, hitNeedsTranslation, nameInGame } from '../../src/renderer/src/panels/live/names'
+import { hitNameIn, hitNeedsTranslation, nameInGame } from '@shared/live/names'
 import { store } from '../poe1/helpers'
 
 // Имя находки live на языке клиента игры (S31): сайт трейда (www — EN, ru — RU) × клиент игры (EN/RU).
