@@ -31,7 +31,7 @@ export function BuildTab() {
   const ready = useBuildStore((s) => s.ready)
   const active = useBuildStore((s) => s.state.active)
   const dataError = useBuildStore((s) => s.dataError)
-  const error = useBuildStore((s) => s.error)
+  const error = useBuildStore((s) => (s.errorFrom === 'reload' ? s.error : null))
   const busy = useBuildStore((s) => s.busy)
   useInit(useBuildStore((s) => s.init))
   useInit(useLevelingStore((s) => s.init))
@@ -76,7 +76,7 @@ export function BuildTab() {
                 <span>
                   <b>{t('bd.reload.err')}</b> {t(error.error === 'fetch' ? `bd.err.fetch.${error.fetchError ?? 'network'}` : 'bd.err.notPob')}
                 </span>
-                <button type="button" className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm" aria-label={t('bd.dlg.close')} onClick={() => useBuildStore.getState().setInput('')}>
+                <button type="button" className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm" aria-label={t('bd.dlg.close')} onClick={() => useBuildStore.getState().clearError()}>
                   <BIco name="close" />
                 </button>
               </div>

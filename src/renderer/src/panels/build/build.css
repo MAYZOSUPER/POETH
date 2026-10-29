@@ -116,6 +116,8 @@
 .bd-check li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: var(--sp-4); font-size: var(--fs-sm); }
 .bd-check .ui-ico { width: 14px; height: 14px; margin-top: 2px; color: var(--fg-faint); }
 .bd-nostats { padding: 18px 14px; }
+.bd-foot { flex-wrap: nowrap; align-items: flex-start; gap: var(--sp-3); }
+.bd-foot > .ui-ico { flex: none; margin-top: 2px; }
 
 /* заметки автора: текст как есть, без цветокодов и ссылок */
 .bd-notes { margin: 0; padding: var(--sp-5) var(--sp-6); font: 400 var(--fs-sm) / 1.5 var(--font-ui); color: var(--fg); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 7.5em; overflow: hidden; }
@@ -147,14 +149,17 @@
 .bd-sk__chips .ui-skeleton { width: 56px; height: 24px; border-radius: 12px; }
 
 /* ---------- диалог «Этапы…» ---------- */
-.bd-dialog { width: 680px; }
+.bd-host .ui-dialog-scrim { grid-template-columns: minmax(0, 1fr); }
+.bd-dialog { width: 680px; max-width: 100%; }
 .bd-dialog__body { display: grid; gap: var(--sp-6); }
 .bd-map { display: grid; border: 1px solid var(--border); border-radius: var(--r-sm); }
-.bd-map__row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 64px auto; gap: var(--sp-4); align-items: center; padding: var(--sp-3) var(--sp-5); border-top: 1px solid var(--border); font-size: var(--fs-sm); }
+.bd-map__row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 72px auto; gap: var(--sp-4); align-items: center; padding: var(--sp-3) var(--sp-5); border-top: 1px solid var(--border); font-size: var(--fs-sm); }
 .bd-map__row:first-child { border-top: 0; }
 .bd-map__row.is-head { font: 600 var(--fs-2xs) / 1.2 var(--font-ui); letter-spacing: 0.05em; text-transform: uppercase; color: var(--fg-faint); }
 .bd-map__row code { font: 500 var(--fs-xs) / 1.3 var(--font-mono); color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bd-map__row.is-off > :not(:last-child) { opacity: 0.6; }
+.bd-map__lv { min-width: 0; }
+.bd-map__row.is-head .bd-map__lv { white-space: nowrap; }
 .bd-map__from { width: 100%; }
 @container body (max-width: 560px) {
   .bd-map__row { grid-template-columns: minmax(0, 1fr) 56px auto; }

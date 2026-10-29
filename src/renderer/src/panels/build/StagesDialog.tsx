@@ -92,7 +92,7 @@ export function StagesDialog({
             <div className="bd-map__row is-head" role="row">
               <span role="columnheader">{t('bd.dlg.set')}</span>
               <span role="columnheader">{t('bd.dlg.stage')}</span>
-              <span role="columnheader" className="lv">
+              <span role="columnheader" className="bd-map__lv">
                 {t('bd.dlg.from')}
               </span>
               <span role="columnheader">{t('bd.dlg.leveling')}</span>
@@ -108,7 +108,7 @@ export function StagesDialog({
                     {s.title || labels[plan.stages.indexOf(s)]}
                   </code>
                   <span role="cell">{previewLabels[pi]}</span>
-                  <span className="lv" role="cell">
+                  <span className="bd-map__lv" role="cell">
                     <label className="bd-sr" htmlFor={fromId}>
                       {t('bd.dlg.from.aria', { s: previewLabels[pi] })}
                     </label>

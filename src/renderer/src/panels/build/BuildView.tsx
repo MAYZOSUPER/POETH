@@ -613,12 +613,12 @@ function CheckBox({ build, plan, shown, expert }: { build: StoredBuild; plan: Po
         </div>
       )}
       {checks && (
-        <div className="ui-box__foot">
+        <div className="ui-box__foot bd-foot">
           <BIco name="info" size="sm" />
           <span>
             {t('bd.check.by')}
             {checks.specTitle ? ` · ${t('bd.check.set', { s: checks.specTitle })}` : ''}
-            {checks.penalty ? ` · ${t('bd.check.penalty', { n: checks.penalty })}` : ''}
+            {checks.penalty ? ` · ${t('bd.check.penalty', { n: String(checks.penalty).replace('-', '−') })}` : ''}
           </span>
         </div>
       )}

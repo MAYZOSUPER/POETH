@@ -8,7 +8,7 @@ import { useGameLang } from '../../gameLang'
 import { useLevelingStore } from '../../store/useLevelingStore'
 import { Ico, Switch, useSimple } from '../deals/common'
 import { StepTags, StepText } from './StepText'
-import { useBuildGemIds } from '../../overlay/leveling/buildLine'
+import { useBuildGemIds } from '../../overlay/leveling/buildGuide'
 import './leveling.css'
 
 // Вкладка «Кампания» в PoE 1 (S14) по макету дизайнера «Прокачка PoE 1»: акты 1–10 со счётчиками, маршрут

@@ -20,14 +20,16 @@ interface BuildStore {
   dataError: boolean
   /** идёт вставка или загрузка по ссылке */
   busy: 'import' | 'reload' | null
-  /** ошибка последней вставки и что было вставлено */
+  /** ошибка последней вставки или «Обновить по ссылке» и что было вставлено */
   error: ImportError | null
+  errorFrom: 'import' | 'reload' | null
   input: string
   /** этап на экране (индекс в плане этапов); null — текущий */
   view: number | null
 
   init: () => Promise<() => void>
   setInput: (text: string) => void
+  clearError: () => void
   importText: (text: string) => Promise<boolean>
   reload: () => Promise<boolean>
   open: (id: string | null) => Promise<void>
@@ -77,6 +79,7 @@ export const useBuildStore = create<BuildStore>((set, get) => ({
   dataError: false,
   busy: null,
   error: null,
+  errorFrom: null,
   input: '',
   view: null,
 
@@ -86,7 +89,7 @@ export const useBuildStore = create<BuildStore>((set, get) => ({
       subscribed = (async () => {
         const offState = window.overlayApi.onBuildState((state) => {
           const prev = get().state.active?.id
-          set({ state, ...(state.active?.id !== prev ? { view: null } : {}) })
+          set({ state, ...(state.active?.id !== prev ? { view: null, error: null, errorFrom: null } : {}) })
         })
         const offTaken = window.overlayApi.onBuildTaken((taken) => set({ taken }))
         const [state, tree, gems] = await Promise.all([api().state(), loadBuildTree(), loadBuildGems()])
@@ -111,7 +114,8 @@ export const useBuildStore = create<BuildStore>((set, get) => ({
     }
   },
 
-  setInput: (input) => set({ input, error: null }),
+  setInput: (input) => set({ input, error: null, errorFrom: null }),
+  clearError: () => set({ error: null, errorFrom: null }),
 
   importText: async (text) => {
     if (get().busy) return false
@@ -119,13 +123,13 @@ export const useBuildStore = create<BuildStore>((set, get) => ({
     try {
       const res = await api().importPob(text)
       if (!res.ok) {
-        set({ error: res })
+        set({ error: res, errorFrom: 'import' })
         return false
       }
       set({ state: res.state, input: '', view: null })
       return true
     } catch {
-      set({ error: { ok: false, error: 'fetch', fetchError: 'network' } })
+      set({ error: { ok: false, error: 'fetch', fetchError: 'network' }, errorFrom: 'import' })
       return false
     } finally {
       set({ busy: null })
@@ -139,7 +143,7 @@ export const useBuildStore = create<BuildStore>((set, get) => ({
     try {
       const res = await api().reload(id)
       if (!res.ok) {
-        set({ error: res })
+        set({ error: res, errorFrom: 'reload' })
         return false
       }
       set({ state: res.state })
@@ -150,7 +154,7 @@ export const useBuildStore = create<BuildStore>((set, get) => ({
   },
 
   open: async (id) => {
-    set({ state: await api().open(id), view: null, error: null })
+    set({ state: await api().open(id), view: null, error: null, errorFrom: null })
   },
 
   remove: async (id) => {
