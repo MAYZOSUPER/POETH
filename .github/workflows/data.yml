@@ -28,8 +28,10 @@ on:
         default: false
   push:
     tags: ['data-*']
-  schedule:
-    - cron: '17 * * * *'
+  # Снимок цен по расписанию включим вместе с флагом ITEMFLIP_RELEASED (src/shared/flip/items/flag.ts):
+  # пока функция скрыта, в публичную ветку `prices` ничего не публикуем. Вручную — галочка «Только снимок цен».
+  # schedule:
+  #   - cron: '17 * * * *'
 
 permissions:
   contents: write
