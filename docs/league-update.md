@@ -26,7 +26,8 @@
 | Сайт трейда (фильтры, статусы, поля листингов) | ошибки запросов, пропавшие фильтры | проверка в день старта по чек-листу ниже, хотфикс-релиз |
 | Новые валюты/рынки обмена | флиппинг (v0.2) не знает пары | маппинг metadata-id обновляется вместе с данными |
 | Формат Ctrl+C, строки `Client.txt` | парсер/сделки | фикстуры из новой лиги + тесты; whisper-форматы менялись редко |
-| Дерево пассивок | timeless-калькулятор (v0.2) | перепроверить данные дерева |
+| Дерево пассивок, камни | вкладка «Билд» (v0.2): ноды, имена, статы; новые и трансфигурированные камни | `node tools/build-data/build.mjs --refresh` по новому тегу skilltree-export и выгрузке RePoE → `build/{tree,gems}.json` едут каналом данных; timeless-калькулятор — перепроверить |
+| Тексты журнала (вложение пассивок, очки, `/passives`) | «Билд» не видит прогресс | `node tools/build-data/log-strings.mjs` сверяет с таблицами клиента |
 | Капча/Cloudflare | `blocked` | баннер «проверка сайта» → трейд-окно (S3) |
 
 ## Чек-лист лида
@@ -46,6 +47,10 @@
 - [ ] Вышел новый релиз APT (и/или обновился RePoE fork) → **день лиги одной командой** (см. ниже):
       `node tools/data/league-day.mjs --sha <коммит APT> --version 3.30.0-1 --patch 3.30`.
 - [ ] `npm run collect:fixtures` в новой лиге (новые EN/RU пары) → тесты парсера.
+- [ ] Вышел тег skilltree-export `3.30.x` и выгрузка RePoE fork 3.30 → данные «Билда»: поднять пины в
+      `tools/build-data/sources.mjs` (и `DAT_COMMIT` в `tools/leveling/game-names.mjs`), `node tools/build-data/build.mjs
+      --refresh`, `npx vitest run tests/build-data` (порядок и отчёт — `tools/build-data/README.md`). Скилл-три выходит
+      в день патча, RePoE — обычно через 0–2 дня; дерево без RU-имён не публиковать.
 - [ ] Нужен код (не только данные) — релиз v0.1.1 (тег `v*`, release.yml).
 
 **Неделя 1–2:** следить за issues APT/Sidekick и форумом GGG (изменения сайта трейда), хотфиксы. Мид-лиговые
@@ -81,6 +86,8 @@ node tools/data/league-day.mjs --sha <коммит APT> --version 3.30.0-1 --pat
 1. **apt** — `sync-apt-data --sha` (новые stats/items/client_strings EN+RU, индексы), пин `APT_PIN` ← полный SHA;
 2. **verify** — sha256 файлов по `data.meta.json`;
 3. **regex** — `build-regex-data --refresh --patch` (свежий RePoE fork → `regex/maps.{en,ru}.json`);
+   данные «Билда» (`tools/build-data/build.mjs --refresh`) шагом пока не встроены — запускать вручную перед **tests**
+   (пины версий — в `tools/build-data/sources.mjs`, они не «последние», а закреплённые);
 4. **tests** — typecheck, vitest, test:trade;
 5. **pack** — `publish-data --version` → `dist-data/`;
 6. **publish** — `ci` (по умолчанию): данные закоммичены и коммит уже в origin/main → тег `data-<версия>` →
