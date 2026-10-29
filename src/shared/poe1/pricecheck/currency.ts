@@ -38,16 +38,35 @@ export function rateFractions(chaosPerDivine: number): Array<{ div: number; chao
 const CHAOS = new Set(['chaos'])
 const DIVINE = new Set(['divine'])
 
-/** Курсы для «честной цены» (сравнение chaos и divine в одном списке); без курса — undefined. */
-export function chaosRates(chaosPerDivine: number | undefined): Record<string, number> | undefined {
-  return chaosPerDivine && chaosPerDivine > 0 ? { chaos: 1, divine: chaosPerDivine } : undefined
+/** chaos за 1 шт. по trade tag валюты (S24: прочие валюты лотов — по обмену у Фаустуса). */
+export type ChaosRates = Readonly<Record<string, number>>
+
+/**
+ * Курсы для «честной цены» (сравнение валют в одном списке): chaos, divine по курсу шапки и `more` — прочие
+ * валюты лотов по обмену у Фаустуса (alch, exalted…). Без курса divine — undefined.
+ */
+export function chaosRates(chaosPerDivine: number | undefined, more?: ChaosRates): Record<string, number> | undefined {
+  if (!(chaosPerDivine && chaosPerDivine > 0)) return undefined
+  return { ...more, chaos: 1, divine: chaosPerDivine }
 }
 
-/** Цена в chaos: chaos как есть, divine — по курсу; прочие валюты (и divine без курса) — undefined. */
-export function toChaos(price: Poe1Price, chaosPerDivine: number | undefined): number | undefined {
+/** Цена в chaos: chaos как есть, divine — по курсу, прочие — по `rates`; неизвестно — undefined. */
+export function toChaos(price: Poe1Price, chaosPerDivine: number | undefined, rates?: ChaosRates): number | undefined {
   if (CHAOS.has(price.currency)) return price.amount
   if (DIVINE.has(price.currency) && chaosPerDivine && chaosPerDivine > 0) return price.amount * chaosPerDivine
-  return undefined
+  const r = DIVINE.has(price.currency) ? undefined : rates?.[price.currency]
+  return r != null && r > 0 ? price.amount * r : undefined
+}
+
+/** Одна единица на строку (S24): от 1 div по курсу — divine, ниже — chaos; без курса — chaos. */
+export function unitFor(chaos: number, chaosPerDivine: number | undefined): 'chaos' | 'divine' {
+  return chaosPerDivine && chaosPerDivine > 0 && chaos >= chaosPerDivine ? 'divine' : 'chaos'
+}
+
+/** chaos-эквивалент в выбранной единице, округлённо (chaos — roundChaos, divine — roundDivine). */
+export function chaosIn(chaos: number, unit: 'chaos' | 'divine', chaosPerDivine: number | undefined): Poe1Price {
+  if (unit === 'divine' && chaosPerDivine && chaosPerDivine > 0) return { amount: roundDivine(chaos / chaosPerDivine), currency: 'divine' }
+  return { amount: roundChaos(chaos), currency: 'chaos' }
 }
 
 /** Цена в другой валюте: chaos → divine, divine → chaos; прочие валюты — null. */

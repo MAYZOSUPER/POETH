@@ -319,6 +319,62 @@ export function honestPrice(
   return { instant, person, confidence: confidenceOf(Math.max(total, instant.count + person.count)) }
 }
 
+// ---------------------------------------------------------------- S24: цена на рынке
+
+/** Сколько самых дешёвых честных лотов берём для «цены на рынке». */
+export const MARKET_WINDOW = 10
+
+/**
+ * «Цена на рынке» — ответ на вопрос «сколько стоит моя вещь»: середина (медиана) самых дешёвых честных лотов
+ * обеих групп вместе (без приманок), в chaos по курсам `rates`. Лоты в валюте без курса не считаем; курса нет
+ * ни у одного — всё в валюте самого дешёвого лота. `instant`/`person` — самые дешёвые в группах (для пояснения).
+ */
+export interface MarketPrice {
+  /** середина самых дешёвых лотов: chaos, если курсы известны */
+  mid: Poe1Price
+  /** самый дешёвый и самый дорогой из этих лотов — в той же валюте */
+  min: Poe1Price
+  max: Poe1Price
+  /** по скольким лотам */
+  lots: number
+  /** chaos-эквивалент `mid` (курсы известны) */
+  chaos?: number
+  /** самые дешёвые лоты групп как есть: мгновенный выкуп у торговца / лично (whisper) */
+  instant?: Poe1Price
+  person?: Poe1Price
+}
+
+function chaosValue(p: Poe1Price, rates?: Readonly<Record<string, number>>): number | undefined {
+  if (p.currency === 'chaos') return p.amount
+  const r = rates?.[p.currency]
+  return r != null && r > 0 ? p.amount * r : undefined
+}
+
+export function marketPrice(
+  listings: readonly Poe1Listing[],
+  honest: HonestPrice,
+  rates?: Readonly<Record<string, number>>
+): MarketPrice | undefined {
+  const skip = new Set([...honest.instant.outliers, ...honest.person.outliers])
+  const priced = listings.filter((l): l is Poe1Listing & { price: Poe1Price } => !skip.has(l.id) && l.price != null && l.price.amount > 0)
+  if (!priced.length) return undefined
+  const inChaos = priced.map((l) => chaosValue(l.price, rates)).filter((v): v is number => v != null)
+  const currency = inChaos.length ? 'chaos' : priced[0].price.currency
+  const values = (inChaos.length ? inChaos : priced.filter((l) => l.price.currency === currency).map((l) => l.price.amount))
+    .sort((a, b) => a - b)
+    .slice(0, MARKET_WINDOW)
+  const mid = median(values)
+  return {
+    mid: { amount: mid, currency },
+    min: { amount: values[0], currency },
+    max: { amount: values[values.length - 1], currency },
+    lots: values.length,
+    ...(currency === 'chaos' ? { chaos: mid } : {}),
+    ...(honest.instant.min ? { instant: honest.instant.min } : {}),
+    ...(honest.person.min ? { person: honest.person.min } : {})
+  }
+}
+
 // ---------------------------------------------------------------- IPC (renderer ↔ main)
 
 export interface Poe1SearchArgs {

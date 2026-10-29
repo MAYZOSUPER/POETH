@@ -9,7 +9,9 @@ import type {
   Poe1ExchangeResult,
   Poe1UnknownLine,
   Poe1FallbackMatch,
-  CurrencyRate
+  CurrencyRate,
+  Poe1FaustusArgs,
+  Poe1FaustusResult
 } from '../types'
 
 export const tradeChannels = {
@@ -22,7 +24,8 @@ export const tradeChannels = {
     poe1Exchange: 'trade:pcExchange',
     poe1MatchUnknown: 'trade:pcMatchUnknown',
     copyText: 'trade:copyText',
-    currencyRate: 'trade:currencyRate'
+    currencyRate: 'trade:currencyRate',
+    poe1Faustus: 'trade:pcFaustus'
   }
 } as const
 
@@ -50,6 +53,8 @@ export interface TradeIpcApi {
     copyText(text: string): Promise<boolean>
     /** Курс chaos за divine в лиге (почасовой фид обмена GGG, сервис цен S11a); null — данных нет */
     currencyRate(league: string): Promise<CurrencyRate | null>
+    /** S24: цена у Фаустуса (почасовой фид обмена GGG) по английским именам; запросов к сайту трейда нет */
+    poe1Faustus(args: Poe1FaustusArgs): Promise<Poe1FaustusResult>
   }
   /** A hotkey-triggered price-check finished (main read the clipboard for us). */
   onPriceResult(cb: (result: PriceCheckResult) => void): () => void

@@ -7,12 +7,16 @@
 //   cheap    — то же для валюты, карточек и опта: торговцу не продают, копят и продают пачкой;
 //   list     — «выставьте за ~X»: самый дешёвый честный лот (группы «честной цены», без приманок).
 //
+// S24: валюта и всё, что меняют у Фаустуса, — вердикт по цене обмена (`kind: 'exchange'`): «продайте у Фаустуса»,
+// «дешёвка» или «мало сделок»; заметку цены не даём (на сайте валюту почти не покупают). Прочие валюты лотов
+// (alch, exalted…) переводятся в chaos по обмену (`rates`), иначе «1 alch» и «1 c» не сравнить.
+//
 // Рекомендованная цена округляется до понятных чисел, от 1 div (по курсу плашки в шапке) — в divine.
 // Заметка цены `~price X chaos` — то, что игрок сам вставляет в заметку предмета в игре (одинаково для
 // EN и RU клиента: игра пишет и показывает `~price`/`~b/o` без перевода, десятичная точка). Чистый TS.
 
 import { ItemCategory, type ParsedItem } from '../parser'
-import { toChaos } from './currency'
+import { toChaos, type ChaosRates } from './currency'
 import { confidenceOf, type HonestPrice, type Poe1Listing, type Poe1Price } from './results'
 
 export type VerdictKind = 'none' | 'valuable' | 'few' | 'junk' | 'cheap' | 'list'
@@ -67,6 +71,8 @@ export type VerdictInput =
       listings: readonly Poe1Listing[]
       honest: HonestPrice
       chaosPerDivine?: number
+      /** S24: chaos за 1 шт. прочих валют лотов (по обмену у Фаустуса) */
+      rates?: ChaosRates
       /** валюта, карточки, стопки: «продайте торговцу» не говорим */
       noVendor: boolean
     }
@@ -75,6 +81,17 @@ export type VerdictInput =
       total: number
       /** цена за 1 шт. у лучшего предложения обмена */
       each?: Poe1Price
+      chaosPerDivine?: number
+    }
+  | {
+      /** S24: цена у Фаустуса (фид обмена GGG) */
+      kind: 'exchange'
+      /** chaos за 1 шт. */
+      chaos: number
+      /** точность 0…4 (faustusConfidence) */
+      confidence: number
+      /** штук за час — «сколько похожих» для текста */
+      volume: number
       chaosPerDivine?: number
     }
 
@@ -131,11 +148,11 @@ export function priceNote(p: Poe1Price): string {
 // ---------------------------------------------------------------- цена
 
 /** Самый дешёвый честный лот: меньший из минимумов двух групп (без приманок). */
-export function referencePrice(h: HonestPrice, chaosPerDivine?: number): Poe1Price | undefined {
+export function referencePrice(h: HonestPrice, chaosPerDivine?: number, rates?: ChaosRates): Poe1Price | undefined {
   const [a, b] = [h.instant.min, h.person.min].filter((p): p is Poe1Price => p != null)
   if (!a || !b) return a
-  const ca = toChaos(a, chaosPerDivine)
-  const cb = toChaos(b, chaosPerDivine)
+  const ca = toChaos(a, chaosPerDivine, rates)
+  const cb = toChaos(b, chaosPerDivine, rates)
   if (ca != null && cb != null) return ca <= cb ? a : b
   if (a.currency === b.currency) return a.amount <= b.amount ? a : b
   // разные валюты без курса: мгновенный выкуп — цена, по которой точно покупают
@@ -146,12 +163,13 @@ export function referencePrice(h: HonestPrice, chaosPerDivine?: number): Poe1Pri
 export function priceSpread(
   listings: readonly Poe1Listing[],
   honest: HonestPrice,
-  chaosPerDivine?: number
+  chaosPerDivine?: number,
+  rates?: ChaosRates
 ): { ratio: number; min: number; max: number } | undefined {
   const skip = new Set([...honest.instant.outliers, ...honest.person.outliers])
   const values = listings
     .filter((l) => !skip.has(l.id) && l.price && l.price.amount > 0)
-    .map((l) => toChaos(l.price!, chaosPerDivine))
+    .map((l) => toChaos(l.price!, chaosPerDivine, rates))
     .filter((v): v is number => v != null)
     .sort((x, y) => x - y)
   if (values.length < SPREAD_MIN_LOTS) return undefined
@@ -164,6 +182,14 @@ export function priceSpread(
 
 export function priceVerdict(input: VerdictInput): Verdict {
   const rate = input.chaosPerDivine
+  if (input.kind === 'exchange') {
+    const { chaos, confidence, volume } = input
+    const price = displayPrice({ amount: chaos, currency: 'chaos' }, chaos, rate)
+    const base = { price, chaos, count: volume, confidence }
+    if (confidence <= FEW_CONFIDENCE) return { kind: 'few', ...base }
+    if (chaos < JUNK_CHAOS) return { kind: 'cheap', ...base }
+    return { kind: 'list', ...base }
+  }
   if (input.kind === 'bulk') {
     const confidence = input.each ? confidenceOf(input.total) : 0
     if (!input.each) return { kind: 'none', count: 0, confidence }
@@ -176,16 +202,16 @@ export function priceVerdict(input: VerdictInput): Verdict {
     return { kind: 'list', ...base }
   }
 
-  const { honest, total, listings } = input
+  const { honest, total, listings, rates } = input
   const priced = honest.instant.count + honest.person.count
   if (total <= 0 && priced === 0) return { kind: 'none', count: 0, confidence: 0 }
   const confidence = honest.confidence
   const count = Math.max(total, priced)
-  const ref = referencePrice(honest, rate)
+  const ref = referencePrice(honest, rate, rates)
   // лоты есть, но без цены — судить не по чему
   if (!ref) return { kind: 'few', count, confidence }
 
-  const chaos = toChaos(ref, rate)
+  const chaos = toChaos(ref, rate, rates)
   const price = displayPrice(ref, chaos, rate)
   const note = confidence >= NOTE_MIN_CONFIDENCE ? priceNote(price) : undefined
   const base = { price, chaos, count, confidence }
@@ -194,7 +220,7 @@ export function priceVerdict(input: VerdictInput): Verdict {
   const expensive = isDiv || (chaos != null && chaos >= EXPENSIVE_CHAOS)
   if (expensive) {
     if (confidence <= EXPENSIVE_FEW_CONFIDENCE) return { kind: 'valuable', reason: 'few', ...base, note }
-    const spread = priceSpread(listings, honest, rate)
+    const spread = priceSpread(listings, honest, rate, rates)
     if (spread && spread.ratio >= SPREAD_RATIO) {
       return {
         kind: 'valuable',
