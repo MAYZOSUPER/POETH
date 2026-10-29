@@ -1,13 +1,13 @@
 // Разбор и сборка адресов сайта трейда pathofexile.com (для «Сохранить текущий поиск»,
 // открытия избранного и импорта Better Trading).
 //   PoE1: https://<host>/trade/search/<league>/<slug>      и  /trade/exchange/<league>/<slug>
+//         (+ «/live», если на странице включён live search; slug — и старый ключ, и сжатое состояние «H4sI…»)
 //   PoE2: https://<host>/trade2/search/poe2/<league>/<slug> и  /trade2/exchange/poe2/<league>/<slug>
 // Хост — pathofexile.com или его поддомен (www, ru, …). Лига в URL закодирована («Hardcore%20Mercenaries»).
 
 import { getGameDef, type GameId, type SiteHost, type TradeSiteKind, siteUrl } from '../games'
 import type { TradeUrlInfo } from '../types/fav'
-
-const SLUG_RE = /^[A-Za-z0-9]+$/
+import { isTradeSlug } from './slug'
 
 function isPoeHost(hostname: string): boolean {
   const h = hostname.toLowerCase()
@@ -48,10 +48,12 @@ export function parseTradeUrl(url: unknown): TradeUrlInfo | null {
   const league = parts[i] ? decode(parts[i]) : null
   if (!league) return null
   const slugSeg = parts[i + 1]
-  if (parts.length > i + 2) return null
+  // …/<slug>/live — тот же поиск с включённым live search на странице
+  const tail = parts.slice(i + 2)
+  if (tail.length > 1 || (tail.length === 1 && (tail[0] !== 'live' || slugSeg === undefined))) return null
   let slug: string | null = null
   if (slugSeg !== undefined) {
-    if (!SLUG_RE.test(slugSeg)) return null
+    if (!isTradeSlug(slugSeg)) return null
     slug = slugSeg
   }
   return { host: u.hostname.toLowerCase(), game, type, league, slug }

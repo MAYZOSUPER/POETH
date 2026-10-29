@@ -17,6 +17,7 @@ import type {
 import * as model from '@shared/favorites/model'
 import { buildTradeUrl, parseTradeUrl } from '@shared/favorites/tradeUrl'
 import { searchStateId, targetQuery } from '@shared/favorites/lot'
+import { isTradeSlug } from '@shared/favorites/slug'
 import { getFavorites, newFavId, onFavoritesChanged, updateFavorites } from '../services/favoritesStore'
 import { getSettings } from '../services/settingsStore'
 import { getRunningGame } from '../gameContext'
@@ -146,7 +147,7 @@ async function resolveTarget(target: TradeWindowTarget): Promise<string | undefi
   const state = searchStateId(targetQuery(target), (json) => gzipSync(json))
   if (state) return buildTradeUrl(await siteHost(), game, 'search', league, state)
   if (typeof target.url === 'string' && target.url) return target.url
-  if (typeof target.slug === 'string' && /^[A-Za-z0-9]+$/.test(target.slug)) {
+  if (isTradeSlug(target.slug)) {
     return buildTradeUrl(await siteHost(), game, type, league, target.slug)
   }
   return undefined

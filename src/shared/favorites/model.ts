@@ -4,6 +4,7 @@
 import type { GameId, TradeSiteKind } from '../games'
 import type { FavData, FavFolder, FavFolderInput, FavSearch, FavSearchInput } from '../types/fav'
 import { exportBtFolder, importBtFolder, splitBtStrings } from './betterTrading'
+import { isTradeSlug } from './slug'
 
 export const TITLE_MAX = 120
 export const NOTES_MAX = 2000
@@ -13,7 +14,6 @@ const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !
 const str = (v: unknown): string | undefined => (typeof v === 'string' ? v : undefined)
 const isGame = (v: unknown): v is GameId => v === 'poe1' || v === 'poe2'
 const isKind = (v: unknown): v is TradeSiteKind => v === 'search' || v === 'exchange'
-const SLUG_RE = /^[A-Za-z0-9]+$/
 
 export function emptyFavorites(): FavData {
   return { version: 1, folders: [], searches: [] }
@@ -41,7 +41,7 @@ function sanitizeSearch(raw: unknown): FavSearch | null {
   const folderId = str(raw.folderId)
   const title = cleanTitle(raw.title)
   const slug = str(raw.slug)
-  if (!id || !folderId || !title || !slug || !SLUG_RE.test(slug) || !isGame(raw.game) || !isKind(raw.type)) {
+  if (!id || !folderId || !title || !isTradeSlug(slug) || !isGame(raw.game) || !isKind(raw.type)) {
     return null
   }
   const s: FavSearch = {
@@ -193,7 +193,7 @@ export function saveSearch(
   newId: () => string
 ): { data: FavData; search: FavSearch | null } {
   const title = cleanTitle(input.title)
-  if (!title || !SLUG_RE.test(input.slug) || !isKind(input.type)) return { data, search: null }
+  if (!title || !isTradeSlug(input.slug) || !isKind(input.type)) return { data, search: null }
   const existing = input.id ? data.searches.find((s) => s.id === input.id) : undefined
   const game: GameId = input.game ?? existing?.game ?? 'poe1'
   let next = data

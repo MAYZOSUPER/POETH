@@ -81,6 +81,10 @@ describe('избранное', () => {
     expect(other.search?.league).toBe('Hardcore')
     expect(saveSearch(data, { title: '', type: 'search', slug: 'X' }, id).search).toBeNull()
     expect(saveSearch(data, { title: 'x', type: 'search', slug: 'bad slug' }, id).search).toBeNull()
+    expect(saveSearch(data, { title: 'x', type: 'search', slug: 'a/b' }, id).search).toBeNull()
+    // новый id поиска (base64url с - и _) — сохраняется
+    const long = 'H4sIAAAAAAAAA3WOsQ7CMAxEfwUda4dKDFTdYOYfkFWMsEidKHFQqyr_TsLUhVv8zvLJtyEZWU4YN_hg4hUjSFeUDrYGru7GZC-Ohys7Q4enOOP4C1ikB993ix3SNPms1lA05Aq4KL1Fj_1w7lFKfTBLmv7ExX1cm7PUQsOp3tLSoDR9ATKElH-1AAAA'
+    expect(saveSearch(data, { folderId: boots, title: 'Ремень', type: 'search', slug: long }, id).search?.slug).toBe(long)
   })
 
   it('без папки — создаётся «без папки»', () => {
