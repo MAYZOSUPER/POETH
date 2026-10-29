@@ -18,7 +18,7 @@ export const DATA_MANIFEST_URL = 'https://raw.githubusercontent.com/MAYZOSUPER/P
 
 /**
  * Стратегии игроков (S17): страница стратегии на сайте — код после `#` (браузер не отправляет эту часть на
- * сервер, страница раскрывает код сама). Ссылку игрок только копирует; в EXTERNAL_HOSTS хоста нет.
+ * сервер, страница раскрывает код сама). Ссылку игрок только копирует; хост в EXTERNAL_HOSTS — ради гайда (S37).
  */
 export const STRATEGY_VIEW_URL = 'https://mayzosuper.github.io/POETH/strategies/view'
 
@@ -47,7 +47,9 @@ export const EXTERNAL_HOSTS: readonly string[] = [
   'www.pathofexile.com',
   'ru.pathofexile.com',
   'pathofexile.com',
-  'boosty.to'
+  'boosty.to',
+  // свой сайт на GitHub Pages: «Подробно в гайде» во вкладке «Прайс-чек» (S37, guide/#price)
+  'mayzosuper.github.io'
 ]
 
 /** Можно ли открыть ссылку во внешнем браузере: https + хост из allowlist. */

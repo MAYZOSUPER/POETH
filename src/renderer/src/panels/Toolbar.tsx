@@ -20,6 +20,17 @@ export function Toolbar({ showSettings, onToggleSettings }: Props) {
   const t = useT()
 
   const locked = settings?.locked ?? false
+  // подсказки с текущими сочетаниями: оба переназначаются в настройках (S37)
+  const keyText = (a?: string): string =>
+    (a ?? '')
+      .split('+')
+      .filter(Boolean)
+      .map((k) => (k === 'Control' ? 'Ctrl' : k === 'Super' ? 'Win' : k))
+      .join('+')
+  const lockKey = keyText(settings?.hotkeys.toggleLock.accel)
+  const hideKey = keyText(settings?.hotkeys.toggleCompanion.accel)
+  const lockTitle = lockKey ? t('tb.lock.title', { key: lockKey }) : t('tb.lock.title.nokey')
+  const hideTitle = hideKey ? t('tb.hide.title', { key: hideKey }) : t('tb.hide.title.nokey')
   const hasCampaign = GAMES[settings?.game ?? 'poe1'].features.campaign
   const autoOn = tailerStatus?.running ?? false
 
@@ -47,8 +58,8 @@ export function Toolbar({ showSettings, onToggleSettings }: Props) {
         <button
           type="button"
           className={`icon ${locked ? 'on' : ''}`}
-          title={t('tb.lock.title')}
-          aria-label={t('tb.lock.title')}
+          title={lockTitle}
+          aria-label={lockTitle}
           aria-pressed={locked}
           onClick={() => {
             const v = !locked
@@ -81,8 +92,8 @@ export function Toolbar({ showSettings, onToggleSettings }: Props) {
         <button
           type="button"
           className="icon"
-          title={t('tb.hide.title')}
-          aria-label={t('tb.hide.title')}
+          title={hideTitle}
+          aria-label={hideTitle}
           onClick={() => window.overlayApi.window.toggleVisible()}
         >
           <ShellIcon name="close" />

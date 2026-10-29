@@ -6,10 +6,12 @@ export const common: DomainDict = {
   ru: {
     'tb.auto': 'Авто',
     'tb.auto.title': 'Автоопределение зоны из лога игры (Client.txt)',
-    'tb.lock.title': 'Сквозной режим: все клики идут в игру (Ctrl+Shift+L)',
+    'tb.lock.title': 'Сквозной режим: все клики идут в игру ({key})',
+    'tb.lock.title.nokey': 'Сквозной режим: все клики идут в игру',
     'tb.settings.title': 'Настройки',
     'tb.min.title': 'Свернуть',
-    'tb.hide.title': 'Скрыть окно (Ctrl+Shift+O чтобы вернуть)',
+    'tb.hide.title': 'Скрыть окно ({key} — вернуть)',
+    'tb.hide.title.nokey': 'Скрыть окно (вернуть — в меню значка POETH в трее)',
     'app.campaign': 'Кампания',
     'app.priceCheck': 'Прайс-чек',
     'app.live': 'Live',
@@ -47,6 +49,9 @@ export const common: DomainDict = {
     'set.lang': 'Язык интерфейса',
     'set.opacity': 'Прозрачность',
     'set.taskbar': 'Показывать на панели задач',
+    'set.expert': 'Экспертный режим',
+    'set.expert.hint':
+      'Для всего POETH: окно цены, Сделки, Regex, Обмен, Богатство, Live. В простом режиме — подсказки новичку и меньше колонок.',
     'set.windowedHint':
       'Игра должна работать в режиме «Окно» или «Окно без рамки». В эксклюзивном полноэкранном режиме оверлей не отображается.',
     'set.hotkeys': 'Горячие клавиши',
@@ -76,10 +81,12 @@ export const common: DomainDict = {
   en: {
     'tb.auto': 'Auto',
     'tb.auto.title': 'Auto-detect the current zone from the game log (Client.txt)',
-    'tb.lock.title': 'Click-through: all clicks go to the game (Ctrl+Shift+L)',
+    'tb.lock.title': 'Click-through: all clicks go to the game ({key})',
+    'tb.lock.title.nokey': 'Click-through: all clicks go to the game',
     'tb.settings.title': 'Settings',
     'tb.min.title': 'Minimize',
-    'tb.hide.title': 'Hide the window (Ctrl+Shift+O to bring it back)',
+    'tb.hide.title': 'Hide the window ({key} brings it back)',
+    'tb.hide.title.nokey': 'Hide the window (bring it back from the POETH tray icon menu)',
     'app.campaign': 'Campaign',
     'app.priceCheck': 'Price Check',
     'app.live': 'Live',
@@ -117,6 +124,9 @@ export const common: DomainDict = {
     'set.lang': 'Interface language',
     'set.opacity': 'Opacity',
     'set.taskbar': 'Show on the taskbar',
+    'set.expert': 'Expert mode',
+    'set.expert.hint':
+      'For all of POETH: the price window, Trades, Regex, Exchange, Wealth, Live. Simple mode shows beginner hints and fewer columns.',
     'set.windowedHint':
       'The game must run in Windowed or Windowed Fullscreen. Exclusive fullscreen hides the overlay.',
     'set.hotkeys': 'Hotkeys',

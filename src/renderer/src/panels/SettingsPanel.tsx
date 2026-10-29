@@ -222,6 +222,17 @@ export function SettingsPanel() {
         {t('set.taskbar')}
       </label>
 
+      {/* S37: режим общий для всех вкладок (ui.simpleMode); раньше переключался только в Сделках и Regex */}
+      <label className="row-toggle">
+        <input
+          type="checkbox"
+          checked={!(settings?.ui.simpleMode ?? true)}
+          onChange={(e) => void patchSettings({ ui: { simpleMode: !e.target.checked } })}
+        />
+        {t('set.expert')}
+      </label>
+      <div className="hint small muted">{t('set.expert.hint')}</div>
+
       <div className="hint small muted">{t('set.windowedHint')}</div>
 
       {game === 'poe1' && (
@@ -260,7 +271,7 @@ export function SettingsPanel() {
 
       {game === 'poe1' && <AccountPanel />}
 
-      <div className="block">
+      <div className="block" id="set-hotkeys">
         <div className="block-title">{t('set.hotkeys')}</div>
         {conflicts.map((c) => (
           <div key={c.action} className="hk-conflict small danger" role="alert">
