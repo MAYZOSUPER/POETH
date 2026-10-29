@@ -16,7 +16,7 @@
 // EN и RU клиента: игра пишет и показывает `~price`/`~b/o` без перевода, десятичная точка). Чистый TS.
 
 import { ItemCategory, type ParsedItem } from '../parser'
-import { toChaos, type ChaosRates } from './currency'
+import { chaosIn, toChaos, type ChaosRates } from './currency'
 import { confidenceOf, type HonestPrice, type Poe1Listing, type Poe1Price } from './results'
 
 export type VerdictKind = 'none' | 'valuable' | 'few' | 'junk' | 'cheap' | 'list'
@@ -93,6 +93,8 @@ export type VerdictInput =
       /** штук за час — «сколько похожих» для текста */
       volume: number
       chaosPerDivine?: number
+      /** единица цены — как у главной цены блока (рынок Фаустуса); нет — по уровню цены */
+      unit?: 'chaos' | 'divine'
     }
 
 /** Предметы, которые торговцу не продают: валюта, карточки, всё, что лежит стопкой. */
@@ -184,7 +186,8 @@ export function priceVerdict(input: VerdictInput): Verdict {
   const rate = input.chaosPerDivine
   if (input.kind === 'exchange') {
     const { chaos, confidence, volume } = input
-    const price = displayPrice({ amount: chaos, currency: 'chaos' }, chaos, rate)
+    // цена обмена точная: в единице главного рынка и с тем же округлением, что в блоке цены у Фаустуса
+    const price = input.unit ? chaosIn(chaos, input.unit, rate) : displayPrice({ amount: chaos, currency: 'chaos' }, chaos, rate)
     const base = { price, chaos, count: volume, confidence }
     if (confidence <= FEW_CONFIDENCE) return { kind: 'few', ...base }
     if (chaos < JUNK_CHAOS) return { kind: 'cheap', ...base }

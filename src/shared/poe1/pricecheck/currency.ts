@@ -63,9 +63,13 @@ export function unitFor(chaos: number, chaosPerDivine: number | undefined): 'cha
   return chaosPerDivine && chaosPerDivine > 0 && chaos >= chaosPerDivine ? 'divine' : 'chaos'
 }
 
-/** chaos-эквивалент в выбранной единице, округлённо (chaos — roundChaos, divine — roundDivine). */
+/**
+ * chaos-эквивалент в выбранной единице, округлённо: divine — roundDivine, chaos — roundChaos, меньше 1 c — сотые
+ * (как «~0,15» у цены на рынке, иначе «от 0,2» рядом с «~0,15»).
+ */
 export function chaosIn(chaos: number, unit: 'chaos' | 'divine', chaosPerDivine: number | undefined): Poe1Price {
   if (unit === 'divine' && chaosPerDivine && chaosPerDivine > 0) return { amount: roundDivine(chaos / chaosPerDivine), currency: 'divine' }
+  if (chaos > 0 && chaos < 1) return { amount: Math.max(0.01, Math.round(chaos * 100) / 100), currency: 'chaos' }
   return { amount: roundChaos(chaos), currency: 'chaos' }
 }
 

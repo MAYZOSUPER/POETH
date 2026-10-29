@@ -2,7 +2,8 @@
 // (от 1 div — divine, ниже — chaos); вторая единица — только в подсказке у цены. Чистый TS;
 // tests/pricecheck/priceBlock.test.ts (там же — тексты блока по словарю RU/EN).
 
-import { chaosIn, roundChaos, roundDivine, toChaos, unitFor, type ChaosRates } from './currency'
+import { DIVINE_ID } from '../../wealth/exchange'
+import { chaosIn, roundDivine, toChaos, unitFor, type ChaosRates } from './currency'
 import type { FaustusBase, FaustusPrice } from './faustus'
 import type { MarketPrice, Poe1Price } from './results'
 import { displayPrice } from './verdict'
@@ -61,8 +62,9 @@ export interface FaustusView {
   volume: number
 }
 
+/** Цена обмена точная (не «понятное число»): divine — сотые, chaos — как chaosIn (меньше 1 c — сотые). */
 function roundIn(base: FaustusBase, v: number): number {
-  return base === 'divine' ? roundDivine(v) : roundChaos(v)
+  return base === 'divine' ? roundDivine(v) : chaosIn(v, 'chaos', undefined).amount
 }
 
 export function faustusView(f: FaustusPrice, stack = 1): FaustusView {
@@ -75,9 +77,11 @@ export function faustusView(f: FaustusPrice, stack = 1): FaustusView {
   })
   const rows = [row(f.main), ...(f.other ? [row(f.other)] : [])]
   const total = f.chaos * stack
+  // стопка Divine Orb в divine — это просто число штук: показываем в chaos
+  const stackUnit = f.id === DIVINE_ID ? 'chaos' : unitFor(total, f.chaosPerDivine)
   return {
     each: rows[0].each,
-    ...(stack > 1 ? { stack: displayPrice({ amount: total, currency: 'chaos' }, total, f.chaosPerDivine) } : {}),
+    ...(stack > 1 ? { stack: chaosIn(total, stackUnit, f.chaosPerDivine) } : {}),
     rows,
     volume: f.main.volume + (f.other?.volume ?? 0)
   }
