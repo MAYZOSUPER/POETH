@@ -1,7 +1,7 @@
 // Русский текст маршрута прокачки PoE1 (наш перевод, POETH). Маршрут — exile-leveling (HeartofPhos, MIT):
 // в шагах между фрагментами {…} стоят короткие английские куски (PIECES), под шагами — подсказки #sub (SUBS).
 // Фрагменты ({enter|…}, {dir|…}, {generic|…}…) в переводе подсказок сохраняются как есть — имена подставляет
-// приложение. Термины — как в русском клиенте и макете дизайнера: «путевой камень», «испытание восхождения».
+// приложение на языке клиента игры (S31), без падежей — как надпись в игре. Термины — как в русском клиенте и макете дизайнера: «путевой камень», «испытание восхождения».
 // Новый кусок или подсказка в маршруте → build.mjs перечислит непереведённое; дописать сюда.
 
 /** Куски текста шага между фрагментами (обрезаны по краям). */
@@ -128,7 +128,7 @@ export const SUBS = {
   'Follow edges of the zone and cross bridges in the corners': 'Идите по краям зоны, переходите мосты в углах',
   'Typically bridges spawn in the opposite diagonal corners': 'Обычно мосты — в противоположных углах по диагонали',
   'Find the switch hidden behind {generic|Trial of Ascendancy Plaque} to access {generic|Hidden Gem: Quality}':
-    'Найдите рычаг за {generic|Trial of Ascendancy Plaque} — откроется {generic|Hidden Gem: Quality}',
+    'Найдите рычаг за объектом {generic|Trial of Ascendancy Plaque} — откроется {generic|Hidden Gem: Quality}',
   'In the room with a central pit, look {dir|225} or {dir|45} for a side area containing a {generic|Corrupted Unique}':
     'В зале с ямой посередине ищите {dir|225} или {dir|45} боковую комнату с {generic|Corrupted Unique}',
   'Black splashes of paint on ground points to the right direction to go': 'Чёрные брызги краски на земле указывают нужную сторону',
@@ -142,7 +142,7 @@ export const SUBS = {
   'Go {dir|45} until you find the cliff': 'Идите {dir|45} до обрыва',
   'Go {dir|45} look for petrified soldiers': 'Идите {dir|45}, ищите окаменевших солдат',
   'Look for the hidden switch halfway to {generic|Trial of Ascendancy Plaque} in the corner opposite the entrance to access {generic|Hidden Gem: Transfigured}':
-    'Скрытый рычаг — на полпути к {generic|Trial of Ascendancy Plaque}, в углу напротив входа; откроется {generic|Hidden Gem: Transfigured}',
+    'Скрытый рычаг — на полпути к объекту {generic|Trial of Ascendancy Plaque}, в углу напротив входа; откроется {generic|Hidden Gem: Transfigured}',
   '{dir|45} or {dir|225}': '{dir|45} или {dir|225}',
   '{dir|315} or {dir|45}': '{dir|315} или {dir|45}',
   'Look for a sewer grate leading to {arena|Refinery Tunnels}, it is attached to the cart tracks':
@@ -156,73 +156,27 @@ export const SUBS = {
     'Наберите в чате {generic|/passives} и проверьте, что у вас все 23 очка пассивов с квестов'
 }
 
-/** Имена, которых нет на poedb и в данных APT (служебные и описательные). */
+/**
+ * Имена-описания из маршрута, которых нет в клиенте игры (S31: имена из игры — таблицы клиента, game-names.mjs):
+ * группа предметов («3× глиф»), «всех», служебное. Гид пишет их на языке интерфейса, поэтому — в нужном падеже.
+ * Новое имя маршрута, которого нет в клиенте, build.mjs перечислит — дописать сюда.
+ */
 export const NAMES = {
   Everything: 'всех',
-  'Gemling Legionnaires': 'легионеров-самоцветов',
   '/passives': '/passives',
   Boat: 'лодку',
+  Boots: 'ботинки',
   Pantheons: 'Пантеон',
-  'Secret Passage': 'тайный проход',
+  Tattoo: 'татуировка',
   'Hidden Gem: Quality': 'скрытый камень: качество',
   'Hidden Gem: Transfigured': 'скрытый камень: преображённый',
   "Hidden Gem: Facetor's Lens": 'скрытый камень: линза огранщика',
   'Corrupted Unique': 'осквернённым уникальным предметом',
-  'Trial of Ascendancy Plaque': 'табличкой испытания восхождения',
-  'Pillar Push': 'колонну',
-  'Undying Blockage': 'завал из бессмертных',
-  'Map Device': 'картографическое устройство',
-  'Oriath Portal': 'портал в Ориат',
-  Tattoo: 'татуировка',
-  Boots: 'ботинки',
-
-  // Арены боссов и объекты квестов, которых нет на poedb отдельной страницей, — НАШ перевод
-  // (в русском клиенте может звучать иначе; сверить в игре и поправить здесь).
-  Altar: 'алтарь',
-  'Altar of Hunger': 'Алтарь голода',
-  "Arakaali's Web": 'Паутина Аракаали',
-  Beacon: 'маяк',
-  'Caldera of the King': 'Кальдера короля',
-  'Cathedral Apex': 'Вершина собора',
-  'Den of Despair': 'Логово отчаяния',
-  Deshret: 'Дешрет',
-  "Deshret's Seal": 'печать Дешрета',
-  Dialla: 'Диалла',
-  "Doedre's Despair": 'Отчаяние Доэдре',
-  'Eternal Laboratory': 'Вечная лаборатория',
+  // три разных предмета квеста под общим словом (в клиенте — «Глиф — синяя раковина», «Бюст Гая Сентари»…)
   Glyph: 'глиф',
-  "Kitava's Torment": 'муку Китавы',
-  'Loose Candle': 'шатающуюся свечу',
-  "Maligaro's Misery": 'Страдание Малигаро',
-  "Maligaro's Workshop": 'Мастерская Малигаро',
-  "Merveil's Lair": 'Логово Мервейл',
   'Platinum Bust': 'платиновый бюст',
-  'Prison Rooftop': 'Крыша тюрьмы',
-  'Pyramid Apex': 'Вершина пирамиды',
-  'Resurrection Site': 'Место воскрешения',
-  'Sanctum of Innocence': 'Святилище Невинности',
-  Sarcophagus: 'саркофаг',
-  'Sewer Outlet': 'Выход из канализации',
-  "Shavronne's Sorrow": 'Скорбь Шаврон',
-  'Shrine of the Winds': 'Святилище ветров',
-  'Statue of the Sisters': 'статую сестёр',
-  'Thaumetic Seal': 'тауметическую печать',
-  'The Black Core': 'Чёрное ядро',
-  'The Black Heart': 'Чёрное сердце',
-  'The Bowels of the Beast': 'Утроба зверя',
-  "The Bring King's Throne": 'Трон Короля Пучины',
-  'The Cauldron': 'Котёл',
-  'The Pools of Terror': 'Омуты ужаса',
-  'The Resonator': 'резонатор',
-  'The Ring of Blades': 'Круг клинков',
-  'The Sand Pit': 'Песчаная яма',
-  'The Sky Shrine': 'Небесное святилище',
-  'The Spawning Ground': 'Нерестилище',
-  "The Warden's Chambers": 'Покои надзирателя',
-  "The Warden's Quarters": 'Комнаты надзирателя',
-  "The Weaver's Nest": 'Гнездо Ткачихи',
-  'Tower Rooftop': 'Крыша башни',
-  'Tree Roots': 'корни дерева',
-  "Tukohama's Keep": 'Крепость Тукохамы',
-  'Valley of the Fire Drinker': 'Долина Огнепийцы'
+  "Kitava's Torment": 'муку Китавы',
+  // объект в клиенте называется иначе («Дух Дешрет», колонны — без надписи)
+  Deshret: 'Дешрет',
+  'Pillar Push': 'колонну'
 }
