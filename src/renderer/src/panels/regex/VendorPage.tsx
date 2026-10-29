@@ -49,6 +49,9 @@ const SIMPLE_GROUPS: Group[] = [
   GROUPS[2]
 ]
 
+/** Свойства, которые видны в простом режиме (остальные выбранные — строкой «Ещё выбрано»). */
+const SIMPLE_KEYS = new Set<VendorModKey>(SIMPLE_GROUPS.flatMap((g) => [...(g.num ?? []), ...(g.chips ?? [])]))
+
 /** Короткая подпись внутри группы: стихия или тип камня (полное имя — в подсказке и «что убрать»). */
 const CHIP: Partial<Record<VendorModKey, string>> = {
   gemAll: 'regex.vendor.chip.all',
@@ -184,6 +187,7 @@ export function VendorPage() {
     ...VENDOR_ITEM_CLASSES.map((c) => ({ value: c, label: t(`regex.vendor.class.${c}`) }))
   ]
   const activePreset = VENDOR_PRESETS.find((p) => isPresetQuery(p, q))
+  const hidden = selectedMods(q).filter((k) => !SIMPLE_KEYS.has(k))
 
   return (
     <div className="rx-two">
@@ -309,6 +313,25 @@ export function VendorPage() {
           </div>
           {simple && <div className="ui-field__help">{t('regex.vendor.classHint')}</div>}
           {(simple ? SIMPLE_GROUPS : GROUPS).map(group)}
+          {simple && hidden.length > 0 && (
+            <div className="rx-v-group">
+              <span className="ui-label">{t('regex.vendor.moreSelected')}</span>
+              <div className="ui-chips">
+                {hidden.map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    className="ui-chip"
+                    aria-pressed
+                    title={`${gameText(lang, k)} — ${t('regex.vendor.moreSelectedTip')}`}
+                    onClick={() => setMod(k, 0)}
+                  >
+                    {isThresholdMod(k) ? `${modName(k)} ≥ ${q.mods[k]}${isPercent(lang, k) ? '%' : ''}` : modName(k)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           {simple && <Hint>{t('regex.vendor.mods.hint')}</Hint>}
         </Box>
       </div>
