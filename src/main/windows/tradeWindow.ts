@@ -10,6 +10,7 @@ import { ensureGameForeground, getOverlayStatus } from './gameOverlay'
 import { loadRendererPage } from './rendererPage'
 import { boundsOverGame, gameSizeOf, TRADE_MIN_SIZE as MIN_SIZE, type GameSize } from './tradeBounds'
 import { windowIcon } from '../appIcon'
+import { devEnv } from '../devEnv'
 
 // Трейд-окно (S5): слева наш сайдбар (trade-sidebar.html, preload), справа официальный сайт
 // трейда как есть (siteView: без preload, sandbox, сессия аккаунта persist:poe-account,
@@ -259,7 +260,7 @@ async function create(title: string, area: Rectangle | null): Promise<BaseWindow
     event.preventDefault()
     hideTradeWindow()
   })
-  if (process.env.OVERLAY_DEVTOOLS === '1') side.webContents.openDevTools({ mode: 'detach' })
+  if (devEnv('OVERLAY_DEVTOOLS') === '1') side.webContents.openDevTools({ mode: 'detach' })
 
   w.on('resize', () => {
     layout()

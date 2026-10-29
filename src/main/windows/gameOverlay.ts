@@ -9,6 +9,7 @@ import { getGameFocus, isOverlayActive, onGameFocusChange, setGameFocus } from '
 import { getSettings } from '../services/settingsStore'
 import { isDevServer } from '../gameContext'
 import { windowIcon } from '../appIcon'
+import { devEnv } from '../devEnv'
 
 // Игровой оверлей (S1): прозрачное окно поверх клиентской области игры.
 // electron-overlay-window (OverlayController) следит за окном с заголовком
@@ -369,7 +370,7 @@ export function initGameOverlay(def: GameDef): BrowserWindow {
   onGameFocusChange((focus) => sendToOverlay(IPC.events.overlayFocus, focus))
 
   loadRendererPage(w, 'overlay')
-  if (process.env.POETH_OVERLAY_DEVTOOLS === '1') w.webContents.openDevTools({ mode: 'detach', activate: false })
+  if (devEnv('POETH_OVERLAY_DEVTOOLS') === '1') w.webContents.openDevTools({ mode: 'detach', activate: false })
 
   if (lib) attachToGame(w, lib, def.windowTitle)
   else showFallback(w)

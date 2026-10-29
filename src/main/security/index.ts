@@ -3,6 +3,7 @@ import path from 'path'
 import { isAllowedExternalUrl } from '@shared/links'
 import { guardIpcMain, senderUrl } from './ipcGuard'
 import { appNavigationAllowed, appPageOf, appPermissionAllowed, ipcAllowed, type AppOrigin } from './policy'
+import { devEnv } from '../devEnv'
 
 // Защита наших окон (S29), одним вызовом из main/index.ts ДО регистрации IPC и создания окон:
 //  1. IPC: каждый канал — только с наших страниц (policy.ts), ввод в игру — не из сайдбара трейд-окна,
@@ -17,7 +18,7 @@ import { appNavigationAllowed, appPageOf, appPermissionAllowed, ipcAllowed, type
 export function appOrigin(): AppOrigin {
   return {
     rendererDir: path.join(__dirname, '../renderer'),
-    devServerUrl: app.isPackaged ? undefined : process.env.ELECTRON_RENDERER_URL
+    devServerUrl: devEnv('ELECTRON_RENDERER_URL')
   }
 }
 

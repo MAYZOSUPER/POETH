@@ -1,4 +1,5 @@
 import { getGameDef, type GameDef, type GameId } from '@shared/games'
+import { devEnv } from './devEnv'
 
 // Игра, с которой запущен процесс. Задаётся один раз при старте из настроек;
 // меняется только перезапуском (в dev — мягким перезапуском, см. ipc/app.ts).
@@ -19,5 +20,5 @@ export function getRunningGameDef(): GameDef {
 
 /** dev-режим electron-vite: renderer грузится с dev-сервера. */
 export function isDevServer(): boolean {
-  return !!process.env.ELECTRON_RENDERER_URL
+  return !!devEnv('ELECTRON_RENDERER_URL')
 }

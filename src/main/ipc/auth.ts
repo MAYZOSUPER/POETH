@@ -21,6 +21,7 @@ import {
   stopLeagueRefresh
 } from '../net/leagues'
 import type { IpcDomain } from './types'
+import { devEnv } from '../devEnv'
 
 // Домен «вход в аккаунт и сеть» (S3). В renderer уходит только статус входа и лиги —
 // значения cookies/POESESSID не покидают main. Вызывать каналы могут только наши
@@ -28,7 +29,7 @@ import type { IpcDomain } from './types'
 // GGG (без preload) их не получает.
 
 function devServerUrl(): string | undefined {
-  return process.env.ELECTRON_RENDERER_URL
+  return devEnv('ELECTRON_RENDERER_URL')
 }
 
 function isTrustedSender(e: IpcMainInvokeEvent): boolean {

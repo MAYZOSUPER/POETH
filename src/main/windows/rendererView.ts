@@ -1,14 +1,16 @@
 import type { BrowserWindow } from 'electron'
 import path from 'path'
 import { windowIcon } from '../appIcon'
+import { devEnv } from '../devEnv'
 
 // Маленькие служебные окна (S10a) — та же страница index.html с параметром ?view=…
 // (src/renderer/src/main.tsx выбирает экран): отдельная страница в electron-vite не нужна.
 export type RendererView = 'splash' | 'update'
 
 export function loadRendererView(win: BrowserWindow, view: RendererView): void {
-  if (process.env.ELECTRON_RENDERER_URL) {
-    void win.webContents.loadURL(`${process.env.ELECTRON_RENDERER_URL}/index.html?view=${view}`)
+  const dev = devEnv('ELECTRON_RENDERER_URL')
+  if (dev) {
+    void win.webContents.loadURL(`${dev}/index.html?view=${view}`)
   } else {
     void win.webContents.loadFile(path.join(__dirname, '../renderer/index.html'), { query: { view } })
   }

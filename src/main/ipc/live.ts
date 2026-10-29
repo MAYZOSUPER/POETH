@@ -6,13 +6,14 @@ import { onHotkeyAction } from '../hotkeys'
 import { LiveManager } from '../games/poe1/liveSearch'
 import { registerFavLiveAdapter } from './fav'
 import type { IpcDomain } from './types'
+import { devEnv } from '../devEnv'
 
 // Домен «live search» (main, S6): менеджер live-поисков PoE1, хоткей whisperLastHit.
 // Звать каналы могут только наши страницы (file:// или dev-сервер); события уходят в
 // компаньон и оверлей, но не в окна сайта GGG.
 
 function devServerUrl(): string | undefined {
-  return process.env.ELECTRON_RENDERER_URL
+  return devEnv('ELECTRON_RENDERER_URL')
 }
 
 function broadcast(channel: string, payload: unknown): void {

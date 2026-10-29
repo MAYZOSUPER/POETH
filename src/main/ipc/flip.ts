@@ -17,6 +17,7 @@ import type { BookReadResult, FlipBookEvent } from '@shared/types'
 import { captureBook, saveFixtureShot } from '../ocr/capture'
 import { readBookImage, stopBookReader } from '../ocr/reader'
 import type { IpcDomain } from './types'
+import { devEnv } from '../devEnv'
 
 // Домен «помощник по флиппингу» (main, S13): часы фида обмена GGG из общего хранилища (его же берут учёт
 // богатства и курс для окна цены), маршруты и курс divine:chaos. Звать каналы могут только наши страницы.
@@ -24,7 +25,7 @@ import type { IpcDomain } from './types'
 // распознавание в своём потоке, итог — в карточку «Как сделать» компаньона и тостом у курсора в оверлее.
 
 function devServerUrl(): string | undefined {
-  return process.env.ELECTRON_RENDERER_URL
+  return devEnv('ELECTRON_RENDERER_URL')
 }
 
 function broadcast(channel: string, payload: unknown): void {
