@@ -129,6 +129,27 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 30.10)_ слиты S29 этап 2, S30b, S33, S36 (`324081b`, `f41058c`, `244777b`, `94ff258`). 2776 тестов, test:trade 31/31, сборка.
+  - **S29 этап 2** (`c066a52`…`505a79c`):
+    - демо обновится до v0.1.0: `allowPrerelease = false`, `allowDowngrade = false` (`services/updaterPolicy.ts`; electron-updater
+      у версии `-rc.N` иначе берёт только релизы канала `rc`). **rc.N и v0.1.0 публиковать обычным релизом с `latest.yml`**;
+    - `sandbox: true` у 4 окон с preload; CSP `object-src/base-uri/form-action 'none'`, без `file:` в `img-src`;
+    - PoE2-ключ не уходит при редиректе, только 32 hex; id профиля кампании `[A-Za-z0-9_-]{1,64}`;
+    - dev-переменные (`ELECTRON_RENDERER_URL`, devtools, захваты, фикстуры OCR) — только в разработке (`devEnv.ts`);
+    - лимиты импорта BT и библиотеки regex; без нативного модуля оверлея ввода в игру нет; `@last` — только в командах;
+    - `writeJsonAtomic` — свой временный файл на запись, повтор `rename` при EPERM; гид сохраняется на выходе синхронно.
+  - **S30b** (`cb147c6`…`40febbd`): гайд по всем функциям приложения — https://mayzosuper.github.io/POETH/guide/ (якоря
+    `#start #price #trade-window #live #deals #chat #flip #wealth #maps #regex #leveling #poe2 #settings`, не переименовывать —
+    `site/README.md`); `build/release-notes.md` для rc.11; пометка «демо» на сайте и в README — **к релизу `git revert 40febbd`**.
+  - **S33** (`b529c9e`…`76695c3`) — «Обмен → Предметы», скрыто (`ITEMFLIP_RELEASED`, dev `POETH_ITEMFLIP=1`):
+    - тиры уников T0/T1/T2, «Купить дешевле» (k·цена, один клик — один поиск, «Следить» → live), антискам + `pricefixers.csv`, 6L по верстаку;
+    - цены — снимок poe.ninja из CI в ветку `prices` (`tools/data/ninja-snapshot.mjs`). **Расписание выключено** (`af60bbd`),
+      пока функция скрыта; распространение снимка у poe.ninja не подтверждено.
+  - **S36** (`1b074af`…`f261404`): `resources/data/poe1/build/{tree,gems}.json` (763 + 170 КБ, skilltree-export 3.29.1 + RePoE RU),
+    `src/shared/build/**`, разбор журнала (вложение/снятие пассивки, очки, `/passives`, смерть) в `leveling/log.ts`.
+    Ключ камня PoB ≠ id предмета: `findGem` (PoB) и `gemByGameId`. RU-строки журнала не сверены. Шаг `build` в `league-day.mjs` — позже.
+  - Запущены S29 этап 3, S37 (шлифовка); S34 (Electron 44) ждёт простоя ПК для проверки с настоящими клавишами;
+    S35 меняет фикстуры Maxroll. Дизайнер: макеты v0.2 — https://claude.ai/artifact/Dczhnx84p6F9hps1jks4aZ (ждут утверждения).
 - _(лид, 29.10)_ слиты S29 этап 1, S30, S32 (`9769f5c`, `86c2d3b`, слияние S32). 2629 тестов, test:trade 31/31, сборка.
   - **S29** (`c83584f`…`30a5aea`) — аудит безопасности, критичных дыр нет:
     - ввод в игру — всегда одна строка (`input/chatLine.ts`, длиннее 1000 — не вводится);
