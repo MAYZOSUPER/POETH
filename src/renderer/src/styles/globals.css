@@ -146,6 +146,11 @@ button.icon.on {
 button.icon.danger:hover {
   color: var(--danger);
 }
+/* иконка спрайта в кнопке шапки — по центру (S20) */
+.tools button.icon > .ui-ico {
+  display: block;
+  margin: 0 auto;
+}
 
 /* auto-detect pill toggle */
 .pill {
@@ -184,6 +189,9 @@ button.icon.danger:hover {
   display: flex;
   min-height: 0;
   min-width: 0;
+  /* ширину вкладке задаёт окно минус рельс (S20): панели перестраиваются по @container body, а не по @media окна.
+     position: fixed внутри (подсказки наград PoE 2) по-прежнему отсчитывается от окна — проверено в Chromium 144 */
+  container: body / inline-size;
 }
 /* корень вкладки не шире окна: иначе min-width:auto флекс-элемента растягивает его по самому широкому
    непереносимому куску, и абзацы режутся правым краем вместо переноса (S19) */
@@ -191,7 +199,8 @@ button.icon.danger:hover {
   min-width: 0;
 }
 .left {
-  flex: 0 0 446px;
+  /* сжимается, только когда правой колонке не хватает 112 px: на 560 px слева ещё рельс 52 px (S20) */
+  flex: 0 1 446px;
   width: 446px;
   display: flex;
   flex-direction: column;
@@ -201,7 +210,7 @@ button.icon.danger:hover {
 }
 .rightpane {
   flex: 1;
-  min-width: 0;
+  min-width: 112px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -214,55 +223,14 @@ button.icon.danger:hover {
   color: var(--muted);
 }
 
-/* ---------- top-level app tabs (campaign / price-check) ---------- */
-/* на узком окне строка прокручивается сама (тонкая полоса снизу, колесо мыши — AppTabs.tsx), страницу не раздувает (S19) */
-.app-tabs {
+/* ---------- под шапкой: рельс навигации слева + содержимое вкладки (S20) ---------- */
+/* position: relative — от него открывается шторка рельса на узком окне (.ui-rail--drawer, .ui-rail-scrim) */
+.app-main {
+  position: relative;
+  flex: 1;
   display: flex;
-  gap: 4px;
+  min-height: 0;
   min-width: 0;
-  padding: 6px 10px 0;
-  background: linear-gradient(180deg, rgba(28, 24, 20, 0.6), transparent);
-  border-bottom: 1px solid var(--line);
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--scroll) transparent;
-}
-.app-tab {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  background: transparent;
-  border: 1px solid transparent;
-  border-bottom: none;
-  border-radius: 7px 7px 0 0;
-  color: var(--muted);
-  font-family: var(--font-serif);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  /* 12 px: 7 вкладок релиза без переноса умещаются в 820 px по умолчанию и на RU, и на EN (S19) */
-  padding: 7px 12px;
-  cursor: pointer;
-}
-.app-tab:hover {
-  color: var(--text);
-}
-.app-tab.active {
-  color: var(--gold-bright);
-  background: rgba(194, 162, 90, 0.12);
-  border-color: var(--line);
-  box-shadow: 0 -2px 0 var(--gold) inset;
-}
-.app-tab-icon {
-  font-size: 13px;
-}
-.app-tab:focus-visible {
-  outline: none;
-  box-shadow: inset var(--focus-ring);
 }
 
 /* ---------- game switch (PoE 1 / PoE 2) ---------- */

@@ -2,37 +2,138 @@ import { GAMES, type GameId } from '@shared/games'
 import type { AppTab } from '@shared/types'
 import { advisorOn } from '@shared/advisor/flag'
 
-// Вкладки компаньона и их доступность по игре (GameDef.features).
+// Вкладки компаньона, их разделы на рельсе слева (S20, макет навигации — вариант Б)
+// и доступность по игре (GameDef.features).
 export interface TabDef {
   id: AppTab
   key: string
-  icon: string
+  /** иконка спрайта (docs/design-system.md, «Иконки»); подмножество IconName из overlay/Icon.tsx */
+  icon: TabIcon
 }
 
-const ALL_TABS: TabDef[] = [
-  { id: 'campaign', key: 'app.campaign', icon: '🧭' },
-  { id: 'priceCheck', key: 'app.priceCheck', icon: '💰' },
-  { id: 'live', key: 'app.live', icon: '📡' },
-  { id: 'regex', key: 'app.regex', icon: '🔎' },
-  { id: 'deals', key: 'app.deals', icon: '🤝' },
-  { id: 'wealth', key: 'app.wealth', icon: '💎' },
-  { id: 'flip', key: 'app.flip', icon: '⚖️' },
-  { id: 'advisor', key: 'app.advisor', icon: '🌾' }
+type TabIcon = 'ask' | 'bolt' | 'trade' | 'swap' | 'map' | 'coins' | 'search' | 'compass'
+
+export type SectionId = 'trade' | 'farm' | 'level'
+
+export interface SectionDef {
+  id: SectionId
+  key: string
+  tabs: TabDef[]
+}
+
+const TABS: Record<AppTab, TabDef> = {
+  priceCheck: { id: 'priceCheck', key: 'app.priceCheck', icon: 'ask' },
+  live: { id: 'live', key: 'app.live', icon: 'bolt' },
+  deals: { id: 'deals', key: 'app.deals', icon: 'trade' },
+  flip: { id: 'flip', key: 'app.flip', icon: 'swap' },
+  advisor: { id: 'advisor', key: 'app.advisor', icon: 'map' },
+  wealth: { id: 'wealth', key: 'app.wealth', icon: 'coins' },
+  regex: { id: 'regex', key: 'app.regex', icon: 'search' },
+  campaign: { id: 'campaign', key: 'app.campaign', icon: 'compass' }
+}
+
+/** Разделы и порядок вкладок — одни в обеих играх, чтобы рука помнила; чего нет в игре, просто не показывается. */
+const SECTIONS: { id: SectionId; key: string; tabs: AppTab[] }[] = [
+  { id: 'trade', key: 'nav.sec.trade', tabs: ['priceCheck', 'live', 'deals', 'flip'] },
+  { id: 'farm', key: 'nav.sec.farm', tabs: ['advisor', 'wealth', 'regex'] },
+  { id: 'level', key: 'nav.sec.level', tabs: ['campaign'] }
 ]
 
 /** Флаг разработки POETH_ADVISOR=1 из preload (вкладка «Что фармить» скрыта в релизе, S16). */
-const advisorDev = (): boolean => typeof window !== 'undefined' && window.overlayApi?.advisor?.devFlag === true
+const advisorDev = (): boolean =>
+  (globalThis as { overlayApi?: { advisor?: { devFlag?: boolean } } }).overlayApi?.advisor?.devFlag === true
 
-export function tabsFor(game: GameId): TabDef[] {
+function inGame(game: GameId, id: AppTab, dev: boolean): boolean {
   const f = GAMES[game].features
   // «Кампания» в PoE 1 — прокачка по маршруту (S14), в PoE 2 — компас
-  return ALL_TABS.filter(
-    (t) => f[t.id] || (t.id === 'campaign' && f.leveling) || (t.id === 'advisor' && advisorOn(GAMES[game], advisorDev()))
-  )
+  if (id === 'campaign') return f.campaign || f.leveling
+  if (id === 'advisor') return advisorOn(GAMES[game], dev)
+  return f[id]
 }
 
-/** The wanted tab if it exists for this game, otherwise the game's first tab. */
-export function resolveTab(game: GameId, wanted: AppTab | undefined): AppTab {
-  const tabs = tabsFor(game)
-  return tabs.some((t) => t.id === wanted) ? (wanted as AppTab) : tabs[0].id
+/** Разделы рельса для игры; раздел без вкладок в этой игре не показывается. */
+export function sectionsFor(game: GameId, dev = advisorDev()): SectionDef[] {
+  return SECTIONS.map((s) => ({
+    id: s.id,
+    key: s.key,
+    tabs: s.tabs.filter((id) => inGame(game, id, dev)).map((id) => TABS[id])
+  })).filter((s) => s.tabs.length > 0)
+}
+
+/** Вкладки игры подряд, в порядке рельса. */
+export function tabsFor(game: GameId, dev = advisorDev()): TabDef[] {
+  return sectionsFor(game, dev).flatMap((s) => s.tabs)
+}
+
+/** Раздел вкладки — из неё самой, поэтому хоткеи и resolveTab о разделах не знают. */
+export function sectionOf(tab: AppTab): SectionId {
+  return (SECTIONS.find((s) => s.tabs.includes(tab)) ?? SECTIONS[0]).id
+}
+
+/** Ключ описания вкладки для подсказки на свёрнутом рельсе. */
+export function tabHintKey(tab: AppTab, game: GameId): string {
+  return tab === 'campaign' && game === 'poe2' ? 'nav.d.campaign.poe2' : `nav.d.${tab}`
+}
+
+/**
+ * Нужная вкладка, если она есть в игре. Иначе «Кампания» (как до S20, когда она стояла в строке первой),
+ * а без неё — первая на рельсе.
+ */
+export function resolveTab(game: GameId, wanted: AppTab | undefined, dev = advisorDev()): AppTab {
+  const tabs = tabsFor(game, dev)
+  if (tabs.some((t) => t.id === wanted)) return wanted as AppTab
+  return tabs.some((t) => t.id === 'campaign') ? 'campaign' : tabs[0].id
+}
+
+// ---- рельс: свёрнут до иконок или развёрнут с названиями ----
+
+export type RailPref = 'wide' | 'narrow'
+
+/** С этой ширины окна развёрнутый рельс стоит рядом с содержимым; на окне уже он открывается поверх. */
+export const RAIL_INLINE_MIN = 820
+
+/** Выбор «свёрнут / развёрнут» — в localStorage окна, как развёрнутость папок избранного (Settings не трогаем). */
+export const RAIL_KEY = 'poeth.nav.rail'
+
+/**
+ * Развёрнут ли рельс рядом с содержимым. На узком окне — никогда (развёрнутый открывается поверх).
+ * Пока пользователь не выбрал сам: в простом режиме развёрнут (новичку нужны названия), в экспертном — свёрнут.
+ */
+export function railWide(windowWide: boolean, pref: RailPref | null, simple: boolean): boolean {
+  if (!windowWide) return false
+  return pref ? pref === 'wide' : simple
+}
+
+export function readRailPref(storage: { getItem(key: string): string | null } | undefined): RailPref | null {
+  try {
+    const v = storage?.getItem(RAIL_KEY)
+    return v === 'wide' || v === 'narrow' ? v : null
+  } catch {
+    return null
+  }
+}
+
+export function writeRailPref(storage: { setItem(key: string, value: string): void } | undefined, pref: RailPref): void {
+  try {
+    storage?.setItem(RAIL_KEY, pref)
+  } catch {
+    // нет хранилища — выбор просто не запомнится
+  }
+}
+
+/** Куда перейти фокусу по клавише на рельсе: стрелки вверх/вниз по кругу, Home/End; null — клавиша не наша. */
+export function railStep(index: number, key: string, count: number): number | null {
+  if (count <= 0) return null
+  switch (key) {
+    case 'ArrowDown':
+      return (index + 1) % count
+    case 'ArrowUp':
+      return (index - 1 + count) % count
+    case 'Home':
+      return 0
+    case 'End':
+      return count - 1
+    default:
+      return null
+  }
 }

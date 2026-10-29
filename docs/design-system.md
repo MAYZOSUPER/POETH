@@ -6,6 +6,7 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 «Обмен» (S13: флиппинг валюты): https://claude.ai/artifact/8eEk4CukbHt7XV7a6UnKoE.
 «Прокачка PoE 1» (S14: гид поверх игры, «Кампания»): https://claude.ai/artifact/L6JxNpsHWvWrr7WJDpRUKg.
 «Стратегии фарма» (S16–S17: «Что фармить», редактор, «Поделиться», «Импорт», страница сайта): https://claude.ai/artifact/5gmTJ7i28vYAzjbxY2B8zZ.
+Навигация компаньона (S20: рельс слева — вариант Б): https://claude.ai/artifact/BYKiqFUe7J1gCueUiVcyR2.
 Стиль и бренд: https://claude.ai/artifact/E3pqVxkC8CLw9XHPteKJzT, https://claude.ai/artifact/4M6dmGThWeL58snnyDbqww.
 
 ## Файлы
@@ -88,6 +89,7 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 | `.ui-steps` > `li` > `button` (`aria-current="step"`, `data-state="done"` / `"error"`) + `__n`, `__t` | шаги мастера: номер, «готово» — галочка, «ошибка» — «!» и красный; переход кликом на любой шаг |
 | `.ui-dialog-scrim` > `.ui-dialog` (`role="dialog"`, `aria-modal`) + `__head`, `__title`, `__body`, `__foot` | диалог поверх окна компаньона с затемнением `--scrim` |
 | `.ui-code` (`--line`) + `__text` (`tabindex="0"`) и кнопка | код или ссылка моноширинным (3 строки или одна с многоточием) с копированием |
+| `.ui-rail` (`--wide`, `--drawer`) + `__list`, `__group`, `__head`, `__item` (`.is-current`, `.is-flash`), `__label`, `__toggle`, `__tip`; `.ui-rail-scrim` | рельс навигации компаньона слева, см. «Навигация компаньона» |
 
 Иконки: `resources/brand/icons/<имя>.svg` или спрайт `icons-sprite.svg` (`<use href="#i-<имя>"/>`), класс `.ui-ico`
 (`--sm` 13 px, `--lg` 18 px). Список: check, cross, dash, close, min, max, search, star, bolt, external, chat, invite,
@@ -156,6 +158,29 @@ trial, flask, step, essence, strongbox, expedition, harvest, delirium, abyss, li
 - **Пустые состояния:** `.ui-empty` с картинкой `resources/brand/empty-route.svg` (свиток с маршрутом, 96–132 px,
   `<BrandImg file="empty-route.svg">`) — «под фильтры ничего не подошло», «своих стратегий пока нет», «сессий фарма пока нет».
 - **Страницы сайта** (`site/strategies/`) собирает S17 по исходникам макета; стили — поверх `site/styles.css`, классы `st-*`.
+
+## Навигация компаньона (S20)
+Образец — макет навигации, вариант Б. Окно-компаньон: шапка (знак, PoE 1 / PoE 2, «Авто» у PoE 2, замок, настройки,
+свернуть, скрыть) и под ней `.app-main` — рельс `.ui-rail` слева и содержимое вкладки `.body` справа.
+- **Разделы и вкладки — данные `src/renderer/src/tabs.ts`** (`sectionsFor`, тесты `tests/nav/tabs.test.ts`), не разметка:
+  «Торговля» — прайс-чек (`ask`), Live (`bolt`), «Сделки» (`trade`), «Обмен» (`swap`); «Фарм» — «Что фармить» (`map`),
+  «Богатство» (`coins`), Regex (`search`); «Прокачка» — «Кампания» (`compass`). Порядок одинаков в обеих играх; вкладки,
+  которых нет в игре или которые скрыты флагом (советник), не показываются, пустой раздел — тоже.
+- **Свёрнут — 52 px:** только иконки, между разделами — черта. Название, раздел и описание — в подсказке `.ui-rail__tip`
+  (`.ui-tip` справа от иконки) при наведении и фокусе; `aria-label` у каждой кнопки.
+- **Развёрнут — 188 px:** иконки с названиями, над группами — подписи разделов. На окне от 820 px стоит рядом с содержимым;
+  выбор «свёрнут / развёрнут» — в `localStorage` (`poeth.nav.rail`), без выбора: простой режим — развёрнут, эксперт — свёрнут.
+- **Узкое окно (меньше 820 px):** рядом всегда свёрнутый; кнопка внизу открывает `.ui-rail--drawer` (204 px) поверх
+  содержимого на `.ui-rail-scrim`. Закрывается кликом мимо, Esc (фокус возвращается на кнопку) и выбором вкладки;
+  содержимое не сжимается.
+- **Открытая вкладка** — `.is-current` (фон `--selected`, золотая черта слева) и `aria-current="page"`, пока на экране
+  она, а не настройки. Вкладку открыли не с рельса (Ctrl+D, трей) — пункт на 1 с подсвечивается `.is-flash`
+  (без анимации при `prefers-reduced-motion`).
+- **Клавиатура:** на рельсе одна точка Tab — открытая вкладка; ↑/↓ по кругу, Home/End, Enter открывает; кнопка
+  «Свернуть» — следующая точка Tab. Рамка фокуса — `--focus-ring`.
+- **Замок (сквозной режим):** подсказки рельса и `title` кнопки не появляются — наведение до страницы доходит, а клики нет.
+- **Ширина вкладки:** панели перестраиваются по ширине содержимого, а не окна — `@container body (max-width: …)`
+  (`.body` — контейнер `body`). `@media (max-width)` в CSS панелей компаньона не использовать.
 
 ## Валюта (S18)
 Цены и курс — только через `components/Currency.tsx` (`<Currency>`, `<CoinIcon>`), не голым `.ui-coin`. Иконка — из кэша

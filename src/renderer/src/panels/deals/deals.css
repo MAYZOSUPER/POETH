@@ -61,7 +61,8 @@
   gap: var(--sp-5) var(--sp-7);
   align-items: start;
 }
-@media (max-width: 760px) {
+/* ширина вкладки, а не окна: слева рельс навигации (S20) */
+@container body (max-width: 760px) {
   .dl-two {
     grid-template-columns: minmax(0, 1fr);
   }

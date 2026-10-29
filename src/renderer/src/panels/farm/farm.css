@@ -56,7 +56,8 @@
   color: var(--accent-hi);
   font-variant-numeric: tabular-nums;
 }
-@media (max-width: 760px) {
+/* ширина вкладки, а не окна: слева рельс навигации (S20) */
+@container body (max-width: 760px) {
   .fm .ui-stats--lead {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

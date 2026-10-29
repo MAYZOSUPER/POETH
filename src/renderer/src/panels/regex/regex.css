@@ -44,7 +44,8 @@
   gap: var(--sp-7);
   align-items: start;
 }
-@media (max-width: 720px) {
+/* ширина вкладки, а не окна: слева рельс навигации (S20) */
+@container body (max-width: 720px) {
   .rx-two {
     grid-template-columns: minmax(0, 1fr);
   }
