@@ -11,7 +11,11 @@ function profilesFile(): string {
   return path.join(app.getPath('userData'), 'profiles.json')
 }
 
+/** id профиля — имя файла прогресса (randomUUID); приходит из renderer, поэтому никаких путей и «..» (S29). */
+const PROFILE_ID = /^[A-Za-z0-9_-]{1,64}$/
+
 function progressFile(id: string): string {
+  if (typeof id !== 'string' || !PROFILE_ID.test(id)) throw new Error('profile: bad id')
   return path.join(app.getPath('userData'), 'progress', `${id}.json`)
 }
 
@@ -105,9 +109,10 @@ export function setProfileClass(id: string, className: string): Promise<ProfileM
 
 export function deleteProfile(id: string): Promise<ProfileMeta[]> {
   return serial(async () => {
+    const file = progressFile(id) // плохой id — отказ до любой записи
     const profiles = (await readProfiles()).filter((x) => x.id !== id)
     await save(profilesFile(), profiles)
-    for (const f of [progressFile(id), `${progressFile(id)}.bak`]) {
+    for (const f of [file, `${file}.bak`]) {
       try {
         await fs.rm(f)
       } catch {
