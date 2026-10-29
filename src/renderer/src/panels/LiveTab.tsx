@@ -4,7 +4,8 @@ import { useT } from '../i18n'
 import { useAppStore } from '../store/useAppStore'
 import { useLiveStore } from './live/useLiveStore'
 import { LiveIco, LiveSwitch } from './live/ui'
-import { ago, hitName, priceAmount, rarityColor, searchStatus } from './live/format'
+import { ago, priceAmount, rarityColor, searchStatus } from './live/format'
+import { useHitName } from './live/names'
 import { Currency } from '../components/Currency'
 import './live/live.css'
 
@@ -102,6 +103,8 @@ function HitRow({ hit, now }: { hit: LiveHit; now: number }) {
   const t = useT()
   const [note, setNote] = useState<string | null>(null)
   const lang = useAppStore((s) => s.settings?.uiLang ?? 'ru') as UiLang
+  // имя как в игре (S31): сайт трейда отдаёт его на своём языке
+  const name = useHitName(hit, lang)
   const whisper = async (): Promise<void> => {
     const r = await window.overlayApi.live.whisper(hit.key)
     setNote(r === 'ok' ? t('live.toast.done.note') : t(`live.act.err.${r}`))
@@ -114,7 +117,7 @@ function HitRow({ hit, now }: { hit: LiveHit; now: number }) {
     <tr>
       <td>
         <span className="it" style={{ color: rarityColor(hit.rarity) }}>
-          {hitName(hit)}
+          {name}
         </span>
         <span className="live-hit-sub">
           {hit.searchTitle}

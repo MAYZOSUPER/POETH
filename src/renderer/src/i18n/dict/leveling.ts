@@ -1,5 +1,5 @@
 // Строки домена «прокачка PoE1» (S14, S22): вкладка «Кампания» в PoE 1 и гид поверх игры — по макету дизайнера
-// «Прокачка PoE 1». Имена зон, квестов и боссов — из данных маршрута (RU по poedb), не отсюда.
+// «Прокачка PoE 1». Имена зон, квестов, боссов и NPC — из данных маршрута (как в клиенте игры, на его языке — S31), не отсюда.
 
 import type { DomainDict } from '../types'
 
@@ -76,6 +76,7 @@ export const leveling: DomainDict = {
     'lev.bandit.alira': 'помочь Алире',
     'lev.bandit.kraityn': 'помочь Крайтину',
     'lev.bandit.oak': 'помочь Дубу',
+    'lev.bandit.help': 'помочь {name}',
     'lev.optional': 'необязательно',
     'lev.campaign.title': 'Не пропустить за кампанию',
     'lev.campaign.passives': 'Очки пассивов с квестов',
@@ -87,7 +88,7 @@ export const leveling: DomainDict = {
     'lev.rewards.passive': '{quest} — очко пассивов',
     'lev.rewards.empty': 'В этом акте квестов с очками пассивов нет.',
     'lev.gems.title': 'Камни для класса',
-    'lev.gems.pick': 'Выберите класс — покажем камни наград и у Нессы.',
+    'lev.gems.pick': 'Выберите класс — покажем камни наград и те, что продаёт {npc}.',
     'lev.gems.quest': 'награда: {quest}',
     'lev.gems.vendor': 'купить: {npc} после «{quest}»',
     'lev.gems.empty': 'В этом акте новых камней нет.',
@@ -173,6 +174,7 @@ export const leveling: DomainDict = {
     'lev.bandit.alira': 'help Alira',
     'lev.bandit.kraityn': 'help Kraityn',
     'lev.bandit.oak': 'help Oak',
+    'lev.bandit.help': 'help {name}',
     'lev.optional': 'optional',
     'lev.campaign.title': "Don't miss in the campaign",
     'lev.campaign.passives': 'Quest passive points',
@@ -184,7 +186,7 @@ export const leveling: DomainDict = {
     'lev.rewards.passive': '{quest} — passive point',
     'lev.rewards.empty': 'No passive point quests in this act.',
     'lev.gems.title': 'Gems for your class',
-    'lev.gems.pick': "Pick a class to see quest reward gems and Nessa's gems.",
+    'lev.gems.pick': 'Pick a class to see quest reward gems and the gems {npc} sells.',
     'lev.gems.quest': 'reward: {quest}',
     'lev.gems.vendor': 'buy: {npc} after “{quest}”',
     'lev.gems.empty': 'No new gems in this act.',

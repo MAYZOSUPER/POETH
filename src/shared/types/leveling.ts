@@ -17,8 +17,10 @@ export type LvFrag =
   | { k: 'portal'; v: 'set' | 'use' }
   | { k: 'quest'; q: string; o?: string[] }
   | { k: 'kill' | 'arena' | 'generic' | 'qtext' | 'copy'; v: string }
-  | { k: 'ascend'; v: 'normal' | 'cruel' | 'merciless' | 'eternal' }
+  | { k: 'ascend'; v: LvLab }
   | { k: 'dir'; d: number }
+
+export type LvLab = 'normal' | 'cruel' | 'merciless' | 'eternal'
 
 export type LvPart = LvText | LvFrag | string
 
@@ -93,8 +95,14 @@ export interface LevelingData {
   gems: Record<string, LvGem>
   characters: Record<string, { start: string; chest: string }>
   killWaypoints: Record<string, string[]>
-  /** EN → RU: боссы, арены, предметы квестов, NPC */
+  /** EN → RU: боссы, арены, предметы квестов, NPC — как в клиенте игры (S31); у имён из plain — наш перевод */
   names: Record<string, string>
+  /** EN-имена из names, которых в клиенте нет (описания: «лодку», «всех», «3× глиф») — на языке интерфейса */
+  plain?: string[]
+  /** лабиринт по сложности ({ascend|…}) — как в клиенте */
+  labs?: Partial<Record<LvLab, { en: string; ru: string }>>
+  /** класс из журнала игры (базовый и восхождения, EN и RU — как в клиенте) → базовый EN */
+  classes?: Record<string, string>
   sections: LvSection[]
 }
 

@@ -8,15 +8,17 @@
 //    common/src/route-processing (MIT): фрагменты {enter|…} {waypoint|…} {logout} {quest|…} …, #section, #sub,
 //    #ifdef/#ifndef/#endif. Варианты (LEAGUE_START, BANDIT_*) не раскрываем — у шага остаются условия, зону
 //    после шага считает приложение по выбранному варианту (src/shared/leveling/route.ts);
-//  - poedb.tw/ru/Act_N — русские имена зон, квестов, боссов, предметов квестов (только факты: имя ↔ имя);
+//  - имена зон, квестов, боссов, NPC, предметов квестов, арен, лабиринтов и классов EN/RU — таблицы клиента PoE1
+//    (./game-names.mjs, выгрузка repoe-fork/dat-export; S31 — вместо poedb.tw);
 //  - данные APT в репо (resources/data/poe1/{en,ru}/items.ndjson, SnosMe/awakened-poe-trade, MIT) — камни и
 //    предметы (namespace GEM / ITEM);
 //  - очки пассивов за квесты — вывод /passives настоящего клиента PoE1 3.2x (см. PASSIVE_QUESTS);
-//  - наш перевод текста шагов и подсказок — ./phrases.ru.mjs.
+//  - наш перевод текста шагов и подсказок и имён-описаний, которых в клиенте нет, — ./phrases.ru.mjs.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { applyGameNames, loadClientTables, printReport } from './game-names.mjs'
 import { NAMES, PIECES, SUBS } from './phrases.ru.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
@@ -81,31 +83,8 @@ const el = (p) => cached(`exile-leveling/${p.split('/').pop()}`, `https://raw.gi
 const json = async (p) => JSON.parse((await el(p)).replace(/^﻿/, ''))
 
 // ---------------------------------------------------------------------------
-// Имена RU: poedb (слаг ↔ русский текст ссылки), данные APT, ручной словарь
+// Имена камней RU: данные APT (остальные имена — таблицы клиента, game-names.mjs)
 // ---------------------------------------------------------------------------
-
-const ENTITIES = { '&#39;': "'", '&quot;': '"', '&amp;': '&', '&lt;': '<', '&gt;': '>', '&nbsp;': ' ' }
-const decode = (s) => s.replace(/&#39;|&quot;|&amp;|&lt;|&gt;|&nbsp;/g, (m) => ENTITIES[m])
-
-/** Слаги poedb: EN-имя без апострофов, пробелы → «_» (Lioneye's Watch → Lioneyes_Watch). */
-function slugs(en) {
-  const base = en.replace(/['’]/g, '').trim()
-  const a = base.replace(/\s+/g, '_')
-  const withApos = en.trim().replace(/’/g, "'").replace(/\s+/g, '_')
-  return [...new Set([a, a.replace(/,/g, ''), a.replace(/[,:]/g, ''), withApos])]
-}
-
-function poedbNames(html, into) {
-  const re = /<a\b[^>]*\bhref="(?:\/ru\/)?([^"#?/]+)"[^>]*>([\s\S]*?)<\/a>/g
-  for (const m of html.matchAll(re)) {
-    const slug = decodeURIComponent(m[1])
-    const raw = m[2]
-    const gen = /<else>\{([^}]*)\}/.exec(raw)
-    const text = decode((gen ? gen[1] : raw.replace(/<[^>]+>/g, '')).trim())
-    if (!text || !/[А-Яа-яЁё]/.test(text)) continue
-    if (!into.has(slug)) into.set(slug, text)
-  }
-}
 
 function aptNames() {
   const read = (lang) =>
@@ -257,42 +236,11 @@ async function main() {
   const routes = []
   for (let a = 1; a <= ACTS; a++) routes.push(await el(`common/data/routes/act-${a}.txt`))
 
-  const poedb = new Map()
-  for (let a = 1; a <= ACTS; a++) {
-    poedbNames(await cached(`poedb/act-${a}.html`, `https://poedb.tw/ru/Act_${a}`), poedb)
-  }
+  const tables = await loadClientTables({ refresh: REFRESH })
   const apt = aptNames()
-  const ruOfKnown = (en) => {
-    if (NAMES[en] !== undefined) return NAMES[en]
-    for (const s of slugs(en)) if (poedb.has(s)) return poedb.get(s)
-    if (apt.has(en)) return apt.get(en)
-    return null
-  }
-  // нет на страницах актов — страница сущности poedb (og:title), с паузой между запросами
-  const entityCache = new Map()
-  const ruOfPage = async (en) => {
-    for (const s of slugs(en)) {
-      if (entityCache.has(s)) return entityCache.get(s)
-      const name = `poedb/entity/${s.replace(/[^\w.-]/g, '_')}.html`
-      const fresh = REFRESH || !existsSync(path.join(SOURCES, name))
-      let html = ''
-      try {
-        html = await cached(name, `https://poedb.tw/ru/${encodeURIComponent(s)}`)
-      } catch {
-        html = ''
-      }
-      if (fresh) await new Promise((r) => setTimeout(r, 300))
-      const m = /og:title" content="([^"]*)"/.exec(html)
-      const ru = m && /[А-Яа-яЁё]/.test(m[1]) ? decode(m[1]) : null
-      entityCache.set(s, ru)
-      if (ru) return ru
-    }
-    return null
-  }
-  const ruOfAsync = async (en) => ruOfKnown(en) ?? (await ruOfPage(en))
-  const ruOf = ruOfKnown
+  const ruOf = (en) => NAMES[en] ?? apt.get(en) ?? null
 
-  const missing = { pieces: new Set(), subs: new Set(), names: new Set(), areas: new Set(), quests: new Set() }
+  const missing = { pieces: new Set(), subs: new Set(), names: new Set() }
   const ctx = { missing }
 
   // маршрут — первым: по нему видно, какие квесты и имена нужны
@@ -300,11 +248,9 @@ async function main() {
   const usedQuests = new Set()
   for (const s of sections) for (const st of s.steps) for (const p of st.parts) if (p && p.k === 'quest') usedQuests.add(p.q)
 
-  // зоны актов 1–11 (11 — эпилог: Karui Shores и лобби лабиринта)
+  // зоны актов 1–11 (11 — эпилог: Karui Shores и лобби лабиринта); RU — по id из клиента (applyGameNames)
   const areas = {}
   for (const x of Object.values(areasRaw)) {
-    const ru = await ruOfAsync(x.name)
-    if (!ru) missing.areas.add(`${x.id} ${x.name}`)
     areas[x.id] = {
       act: x.act,
       level: x.level,
@@ -312,7 +258,7 @@ async function main() {
       ...(x.has_waypoint ? { wp: true } : {}),
       ...(x.parent_town_area_id ? { townId: x.parent_town_area_id } : {}),
       en: x.name,
-      ru: ru ?? x.name
+      ru: x.name
     }
   }
 
@@ -323,8 +269,6 @@ async function main() {
   for (const q of Object.values(questsRaw)) {
     // квесты вне маршрута кампании (атлас, Мэйвен…) не берём
     if (!usedQuests.has(q.id) && !PASSIVE_QUESTS[q.name]) continue
-    const ru = await ruOfAsync(q.name)
-    if (!ru) missing.quests.add(`${q.id} ${q.name}`)
     const rewards = {}
     for (const [oid, offer] of Object.entries(q.reward_offers)) {
       if (!offer) continue
@@ -336,7 +280,7 @@ async function main() {
     quests[q.id] = {
       act: Number(q.act),
       en: q.name,
-      ru: ru ?? q.name,
+      ru: q.name,
       ...(PASSIVE_QUESTS[q.name] ? { passives: PASSIVE_QUESTS[q.name] } : {}),
       ...(q.name === BANDIT_QUEST ? { passivesIf: 'BANDIT_KILL' } : {}),
       ...(Object.keys(rewards).length ? { rewards } : {})
@@ -355,18 +299,15 @@ async function main() {
     gems[id] = { en: g.name, ru: ru ?? g.name, attr: g.primary_attribute, lvl: g.required_level, ...(g.is_support ? { support: true } : {}) }
   }
 
-  // имена фрагментов (боссы, арены, предметы квестов, прочее) и NPC
+  // имена фрагментов (боссы, арены, предметы квестов, прочее) и NPC: здесь — наш перевод описаний (NAMES),
+  // имена из игры дописывает applyGameNames по таблицам клиента
   const names = {}
   const want = new Set(npcs)
   for (const s of sections)
     for (const st of s.steps)
       for (const p of [...st.parts, ...(st.sub ?? []).flatMap((x) => [...x.en, ...x.ru])])
         if (p && typeof p === 'object' && 'v' in p && ['kill', 'arena', 'generic', 'qtext'].includes(p.k)) want.add(p.v)
-  for (const en of [...want].sort()) {
-    const ru = await ruOfAsync(en)
-    if (ru === null) missing.names.add(en)
-    names[en] = ru ?? en
-  }
+  for (const en of [...want].sort()) names[en] = NAMES[en] ?? en
 
   // теги шага: очко пассивов, испытание, флакон, камень; зона после шага считает приложение
   for (const s of sections) {
@@ -394,7 +335,7 @@ async function main() {
   const data = {
     meta: {
       source: { repo: EL_REPO, commit: EL_COMMIT, license: 'MIT', copyright: '© 2025 HeartofPhos' },
-      names: ['poedb.tw/ru', 'Awakened PoE Trade data (MIT)'],
+      names: ['Awakened PoE Trade data (MIT)'],
       acts: ACTS,
       steps: sections.reduce((a, s) => a + s.steps.length, 0)
     },
@@ -406,16 +347,19 @@ async function main() {
     names,
     sections
   }
+  const game = applyGameNames(data, tables)
+  for (const en of data.plain) if (NAMES[en] === undefined) missing.names.add(en)
   mkdirSync(path.dirname(OUT), { recursive: true })
   writeFileSync(OUT, JSON.stringify(data) + '\n', 'utf8')
 
-  console.log(`шагов ${data.meta.steps}, зон ${Object.keys(areas).length}, квестов ${Object.keys(quests).length}, камней ${Object.keys(gems).length}, имён ${Object.keys(names).length}`)
+  console.log(
+    `шагов ${data.meta.steps}, зон ${Object.keys(areas).length}, квестов ${Object.keys(quests).length}, камней ${Object.keys(gems).length}, имён ${Object.keys(data.names).length} (не из игры ${data.plain.length})`
+  )
   const report = (label, set) => set.size && console.log(`\n${label} (${set.size}):\n  ${[...set].join('\n  ')}`)
   report('нет перевода куска шага → phrases.ru.mjs PIECES', missing.pieces)
   report('нет перевода подсказки → phrases.ru.mjs SUBS', missing.subs)
-  report('зоны без RU (poedb)', missing.areas)
-  report('квесты без RU (poedb)', missing.quests)
-  report('имена без RU (poedb/APT → phrases.ru.mjs NAMES)', missing.names)
+  report('нет в клиенте и в phrases.ru.mjs NAMES — дописать перевод описания', missing.names)
+  printReport({ ...game, areas: [], quests: [], names: [] })
   console.log(`\n→ ${path.relative(ROOT, OUT)}`)
 }
 

@@ -1,6 +1,6 @@
-import type { LiveHit, LiveRarity, LiveSearchView } from '@shared/types'
+import type { LiveRarity, LiveSearchView } from '@shared/types'
 
-// Общее форматирование live для вкладки компаньона и тостов оверлея (S6).
+// Общее форматирование live для вкладки компаньона и тостов оверлея (S6). Имя находки — ./names.ts (S31).
 
 type T = (key: string, params?: Record<string, string | number>) => string
 
@@ -36,10 +36,6 @@ const RARITY_VAR: Record<LiveRarity, string> = {
 
 export function rarityColor(r: LiveRarity): string {
   return RARITY_VAR[r]
-}
-
-export function hitName(hit: LiveHit): string {
-  return [hit.name, hit.typeLine].filter(Boolean).join(' ') || hit.itemId.slice(0, 8)
 }
 
 /** Подпись состояния поиска + уровень (ok / warn / bad / off) для точки. */
