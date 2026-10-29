@@ -1,0 +1,39 @@
+/* Рельс навигации (S32, макет навигации — вариант Б): счётчики на иконках и плашка «Сквозной режим».
+   Сам рельс — .ui-rail в styles/components.css; здесь только то, что добавил S32. Только токены. */
+
+/* ---------- счётчик на пункте: .ui-count (Live — .ui-count--live) ---------- */
+/* развёрнутый рельс и шторка: число справа от названия */
+.ui-rail--wide .ui-rail__item:has(> .ui-count),
+.ui-rail--drawer .ui-rail__item:has(> .ui-count) {
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+}
+/* свёрнутый: значок в правом верхнем углу иконки */
+.ui-rail:not(.ui-rail--wide):not(.ui-rail--drawer) .ui-rail__item > .ui-count {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  min-width: 15px;
+  height: 14px;
+  padding: 0 3px;
+}
+
+/* строка со счётчиком в подсказке свёрнутого рельса */
+.ui-rail__tip .ui-tip .rail-tip-count { margin-top: var(--sp-1); color: var(--fg); font-weight: 600; }
+.ui-rail__tip .ui-tip .rail-tip-count--live { color: var(--live); }
+
+/* ---------- плашка «Сквозной режим» внизу окна (родитель — .app-main, position: relative) ---------- */
+/* Клики в это время уходят в игру, а наведение до страницы доходит: под курсором плашка почти прозрачна,
+   чтобы не закрывать содержимое. */
+.rail-lock {
+  position: absolute;
+  inset: auto var(--sp-5) var(--sp-5);
+  z-index: 6;
+  transition: opacity var(--t-fast);
+}
+.rail-lock:hover { opacity: 0.12; }
+.rail-lock .ui-banner {
+  border: 1px solid color-mix(in srgb, var(--info) 35%, transparent);
+  border-radius: var(--r-panel);
+  background: var(--surface-solid);
+  box-shadow: var(--halo);
+}
