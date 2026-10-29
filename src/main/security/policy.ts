@@ -71,12 +71,15 @@ export const SECRET_CHANNELS: ReadonlySet<string> = new Set([IPC.auth.pasteSessi
 /** Каналы, нужные только игровому оверлею: наложение дерева билда (S38). */
 export const OVERLAY_CHANNELS: ReadonlySet<string> = new Set(Object.values(IPC.buildTree))
 
+/** Только компаньон: вставка кода PoB и загрузка билда по ссылке (недоверенный ввод, сеть по действию игрока; S39). */
+export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([IPC.build.importPob, IPC.build.reload])
+
 /** Может ли страница звать этот канал IPC. */
 export function ipcAllowed(page: AppPage | null, channel: string): boolean {
   if (!page) return false
   if (OVERLAY_CHANNELS.has(channel)) return page === 'overlay'
   if (GAME_INPUT_CHANNELS.has(channel)) return page === 'index' || page === 'overlay'
-  if (SECRET_CHANNELS.has(channel)) return page === 'index'
+  if (SECRET_CHANNELS.has(channel) || COMPANION_CHANNELS.has(channel)) return page === 'index'
   return true
 }
 

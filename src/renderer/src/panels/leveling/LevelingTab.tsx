@@ -8,6 +8,7 @@ import { useGameLang } from '../../gameLang'
 import { useLevelingStore } from '../../store/useLevelingStore'
 import { Ico, Switch, useSimple } from '../deals/common'
 import { StepTags, StepText } from './StepText'
+import { useBuildGemIds } from '../../overlay/leveling/buildGuide'
 import './leveling.css'
 
 // Вкладка «Кампания» в PoE 1 (S14) по макету дизайнера «Прокачка PoE 1»: акты 1–10 со счётчиками, маршрут
@@ -291,6 +292,8 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
     return [...ids].map((id) => ({ id, q: data.quests[id] })).filter((x) => x.q)
   }, [flat, act, data])
   const passiveQuests = questsInAct.filter((x) => x.q.passives && (!x.q.passivesIf || state.progress.variant.bandit === 'kill'))
+  // S39: вставлен билд — только его камни (id предмета игры, как ключи gems в leveling.json)
+  const buildIds = useBuildGemIds()
   const gems = useMemo(() => {
     if (!cls) return []
     const out: { gem: string; how: string }[] = []
@@ -313,8 +316,8 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
         }
       }
     }
-    return out.slice(0, 12)
-  }, [cls, questsInAct, gameLang, data, t])
+    return (buildIds ? out.filter((g) => buildIds.has(g.gem)) : out).slice(0, 12)
+  }, [cls, questsInAct, gameLang, data, t, buildIds])
 
   return (
     <aside className="lv-side">
@@ -353,13 +356,15 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
       </section>
       <section className="ui-box">
         <div className="ui-box__head">
-          <span className="ui-label">{t('lev.gems.title')}</span>
+          <span className="ui-label" title={buildIds ? t('bd.lev.gems.buildHint') : undefined}>
+            {buildIds ? t('bd.lev.gems.build') : t('lev.gems.title')}
+          </span>
         </div>
         <div className="ui-box__body">
           {!cls ? (
             <p className="lv-p">{t('lev.gems.pick').replace('{npc}', nameOf(data, 'Nessa', gameLang))}</p>
           ) : gems.length === 0 ? (
-            <p className="lv-p">{t('lev.gems.empty')}</p>
+            <p className="lv-p">{buildIds ? t('bd.lev.gems.buildEmpty') : t('lev.gems.empty')}</p>
           ) : (
             gems.map((g) => {
               const gem = data.gems[g.gem]

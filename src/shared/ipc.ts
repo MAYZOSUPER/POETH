@@ -22,6 +22,7 @@ import { flipChannels, flipEvents, type FlipIpcApi } from './ipc/flip'
 import { levelingChannels, levelingEvents, type LevelingIpcApi } from './ipc/leveling'
 import { advisorChannels, advisorEvents, type AdvisorIpcApi } from './ipc/advisor'
 import { buildTreeChannels, buildTreeEvents, type BuildTreeIpcApi } from './ipc/buildTree'
+import { buildChannels, buildEvents, type BuildIpcApi } from './ipc/build'
 
 /** Каналы и события по доменам — для проверки уникальности в тестах. */
 export const IPC_DOMAINS = {
@@ -40,7 +41,8 @@ export const IPC_DOMAINS = {
   flip: { channels: flipChannels, events: flipEvents },
   leveling: { channels: levelingChannels, events: levelingEvents },
   advisor: { channels: advisorChannels, events: advisorEvents },
-  buildTree: { channels: buildTreeChannels, events: buildTreeEvents }
+  buildTree: { channels: buildTreeChannels, events: buildTreeEvents },
+  build: { channels: buildChannels, events: buildEvents }
 } as const
 
 export const IPC = {
@@ -60,6 +62,7 @@ export const IPC = {
   ...levelingChannels,
   ...advisorChannels,
   ...buildTreeChannels,
+  ...buildChannels,
   events: {
     ...campaignEvents,
     ...tradeEvents,
@@ -76,7 +79,8 @@ export const IPC = {
     ...flipEvents,
     ...levelingEvents,
     ...advisorEvents,
-    ...buildTreeEvents
+    ...buildTreeEvents,
+    ...buildEvents
   }
 } as const
 
@@ -97,7 +101,8 @@ export interface OverlayApi
     FlipIpcApi,
     LevelingIpcApi,
     AdvisorIpcApi,
-    BuildTreeIpcApi {}
+    BuildTreeIpcApi,
+    BuildIpcApi {}
 
 export type {
   CampaignIpcApi,
@@ -115,5 +120,6 @@ export type {
   FlipIpcApi,
   LevelingIpcApi,
   AdvisorIpcApi,
-  BuildTreeIpcApi
+  BuildTreeIpcApi,
+  BuildIpcApi
 }
