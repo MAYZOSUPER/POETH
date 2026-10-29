@@ -48,8 +48,16 @@ export interface HardenOptions {
   onBlockedNavigation?: (url: string) => void
 }
 
+/**
+ * WebRTC без прямого UDP (S29, находка S34): вход GGG и проверка Cloudflare (Turnstile) создают RTCPeerConnection со
+ * STUN Google/Cloudflare — это открывало порт на приём (вопрос брандмауэра Windows при первом трейд-окне) и раскрывало
+ * IP STUN-серверам. POETH WebRTC не нужен: UDP только через прокси, а прокси нет — кандидатов нет.
+ */
+export const WEBRTC_IP_POLICY = 'disable_non_proxied_udp' as const
+
 /** Навесить ограничения навигации на webContents с сайтом GGG. */
 export function hardenSiteContents(wc: WebContents, opts: HardenOptions = {}): void {
+  wc.setWebRTCIPHandlingPolicy(WEBRTC_IP_POLICY)
   // Только главный фрейм: подфреймы (Turnstile Cloudflare и т.п.) живут в песочнице
   // страницы и cookies аккаунта чужим хостам не достаются.
   const guard = (details: { url: string; isMainFrame: boolean; preventDefault(): void }): void => {

@@ -61,6 +61,28 @@ describe('main: события доменов — только нашим стр
   })
 })
 
+describe('main: WebRTC без прямого UDP', () => {
+  it('сайт GGG — в hardenSiteContents первой строкой, все окна — при создании webContents', () => {
+    const site = code(join(ROOT, 'src/main/net/siteContents.ts'))
+    expect(site).toMatch(/WEBRTC_IP_POLICY = 'disable_non_proxied_udp'/)
+    const harden = site.slice(site.indexOf('export function hardenSiteContents'))
+    expect(harden.split('\n')[1]).toMatch(/wc\.setWebRTCIPHandlingPolicy\(WEBRTC_IP_POLICY\)/)
+    const sec = code(join(ROOT, 'src/main/security/index.ts'))
+    const created = sec.slice(sec.indexOf("app.on('web-contents-created'"))
+    expect(created.indexOf('setWebRTCIPHandlingPolicy(WEBRTC_IP_POLICY)')).toBeGreaterThan(0)
+    expect(created.indexOf('setWebRTCIPHandlingPolicy(WEBRTC_IP_POLICY)')).toBeLessThan(created.indexOf('guardAppContents(wc)'))
+  })
+
+  it('каждое окно сайта (siteWebPreferences) проходит через hardenSiteContents', () => {
+    for (const f of MAIN) {
+      const src = code(f)
+      const views = (src.match(/webPreferences: siteWebPreferences\(\)/g) ?? []).length
+      if (!views || name(f).endsWith('siteContents.ts')) continue
+      expect((src.match(/hardenSiteContents\(/g) ?? []).length, name(f)).toBeGreaterThanOrEqual(views)
+    }
+  })
+})
+
 describe('main: webPreferences окон', () => {
   it.each([
     [/webSecurity:\s*false/, 'webSecurity: false'],

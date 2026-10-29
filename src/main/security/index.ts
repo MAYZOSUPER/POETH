@@ -4,6 +4,7 @@ import { isAllowedExternalUrl } from '@shared/links'
 import { guardIpcMain, senderUrl } from './ipcGuard'
 import { appNavigationAllowed, appPageOf, appPermissionAllowed, ipcAllowed, type AppOrigin } from './policy'
 import { devEnv } from '../devEnv'
+import { WEBRTC_IP_POLICY } from '../net/siteContents'
 
 // Защита наших окон (S29), одним вызовом из main/index.ts ДО регистрации IPC и создания окон:
 //  1. IPC: каждый канал — только с наших страниц (policy.ts), ввод в игру — не из сайдбара трейд-окна,
@@ -75,6 +76,10 @@ export function installAppSecurity(): void {
     (event, channel) => ipcAllowed(appPageOf(senderUrl(event), appOrigin()), channel),
     (channel, url) => logRejected(`ipc ${channel} from`, url)
   )
-  app.on('web-contents-created', (_e, wc) => guardAppContents(wc))
+  app.on('web-contents-created', (_e, wc) => {
+    // WebRTC без прямого UDP — у всех окон, до первой загрузки (сайт GGG ставит то же в hardenSiteContents)
+    wc.setWebRTCIPHandlingPolicy(WEBRTC_IP_POLICY)
+    guardAppContents(wc)
+  })
   void app.whenReady().then(lockDefaultSession)
 }
