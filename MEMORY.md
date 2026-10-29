@@ -129,6 +129,20 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 30.10)_ **демо `v0.1.0-rc.11`** — первый публичный релиз на GitHub (обычный, не pre-release: на него ведут сайт и
+  `releases/latest`). Перед ним слиты S29 этап 3, S35, S34, S37 (`2aa0fd3`, `084e863`, слияния S34/S37, `91730b9`). 2979 тестов.
+  - **S29 этап 3** (`bb9e63b`…`446f98f`): WebRTC без прямого UDP во всех окнах (нет вопроса брандмауэра, IP не уходит STUN
+    Google/Cloudflare); смена игры — штатный выход с сохранением гида и фарма; лимит импорта профиля кампании.
+  - **S35** (`c9a0143`…`a79864a`): ядро PoB — свой XML-парсер (без DOCTYPE/ENTITY, пределы), модель, этапы прокачки, ссылки
+    pobb.in/pastebin/pob.codes/poedb/Maxroll PoB/rentry, загрузка в main (анонимная сессия, allowlist), флаг `POETH_BUILD`;
+    20 фикстур без контента сайтов-гайдов. IPC `build:importPob` и `GameFeatures.build` — с UI вкладки.
+  - **S34** (`6908b28`…`d2b9182`): **Electron 40.10.6 → 44.10.0** (40.x без исправлений Chromium с 01.07). `clipboard` по W3C —
+    `hostClipboard.ts` переписан (снимок → очистка → Ctrl+C, Ctrl+D и ввод в чат в одной очереди). js-yaml 4.3.2, fuses те же.
+    Проверка с настоящими клавишами на тестовом окне «Path of Exile» — 37/38 (✗ ожидаем: захваты в сборке выключены S29).
+    **После `git pull` — `npm install`**: бинарь Electron с 42 качается при первом запуске, не в postinstall.
+  - **S37** (`4703f84`…`0ad7371` + `91730b9`): вкладка «Прайс-чек» PoE 1 вместо заглушки, тексты без несуществующего
+    (Steam, «Библиотека», звук «Сделок», live в избранном и PoE 2), «Экспертный режим» в настройках, `mayzosuper.github.io`
+    в allowlist ссылок. Выписка мелочей (зашитый «Ctrl+D» в 8 строках, RU-строки диалогов в EN) — `S37-handover.md`.
 - _(лид, 30.10)_ слиты S29 этап 2, S30b, S33, S36 (`324081b`, `f41058c`, `244777b`, `94ff258`). 2776 тестов, test:trade 31/31, сборка.
   - **S29 этап 2** (`c066a52`…`505a79c`):
     - демо обновится до v0.1.0: `allowPrerelease = false`, `allowDowngrade = false` (`services/updaterPolicy.ts`; electron-updater
