@@ -5,6 +5,7 @@ import { findHotkeyConflict } from '@shared/chatCommands'
 import { GAMES, type GameId } from '@shared/games'
 import { HOTKEY_ACTIONS, defaultHotkeys } from '@shared/settings'
 import { BOOSTY_URL } from '@shared/links'
+import { buildOn } from '@shared/build/flag'
 import { useAppStore } from '../store/useAppStore'
 import { useShellStore } from '../store/useShellStore'
 import { Ico } from './regex/Ico'
@@ -16,8 +17,8 @@ import { GameLangSetting } from '../components/GameLangSetting'
 
 const BOTH: GameId[] = ['poe1', 'poe2']
 
-/** Подпись действия и в каких играх оно показывается в настройках. */
-const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameId[] }> = {
+/** Подпись действия и в каких играх оно показывается в настройках (on — функция включена: скрытые флагом — нет). */
+const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameId[]; on?: (game: GameId) => boolean }> = {
   priceCheck: { labelKey: 'set.hk.priceCheck', games: BOTH },
   overlayToggle: { labelKey: 'set.hk.overlayToggle', games: ['poe1'] },
   whisperLastHit: { labelKey: 'set.hk.whisperLastHit', games: ['poe1'] },
@@ -33,6 +34,7 @@ const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameI
   dealDismiss: { labelKey: 'set.hk.dealDismiss', games: ['poe1'] },
   levelingToggle: { labelKey: 'set.hk.levelingToggle', games: ['poe1'] },
   bookRead: { labelKey: 'set.hk.bookRead', games: ['poe1'] },
+  buildTree: { labelKey: 'set.hk.buildTree', games: ['poe1'], on: (g) => buildOn(GAMES[g], window.overlayApi.buildTree.devFlag) },
   toggleTradeWindow: { labelKey: 'set.hk.tradeWindow', games: ['poe1'] },
   prevStep: { labelKey: 'set.hk.prev', games: ['poe2'] },
   nextStep: { labelKey: 'set.hk.next', games: ['poe2'] }
@@ -115,7 +117,7 @@ export function SettingsPanel() {
   const t = useT()
   const meta = dataset?.meta
   const game = settings?.game ?? 'poe1'
-  const hkActions = HOTKEY_ACTIONS.filter((a) => HK_META[a].games.includes(game))
+  const hkActions = HOTKEY_ACTIONS.filter((a) => HK_META[a].games.includes(game) && (HK_META[a].on?.(game) ?? true))
   const hasCampaign = GAMES[game].features.campaign
 
   const [capturing, setCapturing] = useState<HotkeyAction | null>(null)

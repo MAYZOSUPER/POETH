@@ -66,6 +66,8 @@ export type HotkeyAction =
   | 'levelingToggle'
   // «Обмен» (S28): считать стакан «Курс / Кол-во» с экрана, пока игрок держит Alt над «Рыночным курсом»
   | 'bookRead'
+  // «Билд» (S38): дерево этапа поверх игрового дерева пассивок — показать / спрятать
+  | 'buildTree'
   // always
   | 'toggleCompanion'
   | 'toggleLock'

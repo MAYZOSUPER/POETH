@@ -68,9 +68,13 @@ export const GAME_INPUT_CHANNELS: ReadonlySet<string> = new Set([
 /** Секреты аккаунта: вставка POESESSID (PoE1 — в partition, PoE2 — прайс-чек компаса). */
 export const SECRET_CHANNELS: ReadonlySet<string> = new Set([IPC.auth.pasteSession, IPC.trade.setSession])
 
+/** Каналы, нужные только игровому оверлею: наложение дерева билда (S38). */
+export const OVERLAY_CHANNELS: ReadonlySet<string> = new Set(Object.values(IPC.buildTree))
+
 /** Может ли страница звать этот канал IPC. */
 export function ipcAllowed(page: AppPage | null, channel: string): boolean {
   if (!page) return false
+  if (OVERLAY_CHANNELS.has(channel)) return page === 'overlay'
   if (GAME_INPUT_CHANNELS.has(channel)) return page === 'index' || page === 'overlay'
   if (SECRET_CHANNELS.has(channel)) return page === 'index'
   return true
