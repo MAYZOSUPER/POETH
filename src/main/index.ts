@@ -15,6 +15,7 @@ import { announceStarted, applyLoginItem, setStartupStep, wasAutostarted } from 
 import { startAppUpdates } from './services/appUpdater'
 import { startDataUpdates } from './services/dataUpdater'
 import { handleStrategyArgv, registerStrategyProtocol } from './ipc/advisor'
+import { installAppSecurity } from './security'
 
 // dev/test: isolated profile (migration tests, parallel `npm run dev` from several
 // worktrees — the single-instance lock is per userData dir).
@@ -29,6 +30,10 @@ initNetIdentity()
 // AUMID = appId — в шапке тоста его имя и значок. Dev (electron.exe): свой AUMID, чтобы тосты не смешивались
 // с установленной копией и Windows группировал их отдельно.
 if (process.platform === 'win32') app.setAppUserModelId(app.isPackaged ? 'com.poeth.app' : 'com.poeth.app.dev')
+
+// Безопасность окон (S29): проверка отправителя IPC, навигация и разрешения наших страниц —
+// до регистрации обработчиков (bootstrap) и до первого окна.
+installAppSecurity()
 
 // Must happen before `ready` (scheme) and before the single-instance lock
 // (userData copy from the old product names, before Chromium writes there).

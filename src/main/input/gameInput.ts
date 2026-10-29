@@ -16,6 +16,7 @@ import { parseAccelerator } from '@shared/accelerators'
 import { hostClipboard } from './hostClipboard'
 import { detectItemLang } from './itemText'
 import { saveCapture } from './captureLog'
+import { toGameLine } from './chatLine'
 import { isFocusTracking, isGameFocused } from '../focus/gameFocus'
 import { ensureGameForeground } from '../windows/gameOverlay'
 
@@ -219,8 +220,12 @@ function prepareInput(): UiohookLib | GameInputResult {
  * Вставить текст в чат игры через буфер обмена (буфер вернётся через 120 мс).
  * `@last <текст>` — ответить последнему, `<текст> @last` — дописать к последнему
  * собеседнику (как APT). send — сразу отправить (Enter) и вернуть прежний канал чата.
+ * Текст — всегда одна строка (chatLine.ts): переводы строк → пробел, длиннее лимита — 'no-input'.
  */
-export function typeInChat(text: string, opts: { send?: boolean } = {}): GameInputResult {
+export function typeInChat(input: string, opts: { send?: boolean } = {}): GameInputResult {
+  const line = toGameLine(input)
+  if (line === null) return 'no-input'
+  let text = line
   const k = prepareInput()
   if (typeof k === 'string') return k
   const { uIOhook, UiohookKey: Key } = k
@@ -266,9 +271,11 @@ export function typeInChat(text: string, opts: { send?: boolean } = {}): GameInp
 /**
  * Поиск в стэше/у торговца: Ctrl+F → вставить текст (→ Enter, если submit) — буфер вернётся
  * через 120 мс. submit по умолчанию как в APT (Enter снимает фокус с поля поиска); хоткеи
- * строк regex (pasteSearch1..5) вставляют без Enter.
+ * строк regex (pasteSearch1..5) вставляют без Enter. Текст — одна строка, как в typeInChat.
  */
-export function stashSearch(text: string, opts: { submit?: boolean } = {}): GameInputResult {
+export function stashSearch(input: string, opts: { submit?: boolean } = {}): GameInputResult {
+  const text = toGameLine(input)
+  if (text === null) return 'no-input'
   const k = prepareInput()
   if (typeof k === 'string') return k
   const { uIOhook, UiohookKey: Key } = k
