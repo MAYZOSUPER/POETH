@@ -14,7 +14,8 @@ describe('planHotkeys', () => {
       'dealInvite',
       'dealTrade',
       'dealDismiss',
-      'levelingToggle'
+      'levelingToggle',
+      'bookRead'
     ])
     expect(plan.always.map((h) => h.action)).toEqual([
       'toggleCompanion',
@@ -48,7 +49,14 @@ describe('planHotkeys', () => {
       { action: 'pasteSearch2', accel: 'Shift+Space', reason: 'duplicate' },
       { action: 'toggleLock', accel: 'Alt+F4', reason: 'system' }
     ])
-    expect(plan.game.map((h) => h.action)).toEqual(['overlayToggle', 'dealInvite', 'dealTrade', 'dealDismiss', 'levelingToggle'])
+    expect(plan.game.map((h) => h.action)).toEqual([
+      'overlayToggle',
+      'dealInvite',
+      'dealTrade',
+      'dealDismiss',
+      'levelingToggle',
+      'bookRead'
+    ])
   })
 
   it('регистрируется каноническая запись', () => {
@@ -72,6 +80,7 @@ describe('planHotkeys', () => {
       'dealTrade',
       'dealDismiss',
       'levelingToggle',
+      'bookRead',
       'chat:hideout'
     ])
     expect(plan.skipped).toEqual([
@@ -79,6 +88,14 @@ describe('planHotkeys', () => {
       { action: 'chat:bad', accel: 'Enter', reason: 'game' },
       { action: 'chat:dup2', accel: 'F5', reason: 'duplicate' }
     ])
+  })
+
+  it('стакан «Обмена» (S28): bookRead — Alt+D в области game, свободен, не совпадает с Ctrl+D', () => {
+    const plan = planHotkeys(defaultHotkeys(), all)
+    expect(plan.game).toContainEqual({ action: 'bookRead', accel: 'Alt+D', scope: 'game' })
+    const cur = { hotkeys: defaultHotkeys(), chatCommands: [] }
+    expect(findHotkeyConflict('Alt+D', cur, { action: 'bookRead' })).toBeNull()
+    expect(findHotkeyConflict('Control+D', cur, { action: 'bookRead' })).toEqual({ kind: 'action', action: 'priceCheck' })
   })
 
   it('гид прокачки (S14): levelingToggle — Ctrl+Shift+G в области game, свободен; конфликты — с причиной', () => {

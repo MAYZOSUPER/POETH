@@ -10,10 +10,18 @@ import { readJson, writeJsonAtomic } from '../services/atomicJson'
 import { resourcesDir } from '../services/questDataset'
 import { getFeedStore } from '../games/poe1/exchange/feedService'
 import { FEED_WANT_HOURS, FlipManager, type GoldFees } from '../games/poe1/flip/manager'
+import { onHotkeyAction } from '../hotkeys'
+import { getCursorInOverlay } from '../windows/gameOverlay'
+import { bookFromTable } from '@shared/ocr/read'
+import type { BookReadResult, FlipBookEvent } from '@shared/types'
+import { captureBook, saveFixtureShot } from '../ocr/capture'
+import { readBookImage, stopBookReader } from '../ocr/reader'
 import type { IpcDomain } from './types'
 
 // Домен «помощник по флиппингу» (main, S13): часы фида обмена GGG из общего хранилища (его же берут учёт
 // богатства и курс для окна цены), маршруты и курс divine:chaos. Звать каналы могут только наши страницы.
+// S28: стакан «Курс / Кол-во» с экрана по хоткею (Alt над «Рыночным курсом» + bookRead) — снимок у курсора,
+// распознавание в своём потоке, итог — в карточку «Как сделать» компаньона и тостом у курсора в оверлее.
 
 function devServerUrl(): string | undefined {
   return process.env.ELECTRON_RENDERER_URL
@@ -72,8 +80,46 @@ function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
   })
 }
 
+let lastBook: FlipBookEvent | null = null
+let bookBusy = false
+
+/**
+ * Хоткей bookRead: снимок области у курсора → поток распознавания → стакан. Одно нажатие — одно чтение,
+ * в игру ничего не шлём (клавиши игрока не отпускаем — hotkeys.ts keepKeys, иначе Alt «отпустится» и
+ * таблица исчезнет до снимка).
+ */
+async function readBookNow(): Promise<void> {
+  const at = Date.now()
+  const send = (result: BookReadResult, cursor: FlipBookEvent['cursor']): void => {
+    const e: FlipBookEvent = { result, cursor }
+    // «уже читаем» не затирает последнее чтение
+    if (result.ok || result.reason !== 'busy') lastBook = e
+    broadcast(IPC.events.flipBook, e)
+  }
+  if (bookBusy) return send({ ok: false, reason: 'busy', at }, null)
+  bookBusy = true
+  try {
+    const shot = captureBook()
+    if (shot === 'no-game' || shot === 'error') return send({ ok: false, reason: shot, at }, null)
+    const pos = getCursorInOverlay()
+    void saveFixtureShot(shot).catch((e) => log(`ocr fixture save failed: ${String(e)}`))
+    const { table, ms } = await readBookImage(shot.img, shot.hint)
+    if (!table) return send({ ok: false, reason: 'no-table', at }, pos)
+    const reading = bookFromTable(table, at)
+    if (!reading) return send({ ok: false, reason: 'unreadable', at }, pos)
+    log(`book read: ${reading.rows.length} rows, ${reading.doubt.length} doubtful cells, ${ms} ms`)
+    send({ ok: true, reading, ms }, pos)
+  } catch (e) {
+    log(`book read failed: ${e instanceof Error ? e.message : String(e)}`)
+    send({ ok: false, reason: 'error', at }, null)
+  } finally {
+    bookBusy = false
+  }
+}
+
 function register(): void {
   const m = (): FlipManager => getManager()
+  handle(IPC.flip.bookLast, () => lastBook)
   handle(IPC.flip.state, () => m().state())
   handle(IPC.flip.refresh, async () => {
     await m().refresh()
@@ -91,8 +137,10 @@ async function setupForGame(def: GameDef): Promise<void> {
   if (def.id !== 'poe1') {
     feed.stop()
     m.stop()
+    stopBookReader()
     return
   }
+  onHotkeyAction('bookRead', () => readBookNow(), { keepKeys: true })
   unsubs.push(onLeaguesChanged(() => void m.onLeagueChanged()))
   unsubs.push(onSettingsChange(() => void m.onLeagueChanged()))
   // часы фида — раз в час для всех (учёт богатства, курс окна цены, флиппинг)
