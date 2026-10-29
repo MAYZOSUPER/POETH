@@ -4,7 +4,8 @@ import { OverlayWidget } from '../OverlayWidget'
 import { Icon } from '../Icon'
 import { useOverlayT } from '../useOverlayT'
 import type { OverlayWidgetDef } from '../registry'
-import { ago, countdown, hitName, priceAmount, rarityColor } from '../../panels/live/format'
+import { ago, countdown, priceAmount, rarityColor } from '../../panels/live/format'
+import { useHitName } from '../../panels/live/names'
 import { CoinIcon, Currency, CurrencyTipBody, TipAnchor } from '../../components/Currency'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { itemFacts, type ItemFact } from './itemFacts'
@@ -71,6 +72,8 @@ function Toast({ toast }: { toast: LiveToast }) {
   const open = (): void => void window.overlayApi.live.openHit(hit.key)
 
   const lang = useOverlayStore((s) => s.lang)
+  // имя как в игре (S31): сайт трейда отдаёт его на своём языке
+  const name = useHitName(hit, lang)
   const done = toast.state === 'done'
 
   return (
@@ -94,8 +97,8 @@ function Toast({ toast }: { toast: LiveToast }) {
               <span className="lv-meta-ago">· {ago(t, hit.at, now)}</span>
             </span>
           </div>
-          <div className="ui-toast__item" style={{ color: rarityColor(hit.rarity) }} title={hitName(hit)}>
-            {hitName(hit)}
+          <div className="ui-toast__item" style={{ color: rarityColor(hit.rarity) }} title={name}>
+            {name}
           </div>
           {!done && (
             <>
