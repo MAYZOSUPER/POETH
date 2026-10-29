@@ -188,6 +188,7 @@ export const flip: DomainDict = {
     'flip.book.edit': 'Поправить',
     'flip.book.done': 'Готово',
     'flip.book.tag': 'по стакану',
+    'flip.book.far': 'цена далеко от оценки — тот ли предмет и сторона?',
     'flip.book.toast.ok': 'Стакан считан, строк: {n}',
     'flip.book.toast.check': 'Стакан считан, строк: {n} — проверьте ячеек: {k} во вкладке «Обмен»',
     'set.hk.bookRead': 'Обмен: считать стакан (держите Alt над «Рыночным курсом»)'
@@ -377,6 +378,7 @@ export const flip: DomainDict = {
     'flip.book.edit': 'Edit',
     'flip.book.done': 'Done',
     'flip.book.tag': 'by the list',
+    'flip.book.far': 'far from the estimate — right item and side?',
     'flip.book.toast.ok': 'List read, lines: {n}',
     'flip.book.toast.check': 'List read, lines: {n} — check {k} cells in the Exchange tab',
     'set.hk.bookRead': 'Exchange: read the list (hold Alt over “Market Ratio”)'

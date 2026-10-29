@@ -54,20 +54,22 @@ export function GameCheck({
   const setGame = useFlipStore((st) => st.setGame)
   const books = useFlipStore((st) => st.books)
   const setBook = useFlipStore((st) => st.setBook)
-  const pending = useFlipStore((st) => st.pendingBook)
-  const setPending = useFlipStore((st) => st.setPendingBook)
+  const queue = useFlipStore((st) => st.pendingBooks)
+  const dropPending = useFlipStore((st) => st.dropPending)
   const lastBook = useFlipStore((st) => st.lastBook)
   const hotkey = useAppStore((st) => st.settings?.hotkeys.bookRead?.accel ?? '')
   const now = useNow()
 
-  // считанный стакан — к своей ноге, если её видно по цене; иначе спросим игрока (кнопки ниже)
+  // считанные стаканы — к своим ногам по очереди, если ногу видно по цене; иначе спросим игрока (кнопки ниже)
   useEffect(() => {
-    if (!pending) return
-    const side = matchLeg(pending.rows, r)
-    if (!side) return
-    setBook(gameKey(r, side), pending)
-    setPending(null)
-  }, [pending, r, setBook, setPending])
+    for (const b of queue) {
+      const side = matchLeg(b.rows, r)
+      if (!side) continue
+      setBook(gameKey(r, side), b)
+      dropPending(b.at)
+    }
+  }, [queue, r, setBook, dropPending])
+  const pending = queue.find((b) => !matchLeg(b.rows, r)) ?? null
 
   const book = (side: GameSide) => books[gameKey(r, side)] ?? null
   const text = (side: GameSide): string => game[gameKey(r, side)] ?? ''
@@ -83,7 +85,7 @@ export function GameCheck({
   const assign = (side: GameSide): void => {
     if (!pending) return
     setBook(gameKey(r, side), pending)
-    setPending(null)
+    dropPending(pending.at)
   }
   const perUnit = (v: number, side: GameSide): string => `${price(v, lang)} ${UNIT[r[side].base]}`
   const signed = (v: number, digits: number): string => `${v > 0 ? '+' : v < 0 ? '−' : ''}${fixed(Math.abs(v), digits, lang)}`
@@ -166,7 +168,7 @@ export function GameCheck({
               <button type="button" className="ui-btn ui-btn--sm" onClick={() => assign('sell')}>
                 {t('flip.book.asSell')}
               </button>
-              <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" onClick={() => setPending(null)}>
+              <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" onClick={() => dropPending(pending.at)}>
                 {t('flip.book.drop')}
               </button>
             </span>

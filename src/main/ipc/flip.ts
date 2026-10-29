@@ -80,7 +80,9 @@ function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
   })
 }
 
-let lastBook: FlipBookEvent | null = null
+/** последние чтения стакана (вкладка «Обмен» могла быть закрыта, пока игрок читал обе ноги) */
+const RECENT_BOOKS = 6
+let recentBooks: FlipBookEvent[] = []
 let bookBusy = false
 
 /**
@@ -92,8 +94,8 @@ async function readBookNow(): Promise<void> {
   const at = Date.now()
   const send = (result: BookReadResult, cursor: FlipBookEvent['cursor']): void => {
     const e: FlipBookEvent = { result, cursor }
-    // «уже читаем» не затирает последнее чтение
-    if (result.ok || result.reason !== 'busy') lastBook = e
+    // «уже читаем» не запоминаем
+    if (result.ok || result.reason !== 'busy') recentBooks = [...recentBooks, e].slice(-RECENT_BOOKS)
     broadcast(IPC.events.flipBook, e)
   }
   if (bookBusy) return send({ ok: false, reason: 'busy', at }, null)
@@ -119,7 +121,7 @@ async function readBookNow(): Promise<void> {
 
 function register(): void {
   const m = (): FlipManager => getManager()
-  handle(IPC.flip.bookLast, () => lastBook)
+  handle(IPC.flip.bookRecent, () => recentBooks)
   handle(IPC.flip.state, () => m().state())
   handle(IPC.flip.refresh, async () => {
     await m().refresh()

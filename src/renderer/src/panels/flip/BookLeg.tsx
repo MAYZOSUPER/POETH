@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { BookReading, BookRow, FlipRoute } from '@shared/types'
-import { allDoubts, bookLevels, editBook, confirmBook, isBookStale, legFill, unitsWithin, type BookSide } from '@shared/flip/book'
+import { allDoubts, bookLevels, confirmBook, editBook, isBookStale, legFill, topPrice, unitsWithin, type BookSide } from '@shared/flip/book'
 import { useT } from '../../i18n'
 import { FIco } from './ui'
 import { int, price, UNIT } from './format'
@@ -55,6 +55,9 @@ export function BookLeg({
   const stale = isBookStale(book, now)
   const mins = Math.max(0, Math.floor((now - book.at) / 60_000))
   const fill = legFill(r, side, book)
+  // лучшая строка в 1,6 раза дальше оценки — скорее всего, другой предмет или другая сторона обмена
+  const top = topPrice(book.rows, side)
+  const far = top !== null && r[side].price > 0 && Math.abs(Math.log(top / r[side].price)) > Math.log(1.6)
   const unit = UNIT[r[side].base]
   const units = r.units > 0 ? r.units : 1
 
@@ -78,6 +81,7 @@ export function BookLeg({
         </span>
         {stale && <span className="ui-tag ui-tag--warn">{t('flip.book.stale')}</span>}
         {doubts.length > 0 && <span className="ui-tag ui-tag--warn">{t('flip.book.check', { n: doubts.length })}</span>}
+        {far && <span className="ui-tag ui-tag--warn">{t('flip.book.far')}</span>}
       </div>
       <table className="ui-table fx-book__table">
         <thead>

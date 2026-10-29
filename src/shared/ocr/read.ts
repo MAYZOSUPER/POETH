@@ -114,6 +114,9 @@ function readCell(t: TableLayout, job: CellJob, ocr: OcrFn, count: { calls: numb
   return { read: cell(res.text, res.sure), tried, glyphs, fits }
 }
 
+/** Высота цифр, ниже которой ни одной ячейке не доверяем без проверки (на фикстурах 0,66× = 8 точек). */
+const MIN_SURE_GLYPH = 9
+
 /** Пороги сверки по образцам (подобраны на фикстурах 0,66×–3×; шум растёт на малом разрешении). */
 const DEMOTE_OWN = 0.5
 const DEMOTE_GAP = 0.2
@@ -217,10 +220,10 @@ export function readTable(img: Bitmap, hint: number, ocr: OcrFn): TableRead | nu
       stock: readCell(t, job(r.stock, r.parts.stock, 'stock'), ocr, count)
     }
   })
-  crossCheck(
-    t,
-    states.flatMap((r) => [r.want, r.have, r.stock])
-  )
+  const cells = states.flatMap((r) => [r.want, r.have, r.stock])
+  crossCheck(t, cells)
+  // мелкий шрифт (окно ниже ~800 точек): разметка может потерять строку целиком — всё на проверку игроку
+  if (t.glyphH < MIN_SURE_GLYPH) for (const c of cells) c.read = { ...c.read, sure: false }
   const rows = states.map((r): RowRead => ({ beyond: r.beyond, want: r.want.read, have: r.have.read, stock: r.stock.read }))
   return { rows, glyphH: t.glyphH, calls: count.calls }
 }

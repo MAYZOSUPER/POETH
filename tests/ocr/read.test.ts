@@ -76,6 +76,13 @@ describe('стакан со скриншота пользователя', () => 
     if (book && book.doubt.length) expect(bookUsable(book)).toBe(false)
   })
 
+  it('0,66× (окно ~720 точек): мелкий шрифт — ни одной уверенной ячейки, «не удалось прочитать»', () => {
+    const t = read(alt, 0.66)
+    expect(t?.rows.length).toBeGreaterThan(0)
+    expect(t!.rows.every((r) => !r.want.sure && !r.have.sure && !r.stock.sure)).toBe(true)
+    expect(bookFromTable(t!, 1000)).toBeNull()
+  })
+
   it('окно обмена без Alt — таблицы нет (курс посреди окна — не стакан)', () => {
     for (const k of [0.75, 1, 1.33, 2]) expect(read(exchange, k)).toBeNull()
   })

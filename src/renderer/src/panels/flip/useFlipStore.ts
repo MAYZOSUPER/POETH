@@ -5,7 +5,7 @@ import { DEFAULT_VIEW, type FlipView, type RateRange } from './view'
 // Состояние вкладки «Обмен» (компаньон, S13). Источник — main (flip:state + event:flip.state); фильтры простого
 // режима, сортировка, выбранная строка, окно графика и курсы, введённые из игры, — только вид, живут до перезапуска.
 // S28: стаканы из игры (хоткей bookRead → event:flip.book) — по ногам маршрута (тот же ключ, что у курса из игры);
-// считанный, но ещё не разложенный по ноге — pendingBook (нога ясна по цене — раскладывает GameCheck).
+// считанные, но ещё не разложенные по ногам — pendingBooks, по очереди (нога ясна по цене — раскладывает GameCheck).
 
 interface FlipStore {
   state: FlipState | null
@@ -19,9 +19,10 @@ interface FlipStore {
   /** стаканы из игры по ногам: ключ — gameKey */
   books: Record<string, BookReading>
   setBook: (key: string, reading: BookReading | null) => void
-  /** считан, нога ещё не выбрана */
-  pendingBook: BookReading | null
-  setPendingBook: (reading: BookReading | null) => void
+  /** считаны, нога ещё не выбрана — старые сначала */
+  pendingBooks: BookReading[]
+  /** убрать из очереди (разложен по ноге или игрок убрал) */
+  dropPending: (at: number) => void
   /** последнее событие хоткея (неудачи — подсказкой в карточке) */
   lastBook: FlipBookEvent | null
   init: () => void
@@ -50,8 +51,8 @@ export const useFlipStore = create<FlipStore>((set) => ({
       else delete books[key]
       return { books }
     }),
-  pendingBook: null,
-  setPendingBook: (pendingBook) => set({ pendingBook }),
+  pendingBooks: [],
+  dropPending: (at) => set((s) => ({ pendingBooks: s.pendingBooks.filter((b) => b.at !== at) })),
   lastBook: null,
   setGame: (key, text) =>
     set((s) => {
@@ -66,19 +67,16 @@ export const useFlipStore = create<FlipStore>((set) => ({
     const api = window.overlayApi
     api.onFlipState((state) => set({ state }))
     void api.flip.state().then((state) => set({ state }))
-    const onBook = (e: FlipBookEvent | null): void => {
-      if (!e) return
+    const onBook = (e: FlipBookEvent): void => {
       set((s) => {
-        // то же чтение второй раз (bookLast после события) не возвращаем в «ждёт ноги»
-        const seen = (r: BookReading): boolean => s.pendingBook?.at === r.at || Object.values(s.books).some((b) => b.at === r.at)
-        return {
-          lastBook: e,
-          pendingBook: e.result.ok && !seen(e.result.reading) ? e.result.reading : s.pendingBook
-        }
+        // то же чтение второй раз (bookRecent после события) в очередь не возвращаем
+        const r = e.result.ok ? e.result.reading : null
+        const seen = !r || s.pendingBooks.some((b) => b.at === r.at) || Object.values(s.books).some((b) => b.at === r.at)
+        return { lastBook: e, pendingBooks: seen ? s.pendingBooks : [...s.pendingBooks, r].slice(-6) }
       })
     }
     api.onFlipBook(onBook)
-    void api.flip.bookLast().then(onBook)
+    void api.flip.bookRecent().then((list) => list.forEach(onBook))
   },
   refresh: async () => {
     set({ busy: true })
