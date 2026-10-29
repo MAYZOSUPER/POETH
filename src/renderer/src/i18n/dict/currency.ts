@@ -1,5 +1,5 @@
 // Строки домена «понятная валюта» (S18): подсказка при наведении на валюту и курс, изменение курса словами.
-// Названия валют — не здесь: они из данных APT по языку (src/shared/currency), кроме золота.
+// Названия валют — не здесь: они из данных APT на языке клиента игры (src/shared/currency, S26), кроме золота.
 
 import type { DomainDict } from '../types'
 
@@ -18,6 +18,7 @@ export const currency: DomainDict = {
     'cur.slang.exalted': '«экз», «ex»',
     'cur.slang.mirror': '«зеркало», «mirror»',
     'cur.client': 'В английском клиенте игры — {name}.',
+    'cur.client.ru': 'В русском клиенте игры — {name}.',
     'cur.rate.what': 'Курс — сколько {chaos} дают за 1 {divine}.',
     'cur.rate.why': 'По нему сравнивают цены в div и в c: например, {div} div ≈ {chaos} c.',
     'cur.rate.now': 'Сейчас: 1 {divine} = {n} {chaos}.',
@@ -42,6 +43,7 @@ export const currency: DomainDict = {
     'cur.slang.exalted': '"ex", "exalt"',
     'cur.slang.mirror': '"mirror", "mirr"',
     'cur.client': 'In the English game client: {name}.',
+    'cur.client.ru': 'In the Russian game client: {name}.',
     'cur.rate.what': 'The rate is how many {chaos} you get for 1 {divine}.',
     'cur.rate.why': 'Use it to compare prices in div and in c: for example, {div} div ≈ {chaos} c.',
     'cur.rate.now': 'Now: 1 {divine} = {n} {chaos}.',
