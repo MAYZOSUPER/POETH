@@ -43,6 +43,19 @@ whose full history is kept in this repository.
   `common/src/route-processing`. Russian step texts are our own translation. Zone, quest, boss, NPC and
   item names (EN and RU) are facts read by `tools/leveling/game-names.mjs` from the PoE 1 client tables
   exported by [repoe-fork/dat-export](https://github.com/repoe-fork/dat-export) (pinned commit; names only).
+- **Passive skill tree data** — [grindinggear/skilltree-export](https://github.com/grindinggear/skilltree-export),
+  the official Path of Exile data export by Grinding Gear Games (tag `3.29.1`, pinned commit). POETH is not
+  affiliated with or endorsed by Grinding Gear Games. `tools/build-data/tree.mjs` reduces it to node ids, names,
+  stat texts, groups and orbits in `resources/data/poe1/build/tree.json`; no sprites or images are used.
+  Russian node names, string ids, stat ids and stat translations come from the
+  **[RePoE fork](https://github.com/repoe-fork/repoe-fork)** (MIT; pinned commit of repoe-fork.github.io), mastery
+  effects and ascendancy names — from the PoE 1 client tables exported by
+  [repoe-fork/dat-export](https://github.com/repoe-fork/dat-export) (pinned commit; facts only).
+- **Gem data** (`resources/data/poe1/build/gems.json`, `tools/build-data/gems.mjs`) — RePoE fork (MIT): names,
+  transfigured variants, level requirements; gem variant ids from the client tables (dat-export). Gem keys follow
+  the format of [Path of Building Community](https://github.com/PathOfBuildingCommunity/PathOfBuilding)
+  (MIT, Copyright (c) 2016 David Gowor; only the id convention, no code or data copied). Where to get a gem
+  (quest rewards and vendors by class) — from our exile-leveling dataset above.
 - **[tesseract.js-core](https://github.com/naptha/tesseract.js-core)** 6.1.2 — **Apache License 2.0**
   (Tesseract OCR compiled to WebAssembly). The unmodified `tesseract-core-simd-lstm.{js,wasm}` and the
   `eng.traineddata` model (`4.0.0_best_int` from [tessdata](https://github.com/naptha/tessdata), based on
