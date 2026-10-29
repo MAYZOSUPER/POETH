@@ -20,7 +20,8 @@ import { useOverlayStore } from '../../store/useOverlayStore'
 import { useOverlayT } from '../useOverlayT'
 import { PopupPositionButton } from '../PopupPosition'
 import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
-import { ageKey, currencyLabel, fmtNum, statParts, tierWordKey } from './format'
+import { ageKey, currencyLabel, fmtNum, tierWordKey } from './format'
+import { modText, modTextParts } from '@shared/poe1/pricecheck/filters/mod-text'
 import { CoinIcon, Currency, CurrencyTipBody, RateTipBody, TipAnchor, useCurrencyNames } from '../../components/Currency'
 import type { RuCase } from '@shared/currency'
 import { convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
@@ -229,15 +230,19 @@ function ItemHead({ item, captured, t }: { item: ParsedItem | null; captured: Ca
 
 // ---------------------------------------------------------------- строки свойств
 
-function ModRow({ f, expert, lang, t }: { f: StatFilter; expert: boolean; lang: UiLang; t: T }) {
+function ModRow({ f, rawText, expert, lang, t }: { f: StatFilter; rawText: string; expert: boolean; lang: UiLang; t: T }) {
   const touch = usePriceCheckStore((s) => s.touch)
   const pseudo = f.tag === 'pseudo'
   const tier = f.sources[0]?.modifier.info.tier
   // свойства предмета (броня, DPS, IIQ карты…) в данных — английские ключи; переводим по trade id
   const propKey = `pc1.prop.${f.tradeId[0]}`
   const propText = f.tag === 'property' || f.tradeId[0]?.startsWith('item.') ? t(propKey) : undefined
-  const parts = statParts(f, lang, propText && propText !== propKey ? propText : f.text)
-  const label = `${parts.before}${parts.value ?? ''}${parts.after}`
+  // S23: как в игре — «Adds 3 to 34 …», «+40 to …»; среднее «от # до #» (его ищет фильтр) — приглушённо
+  const shown = modText(propText && propText !== propKey ? propText : f.text, f.statRef, f.roll?.value, f.sources, rawText)
+  const parts = modTextParts(shown, (n) => fmtNum(n, lang))
+  const label = parts.map((p) => p.text).join('')
+  const avg = shown.avg !== undefined ? fmtNum(shown.avg, lang) : undefined
+  const from = !expert && typeof f.roll?.min === 'number' && !f.disabled ? fmtNum(f.roll.min, lang) : undefined
   const toggle = (): void => {
     f.disabled = !f.disabled
     touch()
@@ -280,11 +285,13 @@ function ModRow({ f, expert, lang, t }: { f: StatFilter; expert: boolean; lang: 
         <Icon name="check" />
       </button>
       <span className="ui-mod__text">
-        {parts.before}
-        {parts.value !== undefined && <b>{parts.value}</b>}
-        {parts.after}
-        {!expert && typeof f.roll?.min === 'number' && !f.disabled && (
-          <span className="ui-mod__from">{t('pc1.from', { n: fmtNum(f.roll.min, lang) })}</span>
+        {parts.map((p, i) => (p.num ? <b key={i}>{p.text}</b> : p.text))}
+        {avg !== undefined ? (
+          <span className="ui-mod__from">
+            {from !== undefined ? t('pc1.s23.avgFrom', { n: avg, min: from }) : t('pc1.s23.avg', { n: avg })}
+          </span>
+        ) : (
+          from !== undefined && <span className="ui-mod__from">{t('pc1.from', { n: from })}</span>
         )}
       </span>
       {tierTag}
@@ -418,7 +425,7 @@ function StatsBlocks({ preset, item, expert, lang, t }: { preset: FilterPreset; 
           </div>
           {head}
           {mods.map((f, i) => (
-            <ModRow key={`${f.statRef}-${i}`} f={f} expert={expert} lang={lang} t={t} />
+            <ModRow key={`${f.statRef}-${i}`} f={f} rawText={item.rawText} expert={expert} lang={lang} t={t} />
           ))}
           {unknown.map((u, i) => (
             <UnknownRow key={`u-${i}`} text={u.text} expert={expert} t={t} />
@@ -442,7 +449,7 @@ function StatsBlocks({ preset, item, expert, lang, t }: { preset: FilterPreset; 
             </span>
           </div>
           {pseudo.map((f, i) => (
-            <ModRow key={`${f.statRef}-${i}`} f={f} expert={expert} lang={lang} t={t} />
+            <ModRow key={`${f.statRef}-${i}`} f={f} rawText={item.rawText} expert={expert} lang={lang} t={t} />
           ))}
         </div>
       )}

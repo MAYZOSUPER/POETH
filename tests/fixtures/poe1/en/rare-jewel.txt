@@ -1,0 +1,17 @@
+Item Class: Jewels
+Rarity: Rare
+Grim Glisten
+Cobalt Jewel
+--------
+Item Level: 84
+--------
+{ Prefix Modifier "Vivid" (Tier: 1) — Life }
+7(5-7)% increased maximum Life
+{ Prefix Modifier "Mystic" (Tier: 1) — Damage, Caster }
+15(14-16)% increased Spell Damage
+{ Suffix Modifier "of Potency" (Tier: 1) — Damage, Critical }
++11(9-12)% to Global Critical Strike Multiplier
+{ Suffix Modifier "of Berserking" (Tier: 1) — Attack, Speed }
+4(3-5)% increased Attack Speed
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.

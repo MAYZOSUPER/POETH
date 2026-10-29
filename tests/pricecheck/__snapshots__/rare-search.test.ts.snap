@@ -1,0 +1,121 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-amulet: снимок (EN = RU) 1`] = `
+[
+  "база: Onyx Amulet",
+  "[x] +#% total Elemental Resistance ≥ 36",
+  "[ ] +# total to all Attributes",
+  "[x] +# total maximum Life ≥ 75",
+  "[x] +#% Global Critical Strike Multiplier ≥ 30",
+  "[ ] Adds # to # Physical Damage to Attacks",
+  "[ ] +# to Accuracy Rating",
+]
+`;
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-belt: снимок (EN = RU) 1`] = `
+[
+  "база: Stygian Vise",
+  "[x] +#% total Elemental Resistance ≥ 42",
+  "[x] +# total to Strength ≥ 38",
+  "[x] +# total maximum Life ≥ 99",
+  "[x] +# total maximum Energy Shield ≥ 34",
+  "[ ] Has # Abyssal Sockets",
+  "[ ] +# to Armour",
+  "[ ] #% increased Flask Effect Duration",
+]
+`;
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-boots: снимок (EN = RU) 1`] = `
+[
+  "база: Slink Boots",
+  "[x] Evasion Rating: # ≥ 445",
+  "[x] +#% total Elemental Resistance ≥ 66",
+  "[x] +# total maximum Life ≥ 80",
+  "[x] #% increased Movement Speed ≥ 30",
+  "[ ] #% increased Stun and Block Recovery",
+]
+`;
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-chest: снимок (EN = RU) 1`] = `
+[
+  "база: Zodiac Leather",
+  "[x] Evasion Rating: # ≥ 1868",
+  "[x] +#% total Elemental Resistance ≥ 55",
+  "[x] +# total maximum Life ≥ 110",
+  "[ ] Reflects # Physical Damage to Melee Attackers",
+  "[x] +#% chance to Suppress Spell Damage ≥ 17",
+]
+`;
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-gloves: снимок (EN = RU) 1`] = `
+[
+  "база: Slink Gloves",
+  "[x] Evasion Rating: # ≥ 322",
+  "[x] +#% total Elemental Resistance ≥ 36",
+  "[x] +# total maximum Life ≥ 70",
+  "[x] +#% total Attack Speed ≥ 11",
+  "[ ] Adds # to # Physical Damage to Attacks",
+  "[x] +#% chance to Suppress Spell Damage ≥ 7",
+]
+`;
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-helmet: снимок (EN = RU) 1`] = `
+[
+  "база: Hubris Circlet",
+  "[x] Energy Shield: # ≥ 144",
+  "[x] +#% total Elemental Resistance ≥ 36",
+  "[x] +# total maximum Life ≥ 60",
+  "[x] +# to Level of Socketed Minion Gems ≥ 1",
+  "[ ] +# to Accuracy Rating",
+  "[ ] #% increased Light Radius",
+]
+`;
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-jewel: снимок (EN = RU) 1`] = `
+[
+  "любая база: Jewel",
+  "[x] +#% total Attack Speed ≥ 3",
+  "[x] +#% Global Critical Strike Multiplier ≥ 9",
+  "[x] #% increased Spell Damage ≥ 14",
+  "[x] #% increased maximum Life ≥ 6",
+]
+`;
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-ring: снимок (EN = RU) 1`] = `
+[
+  "база: Unset Ring",
+  "[x] +#% total Elemental Resistance ≥ 66",
+  "[x] +# total maximum Mana ≥ 40",
+  "[x] +#% total Cast Speed ≥ 9",
+  "[ ] Has 1 Socket",
+  "[ ] Adds # to # Lightning Damage to Attacks",
+  "[ ] +# to Evasion Rating",
+]
+`;
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-sword: снимок (EN = RU) 1`] = `
+[
+  "база: Vaal Greatsword",
+  "[x] Physical DPS: # ≥ 790",
+  "[ ] Attacks per Second: #",
+  "[ ] Critical Strike Chance: #%",
+  "[x] +#% Global Critical Strike Multiplier ≥ 35",
+  "[ ] +# to Accuracy Rating",
+  "[ ] +# to Accuracy Rating",
+]
+`;
+
+exports[`S23: галочки и база редкого после Ctrl+D > rare-wand: снимок (EN = RU) 1`] = `
+[
+  "база: Imbued Wand",
+  "[ ] Physical DPS: #",
+  "[ ] Attacks per Second: #",
+  "[ ] Critical Strike Chance: #%",
+  "[x] +#% total Cast Speed ≥ 18",
+  "[x] +#% Global Critical Strike Multiplier ≥ 25",
+  "[x] #% increased Spell Damage ≥ 108",
+  "[ ] #% increased Mana Regeneration Rate",
+  "[x] +# to Level of all Cold Spell Skill Gems ≥ 1",
+  "[ ] Adds # to # Cold Damage to Spells",
+]
+`;

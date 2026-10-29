@@ -1,0 +1,33 @@
+Item Class: Wands
+Rarity: Rare
+Doom Song
+Imbued Wand
+--------
+Wand
+Physical Damage: 29-53
+Critical Strike Chance: 7.00%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 59
+Int: 188
+--------
+Sockets: B-B-B 
+--------
+Item Level: 84
+--------
+{ Implicit Modifier — Damage, Caster }
+35(33-37)% increased Spell Damage (implicit)
+--------
+{ Prefix Modifier "Glyphic" (Tier: 3) — Damage, Caster }
+79(75-79)% increased Spell Damage
+{ Prefix Modifier "Frost Weaver's" (Tier: 2) — Cold, Gem }
++1 to Level of all Cold Spell Skill Gems
+{ Prefix Modifier "Frigid" (Tier: 4) — Damage, Elemental, Cold, Caster }
+Adds 28(24-32) to 49(45-56) Cold Damage to Spells
+{ Suffix Modifier "of Expertise" (Tier: 3) — Caster, Speed }
+19(18-20)% increased Cast Speed
+{ Suffix Modifier "of Unmaking" (Tier: 3) — Damage, Critical }
++27(25-29)% to Global Critical Strike Multiplier
+{ Suffix Modifier "of Elation" (Tier: 3) — Mana }
+48(41-55)% increased Mana Regeneration Rate

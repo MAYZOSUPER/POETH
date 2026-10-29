@@ -1,0 +1,25 @@
+Item Class: Rings
+Rarity: Rare
+Death Nail
+Unset Ring
+--------
+Requirements:
+Level: 48
+--------
+Item Level: 66
+--------
+{ Implicit Modifier }
+Has 1 Socket (implicit)
+--------
+{ Prefix Modifier "Buzzing" (Tier: 5) — Damage, Elemental, Lightning, Attack }
+Adds 3(2-3) to 34(32-34) Lightning Damage to Attacks
+{ Prefix Modifier "Agile" (Tier: 5) — Defences, Evasion }
++40(36-60) to Evasion Rating
+{ Prefix Modifier "Aqua" (Tier: 6) — Mana }
++44(40-44) to maximum Mana
+{ Suffix Modifier "of Talent" (Tier: 2) — Caster, Speed }
+11(9-12)% increased Cast Speed
+{ Suffix Modifier "of the Volcano" (Tier: 3) — Elemental, Fire, Resistance }
++36(36-41)% to Fire Resistance
+{ Suffix Modifier "of Thunder" (Tier: 4) — Elemental, Lightning, Resistance }
++35(30-35)% to Lightning Resistance

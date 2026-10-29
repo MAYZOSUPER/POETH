@@ -465,9 +465,6 @@ exports[`запрос по каждой фикстуре > adv-ring: снапш�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.ring",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -524,6 +521,7 @@ exports[`запрос по каждой фикстуре > adv-ring: снапш�
             "status": {
               "option": "available",
             },
+            "type": "Coral Ring",
           },
           "sort": {
             "price": "asc",
@@ -664,9 +662,6 @@ exports[`запрос по каждой фикстуре > adv-weapon: снап�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.onemace",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -711,6 +706,7 @@ exports[`запрос по каждой фикстуре > adv-weapon: снап�
             "status": {
               "option": "available",
             },
+            "type": "Bladed Mace",
           },
           "sort": {
             "price": "asc",
@@ -1092,9 +1088,6 @@ exports[`запрос по каждой фикстуре > armour-05: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "armour.helmet",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -1112,7 +1105,7 @@ exports[`запрос по каждой фикстуре > armour-05: снапш
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_mana",
                     "value": {
                       "min": 34,
@@ -1132,6 +1125,7 @@ exports[`запрос по каждой фикстуре > armour-05: снапш
             "status": {
               "option": "available",
             },
+            "type": "Lunaris Circlet",
           },
           "sort": {
             "price": "asc",
@@ -1184,9 +1178,6 @@ exports[`запрос по каждой фикстуре > armour-06: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "armour.helmet",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -1231,6 +1222,7 @@ exports[`запрос по каждой фикстуре > armour-06: снапш
             "status": {
               "option": "available",
             },
+            "type": "Reaver Helmet",
           },
           "sort": {
             "price": "asc",
@@ -1283,9 +1275,6 @@ exports[`запрос по каждой фикстуре > armour-07: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "armour.helmet",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -1324,7 +1313,7 @@ exports[`запрос по каждой фикстуре > armour-07: снапш
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_3604946673",
                     "value": {
                       "min": 1,
@@ -1337,6 +1326,7 @@ exports[`запрос по каждой фикстуре > armour-07: снапш
             "status": {
               "option": "available",
             },
+            "type": "Reaver Helmet",
           },
           "sort": {
             "price": "asc",
@@ -4321,9 +4311,6 @@ exports[`запрос по каждой фикстуре > jewellery-01: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.ring",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -4341,7 +4328,7 @@ exports[`запрос по каждой фикстуре > jewellery-01: сна�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_energy_shield",
                     "value": {
                       "min": 14,
@@ -4387,6 +4374,7 @@ exports[`запрос по каждой фикстуре > jewellery-01: сна�
             "status": {
               "option": "available",
             },
+            "type": "Coral Ring",
           },
           "sort": {
             "price": "asc",
@@ -4494,9 +4482,6 @@ exports[`запрос по каждой фикстуре > jewellery-02: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.belt",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -4507,14 +4492,14 @@ exports[`запрос по каждой фикстуре > jewellery-02: сна�
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_mana",
                     "value": {
                       "min": 16,
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_energy_shield",
                     "value": {
                       "min": 20,
@@ -4553,6 +4538,7 @@ exports[`запрос по каждой фикстуре > jewellery-02: сна�
             "status": {
               "option": "available",
             },
+            "type": "Chain Belt",
           },
           "sort": {
             "price": "asc",
@@ -4660,9 +4646,6 @@ exports[`запрос по каждой фикстуре > jewellery-03: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.amulet",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -4708,7 +4691,7 @@ exports[`запрос по каждой фикстуре > jewellery-03: сна�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_energy_shield",
                     "value": {
                       "min": 7,
@@ -4733,6 +4716,7 @@ exports[`запрос по каждой фикстуре > jewellery-03: сна�
             "status": {
               "option": "available",
             },
+            "type": "Jade Amulet",
           },
           "sort": {
             "price": "asc",
@@ -4840,9 +4824,6 @@ exports[`запрос по каждой фикстуре > jewellery-04: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.ring",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -4874,7 +4855,7 @@ exports[`запрос по каждой фикстуре > jewellery-04: сна�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_energy_shield",
                     "value": {
                       "min": 36,
@@ -4913,6 +4894,7 @@ exports[`запрос по каждой фикстуре > jewellery-04: сна�
             "status": {
               "option": "available",
             },
+            "type": "Amethyst Ring",
           },
           "sort": {
             "price": "asc",
@@ -5020,9 +5002,6 @@ exports[`запрос по каждой фикстуре > jewellery-05: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.ring",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -5047,7 +5026,7 @@ exports[`запрос по каждой фикстуре > jewellery-05: сна�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_mana",
                     "value": {
                       "min": 15,
@@ -5107,6 +5086,7 @@ exports[`запрос по каждой фикстуре > jewellery-05: сна�
             "status": {
               "option": "available",
             },
+            "type": "Iron Ring",
           },
           "sort": {
             "price": "asc",
@@ -5214,9 +5194,6 @@ exports[`запрос по каждой фикстуре > jewellery-06: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.ring",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -5241,7 +5218,7 @@ exports[`запрос по каждой фикстуре > jewellery-06: сна�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_mana",
                     "value": {
                       "min": 23,
@@ -5287,6 +5264,7 @@ exports[`запрос по каждой фикстуре > jewellery-06: сна�
             "status": {
               "option": "available",
             },
+            "type": "Paua Ring",
           },
           "sort": {
             "price": "asc",
@@ -5394,9 +5372,6 @@ exports[`запрос по каждой фикстуре > jewellery-07: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.amulet",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -5414,7 +5389,7 @@ exports[`запрос по каждой фикстуре > jewellery-07: сна�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_increased_energy_shield",
                     "value": {
                       "min": 16,
@@ -5446,6 +5421,7 @@ exports[`запрос по каждой фикстуре > jewellery-07: сна�
             "status": {
               "option": "available",
             },
+            "type": "Lapis Amulet",
           },
           "sort": {
             "price": "asc",
@@ -5553,9 +5529,6 @@ exports[`запрос по каждой фикстуре > jewellery-08: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.belt",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -5587,7 +5560,7 @@ exports[`запрос по каждой фикстуре > jewellery-08: сна�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_energy_shield",
                     "value": {
                       "min": 37,
@@ -5612,6 +5585,7 @@ exports[`запрос по каждой фикстуре > jewellery-08: сна�
             "status": {
               "option": "available",
             },
+            "type": "Chain Belt",
           },
           "sort": {
             "price": "asc",
@@ -5719,9 +5693,6 @@ exports[`запрос по каждой фикстуре > jewellery-09: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.amulet",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -5739,7 +5710,7 @@ exports[`запрос по каждой фикстуре > jewellery-09: сна�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_energy_shield",
                     "value": {
                       "min": 21,
@@ -5778,6 +5749,7 @@ exports[`запрос по каждой фикстуре > jewellery-09: сна�
             "status": {
               "option": "available",
             },
+            "type": "Gold Amulet",
           },
           "sort": {
             "price": "asc",
@@ -5885,9 +5857,6 @@ exports[`запрос по каждой фикстуре > jewellery-10: сна�
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "accessory.belt",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -5905,14 +5874,14 @@ exports[`запрос по каждой фикстуре > jewellery-10: сна�
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_mana",
                     "value": {
                       "min": 61,
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_energy_shield",
                     "value": {
                       "min": 18,
@@ -5944,6 +5913,7 @@ exports[`запрос по каждой фикстуре > jewellery-10: сна�
             "status": {
               "option": "available",
             },
+            "type": "Heavy Belt",
           },
           "sort": {
             "price": "asc",
@@ -6883,6 +6853,1737 @@ exports[`запрос по каждой фикстуре > map-10: снапшо�
               "discriminator": "blighted",
               "option": "60607",
             },
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-amulet: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_elemental_resistance",
+                    "value": {
+                      "min": 36,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_total_cold_resistance",
+                    "value": {
+                      "min": 36,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_total_all_attributes",
+                    "value": {
+                      "min": 12,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_life",
+                    "value": {
+                      "min": 75,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_global_critical_strike_multiplier",
+                    "value": {
+                      "min": 30,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_3032590688",
+                    "value": {
+                      "min": 7,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_803737631",
+                    "value": {
+                      "min": 166,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+              {
+                "disabled": true,
+                "filters": [
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_empty_prefix_mods",
+                    "value": {
+                      "max": 1,
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_crafted_prefix_mods",
+                    "value": {
+                      "min": 1,
+                    },
+                  },
+                ],
+                "type": "count",
+                "value": {
+                  "max": 1,
+                  "min": 1,
+                },
+              },
+              {
+                "disabled": true,
+                "filters": [
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_empty_prefix_mods",
+                    "value": {
+                      "max": 1,
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_affix_mods",
+                    "value": {
+                      "min": 6,
+                    },
+                  },
+                ],
+                "type": "count",
+                "value": {
+                  "max": 1,
+                  "min": 1,
+                },
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Onyx Amulet",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+    {
+      "id": "filters.preset_base_item",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "ilvl": {
+                    "min": 84,
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                  "split": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "implicit.stat_1379411836",
+                    "value": {
+                      "min": 13,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Onyx Amulet",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-belt: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_elemental_resistance",
+                    "value": {
+                      "min": 42,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_total_fire_resistance",
+                    "value": {
+                      "min": 42,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_strength",
+                    "value": {
+                      "min": 38,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_life",
+                    "value": {
+                      "min": 99,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_energy_shield",
+                    "value": {
+                      "min": 34,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "implicit.stat_3527617737",
+                    "value": {
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_809229260",
+                    "value": {
+                      "min": 289,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_3741323227",
+                    "value": {
+                      "min": 16,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Stygian Vise",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+    {
+      "id": "filters.preset_base_item",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "ilvl": {
+                    "min": 86,
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                  "split": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "implicit.stat_3527617737",
+                    "value": {
+                      "min": 1,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Stygian Vise",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-boots: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "armour_filters": {
+                "filters": {
+                  "ev": {
+                    "min": 445,
+                  },
+                },
+              },
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_elemental_resistance",
+                    "value": {
+                      "min": 66,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_total_fire_resistance",
+                    "value": {
+                      "min": 42,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_life",
+                    "value": {
+                      "min": 80,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_increased_movement_speed",
+                    "value": {
+                      "min": 30,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_2511217560",
+                    "value": {
+                      "min": 29,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Slink Boots",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+    {
+      "id": "filters.preset_base_item",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "ilvl": {
+                    "min": 83,
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                  "split": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Slink Boots",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-chest: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "armour_filters": {
+                "filters": {
+                  "ev": {
+                    "min": 1868,
+                  },
+                },
+              },
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_elemental_resistance",
+                    "value": {
+                      "min": 55,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_total_lightning_resistance",
+                    "value": {
+                      "min": 30,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_life",
+                    "value": {
+                      "min": 110,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_3767873853",
+                    "value": {
+                      "min": 25,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "explicit.stat_3680664274",
+                    "value": {
+                      "min": 17,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Zodiac Leather",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+    {
+      "id": "filters.preset_base_item",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "armour_filters": {
+                "filters": {
+                  "base_defence_percentile": {
+                    "min": 50,
+                  },
+                },
+              },
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "ilvl": {
+                    "min": 86,
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                  "split": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Zodiac Leather",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-gloves: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "armour_filters": {
+                "filters": {
+                  "ev": {
+                    "min": 322,
+                  },
+                },
+              },
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_elemental_resistance",
+                    "value": {
+                      "min": 36,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_total_cold_resistance",
+                    "value": {
+                      "min": 36,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_life",
+                    "value": {
+                      "min": 70,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_attack_speed",
+                    "value": {
+                      "min": 11,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_3032590688",
+                    "value": {
+                      "min": 8,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "explicit.stat_3680664274",
+                    "value": {
+                      "min": 7,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Slink Gloves",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+    {
+      "id": "filters.preset_base_item",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "armour_filters": {
+                "filters": {
+                  "base_defence_percentile": {
+                    "min": 49,
+                  },
+                },
+              },
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "ilvl": {
+                    "min": 84,
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                  "split": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Slink Gloves",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-helmet: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "armour_filters": {
+                "filters": {
+                  "es": {
+                    "min": 144,
+                  },
+                },
+              },
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_elemental_resistance",
+                    "value": {
+                      "min": 36,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_total_fire_resistance",
+                    "value": {
+                      "min": 36,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_life",
+                    "value": {
+                      "min": 60,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "explicit.stat_3604946673",
+                    "value": {
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_803737631",
+                    "value": {
+                      "min": 108,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_1263695895",
+                    "value": {
+                      "min": 15,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+              {
+                "disabled": true,
+                "filters": [
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_empty_prefix_mods",
+                    "value": {
+                      "max": 1,
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_crafted_prefix_mods",
+                    "value": {
+                      "min": 1,
+                    },
+                  },
+                ],
+                "type": "count",
+                "value": {
+                  "max": 1,
+                  "min": 1,
+                },
+              },
+              {
+                "disabled": true,
+                "filters": [
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_empty_prefix_mods",
+                    "value": {
+                      "max": 1,
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_affix_mods",
+                    "value": {
+                      "min": 6,
+                    },
+                  },
+                ],
+                "type": "count",
+                "value": {
+                  "max": 1,
+                  "min": 1,
+                },
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Hubris Circlet",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+    {
+      "id": "filters.preset_base_item",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "armour_filters": {
+                "filters": {
+                  "base_defence_percentile": {
+                    "min": 49,
+                  },
+                },
+              },
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "ilvl": {
+                    "min": 85,
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                  "split": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Hubris Circlet",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-jewel: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "category": {
+                    "option": "jewel",
+                  },
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_attack_speed",
+                    "value": {
+                      "min": 3,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_global_critical_strike_multiplier",
+                    "value": {
+                      "min": 9,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_increased_spell_damage",
+                    "value": {
+                      "min": 14,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "explicit.stat_983749596",
+                    "value": {
+                      "min": 6,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-ring: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_elemental_resistance",
+                    "value": {
+                      "min": 66,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_total_fire_resistance",
+                    "value": {
+                      "min": 36,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_mana",
+                    "value": {
+                      "min": 40,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_cast_speed",
+                    "value": {
+                      "min": 9,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "implicit.stat_4077843608",
+                    "value": {
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_1754445556",
+                    "value": {
+                      "min": 17,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_2144192055",
+                    "value": {
+                      "min": 36,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Unset Ring",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-sword: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+              "weapon_filters": {
+                "filters": {
+                  "pdps": {
+                    "min": 790,
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_global_critical_strike_multiplier",
+                    "value": {
+                      "min": 35,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "implicit.stat_691932474",
+                    "value": {
+                      "min": 470,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_691932474",
+                    "value": {
+                      "min": 279,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+              {
+                "disabled": true,
+                "filters": [
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_empty_prefix_mods",
+                    "value": {
+                      "max": 1,
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_crafted_prefix_mods",
+                    "value": {
+                      "min": 1,
+                    },
+                  },
+                ],
+                "type": "count",
+                "value": {
+                  "max": 1,
+                  "min": 1,
+                },
+              },
+              {
+                "disabled": true,
+                "filters": [
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_empty_prefix_mods",
+                    "value": {
+                      "max": 1,
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_number_of_affix_mods",
+                    "value": {
+                      "min": 6,
+                    },
+                  },
+                ],
+                "type": "count",
+                "value": {
+                  "max": 1,
+                  "min": 1,
+                },
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Vaal Greatsword",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+    {
+      "id": "filters.preset_base_item",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "ilvl": {
+                    "min": 84,
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                  "split": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "implicit.stat_691932474",
+                    "value": {
+                      "min": 470,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Vaal Greatsword",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+  ],
+}
+`;
+
+exports[`запрос по каждой фикстуре > rare-wand: снапшот JSON запроса 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    {
+      "id": "filters.preset_pseudo",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_total_cast_speed",
+                    "value": {
+                      "min": 18,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_global_critical_strike_multiplier",
+                    "value": {
+                      "min": 25,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "pseudo.pseudo_increased_spell_damage",
+                    "value": {
+                      "min": 108,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "pseudo.pseudo_increased_mana_regen",
+                    "value": {
+                      "min": 43,
+                    },
+                  },
+                  {
+                    "disabled": false,
+                    "id": "explicit.stat_2254480358",
+                    "value": {
+                      "min": 1,
+                    },
+                  },
+                  {
+                    "disabled": true,
+                    "id": "explicit.stat_2469416729",
+                    "value": {
+                      "min": 34,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Imbued Wand",
+          },
+          "sort": {
+            "price": "asc",
+          },
+        },
+        "league": "Standard",
+      },
+    },
+    {
+      "id": "filters.preset_base_item",
+      "request": {
+        "api": "trade",
+        "body": {
+          "query": {
+            "filters": {
+              "misc_filters": {
+                "filters": {
+                  "corrupted": {
+                    "option": "false",
+                  },
+                  "fractured_item": {
+                    "option": "false",
+                  },
+                  "ilvl": {
+                    "min": 84,
+                  },
+                  "mirrored": {
+                    "option": "false",
+                  },
+                  "split": {
+                    "option": "false",
+                  },
+                },
+              },
+              "trade_filters": {
+                "filters": {
+                  "collapse": {
+                    "option": "true",
+                  },
+                },
+              },
+              "type_filters": {
+                "filters": {
+                  "rarity": {
+                    "option": "nonunique",
+                  },
+                },
+              },
+            },
+            "stats": [
+              {
+                "filters": [
+                  {
+                    "disabled": false,
+                    "id": "implicit.stat_2974417149",
+                    "value": {
+                      "min": 34,
+                    },
+                  },
+                ],
+                "type": "and",
+              },
+            ],
+            "status": {
+              "option": "available",
+            },
+            "type": "Imbued Wand",
           },
           "sort": {
             "price": "asc",
@@ -8989,9 +10690,6 @@ exports[`запрос по каждой фикстуре > weapon-01: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.onemace",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -9023,7 +10721,7 @@ exports[`запрос по каждой фикстуре > weapon-01: снапш
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_829382474",
                     "value": {
                       "min": 1,
@@ -9050,6 +10748,7 @@ exports[`запрос по каждой фикстуре > weapon-01: снапш
             "status": {
               "option": "available",
             },
+            "type": "Bladed Mace",
           },
           "sort": {
             "price": "asc",
@@ -9145,9 +10844,6 @@ exports[`запрос по каждой фикстуре > weapon-02: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.onesword",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -9192,6 +10888,7 @@ exports[`запрос по каждой фикстуре > weapon-02: снапш
             "status": {
               "option": "available",
             },
+            "type": "Spiraled Foil",
           },
           "sort": {
             "price": "asc",
@@ -9287,9 +10984,6 @@ exports[`запрос по каждой фикстуре > weapon-03: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.twomace",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -9334,6 +11028,7 @@ exports[`запрос по каждой фикстуре > weapon-03: снапш
             "status": {
               "option": "available",
             },
+            "type": "Colossus Mallet",
           },
           "sort": {
             "price": "asc",
@@ -9429,9 +11124,6 @@ exports[`запрос по каждой фикстуре > weapon-04: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.wand",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -9442,7 +11134,7 @@ exports[`запрос по каждой фикстуре > weapon-04: снапш
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_mana",
                     "value": {
                       "min": 120,
@@ -9483,6 +11175,7 @@ exports[`запрос по каждой фикстуре > weapon-04: снапш
             "status": {
               "option": "available",
             },
+            "type": "Convoking Wand",
           },
           "sort": {
             "price": "asc",
@@ -9578,9 +11271,6 @@ exports[`запрос по каждой фикстуре > weapon-05: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.twomace",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -9605,14 +11295,14 @@ exports[`запрос по каждой фикстуре > weapon-05: снапш
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_829382474",
                     "value": {
                       "min": 1,
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_2843100721",
                     "value": {
                       "min": 1,
@@ -9639,6 +11329,7 @@ exports[`запрос по каждой фикстуре > weapon-05: снапш
             "status": {
               "option": "available",
             },
+            "type": "Dread Maul",
           },
           "sort": {
             "price": "asc",
@@ -9734,9 +11425,6 @@ exports[`запрос по каждой фикстуре > weapon-06: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.dagger",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -9761,7 +11449,7 @@ exports[`запрос по каждой фикстуре > weapon-06: снапш
                     },
                   },
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "explicit.stat_339179093",
                     "value": {
                       "min": 2,
@@ -9774,6 +11462,7 @@ exports[`запрос по каждой фикстуре > weapon-06: снапш
             "status": {
               "option": "available",
             },
+            "type": "Gutting Knife",
           },
           "sort": {
             "price": "asc",
@@ -9869,9 +11558,6 @@ exports[`запрос по каждой фикстуре > weapon-07: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.twosword",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -9916,6 +11602,7 @@ exports[`запрос по каждой фикстуре > weapon-07: снапш
             "status": {
               "option": "available",
             },
+            "type": "Wraith Sword",
           },
           "sort": {
             "price": "asc",
@@ -10011,9 +11698,6 @@ exports[`запрос по каждой фикстуре > weapon-08: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.wand",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -10031,7 +11715,7 @@ exports[`запрос по каждой фикстуре > weapon-08: снапш
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_cast_speed",
                     "value": {
                       "min": 13,
@@ -10065,6 +11749,7 @@ exports[`запрос по каждой фикстуре > weapon-08: снапш
             "status": {
               "option": "available",
             },
+            "type": "Omen Wand",
           },
           "sort": {
             "price": "asc",
@@ -10160,9 +11845,6 @@ exports[`запрос по каждой фикстуре > weapon-09: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.claw",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -10221,6 +11903,7 @@ exports[`запрос по каждой фикстуре > weapon-09: снапш
             "status": {
               "option": "available",
             },
+            "type": "Great White Claw",
           },
           "sort": {
             "price": "asc",
@@ -10316,9 +11999,6 @@ exports[`запрос по каждой фикстуре > weapon-10: снапш
               },
               "type_filters": {
                 "filters": {
-                  "category": {
-                    "option": "weapon.wand",
-                  },
                   "rarity": {
                     "option": "nonunique",
                   },
@@ -10329,7 +12009,7 @@ exports[`запрос по каждой фикстуре > weapon-10: снапш
               {
                 "filters": [
                   {
-                    "disabled": true,
+                    "disabled": false,
                     "id": "pseudo.pseudo_total_cast_speed",
                     "value": {
                       "min": 6,
@@ -10363,6 +12043,7 @@ exports[`запрос по каждой фикстуре > weapon-10: снапш
             "status": {
               "option": "available",
             },
+            "type": "Imbued Wand",
           },
           "sort": {
             "price": "asc",

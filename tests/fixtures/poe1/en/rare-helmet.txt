@@ -1,0 +1,26 @@
+Item Class: Helmets
+Rarity: Rare
+Corpse Crown
+Hubris Circlet
+--------
+Energy Shield: 134 (augmented)
+--------
+Requirements:
+Level: 69
+Int: 154
+--------
+Sockets: B-B-B-G 
+--------
+Item Level: 85
+--------
+{ Prefix Modifier "Seething" (Tier: 3) — Defences, Energy Shield }
++48(39-49) to maximum Energy Shield
+{ Prefix Modifier "Rotund" (Tier: 5) — Life }
++65(60-69) to maximum Life
+{ Suffix Modifier "of the Taskmaster" (Tier: 1) — Minion, Gem }
++1 to Level of Socketed Minion Gems
+{ Suffix Modifier "of the Volcano" (Tier: 3) — Elemental, Fire, Resistance }
++38(36-41)% to Fire Resistance
+{ Suffix Modifier "of the Sun" (Tier: 2) — Attack }
++121(101-130) to Accuracy Rating
+15% increased Light Radius
