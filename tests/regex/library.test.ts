@@ -13,6 +13,7 @@ import {
   removeEntry,
   upsertEntry
 } from '@shared/regex'
+import { legacyGameLang } from '@shared/regex/library'
 import { LANGS, loadMapData } from './helpers'
 
 // Библиотека строк: нормализация файла, слоты хоткеев, экспорт/импорт; пресеты для новичков.
@@ -27,26 +28,24 @@ describe('библиотека', () => {
     for (const raw of [null, 42, 'x', [], { entries: 'nope' }]) {
       const lib = normalizeLibrary(raw, ids())
       expect(lib.entries).toEqual([])
-      expect(lib.prefs.gameLang).toBe('auto')
       expect(lib.prefs.page).toBe('maps')
+      expect(legacyGameLang(raw)).toBeNull()
     }
   })
 
   it('отбрасывает пустые и слишком длинные строки, чинит дубли id и слотов', () => {
-    const lib = normalizeLibrary(
-      {
-        entries: [
-          { id: 'a', name: 'A', text: 'abc', game: 'poe1', slot: 1 },
-          { id: 'a', name: 'B', text: 'def', game: 'poe1', slot: 1 },
-          { id: 'c', name: '', text: 'x', game: 'poe1' },
-          { id: 'd', name: 'D', text: 'x'.repeat(251), game: 'poe1' },
-          { id: 'e', name: 'E', text: 'ghi', game: 'poe2', slot: 1 },
-          { id: 'f', name: 'F', text: 'jkl', game: 'poe9', slot: 7 }
-        ],
-        prefs: { gameLang: 'ru', page: 'vendor', maps: { thresholds: { quantity: 80.4, rarity: -5 } } }
-      },
-      ids()
-    )
+    const raw = {
+      entries: [
+        { id: 'a', name: 'A', text: 'abc', game: 'poe1', slot: 1 },
+        { id: 'a', name: 'B', text: 'def', game: 'poe1', slot: 1 },
+        { id: 'c', name: '', text: 'x', game: 'poe1' },
+        { id: 'd', name: 'D', text: 'x'.repeat(251), game: 'poe1' },
+        { id: 'e', name: 'E', text: 'ghi', game: 'poe2', slot: 1 },
+        { id: 'f', name: 'F', text: 'jkl', game: 'poe9', slot: 7 }
+      ],
+      prefs: { gameLang: 'ru', page: 'vendor', maps: { thresholds: { quantity: 80.4, rarity: -5 } } }
+    }
+    const lib = normalizeLibrary(raw, ids())
     expect(lib.entries.map((e) => [e.id, e.slot ?? null])).toEqual([
       ['a', 1],
       ['id1', null],
@@ -54,7 +53,9 @@ describe('библиотека', () => {
       ['f', null]
     ])
     expect(lib.entries[3].game).toBe('poe1')
-    expect(lib.prefs.gameLang).toBe('ru')
+    // язык клиента с S26 — общая настройка: в библиотеке его нет, старое значение читается для переноса
+    expect('gameLang' in lib.prefs).toBe(false)
+    expect(legacyGameLang(raw)).toBe('ru')
     expect(lib.prefs.page).toBe('vendor')
     expect(lib.prefs.maps.thresholds).toEqual({ quantity: 80 })
   })
@@ -94,8 +95,9 @@ describe('библиотека', () => {
   })
 
   it('patchPrefs нормализует', () => {
-    const lib = patchPrefs(emptyLibrary(), { gameLang: 'en', page: 'library' })
-    expect(lib.prefs).toMatchObject({ gameLang: 'en', page: 'library' })
+    const lib = patchPrefs(emptyLibrary(), { page: 'library', gameLang: 'en' } as never)
+    expect(lib.prefs).toMatchObject({ page: 'library' })
+    expect('gameLang' in lib.prefs).toBe(false)
   })
 })
 

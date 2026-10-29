@@ -139,8 +139,7 @@ export interface RegexEntry {
 export type RegexPage = 'maps' | 'vendor' | 'library'
 
 export interface RegexPrefs {
-  /** Язык клиента игры: 'auto' = как язык интерфейса. */
-  gameLang: 'auto' | RegexLang
+  // язык клиента игры с S26 — общая настройка Settings.gameLang (старое prefs.gameLang переносит main)
   page: RegexPage
   maps: MapQuery
   vendor: VendorQuery

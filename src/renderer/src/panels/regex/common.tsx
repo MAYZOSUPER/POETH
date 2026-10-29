@@ -4,16 +4,15 @@ import { REGEX_LIMIT } from '@shared/regex'
 import { useLang, useT } from '../../i18n'
 import { useAppStore } from '../../store/useAppStore'
 import { useRegexStore } from '../../store/useRegexStore'
+import { useGameLang as useClientLang } from '../../gameLang'
 import { Ico } from './Ico'
 
 // Общие куски вкладки Regex по макету «Золото компаса»: язык клиента игры, режим простой/экспертный,
 // сегменты, переключатель, блок-карточка, счётчик 250 и блок готовой строки.
 
-/** Язык клиента игры для строки: настройка вкладки или язык интерфейса. */
+/** Язык клиента игры для строки — общая настройка (S26): выбор, узнанный по игре или язык интерфейса. */
 export function useGameLang(): RegexLang {
-  const uiLang = useLang()
-  const pref = useRegexStore((s) => s.prefs.gameLang)
-  return pref === 'auto' ? uiLang : pref
+  return useClientLang(useLang())
 }
 
 /** Простой режим (по умолчанию): подсказки новичку, меньше настроек. */

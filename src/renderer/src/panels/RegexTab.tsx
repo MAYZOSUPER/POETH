@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
-import type { RegexLang, RegexPage, RegexPrefs } from '@shared/types'
+import type { GameLangSettings, RegexLang, RegexPage } from '@shared/types'
+import { resolveGameLang } from '@shared/gameLang'
 import { useLang, useT } from '../i18n'
 import { useAppStore } from '../store/useAppStore'
 import { useRegexStore } from '../store/useRegexStore'
+import { setGameLangChoice, useGameLangInfo } from '../gameLang'
 import { Switch, useSimple } from './regex/common'
 import { Ico, type IcoName } from './regex/Ico'
 import { MapsPage } from './regex/MapsPage'
@@ -11,7 +13,8 @@ import { LibraryPage } from './regex/LibraryPage'
 import './regex/regex.css'
 
 // Вкладка «Regex» компаньона (PoE1, этап S7) по утверждённому макету: подвкладки «Карты»,
-// «Торговец», «Библиотека»; справа — язык клиента игры и простой/экспертный режим.
+// «Торговец», «Библиотека»; справа — язык клиента игры (общая настройка S26, та же, что в настройках)
+// и простой/экспертный режим.
 
 const PAGES: { id: RegexPage; icon: IcoName }[] = [
   { id: 'maps', icon: 'map' },
@@ -28,7 +31,7 @@ export function RegexTab() {
   const ready = useRegexStore((s) => s.ready)
   const init = useRegexStore((s) => s.init)
   const page = useRegexStore((s) => s.prefs.page)
-  const gameLang = useRegexStore((s) => s.prefs.gameLang)
+  const gameLang = useGameLangInfo(uiLang)
   const libCount = useRegexStore((s) => s.library?.entries.filter((e) => e.game === game).length ?? 0)
   const setPrefs = useRegexStore((s) => s.setPrefs)
 
@@ -38,8 +41,10 @@ export function RegexTab() {
 
   if (!ready) return <div className="ui-empty">{t('regex.maps.loading')}</div>
 
-  const langOptions: { value: RegexPrefs['gameLang']; label: string }[] = [
-    { value: 'auto', label: t('regex.gameLang.auto', { lang: t(`regex.lang.${uiLang}`) }) },
+  // «авто» — с тем языком, который выйдет сейчас: узнанный по игре или язык интерфейса
+  const autoLang = resolveGameLang({ choice: 'auto', detected: gameLang.detected }, uiLang).lang
+  const langOptions: { value: GameLangSettings['choice']; label: string }[] = [
+    { value: 'auto', label: t('regex.gameLang.auto', { lang: t(`regex.lang.${autoLang}`) }) },
     ...(['ru', 'en'] as RegexLang[]).map((l) => ({ value: l, label: t(`regex.lang.${l}`) }))
   ]
 
@@ -65,8 +70,8 @@ export function RegexTab() {
           <span>{t('regex.gameLang')}</span>
           <select
             className="ui-select"
-            value={gameLang}
-            onChange={(e) => setPrefs({ gameLang: e.target.value as RegexPrefs['gameLang'] })}
+            value={gameLang.choice}
+            onChange={(e) => void setGameLangChoice(e.target.value as GameLangSettings['choice'])}
           >
             {langOptions.map((o) => (
               <option key={o.value} value={o.value}>

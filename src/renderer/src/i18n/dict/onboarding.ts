@@ -21,7 +21,8 @@ export const onboarding: DomainDict = {
     'wiz.lang.game.help': 'Смена игры перезапускает POETH — это случится после мастера.',
 
     'wiz.client.h': 'Клиент игры и сайт трейда',
-    'wiz.client.lead': 'Так строки поиска и сообщения продавцам будут на языке вашей игры.',
+    'wiz.client.lead': 'Так названия предметов и валют, строки поиска и сообщения продавцам будут на языке вашей игры.',
+    'wiz.client.detected': 'По журналу игры похоже на {lang}. Поменять можно и потом — в настройках.',
     'wiz.client.lang': 'На каком языке у вас игра?',
     'wiz.client.site': 'Сайт трейда',
     'wiz.client.site.help':
@@ -118,7 +119,8 @@ export const onboarding: DomainDict = {
     'wiz.lang.game.help': 'Switching the game restarts POETH — that happens after the wizard.',
 
     'wiz.client.h': 'Game client and trade site',
-    'wiz.client.lead': 'So search strings and seller messages are in your game’s language.',
+    'wiz.client.lead': 'So item and currency names, search strings and seller messages are in your game’s language.',
+    'wiz.client.detected': 'The game log suggests {lang}. You can change it later in the settings.',
     'wiz.client.lang': 'What language is your game in?',
     'wiz.client.site': 'Trade site',
     'wiz.client.site.help':

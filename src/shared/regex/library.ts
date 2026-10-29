@@ -8,6 +8,7 @@ import type {
   RegexEntry,
   RegexEntryInput,
   RegexLibrary,
+  RegexLang,
   RegexPrefs,
   TriState,
   VendorQuery
@@ -27,7 +28,7 @@ const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !
 const str = (v: unknown): string | null => (typeof v === 'string' ? v : null)
 
 export function defaultRegexPrefs(): RegexPrefs {
-  return { gameLang: 'auto', page: 'maps', maps: emptyMapQuery(), vendor: emptyVendorQuery() }
+  return { page: 'maps', maps: emptyMapQuery(), vendor: emptyVendorQuery() }
 }
 
 export function emptyLibrary(): RegexLibrary {
@@ -93,11 +94,19 @@ function normalizeVendorQuery(raw: unknown): VendorQuery {
 function normalizePrefs(raw: unknown): RegexPrefs {
   const p = defaultRegexPrefs()
   if (!isObj(raw)) return p
-  if (raw.gameLang === 'ru' || raw.gameLang === 'en') p.gameLang = raw.gameLang
   if (raw.page === 'vendor' || raw.page === 'library') p.page = raw.page
   p.maps = normalizeMapQuery(raw.maps)
   p.vendor = normalizeVendorQuery(raw.vendor)
   return p
+}
+
+/**
+ * Язык клиента из файла до S26 (prefs.gameLang). Теперь это общая настройка Settings.gameLang: main переносит
+ * старое значение один раз (src/main/ipc/gameLang.ts) и переписывает файл уже без него.
+ */
+export function legacyGameLang(raw: unknown): RegexLang | null {
+  const v = isObj(raw) && isObj(raw.prefs) ? raw.prefs.gameLang : null
+  return v === 'ru' || v === 'en' ? v : null
 }
 
 /** Один слот — одна строка на игру: при совпадении слот остаётся у первой записи. */
