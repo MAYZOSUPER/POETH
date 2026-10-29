@@ -3,7 +3,8 @@
 // и main/src/shortcuts/text-box.ts (typeInChat, stashSearch), коммит 3188208957.
 // MIT License, Copyright (c) SnosMe and contributors. Изменения POETH: акселераторы
 // Electron вместо формата APT, ленивая загрузка uiohook (без него — no-op, а не падение),
-// проверка «фокус у игры» перед вводом, результат действия вместо void.
+// проверка «фокус у игры» перед вводом, результат действия вместо void; ввод — одна строка, без разбора
+// «@last» (S29).
 //
 // Ввод в игру. Правило GGG: одно действие в игре на одно нажатие/клик пользователя —
 // никаких таймеров и повторов; троттлинг restoreShortly дополнительно защищает от
@@ -199,7 +200,6 @@ export async function captureItemText(): Promise<ItemTextCapture | null> {
 // Чат и поиск в стэше (порт text-box.ts)
 // ---------------------------------------------------------------------------
 
-const PLACEHOLDER_LAST = '@last'
 const AUTO_CLEAR = [
   '#', // Global
   '%', // Party
@@ -218,14 +218,14 @@ function prepareInput(): UiohookLib | GameInputResult {
 
 /**
  * Вставить текст в чат игры через буфер обмена (буфер вернётся через 120 мс).
- * `@last <текст>` — ответить последнему, `<текст> @last` — дописать к последнему
- * собеседнику (как APT). send — сразу отправить (Enter) и вернуть прежний канал чата.
+ * send — сразу отправить (Enter) и вернуть прежний канал чата. «@last» здесь не разбирается (S29): ник
+ * подставляют команды из настроек (resolveChatText, @shared/chatCommands), а в чужом тексте (whisper трейда,
+ * шаблон ответа сделки с предметом из whisper) «@last» в начале или в конце не должен менять адресата.
  * Текст — всегда одна строка (chatLine.ts): переводы строк → пробел, длиннее лимита — 'no-input'.
  */
 export function typeInChat(input: string, opts: { send?: boolean } = {}): GameInputResult {
-  const line = toGameLine(input)
-  if (line === null) return 'no-input'
-  let text = line
+  const text = toGameLine(input)
+  if (text === null) return 'no-input'
   const k = prepareInput()
   if (typeof k === 'string') return k
   const { uIOhook, UiohookKey: Key } = k
@@ -234,24 +234,10 @@ export function typeInChat(input: string, opts: { send?: boolean } = {}): GameIn
   const done = hostClipboard.restoreShortly((clipboard) => {
     const modifiers = process.platform === 'darwin' ? [Key.Meta] : [Key.Ctrl]
 
-    if (text.startsWith(PLACEHOLDER_LAST)) {
-      text = text.slice(`${PLACEHOLDER_LAST} `.length)
-      clipboard.writeText(text)
-      uIOhook.keyTap(Key.Enter, modifiers)
-    } else if (text.endsWith(PLACEHOLDER_LAST)) {
-      text = text.slice(0, -PLACEHOLDER_LAST.length)
-      clipboard.writeText(text)
-      uIOhook.keyTap(Key.Enter, modifiers)
-      uIOhook.keyTap(Key.Home)
-      // press twice to focus input when using controller
-      uIOhook.keyTap(Key.Home)
-      uIOhook.keyTap(Key.Delete)
-    } else {
-      clipboard.writeText(text)
-      uIOhook.keyTap(Key.Enter)
-      if (!AUTO_CLEAR.includes(text[0])) {
-        uIOhook.keyTap(Key.A, modifiers)
-      }
+    clipboard.writeText(text)
+    uIOhook.keyTap(Key.Enter)
+    if (!AUTO_CLEAR.includes(text[0])) {
+      uIOhook.keyTap(Key.A, modifiers)
     }
 
     uIOhook.keyTap(Key.V, modifiers)
