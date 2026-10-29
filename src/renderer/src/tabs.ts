@@ -1,6 +1,7 @@
 import { GAMES, type GameId } from '@shared/games'
 import type { AppTab } from '@shared/types'
 import { advisorOn } from '@shared/advisor/flag'
+import { buildOn } from '@shared/build/flag'
 
 // Вкладки компаньона, их разделы на рельсе слева (S20, макет навигации — вариант Б)
 // и доступность по игре (GameDef.features).
@@ -11,7 +12,7 @@ export interface TabDef {
   icon: TabIcon
 }
 
-type TabIcon = 'ask' | 'bolt' | 'trade' | 'swap' | 'map' | 'coins' | 'search' | 'compass'
+type TabIcon = 'ask' | 'bolt' | 'trade' | 'swap' | 'map' | 'coins' | 'search' | 'compass' | 'passive'
 
 export type SectionId = 'trade' | 'farm' | 'level'
 
@@ -29,25 +30,31 @@ const TABS: Record<AppTab, TabDef> = {
   advisor: { id: 'advisor', key: 'app.advisor', icon: 'map' },
   wealth: { id: 'wealth', key: 'app.wealth', icon: 'coins' },
   regex: { id: 'regex', key: 'app.regex', icon: 'search' },
-  campaign: { id: 'campaign', key: 'app.campaign', icon: 'compass' }
+  campaign: { id: 'campaign', key: 'app.campaign', icon: 'compass' },
+  build: { id: 'build', key: 'app.build', icon: 'passive' }
 }
 
 /** Разделы и порядок вкладок — одни в обеих играх, чтобы рука помнила; чего нет в игре, просто не показывается. */
 const SECTIONS: { id: SectionId; key: string; tabs: AppTab[] }[] = [
   { id: 'trade', key: 'nav.sec.trade', tabs: ['priceCheck', 'live', 'deals', 'flip'] },
   { id: 'farm', key: 'nav.sec.farm', tabs: ['advisor', 'wealth', 'regex'] },
-  { id: 'level', key: 'nav.sec.level', tabs: ['campaign'] }
+  { id: 'level', key: 'nav.sec.level', tabs: ['campaign', 'build'] }
 ]
 
 /** Флаг разработки POETH_ADVISOR=1 из preload (вкладка «Что фармить» скрыта в релизе, S16). */
 const advisorDev = (): boolean =>
   (globalThis as { overlayApi?: { advisor?: { devFlag?: boolean } } }).overlayApi?.advisor?.devFlag === true
 
+/** Флаг разработки POETH_BUILD=1 из preload (вкладка «Билд» скрыта до v0.2, S35–S39). */
+const buildDev = (): boolean =>
+  (globalThis as { overlayApi?: { build?: { devFlag?: boolean } } }).overlayApi?.build?.devFlag === true
+
 function inGame(game: GameId, id: AppTab, dev: boolean): boolean {
   const f = GAMES[game].features
   // «Кампания» в PoE 1 — прокачка по маршруту (S14), в PoE 2 — компас
   if (id === 'campaign') return f.campaign || f.leveling
   if (id === 'advisor') return advisorOn(GAMES[game], dev)
+  if (id === 'build') return buildOn(GAMES[game], buildDev())
   return f[id]
 }
 

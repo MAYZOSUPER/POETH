@@ -27,6 +27,8 @@ export interface GameFeatures {
   leveling: boolean
   /** советник «что фармить» (S16): в v0.1.0 скрыт, в разработке — POETH_ADVISOR=1 (shared/advisor/flag.ts) */
   advisor: boolean
+  /** вкладка «Билд» (S35–S39, v0.2): в v0.1.0 скрыта, в разработке — POETH_BUILD=1 (shared/build/flag.ts) */
+  build: boolean
 }
 
 export interface GameDef {
@@ -55,7 +57,7 @@ export const GAMES: Record<GameId, GameDef> = {
     siteRealm: null,
     logSubdirs: ['Path of Exile/logs', 'PathOfExile/logs'],
     dataDir: 'poe1',
-    features: { campaign: false, priceCheck: true, live: true, regex: true, deals: true, wealth: true, flip: true, leveling: true, advisor: false }
+    features: { campaign: false, priceCheck: true, live: true, regex: true, deals: true, wealth: true, flip: true, leveling: true, advisor: false, build: false }
   },
   poe2: {
     id: 'poe2',
@@ -65,7 +67,7 @@ export const GAMES: Record<GameId, GameDef> = {
     siteRealm: 'poe2',
     logSubdirs: ['Path of Exile 2/logs', 'PathOfExile2/logs'],
     dataDir: 'poe2',
-    features: { campaign: true, priceCheck: true, live: false, regex: false, deals: false, wealth: false, flip: false, leveling: false, advisor: false }
+    features: { campaign: true, priceCheck: true, live: false, regex: false, deals: false, wealth: false, flip: false, leveling: false, advisor: false, build: false }
   }
 }
 

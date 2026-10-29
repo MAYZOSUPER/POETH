@@ -12,6 +12,7 @@ import { iconResponse } from './services/iconCache'
 //   poeth://img/<areaId>/<file>         -> PoE2 layout image (bundled/cached/remote)
 //   poeth://data/<game>/<lang>/<file>   -> userData/data/... (updates without reinstall),
 //                                          then bundled resources/data/...
+//   poeth://data/poe1/build/<file>      -> то же для данных вкладки «Билд» (S36: tree.json, gems.json; S39)
 //   poeth://icon/?u=<https://web.poecdn.com/…> -> userData/icons (S18, services/iconCache.ts)
 export const SCHEME = 'poeth'
 
@@ -34,6 +35,8 @@ export function registerPoethScheme(): void {
 
 const GAME_RE = /^poe[12]$/
 const LANG_RE = /^[a-z]{2,3}(-[A-Za-z]{2,4})?$/
+/** Подпапки данных, которые не язык: только перечисленные (`build` — дерево и камни «Билда», S36). */
+const DATA_SUBDIRS: ReadonlySet<string> = new Set(['build'])
 // a single plain file name — no separators, no "..", no leading dot
 const FILE_RE = /^[\w][\w.-]*$/
 
@@ -60,7 +63,7 @@ export async function resolveDataFile(
   lang: string,
   file: string
 ): Promise<string | null> {
-  if (!GAME_RE.test(game) || !LANG_RE.test(lang) || !FILE_RE.test(file) || file.includes('..')) {
+  if (!GAME_RE.test(game) || !(LANG_RE.test(lang) || DATA_SUBDIRS.has(lang)) || !FILE_RE.test(file) || file.includes('..')) {
     return null
   }
   return firstExisting([

@@ -68,11 +68,14 @@ export const GAME_INPUT_CHANNELS: ReadonlySet<string> = new Set([
 /** Секреты аккаунта: вставка POESESSID (PoE1 — в partition, PoE2 — прайс-чек компаса). */
 export const SECRET_CHANNELS: ReadonlySet<string> = new Set([IPC.auth.pasteSession, IPC.trade.setSession])
 
+/** Только компаньон: вставка кода PoB и загрузка билда по ссылке (недоверенный ввод, сеть по действию игрока; S39). */
+export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([IPC.build.importPob, IPC.build.reload])
+
 /** Может ли страница звать этот канал IPC. */
 export function ipcAllowed(page: AppPage | null, channel: string): boolean {
   if (!page) return false
   if (GAME_INPUT_CHANNELS.has(channel)) return page === 'index' || page === 'overlay'
-  if (SECRET_CHANNELS.has(channel)) return page === 'index'
+  if (SECRET_CHANNELS.has(channel) || COMPANION_CHANNELS.has(channel)) return page === 'index'
   return true
 }
 
