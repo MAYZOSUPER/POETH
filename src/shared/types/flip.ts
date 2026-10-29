@@ -188,3 +188,214 @@ export interface FlipBookEvent {
   /** курсор в координатах окна оверлея (CSS px) в момент снимка; null — неизвестно */
   cursor: { x: number; y: number } | null
 }
+
+// ---------------------------------------------------------------- S33: флиппинг предметов (уники PoE 1)
+// Цены — снимок poe.ninja раз в час (ветка `prices`, собирает CI), поиск — сайт трейда по клику игрока.
+// Оценка, не финансовый совет; никаких авто-покупок и поисков по таймеру.
+
+/** Stat-фильтр трейда, которым poe.ninja описывает вариант (у Foulborn — заменённое свойство). */
+export interface ItemTradeStat {
+  id: string
+  min?: number
+  max?: number
+}
+
+/** Строка снимка цен: один уник в одном варианте и с одними связями. */
+export interface ItemLine {
+  /** detailsId poe.ninja — уникален в лиге */
+  id: string
+  /** имя как у poe.ninja (Foulborn — с приставкой) */
+  name: string
+  base: string
+  /** тип item overview poe.ninja ('UniqueArmour'…) */
+  type: string
+  /** рамка poe.ninja: 3 и 10 — уник, 9 — фольга (реликвия) */
+  cls: number
+  variant?: string
+  links?: 5 | 6
+  itemType?: string
+  corrupted?: boolean
+  /** число имплицитов у оценённого предмета (нет — poe.ninja не прислал) */
+  implicits?: number
+  trade?: ItemTradeStat[]
+  /** цена, chaos */
+  chaos: number
+  /** наблюдений за ценой */
+  count: number
+  /** лотов сейчас */
+  listings: number
+  /** изменение за 7 дней, % */
+  change?: number
+  spark?: Array<number | null>
+}
+
+export interface ItemSnapshot {
+  league: string
+  /** время снимка (мс) */
+  at: number
+  source: 'poe.ninja'
+  /** chaos за divine по poe.ninja (запасной курс, если нет фида обмена) */
+  divine?: number
+  lines: ItemLine[]
+}
+
+export interface ItemSnapshotIndex {
+  at: number
+  leagues: Array<{ league: string; file: string; at: number }>
+}
+
+/** Тир уника по цене в divine: T0 ≥ 10, T1 ≥ 1, T2 ≥ 0,1, дешевле — low. */
+export type UniqueTier = 'T0' | 'T1' | 'T2' | 'low'
+/** Как быстро продаётся (оценка по числу наблюдений и лотов poe.ninja). */
+export type ItemLiquidity = 'fast' | 'normal' | 'slow'
+
+/** Строка вкладки: цена уника и расчёт. */
+export interface ItemRow {
+  id: string
+  /** английское имя без Foulborn (по нему — запрос и имя на языке игры) */
+  name: string
+  base: string
+  variant?: string
+  links?: 5 | 6
+  /** без связей, но есть 5L/6L: цена за 0–4 связи */
+  unlinked?: boolean
+  foulborn: boolean
+  type: string
+  itemType?: string
+  /** цена poe.ninja, chaos и divine */
+  chaos: number
+  div: number
+  tier: UniqueTier
+  /** мало данных (наблюдений или лотов): цена и тир неточны */
+  thin: boolean
+  count: number
+  listings: number
+  /** изменение за 7 дней, % */
+  change?: number
+  liquidity: ItemLiquidity
+  /** уверенность 0–1 */
+  confidence: number
+  /** «обычно продаётся за»: цена со скидкой на скорость продажи, chaos */
+  sell: number
+  /** на трейде вариант не отличить (другие варианты того же уника, а stat-фильтров нет) */
+  ambiguous?: boolean
+  /** в топе ликвидных */
+  top?: boolean
+}
+
+/** «6L против без связей»: купить без связей, сделать 6 гнёзд и 6 связей на верстаке, продать 6L. */
+export interface SixLinkRow {
+  /** id строки 6L */
+  id: string
+  /** id строки без связей */
+  baseId: string
+  name: string
+  base: string
+  variant?: string
+  foulborn: boolean
+  /** цена без связей (покупка), chaos */
+  buy: number
+  /** ожидаемая продажа 6L, chaos */
+  sell: number
+  /** сырьё верстака: штук Fusing и Jeweller's */
+  fusing: number
+  jewellers: number
+  /** стоимость связей и гнёзд, chaos; null — нет цены сфер в фиде */
+  cost: number | null
+  /** выгода = продажа 6L − покупка − стоимость; null — без цены сфер */
+  profit: number | null
+  confidence: number
+  liquidity: ItemLiquidity
+  /** мало данных у 6L или у формы без связей — выгода может быть случайной */
+  thin: boolean
+}
+
+export interface ItemFlipConfig {
+  /** покупать не дороже k × цены poe.ninja */
+  k: number
+  /** выбранные игроком уники (id строк) */
+  picks: string[]
+  /** список «Недооценённых»: топ ликвидных или свои */
+  list: 'top' | 'mine'
+}
+
+export interface ItemFlipState {
+  /** PoE 1 и функция включена (флаг) */
+  supported: boolean
+  league: string | null
+  loading: boolean
+  /** net — сеть (данные из кэша), missing — в снимке нет этой лиги */
+  problem: 'net' | 'missing' | null
+  /** время снимка цен (мс) */
+  at: number | null
+  nextAt: number | null
+  /** chaos за divine: фид обмена GGG, иначе курс poe.ninja */
+  divine: number
+  /** цена сфер для 6L, chaos (фид обмена GGG); null — нет данных */
+  fusing: number | null
+  jewellers: number | null
+  rows: ItemRow[]
+  sixLinks: SixLinkRow[]
+  config: ItemFlipConfig
+}
+
+/**
+ * Итог проверки лота: выгодно; выгода мала; приманка (в разы дешевле соседей, лично); старый (> 7 дней);
+ * другой вариант / порча / связи / имплициты; продавец в списке price-fixer'ов PoE Hub; цена в непонятной валюте.
+ */
+export type ItemLotVerdict =
+  | 'deal'
+  | 'thin'
+  | 'bait'
+  | 'old'
+  | 'variant'
+  | 'corrupted'
+  | 'links'
+  | 'implicits'
+  | 'fixer'
+  | 'currency'
+
+export interface ItemLot {
+  id: string
+  kind: 'instant' | 'person'
+  /** цена лота как выставлена */
+  amount: number | null
+  currency: string | null
+  /** в chaos; null — валюта без курса */
+  chaos: number | null
+  /** комиссия мгновенного выкупа, золото */
+  fee?: number
+  account: string
+  online: 'online' | 'afk' | 'offline'
+  /** дней с выставления */
+  ageDays?: number
+  links?: number
+  verdict: ItemLotVerdict
+  /** прибыль при продаже по ожидаемой цене, chaos */
+  profit?: number
+  /** в разы дешевле остальных (у мгновенного выкупа — не приманка, но сверьте предмет) */
+  tooCheap?: boolean
+  confidence?: number
+}
+
+export type ItemCheckError = 'no-row' | 'busy' | 'no-league' | 'rate-limited' | 'blocked' | 'net' | 'bad'
+
+export type ItemCheckResult =
+  | {
+      ok: true
+      rowId: string
+      at: number
+      /** лотов дешевле порога на сайте всего */
+      total: number
+      /** порог поиска, chaos (k × цена poe.ninja) */
+      maxChaos: number
+      /** ожидаемая продажа, chaos (с поправкой на «рынок ниже цены poe.ninja») */
+      sell: number
+      /** ≥ 3 лотов в ±15 % друг от друга дешевле порога: цена, похоже, упала */
+      market: { price: number; n: number } | null
+      lots: ItemLot[]
+      siteUrl: string
+    }
+  | { ok: false; rowId: string; error: ItemCheckError; retryAfterMs?: number }
+
+export type ItemWatchResult = { ok: true; siteUrl: string; title: string } | { ok: false; error: ItemCheckError; retryAfterMs?: number }

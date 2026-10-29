@@ -1,0 +1,1042 @@
+{
+ "league": "Allflame",
+ "note": "Выборка строк poe.ninja item overview (Allflame, 29.10.2026) для тестов S33: без иконок, текстов модов и flavour text; число имплицитов — в implicitModifiers как пустые объекты.",
+ "types": {
+  "UniqueArmour": {
+   "lines": [
+    {
+     "id": 134993,
+     "name": "Foulborn Rathpith Globe",
+     "baseType": "Titanium Spirit Shield",
+     "variant": "DOT per Life",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 15.78,
+      "data": [
+       0,
+       null,
+       null,
+       49.14,
+       null,
+       35.46,
+       15.78
+      ]
+     },
+     "statIds": [
+      "base_spell_block_%"
+     ],
+     "itemType": "Shield",
+     "chaosValue": 99343,
+     "exaltedValue": 40058,
+     "divineValue": 294.7,
+     "count": 9,
+     "detailsId": "foulborn-rathpith-globe-dot-per-life-titanium-spirit-shield",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_1855381243",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 10
+    },
+    {
+     "id": 135905,
+     "name": "Foulborn Rathpith Globe",
+     "baseType": "Titanium Spirit Shield",
+     "variant": "DOT per Life, Ailment per Life",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": []
+     },
+     "statIds": [
+      "base_spell_block_%"
+     ],
+     "itemType": "Shield",
+     "chaosValue": 95231,
+     "exaltedValue": 38400,
+     "divineValue": 282.5,
+     "count": 2,
+     "detailsId": "foulborn-rathpith-globe-dot-per-life-ailment-per-life-titanium-spirit-shield",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_1855381243",
+       "min": 0,
+       "max": 0
+      },
+      {
+       "mod": "explicit.stat_1572854306",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 2
+    },
+    {
+     "id": 136340,
+     "name": "Foulborn The Covenant",
+     "baseType": "Spidersilk Robe",
+     "variant": "Blood Magic",
+     "links": 6,
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": []
+     },
+     "statIds": [
+      "additional_intelligence"
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 41126,
+     "exaltedValue": 16583,
+     "divineValue": 122,
+     "count": 2,
+     "detailsId": "foulborn-the-covenant-blood-magic-spidersilk-robe-6l",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_2801937280",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 8
+    },
+    {
+     "id": 135903,
+     "name": "Foulborn The Covenant",
+     "baseType": "Spidersilk Robe",
+     "variant": "Blood Magic",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": [
+       null,
+       0,
+       null,
+       null,
+       null,
+       null,
+       null
+      ]
+     },
+     "statIds": [
+      "additional_intelligence"
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 24608,
+     "exaltedValue": 9923,
+     "divineValue": 73,
+     "count": 4,
+     "detailsId": "foulborn-the-covenant-blood-magic-spidersilk-robe",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_2801937280",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 6
+    },
+    {
+     "id": 44311,
+     "name": "Replica Alberon's Warpath",
+     "baseType": "Soldier Boots",
+     "itemClass": 10,
+     "sparkLine": {
+      "totalChange": 8.69,
+      "data": [
+       0,
+       -6.32,
+       -12.9,
+       -13.11,
+       18.61,
+       17.65,
+       8.69
+      ]
+     },
+     "itemType": "Boots",
+     "chaosValue": 18642,
+     "exaltedValue": 7517,
+     "divineValue": 55.3,
+     "count": 27,
+     "detailsId": "replica-alberons-warpath-soldier-boots",
+     "listingCount": 42
+    },
+    {
+     "id": 118882,
+     "name": "Svalinn",
+     "baseType": "Girded Tower Shield",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 5.41,
+      "data": [
+       0,
+       0.27,
+       5.81,
+       4.09,
+       3.36,
+       1.58,
+       5.41
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "base_spell_block_%"
+     ],
+     "itemType": "Shield",
+     "chaosValue": 10787,
+     "exaltedValue": 4350,
+     "divineValue": 32,
+     "count": 68,
+     "detailsId": "svalinn-girded-tower-shield",
+     "listingCount": 267
+    },
+    {
+     "id": 4770,
+     "name": "Shroud of the Lightless",
+     "baseType": "Carnal Armour",
+     "variant": "1 Jewel",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": -52.79,
+      "data": [
+       0,
+       -2.25,
+       -1.31,
+       -22.98,
+       -31.39,
+       -29.54,
+       -52.79
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 3708,
+     "exaltedValue": 1495,
+     "divineValue": 11,
+     "count": 12,
+     "detailsId": "shroud-of-the-lightless-1-jewel-carnal-armour",
+     "listingCount": 50
+    },
+    {
+     "id": 1465,
+     "name": "The Covenant",
+     "baseType": "Spidersilk Robe",
+     "links": 6,
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 52.17,
+      "data": [
+       0,
+       48.58,
+       50.86,
+       54.6,
+       54.02,
+       52.12,
+       52.17
+      ]
+     },
+     "statIds": [
+      "additional_intelligence"
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 1011,
+     "exaltedValue": 407.8,
+     "divineValue": 3,
+     "count": 12,
+     "detailsId": "the-covenant-spidersilk-robe-6l",
+     "listingCount": 47
+    },
+    {
+     "id": 1464,
+     "name": "The Covenant",
+     "baseType": "Spidersilk Robe",
+     "links": 5,
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": []
+     },
+     "statIds": [
+      "additional_intelligence"
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 337.1,
+     "exaltedValue": 135.9,
+     "divineValue": 1,
+     "count": 1,
+     "detailsId": "the-covenant-spidersilk-robe-5l",
+     "listingCount": 23
+    },
+    {
+     "id": 1268,
+     "name": "Shavronne's Wrappings",
+     "baseType": "Occultist's Vestment",
+     "links": 6,
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": -3.79,
+      "data": [
+       0,
+       -0.85,
+       2.42,
+       3.44,
+       3.05,
+       1.78,
+       -3.79
+      ]
+     },
+     "implicitModifiers": [
+      {},
+      {}
+     ],
+     "statIds": [
+      "chaos_damage_does_not_bypass_energy_shield"
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 318.6,
+     "exaltedValue": 128.4,
+     "divineValue": 0.94,
+     "count": 6,
+     "detailsId": "shavronnes-wrappings-occultists-vestment-6l",
+     "listingCount": 111
+    },
+    {
+     "id": 703,
+     "name": "Kaom's Heart",
+     "baseType": "Glorious Plate",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 67.34,
+      "data": [
+       0,
+       -26.37,
+       -33.07,
+       -41.43,
+       -39.76,
+       -33.07,
+       67.34
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 250,
+     "exaltedValue": 100.8,
+     "divineValue": 0.74,
+     "count": 137,
+     "detailsId": "kaoms-heart-glorious-plate",
+     "listingCount": 317
+    },
+    {
+     "id": 135833,
+     "name": "Foulborn Rathpith Globe",
+     "baseType": "Titanium Spirit Shield",
+     "variant": "Ailment per Life",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 21.25,
+      "data": [
+       0,
+       -0.38,
+       25,
+       25,
+       25,
+       -6.25,
+       21.25
+      ]
+     },
+     "statIds": [
+      "base_spell_block_%"
+     ],
+     "itemType": "Shield",
+     "chaosValue": 97,
+     "exaltedValue": 39.11,
+     "divineValue": 0.29,
+     "count": 10,
+     "detailsId": "foulborn-rathpith-globe-ailment-per-life-titanium-spirit-shield",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_1572854306",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 46
+    },
+    {
+     "id": 1463,
+     "name": "The Covenant",
+     "baseType": "Spidersilk Robe",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 40,
+      "data": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       40
+      ]
+     },
+     "statIds": [
+      "additional_intelligence"
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 70,
+     "exaltedValue": 28.23,
+     "divineValue": 0.21,
+     "count": 39,
+     "detailsId": "the-covenant-spidersilk-robe",
+     "listingCount": 251
+    },
+    {
+     "id": 1267,
+     "name": "Shavronne's Wrappings",
+     "baseType": "Occultist's Vestment",
+     "links": 5,
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": []
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "chaos_damage_does_not_bypass_energy_shield"
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 20,
+     "exaltedValue": 8.06,
+     "divineValue": 0.06,
+     "count": 1,
+     "detailsId": "shavronnes-wrappings-occultists-vestment-5l",
+     "listingCount": 72
+    },
+    {
+     "id": 44559,
+     "name": "Replica Kaom's Heart",
+     "baseType": "Glorious Plate",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": -62,
+      "data": [
+       0,
+       -48.4,
+       -50,
+       -50,
+       -70,
+       -70.4,
+       -62
+      ]
+     },
+     "itemType": "Body Armour",
+     "chaosValue": 19,
+     "exaltedValue": 7.66,
+     "divineValue": 0.06,
+     "count": 29,
+     "detailsId": "replica-kaoms-heart-glorious-plate",
+     "listingCount": 71
+    },
+    {
+     "id": 4767,
+     "name": "Shroud of the Lightless",
+     "baseType": "Carnal Armour",
+     "variant": "2 Jewels",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 20,
+      "data": [
+       0,
+       26.67,
+       20.67,
+       20,
+       0,
+       0,
+       20
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 18,
+     "exaltedValue": 7.26,
+     "divineValue": 0.05,
+     "count": 37,
+     "detailsId": "shroud-of-the-lightless-2-jewels-carnal-armour",
+     "listingCount": 274
+    },
+    {
+     "id": 1266,
+     "name": "Shavronne's Wrappings",
+     "baseType": "Occultist's Vestment",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 8.7,
+      "data": [
+       0,
+       1.09,
+       8.7,
+       8.7,
+       8.7,
+       8.7,
+       8.7
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "chaos_damage_does_not_bypass_energy_shield"
+     ],
+     "itemType": "Body Armour",
+     "chaosValue": 10,
+     "exaltedValue": 4.03,
+     "divineValue": 0.03,
+     "count": 30,
+     "detailsId": "shavronnes-wrappings-occultists-vestment",
+     "listingCount": 372
+    },
+    {
+     "id": 1388,
+     "name": "Tabula Rasa",
+     "baseType": "Simple Robe",
+     "links": 6,
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     },
+     "itemType": "Body Armour",
+     "chaosValue": 5,
+     "exaltedValue": 2.02,
+     "divineValue": 0.01,
+     "count": 147,
+     "detailsId": "tabula-rasa-simple-robe-6l",
+     "listingCount": 1372
+    }
+   ]
+  },
+  "UniqueAccessory": {
+   "lines": [
+    {
+     "id": 142079,
+     "name": "Mageblood",
+     "baseType": "Heavy Belt",
+     "variant": "5 Flasks",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 6.93,
+      "data": [
+       0,
+       12.34,
+       14.34,
+       1.09,
+       6.42,
+       5.28,
+       6.93
+      ]
+     },
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 463736,
+     "exaltedValue": 179049,
+     "divineValue": 1372,
+     "count": 9,
+     "detailsId": "mageblood-5-flasks-heavy-belt",
+     "listingCount": 30
+    },
+    {
+     "id": 135418,
+     "name": "Foulborn Headhunter",
+     "baseType": "Leather Belt",
+     "variant": "Culling Strike, Soul Eater",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": []
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 341380,
+     "exaltedValue": 131807,
+     "divineValue": 1010,
+     "count": 2,
+     "detailsId": "foulborn-headhunter-culling-strike-soul-eater-leather-belt",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_2524254339",
+       "min": 0,
+       "max": 0
+      },
+      {
+       "mod": "explicit.stat_2103621252",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 4
+    },
+    {
+     "id": 135150,
+     "name": "Foulborn Headhunter",
+     "baseType": "Leather Belt",
+     "variant": "Culling Strike",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": -2.54,
+      "data": [
+       null,
+       null,
+       0,
+       -0.64,
+       -1.62,
+       -2.83,
+       -2.54
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 202462,
+     "exaltedValue": 78171,
+     "divineValue": 599,
+     "count": 6,
+     "detailsId": "foulborn-headhunter-culling-strike-leather-belt",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_2524254339",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 13
+    },
+    {
+     "id": 135807,
+     "name": "Foulborn Headhunter",
+     "baseType": "Leather Belt",
+     "variant": "Soul Eater, Minimap Icons",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": []
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 185900,
+     "exaltedValue": 71776,
+     "divineValue": 550,
+     "count": 1,
+     "detailsId": "foulborn-headhunter-soul-eater-minimap-icons-leather-belt",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_2103621252",
+       "min": 0,
+       "max": 0
+      },
+      {
+       "mod": "explicit.stat_2543266731",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 3
+    },
+    {
+     "id": 134994,
+     "name": "Foulborn Headhunter",
+     "baseType": "Leather Belt",
+     "variant": "Soul Eater",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": -5.78,
+      "data": [
+       null,
+       0,
+       8.68,
+       -6.48,
+       -7.53,
+       -13.5,
+       -5.78
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 121680,
+     "exaltedValue": 46981,
+     "divineValue": 360,
+     "count": 7,
+     "detailsId": "foulborn-headhunter-soul-eater-leather-belt",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_2103621252",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 13
+    },
+    {
+     "id": 135487,
+     "name": "Foulborn Headhunter",
+     "baseType": "Leather Belt",
+     "variant": "Minimap Icons",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": []
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 87812,
+     "exaltedValue": 33904,
+     "divineValue": 259.8,
+     "count": 3,
+     "detailsId": "foulborn-headhunter-minimap-icons-leather-belt",
+     "tradeInfo": [
+      {
+       "mod": "explicit.stat_2543266731",
+       "min": 0,
+       "max": 0
+      }
+     ],
+     "listingCount": 8
+    },
+    {
+     "id": 142076,
+     "name": "Mageblood",
+     "baseType": "Heavy Belt",
+     "variant": "4 Flasks",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 12.29,
+      "data": [
+       0,
+       6.38,
+       11.02,
+       11.18,
+       21.96,
+       16.04,
+       12.29
+      ]
+     },
+     "implicitModifiers": [
+      {},
+      {}
+     ],
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 55770,
+     "exaltedValue": 21533,
+     "divineValue": 165,
+     "count": 284,
+     "detailsId": "mageblood-4-flasks-heavy-belt",
+     "listingCount": 625
+    },
+    {
+     "id": 142077,
+     "name": "Mageblood",
+     "baseType": "Heavy Belt",
+     "variant": "3 Flasks",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 11.08,
+      "data": [
+       0,
+       5.96,
+       10.4,
+       11.23,
+       9.96,
+       3.31,
+       11.08
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 27817,
+     "exaltedValue": 10740,
+     "divineValue": 82.3,
+     "count": 55,
+     "detailsId": "mageblood-3-flasks-heavy-belt",
+     "listingCount": 158
+    },
+    {
+     "id": 142078,
+     "name": "Mageblood",
+     "baseType": "Heavy Belt",
+     "variant": "2 Flasks",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": -20.92,
+      "data": [
+       0,
+       2.35,
+       1.75,
+       0.6,
+       3.06,
+       -6.12,
+       -20.92
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 7673,
+     "exaltedValue": 2962,
+     "divineValue": 22.7,
+     "count": 66,
+     "detailsId": "mageblood-2-flasks-heavy-belt",
+     "listingCount": 221
+    },
+    {
+     "id": 607,
+     "name": "Headhunter",
+     "baseType": "Leather Belt",
+     "itemClass": 10,
+     "sparkLine": {
+      "totalChange": -7.92,
+      "data": [
+       0,
+       6.41,
+       10.86,
+       2.67,
+       11.54,
+       9.52,
+       -7.92
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "additional_dexterity",
+      "additional_strength"
+     ],
+     "itemType": "Belt",
+     "chaosValue": 3380,
+     "exaltedValue": 1305,
+     "divineValue": 10,
+     "count": 108,
+     "detailsId": "headhunter-leather-belt",
+     "listingCount": 498
+    }
+   ]
+  },
+  "UniqueWeapon": {
+   "lines": [
+    {
+     "id": 1362,
+     "name": "Starforge",
+     "baseType": "Infernal Sword",
+     "links": 6,
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": []
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "local_physical_damage_+%",
+      "physical_damage_+%"
+     ],
+     "itemType": "Two Handed Sword",
+     "chaosValue": 67420,
+     "exaltedValue": 27185,
+     "divineValue": 200,
+     "count": 1,
+     "detailsId": "starforge-infernal-sword-6l",
+     "listingCount": 7
+    },
+    {
+     "id": 129648,
+     "name": "The Golden Charlatan",
+     "baseType": "Lion Sword",
+     "links": 6,
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 2.28,
+      "data": [
+       0,
+       -0.51,
+       1.78,
+       2.18,
+       3.52,
+       0.96,
+       2.28
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "local_critical_strike_chance_+%",
+      "local_physical_damage_+%"
+     ],
+     "itemType": "Two Handed Sword",
+     "chaosValue": 13484,
+     "exaltedValue": 5437,
+     "divineValue": 40,
+     "count": 57,
+     "detailsId": "the-golden-charlatan-lion-sword-6l",
+     "listingCount": 207
+    },
+    {
+     "id": 129546,
+     "name": "The Golden Charlatan",
+     "baseType": "Lion Sword",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 1.63,
+      "data": [
+       0,
+       2.01,
+       3.25,
+       6.98,
+       4.31,
+       3.43,
+       1.63
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "local_critical_strike_chance_+%",
+      "local_physical_damage_+%"
+     ],
+     "itemType": "Two Handed Sword",
+     "chaosValue": 12810,
+     "exaltedValue": 5165,
+     "divineValue": 38,
+     "count": 22,
+     "detailsId": "the-golden-charlatan-lion-sword",
+     "listingCount": 105
+    },
+    {
+     "id": 1361,
+     "name": "Starforge",
+     "baseType": "Infernal Sword",
+     "links": 5,
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 0,
+      "data": []
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "local_physical_damage_+%",
+      "physical_damage_+%"
+     ],
+     "itemType": "Two Handed Sword",
+     "chaosValue": 2360,
+     "exaltedValue": 951.5,
+     "divineValue": 7,
+     "count": 1,
+     "detailsId": "starforge-infernal-sword-5l",
+     "listingCount": 2
+    },
+    {
+     "id": 1360,
+     "name": "Starforge",
+     "baseType": "Infernal Sword",
+     "itemClass": 3,
+     "sparkLine": {
+      "totalChange": 11.99,
+      "data": [
+       0,
+       -0.03,
+       2.33,
+       4.32,
+       3.05,
+       1.78,
+       11.99
+      ]
+     },
+     "implicitModifiers": [
+      {}
+     ],
+     "statIds": [
+      "local_physical_damage_+%",
+      "physical_damage_+%"
+     ],
+     "itemType": "Two Handed Sword",
+     "chaosValue": 1483,
+     "exaltedValue": 598.1,
+     "divineValue": 4.4,
+     "count": 8,
+     "detailsId": "starforge-infernal-sword",
+     "listingCount": 21
+    }
+   ]
+  }
+ }
+}
