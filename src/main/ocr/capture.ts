@@ -53,17 +53,20 @@ export function captureBook(): BookShot | ShotFail {
   }
 }
 
-/** Dev: сохранить снимок в свой профиль (сбор фикстур для tests/fixtures/ocr). */
+/**
+ * Dev: сохранить снимок в свой профиль (сбор фикстур для tests/fixtures/ocr). PNG собирается сразу, до первого
+ * await: буфер снимка следом уходит в поток распознавания (transfer) и здесь становится пустым.
+ */
 export async function saveFixtureShot(shot: BookShot): Promise<void> {
   if (process.env.POETH_OCR_FIXTURES !== '1') return
-  const dir = path.join(app.getPath('userData'), 'ocr-fixtures')
-  await fs.mkdir(dir, { recursive: true })
   const png = nativeImage
     .createFromBitmap(Buffer.from(shot.img.data.buffer, shot.img.data.byteOffset, shot.img.data.byteLength), {
       width: shot.img.width,
       height: shot.img.height
     })
     .toPNG()
+  const dir = path.join(app.getPath('userData'), 'ocr-fixtures')
+  await fs.mkdir(dir, { recursive: true })
   const name = `book-${new Date().toISOString().replace(/[:.]/g, '-')}-h${Math.round(shot.hint)}.png`
   await fs.writeFile(path.join(dir, name), png)
   console.log(`[ocr] fixture saved: ${name}`)
