@@ -25,6 +25,14 @@ describe('importBt: лимит вставки', () => {
   })
 })
 
+describe('импорт файлов из диалога — только через readImportJson', () => {
+  it.each(['src/main/ipc/regex.ts', 'src/main/ipc/campaign.ts'])('%s', async (rel) => {
+    const src = await fs.readFile(path.join(__dirname, '../..', rel), 'utf8')
+    expect(src).toMatch(/readImportJson\(result\.filePaths\[0\], [A-Z_]+_MAX_BYTES\)/)
+    expect(src).not.toMatch(/fs\.readFile\(result\.filePaths/)
+  })
+})
+
 describe('readImportJson: размер — до чтения', () => {
   let dir = ''
   beforeAll(async () => {
