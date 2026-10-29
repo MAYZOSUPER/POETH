@@ -1,0 +1,27 @@
+Item Class: Body Armours
+Rarity: Rare
+Shadow Shell
+Zodiac Leather
+--------
+Evasion Rating: 1730 (augmented)
+--------
+Requirements:
+Level: 65
+Dex: 197
+--------
+Sockets: G-G-B-R 
+--------
+Item Level: 86
+--------
+{ Prefix Modifier "Rapturous" (Tier: 2) — Life }
++113(110-119) to maximum Life
+{ Prefix Modifier "Phantasm's" (Tier: 2) — Defences, Evasion }
+88(80-91)% increased Evasion Rating
+{ Prefix Modifier "Thorny" (Tier: 3) }
+Reflects 25(25-50) Physical Damage to Melee Attackers
+{ Suffix Modifier "of Haunting" (Tier: 2) }
++18(17-20)% chance to Suppress Spell Damage
+{ Suffix Modifier "of the Ice" (Tier: 5) — Elemental, Cold, Resistance }
++29(24-29)% to Cold Resistance
+{ Suffix Modifier "of Thunder" (Tier: 4) — Elemental, Lightning, Resistance }
++33(30-35)% to Lightning Resistance

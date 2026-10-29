@@ -1,0 +1,25 @@
+Item Class: Belts
+Rarity: Rare
+Hate Lock
+Stygian Vise
+--------
+Requirements:
+Level: 64
+--------
+Item Level: 86
+--------
+{ Implicit Modifier }
+Has 1 Abyssal Socket (implicit)
+--------
+{ Prefix Modifier "Athlete's" (Tier: 3) — Life }
++84(80-89) to maximum Life
+{ Prefix Modifier "Lacquered" (Tier: 2) — Defences, Armour }
++322(271-350) to Armour
+{ Prefix Modifier "Seething" (Tier: 3) — Defences, Energy Shield }
++38(32-41) to maximum Energy Shield
+{ Suffix Modifier "of the Titan" (Tier: 2) — Attribute }
++42(38-42) to Strength
+{ Suffix Modifier "of Tzteosh" (Tier: 2) — Elemental, Fire, Resistance }
++44(42-45)% to Fire Resistance
+{ Suffix Modifier "of the Sorcerer" (Tier: 4) — Flask }
+18(16-20)% increased Flask Effect Duration

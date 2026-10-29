@@ -3160,6 +3160,824 @@ Can be Anointed up to 3 times",
 }
 `;
 
+exports[`снапшоты разбора (en) > rare-amulet 1`] = `
+{
+  "category": "Amulet",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 84,
+  },
+  "rarity": "Rare",
+  "refName": "Onyx Amulet",
+  "stats": [
+    {
+      "max": 16,
+      "min": 10,
+      "ref": "+# to all Attributes",
+      "tradeIds": [
+        "implicit.stat_1379411836",
+      ],
+      "type": "implicit",
+      "value": 14,
+    },
+    {
+      "max": 79,
+      "min": 70,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 72,
+    },
+    {
+      "max": 9,
+      "min": 6.5,
+      "ref": "Adds # to # Physical Damage to Attacks",
+      "tradeIds": [
+        "explicit.stat_3032590688",
+      ],
+      "type": "explicit",
+      "value": 8,
+    },
+    {
+      "max": 34,
+      "min": 30,
+      "ref": "+#% to Global Critical Strike Multiplier",
+      "tradeIds": [
+        "explicit.stat_3556824919",
+      ],
+      "type": "explicit",
+      "value": 32,
+    },
+    {
+      "max": 41,
+      "min": 36,
+      "ref": "+#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 38,
+    },
+    {
+      "max": 200,
+      "min": 166,
+      "ref": "+# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 180,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (en) > rare-belt 1`] = `
+{
+  "category": "Belt",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 86,
+  },
+  "rarity": "Rare",
+  "refName": "Stygian Vise",
+  "stats": [
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Has # Abyssal Sockets",
+      "tradeIds": [
+        "implicit.stat_3527617737",
+      ],
+      "type": "implicit",
+      "value": 1,
+    },
+    {
+      "max": 89,
+      "min": 80,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 84,
+    },
+    {
+      "max": 350,
+      "min": 271,
+      "ref": "+# to Armour",
+      "tradeIds": [
+        "explicit.stat_809229260",
+      ],
+      "type": "explicit",
+      "value": 322,
+    },
+    {
+      "max": 41,
+      "min": 32,
+      "ref": "+# to maximum Energy Shield",
+      "tradeIds": [
+        "explicit.stat_3489782002",
+      ],
+      "type": "explicit",
+      "value": 38,
+    },
+    {
+      "max": 42,
+      "min": 38,
+      "ref": "+# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 42,
+    },
+    {
+      "max": 45,
+      "min": 42,
+      "ref": "+#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 44,
+    },
+    {
+      "max": 20,
+      "min": 16,
+      "ref": "#% increased Flask Effect Duration",
+      "tradeIds": [
+        "explicit.stat_3741323227",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (en) > rare-boots 1`] = `
+{
+  "category": "Boots",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "armourEV": 395,
+    "basePercentile": 37,
+    "itemLevel": 83,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Slink Boots",
+  "stats": [
+    {
+      "max": 30,
+      "min": 30,
+      "ref": "#% increased Movement Speed",
+      "tradeIds": [
+        "explicit.stat_2250533757",
+      ],
+      "type": "explicit",
+      "value": 30,
+    },
+    {
+      "max": 89,
+      "min": 80,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 81,
+    },
+    {
+      "max": 67,
+      "min": 51,
+      "ref": "#% increased Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_124859000",
+      ],
+      "type": "explicit",
+      "value": 52,
+    },
+    {
+      "max": 45,
+      "min": 42,
+      "ref": "+#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 43,
+    },
+    {
+      "max": 29,
+      "min": 24,
+      "ref": "+#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 28,
+    },
+    {
+      "max": 34,
+      "min": 29,
+      "ref": "#% increased Stun and Block Recovery",
+      "tradeIds": [
+        "explicit.stat_2511217560",
+      ],
+      "type": "explicit",
+      "value": 30,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (en) > rare-chest 1`] = `
+{
+  "category": "Body Armour",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "armourEV": 1730,
+    "basePercentile": 52,
+    "itemLevel": 86,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Zodiac Leather",
+  "stats": [
+    {
+      "max": 119,
+      "min": 110,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 113,
+    },
+    {
+      "max": 91,
+      "min": 80,
+      "ref": "#% increased Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_124859000",
+      ],
+      "type": "explicit",
+      "value": 88,
+    },
+    {
+      "max": 50,
+      "min": 25,
+      "ref": "Reflects # Physical Damage to Melee Attackers",
+      "tradeIds": [
+        "explicit.stat_3767873853",
+      ],
+      "type": "explicit",
+      "value": 25,
+    },
+    {
+      "max": 20,
+      "min": 17,
+      "ref": "+#% chance to Suppress Spell Damage",
+      "tradeIds": [
+        "explicit.stat_3680664274",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+    {
+      "max": 29,
+      "min": 24,
+      "ref": "+#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 29,
+    },
+    {
+      "max": 35,
+      "min": 30,
+      "ref": "+#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 33,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (en) > rare-gloves 1`] = `
+{
+  "category": "Gloves",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "armourEV": 294,
+    "basePercentile": 50,
+    "itemLevel": 84,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Slink Gloves",
+  "stats": [
+    {
+      "max": 79,
+      "min": 70,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 78,
+    },
+    {
+      "max": 10,
+      "min": 8,
+      "ref": "Adds # to # Physical Damage to Attacks",
+      "tradeIds": [
+        "explicit.stat_3032590688",
+      ],
+      "type": "explicit",
+      "value": 9.5,
+    },
+    {
+      "max": 42,
+      "min": 27,
+      "ref": "+# to Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_53045048",
+      ],
+      "type": "explicit",
+      "value": 34,
+    },
+    {
+      "max": 13,
+      "min": 11,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 12,
+    },
+    {
+      "max": 41,
+      "min": 36,
+      "ref": "+#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 40,
+    },
+    {
+      "max": 8,
+      "min": 7,
+      "ref": "+#% chance to Suppress Spell Damage",
+      "tradeIds": [
+        "explicit.stat_3680664274",
+      ],
+      "type": "explicit",
+      "value": 8,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (en) > rare-helmet 1`] = `
+{
+  "category": "Helmet",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "armourES": 134,
+    "basePercentile": 50,
+    "itemLevel": 85,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Hubris Circlet",
+  "stats": [
+    {
+      "max": 49,
+      "min": 39,
+      "ref": "+# to maximum Energy Shield",
+      "tradeIds": [
+        "explicit.stat_4052037485",
+      ],
+      "type": "explicit",
+      "value": 48,
+    },
+    {
+      "max": 69,
+      "min": 60,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 65,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "+# to Level of Socketed Minion Gems",
+      "tradeIds": [
+        "explicit.stat_3604946673",
+      ],
+      "type": "explicit",
+      "value": 1,
+    },
+    {
+      "max": 41,
+      "min": 36,
+      "ref": "+#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 38,
+    },
+    {
+      "max": 130,
+      "min": 101,
+      "ref": "+# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 121,
+    },
+    {
+      "max": 15,
+      "min": 15,
+      "ref": "#% increased Light Radius",
+      "tradeIds": [
+        "explicit.stat_1263695895",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (en) > rare-jewel 1`] = `
+{
+  "category": "Jewel",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 84,
+  },
+  "rarity": "Rare",
+  "refName": "Cobalt Jewel",
+  "stats": [
+    {
+      "max": 7,
+      "min": 5,
+      "ref": "#% increased maximum Life",
+      "tradeIds": [
+        "explicit.stat_983749596",
+      ],
+      "type": "explicit",
+      "value": 7,
+    },
+    {
+      "max": 16,
+      "min": 14,
+      "ref": "#% increased Spell Damage",
+      "tradeIds": [
+        "explicit.stat_2974417149",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+    {
+      "max": 12,
+      "min": 9,
+      "ref": "+#% to Global Critical Strike Multiplier",
+      "tradeIds": [
+        "explicit.stat_3556824919",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 5,
+      "min": 3,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 4,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (en) > rare-ring 1`] = `
+{
+  "category": "Ring",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 66,
+  },
+  "rarity": "Rare",
+  "refName": "Unset Ring",
+  "stats": [
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Has 1 Socket",
+      "tradeIds": [
+        "implicit.stat_4077843608",
+      ],
+      "type": "implicit",
+      "value": 1,
+    },
+    {
+      "max": 18.5,
+      "min": 17,
+      "ref": "Adds # to # Lightning Damage to Attacks",
+      "tradeIds": [
+        "explicit.stat_1754445556",
+      ],
+      "type": "explicit",
+      "value": 18.5,
+    },
+    {
+      "max": 60,
+      "min": 36,
+      "ref": "+# to Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_2144192055",
+      ],
+      "type": "explicit",
+      "value": 40,
+    },
+    {
+      "max": 44,
+      "min": 40,
+      "ref": "+# to maximum Mana",
+      "tradeIds": [
+        "explicit.stat_1050105434",
+      ],
+      "type": "explicit",
+      "value": 44,
+    },
+    {
+      "max": 12,
+      "min": 9,
+      "ref": "#% increased Cast Speed",
+      "tradeIds": [
+        "explicit.stat_2891184298",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 41,
+      "min": 36,
+      "ref": "+#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 36,
+    },
+    {
+      "max": 35,
+      "min": 30,
+      "ref": "+#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 35,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (en) > rare-sword 1`] = `
+{
+  "category": "Two-Handed Sword",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 84,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+    "weaponAS": 1.56,
+    "weaponCRIT": 5,
+    "weaponPHYSICAL": 448,
+  },
+  "rarity": "Rare",
+  "refName": "Vaal Greatsword",
+  "stats": [
+    {
+      "max": 470,
+      "min": 470,
+      "ref": "+# to Accuracy Rating",
+      "tradeIds": [
+        "implicit.stat_691932474",
+      ],
+      "type": "implicit",
+      "value": 470,
+    },
+    {
+      "max": 179,
+      "min": 170,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1509134228",
+      ],
+      "type": "explicit",
+      "value": 172,
+    },
+    {
+      "max": 47,
+      "min": 38.5,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1940865751",
+      ],
+      "type": "explicit",
+      "value": 45.5,
+    },
+    {
+      "max": 19,
+      "min": 17,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_210067635",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+    {
+      "max": 350,
+      "min": 251,
+      "ref": "+# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_691932474",
+      ],
+      "type": "explicit",
+      "value": 311,
+    },
+    {
+      "max": 38,
+      "min": 35,
+      "ref": "+#% to Global Critical Strike Multiplier",
+      "tradeIds": [
+        "explicit.stat_3556824919",
+      ],
+      "type": "explicit",
+      "value": 35,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (en) > rare-wand 1`] = `
+{
+  "category": "Wand",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 84,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+    "weaponAS": 1.5,
+    "weaponCRIT": 7,
+    "weaponPHYSICAL": 41,
+  },
+  "rarity": "Rare",
+  "refName": "Imbued Wand",
+  "stats": [
+    {
+      "max": 37,
+      "min": 33,
+      "ref": "#% increased Spell Damage",
+      "tradeIds": [
+        "implicit.stat_2974417149",
+      ],
+      "type": "implicit",
+      "value": 35,
+    },
+    {
+      "max": 79,
+      "min": 75,
+      "ref": "#% increased Spell Damage",
+      "tradeIds": [
+        "explicit.stat_2974417149",
+      ],
+      "type": "explicit",
+      "value": 79,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "+# to Level of all Cold Spell Skill Gems",
+      "tradeIds": [
+        "explicit.stat_2254480358",
+      ],
+      "type": "explicit",
+      "value": 1,
+    },
+    {
+      "max": 44,
+      "min": 34.5,
+      "ref": "Adds # to # Cold Damage to Spells",
+      "tradeIds": [
+        "explicit.stat_2469416729",
+      ],
+      "type": "explicit",
+      "value": 38.5,
+    },
+    {
+      "max": 20,
+      "min": 18,
+      "ref": "#% increased Cast Speed",
+      "tradeIds": [
+        "explicit.stat_2891184298",
+      ],
+      "type": "explicit",
+      "value": 19,
+    },
+    {
+      "max": 29,
+      "min": 25,
+      "ref": "+#% to Global Critical Strike Multiplier",
+      "tradeIds": [
+        "explicit.stat_3556824919",
+      ],
+      "type": "explicit",
+      "value": 27,
+    },
+    {
+      "max": 55,
+      "min": 41,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 48,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
 exports[`снапшоты разбора (en) > timeless-01 1`] = `
 {
   "category": "Jewel",
@@ -8437,6 +9255,824 @@ Can be Anointed up to 3 times",
       "type": "implicit",
     },
   ],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-amulet 1`] = `
+{
+  "category": "Amulet",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 84,
+  },
+  "rarity": "Rare",
+  "refName": "Onyx Amulet",
+  "stats": [
+    {
+      "max": 16,
+      "min": 10,
+      "ref": "+# to all Attributes",
+      "tradeIds": [
+        "implicit.stat_1379411836",
+      ],
+      "type": "implicit",
+      "value": 14,
+    },
+    {
+      "max": 79,
+      "min": 70,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 72,
+    },
+    {
+      "max": 9,
+      "min": 6.5,
+      "ref": "Adds # to # Physical Damage to Attacks",
+      "tradeIds": [
+        "explicit.stat_3032590688",
+      ],
+      "type": "explicit",
+      "value": 8,
+    },
+    {
+      "max": 34,
+      "min": 30,
+      "ref": "+#% to Global Critical Strike Multiplier",
+      "tradeIds": [
+        "explicit.stat_3556824919",
+      ],
+      "type": "explicit",
+      "value": 32,
+    },
+    {
+      "max": 41,
+      "min": 36,
+      "ref": "+#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 38,
+    },
+    {
+      "max": 200,
+      "min": 166,
+      "ref": "+# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 180,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-belt 1`] = `
+{
+  "category": "Belt",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 86,
+  },
+  "rarity": "Rare",
+  "refName": "Stygian Vise",
+  "stats": [
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Has # Abyssal Sockets",
+      "tradeIds": [
+        "implicit.stat_3527617737",
+      ],
+      "type": "implicit",
+      "value": 1,
+    },
+    {
+      "max": 89,
+      "min": 80,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 84,
+    },
+    {
+      "max": 350,
+      "min": 271,
+      "ref": "+# to Armour",
+      "tradeIds": [
+        "explicit.stat_809229260",
+      ],
+      "type": "explicit",
+      "value": 322,
+    },
+    {
+      "max": 41,
+      "min": 32,
+      "ref": "+# to maximum Energy Shield",
+      "tradeIds": [
+        "explicit.stat_3489782002",
+      ],
+      "type": "explicit",
+      "value": 38,
+    },
+    {
+      "max": 42,
+      "min": 38,
+      "ref": "+# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 42,
+    },
+    {
+      "max": 45,
+      "min": 42,
+      "ref": "+#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 44,
+    },
+    {
+      "max": 20,
+      "min": 16,
+      "ref": "#% increased Flask Effect Duration",
+      "tradeIds": [
+        "explicit.stat_3741323227",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-boots 1`] = `
+{
+  "category": "Boots",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "armourEV": 395,
+    "basePercentile": 37,
+    "itemLevel": 83,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Slink Boots",
+  "stats": [
+    {
+      "max": 30,
+      "min": 30,
+      "ref": "#% increased Movement Speed",
+      "tradeIds": [
+        "explicit.stat_2250533757",
+      ],
+      "type": "explicit",
+      "value": 30,
+    },
+    {
+      "max": 89,
+      "min": 80,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 81,
+    },
+    {
+      "max": 67,
+      "min": 51,
+      "ref": "#% increased Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_124859000",
+      ],
+      "type": "explicit",
+      "value": 52,
+    },
+    {
+      "max": 45,
+      "min": 42,
+      "ref": "+#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 43,
+    },
+    {
+      "max": 29,
+      "min": 24,
+      "ref": "+#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 28,
+    },
+    {
+      "max": 34,
+      "min": 29,
+      "ref": "#% increased Stun and Block Recovery",
+      "tradeIds": [
+        "explicit.stat_2511217560",
+      ],
+      "type": "explicit",
+      "value": 30,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-chest 1`] = `
+{
+  "category": "Body Armour",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "armourEV": 1730,
+    "basePercentile": 52,
+    "itemLevel": 86,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Zodiac Leather",
+  "stats": [
+    {
+      "max": 119,
+      "min": 110,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 113,
+    },
+    {
+      "max": 91,
+      "min": 80,
+      "ref": "#% increased Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_124859000",
+      ],
+      "type": "explicit",
+      "value": 88,
+    },
+    {
+      "max": 50,
+      "min": 25,
+      "ref": "Reflects # Physical Damage to Melee Attackers",
+      "tradeIds": [
+        "explicit.stat_3767873853",
+      ],
+      "type": "explicit",
+      "value": 25,
+    },
+    {
+      "max": 20,
+      "min": 17,
+      "ref": "+#% chance to Suppress Spell Damage",
+      "tradeIds": [
+        "explicit.stat_3680664274",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+    {
+      "max": 29,
+      "min": 24,
+      "ref": "+#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 29,
+    },
+    {
+      "max": 35,
+      "min": 30,
+      "ref": "+#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 33,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-gloves 1`] = `
+{
+  "category": "Gloves",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "armourEV": 294,
+    "basePercentile": 50,
+    "itemLevel": 84,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Slink Gloves",
+  "stats": [
+    {
+      "max": 79,
+      "min": 70,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 78,
+    },
+    {
+      "max": 10,
+      "min": 8,
+      "ref": "Adds # to # Physical Damage to Attacks",
+      "tradeIds": [
+        "explicit.stat_3032590688",
+      ],
+      "type": "explicit",
+      "value": 9.5,
+    },
+    {
+      "max": 42,
+      "min": 27,
+      "ref": "+# to Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_53045048",
+      ],
+      "type": "explicit",
+      "value": 34,
+    },
+    {
+      "max": 13,
+      "min": 11,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 12,
+    },
+    {
+      "max": 41,
+      "min": 36,
+      "ref": "+#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 40,
+    },
+    {
+      "max": 8,
+      "min": 7,
+      "ref": "+#% chance to Suppress Spell Damage",
+      "tradeIds": [
+        "explicit.stat_3680664274",
+      ],
+      "type": "explicit",
+      "value": 8,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-helmet 1`] = `
+{
+  "category": "Helmet",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "armourES": 134,
+    "basePercentile": 50,
+    "itemLevel": 85,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Hubris Circlet",
+  "stats": [
+    {
+      "max": 49,
+      "min": 39,
+      "ref": "+# to maximum Energy Shield",
+      "tradeIds": [
+        "explicit.stat_4052037485",
+      ],
+      "type": "explicit",
+      "value": 48,
+    },
+    {
+      "max": 69,
+      "min": 60,
+      "ref": "+# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 65,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "+# to Level of Socketed Minion Gems",
+      "tradeIds": [
+        "explicit.stat_3604946673",
+      ],
+      "type": "explicit",
+      "value": 1,
+    },
+    {
+      "max": 41,
+      "min": 36,
+      "ref": "+#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 38,
+    },
+    {
+      "max": 130,
+      "min": 101,
+      "ref": "+# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 121,
+    },
+    {
+      "max": 15,
+      "min": 15,
+      "ref": "#% increased Light Radius",
+      "tradeIds": [
+        "explicit.stat_1263695895",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-jewel 1`] = `
+{
+  "category": "Jewel",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 84,
+  },
+  "rarity": "Rare",
+  "refName": "Cobalt Jewel",
+  "stats": [
+    {
+      "max": 7,
+      "min": 5,
+      "ref": "#% increased maximum Life",
+      "tradeIds": [
+        "explicit.stat_983749596",
+      ],
+      "type": "explicit",
+      "value": 7,
+    },
+    {
+      "max": 16,
+      "min": 14,
+      "ref": "#% increased Spell Damage",
+      "tradeIds": [
+        "explicit.stat_2974417149",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+    {
+      "max": 12,
+      "min": 9,
+      "ref": "+#% to Global Critical Strike Multiplier",
+      "tradeIds": [
+        "explicit.stat_3556824919",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 5,
+      "min": 3,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 4,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-ring 1`] = `
+{
+  "category": "Ring",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 66,
+  },
+  "rarity": "Rare",
+  "refName": "Unset Ring",
+  "stats": [
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Has 1 Socket",
+      "tradeIds": [
+        "implicit.stat_4077843608",
+      ],
+      "type": "implicit",
+      "value": 1,
+    },
+    {
+      "max": 18.5,
+      "min": 17,
+      "ref": "Adds # to # Lightning Damage to Attacks",
+      "tradeIds": [
+        "explicit.stat_1754445556",
+      ],
+      "type": "explicit",
+      "value": 18.5,
+    },
+    {
+      "max": 60,
+      "min": 36,
+      "ref": "+# to Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_2144192055",
+      ],
+      "type": "explicit",
+      "value": 40,
+    },
+    {
+      "max": 44,
+      "min": 40,
+      "ref": "+# to maximum Mana",
+      "tradeIds": [
+        "explicit.stat_1050105434",
+      ],
+      "type": "explicit",
+      "value": 44,
+    },
+    {
+      "max": 12,
+      "min": 9,
+      "ref": "#% increased Cast Speed",
+      "tradeIds": [
+        "explicit.stat_2891184298",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 41,
+      "min": 36,
+      "ref": "+#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 36,
+    },
+    {
+      "max": 35,
+      "min": 30,
+      "ref": "+#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 35,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-sword 1`] = `
+{
+  "category": "Two-Handed Sword",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 84,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+    "weaponAS": 1.56,
+    "weaponCRIT": 5,
+    "weaponPHYSICAL": 448,
+  },
+  "rarity": "Rare",
+  "refName": "Vaal Greatsword",
+  "stats": [
+    {
+      "max": 470,
+      "min": 470,
+      "ref": "+# to Accuracy Rating",
+      "tradeIds": [
+        "implicit.stat_691932474",
+      ],
+      "type": "implicit",
+      "value": 470,
+    },
+    {
+      "max": 179,
+      "min": 170,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1509134228",
+      ],
+      "type": "explicit",
+      "value": 172,
+    },
+    {
+      "max": 47,
+      "min": 38.5,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1940865751",
+      ],
+      "type": "explicit",
+      "value": 45.5,
+    },
+    {
+      "max": 19,
+      "min": 17,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_210067635",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+    {
+      "max": 350,
+      "min": 251,
+      "ref": "+# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_691932474",
+      ],
+      "type": "explicit",
+      "value": 311,
+    },
+    {
+      "max": 38,
+      "min": 35,
+      "ref": "+#% to Global Critical Strike Multiplier",
+      "tradeIds": [
+        "explicit.stat_3556824919",
+      ],
+      "type": "explicit",
+      "value": 35,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора (ru) > rare-wand 1`] = `
+{
+  "category": "Wand",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 84,
+    "sockets": {
+      "linked": undefined,
+      "white": 0,
+    },
+    "weaponAS": 1.5,
+    "weaponCRIT": 7,
+    "weaponPHYSICAL": 41,
+  },
+  "rarity": "Rare",
+  "refName": "Imbued Wand",
+  "stats": [
+    {
+      "max": 37,
+      "min": 33,
+      "ref": "#% increased Spell Damage",
+      "tradeIds": [
+        "implicit.stat_2974417149",
+      ],
+      "type": "implicit",
+      "value": 35,
+    },
+    {
+      "max": 79,
+      "min": 75,
+      "ref": "#% increased Spell Damage",
+      "tradeIds": [
+        "explicit.stat_2974417149",
+      ],
+      "type": "explicit",
+      "value": 79,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "+# to Level of all Cold Spell Skill Gems",
+      "tradeIds": [
+        "explicit.stat_2254480358",
+      ],
+      "type": "explicit",
+      "value": 1,
+    },
+    {
+      "max": 44,
+      "min": 34.5,
+      "ref": "Adds # to # Cold Damage to Spells",
+      "tradeIds": [
+        "explicit.stat_2469416729",
+      ],
+      "type": "explicit",
+      "value": 38.5,
+    },
+    {
+      "max": 20,
+      "min": 18,
+      "ref": "#% increased Cast Speed",
+      "tradeIds": [
+        "explicit.stat_2891184298",
+      ],
+      "type": "explicit",
+      "value": 19,
+    },
+    {
+      "max": 29,
+      "min": 25,
+      "ref": "+#% to Global Critical Strike Multiplier",
+      "tradeIds": [
+        "explicit.stat_3556824919",
+      ],
+      "type": "explicit",
+      "value": 27,
+    },
+    {
+      "max": 55,
+      "min": 41,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 48,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
 }
 `;
 

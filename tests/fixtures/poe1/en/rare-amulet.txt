@@ -1,0 +1,23 @@
+Item Class: Amulets
+Rarity: Rare
+Rapture Talisman
+Onyx Amulet
+--------
+Requirements:
+Level: 64
+--------
+Item Level: 84
+--------
+{ Implicit Modifier — Attribute }
++14(10-16) to all Attributes (implicit)
+--------
+{ Prefix Modifier "Virile" (Tier: 3) — Life }
++72(70-79) to maximum Life
+{ Prefix Modifier "Honed" (Tier: 4) — Damage, Physical, Attack }
+Adds 5(4-6) to 11(9-12) Physical Damage to Attacks
+{ Suffix Modifier "of Ruin" (Tier: 2) — Damage, Critical }
++32(30-34)% to Global Critical Strike Multiplier
+{ Suffix Modifier "of the Ice" (Tier: 3) — Elemental, Cold, Resistance }
++38(36-41)% to Cold Resistance
+{ Suffix Modifier "of the Marksman" (Tier: 1) — Attack }
++180(166-200) to Accuracy Rating

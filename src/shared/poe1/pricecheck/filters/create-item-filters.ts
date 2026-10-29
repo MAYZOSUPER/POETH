@@ -8,7 +8,7 @@
 import type { Poe1Data } from '../../data/Poe1Data'
 import type { BaseType } from '../../data/interfaces'
 import { type ParsedItem, ItemCategory, ItemRarity } from '../../parser'
-import { MAGIC_ONLY_OR_UNIQUE_ITEM, CONSUMABLE_CRAFTABLE_ITEM, JEWELLERY } from '../../parser/meta'
+import { MAGIC_ONLY_OR_UNIQUE_ITEM, CONSUMABLE_CRAFTABLE_ITEM, JEWELLERY, ARMOUR, WEAPON } from '../../parser/meta'
 import { getPropQuality } from '../../parser/calc-q20'
 import { ModifierType } from '../../parser/modifiers'
 import { tradeTag } from '../query/common'
@@ -19,6 +19,9 @@ import type { ItemFilters, TradeStatus } from './interfaces'
 export const PERMANENT_SC = ['Standard']
 
 export const SPECIAL_SUPPORT_GEM = ['Empower Support', 'Enlighten Support', 'Enhance Support']
+
+/** POETH (S23): редкие этих категорий по умолчанию ищутся по той же базе (броня, оружие, бижутерия, колчаны). */
+const EXACT_BASE = new Set<ItemCategory>([...ARMOUR, ...WEAPON, ...JEWELLERY, ItemCategory.Quiver])
 
 export interface CreateOptions {
   league: string
@@ -235,6 +238,13 @@ export function createFilters(item: ParsedItem, d: Poe1Data, opts: CreateOptions
     }
     if (item.category && CATEGORY_TO_TRADE_ID.has(item.category)) {
       let disabled = opts.exact
+      // POETH (S23): у APT в пресете «псевдо» редкий ищется по любой базе типа («любое кольцо») — у новичка
+      // кольцо с гнездом (Unset Ring) оценилось в 1 alch по 10 000 «похожих» вместо 20 c. У брони, оружия и
+      // бижутерии база задаёт имплицит, защиту и урон — ищем ту же базу, «Любая база» — по желанию.
+      // Самоцветы (без имплицитов, цену делают моды) и явные исключения APT ниже — как в APT.
+      if (item.rarity === ItemRarity.Rare && EXACT_BASE.has(item.category)) {
+        disabled = true
+      }
       if (
         item.category === ItemCategory.ClusterJewel ||
         item.category === ItemCategory.Idol ||
