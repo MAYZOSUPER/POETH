@@ -10,6 +10,8 @@ import { Opportunities } from './flip/Opportunities'
 import { HowCard } from './flip/HowCard'
 import { clock, itemNs } from './flip/format'
 import { hiddenByTrend, pickRoute, visibleRoutes, type ViewBase } from './flip/view'
+import { FlipSubTabs, ItemsPanel } from './flip/items/ItemsPanel'
+import { itemsEnabled, useItemsStore } from './flip/items/useItemsStore'
 import './flip/flip.css'
 
 // Вкладка «Обмен» (PoE1, S13) по утверждённому макету «Обмен» v2: помощник по флиппингу валюты у Фаустуса по
@@ -122,6 +124,9 @@ export function FlipTab() {
   const selected = useFlipStore((st) => st.selected)
   const init = useFlipStore((st) => st.init)
   const nameOfItem = useNameOf(lang)
+  // S33: подвкладка «Предметы» (скрыта флагом, пока не проверена в игре)
+  const itemsOn = itemsEnabled(useAppStore((st) => st.settings?.game ?? 'poe1'))
+  const sub = useItemsStore((st) => st.sub)
   // карты Таро — в DIVINATION_CARD, но «колода» и прочее из той же папки — обычные предметы
   const nameOf = useCallback(
     (r: FlipRoute): string => {
@@ -136,6 +141,16 @@ export function FlipTab() {
 
   const rows = useMemo(() => (s ? visibleRoutes(s.routes, view, nameOf) : []), [s, view, nameOf])
 
+  if (itemsOn && sub === 'items') {
+    return (
+      <div className="flip-tab ui-scroll">
+        <div className="fx-pad">
+          <FlipSubTabs />
+          <ItemsPanel lang={lang} expert={expert} />
+        </div>
+      </div>
+    )
+  }
   if (!s) return <div className="flip-tab" />
   if (!s.supported) {
     return (
@@ -149,6 +164,7 @@ export function FlipTab() {
   return (
     <div className="flip-tab ui-scroll">
       <div className="fx-pad">
+        {itemsOn && <FlipSubTabs />}
         <div className="fx-top">
           <div className="fx-intro">
             <div className="fx-title">

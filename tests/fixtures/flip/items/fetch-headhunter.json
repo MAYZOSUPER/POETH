@@ -1,0 +1,559 @@
+{
+ "note": "Ответ /api/trade/fetch (форма как у сайта 29.10.2026, лоты придуманы) для теста «Проверить сейчас» S33: Headhunter, сейчас = 2026-10-29T20:00:00Z.",
+ "result": [
+  {
+   "id": "a",
+   "listing": {
+    "indexed": "2026-10-29T10:00:00Z",
+    "price": {
+     "type": "~price",
+     "amount": 1,
+     "currency": "chaos"
+    },
+    "whisper": "@Char Hi, I would like to buy your Headhunter",
+    "account": {
+     "name": "BaitSeller#1001",
+     "lastCharacterName": "Chara",
+     "online": {
+      "league": "Allflame"
+     }
+    }
+   },
+   "item": {
+    "name": "Headhunter",
+    "typeLine": "Leather Belt",
+    "baseType": "Leather Belt",
+    "frameType": 3,
+    "identified": true,
+    "ilvl": 84,
+    "implicitMods": [
+     {
+      "description": "+32 to maximum Life",
+      "domain": "implicit",
+      "hash": "stat.implicit.stat_3299347043"
+     }
+    ],
+    "explicitMods": [
+     {
+      "description": "+45 to Strength",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_4080418644"
+     },
+     {
+      "description": "When you Kill a Rare monster, you gain its Modifiers for 60 seconds",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_2192875806"
+     }
+    ],
+    "extended": {
+     "hashes": {
+      "implicit": [
+       [
+        "implicit.stat_3299347043",
+        [
+         0
+        ]
+       ]
+      ],
+      "explicit": [
+       [
+        "explicit.stat_4080418644",
+        [
+         0
+        ]
+       ],
+       [
+        "explicit.stat_2192875806",
+        [
+         1
+        ]
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "b",
+   "listing": {
+    "indexed": "2026-10-28T20:00:00Z",
+    "price": {
+     "type": "~price",
+     "amount": 5.1,
+     "currency": "divine"
+    },
+    "fee": 5000,
+    "account": {
+     "name": "FastSeller#1002",
+     "lastCharacterName": "Charb",
+     "online": null
+    }
+   },
+   "item": {
+    "name": "Headhunter",
+    "typeLine": "Leather Belt",
+    "baseType": "Leather Belt",
+    "frameType": 3,
+    "identified": true,
+    "ilvl": 84,
+    "implicitMods": [
+     {
+      "description": "+32 to maximum Life",
+      "domain": "implicit",
+      "hash": "stat.implicit.stat_3299347043"
+     }
+    ],
+    "explicitMods": [
+     {
+      "description": "+45 to Strength",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_4080418644"
+     },
+     {
+      "description": "When you Kill a Rare monster, you gain its Modifiers for 60 seconds",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_2192875806"
+     }
+    ],
+    "extended": {
+     "hashes": {
+      "implicit": [
+       [
+        "implicit.stat_3299347043",
+        [
+         0
+        ]
+       ]
+      ],
+      "explicit": [
+       [
+        "explicit.stat_4080418644",
+        [
+         0
+        ]
+       ],
+       [
+        "explicit.stat_2192875806",
+        [
+         1
+        ]
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "c",
+   "listing": {
+    "indexed": "2026-10-19T12:00:00Z",
+    "price": {
+     "type": "~price",
+     "amount": 6.5,
+     "currency": "divine"
+    },
+    "whisper": "@Char Hi, I would like to buy your Headhunter",
+    "account": {
+     "name": "OldSeller#1003",
+     "lastCharacterName": "Charc",
+     "online": {
+      "league": "Allflame"
+     }
+    }
+   },
+   "item": {
+    "name": "Headhunter",
+    "typeLine": "Leather Belt",
+    "baseType": "Leather Belt",
+    "frameType": 3,
+    "identified": true,
+    "ilvl": 84,
+    "implicitMods": [
+     {
+      "description": "+32 to maximum Life",
+      "domain": "implicit",
+      "hash": "stat.implicit.stat_3299347043"
+     }
+    ],
+    "explicitMods": [
+     {
+      "description": "+45 to Strength",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_4080418644"
+     },
+     {
+      "description": "When you Kill a Rare monster, you gain its Modifiers for 60 seconds",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_2192875806"
+     }
+    ],
+    "extended": {
+     "hashes": {
+      "implicit": [
+       [
+        "implicit.stat_3299347043",
+        [
+         0
+        ]
+       ]
+      ],
+      "explicit": [
+       [
+        "explicit.stat_4080418644",
+        [
+         0
+        ]
+       ],
+       [
+        "explicit.stat_2192875806",
+        [
+         1
+        ]
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "d",
+   "listing": {
+    "indexed": "2026-10-29T08:00:00Z",
+    "price": {
+     "type": "~price",
+     "amount": 6.9,
+     "currency": "divine"
+    },
+    "whisper": "@Char Hi, I would like to buy your Headhunter",
+    "account": {
+     "name": "FoulSeller#1004",
+     "lastCharacterName": "Chard",
+     "online": {
+      "league": "Allflame"
+     }
+    }
+   },
+   "item": {
+    "name": "Headhunter",
+    "typeLine": "Leather Belt",
+    "baseType": "Leather Belt",
+    "frameType": 3,
+    "identified": true,
+    "ilvl": 84,
+    "implicitMods": [
+     {
+      "description": "+32 to maximum Life",
+      "domain": "implicit",
+      "hash": "stat.implicit.stat_3299347043"
+     }
+    ],
+    "explicitMods": [
+     {
+      "description": "+45 to Strength",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_4080418644"
+     },
+     {
+      "description": "When you Kill a Rare monster, you gain its Modifiers for 60 seconds",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_2192875806"
+     }
+    ],
+    "extended": {
+     "hashes": {
+      "implicit": [
+       [
+        "implicit.stat_3299347043",
+        [
+         0
+        ]
+       ]
+      ],
+      "explicit": [
+       [
+        "explicit.stat_4080418644",
+        [
+         0
+        ]
+       ],
+       [
+        "explicit.stat_2192875806",
+        [
+         1
+        ]
+       ]
+      ]
+     }
+    },
+    "mutated": true
+   }
+  },
+  {
+   "id": "e",
+   "listing": {
+    "indexed": "2026-10-29T09:00:00Z",
+    "price": {
+     "type": "~price",
+     "amount": 6.95,
+     "currency": "divine"
+    },
+    "whisper": "@Char Hi, I would like to buy your Headhunter",
+    "account": {
+     "name": "CorruptSeller#1005",
+     "lastCharacterName": "Chare",
+     "online": {
+      "league": "Allflame"
+     }
+    }
+   },
+   "item": {
+    "name": "Headhunter",
+    "typeLine": "Leather Belt",
+    "baseType": "Leather Belt",
+    "frameType": 3,
+    "identified": true,
+    "ilvl": 84,
+    "implicitMods": [
+     {
+      "description": "+32 to maximum Life",
+      "domain": "implicit",
+      "hash": "stat.implicit.stat_3299347043"
+     }
+    ],
+    "explicitMods": [
+     {
+      "description": "+45 to Strength",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_4080418644"
+     },
+     {
+      "description": "When you Kill a Rare monster, you gain its Modifiers for 60 seconds",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_2192875806"
+     }
+    ],
+    "extended": {
+     "hashes": {
+      "implicit": [
+       [
+        "implicit.stat_3299347043",
+        [
+         0
+        ]
+       ]
+      ],
+      "explicit": [
+       [
+        "explicit.stat_4080418644",
+        [
+         0
+        ]
+       ],
+       [
+        "explicit.stat_2192875806",
+        [
+         1
+        ]
+       ]
+      ]
+     }
+    },
+    "corrupted": true
+   }
+  },
+  {
+   "id": "f",
+   "listing": {
+    "indexed": "2026-10-29T11:00:00Z",
+    "price": {
+     "type": "~price",
+     "amount": 7,
+     "currency": "divine"
+    },
+    "whisper": "@Char Hi, I would like to buy your Headhunter",
+    "account": {
+     "name": "traven77#7212",
+     "lastCharacterName": "Charf",
+     "online": {
+      "league": "Allflame"
+     }
+    }
+   },
+   "item": {
+    "name": "Headhunter",
+    "typeLine": "Leather Belt",
+    "baseType": "Leather Belt",
+    "frameType": 3,
+    "identified": true,
+    "ilvl": 84,
+    "implicitMods": [
+     {
+      "description": "+32 to maximum Life",
+      "domain": "implicit",
+      "hash": "stat.implicit.stat_3299347043"
+     }
+    ],
+    "explicitMods": [
+     {
+      "description": "+45 to Strength",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_4080418644"
+     },
+     {
+      "description": "When you Kill a Rare monster, you gain its Modifiers for 60 seconds",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_2192875806"
+     }
+    ],
+    "extended": {
+     "hashes": {
+      "implicit": [
+       [
+        "implicit.stat_3299347043",
+        [
+         0
+        ]
+       ]
+      ],
+      "explicit": [
+       [
+        "explicit.stat_4080418644",
+        [
+         0
+        ]
+       ],
+       [
+        "explicit.stat_2192875806",
+        [
+         1
+        ]
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "g",
+   "listing": {
+    "indexed": "2026-10-29T12:00:00Z",
+    "price": {
+     "type": "~price",
+     "amount": 3,
+     "currency": "mirror-shard"
+    },
+    "whisper": "@Char Hi, I would like to buy your Headhunter",
+    "account": {
+     "name": "OddSeller#1007",
+     "lastCharacterName": "Charg",
+     "online": {
+      "league": "Allflame"
+     }
+    }
+   },
+   "item": {
+    "name": "Headhunter",
+    "typeLine": "Leather Belt",
+    "baseType": "Leather Belt",
+    "frameType": 3,
+    "identified": true,
+    "ilvl": 84,
+    "implicitMods": [
+     {
+      "description": "+32 to maximum Life",
+      "domain": "implicit",
+      "hash": "stat.implicit.stat_3299347043"
+     }
+    ],
+    "explicitMods": [
+     {
+      "description": "+45 to Strength",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_4080418644"
+     },
+     {
+      "description": "When you Kill a Rare monster, you gain its Modifiers for 60 seconds",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_2192875806"
+     }
+    ],
+    "extended": {
+     "hashes": {
+      "implicit": [
+       [
+        "implicit.stat_3299347043",
+        [
+         0
+        ]
+       ]
+      ],
+      "explicit": [
+       [
+        "explicit.stat_4080418644",
+        [
+         0
+        ]
+       ],
+       [
+        "explicit.stat_2192875806",
+        [
+         1
+        ]
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "h",
+   "listing": {
+    "indexed": "2026-10-29T13:00:00Z",
+    "price": {
+     "type": "~price",
+     "amount": 6,
+     "currency": "divine"
+    },
+    "fee": 5200,
+    "account": {
+     "name": "NoImplSeller#1008",
+     "lastCharacterName": "Charh",
+     "online": null
+    }
+   },
+   "item": {
+    "name": "Headhunter",
+    "typeLine": "Leather Belt",
+    "baseType": "Leather Belt",
+    "frameType": 3,
+    "identified": true,
+    "ilvl": 84,
+    "implicitMods": [],
+    "explicitMods": [
+     {
+      "description": "+45 to Strength",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_4080418644"
+     },
+     {
+      "description": "When you Kill a Rare monster, you gain its Modifiers for 60 seconds",
+      "domain": "explicit",
+      "hash": "stat.explicit.stat_2192875806"
+     }
+    ],
+    "extended": {
+     "hashes": {
+      "explicit": [
+       [
+        "explicit.stat_4080418644",
+        [
+         0
+        ]
+       ]
+      ]
+     }
+    }
+   }
+  }
+ ]
+}

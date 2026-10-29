@@ -1,0 +1,50 @@
+/* «Обмен → Предметы» (S33): раскладка как у валютного «Обмена» (fx-* из flip.css), свои классы — fi-*.
+   Только токены дизайн-системы, компоненты ui-* — из components.css. */
+
+.fi-subtabs { margin: -4px 0 0; }
+.fi-subtabs .ui-tab { display: inline-flex; align-items: center; gap: 6px; }
+.fi-beta { margin-left: 2px; color: var(--fg-muted); font-weight: 600; }
+.fi-modes { justify-self: start; flex-wrap: wrap; }
+.fi-view { display: grid; gap: 10px; min-width: 0; }
+
+.fi-rates .fx-kv { padding: var(--sp-4) var(--sp-5); }
+.fi-rates .ui-coin { width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; }
+
+.fi-table .ui-coin,
+.fi-lots .ui-coin,
+.fi-say .ui-coin,
+.fi-suggest .ui-coin,
+.fi-card .ui-coin,
+.fx-hint .ui-coin { width: 12px; height: 12px; margin-right: 3px; vertical-align: -1px; }
+.fi-name { display: grid; gap: 2px; min-width: 0; }
+.fi-name b { font-weight: 600; }
+.fi-sub { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; font-size: var(--fs-xs); color: var(--fg-faint); }
+.fi-variant { font-size: var(--fs-xs); color: var(--fg-muted); }
+.fi-advice { color: var(--fg-muted); font-size: var(--fs-sm); }
+.fi-todo { color: var(--fg); font-size: var(--fs-sm); line-height: 1.5; }
+.fi-act-col { width: 1%; }
+.fi-act { white-space: nowrap; text-align: right; }
+.fi-act .ui-btn + .ui-btn { margin-left: 4px; }
+.ui-tier.fi-t0 { box-shadow: 0 0 0 1px var(--accent-hi); }
+
+.fi-picker { display: grid; gap: 6px; }
+.fi-picker .fx-search { width: min(100%, 340px); }
+.fi-suggest { display: flex; flex-wrap: wrap; gap: 4px; }
+.fi-suggest .ui-btn { gap: 6px; }
+
+/* карточка проверки */
+.fi-card__name { color: var(--rarity-unique); font-weight: 600; }
+.fi-card__body { display: grid; gap: 10px; padding: var(--sp-5); }
+.fi-say { margin: 0; color: var(--fg); line-height: 1.6; }
+.fi-note { margin: 0; color: var(--fg-muted); font-size: var(--fs-sm); }
+.fi-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.fi-kind { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; white-space: nowrap; }
+.fi-fee { display: inline-flex; align-items: center; gap: 3px; font-size: var(--fs-xs); color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.fi-verdict { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.fi-skel { display: grid; gap: 8px; padding: var(--sp-5); }
+.fi-skel .ui-skeleton { height: 14px; }
+
+@container (max-width: 640px) {
+  .fi-act { white-space: normal; }
+  .fi-act .ui-btn + .ui-btn { margin: 4px 0 0; }
+}
