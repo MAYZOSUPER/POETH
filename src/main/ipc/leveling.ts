@@ -138,7 +138,8 @@ function register(): void {
     }
     return s().state()
   })
-  app.on('before-quit', () => void store?.flush())
+  // синхронно: асинхронная запись не успевала rename до выхода (S29)
+  app.on('before-quit', () => store?.flushSync())
 }
 
 async function setupForGame(def: GameDef): Promise<void> {

@@ -27,7 +27,7 @@ import {
 } from '@shared/leveling/route'
 import { isAfter, parseLevelingLog } from '@shared/leveling/log'
 import { applyLevel, applyLogin, applyZone, emptySession, guideState, zoneKind, type SyncEnv } from '@shared/leveling/sync'
-import { readJson, writeJsonAtomic } from './atomicJson'
+import { readJson, writeJsonAtomic, writeJsonAtomicSync } from './atomicJson'
 
 // Прокачка PoE1 в main (S14, S22): персонажи и прогресс по маршруту — userData/leveling.json (свой файл: профили
 // компаса PoE2 в profiles.json не трогаем; модель та же — список персонажей + прогресс активного), строки
@@ -473,5 +473,22 @@ export class LevelingStore extends EventEmitter {
     }
     if (!this.f) return Promise.resolve()
     return writeJsonAtomic(this.file, this.f).catch((e) => console.error('[leveling] сохранение:', e))
+  }
+
+  /**
+   * Для `before-quit` (S29): синхронно. Асинхронная запись на выходе не успевала rename — прогресс гида
+   * оставался в leveling.json.tmp и терялся.
+   */
+  flushSync(): void {
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer)
+      this.saveTimer = null
+    }
+    if (!this.f) return
+    try {
+      writeJsonAtomicSync(this.file, this.f)
+    } catch (e) {
+      console.error('[leveling] сохранение при выходе:', e)
+    }
   }
 }
