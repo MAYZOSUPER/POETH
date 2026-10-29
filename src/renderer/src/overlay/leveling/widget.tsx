@@ -3,6 +3,7 @@ import type { LvTag } from '@shared/types/leveling'
 import { currentIndex, stepPassives, stepTags } from '@shared/leveling/route'
 import { areaName } from '@shared/leveling/render'
 import { useOverlayStore } from '../../store/useOverlayStore'
+import { useGameLang } from '../../gameLang'
 import { useLevelingStore } from '../../store/useLevelingStore'
 import { StepTags, StepText } from '../../panels/leveling/StepText'
 import { Icon } from '../Icon'
@@ -17,7 +18,8 @@ import './leveling-overlay.css'
 // пропустите» — до двух пунктов впереди в акте; вернулся назад за квестом — «Вернуться к шагу» прогресса;
 // свёрнуто — полоса .ui-hud. Мышь ловят только шапка и кнопки — остальное проходит в игру. Только PoE 1.
 // Виден, когда main решил (S22, LevelingState.guide): режим «авто» — только в зонах кампании, пока она не
-// пройдена; хоткей — до входа в другую зону.
+// пройдена; хоткей — до входа в другую зону. Текст шага — на языке интерфейса, имена зон, NPC, квестов и
+// предметов — на языке клиента игры (S31), как в игре.
 
 const DEFAULT_POS = { left: 16, top: 112 }
 const MAX_MISS = 2
@@ -38,6 +40,7 @@ function useSettingsSlice(): { poe1: boolean; simple: boolean } {
 function Guide({ simple }: { simple: boolean }) {
   const t = useOverlayT()
   const lang = useOverlayStore((s) => s.lang)
+  const gameLang = useGameLang(lang)
   const data = useLevelingStore((s) => s.data)!
   const state = useLevelingStore((s) => s.state)!
   const flat = useLevelingStore((s) => s.flat)
@@ -109,7 +112,7 @@ function Guide({ simple }: { simple: boolean }) {
   const f = cur >= 0 ? flat[cur] : null
   // где игрок: зона из журнала, если она в данных маршрута (убежище, карта — нет), иначе — по маршруту
   const zoneId = state.zone && data.areas[state.zone.areaId] ? state.zone.areaId : (f?.after ?? null)
-  const zone = zoneId ? areaName(data, zoneId, lang) : ''
+  const zone = zoneId ? areaName(data, zoneId, gameLang) : ''
   const zl = state.zone && state.zone.areaId === zoneId ? state.zone.level : undefined
   const nextZone = f ? flat.slice(cur).find((x) => x.to && x.to !== zoneId)?.to ?? null : null
   const miss: { tag: LvTag; index: number }[] = []
@@ -155,7 +158,7 @@ function Guide({ simple }: { simple: boolean }) {
             {nextZone && (
               <>
                 <span className="ui-hud__lbl">➞</span>
-                <span className="ui-hud__name">{areaName(data, nextZone, lang)}</span>
+                <span className="ui-hud__name">{areaName(data, nextZone, gameLang)}</span>
               </>
             )}
           </span>
@@ -217,13 +220,13 @@ function Guide({ simple }: { simple: boolean }) {
               <div className="lv-ov__text">
                 <Icon name="step" />
                 <span>
-                  <StepText parts={f.step.parts} data={data} lang={lang} />
+                  <StepText parts={f.step.parts} data={data} lang={lang} gameLang={gameLang} />
                 </span>
               </div>
             )}
             {f && simple && f.step.sub?.[0] && (
               <div className="lv-ov__sub">
-                <StepText parts={lang === 'ru' ? f.step.sub[0].ru : f.step.sub[0].en} data={data} lang={lang} />
+                <StepText parts={lang === 'ru' ? f.step.sub[0].ru : f.step.sub[0].en} data={data} lang={lang} gameLang={gameLang} />
               </div>
             )}
             {f?.step.lvl && <div className="lv-ov__sub">{t('lev.recLevel').replace('{lvl}', f.step.lvl)}</div>}
@@ -234,7 +237,7 @@ function Guide({ simple }: { simple: boolean }) {
                   <div key={m.index} className="lv-ov__missrow">
                     <StepTags tags={[m.tag]} t={t} icon={(n) => <Icon name={n} />} passives={stepPassives(flat[m.index].step, data)} />
                     <span className="lv-ov__misstext">
-                      <StepText parts={flat[m.index].step.parts} data={data} lang={lang} />
+                      <StepText parts={flat[m.index].step.parts} data={data} lang={lang} gameLang={gameLang} />
                     </span>
                   </div>
                 ))}

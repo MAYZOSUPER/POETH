@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import type { LevelingData, LevelingShow, LevelingState, LvBandit } from '@shared/types/leveling'
 import { banditPassives, counters, currentIndex, stepPassives, stepTags, type FlatStep } from '@shared/leveling/route'
 import { BASE_CLASSES, baseClass } from '@shared/leveling/classes'
-import { areaName } from '@shared/leveling/render'
-import { useLang, useT } from '../../i18n'
+import { areaName, nameOf, questName } from '@shared/leveling/render'
+import { translate, useLang, useT } from '../../i18n'
 import { useGameLang } from '../../gameLang'
 import { useLevelingStore } from '../../store/useLevelingStore'
 import { Ico, Switch, useSimple } from '../deals/common'
@@ -18,13 +18,14 @@ import './leveling.css'
 // пройдена — гид скрыт» с «Показать всё равно» и «Начать заново (новый персонаж)».
 
 const BANDITS: LvBandit[] = ['kill', 'alira', 'kraityn', 'oak']
+const BANDIT_NPC: Record<Exclude<LvBandit, 'kill'>, string> = { alira: 'Alira', kraityn: 'Kraityn', oak: 'Oak' }
 const SHOW: LevelingShow[] = ['auto', 'always', 'never']
 
-/** Где гид сейчас: виден, показан хоткеем или почему скрыт. */
-function guideText(state: LevelingState, data: LevelingData, lang: 'ru' | 'en', t: (k: string) => string): string {
+/** Где гид сейчас: виден, показан хоткеем или почему скрыт; gameLang — язык клиента (имя зоны). */
+function guideText(state: LevelingState, data: LevelingData, gameLang: 'ru' | 'en', t: (k: string) => string): string {
   if (state.guide.forced) return t('lev.guide.forced')
   if (state.guide.visible) return t('lev.guide.visible')
-  const zone = state.zone && data.areas[state.zone.areaId] ? areaName(data, state.zone.areaId, lang) : null
+  const zone = state.zone && data.areas[state.zone.areaId] ? areaName(data, state.zone.areaId, gameLang) : null
   switch (state.guide.hidden) {
     case 'never':
       return t('lev.guide.never')
@@ -96,12 +97,17 @@ function zoneLevel(data: LevelingData, f: FlatStep): number | null {
 function Header() {
   const t = useT()
   const lang = useLang()
+  // имена из игры (классы, бандиты, зона) — на языке клиента игры (S31)
+  const gameLang = useGameLang(lang)
   const simple = useSimple()
   const state = useLevelingStore((s) => s.state)!
   const data = useLevelingStore((s) => s.data)!
   const { createProfile, selectProfile, removeProfile, updateProfile, setVariant, setConfig, act } = useLevelingStore.getState()
   const profile = state.profiles.find((p) => p.id === state.activeId)!
-  const cls = baseClass(profile.className)
+  const cls = baseClass(profile.className, data.classes)
+  // «помочь Алире» — RU-имя в RU-тексте; иначе имя как в игре, без падежа: «помочь Alira», «help Алира»
+  const banditLabel = (b: LvBandit): string =>
+    b === 'kill' || gameLang === lang ? t(`lev.bandit.${b}`) : t('lev.bandit.help').replace('{name}', nameOf(data, BANDIT_NPC[b], gameLang))
   const onRemove = (): void => {
     if (window.confirm(t('lev.profile.removeConfirm').replace('{name}', profile.name))) void removeProfile(profile.id)
   }
@@ -144,7 +150,7 @@ function Header() {
           <option value="">{profile.className && !cls ? profile.className : '—'}</option>
           {BASE_CLASSES.map((c) => (
             <option key={c} value={c}>
-              {t(`lev.cls.${c}`)}
+              {translate(gameLang, `lev.cls.${c}`)}
             </option>
           ))}
         </select>
@@ -159,7 +165,7 @@ function Header() {
         <select className="ui-select" value={state.progress.variant.bandit} onChange={(e) => void setVariant({ bandit: e.target.value as LvBandit })}>
           {BANDITS.map((b) => (
             <option key={b} value={b}>
-              {t(`lev.bandit.${b}`)}
+              {banditLabel(b)}
             </option>
           ))}
         </select>
@@ -176,7 +182,7 @@ function Header() {
         </div>
       </div>
       <span className="lv-log" role="status">
-        {guideText(state, data, lang, t)}
+        {guideText(state, data, gameLang, t)}
       </span>
       {state.log.connected && (
         <span className="lv-log" title={state.log.logPath ?? undefined}>
@@ -195,6 +201,7 @@ function Header() {
 function Route({ act, flat, data }: { act: number; flat: FlatStep[]; data: LevelingData }) {
   const t = useT()
   const lang = useLang()
+  const gameLang = useGameLang(lang)
   const simple = useSimple()
   const state = useLevelingStore((s) => s.state)!
   const toggle = (stepId: string): void => void useLevelingStore.getState().act({ type: 'toggle', stepId })
@@ -222,7 +229,7 @@ function Route({ act, flat, data }: { act: number; flat: FlatStep[]; data: Level
               <div className="lv-row__body">
                 <div className="lv-row__text">
                   <span className="lv-row__n">{f.actIndex}</span>
-                  <StepText parts={f.step.parts} data={data} lang={lang} />
+                  <StepText parts={f.step.parts} data={data} lang={lang} gameLang={gameLang} />
                   <StepTags tags={stepTags(f.step)} t={t} icon={(n) => <Ico name={n} />} passives={stepPassives(f.step, data)} />
                   {now && <span className="lv-here">{t('lev.here')}</span>}
                   {!simple && zl !== null && <span className="lv-zl">{t('lev.zoneLevel').replace('{n}', String(zl))}</span>}
@@ -231,7 +238,7 @@ function Route({ act, flat, data }: { act: number; flat: FlatStep[]; data: Level
                 {simple &&
                   f.step.sub?.map((s, i) => (
                     <div key={i} className="lv-row__sub">
-                      <StepText parts={lang === 'ru' ? s.ru : s.en} data={data} lang={lang} />
+                      <StepText parts={lang === 'ru' ? s.ru : s.en} data={data} lang={lang} gameLang={gameLang} />
                     </div>
                   ))}
               </div>
@@ -262,7 +269,7 @@ function Meter({ label, done, total, hint }: { label: string; done: number; tota
 function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: LevelingData }) {
   const t = useT()
   const lang = useLang()
-  // камни — предметы: названия как в игре, у торговца (S26)
+  // камни (S26), квесты и NPC (S31) — названия как в игре
   const gameLang = useGameLang(lang)
   const state = useLevelingStore((s) => s.state)!
   const c = counters(flat, state.progress, data)
@@ -277,7 +284,7 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
         .replace('{bonus}', String(bonus))
         .replace('{all}', String(base + bonus))
   const profile = state.profiles.find((p) => p.id === state.activeId)!
-  const cls = baseClass(profile.className)
+  const cls = baseClass(profile.className, data.classes)
   const questsInAct = useMemo(() => {
     const ids = new Set<string>()
     for (const f of flat) if (f.act === act) for (const p of f.step.parts) if (typeof p === 'object' && 'k' in p && p.k === 'quest') ids.add(p.q)
@@ -289,7 +296,7 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
     const out: { gem: string; how: string }[] = []
     const seen = new Set<string>()
     for (const { q } of questsInAct) {
-      const qn = lang === 'ru' ? q.ru : q.en
+      const qn = gameLang === 'ru' ? q.ru : q.en
       for (const r of Object.values(q.rewards ?? {})) {
         for (const g of r.quest) {
           if (!g.classes.includes(cls) || seen.has(g.gem)) continue
@@ -301,13 +308,13 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
         for (const g of r.vendor) {
           if (!g.classes.includes(cls) || seen.has(g.gem)) continue
           seen.add(g.gem)
-          const npc = g.npc ? (lang === 'ru' ? (data.names[g.npc] ?? g.npc) : g.npc) : ''
+          const npc = g.npc ? nameOf(data, g.npc, gameLang) : ''
           out.push({ gem: g.gem, how: t('lev.gems.vendor').replace('{npc}', npc).replace('{quest}', qn) })
         }
       }
     }
     return out.slice(0, 12)
-  }, [cls, questsInAct, lang, data, t])
+  }, [cls, questsInAct, gameLang, data, t])
 
   return (
     <aside className="lv-side">
@@ -338,7 +345,7 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
                   <Ico name="passive" />
                   {(q.passives ?? 1) > 1 ? t('lev.tag.passives').replace('{n}', String(q.passives)) : t('lev.tag.passive')}
                 </span>
-                {lang === 'ru' ? q.ru : q.en}
+                {questName(data, id, gameLang)}
               </div>
             ))
           )}
@@ -350,7 +357,7 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
         </div>
         <div className="ui-box__body">
           {!cls ? (
-            <p className="lv-p">{t('lev.gems.pick')}</p>
+            <p className="lv-p">{t('lev.gems.pick').replace('{npc}', nameOf(data, 'Nessa', gameLang))}</p>
           ) : gems.length === 0 ? (
             <p className="lv-p">{t('lev.gems.empty')}</p>
           ) : (

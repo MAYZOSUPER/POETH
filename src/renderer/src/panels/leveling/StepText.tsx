@@ -3,10 +3,21 @@ import type { LevelingData, LvPart, LvTag } from '@shared/types/leveling'
 import { renderParts } from '@shared/leveling/render'
 
 // Текст шага прокачки (S14) — общий для вкладки «Кампания» PoE1 и гида поверх игры: зоны, квесты, боссы и
-// предметы подсвечены (lv-seg--*), направления — стрелками.
+// предметы подсвечены (lv-seg--*), направления — стрелками. Текст — на языке интерфейса (lang), имена — на языке
+// клиента игры (gameLang, S31).
 
-export function StepText({ parts, data, lang }: { parts: LvPart[]; data: LevelingData; lang: 'ru' | 'en' }) {
-  const segs = renderParts(parts, data, lang)
+export function StepText({
+  parts,
+  data,
+  lang,
+  gameLang = lang
+}: {
+  parts: LvPart[]
+  data: LevelingData
+  lang: 'ru' | 'en'
+  gameLang?: 'ru' | 'en'
+}) {
+  const segs = renderParts(parts, data, lang, gameLang)
   return (
     <>
       {segs.map((s, i) => (
