@@ -19,10 +19,10 @@ function progressFile(id: string): string {
   return path.join(app.getPath('userData'), 'progress', `${id}.json`)
 }
 
-// Все чтения и изменения profiles.json и файлов прогресса — строго по очереди (S32). writeJsonAtomic пишет
-// через общий `<файл>.tmp`: две одновременные записи одного файла делили его, и rename второй падал с ENOENT
-// (первый запуск: компаньон дважды зовёт init() и создаёт профиль), а запись, прочитавшая список до соседней,
-// её затирала. Внутри очереди — только внутренние функции (readProfiles, loadProgress, addProfile), не экспорт.
+// Все чтения и изменения profiles.json и файлов прогресса — строго по очереди (S32). Раньше writeJsonAtomic
+// писал через общий `<файл>.tmp`, и rename второй из двух одновременных записей падал с ENOENT (первый запуск:
+// компаньон дважды зовёт init() и создаёт профиль); теперь временные файлы свои (S29), но очередь нужна и так:
+// запись, прочитавшая список до соседней, её затирала бы. Внутри очереди — только внутренние функции (readProfiles, loadProgress, addProfile), не экспорт.
 let queue: Promise<unknown> = Promise.resolve()
 
 function serial<T>(run: () => Promise<T>): Promise<T> {
