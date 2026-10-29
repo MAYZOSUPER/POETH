@@ -7,6 +7,7 @@ import { LiveManager } from '../games/poe1/liveSearch'
 import { registerFavLiveAdapter } from './fav'
 import type { IpcDomain } from './types'
 import { devEnv } from '../devEnv'
+import { isAppPageUrl } from '../security'
 
 // Домен «live search» (main, S6): менеджер live-поисков PoE1, хоткей whisperLastHit.
 // Звать каналы могут только наши страницы (file:// или dev-сервер); события уходят в
@@ -18,7 +19,7 @@ function devServerUrl(): string | undefined {
 
 function broadcast(channel: string, payload: unknown): void {
   for (const wc of webContents.getAllWebContents()) {
-    if (wc.isDestroyed() || !isTrustedAppUrl(wc.getURL(), devServerUrl())) continue
+    if (wc.isDestroyed() || !isAppPageUrl(wc.getURL())) continue
     wc.send(channel, payload)
   }
 }

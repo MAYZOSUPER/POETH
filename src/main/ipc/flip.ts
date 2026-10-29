@@ -18,6 +18,7 @@ import { captureBook, saveFixtureShot } from '../ocr/capture'
 import { readBookImage, stopBookReader } from '../ocr/reader'
 import type { IpcDomain } from './types'
 import { devEnv } from '../devEnv'
+import { isAppPageUrl } from '../security'
 
 // Домен «помощник по флиппингу» (main, S13): часы фида обмена GGG из общего хранилища (его же берут учёт
 // богатства и курс для окна цены), маршруты и курс divine:chaos. Звать каналы могут только наши страницы.
@@ -30,7 +31,7 @@ function devServerUrl(): string | undefined {
 
 function broadcast(channel: string, payload: unknown): void {
   for (const wc of webContents.getAllWebContents()) {
-    if (wc.isDestroyed() || !isTrustedAppUrl(wc.getURL(), devServerUrl())) continue
+    if (wc.isDestroyed() || !isAppPageUrl(wc.getURL())) continue
     wc.send(channel, payload)
   }
 }

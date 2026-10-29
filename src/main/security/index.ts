@@ -22,6 +22,11 @@ export function appOrigin(): AppOrigin {
   }
 }
 
+/** Адрес — одна из наших страниц (для рассылки событий доменов: сайту GGG и чужим file:// — ничего). */
+export function isAppPageUrl(url: unknown): boolean {
+  return appPageOf(url, appOrigin()) !== null
+}
+
 const reported = new Set<string>()
 
 function logRejected(what: string, url: string): void {

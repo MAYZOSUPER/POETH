@@ -46,6 +46,21 @@ describe('main: защита окон ставится до IPC и окон', ()
   })
 })
 
+describe('main: события доменов — только нашим страницам', () => {
+  it('рассылка по webContents фильтрует isAppPageUrl (папка renderer + имя страницы), а не «любой file://»', () => {
+    let seen = 0
+    for (const f of MAIN.filter((x) => /src[\\/]main[\\/]ipc[\\/]/.test(x))) {
+      const src = code(f)
+      expect(src, name(f)).not.toMatch(/isTrustedAppUrl\(wc\.getURL\(\)/)
+      if (/getAllWebContents\(\)/.test(src)) {
+        seen++
+        expect(src, name(f)).toMatch(/!isAppPageUrl\(wc\.getURL\(\)\)/)
+      }
+    }
+    expect(seen).toBeGreaterThanOrEqual(6)
+  })
+})
+
 describe('main: webPreferences окон', () => {
   it.each([
     [/webSecurity:\s*false/, 'webSecurity: false'],

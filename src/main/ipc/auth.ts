@@ -22,6 +22,7 @@ import {
 } from '../net/leagues'
 import type { IpcDomain } from './types'
 import { devEnv } from '../devEnv'
+import { isAppPageUrl } from '../security'
 
 // Домен «вход в аккаунт и сеть» (S3). В renderer уходит только статус входа и лиги —
 // значения cookies/POESESSID не покидают main. Вызывать каналы могут только наши
@@ -46,7 +47,7 @@ function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
 /** Событие — во все наши страницы (компаньон, оверлей, сайдбар), но не в окна сайта. */
 function broadcast(channel: string, payload: unknown): void {
   for (const wc of webContents.getAllWebContents()) {
-    if (wc.isDestroyed() || !isTrustedAppUrl(wc.getURL(), devServerUrl())) continue
+    if (wc.isDestroyed() || !isAppPageUrl(wc.getURL())) continue
     wc.send(channel, payload)
   }
 }
