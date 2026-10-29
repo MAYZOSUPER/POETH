@@ -116,6 +116,22 @@ describe('preload: только узкий мост', () => {
   })
 })
 
+describe('renderer: CSP всех страниц', () => {
+  it.each(['index.html', 'overlay.html', 'trade-sidebar.html'])('%s', (page) => {
+    const html = readFileSync(join(ROOT, 'src/renderer', page), 'utf8')
+    const csp = /http-equiv="Content-Security-Policy"\s+content="([^"]+)"/.exec(html)?.[1] ?? ''
+    const dir = (n: string): string => csp.split(';').map((s) => s.trim()).find((s) => s.startsWith(`${n} `)) ?? ''
+    expect(dir('default-src')).toBe("default-src 'self'")
+    expect(dir('script-src')).toBe("script-src 'self'")
+    expect(dir('object-src')).toBe("object-src 'none'")
+    expect(dir('base-uri')).toBe("base-uri 'none'")
+    expect(dir('form-action')).toBe("form-action 'none'")
+    // картинки: свои, data: и poeth:// (иконки, бренд) — не любой файл с диска и не сеть
+    expect(dir('img-src')).toBe("img-src 'self' data: poeth:")
+    expect(csp).not.toMatch(/unsafe-eval|https?:|\*/)
+  })
+})
+
 describe('renderer: чужой текст не становится HTML или ссылкой', () => {
   it('dangerouslySetInnerHTML — только встроенный спрайт иконок', () => {
     const hits = RENDERER.filter((f) => /dangerouslySetInnerHTML/.test(code(f)))
