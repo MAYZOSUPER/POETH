@@ -44,6 +44,8 @@
 | **S35** | Вкладка «Билд» (v0.2, скрыта флагом), B1: разбор кода PoB (безопасный XML), модель, этапы прокачки, ссылки на билды | с 29.10 | сессия s35-pob-parser | `s35-pob-parser` | ✅ слит 30.10 |
 | **S37** | Шлифовка интерфейса перед демо: страница «Прайс-чек» PoE 1 вместо заглушки, тексты, расходящиеся с кодом | 30.10 | сессия s37-demo-polish | `s37-demo-polish` | ✅ слит 30.10 |
 | **S36** | Вкладка «Билд», B2: данные дерева и камней (skilltree-export + RePoE RU), строки лога (вложение пассивок, `/passives`) | с 29.10 | сессия s36-build-data | `s36-build-data` | ✅ слит 30.10 |
+| **S38** | Вкладка «Билд»: дерево этапа поверх игрового дерева пассивок по Alt+P (как Build Planner PoE 2) | с 30.10 | сессия s38-tree-overlay | `s38-tree-overlay` | ✅ фаза 2 слита 30.10 · ⏳ автоподгонка по снимку и проверка в игре |
+| **S39** | Вкладка «Билд», B3: интерфейс по макету v0.2 — вставка PoB, этапы, камни, связки, дерево, проверка | 30.10 | сессия s39-b3 | `s39-b3` | ✅ слит 30.10 (скрыта флагом) |
 | **S10** | Hardening + релиз: матрица EN/RU, DPI, NSIS, тег v0.1.0 | Д13–15 | лид | `main` | S10a ✅ · репо открыт 28.10 ✅ · ⏳ живые проверки, тег v0.1.0 |
 
 ∥ — параллельно с другими этапами, каждый в своём git worktree. Последовательные S1 → S4 → S6 —
@@ -112,6 +114,8 @@
 | **S35** | `src/shared/pob/**`, `src/shared/build/flag.ts`, `src/main/pob/**`, `tests/pob/**`, `tests/fixtures/pob/**`, `docs/pob.md`, строка в `NOTICE.md`. IPC — через лида. |
 | **S36** | `tools/build-data/**`, `resources/data/poe1/build/**`, `src/shared/build/**` (кроме `flag.ts`), `src/shared/leveling/log.ts`, `tests/build-data/**`, строки в `NOTICE.md` и `docs/league-update.md`. |
 | **S37** | тексты в `i18n/dict/*` (кроме агрегатора), компоненты затронутых вкладок (страница «Прайс-чек» PoE 1 и др.). |
+| **S38** | `src/shared/build/treeOverlay*.ts`, `src/main/build/treeOverlay*.ts`, домен `buildTree` (shared/main/preload/dict), `overlay/tree/**`, `tools/tree-bench/**`, `tests/build/treeOverlay*`; по разрешению лида — хоткей `buildTree`, подписки мыши в `gameInput.ts`, `OVERLAY_CHANNELS` в `policy.ts`. |
+| **S39** | домен `build` (shared/main/preload/dict), `src/main/build/{buildLibrary,buildTaken}.ts`, `src/shared/build/{library,takenLog,view}.ts`, `panels/build/**`, `store/useBuildStore.ts`, `overlay/leveling/buildGuide.ts` + `buildLine.tsx`, `tests/build/*` (кроме treeOverlay); по разрешению лида — `GameFeatures.build`, `tabs.ts`, `AppTab`, `protocol.ts` (`DATA_SUBDIRS`), `COMPANION_CHANNELS`. |
 
 ## Замороженные общие файлы (меняет только лид)
 

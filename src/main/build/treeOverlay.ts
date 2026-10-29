@@ -35,6 +35,7 @@ import type { PobBuild } from '@shared/pob/model'
 import type { PobStagePlan } from '@shared/pob/stages'
 import type { GameLang } from '@shared/types/settings'
 import { parseLevelingLine } from '@shared/leveling/log'
+import { devEnv } from '../devEnv'
 import { getGameFocus, onGameFocusChange } from '../focus/gameFocus'
 import { onHotkeyAction } from '../hotkeys'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
@@ -319,8 +320,8 @@ let devBuildLoaded = false
 async function loadDevBuild(): Promise<void> {
   if (devBuildLoaded || build) return
   devBuildLoaded = true
-  // как devEnv (S29): в установленном POETH переменная не действует
-  const file = app.isPackaged ? undefined : process.env.POETH_TREE_POB
+  // devEnv (S29): в установленном POETH переменная не действует
+  const file = devEnv('POETH_TREE_POB')
   if (!file) return
   try {
     const res = importPobCode((await fs.readFile(file, 'utf8')).trim(), inflateNode)
@@ -386,7 +387,7 @@ export async function setupTreeOverlay(game: GameDef): Promise<void> {
     return
   }
   onHotkeyAction('buildTree', () => toggleTreeOverlay(), { keepKeys: true })
-  const devShow = !app.isPackaged && process.env.POETH_TREE_SHOW === '1'
+  const devShow = devEnv('POETH_TREE_SHOW') === '1'
   // окно игры появилось или вернулось в фокус: положение — для его нынешнего размера
   const onFocus = (game: boolean): void => {
     if (!game) return

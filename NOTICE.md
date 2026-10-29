@@ -86,6 +86,9 @@ whose full history is kept in this repository.
 - **Map layout images** — [Lailloken/Exile-UI](https://github.com/Lailloken/Exile-UI)
   (Act-Decoder), MIT License. Layout images are loaded from the upstream
   repository (pinned commit) and cached locally; each image is credited in-app.
+  The passive-tree overlay (PoE 1 "Build" tab) follows Exile-UI's approach of drawing
+  a PoB tree over the in-game one (scale = window height / 10000 with the tree fully
+  zoomed out, class start as the anchor); no Exile-UI code is used.
 - **Quest / reward / zone facts** — cross-referenced from community resources
   including [nicolasbagatello/poe2-helper](https://github.com/nicolasbagatello/poe2-helper)
   and validated against publicly documented campaign reward tables. Only factual

@@ -10,6 +10,9 @@ export type DevEnvName =
   | 'POETH_OVERLAY_DEVTOOLS'
   | 'POETH_SAVE_CAPTURES'
   | 'POETH_OCR_FIXTURES'
+  // дерево билда поверх игры без вкладки «Билд» и для стенда tools/tree-bench (S38)
+  | 'POETH_TREE_POB'
+  | 'POETH_TREE_SHOW'
 
 /** Значение переменной разработчика; в собранной версии — всегда undefined. */
 export function devEnv(name: DevEnvName): string | undefined {

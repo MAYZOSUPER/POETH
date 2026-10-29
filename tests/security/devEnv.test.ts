@@ -10,7 +10,7 @@ vi.mock('electron', () => ({ app }))
 
 const { devEnv } = await import('../../src/main/devEnv')
 
-const NAMES = ['ELECTRON_RENDERER_URL', 'OVERLAY_DEVTOOLS', 'POETH_OVERLAY_DEVTOOLS', 'POETH_SAVE_CAPTURES', 'POETH_OCR_FIXTURES'] as const
+const NAMES = ['ELECTRON_RENDERER_URL', 'OVERLAY_DEVTOOLS', 'POETH_OVERLAY_DEVTOOLS', 'POETH_SAVE_CAPTURES', 'POETH_OCR_FIXTURES', 'POETH_TREE_POB', 'POETH_TREE_SHOW'] as const
 
 afterEach(() => {
   for (const n of NAMES) delete process.env[n]
