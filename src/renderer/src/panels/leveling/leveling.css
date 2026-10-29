@@ -86,10 +86,11 @@
   scrollbar-width: thin;
   scrollbar-color: var(--scroll) transparent;
 }
-/* одна колонка (окно уже 900 px, в том числе 820 по умолчанию): блоки справа уходят под маршрут, а область
+/* одна колонка (вкладка уже 900 px: окно 820 по умолчанию, или до 1088 с развёрнутым рельсом): блоки справа уходят под маршрут, а область
    прокручивается. min-height: auto у маршрута — иначе грид ужимал его строку и правые блоки ложились поверх (S19).
    Блок стоит после .lv-route, .lv-rows и .lv-side: та же специфичность, побеждает более позднее правило */
-@media (max-width: 900px) {
+/* ширина вкладки, а не окна: слева рельс навигации (S20) */
+@container body (max-width: 900px) {
   .lv-body {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: none;
@@ -102,7 +103,7 @@
     max-height: none;
   }
   .lv-rows {
-    max-height: max(240px, calc(100vh - 300px));
+    max-height: max(240px, calc(100vh - 262px));
   }
   .lv-side {
     max-height: none;

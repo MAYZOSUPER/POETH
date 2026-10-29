@@ -86,7 +86,8 @@
 }
 
 /* узкое окно: хоткей, «отправить» и «удалить» — второй строкой */
-@media (max-width: 640px) {
+/* ширина вкладки, а не окна: слева рельс навигации (S20) */
+@container body (max-width: 640px) {
   .chat-cmd {
     grid-template-columns: 16px minmax(0, 1fr);
   }

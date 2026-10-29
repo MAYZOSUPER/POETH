@@ -76,7 +76,8 @@
 /* «Что прибавилось» в эксперте — 5 колонок, на 560 px шире окна: прокрутка внутри блока, а не обрезка (S19) */
 .wealth-tab .ui-box:has(> .ui-table) { overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
 
-@media (max-width: 760px) {
+/* ширина вкладки, а не окна: слева рельс навигации (S20) */
+@container body (max-width: 760px) {
   .w-grid { grid-template-columns: minmax(0, 1fr); }
   .w-top { grid-template-columns: minmax(0, 1fr); }
   .w-snap { justify-items: start; text-align: left; }

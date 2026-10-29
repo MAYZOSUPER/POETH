@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useAppStore } from './store/useAppStore'
 import { useShellStore } from './store/useShellStore'
 import { Toolbar } from './panels/Toolbar'
-import { AppTabs } from './panels/AppTabs'
+import { NavRail } from './panels/NavRail'
 import { ProfileBar } from './panels/ProfileBar'
 import { ActTabs } from './panels/ActTabs'
 import { ZoneBanner } from './panels/ZoneBanner'
@@ -114,28 +114,31 @@ export default function App() {
         </div>
       ) : (
         <>
-          <AppTabs />
-          {page === 'about' ? (
-            <div className="body">
-              <AboutPanel />
-            </div>
-          ) : appTab === 'campaign' && game === 'poe1' && !showSettings ? (
-            <div className="body">
-              <LevelingTab />
-            </div>
-          ) : appTab === 'campaign' && game !== 'poe1' ? (
-            <CampaignTab showSettings={showSettings} />
-          ) : showSettings ? (
-            <div className="body">
-              <div className="page-scroll">
-                <SettingsPanel />
+          {/* S20: вкладки — рельсом слева (вариант Б макета навигации), содержимое — справа */}
+          <div className="app-main">
+            <NavRail />
+            {page === 'about' ? (
+              <div className="body">
+                <AboutPanel />
               </div>
-            </div>
-          ) : (
-            <div className="body">
-              <TabBody />
-            </div>
-          )}
+            ) : appTab === 'campaign' && game === 'poe1' && !showSettings ? (
+              <div className="body">
+                <LevelingTab />
+              </div>
+            ) : appTab === 'campaign' && game !== 'poe1' ? (
+              <CampaignTab showSettings={showSettings} />
+            ) : showSettings ? (
+              <div className="body">
+                <div className="page-scroll">
+                  <SettingsPanel />
+                </div>
+              </div>
+            ) : (
+              <div className="body">
+                <TabBody />
+              </div>
+            )}
+          </div>
           {(!firstRunDone || wizard) && <Wizard onClose={closeWizard} />}
         </>
       )}

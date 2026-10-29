@@ -233,7 +233,8 @@
   .ad-steprow .ad-drag { display: none; }
   .ad-total { padding: 8px; }
 }
-@media (max-width: 640px) {
+/* ширина вкладки, а не окна: слева рельс навигации (S20) */
+@container body (max-width: 640px) {
   .ad-host .ui-dialog-scrim { padding: 12px 8px; }
   .ad-host .ui-dialog__body { padding: var(--sp-6); gap: var(--sp-6); }
   .ad-share-in { grid-template-columns: minmax(0, 1fr); }
