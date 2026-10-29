@@ -4,7 +4,17 @@ import { describe, expect, it } from 'vitest'
 import { inflateNode } from '@shared/advisor/codecNode'
 import { BUILD_TREE_FILE, nodePosition, parseTreeData } from '@shared/build/data'
 import type { TreeData, TreeNode } from '@shared/build/types'
-import { RING_RADIUS, edgePath, stageDrawing, type TreeDrawing } from '@shared/build/treeOverlayDraw'
+import {
+  LABEL_LINE_PX,
+  MIN_RING_PX,
+  RING_RADIUS,
+  edgePath,
+  layoutLabels,
+  ringRadius,
+  stageDrawing,
+  type TreeDrawNode,
+  type TreeDrawing
+} from '@shared/build/treeOverlayDraw'
 import { TreeLogTracker } from '@shared/build/treeOverlayLog'
 import { treeBuildFromPob, treeStageFor } from '@shared/build/treeOverlayStages'
 import { importPobCode } from '@shared/pob/import'
@@ -200,5 +210,45 @@ describe('«взято» по журналу', () => {
     expect(t.nodes()).toBeNull()
     t.ingest([login, level('Alice', 3)])
     expect([...t.nodes()!.taken]).toEqual([path[0].hash])
+  })
+})
+
+describe('на экране: кольца и подписи', () => {
+  const node = (hash: number, x: number, y: number, en: string): TreeDrawNode => ({
+    hash,
+    x,
+    y,
+    r: RING_RADIUS.notable,
+    kind: 'notable',
+    state: 'take',
+    label: true,
+    en,
+    ru: en
+  })
+
+  it('кольцо не меньше 5 CSS-пикселей при сильном отдалении', () => {
+    expect(ringRadius({ r: 78 }, 0.2)).toBe(78)
+    expect(ringRadius({ r: 78 }, 0.03) * 0.03).toBeCloseTo(MIN_RING_PX, 9)
+  })
+
+  it('соседние нотабли (стенд: «Повелитель арены» и «Мастерство гладиатора») — подписи не налезают', () => {
+    const view = { scale: 0.072, ox: 0, oy: 0 }
+    // в 40 единицах дерева друг от друга: на экране — 3 точки
+    const boxes = layoutLabels([node(1, 1000, 1000, 'Повелитель арены'), node(2, 1040, 1000, 'Мастерство гладиатора')], view, 'ru')
+    const [a, b] = boxes
+    const w = (t: string) => t.length * 7
+    const span = (l: (typeof boxes)[number]) => (l.anchor === 'start' ? [l.x, l.x + w(l.text)] : [l.x - w(l.text), l.x])
+    const [al, ar] = span(a)
+    const [bl, br] = span(b)
+    const overlapX = al < br && ar > bl
+    const overlapY = Math.abs(a.y - b.y) < LABEL_LINE_PX
+    expect(overlapX && overlapY).toBe(false)
+  })
+
+  it('далёкие нотабли — подпись справа от кольца, по центру', () => {
+    const view = { scale: 0.1, ox: 10, oy: 20 }
+    const [a] = layoutLabels([node(1, 0, 0, 'A')], view, 'en')
+    expect(a).toMatchObject({ anchor: 'start', y: 20 })
+    expect(a.x).toBeCloseTo(10 + RING_RADIUS.notable * 0.1 + 4, 9)
   })
 })

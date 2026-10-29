@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type WheelEvent as ReactWheelEvent } from 'react'
 import { viewToCss, type TreeView } from '@shared/build/treeOverlay'
-import type { TreeDrawNode, TreeDrawing } from '@shared/build/treeOverlayDraw'
+import { layoutLabels, ringRadius, type TreeDrawing } from '@shared/build/treeOverlayDraw'
 import type { TreeOverlayState, TreeOverlayViewEvent } from '@shared/build/treeOverlayState'
 import { Icon } from '../Icon'
 import { scheduleRectsFlush, useInteractive } from '../interactive'
@@ -14,8 +14,6 @@ import './tree.css'
 // transform: панорама вслед за мышью (event:buildTree.view) меняет только его. Мышь проходит в игру везде, кроме
 // плашки этапа сверху по центру: ← →, колесо над плашкой листает этапы, «В центр», спрятать.
 
-/** Кольцо ноды на экране не меньше этого (CSS-пиксели) — при сильном отдалении ноды игры мельче. */
-const MIN_RING_PX = 5
 /** Подписи нотаблей — только когда дерево не слишком отдалено (иначе налезают друг на друга). */
 const LABEL_MIN_SCALE = 0.07
 
@@ -39,57 +37,6 @@ function useTreeOverlay(): { st: TreeOverlayState | null; pos: TreeOverlayViewEv
   return { st, pos }
 }
 
-function ringRadius(n: TreeDrawNode, scale: number): number {
-  return Math.max(n.r, MIN_RING_PX / scale)
-}
-
-/** Ширина подписи на глаз (шрифт --fs-sm): точная не нужна — только чтобы соседние подписи не налезали. */
-const CHAR_PX = 7
-const LINE_PX = 15
-
-interface LabelBox {
-  hash: number
-  text: string
-  state: TreeDrawNode['state']
-  x: number
-  y: number
-  anchor: 'start' | 'end'
-}
-
-/** Подписи нотаблей: справа от кольца, при наложении на соседнюю — слева, ниже или выше (жадно, по порядку). */
-function layoutLabels(nodes: TreeDrawNode[], view: TreeView, lang: string): LabelBox[] {
-  const placed: { l: number; t: number; r: number; b: number }[] = []
-  const out: LabelBox[] = []
-  for (const n of nodes) {
-    const text = lang === 'ru' ? n.ru : n.en
-    const cx = n.x * view.scale + view.ox
-    const cy = n.y * view.scale + view.oy
-    const rr = ringRadius(n, view.scale) * view.scale + 4
-    const w = text.length * CHAR_PX
-    const tries: [number, number, 'start' | 'end'][] = [
-      [cx + rr, cy, 'start'],
-      [cx - rr, cy, 'end'],
-      [cx + rr, cy + LINE_PX, 'start'],
-      [cx + rr, cy - LINE_PX, 'start'],
-      [cx - rr, cy + LINE_PX, 'end'],
-      [cx - rr, cy - LINE_PX, 'end']
-    ]
-    const box = ([x, y, a]: (typeof tries)[number]) => ({
-      l: a === 'start' ? x : x - w,
-      r: a === 'start' ? x + w : x,
-      t: y - LINE_PX / 2,
-      b: y + LINE_PX / 2
-    })
-    const free = tries.find((c) => {
-      const b = box(c)
-      return !placed.some((p) => b.l < p.r && b.r > p.l && b.t < p.b && b.b > p.t)
-    })
-    const [x, y, anchor] = free ?? tries[0]
-    placed.push(box([x, y, anchor]))
-    out.push({ hash: n.hash, text, state: n.state, x, y, anchor })
-  }
-  return out
-}
 
 function TreeSvg({ drawing, view, drift, lang }: { drawing: TreeDrawing; view: TreeView; drift: boolean; lang: string }) {
   const { scale, ox, oy } = view

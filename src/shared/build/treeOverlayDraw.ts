@@ -195,3 +195,67 @@ function edgeState(a: TreeDrawState, b: TreeDrawState): TreeDrawEdge['state'] {
   if (a === 'taken' && b === 'taken') return 'taken'
   return 'keep'
 }
+
+// ---------------------------------------------------------------------------
+// На экране: размер кольца и подписи нотаблей (renderer оверлея; координаты — CSS-пиксели)
+// ---------------------------------------------------------------------------
+
+/** Кольцо ноды на экране не меньше этого (CSS-пиксели) — при сильном отдалении ноды игры мельче. */
+export const MIN_RING_PX = 5
+
+/** Радиус кольца в единицах дерева при масштабе scale (CSS-пикселей на единицу). */
+export function ringRadius(n: Pick<TreeDrawNode, 'r'>, scale: number): number {
+  return Math.max(n.r, MIN_RING_PX / scale)
+}
+
+export interface LabelBox {
+  hash: number
+  text: string
+  state: TreeDrawState
+  x: number
+  y: number
+  anchor: 'start' | 'end'
+}
+
+/** Ширина подписи на глаз (шрифт --fs-sm): точная не нужна — только чтобы соседние подписи не налезали. */
+export const LABEL_CHAR_PX = 7
+export const LABEL_LINE_PX = 15
+
+/** Подписи нотаблей: справа от кольца, при наложении на соседнюю — слева, ниже или выше (жадно, по порядку). */
+export function layoutLabels(
+  nodes: readonly TreeDrawNode[],
+  view: { scale: number; ox: number; oy: number },
+  lang: string
+): LabelBox[] {
+  const placed: { l: number; t: number; r: number; b: number }[] = []
+  const out: LabelBox[] = []
+  for (const n of nodes) {
+    const text = lang === 'ru' ? n.ru : n.en
+    const cx = n.x * view.scale + view.ox
+    const cy = n.y * view.scale + view.oy
+    const rr = ringRadius(n, view.scale) * view.scale + 4
+    const w = text.length * LABEL_CHAR_PX
+    const tries: [number, number, 'start' | 'end'][] = [
+      [cx + rr, cy, 'start'],
+      [cx - rr, cy, 'end'],
+      [cx + rr, cy + LABEL_LINE_PX, 'start'],
+      [cx + rr, cy - LABEL_LINE_PX, 'start'],
+      [cx - rr, cy + LABEL_LINE_PX, 'end'],
+      [cx - rr, cy - LABEL_LINE_PX, 'end']
+    ]
+    const box = ([x, y, a]: (typeof tries)[number]) => ({
+      l: a === 'start' ? x : x - w,
+      r: a === 'start' ? x + w : x,
+      t: y - LABEL_LINE_PX / 2,
+      b: y + LABEL_LINE_PX / 2
+    })
+    const free = tries.find((c) => {
+      const b = box(c)
+      return !placed.some((p) => b.l < p.r && b.r > p.l && b.t < p.b && b.b > p.t)
+    })
+    const [x, y, anchor] = free ?? tries[0]
+    placed.push(box([x, y, anchor]))
+    out.push({ hash: n.hash, text, state: n.state, x, y, anchor })
+  }
+  return out
+}
