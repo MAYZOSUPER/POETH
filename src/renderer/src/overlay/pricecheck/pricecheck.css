@@ -77,46 +77,134 @@
   padding: var(--sp-5);
 }
 
-/* «честная цена»: две группы — купить сейчас (торговец) и по whisper (лично) */
+/* S24: блок цены — «Цена на рынке: ~X» (или «Цена у Фаустуса») крупно, ниже диапазон и пояснения мелко */
 .pc-summary {
   display: grid;
   gap: var(--sp-3);
 }
-.pc-group {
+.pc-market {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: baseline;
-  gap: var(--sp-1) var(--sp-4);
+  gap: var(--sp-1);
+  min-width: 0;
 }
-.pc-group__price {
+.pc-market__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--fg-muted);
+  font: 600 var(--fs-xs) / 1.2 var(--font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.pc-market__price {
   color: var(--accent-hi);
-  font: 700 var(--fs-lg) / 1.2 var(--font-ui);
+  font: 700 var(--fs-price) / 1.15 var(--font-ui);
 }
-/* простой режим (S18): число крупно, полное название валюты — помельче, медиана переносится целиком */
-.pc-group__price .ui-cur,
-.pc-group__median {
+/* простой режим (S18): число крупно, полное название валюты — помельче */
+.pc-market__price .ui-cur,
+.pc-market__stack .ui-cur {
   white-space: nowrap;
 }
-.pc-group__price .ui-cur__unit {
+.pc-market__price .ui-cur__unit {
   font-size: var(--fs-md);
 }
 .pc .ui-summary__price {
   white-space: normal;
 }
-.pc-group[data-kind='instant'] .pc-group__price {
-  font-size: var(--fs-price);
-}
-.pc-group__median {
+.pc-market__each {
   color: var(--fg-muted);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-md);
   font-weight: 500;
+}
+.pc-market__stack {
+  color: var(--fg);
+  font: 600 var(--fs-md) / 1.3 var(--font-ui);
+}
+.pc-market__note {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.35;
 }
 .pc-group__none {
   color: var(--fg-faint);
   font-size: var(--fs-sm);
 }
-.pc-group__note {
+
+/* S24: рынки Фаустуса «за chaos» / «за divine» — одна строка, одна валюта */
+.pc-fs {
+  display: grid;
+  gap: var(--sp-2);
+}
+.pc-fs-row {
+  display: grid;
+  grid-template-columns: minmax(0, auto) auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--sp-1) var(--sp-4);
+  font-size: var(--fs-sm);
+}
+.pc-fs-row__base {
+  color: var(--fg-muted);
+}
+.pc-fs-row__price {
+  color: var(--accent-hi);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pc-fs-row__note {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+
+/* S24: «Цена может быть выше: не отмечены …» — подсказка с кнопкой, не предупреждение */
+.pc-higher {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  color: var(--fg);
+  font: 500 var(--fs-xs) / 1.4 var(--font-ui);
+}
+.pc-higher > .ui-ico {
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  color: var(--accent-hi);
+}
+.pc-higher__text b {
+  color: var(--accent-hi);
+  font-weight: 700;
+}
+.pc-higher__acts {
   grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* S24: порядок списка лотов словами вместо «колонок» */
+.pc-listings__order {
+  color: var(--fg-faint);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* S24: «Объявления на сайте (часто устаревшие)» — свёрнуты, по кнопке */
+.pc-site__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.pc-site__note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-1) var(--sp-3);
   color: var(--fg-muted);
   font-size: var(--fs-xs);
 }

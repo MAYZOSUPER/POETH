@@ -1,4 +1,5 @@
 import { app, ipcMain, clipboard } from 'electron'
+import { promises as fs } from 'fs'
 import path from 'path'
 import { IPC } from '@shared/ipc'
 import { GAMES, siteUrl, type GameDef, type SiteHost } from '@shared/games'
@@ -8,6 +9,7 @@ import type {
   Poe1ExchangeOffer,
   Poe1ExchangeResult,
   Poe1FallbackMatch,
+  Poe1FaustusResult,
   Poe1SearchResult,
   Poe1UnknownLine
 } from '@shared/types'
@@ -19,6 +21,8 @@ import {
   type TradeFetchItem
 } from '@shared/poe1/pricecheck/results'
 import { parseTradeDataStats, TradeStatsFallback, type TradeStatEntry } from '@shared/poe1/pricecheck/fallback'
+import { faustusPriceByName, feedIdsByName, lastFeedHour, type FaustusPrice } from '@shared/poe1/pricecheck/faustus'
+import type { ExchangeIdNames } from '@shared/wealth/sources'
 import * as trade from '../services/tradeClient'
 import * as secret from '../services/secretStore'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
@@ -26,6 +30,9 @@ import { getSettings } from '../services/settingsStore'
 import { tradeRequest } from '../net'
 import { captureItemText } from '../input/gameInput'
 import { getDivineRate } from './wealth'
+import { getFeedStore } from '../games/poe1/exchange/feedService'
+import { KEEP_HOURS } from '../games/poe1/exchange/feedStore'
+import { resourcesDir } from '../services/questDataset'
 import { sendToCompanion } from '../windows/companionWindow'
 import { onHotkeyAction } from '../hotkeys'
 import type { IpcDomain } from './types'
@@ -287,6 +294,55 @@ function currencyRate(league: unknown): Promise<CurrencyRate | null> {
   return pending
 }
 
+// ---------------------------------------------------------------- S24: цена у Фаустуса
+
+let feedNames: Promise<Map<string, string[]> | null> | null = null
+
+/** id фида ↔ английское имя: обновлённые данные (userData/data) главнее встроенных; один раз за запуск. */
+function loadFeedNames(): Promise<Map<string, string[]> | null> {
+  feedNames ??= (async () => {
+    for (const base of [path.join(app.getPath('userData'), 'data'), path.join(resourcesDir(), 'data')]) {
+      try {
+        const raw = JSON.parse(await fs.readFile(path.join(base, 'poe1', 'wealth', 'exchange-ids.json'), 'utf8')) as ExchangeIdNames
+        if (raw && raw.version === 1 && raw.names && typeof raw.names === 'object') return feedIdsByName(raw.names)
+      } catch {
+        // следующий кандидат
+      }
+    }
+    return null
+  })()
+  return feedNames
+}
+
+/**
+ * Цена у Фаустуса по почасовому фиду обмена GGG (тот же кэш часов, что у «Богатства» и «Обмена»), курс — тот же,
+ * что у плашки в шапке. Сайт трейда не трогаем — лимиты GGG не тратятся.
+ */
+async function poe1Faustus(args: unknown): Promise<Poe1FaustusResult> {
+  if (typeof args !== 'object' || args === null) return { ok: false }
+  const { league, names } = args as Record<string, unknown>
+  if (typeof league !== 'string' || !league || league.length > 100 || !Array.isArray(names)) return { ok: false }
+  const wanted = names.filter((n): n is string => typeof n === 'string' && n.length > 0 && n.length < 200).slice(0, 40)
+  try {
+    const [byName, rate] = await Promise.all([loadFeedNames(), currencyRate(league)])
+    if (!byName || !rate) return { ok: false }
+    const feed = getFeedStore()
+    await feed.refresh(league)
+    const hours = feed.hours(league, KEEP_HOURS)
+    const last = lastFeedHour(hours)
+    if (last === undefined) return { ok: false }
+    const prices: Record<string, FaustusPrice> = {}
+    for (const name of wanted) {
+      const p = faustusPriceByName(hours, league, byName, name, rate.chaosPerDivine)
+      if (p) prices[name] = p
+    }
+    return { ok: true, chaosPerDivine: rate.chaosPerDivine, lastHour: last * 1000, prices }
+  } catch (e) {
+    console.warn('[trade] цена у Фаустуса:', e instanceof Error ? e.message : e)
+    return { ok: false }
+  }
+}
+
 // ---------------------------------------------------------------- регистрация
 
 function register(): void {
@@ -302,6 +358,7 @@ function register(): void {
   ipcMain.handle(IPC.trade.poe1MatchUnknown, (_e, lang: unknown, lines: unknown) => poe1MatchUnknown(lang, lines))
   // одно действие игрока — текст whisper в буфер; отправляет игрок сам
   ipcMain.handle(IPC.trade.currencyRate, (_e, league: unknown) => currencyRate(league))
+  ipcMain.handle(IPC.trade.poe1Faustus, (_e, args: unknown) => poe1Faustus(args))
   ipcMain.handle(IPC.trade.copyText, (_e, text: unknown) => {
     if (typeof text !== 'string' || !text || text.length > 2000) return false
     clipboard.writeText(text)

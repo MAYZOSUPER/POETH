@@ -9,7 +9,7 @@ import {
   type StatFilter,
   type TradeStatus
 } from '@shared/poe1/pricecheck'
-import type { Poe1Listing, Poe1Price, PriceGroupSummary } from '@shared/poe1/pricecheck/results'
+import type { MarketPrice, Poe1Listing, Poe1Price } from '@shared/poe1/pricecheck/results'
 import type { TradeWindowTarget } from '@shared/types/fav'
 import type { LiveAddError } from '@shared/types/live'
 import { parseTradeUrl } from '@shared/favorites/tradeUrl'
@@ -24,9 +24,13 @@ import { ageKey, currencyLabel, fmtNum, tierWordKey } from './format'
 import { modText, modTextParts } from '@shared/poe1/pricecheck/filters/mod-text'
 import { CoinIcon, Currency, CurrencyTipBody, RateTipBody, TipAnchor, useCurrencyNames } from '../../components/Currency'
 import type { RuCase } from '@shared/currency'
-import { convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
+import { chaosRates, convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
 import { createClickGuard, lotActions, whisperCommand } from '@shared/poe1/pricecheck/lotActions'
 import type { Verdict, VerdictKind } from '@shared/poe1/pricecheck/verdict'
+import { faustusConfidence, hourRange } from '@shared/poe1/pricecheck/faustus'
+import { faustusView, marketView, type FaustusRowView, type MarketView } from '@shared/poe1/pricecheck/priceBlock'
+import type { HigherHint } from '@shared/poe1/pricecheck/higher'
+import { CHAOS_ID, DIVINE_ID } from '@shared/wealth/exchange'
 import { VISIBLE_WARNINGS, type PriceWarning } from '@shared/poe1/pricecheck/warnings'
 import { compareLot, type LotComparison } from '@shared/poe1/pricecheck/compare'
 import { Select } from '../../components/Select'
@@ -109,14 +113,16 @@ function fmtDiv(v: number, lang: UiLang): string {
   return lang === 'ru' ? s.replace('.', ',') : s
 }
 
-/** Цена с иконкой и подсказкой (там же — перевод в другую валюту по курсу); full — полное название (простой режим). */
-function Price({ price, lang, full = false }: { price: Poe1Price; lang: UiLang; full?: boolean }) {
+/**
+ * Цена с иконкой и подсказкой (там же — перевод в другую валюту по курсу); full — полное название (простой режим),
+ * approx — «~» перед числом (после иконки).
+ */
+function Price({ price, lang, full = false, approx = false }: { price: Poe1Price; lang: UiLang; full?: boolean; approx?: boolean }) {
   const t = useOverlayT()
   const rate = usePriceCheckStore((s) => s.rate?.chaosPerDivine)
   const conv = conversionTitle(price, rate, lang, t)
-  return (
-    <Currency tag={price.currency} text={fmtNum(price.amount, lang)} full={full} lang={lang} className="pc-price" extra={conv && <b>{conv}</b>} />
-  )
+  const text = `${approx ? '~' : ''}${fmtNum(price.amount, lang)}`
+  return <Currency tag={price.currency} text={text} full={full} lang={lang} className="pc-price" extra={conv && <b>{conv}</b>} />
 }
 
 /** Цена текстом: простой режим — полное название с падежом («за ~14 Сфер хаоса»), эксперт — «14 c». */
@@ -569,33 +575,69 @@ function ItemFiltersRow({ filters, item, t }: { filters: ItemFilters; item: Pars
 
 // ---------------------------------------------------------------- результаты
 
-function GroupLine({ kind, g, lang, t }: { kind: 'instant' | 'person'; g: PriceGroupSummary; lang: UiLang; t: T }) {
-  const simple = usePriceCheckStore((s) => s.simple)
+/** S24: «цена на рынке» в единице показа (курс шапки и курсы прочих валют по обмену у Фаустуса). */
+function useMarketView(m: MarketPrice | undefined): MarketView | undefined {
+  const rate = usePriceCheckStore((s) => s.rate?.chaosPerDivine)
+  const rates = usePriceCheckStore((s) => s.rates)
+  return m ? marketView(m, rate, chaosRates(rate, rates)) : undefined
+}
+
+/**
+ * S24: блок цены под вопрос «сколько стоит моя вещь»: «Цена на рынке: ~X» и диапазон самых дешёвых похожих.
+ * Мгновенный выкуп и whisper — пояснение (эксперт — строкой, простой режим — в «Почему такая цена?»); пустые группы
+ * не показываем. Одна строка — одна единица, вторая — в подсказке у цены.
+ */
+function MarketSummary({ result, simple, lang, t }: { result: Extract<PcResult, { kind: 'trade' }>; simple: boolean; lang: UiLang; t: T }) {
   const priceText = usePriceText(lang)
+  const shown = useMarketView(result.market)
+  const conf = result.honest.confidence
+  const split = shown
+    ? [
+        shown.instant && t('pc1.s24.split.instant', { price: priceText(shown.instant, 'gen') }),
+        shown.person && t('pc1.s24.split.person', { price: priceText(shown.person, 'gen') })
+      ].filter(Boolean)
+    : []
   return (
-    <div className="pc-group" data-kind={kind}>
-      <span className={`ui-tag ui-tag--${kind === 'instant' ? 'merchant' : 'person'}`}>{t(`pc1.summary.${kind}`)}</span>
-      {g.min ? (
-        <span className="pc-group__price">
-          <Price price={g.min} lang={lang} full={simple} />
-          {g.median && g.count > 1 && (
-            <>
-              {' '}
-              <span className="pc-group__median">· {t('pc1.summary.median', { price: priceText(g.median) })}</span>
-            </>
-          )}
-        </span>
+    <div className="ui-summary pc-summary">
+      {shown ? (
+        <div className="pc-market">
+          <span className="pc-market__label">
+            {t(simple ? 'pc1.s24.market' : 'pc1.s24.market.short')}
+            <span className="ui-q" title={t('pc1.s24.market.help')}>
+              ?
+            </span>
+          </span>
+          <span className="pc-market__price">
+            <Price price={shown.mid} lang={lang} full={simple} approx />
+          </span>
+          <span className="pc-market__note">
+            {shown.min.amount === shown.max.amount
+              ? t('pc1.s24.market.same', { n: shown.lots })
+              : t('pc1.s24.market.range', { n: shown.lots, min: fmtNum(shown.min.amount, lang), max: priceText(shown.max, 'gen') })}
+          </span>
+          {!simple && split.length > 0 && <span className="pc-market__note">{split.join(' · ')}</span>}
+        </div>
       ) : (
-        <span className="pc-group__none">{t('pc1.summary.none')}</span>
+        <span className="pc-group__none">{t('pc1.s24.market.none')}</span>
       )}
-      <span className="pc-group__note">{t(`pc1.summary.${kind}.note`)}</span>
+      <span className="ui-summary__conf">
+        <span className="ui-pips">
+          {[1, 2, 3, 4].map((i) => (
+            <i key={i} className={i <= conf ? 'on' : undefined} />
+          ))}
+        </span>
+        {t(`pc1.conf.${conf}`)} · {t('pc1.conf.similar', { n: result.total })}
+        {result.cached && <span className="ui-tag">{t('pc1.cached')}</span>}
+      </span>
     </div>
   )
 }
 
+/** «Почему такая цена?» (простой режим): что искали, откуда цена, где купить дешевле — словами, по одной единице. */
 function WhyHint({ result, lang, t }: { result: Extract<PcResult, { kind: 'trade' }>; lang: UiLang; t: T }) {
   const range = usePriceCheckStore((s) => s.searchStatRange)
   const priceText = usePriceText(lang)
+  const m = useMarketView(result.market)
   const { instant, person } = result.honest
   const outliers = instant.outliers.length + person.outliers.length
   return (
@@ -603,9 +645,44 @@ function WhyHint({ result, lang, t }: { result: Extract<PcResult, { kind: 'trade
       <Icon name="help" />
       <span>
         <b>{t('pc1.why.title')}</b> {t('pc1.why.search', { range, n: result.total })}
-        {instant.min && <> {t('pc1.why.instant', { price: priceText(instant.min, 'gen') })}</>}
-        {person.min && <> {t('pc1.why.person', { price: priceText(person.min, 'gen') })}</>}
+        {m && <> {t('pc1.s24.why.market')}</>}
+        {m?.instant && <> {t('pc1.s24.why.instant', { price: priceText(m.instant, 'gen') })}</>}
+        {m?.person && <> {t('pc1.s24.why.person', { price: priceText(m.person, 'gen') })}</>}
         {outliers > 0 && <> {t('pc1.why.outliers', { n: outliers })}</>}
+      </span>
+    </div>
+  )
+}
+
+/**
+ * S24: «Цена может быть выше: не отмечены …» — поиск широкий, цена низкая, а ценные свойства не отмечены.
+ * Кнопка отмечает именно эти свойства и ищет один раз; отметили сами — строка уходит.
+ */
+function HigherLine({ hint, lang, t }: { hint: HigherHint; lang: UiLang; t: T }) {
+  usePriceCheckStore((s) => s.rev)
+  const considerMore = usePriceCheckStore((s) => s.considerMore)
+  const phase = usePriceCheckStore((s) => s.phase)
+  const left = hint.filters.filter((f) => f.disabled)
+  if (!left.length) return null
+  const names = left.map((f) => {
+    const p = statParts(f, lang)
+    return `${p.before}${p.value ?? ''}${p.after}`.replace(/\s*·\s*$/, '').trim()
+  })
+  return (
+    <div className="pc-higher" role="note">
+      <Icon name="arrow-up" />
+      <span className="pc-higher__text">
+        <b>{t('pc1.s24.higher')}</b> {t('pc1.s24.higher.list', { list: names.map((n) => t('pc1.s24.quote', { s: n })).join(', ') })}
+        {hint.more > 0 && <> {t('pc1.s24.higher.more', { n: hint.more })}</>}
+      </span>
+      <span className="pc-higher__acts">
+        <span className="ui-q" title={t('pc1.s24.higher.help')}>
+          ?
+        </span>
+        <button type="button" className="ui-btn ui-btn--sm" disabled={phase === 'loading'} onClick={() => considerMore(left)}>
+          <Icon name="search" />
+          {t('pc1.s24.higher.btn')}
+        </button>
       </span>
     </div>
   )
@@ -720,7 +797,7 @@ function ListingRow({
         <span className="ui-listing__who">
           <span
             className={`ui-tag ui-tag--${acts.buyout ? 'merchant' : 'person'}`}
-            title={t(acts.buyout ? 'pc1.tag.buyout.help' : 'pc1.tag.person.help')}
+            title={t(acts.buyout ? 'pc1.s24.tag.buyout.help' : 'pc1.tag.person.help')}
           >
             {t(acts.buyout ? 'pc1.tag.buyout' : 'pc1.tag.person')}
           </span>{' '}
@@ -826,11 +903,16 @@ const VERDICT_TONE: Record<VerdictKind, string> = {
 
 function verdictText(
   v: Verdict,
-  ctx: { bulk: boolean; timeless: boolean; noMods?: boolean; one: string },
+  ctx: { bulk: boolean; timeless: boolean; noMods?: boolean; one: string; exchange?: boolean },
   priceText: PriceText,
   t: T
 ): { title: string; sub?: string; help?: string } {
   const price = v.price ? priceText(v.price) : ''
+  // S24: цена у Фаустуса — продавать там, а не выставлять на сайте; «похожих» — штук за час
+  if (ctx.exchange && v.kind === 'list') {
+    return { title: t('pc1.s24.v.sell', { price: v.price ? priceText(v.price, 'acc') : '' }), help: t('pc1.s24.v.sell.help') }
+  }
+  if (ctx.exchange && v.kind === 'few') return { title: t('pc1.v.few'), sub: t('pc1.s24.v.few', { n: v.count, price }) }
   switch (v.kind) {
     case 'none':
       return {
@@ -909,6 +991,7 @@ function VerdictPlate({
   bulk,
   timeless,
   noMods,
+  exchange,
   simple,
   lang,
   t
@@ -917,6 +1000,8 @@ function VerdictPlate({
   bulk: boolean
   timeless: boolean
   noMods?: boolean
+  /** S24: цена у Фаустуса */
+  exchange?: boolean
   simple: boolean
   lang: UiLang
   t: T
@@ -925,7 +1010,7 @@ function VerdictPlate({
   const names = useCurrencyNames(lang)
   // «меньше 1 Сферы хаоса» / «less than 1 Chaos Orb»; эксперт — «1 c»
   const one = simple ? `1 ${names.after('chaos', 1, 'gen')}` : '1 c'
-  const { title, sub, help } = verdictText(v, { bulk, timeless, noMods, one }, priceText, t)
+  const { title, sub, help } = verdictText(v, { bulk, timeless, noMods, one, exchange }, priceText, t)
   const tip = simple ? help : [sub, help].filter(Boolean).join(' ')
   return (
     <div className={`pc-verdict pc-verdict--${v.caution ? 'info' : VERDICT_TONE[v.kind]}`} role="status" data-kind={v.kind}>
@@ -994,7 +1079,6 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
   const [hover, setHover] = useState<CardAt | null>(null)
   const [pinned, setPinned] = useState<CardAt | null>(null)
   const cardDomId = useId()
-  const conf = result.honest.confidence
   const outliers = new Set([...result.honest.instant.outliers, ...result.honest.person.outliers])
   const rows = result.listings.filter((l) => !outliers.has(l.id))
   const shown = all ? rows : rows.slice(0, SHOW_LISTINGS)
@@ -1024,31 +1108,15 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
     <>
       <VerdictPlate v={result.verdict} bulk={false} timeless={false} simple={simple} lang={lang} t={t} />
       <WarningList key={result.siteUrl} list={result.warnings} t={t} />
-      <div className="ui-summary pc-summary">
-        <GroupLine kind="instant" g={result.honest.instant} lang={lang} t={t} />
-        <GroupLine kind="person" g={result.honest.person} lang={lang} t={t} />
-        <span className="ui-summary__conf">
-          <span className="ui-pips">
-            {[1, 2, 3, 4].map((i) => (
-              <i key={i} className={i <= conf ? 'on' : undefined} />
-            ))}
-          </span>
-          {t(`pc1.conf.${conf}`)} · {t('pc1.conf.similar', { n: result.total })}
-          {result.cached && <span className="ui-tag">{t('pc1.cached')}</span>}
-        </span>
-      </div>
+      <MarketSummary result={result} simple={simple} lang={lang} t={t} />
+      {result.higher && <HigherLine hint={result.higher} lang={lang} t={t} />}
       {simple && <WhyHint result={result} lang={lang} t={t} />}
-      {simple && shown.some((l) => lotActions(l).buyout) && (
-        <div className="ui-hint pc-defaults">
-          <Icon name="info" />
-          <span>{t('pc1.buyout.hint')}</span>
-        </div>
-      )}
       <div className="pc-blk">
+        {/* S24: не «колонки» (их приняли за сортировку): порядок сайта — по цене, это и пишем */}
         <div className="ui-label">
           {t('pc1.listings')}
           <span className="ui-label__grow" />
-          {!simple && t('pc1.listings.cols')}
+          <span className="pc-listings__order">{t('pc1.s24.listings.order')}</span>
         </div>
         <div className="pc-listings ui-scroll">
           {shown.map((l) => (
@@ -1104,24 +1172,195 @@ function BulkResult({ result, simple, lang, t }: { result: Extract<PcResult, { k
         <span className="ui-summary__conf">{t('pc1.bulk.title')} · {t('pc1.conf.similar', { n: result.total })}</span>
       </div>
       <div className="pc-blk">
-        <div className="pc-listings ui-scroll">
-          {result.offers.slice(0, 10).map((o) => (
-            <div className="ui-listing" key={o.id}>
-              <span className="ui-listing__price">
-                <Currency tag={o.currency} text={fmtNum(o.exchangeAmount, lang)} lang={lang} />
-              </span>
-              <span className="ui-listing__meta">
-                <span className="ui-listing__who">{o.characterName || o.accountName}</span>
-                <span>
-                  {t('pc1.bulk.rate', { n: o.itemAmount })} · {t('pc1.bulk.stock', { n: o.stock })}
-                </span>
-              </span>
-              <span />
-            </div>
-          ))}
-        </div>
+        <OffersList offers={result.offers} lang={lang} t={t} />
       </div>
     </>
+  )
+}
+
+/** Предложения обмена на сайте: цена за пачку, сколько штук, запас. */
+function OffersList({ offers, lang, t }: { offers: Extract<PcResult, { kind: 'bulk' }>['offers']; lang: UiLang; t: T }) {
+  return (
+    <div className="pc-listings ui-scroll">
+      {offers.slice(0, 10).map((o) => (
+        <div className="ui-listing" key={o.id}>
+          <span className="ui-listing__price">
+            <Currency tag={o.currency} text={fmtNum(o.exchangeAmount, lang)} lang={lang} />
+          </span>
+          <span className="ui-listing__meta">
+            <span className="ui-listing__who">{o.characterName || o.accountName}</span>
+            <span>
+              {t('pc1.bulk.rate', { n: o.itemAmount })} · {t('pc1.bulk.stock', { n: o.stock })}
+            </span>
+          </span>
+          <span />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- S24: цена у Фаустуса
+
+/** Рынок «за chaos» / «за divine»: цена 1 шт., диапазон сделок часа и объём — всё в валюте рынка. */
+function FaustusRow({ row, simple, lang, t }: { row: FaustusRowView; simple: boolean; lang: UiLang; t: T }) {
+  const names = useCurrencyNames(lang)
+  return (
+    <div className="pc-fs-row">
+      <span className="pc-fs-row__base">
+        {t('pc1.s24.fs.for', { cur: simple ? names.after(row.base, 2, 'acc') : row.base })}
+      </span>
+      <span className="pc-fs-row__price">
+        <Price price={row.each} lang={lang} approx />
+      </span>
+      <span className="pc-fs-row__note">
+        {row.lo !== row.hi && (
+          <>{t('pc1.s24.fs.deals', { lo: fmtNum(row.lo, lang), hi: `${fmtNum(row.hi, lang)} ${currencyLabel(row.base)}` })} · </>
+        )}
+        {t('pc1.s24.fs.volume', { n: row.volume.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US') })}
+      </span>
+    </div>
+  )
+}
+
+/** Сфера хаоса — сама мера цены: показываем курс из шапки, а не «цену хаоса в хаосе». */
+function ChaosPlate({ rate, lang, t }: { rate: number; lang: UiLang; t: T }) {
+  const names = useCurrencyNames(lang)
+  const n = fmtNum(roundChaos(rate), lang)
+  return (
+    <div className="pc-verdict pc-verdict--info" role="status">
+      <Icon name="coins" />
+      <span className="pc-verdict__text">
+        <b className="pc-verdict__title">{t('pc1.s24.v.chaos')}</b>
+        <span className="pc-verdict__sub">
+          {t('pc1.s24.v.chaos.sub', { div: `1 ${names.after('divine', 1)}`, chaos: `${n} ${names.after('chaos', n)}` })}
+        </span>
+      </span>
+      <span />
+    </div>
+  )
+}
+
+/**
+ * S24: валюта и всё, что меняют у Фаустуса: цена по фиду обмена GGG за последний час (без запроса к сайту), у стопки —
+ * сумма; рынки «за chaos» и «за divine» отдельными строками. Объявления сайта — свёрнуты, по кнопке.
+ */
+function FaustusResult({ result, simple, lang, t }: { result: Extract<PcResult, { kind: 'faustus' }>; simple: boolean; lang: UiLang; t: T }) {
+  const f = result.faustus
+  const view = faustusView(f, result.stack)
+  const conf = faustusConfidence(f)
+  const chaos = f.id === CHAOS_ID
+  const divine = f.id === DIVINE_ID
+  return (
+    <>
+      {chaos ? (
+        <ChaosPlate rate={f.chaosPerDivine} lang={lang} t={t} />
+      ) : (
+        <VerdictPlate v={result.verdict} bulk exchange timeless={false} simple={simple} lang={lang} t={t} />
+      )}
+      {!chaos && (
+        <div className="ui-summary pc-summary">
+          <div className="pc-market">
+            <span className="pc-market__label">
+              {t(divine ? 'pc1.s24.fs.titleDivine' : 'pc1.s24.fs.title')}
+              <span className="ui-q" title={t('pc1.s24.fs.help')}>
+                ?
+              </span>
+            </span>
+            <span className="pc-market__price">
+              <Price price={view.each} lang={lang} full={simple} approx /> <span className="pc-market__each">{t('pc1.s24.fs.each')}</span>
+            </span>
+            {view.stack && (
+              <span className="pc-market__stack">
+                {t('pc1.s24.fs.stack', { n: result.stack })} <Price price={view.stack} lang={lang} full={simple} approx />
+              </span>
+            )}
+            <span className="pc-market__note">
+              {divine ? t('pc1.s24.fs.srcDivine', { hours: hourRange(f.hour) }) : t('pc1.s24.fs.src', { hours: hourRange(f.hour) })}
+            </span>
+          </div>
+          <div className="pc-fs">
+            {view.rows.map((row) => (
+              <FaustusRow key={row.base} row={row} simple={simple} lang={lang} t={t} />
+            ))}
+          </div>
+          <span className="ui-summary__conf">
+            <span className="ui-pips">
+              {[1, 2, 3, 4].map((i) => (
+                <i key={i} className={i <= conf ? 'on' : undefined} />
+              ))}
+            </span>
+            {t(`pc1.conf.${conf}`)} · {t('pc1.s24.fs.traded', { n: view.volume.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US') })}
+          </span>
+        </div>
+      )}
+      {f.age > 0 && (
+        <div className="ui-hint pc-defaults">
+          <Icon name="info" />
+          <span>{t('pc1.s24.fs.old', { n: f.age })}</span>
+        </div>
+      )}
+      <SiteOffers result={result} lang={lang} t={t} />
+    </>
+  )
+}
+
+/** «Объявления на сайте (часто устаревшие)»: свёрнуты; первый раз раскрыли — один запрос обмена к сайту. */
+function SiteOffers({ result, lang, t }: { result: Extract<PcResult, { kind: 'faustus' }>; lang: UiLang; t: T }) {
+  const load = usePriceCheckStore((s) => s.loadSiteOffers)
+  const site = result.site
+  const [open, setOpen] = useState(site.phase !== 'idle')
+  const now = useNow(open && site.phase === 'limit')
+  // новый предмет — объявления не загружены: свёрнуто (сами не грузим — только по кнопке)
+  useEffect(() => {
+    if (site.phase === 'idle') setOpen(false)
+  }, [site.phase])
+  const toggle = (): void => {
+    setOpen((o) => !o)
+    if (!open && site.phase === 'idle') void load()
+  }
+  return (
+    <div className="pc-blk pc-site">
+      <div className="pc-site__head">
+        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" aria-expanded={open} onClick={toggle}>
+          <Icon name={open ? 'chev-d' : 'chev-r'} />
+          {t('pc1.s24.site')}
+        </button>
+        <span className="ui-q" title={t('pc1.s24.site.help')}>
+          ?
+        </span>
+      </div>
+      {open && site.phase === 'loading' && <span className="pc-site__note">{t('pc1.s24.site.loading')}</span>}
+      {open && site.phase === 'ok' && (
+        <>
+          <span className="pc-site__note">
+            {site.offers.length ? t('pc1.s24.site.count', { n: site.total }) : t('pc1.s24.site.empty')}
+            {site.cached && <span className="ui-tag">{t('pc1.cached')}</span>}
+          </span>
+          {site.offers.length > 0 && <OffersList offers={site.offers} lang={lang} t={t} />}
+        </>
+      )}
+      {open && site.phase === 'limit' && (
+        <span className="pc-site__note">
+          {t('pc1.s24.site.limit', { time: `0:${String(Math.max(0, Math.ceil((site.retryAt - now) / 1000))).padStart(2, '0')}` })}{' '}
+          {now >= site.retryAt && (
+            <button type="button" className="ui-btn ui-btn--sm" onClick={() => void load()}>
+              <Icon name="refresh" />
+              {t('pc1.s24.site.retry')}
+            </button>
+          )}
+        </span>
+      )}
+      {open && site.phase === 'error' && (
+        <span className="pc-site__note">
+          {t('pc1.s24.site.error')} {site.error && t(...netErrorText(site.error))}{' '}
+          <button type="button" className="ui-btn ui-btn--sm" onClick={() => void load()}>
+            <Icon name="refresh" />
+            {t('pc1.s24.site.retry')}
+          </button>
+        </span>
+      )}
+    </div>
   )
 }
 
@@ -1260,6 +1499,8 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
       <>
         {result.kind === 'trade' ? (
           <TradeResult result={result} simple={simple} lang={lang} t={t} />
+        ) : result.kind === 'faustus' ? (
+          <FaustusResult result={result} simple={simple} lang={lang} t={t} />
         ) : (
           <BulkResult result={result} simple={simple} lang={lang} t={t} />
         )}
@@ -1399,7 +1640,8 @@ function PriceActions({ result, title, t }: { result: PcResult | undefined; titl
     setLiveError(null)
   }, [siteUrl])
   const search = siteUrl ? parseTradeUrl(siteUrl) : null
-  const bulk = result?.kind === 'bulk'
+  // обмен (и цена Фаустуса) live search не умеет
+  const bulk = result?.kind === 'bulk' || result?.kind === 'faustus'
 
   const save = async (): Promise<void> => {
     if (!search?.slug || saved === 'busy' || saved === 'done') return
