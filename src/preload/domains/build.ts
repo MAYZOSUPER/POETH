@@ -17,7 +17,10 @@ export function buildBridge(): BuildIpcApi {
       setEdits: (id, edits) => ipcRenderer.invoke(b.setEdits, id, edits),
       reload: (id) => ipcRenderer.invoke(b.reload, id),
       taken: () => ipcRenderer.invoke(b.taken),
-      showTree: (stage) => ipcRenderer.invoke(b.showTree, stage)
+      showTree: (stage) => ipcRenderer.invoke(b.showTree, stage),
+      starters: () => ipcRenderer.invoke(b.starters),
+      playStarter: (id, mode) => ipcRenderer.invoke(b.playStarter, id, mode),
+      openStarterLink: (id, kind) => ipcRenderer.invoke(b.openStarterLink, id, kind)
     },
     onBuildState: (cb) => subscribe(IPC.events.buildState, cb),
     onBuildTaken: (cb) => subscribe(IPC.events.buildTaken, cb)

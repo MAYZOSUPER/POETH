@@ -1,14 +1,44 @@
 import { create } from 'zustand'
 import { BUILD_GEMS_FILE, BUILD_TREE_FILE, parseGemsData, parseTreeData } from '@shared/build/data'
 import type { GemsData, TreeData } from '@shared/build/types'
-import type { BuildImportResult, BuildState, BuildTaken, PobStageEdits } from '@shared/types/build'
+import { NO_FILTERS, type StarterFilters, type StarterSort, type StartersState } from '@shared/starters/view'
+import type {
+  BuildImportResult,
+  BuildState,
+  BuildTaken,
+  PobStageEdits,
+  StarterLinkKind,
+  StarterPlayMode,
+  StarterPlayResult
+} from '@shared/types/build'
 
 // Вкладка «Билд» (S39) в окне компаньона: библиотека билдов и открытый билд — из main (build:state + событие),
 // «взято» по журналу — build:taken + событие, данные дерева и камней S36 — poeth://data/poe1/build/… (один раз
 // на окно). Какой этап смотрит игрок — состояние окна: смотреть вперёд не значит менять текущий этап.
 // Для S40 («Предметы этапа», «Против надетого»): активный билд — state.active, этап на экране — viewStage().
+// S59: раздел «Мои билды · Стартеры», список стартеров лиги (build:starters), фильтры и сортировка — состояние окна;
+// «Играть по этому гайду» и ссылки автора — по id записи (адреса знает только main).
 
 export type ImportError = Exclude<BuildImportResult, { ok: true }>
+export type StarterPlayFail = Exclude<StarterPlayResult, { ok: true }>
+
+/** Раздел вкладки: свои билды (вставка, недавние, открытый) или стартеры лиги. */
+export type BuildSection = 'mine' | 'starters'
+
+/** Диалог «Играть по этому гайду»: подтверждение, загрузка PoB, ошибка. */
+export interface StarterPlayDialog {
+  id: string
+  phase: 'confirm' | 'loading' | 'error'
+  error?: StarterPlayFail
+}
+
+/** Итог последнего «Играть»: баннер «Автор обновил PoB…», «Добавлено в библиотеку». */
+export interface StarterPlayDone {
+  id: string
+  mode: StarterPlayMode
+  changed: boolean
+  leveling: Extract<StarterPlayResult, { ok: true }>['leveling']
+}
 
 interface BuildStore {
   ready: boolean
@@ -26,6 +56,16 @@ interface BuildStore {
   input: string
   /** этап на экране (индекс в плане этапов); null — текущий */
   view: number | null
+  section: BuildSection
+  /** стартеры лиги; null — ещё не загружали */
+  starters: StartersState | null
+  startersLoading: boolean
+  stFilters: StarterFilters
+  stSort: StarterSort
+  /** раскрытая карточка («Подробнее») */
+  stOpen: string | null
+  play: StarterPlayDialog | null
+  played: StarterPlayDone | null
 
   init: () => Promise<() => void>
   setInput: (text: string) => void
@@ -36,6 +76,17 @@ interface BuildStore {
   remove: (id: string) => Promise<void>
   setEdits: (edits: PobStageEdits) => Promise<void>
   viewStage: (index: number | null) => void
+  setSection: (section: BuildSection) => void
+  loadStarters: () => Promise<void>
+  setStFilters: (patch: Partial<StarterFilters>) => void
+  resetStFilters: () => void
+  setStSort: (sort: StarterSort) => void
+  toggleStarter: (id: string) => void
+  askPlay: (id: string) => void
+  cancelPlay: () => void
+  playStarter: (mode: StarterPlayMode) => Promise<boolean>
+  clearPlayed: () => void
+  openStarterLink: (id: string, kind: StarterLinkKind) => Promise<boolean>
 }
 
 const api = () => window.overlayApi.build
@@ -82,6 +133,14 @@ export const useBuildStore = create<BuildStore>((set, get) => ({
   errorFrom: null,
   input: '',
   view: null,
+  section: 'mine',
+  starters: null,
+  startersLoading: false,
+  stFilters: NO_FILTERS,
+  stSort: 'recommended',
+  stOpen: null,
+  play: null,
+  played: null,
 
   init: async () => {
     users += 1
@@ -167,5 +226,70 @@ export const useBuildStore = create<BuildStore>((set, get) => ({
     set({ state: await api().setEdits(id, edits) })
   },
 
-  viewStage: (view) => set({ view })
+  viewStage: (view) => set({ view }),
+
+  setSection: (section) => {
+    set({ section })
+    if (section === 'starters') void get().loadStarters()
+  },
+
+  loadStarters: async () => {
+    if (get().startersLoading) return
+    set({ startersLoading: true })
+    try {
+      set({ starters: await api().starters() })
+    } catch {
+      set({ starters: { status: 'none', league: null, updatedAt: null, starters: [], previous: null, invalid: 0 } })
+    } finally {
+      set({ startersLoading: false })
+    }
+  },
+
+  setStFilters: (patch) => {
+    const next = { ...get().stFilters, ...patch }
+    // восхождение — только вместе с классом
+    if ('cls' in patch && patch.cls !== get().stFilters.cls) next.asc = null
+    set({ stFilters: next })
+  },
+  resetStFilters: () => set({ stFilters: NO_FILTERS }),
+  setStSort: (stSort) => set({ stSort }),
+  toggleStarter: (id) => set({ stOpen: get().stOpen === id ? null : id }),
+
+  askPlay: (id) => set({ play: { id, phase: 'confirm' } }),
+  cancelPlay: () => {
+    if (get().play?.phase !== 'loading') set({ play: null })
+  },
+
+  playStarter: async (mode) => {
+    const play = get().play
+    if (!play || play.phase === 'loading' || get().busy) return false
+    set({ play: { id: play.id, phase: 'loading' }, played: null })
+    let res: StarterPlayResult
+    try {
+      res = await api().playStarter(play.id, mode)
+    } catch {
+      res = { ok: false, error: 'fetch', fetchError: 'network' }
+    }
+    if (!res.ok) {
+      set({ play: { id: play.id, phase: 'error', error: res } })
+      return false
+    }
+    const done: StarterPlayDone = { id: play.id, mode, changed: res.changed, leveling: res.leveling }
+    set({
+      state: res.state,
+      play: null,
+      played: done,
+      ...(mode === 'replace' ? { section: 'mine' as const, view: null, error: null, errorFrom: null } : {})
+    })
+    return true
+  },
+  clearPlayed: () => set({ played: null }),
+
+  openStarterLink: async (id, kind) => {
+    try {
+      return await api().openStarterLink(id, kind)
+    } catch {
+      return false
+    }
+  }
 }))

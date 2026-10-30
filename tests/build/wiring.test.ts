@@ -18,7 +18,13 @@ vi.mock('../../src/main/services/iconCache', () => ({ iconResponse: vi.fn() }))
 describe('вставка кода PoB — только компаньон (политика S29)', () => {
   it('importPob и reload: компаньон да, оверлей и сайдбар нет', () => {
     // S53: в наборе ещё каналы фильтра лута (tests/lootFilter/store.test.ts) — здесь проверяем только свои
-    expect([...COMPANION_CHANNELS].filter((c) => c.startsWith('build:'))).toEqual([IPC.build.importPob, IPC.build.reload])
+    // S59: «Играть по этому гайду» (сеть по кнопке) и ссылки автора стартера (системный браузер)
+    expect([...COMPANION_CHANNELS].filter((c) => c.startsWith('build:'))).toEqual([
+      IPC.build.importPob,
+      IPC.build.reload,
+      IPC.build.playStarter,
+      IPC.build.openStarterLink
+    ])
     for (const ch of COMPANION_CHANNELS) {
       expect(ipcAllowed('index', ch)).toBe(true)
       expect(ipcAllowed('overlay', ch)).toBe(false)
@@ -45,6 +51,11 @@ describe('poeth://data/poe1/build/<файл>', () => {
     expect(await resolveDataFile('poe1', 'build', 'tree.json')).toBe(join(state.dir, 'res', 'data', 'poe1', 'build', 'tree.json'))
     expect(await resolveDataFile('poe1', 'build', '../tree.json')).toBeNull()
     expect(await resolveDataFile('poe1', 'builds', 'tree.json')).toBeNull()
+    // S59: стартеры лиги — своя подпапка
+    mkdirSync(join(state.dir, 'res', 'data', 'poe1', 'starters'), { recursive: true })
+    writeFileSync(join(state.dir, 'res', 'data', 'poe1', 'starters', '3.30.json'), '{}')
+    expect(await resolveDataFile('poe1', 'starters', '3.30.json')).toBe(join(state.dir, 'res', 'data', 'poe1', 'starters', '3.30.json'))
+    expect(await resolveDataFile('poe1', 'starters', '..')).toBeNull()
     expect(await resolveDataFile('poe1', 'advisor', 'strategies.json')).toBeNull()
     expect(await resolveDataFile('poe1', 'ru', 'missing.ndjson')).toBeNull()
   })

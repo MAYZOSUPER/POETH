@@ -177,3 +177,47 @@ describe('builds.json с диска — недоверенные данные', 
     expect(BUILDS_FORMAT).toBe(1)
   })
 })
+
+describe('S59: билды из «Стартеров»', () => {
+  const STARTER = { id: 'rf-chieftain', league: '3.30', changed: true }
+
+  it('«Добавить в библиотеку» — в список, открытый не меняется; метка стартера и в недавних', () => {
+    const mine = addBuild(emptyLibrary(), build('pobbin-crit'), { kind: 'code' }, 1000, newId)
+    const lib = addBuild(mine, build('pobbin-acts-all-axes'), LINK, 2000, newId, { activate: false, starter: STARTER })
+    expect(lib.active).toBe(mine.active)
+    expect(lib.builds).toHaveLength(2)
+    expect(lib.builds[0]).toMatchObject({ source: LINK, starter: STARTER })
+    const st = stateOf(lib)
+    expect(st.active?.id).toBe(mine.active)
+    expect(st.recent.find((r) => r.id === lib.builds[0].id)?.starter).toBe('rf-chieftain')
+    expect(st.recent.find((r) => r.id === mine.active)?.starter).toBeUndefined()
+  })
+
+  it('«Заменить» — стартер открыт, прежний билд остаётся в библиотеке', () => {
+    const mine = addBuild(emptyLibrary(), build('pobbin-crit'), { kind: 'code' }, 1000, newId)
+    const lib = addBuild(mine, build('pobbin-acts-all-axes'), LINK, 2000, newId, { starter: STARTER })
+    expect(lib.active).toBe(lib.builds[0].id)
+    expect(lib.builds.map((b) => b.id)).toContain(mine.active)
+  })
+
+  it('тот же стартер второй раз — та же запись, правки этапов сохраняются, метка обновляется', () => {
+    let lib = addBuild(emptyLibrary(), build('pobbin-acts-all-axes'), LINK, 1000, newId, { starter: STARTER })
+    const id = lib.builds[0].id
+    lib = setBuildEdits(lib, id, { current: 'spec:3' })
+    lib = addBuild(lib, build('pobbin-acts-all-axes'), LINK, 2000, newId, { starter: { ...STARTER, changed: false } })
+    expect(lib.builds).toHaveLength(1)
+    expect(lib.builds[0]).toMatchObject({ id, edits: { current: 'spec:3' }, starter: { changed: false } })
+  })
+
+  it('метка стартера с диска — проверяется; битая отбрасывается, билд остаётся', () => {
+    const lib = addBuild(emptyLibrary(), build('pobbin-crit'), LINK, 5, newId, { starter: STARTER })
+    expect(parseLibrary(JSON.parse(JSON.stringify(lib)))).toEqual(lib)
+    const raw = JSON.parse(JSON.stringify(lib))
+    raw.builds[0].starter = { id: 'https://evil.example', league: '3.30', changed: 'yes' }
+    const back = parseLibrary(raw)
+    expect(back.builds).toHaveLength(1)
+    expect(back.builds[0]).not.toHaveProperty('starter')
+    raw.builds[0].starter = { id: 'ok-id', league: '3.30', changed: 'yes', extra: 1 }
+    expect(parseLibrary(raw).builds[0].starter).toEqual({ id: 'ok-id', league: '3.30', changed: false })
+  })
+})

@@ -1,9 +1,21 @@
 // IPC домена «Билд» (S39, B3): вставка кода или ссылки PoB, библиотека билдов (userData/builds.json), правки
 // этапов, «взято» по журналу, дерево поверх игры (S38). Разбор кода и сеть — только в main; вставку и загрузку
 // по ссылке может звать только компаньон (политика S29, COMPANION_CHANNELS в src/main/security/policy.ts).
+// S59: «Стартеры» лиги — список из пакета данных, «Играть по этому гайду» и ссылки автора — по id записи
+// (адресов окно не передаёт: их берёт main из проверенного списка); играть и открывать ссылки — только компаньон.
 // Соглашение: каналы '<домен>:<метод>', события 'event:<домен>.<имя>' (уникальность — tests/ipc.test.ts).
 
-import type { BuildImportResult, BuildState, BuildTaken, BuildTreeResult, PobStageEdits } from '../types/build'
+import type {
+  BuildImportResult,
+  BuildState,
+  BuildTaken,
+  BuildTreeResult,
+  PobStageEdits,
+  StarterLinkKind,
+  StarterPlayMode,
+  StarterPlayResult,
+  StartersState
+} from '../types/build'
 
 export const buildChannels = {
   build: {
@@ -14,7 +26,10 @@ export const buildChannels = {
     setEdits: 'build:setEdits',
     reload: 'build:reload',
     taken: 'build:taken',
-    showTree: 'build:showTree'
+    showTree: 'build:showTree',
+    starters: 'build:starters',
+    playStarter: 'build:playStarter',
+    openStarterLink: 'build:openStarterLink'
   }
 } as const
 
@@ -41,6 +56,12 @@ export interface BuildIpcApi {
     taken(): Promise<BuildTaken>
     /** этап для дерева поверх игры (индекс в плане этапов; null — по уровню) */
     showTree(stage: number | null): Promise<BuildTreeResult>
+    /** S59: стартеры лиги (пакет данных, проверенные; вместо адресов — сайты ссылок) */
+    starters(): Promise<StartersState>
+    /** S59: «Играть по этому гайду» — PoB записи одним запросом; 'replace' — открыть, 'add' — только в библиотеку */
+    playStarter(id: string, mode: StarterPlayMode): Promise<StarterPlayResult>
+    /** S59: ссылка записи в системном браузере (адрес — из списка в main); false — ссылки нет */
+    openStarterLink(id: string, kind: StarterLinkKind): Promise<boolean>
   }
   onBuildState(cb: (state: BuildState) => void): () => void
   onBuildTaken(cb: (taken: BuildTaken) => void): () => void

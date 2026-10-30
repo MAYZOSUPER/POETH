@@ -29,3 +29,21 @@ export function ascOrClass(
 export function buildTitle(skill: string, who: string): string {
   return skill ? `${skill} · ${who}` : who
 }
+
+/**
+ * Стартер (S59): класс и восхождение по английским именам PoB → на языке клиента (данные дерева S36);
+ * восхождения нет в данных (новое в лиге) — как в PoB.
+ */
+export function starterClass(
+  tree: TreeData | null,
+  lang: GameLang,
+  className: string,
+  ascendancy: string | null
+): { cls: string; asc: string | null } {
+  const c = tree?.classes.find((x) => x.en === className)
+  const a = c && ascendancy ? c.asc.find((x) => x.en === ascendancy) : undefined
+  return {
+    cls: c ? (lang === 'ru' ? c.ru : c.en) : className,
+    asc: a ? (lang === 'ru' ? a.ru : a.en) : ascendancy
+  }
+}

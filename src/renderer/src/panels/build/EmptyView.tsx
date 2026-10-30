@@ -1,4 +1,4 @@
-import { useId, type FormEvent } from 'react'
+import { useEffect, useId, type FormEvent } from 'react'
 import { ascOrClass, buildTitle, mainSkillName } from './names'
 import { BIco, classLine } from './ui'
 import { sourceHost } from '@shared/build/library'
@@ -9,6 +9,7 @@ import type { IconName } from '../../overlay/Icon'
 
 // Пустое состояние вкладки «Билд» (макет v0.2, раздел 1): вставка кода или ссылки, загрузка (скелет), ошибки
 // «что случилось и что сделать», три мини-инструкции «где взять код» (простой режим), недавние билды.
+// S59: рядом со вставкой — «Выбрать стартер лиги 3.30» (раздел «Стартеры»).
 
 const SITES = ['pobb.in', 'pastebin.com', 'pob.codes', 'poedb.tw', 'maxroll.gg/poe/pob']
 
@@ -121,6 +122,33 @@ function Loading() {
   )
 }
 
+/** «Не знаете, чем начать лигу?» → раздел «Стартеры» (S59). Список читается из данных приложения, без сети. */
+function StarterCta({ expert }: { expert: boolean }) {
+  const t = useT()
+  const league = useBuildStore((s) => s.starters?.league ?? null)
+  const { loadStarters, setSection } = useBuildStore.getState()
+  useEffect(() => {
+    if (!useBuildStore.getState().starters) void loadStarters()
+  }, [loadStarters])
+  return (
+    <div className="bd-st-cta">
+      <span className="ui-mech" aria-hidden="true">
+        <BIco name="star" />
+      </span>
+      {!expert && (
+        <span className="bd-st-cta__t">
+          <b>{t('bd.st.cta.title')}</b>
+          <span>{t('bd.st.cta.text')}</span>
+        </span>
+      )}
+      <button type="button" className="ui-btn ui-btn--primary" onClick={() => setSection('starters')}>
+        <BIco name="star" />
+        {league ? t('bd.st.cta.btn', { league }) : t('bd.st.cta.btnAny')}
+      </button>
+    </div>
+  )
+}
+
 function HowTo() {
   const t = useT()
   const how: { icon: IconName; name: string; steps: string[] }[] = [
@@ -222,6 +250,7 @@ export function EmptyView({ expert }: { expert: boolean }) {
         {!expert && !loading && <p>{t('bd.empty.lead')}</p>}
       </div>
       <Paste />
+      {!loading && <StarterCta expert={expert} />}
       {loading ? (
         <Loading />
       ) : (

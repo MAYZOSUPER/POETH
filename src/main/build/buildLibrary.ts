@@ -11,6 +11,7 @@ import {
   replaceBuild,
   setBuildEdits,
   stateOf,
+  type AddBuildOptions,
   type BuildLibrary
 } from '@shared/build/library'
 import type { PobBuild } from '@shared/pob/model'
@@ -58,8 +59,9 @@ export async function getActiveBuild(): Promise<StoredBuild | null> {
   return stateOf(await load()).active
 }
 
-export async function saveImported(build: PobBuild, source: PobSource): Promise<BuildState> {
-  return commit(addBuild(await load(), build, source, Date.now(), newId))
+/** S59: opts — «только в библиотеку» (activate: false) и метка «из Стартеров». */
+export async function saveImported(build: PobBuild, source: PobSource, opts?: AddBuildOptions): Promise<BuildState> {
+  return commit(addBuild(await load(), build, source, Date.now(), newId, opts))
 }
 
 export async function replaceImported(id: string, build: PobBuild): Promise<BuildState> {

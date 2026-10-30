@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "league": "3.29",
+  "updatedAt": "2026-07-24",
+  "starters": [
+    {
+      "id": "test-old-champion",
+      "patch": "3.29",
+      "class": "Duelist",
+      "ascendancy": "Champion",
+      "skill": { "en": "Boneshatter of Carnage", "gem": "Metadata/Items/Gems/SkillGemBoneshatterAltY" },
+      "author": "Test Author A",
+      "lang": "ru",
+      "links": { "pob": "https://pobb.in/FakeStarterOld1" },
+      "tags": { "budget": "low", "difficulty": 1, "newbie": true, "leveling": "acts" },
+      "pick": true,
+      "note": { "ru": "Тестовая запись прошлой лиги.", "en": "Test entry from the previous league." },
+      "pob": { "sha256": "7939c644e9b58fc594a2cd11316a600c3e01b074be6268effd977de5e8e88ec8", "checkedAt": "2026-07-23" },
+      "checked": { "league": "3.29", "date": "2026-07-23" },
+      "added": "2026-07-22"
+    }
+  ]
+}
