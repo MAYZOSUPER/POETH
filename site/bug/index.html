@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ru" data-lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-ru="Сообщить об ошибке в POETH" data-en="Report a POETH bug">Сообщить об ошибке в POETH</title>
+<meta name="description" content="Как сообщить об ошибке в POETH: форма на GitHub, что приложить, как сделать скриншот и что не показывать." data-ru="Как сообщить об ошибке в POETH: форма на GitHub, что приложить, как сделать скриншот и что не показывать." data-en="How to report a POETH bug: the GitHub form, what to attach, how to take a screenshot and what to keep private.">
+<meta name="theme-color" content="#0f0c0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="POETH">
+<meta property="og:title" content="Сообщить об ошибке в POETH">
+<meta property="og:description" content="Форма на GitHub: опишите ошибку и приложите скриншоты.">
+<meta property="og:url" content="https://mayzosuper.github.io/POETH/bug/">
+<meta property="og:image" content="https://mayzosuper.github.io/POETH/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../assets/brand/apple-touch-icon.png">
+<link rel="preload" href="../assets/fonts/GolosText-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../guide/guide.css">
+<script>
+  // Язык до первой отрисовки: ?lang= → сохранённый выбор → язык браузера (ru, be, kk → RU, остальные → EN).
+  (function () {
+    var l = 'en', q = /[?&]lang=(ru|en)\b/.exec(location.search), s = null;
+    try { s = localStorage.getItem('poeth-lang'); } catch (e) {}
+    if (q) l = q[1];
+    else if (s === 'ru' || s === 'en') l = s;
+    else {
+      var a = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+      for (var i = 0; i < a.length; i++) {
+        var x = String(a[i]).toLowerCase();
+        if (/^(ru|be|kk)\b/.test(x)) { l = 'ru'; break; }
+        if (/^en\b/.test(x)) break;
+      }
+    }
+    document.documentElement.lang = l;
+    document.documentElement.setAttribute('data-lang', l);
+  })();
+</script>
+<script src="../app.js" defer></script>
+</head>
+<body>
+<!-- иконки: как на главной и в гайде (спрайт приложения resources/brand/icons-sprite.svg) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-8.5 8.5M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap top__bar">
+    <a class="brand" href="../" aria-label="POETH">
+      <img src="../assets/brand/mark.svg" alt="" width="30" height="30">
+      <img class="brand__word" src="../assets/brand/wordmark.svg" alt="" width="78" height="16">
+    </a>
+    <nav class="nav nav--guide" aria-label="Разделы / Sections">
+      <a href="../#look"><span lang="ru">Как выглядит</span><span lang="en">Screens</span></a>
+      <a href="../#install"><span lang="ru">Установка</span><span lang="en">Install</span></a>
+      <a href="../#safe"><span lang="ru">Безопасность</span><span lang="en">Safety</span></a>
+      <a href="../#features"><span lang="ru">Возможности</span><span lang="en">Features</span></a>
+      <a class="nav__guide" href="../guide/"><span lang="ru">Гайд</span><span lang="en">Guide</span></a>
+      <a href="../#faq"><span lang="ru">Вопросы</span><span lang="en">FAQ</span></a>
+      <a class="nav__bug" href="./" aria-current="page"><span lang="ru">Ошибка?</span><span lang="en">Bug?</span></a>
+    </nav>
+    <div class="langs" role="group" aria-label="Язык / Language">
+      <button type="button" data-set-lang="ru" aria-pressed="false">RU</button>
+      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="btn btn--sm btn--primary" href="https://github.com/MAYZOSUPER/POETH/releases/latest">
+      <svg class="ico" aria-hidden="true"><use href="#i-download"/></svg><span lang="ru">Скачать</span><span lang="en">Download</span>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="g-hero">
+    <div class="wrap g-hero__text">
+      <p class="eyebrow"><span lang="ru">Обратная связь</span><span lang="en">Feedback</span></p>
+      <h1><span lang="ru">Сообщить об ошибке</span><span lang="en">Report a bug</span></h1>
+      <p class="lead">
+        <span lang="ru">Что-то в POETH работает не так? Опишите, что случилось, и приложите скриншот — так ошибку проще найти и исправить. Сообщения принимаем через форму на GitHub: своих серверов у POETH нет.</span>
+        <span lang="en">Something in POETH is not working right? Describe what happened and attach a screenshot — that makes the bug easier to find and fix. Reports go through a form on GitHub: POETH has no servers of its own.</span>
+      </p>
+      <div class="cta">
+        <a class="btn btn--primary btn--xl" href="https://github.com/MAYZOSUPER/POETH/issues/new?template=bug.yml">
+          <svg class="ico" aria-hidden="true"><use href="#i-external"/></svg><span lang="ru">Открыть форму на GitHub</span><span lang="en">Open the form on GitHub</span>
+        </a>
+        <p class="cta__meta">
+          <span lang="ru">Нужен бесплатный аккаунт GitHub. В демо-версии 0.1.0-rc.12 кнопки в приложении ещё нет — пользуйтесь этой. Сначала можно заглянуть в <a href="../guide/">гайд</a> и <a href="https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.md">частые вопросы</a> — вдруг ответ уже есть.</span>
+          <span lang="en">You need a free GitHub account. The 0.1.0-rc.12 demo has no in-app button yet — use this one. You may want to check the <a href="../guide/">guide</a> and the <a href="https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.en.md">FAQ</a> first — the answer may already be there.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--band" aria-labelledby="h-how">
+    <div class="wrap">
+      <div class="sh">
+        <span class="orn" aria-hidden="true"></span>
+        <h2 id="h-how"><span lang="ru">Как это сделать</span><span lang="en">How to do it</span></h2>
+      </div>
+      <div class="g-feat__grid">
+        <div>
+          <ol class="g-steps">
+            <li id="from-app"><div>
+              <span lang="ru"><b>Проще всего — из самого POETH</b> (в версиях новее 0.1.0-rc.12). Пункт «Сообщить об ошибке» в меню значка POETH в трее (правый клик) или кнопка в «О программе». Откроется форма в браузере, а версия, игра и языки уже будут подставлены. Сам POETH ничего не отправляет.</span>
+              <span lang="en"><b>The easiest way is from POETH itself</b> (in versions after 0.1.0-rc.12). “Report a bug” in the POETH tray icon menu (right-click) or the button in About. The form opens in your browser with the version, game and languages already filled in. POETH itself sends nothing.</span>
+            </div></li>
+            <li id="account"><div>
+              <span lang="ru"><b>Аккаунт GitHub.</b> Если его нет — зарегистрируйтесь на <a href="https://github.com/signup">github.com/signup</a>: почта, пароль и имя пользователя, затем код из письма. Это бесплатно. Имя пользователя будет видно рядом с сообщением — оно может быть любым, не обязательно как в игре.</span>
+              <span lang="en"><b>A GitHub account.</b> If you don't have one, sign up at <a href="https://github.com/signup">github.com/signup</a>: email, password and username, then the code from the email. It's free. Your username is shown next to your report — it can be anything, not necessarily your in-game name.</span>
+            </div></li>
+            <li id="what"><div>
+              <span lang="ru"><b>Что написать.</b> Одна ошибка — одно сообщение. Версия POETH (в «О программе» или в меню значка в трее), игра и язык клиента, что вы делали, что случилось и что ожидали. Если ошибка повторяется — шаги, как её повторить.</span>
+              <span lang="en"><b>What to write.</b> One bug per report. Your POETH version (in About or the tray icon menu), the game and client language, what you were doing, what happened and what you expected. If it happens again and again — the steps to reproduce it.</span>
+            </div></li>
+            <li id="screenshot"><div>
+              <span lang="ru"><b>Скриншот.</b> Нажмите <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> и выделите нужную часть экрана — снимок попадёт в буфер обмена. Щёлкните в поле «Скриншоты» формы и нажмите <kbd>Ctrl</kbd>+<kbd>V</kbd>. Можно и перетащить файл картинки мышью. Если игра в полноэкранном режиме, переключите её в «Окно без рамки».</span>
+              <span lang="en"><b>Screenshot.</b> Press <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> and select the part of the screen you need — the capture goes to the clipboard. Click the Screenshots field of the form and press <kbd>Ctrl</kbd>+<kbd>V</kbd>. You can also drag an image file into it. If the game is in fullscreen, switch it to Windowed Fullscreen.</span>
+            </div></li>
+            <li id="log"><div>
+              <span lang="ru"><b>Журнал.</b> POETH не ведёт журналов на диске, поэтому прикладывать файл не нужно. Если появилось сообщение об ошибке — перепишите его текст в поле «Текст ошибки» или приложите его скриншот.</span>
+              <span lang="en"><b>Log.</b> POETH keeps no log files on disk, so there is no file to attach. If an error message appeared, copy its text into the “Error text” field or attach a screenshot of it.</span>
+            </div></li>
+          </ol>
+        </div>
+        <div class="g-side">
+          <div class="g-note" id="privacy">
+            <p>
+              <span lang="ru"><b>Приватность.</b> Сообщения на GitHub видят все. Никогда не вставляйте POESESSID, cookies, пароли и коды входа. Ники других игроков, чат и имя аккаунта на скриншотах лучше закрасить — например, маркером в «Ножницах».</span>
+              <span lang="en"><b>Privacy.</b> Reports on GitHub are public. Never paste your POESESSID, cookies, passwords or sign-in codes. It's best to paint over other players' nicknames, chat and your account name in screenshots — for example, with the pen in Snipping Tool.</span>
+            </p>
+          </div>
+          <div class="g-note">
+            <p>
+              <span lang="ru"><b>Что дальше.</b> Мы прочитаем сообщение и, если нужно, зададим вопрос там же — GitHub пришлёт уведомление на почту. Когда исправление выйдет, установленная версия POETH обновится сама.</span>
+              <span lang="en"><b>What happens next.</b> We read the report and, if needed, ask a question right there — GitHub emails you a notification. Once the fix is out, the installed version of POETH updates itself.</span>
+            </p>
+          </div>
+          <p>
+            <a class="btn" href="https://github.com/MAYZOSUPER/POETH/issues/new?template=bug.yml"><svg class="ico" aria-hidden="true"><use href="#i-external"/></svg><span lang="ru">Открыть форму</span><span lang="en">Open the form</span></a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div>
+      <p lang="ru">POETH — неофициальный фанатский инструмент. Он не связан с Grinding Gear Games и не одобрен компанией. Path of Exile и Path of Exile 2 — товарные знаки Grinding Gear Games.</p>
+      <p lang="en">POETH is an unofficial fan-made tool. It is not affiliated with or endorsed by Grinding Gear Games. Path of Exile and Path of Exile 2 are trademarks of Grinding Gear Games.</p>
+      <p>© 2026 POETH contributors · MIT</p>
+    </div>
+    <nav class="foot__links" aria-label="Ссылки / Links">
+      <a href="https://github.com/MAYZOSUPER/POETH">GitHub</a>
+      <a href="https://github.com/MAYZOSUPER/POETH/releases"><span lang="ru">Релизы</span><span lang="en">Releases</span></a>
+      <a href="../guide/"><span lang="ru">Гайд</span><span lang="en">Guide</span></a>
+      <a href="./"><span lang="ru">Сообщить об ошибке</span><span lang="en">Report a bug</span></a>
+      <a href="https://github.com/MAYZOSUPER/POETH/blob/main/LICENSE"><span lang="ru">Лицензия</span><span lang="en">License</span></a>
+      <a href="https://github.com/MAYZOSUPER/POETH/blob/main/NOTICE.md"><span lang="ru">Атрибуция</span><span lang="en">Notices</span></a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
