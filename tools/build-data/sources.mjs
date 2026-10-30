@@ -52,7 +52,9 @@ export const FILES = {
   'dat-GemEffects.csv': dat('GemEffects'),
   'dat-GrantedEffects.csv': dat('GrantedEffects'),
   'dat-BackendErrors.csv': dat('BackendErrors'),
-  'dat-ClientStrings.csv': dat('ClientStrings')
+  'dat-ClientStrings.csv': dat('ClientStrings'),
+  // S54: масла анойнта — тир (порядок в рецепте) и назначение (0 — анойнт, 1 — Tainted, 2 — Reflective)
+  'dat-BlightCraftingItems.csv': dat('BlightCraftingItems')
 }
 
 function repoe(rel) {

@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url'
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const pass = process.argv.slice(2)
 
-for (const step of ['tree.mjs', 'gems.mjs', 'log-strings.mjs']) {
+for (const step of ['tree.mjs', 'anoints.mjs', 'gems.mjs', 'log-strings.mjs']) {
   console.log(`\n== ${step}`)
   const r = spawnSync(process.execPath, [path.join(HERE, step), ...pass], { stdio: 'inherit' })
   if (r.status !== 0) {
