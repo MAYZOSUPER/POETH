@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import type { RegexLang, SocketColor, VendorItemClass, VendorModKey, VendorQuery, VendorRarity } from '@shared/types'
+import type { SocketColor, VendorItemClass, VendorModKey, VendorQuery, VendorRarity } from '@shared/types'
 import {
   VENDOR_ITEM_CLASSES,
   VENDOR_PRESETS,
@@ -9,88 +9,21 @@ import {
   isPresetQuery,
   isThresholdMod,
   presetQuery,
-  selectedMods,
-  vendorModText
+  selectedMods
 } from '@shared/regex'
 import { Select } from '../../components/Select'
 import { useT } from '../../i18n'
 import { useRegexStore } from '../../store/useRegexStore'
 import { Box, Hint, NumberRow, ResultBox, Seg, Switch, useGameLang, useSimple } from './common'
-import './vendor.css'
+import { PropGroups } from './PropGroups'
 
 // Страница «Торговец» (макет: связи, R-G-B, скорость; в экспертном режиме — гнёзда, цвета, качество,
 // уровень камня). S27: готовые наборы, свойства предметов (простой режим — скорость, здоровье,
-// сопротивления, «+ к уровню камней»; экспертный — все группы), класс и редкость — условия «И».
+// сопротивления, «+ к уровню камней»; экспертный — все группы; блок общий со страницей «Предметы» —
+// PropGroups.tsx), класс и редкость — условия «И».
 
 const LINKS: VendorQuery['links'][] = [0, 3, 4, 5, 6]
 const COLORS: SocketColor[] = ['r', 'g', 'b', 'w']
-
-type Group = { id: string; num?: VendorModKey[]; chips?: VendorModKey[] }
-
-/** Группы свойств экспертного режима (подписи — regex.vendor.group.<id>). */
-const GROUPS: Group[] = [
-  { id: 'defence', num: ['life', 'mana', 'energyShield'] },
-  { id: 'res', num: ['resFire', 'resCold', 'resLightning', 'resChaos', 'resAll'] },
-  {
-    id: 'gems',
-    chips: ['gemAll', 'gemSpell', 'gemFire', 'gemCold', 'gemLightning', 'gemChaos', 'gemPhys', 'gemMinion', 'gemBow', 'gemMelee']
-  },
-  { id: 'damage', num: ['spellDamage', 'physDamage', 'eleAttack'] },
-  { id: 'addAttack', chips: ['addAttackPhys', 'addAttackFire', 'addAttackCold', 'addAttackLightning', 'addAttackChaos'] },
-  { id: 'addSpell', chips: ['addSpellPhys', 'addSpellFire', 'addSpellCold', 'addSpellLightning', 'addSpellChaos'] },
-  { id: 'speed', num: ['moveSpeed', 'attackSpeed', 'castSpeed', 'critChance'] },
-  { id: 'attributes', num: ['str', 'dex', 'int', 'allAttributes'] }
-]
-
-/** Простой режим: то, что ищут на прокачке и в начале лиги. */
-const SIMPLE_GROUPS: Group[] = [
-  { id: 'main', num: ['moveSpeed', 'life'] },
-  { id: 'res', num: ['resFire', 'resCold', 'resLightning', 'resAll'] },
-  GROUPS[2]
-]
-
-/** Свойства, которые видны в простом режиме (остальные выбранные — строкой «Ещё выбрано»). */
-const SIMPLE_KEYS = new Set<VendorModKey>(SIMPLE_GROUPS.flatMap((g) => [...(g.num ?? []), ...(g.chips ?? [])]))
-
-/** Короткая подпись внутри группы: стихия или тип камня (полное имя — в подсказке и «что убрать»). */
-const CHIP: Partial<Record<VendorModKey, string>> = {
-  gemAll: 'regex.vendor.chip.all',
-  gemSpell: 'regex.vendor.chip.spell',
-  gemFire: 'regex.vendor.el.fire',
-  gemCold: 'regex.vendor.el.cold',
-  gemLightning: 'regex.vendor.el.lightning',
-  gemChaos: 'regex.vendor.el.chaos',
-  gemPhys: 'regex.vendor.el.phys',
-  gemMinion: 'regex.vendor.chip.minion',
-  gemBow: 'regex.vendor.chip.bow',
-  gemMelee: 'regex.vendor.chip.melee',
-  addAttackPhys: 'regex.vendor.el.phys',
-  addAttackFire: 'regex.vendor.el.fire',
-  addAttackCold: 'regex.vendor.el.cold',
-  addAttackLightning: 'regex.vendor.el.lightning',
-  addAttackChaos: 'regex.vendor.el.chaos',
-  addSpellPhys: 'regex.vendor.el.phys',
-  addSpellFire: 'regex.vendor.el.fire',
-  addSpellCold: 'regex.vendor.el.cold',
-  addSpellLightning: 'regex.vendor.el.lightning',
-  addSpellChaos: 'regex.vendor.el.chaos',
-  // в группе «Сопротивления» — короткие подписи
-  resFire: 'regex.vendor.el.fire',
-  resCold: 'regex.vendor.el.cold',
-  resLightning: 'regex.vendor.el.lightning',
-  resChaos: 'regex.vendor.el.chaos',
-  resAll: 'regex.vendor.short.resAll'
-}
-
-/** Порог в процентах (иначе — просто число: здоровье, характеристики). */
-function isPercent(lang: RegexLang, key: VendorModKey): boolean {
-  return vendorModText(lang, key).every((l) => l.includes('#%'))
-}
-
-/** Строки мода в игре — подсказка «что именно ищем». */
-function gameText(lang: RegexLang, key: VendorModKey): string {
-  return vendorModText(lang, key).join(' · ')
-}
 
 export function VendorPage() {
   const t = useT()
@@ -126,68 +59,11 @@ export function VendorPage() {
   const sideList = [...result.also.map(modName), ...result.side.map((s) => t(`regex.vendor.side.${s}`))]
   const sideText = sideList.length ? t('regex.vendor.side', { list: sideList.join('; ') }) : undefined
 
-  // порог: подпись | ≥ | число | %; пусто — свойство не ищем
-  const numRow = (key: VendorModKey) => (
-    <div key={key} className="rx-v-row" title={gameText(lang, key)}>
-      <label htmlFor={`rx-v-${key}`}>{t(CHIP[key] ?? `regex.vendor.mod.${key}`)}</label>
-      <span className="rx-v-unit">≥</span>
-      <input
-        id={`rx-v-${key}`}
-        className="ui-input ui-input--num"
-        type="number"
-        min={0}
-        max={999}
-        value={q.mods[key] || ''}
-        placeholder="—"
-        onChange={(e) => {
-          const n = Math.round(Number(e.target.value))
-          setMod(key, Number.isFinite(n) ? Math.max(0, Math.min(999, n)) : 0)
-        }}
-      />
-      <span className="rx-v-unit">{isPercent(lang, key) ? '%' : ''}</span>
-    </div>
-  )
-  const chip = (key: VendorModKey) => (
-    <button
-      key={key}
-      type="button"
-      className="ui-chip"
-      aria-pressed={(q.mods[key] ?? 0) > 0}
-      title={gameText(lang, key)}
-      onClick={() => setMod(key, (q.mods[key] ?? 0) > 0 ? 0 : 1)}
-    >
-      {t(CHIP[key] ?? `regex.vendor.mod.${key}`)}
-    </button>
-  )
-  const group = (g: Group) => (
-    <div key={g.id} className="rx-v-group">
-      <span className="ui-label">{t(`regex.vendor.group.${g.id}`)}</span>
-      {g.num && <div className="rx-v-nums">{g.num.map(numRow)}</div>}
-      {g.chips && (
-        <div className="ui-chips">
-          {g.id === 'gems' && (
-            <button
-              type="button"
-              className="ui-chip"
-              aria-pressed={q.plusGemLevel}
-              title={t('regex.vendor.plusGem')}
-              onClick={() => setQuery({ plusGemLevel: !q.plusGemLevel })}
-            >
-              {t('regex.vendor.chip.any')}
-            </button>
-          )}
-          {g.chips.map(chip)}
-        </div>
-      )}
-    </div>
-  )
-
   const classOptions = [
     { value: '' as const, label: t('regex.vendor.class.any') },
     ...VENDOR_ITEM_CLASSES.map((c) => ({ value: c, label: t(`regex.vendor.class.${c}`) }))
   ]
   const activePreset = VENDOR_PRESETS.find((p) => isPresetQuery(p, q))
-  const hidden = selectedMods(q).filter((k) => !SIMPLE_KEYS.has(k))
 
   return (
     <div className="rx-two">
@@ -312,26 +188,24 @@ export function VendorPage() {
             </span>
           </div>
           {simple && <div className="ui-field__help">{t('regex.vendor.classHint')}</div>}
-          {(simple ? SIMPLE_GROUPS : GROUPS).map(group)}
-          {simple && hidden.length > 0 && (
-            <div className="rx-v-group">
-              <span className="ui-label">{t('regex.vendor.moreSelected')}</span>
-              <div className="ui-chips">
-                {hidden.map((k) => (
-                  <button
-                    key={k}
-                    type="button"
-                    className="ui-chip"
-                    aria-pressed
-                    title={`${gameText(lang, k)} — ${t('regex.vendor.moreSelectedTip')}`}
-                    onClick={() => setMod(k, 0)}
-                  >
-                    {isThresholdMod(k) ? `${modName(k)} ≥ ${q.mods[k]}${isPercent(lang, k) ? '%' : ''}` : modName(k)}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          <PropGroups
+            values={q.mods}
+            onSet={setMod}
+            simple={simple}
+            lang={lang}
+            idPrefix="rx-v"
+            gemsExtra={
+              <button
+                type="button"
+                className="ui-chip"
+                aria-pressed={q.plusGemLevel}
+                title={t('regex.vendor.plusGem')}
+                onClick={() => setQuery({ plusGemLevel: !q.plusGemLevel })}
+              >
+                {t('regex.vendor.chip.any')}
+              </button>
+            }
+          />
           {simple && <Hint>{t('regex.vendor.mods.hint')}</Hint>}
         </Box>
       </div>
