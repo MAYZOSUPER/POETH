@@ -9,7 +9,7 @@ import {
   type StatFilter,
   type TradeStatus
 } from '@shared/poe1/pricecheck'
-import type { MarketPrice, Poe1Listing, Poe1Price } from '@shared/poe1/pricecheck/results'
+import type { MarketPrice, Poe1Listing } from '@shared/poe1/pricecheck/results'
 import type { TradeWindowTarget } from '@shared/types/fav'
 import type { LiveAddError } from '@shared/types/live'
 import { parseTradeUrl } from '@shared/favorites/tradeUrl'
@@ -24,8 +24,7 @@ import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
 import { ageKey, currencyLabel, fmtNum, tierWordKey, waitClock } from './format'
 import { modText, modTextParts, modTextString, type ModText } from '@shared/poe1/pricecheck/filters/mod-text'
 import { CoinIcon, Currency, CurrencyTipBody, RateTipBody, TipAnchor, useCurrencyNames } from '../../components/Currency'
-import type { RuCase } from '@shared/currency'
-import { chaosRates, convertPrice, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
+import { chaosRates, rateFractions, roundChaos } from '@shared/poe1/pricecheck/currency'
 import { createClickGuard, lotActions, whisperCommand } from '@shared/poe1/pricecheck/lotActions'
 import type { Verdict, VerdictKind } from '@shared/poe1/pricecheck/verdict'
 import { faustusConfidence, hourRange } from '@shared/poe1/pricecheck/faustus'
@@ -39,6 +38,9 @@ import { LotCard } from './LotCard'
 import { EquipBox } from './EquipBox'
 import { TimelessBox } from './TimelessBox'
 import { SiteLinks } from './SiteLinks'
+import { Price, usePriceText, type PriceText } from './PriceText'
+import { ModeSwitch, SellBulk, SellExchange, SellTrade } from './SellBox'
+import { usePcMode } from './sellMode'
 
 // Окно цены PoE1 по утверждённому макету (docs/design-system.md, классы ui-*): шапка с лигой, предмет,
 // свойства и псевдо-статы с галочками, фильтры предмета, вердикт и предупреждения (S15), сводка «честной
@@ -101,43 +103,6 @@ function useNow(active: boolean): number {
     return () => clearInterval(id)
   }, [active])
   return now
-}
-
-/** «34 c ≈ 0.10 div» / «1.5 div ≈ 507 c» — подсказка к цене по курсу фида обмена. */
-function conversionTitle(price: Poe1Price, rate: number | undefined, lang: UiLang, t: T): string | undefined {
-  const other = convertPrice(price, rate)
-  if (!other) return undefined
-  return price.currency === 'chaos'
-    ? t('pc1.conv.toDiv', { c: fmtNum(price.amount, lang), d: fmtDiv(other.amount, lang) })
-    : t('pc1.conv.toChaos', { d: fmtNum(price.amount, lang), c: fmtNum(other.amount, lang) })
-}
-
-function fmtDiv(v: number, lang: UiLang): string {
-  const s = v < 10 ? v.toFixed(2) : String(v)
-  return lang === 'ru' ? s.replace('.', ',') : s
-}
-
-/**
- * Цена с иконкой и подсказкой (там же — перевод в другую валюту по курсу); full — полное название (простой режим),
- * approx — «~» перед числом (после иконки).
- */
-function Price({ price, lang, full = false, approx = false }: { price: Poe1Price; lang: UiLang; full?: boolean; approx?: boolean }) {
-  const t = useOverlayT()
-  const rate = usePriceCheckStore((s) => s.rate?.chaosPerDivine)
-  const conv = conversionTitle(price, rate, lang, t)
-  const text = `${approx ? '~' : ''}${fmtNum(price.amount, lang)}`
-  return <Currency tag={price.currency} text={text} full={full} lang={lang} className="pc-price" extra={conv && <b>{conv}</b>} />
-}
-
-/** Цена текстом: простой режим — полное название с падежом («за ~14 Сфер хаоса»), эксперт — «14 c». */
-type PriceText = (p: Poe1Price, c?: RuCase) => string
-function usePriceText(lang: UiLang): PriceText {
-  const simple = usePriceCheckStore((s) => s.simple)
-  const names = useCurrencyNames(lang)
-  return (p, c = 'nom') => {
-    const n = fmtNum(p.amount, lang)
-    return `${n} ${simple ? names.after(p.currency, n, c) : currencyLabel(p.currency)}`
-  }
 }
 
 /** Плашка курса «1 div = N c»; при наведении — что такое курс, дроби 0.1…1 div, сленг. Без курса не показывается. */
@@ -1081,6 +1046,7 @@ type CardAt = { id: string; el: HTMLElement }
 
 function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { kind: 'trade' }>; simple: boolean; lang: UiLang; t: T }) {
   const [all, setAll] = useState(false)
+  const selling = usePcMode((s) => s.mode) === 'sell'
   const mine = usePriceCheckStore((s) => s.mine)
   const readLotValue = usePriceCheckStore((s) => s.readLotValue)
   // наведение/фокус показывает карточку лота, клик закрепляет; наведение на другой лот закреплённую подменяет
@@ -1114,11 +1080,16 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<PcResult, { 
   })
   return (
     <>
-      <VerdictPlate v={result.verdict} bulk={false} timeless={false} simple={simple} lang={lang} t={t} />
+      {/* S50: «Продаю» — тот же поиск, другой вывод: цена для мерчант-вкладки вместо вердикта и цены на рынке */}
+      {selling ? (
+        <SellTrade result={result} simple={simple} lang={lang} t={t} />
+      ) : (
+        <VerdictPlate v={result.verdict} bulk={false} timeless={false} simple={simple} lang={lang} t={t} />
+      )}
       <WarningList key={result.siteUrl} list={result.warnings} t={t} />
-      <MarketSummary result={result} simple={simple} lang={lang} t={t} />
+      {!selling && <MarketSummary result={result} simple={simple} lang={lang} t={t} />}
       {result.higher && <HigherLine hint={result.higher} lang={lang} t={t} />}
-      {simple && <WhyHint result={result} lang={lang} t={t} />}
+      {simple && !selling && <WhyHint result={result} lang={lang} t={t} />}
       <div className="pc-blk">
         {/* S24: не «колонки» (их приняли за сортировку): порядок сайта — по цене, это и пишем */}
         <div className="ui-label">
@@ -1160,9 +1131,14 @@ function BulkResult({ result, simple, lang, t }: { result: Extract<PcResult, { k
   const each = best ? best.exchangeAmount / best.itemAmount : 0
   const priceText = usePriceText(lang)
   const names = useCurrencyNames(lang)
+  const selling = usePcMode((s) => s.mode) === 'sell'
   return (
     <>
-      <VerdictPlate v={result.verdict} bulk timeless={false} simple={simple} lang={lang} t={t} />
+      {selling ? (
+        <SellBulk result={result} simple={simple} lang={lang} t={t} />
+      ) : (
+        <VerdictPlate v={result.verdict} bulk timeless={false} simple={simple} lang={lang} t={t} />
+      )}
       <div className="ui-summary">
         <span className="ui-summary__price">
           {best && (
@@ -1259,10 +1235,13 @@ function FaustusResult({ result, simple, lang, t }: { result: Extract<PcResult, 
   const conf = faustusConfidence(f)
   const chaos = f.id === CHAOS_ID
   const divine = f.id === DIVINE_ID
+  const selling = usePcMode((s) => s.mode) === 'sell'
   return (
     <>
       {chaos ? (
         <ChaosPlate rate={f.chaosPerDivine} lang={lang} t={t} />
+      ) : selling ? (
+        <SellExchange result={result} simple={simple} lang={lang} t={t} />
       ) : (
         <VerdictPlate v={result.verdict} bulk exchange timeless={false} simple={simple} lang={lang} t={t} />
       )}
@@ -1596,6 +1575,8 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
       </header>
       <div className="pc-body ui-scroll">
         <ItemHead item={item} captured={captured} t={t} />
+        {/* S50: «Покупаю / Продаю» — выбор запоминается */}
+        <ModeSwitch t={t} />
         {/* S43: страница предмета на poedb / вики / poe.ninja во вкладке трейд-окна */}
         <SiteLinks item={item} league={league} t={t} />
         {/* S41: «Против надетого» — только PoE 1 при включённой вкладке «Билд» (иначе ничего не рисует) */}
