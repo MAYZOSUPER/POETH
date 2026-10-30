@@ -15,6 +15,7 @@ import { AccountPanel } from './account/AccountPanel'
 import { ChatCommandsPanel } from './chat/ChatCommandsPanel'
 import { UpdatesSettings } from '../updates/UpdatesSettings'
 import { GameLangSetting } from '../components/GameLangSetting'
+import { LootFilterSection } from './lootfilter/LootFilterSection'
 
 const BOTH: GameId[] = ['poe1', 'poe2']
 
@@ -345,6 +346,8 @@ export function SettingsPanel() {
       </div>
 
       {game === 'poe1' && <ChatCommandsPanel />}
+      {/* S53: фильтр лута NeverSink (раздел рисует себя только в PoE 1) */}
+      {game === 'poe1' && <LootFilterSection />}
 
       {hasCampaign && (
         <>
