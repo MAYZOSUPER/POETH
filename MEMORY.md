@@ -129,6 +129,10 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
 > Новые изменения добавляй сверху: `<коммит> — что сделано`. История компаса (Exile Companion / Act Compass) —
 > [docs/compass/MEMORY.md](docs/compass/MEMORY.md).
 
+- _(лид, 31.10)_ слит **сайт S60** (`9f7918d`, `d6532ab`, слияние `b1ed981`): гайд по функциям S50–S59 и «Что нового» rc.13
+  (RU/EN), главная — список функций rc.13. **ST3:** страница `site/starters/` (только просмотр, строгий CSP, вывод через
+  `textContent`): бандл `src/shared/starters/site.ts` (тот же валидатор и фильтры, что в приложении), копии списка и имена
+  на языке клиента — `tools/starters/build-site.mjs` (`--check` в `npm test`; `add-starter` обновляет сайт сам). 4886 тестов.
 - _(лид, 31.10)_ **демо `v0.1.0-rc.13`** (`fd2c9f4`, тег `v0.1.0-rc.13`): обычный релиз, `releases/latest`, 4 файла
   (Setup 138,7 МБ, Portable 125,9 МБ, blockmap, `latest.yml` → rc.13), дубля нет. Всё слитое после rc.12: S49
   (брандмауэр), дизайн (прокрутка, мастер, шестерёнка), S50–S56, S58 (шапка трейд-окна), S59 («Стартеры»). Установленная
