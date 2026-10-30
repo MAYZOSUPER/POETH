@@ -5,7 +5,7 @@ import { parsePobXml, type PobBuild } from '@shared/pob/model'
 import { searchStateId, targetQuery } from '@shared/favorites/lot'
 import { readPobItem, type PobItemInfo } from '@shared/build/pobItem'
 import { itemSearch, lowMin, similarRareSearch, tradeCategory, type ItemSearch } from '@shared/build/itemTrade'
-import { lifeCap, slotNeeds, speedCap } from '@shared/build/slotNeeds'
+import { lifeCap, resSumCap, slotNeeds, speedCap } from '@shared/build/slotNeeds'
 import { fixtureXml } from '../pob/fixtures'
 import { store } from '../poe1/helpers'
 
@@ -54,10 +54,33 @@ describe('«Трейд»: уник — по имени', () => {
     expect(s!.lines[0]).toEqual({ kind: 'name', name: "Death's Oath" })
     expect(opensInWindow(s)).toBe(true)
   })
-  it('уник с вариантами — моды выбранного варианта, чтобы не купить не тот', () => {
+  it('уник с вариантами-версиями («Pre 2.3.0» → «Current») — только по имени (иначе сайт находит 0)', () => {
     const s = itemSearch(item('pobbin-leveling-ranges', 15), en)
-    expect(s!.lines.some((l) => l.kind === 'stat' && l.ref === '#% increased Elemental Damage')).toBe(true)
-    expect(enabledStats(s).length).toBeGreaterThan(0)
+    expect(enabledStats(s)).toEqual([])
+  })
+  it('уник с вариантами-выбором — строки выбранного варианта (имплицит — как имплицит)', () => {
+    const aul = readPobItem(
+      [
+        'Rarity: UNIQUE',
+        "Aul's Uprising",
+        'Onyx Amulet',
+        'Variant: Anger',
+        'Variant: Hatred',
+        'Variant: Envy',
+        'Selected Variant: 3',
+        'Implicits: 1',
+        '{range:0.5}+(10-16) to all Attributes',
+        '{range:0.5}+(15-25) to all Attributes',
+        '{variant:1}Anger has no Reservation',
+        '{variant:2}Hatred has no Reservation',
+        '{variant:3}Grants Level 15 Envy Skill',
+        '{variant:3}Envy has no Reservation'
+      ].join('\n')
+    )!
+    expect(aul.explicits.filter((m) => m.variant).map((m) => m.text)).toEqual(['Grants Level 15 Envy Skill', 'Envy has no Reservation'])
+    const s = itemSearch(aul, en)
+    expect(enabledStats(s).map((f) => f.id)).toHaveLength(2)
+    expect(enabledStats(s).every((f) => f.id.startsWith('explicit.'))).toBe(true)
   })
   it('главная связка в униках: связи от 5', () => {
     const s = itemSearch(item('pobbin-leveling-ranges', 17), en, { links: 6 })
@@ -128,16 +151,24 @@ describe('«Что нужно от слота, пока уника нет» (K3,
     expect(early.needs.find((x) => x.id === 'life')?.value).toBe(20)
     expect(early.exact).toBe(false)
   })
-  it('без статов автора — «замените то, что давал уник»; обувь — скорость по уровню', () => {
+  it('без статов автора — сумма сопротивлений уника, но не больше, чем найти на уровне; обувь — скорость по уровню', () => {
     const n = slotNeeds({ info: item('pobbin-leveling-ranges', 19), kind: 'boots', level: 12, stats: null })
     expect(n.needs.find((x) => x.id === 'speed')?.value).toBe(10)
     const tr = slotNeeds({ info: item('pobbin-leveling-ranges', 17), kind: 'body', level: 20, stats: null, mainLinks: 4 })
-    expect(tr.needs.find((x) => x.id === 'res')?.res).toEqual({ fire: 23, cold: 23, lightning: 23 })
+    expect(tr.needs.find((x) => x.id === 'res')).toMatchObject({ sum: true, value: 30 }) // 23 × 3 = 69, на 20 ур. — до 30
     expect(tr.needs.find((x) => x.id === 'links')?.value).toBe(4)
     expect(tr.needs.length).toBeLessThanOrEqual(5)
+    // Goldrim (+35% ко всем) на 20 ур.: не «по 35 к каждой», а «в сумме от 30»
+    expect(slotNeeds({ info: item('pobbin-leveling-ranges', 16), kind: 'helmet', level: 20, stats: null }).needs[0]).toMatchObject({ id: 'res', sum: true, value: 30 })
   })
-  it('пределы жизни и скорости по уровню', () => {
+  it('оружие: урон чар или атак как у уника; во второй руке без щита — без «жизни»', () => {
+    const axiom = slotNeeds({ info: item('pobbin-leveling-ranges', 15), kind: 'offhand', level: 20, stats: null })
+    expect(axiom.needs.map((x) => x.id)).toEqual(['dmg'])
+    expect(axiom.needs[0].dmg).toBe('spell')
+  })
+  it('пределы жизни, сопротивлений и скорости по уровню', () => {
     expect([lifeCap(5), lifeCap(16), lifeCap(45), lifeCap(97)]).toEqual([10, 10, 40, 90])
+    expect([resSumCap(10), resSumCap(20), resSumCap(40), resSumCap(50), resSumCap(80)]).toEqual([15, 30, 50, 70, 90])
     expect([speedCap(5), speedCap(20), speedCap(35), speedCap(50), speedCap(80)]).toEqual([10, 15, 20, 25, 30])
   })
   it('«Трейд: похожая жёлтая»: категория слота, «и» — нужды, «вес» — жизнь + сопротивления', () => {
@@ -146,26 +177,33 @@ describe('«Что нужно от слота, пока уника нет» (K3,
     const s = similarRareSearch(coil, 'belt', needs, en, { level: 97 })
     const query = q(s)
     expect(query.filters.type_filters.filters).toEqual({ category: { option: 'accessory.belt' }, rarity: { option: 'nonunique' } })
-    expect(query.stats[0]).toEqual({ type: 'and', filters: [{ id: 'pseudo.pseudo_total_strength', value: { min: 7 } }] })
-    expect(query.stats[1]).toEqual({
-      type: 'weight',
-      value: { min: 89 },
-      filters: [
-        { id: 'pseudo.pseudo_total_life', value: { weight: 1 } },
-        { id: 'pseudo.pseudo_total_elemental_resistance', value: { weight: 1 } }
-      ]
-    })
+    // одна группа «и»: группу «вес» сайт без входа отвергает («Query is too complex»)
+    expect(query.stats).toEqual([
+      {
+        type: 'and',
+        filters: [
+          { id: 'pseudo.pseudo_total_strength', value: { min: 7 } },
+          { id: 'pseudo.pseudo_total_life', value: { min: 89 } }
+        ]
+      }
+    ])
     expect(query.filters.req_filters).toEqual({ filters: { lvl: { max: 97 } } })
     expect(opensInWindow(s)).toBe(true)
   })
-  it('похожая жёлтая для тела прокачки: сопротивления, связи', () => {
+  it('похожая жёлтая для тела прокачки: связи, сумма сопротивлений, жизнь (статов автора для этапа нет)', () => {
     const tr = item('pobbin-leveling-ranges', 17)
     const needs = slotNeeds({ info: tr, kind: 'body', level: 20, stats: null, mainLinks: 4 })
     const s = similarRareSearch(tr, 'body', needs, en, { level: 20 })
     expect(q(s).filters.socket_filters).toEqual({ filters: { links: { min: 4 } } })
-    expect(enabledStats(s).map((f) => f.id)).toEqual(
-      expect.arrayContaining(['pseudo.pseudo_total_fire_resistance', 'pseudo.pseudo_total_cold_resistance', 'pseudo.pseudo_total_lightning_resistance'])
-    )
+    expect(q(s).stats).toEqual([
+      {
+        type: 'and',
+        filters: [
+          { id: 'pseudo.pseudo_total_elemental_resistance', value: { min: 30 } },
+          { id: 'pseudo.pseudo_total_life', value: { min: 20 } }
+        ]
+      }
+    ])
   })
   it('категория — по базе из данных APT, иначе по слоту', () => {
     expect(tradeCategory(null, 'ring')).toBe('accessory.ring')

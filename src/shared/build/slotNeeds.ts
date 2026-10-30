@@ -12,7 +12,7 @@ import type { PobBuild } from '../pob/model'
 import { itemNumbers, propKind, type Attribute, type Element, type PobItemInfo, type PropKind } from './pobItem'
 import type { SlotKind } from './stageItems'
 
-export type NeedId = 'res' | 'attr' | 'life' | 'es' | 'speed' | 'spell' | 'links'
+export type NeedId = 'res' | 'attr' | 'life' | 'es' | 'speed' | 'spell' | 'dmg' | 'links'
 
 export interface SlotNeed {
   id: NeedId
@@ -20,6 +20,10 @@ export interface SlotNeed {
   /** жизнь, ЭЩ, скорость, уровни чар, связи; у res и attr — сумма */
   value: number
   res?: Partial<Record<Element, number>>
+  /** сопротивления суммой (статов автора для этапа нет — не требуем каждую стихию отдельно) */
+  sum?: boolean
+  /** урон оружия: чары или атаки — как у уника (без числа) */
+  dmg?: 'spell' | 'attack'
   attr?: Partial<Record<Attribute, number>>
   /** атрибуты: сколько будет без уника и сколько требуют камни и вещи (для подписи «иначе 153 из 155») */
   gap?: Partial<Record<Attribute, { have: number; req: number }>>
@@ -38,11 +42,16 @@ const ATTR_MARGIN = 5
 const NEEDS_MAX = 5
 
 /** Типичная жизнь на редкой вещи слота (ориентир из исследования §2.2). */
-const LIFE_BY_SLOT: Partial<Record<SlotKind, number>> = { helmet: 70, body: 90, gloves: 70, boots: 70, belt: 80, ring: 50, amulet: 50, offhand: 70 }
+const LIFE_BY_SLOT: Partial<Record<SlotKind, number>> = { helmet: 70, body: 90, gloves: 70, boots: 70, belt: 80, ring: 50, amulet: 50 }
 
 /** Жизнь, которая реально выпадает к уровню (тир мода ≈ уровень предмета): 16 → 10, 45 → 40, 70+ → без предела. */
 export function lifeCap(level: number): number {
   return Math.max(10, Math.floor(level / 10) * 10)
+}
+
+/** Сумма стихийных сопротивлений, которую реально найти на одной редкой вещи к уровню. */
+export function resSumCap(level: number): number {
+  return level < 15 ? 15 : level < 30 ? 30 : level < 45 ? 50 : level < 60 ? 70 : 90
 }
 
 /** Скорость передвижения на обуви по уровню (тиры мода: 10/15/20/25/30 %). */
@@ -78,20 +87,24 @@ export function slotNeeds(input: NeedsInput): SlotNeeds {
   const u = itemNumbers(info)
   const needs: SlotNeed[] = []
 
-  // сопротивления
-  const res: Partial<Record<Element, number>> = {}
-  for (const [e, name] of ELEMENTS) {
-    const given = u.res[e]
-    if (st && st[`${name}Resist`] !== undefined) {
+  // сопротивления: по статам автора — нехватка каждой стихии; без них — сумма того, что давал уник, но не больше,
+  // чем реально найти на уровне (Goldrim на 20 ур. — не «по 35 к каждой», а «в сумме от 30»)
+  if (st && ELEMENTS.some(([, name]) => st[`${name}Resist`] !== undefined)) {
+    const res: Partial<Record<Element, number>> = {}
+    for (const [e, name] of ELEMENTS) {
+      if (st[`${name}Resist`] === undefined) continue
       const cap = st[`${name}ResistMax`] ?? RES_CAP
-      const without = st[`${name}Resist`] + (st[`${name}ResistOverCap`] ?? 0) - given
+      const without = st[`${name}Resist`] + (st[`${name}ResistOverCap`] ?? 0) - u.res[e]
       const need = Math.max(0, Math.round(cap - without))
       if (need > 0) res[e] = need
-    } else if (given > 0) res[e] = given
+    }
+    if (u.res.chaos > 0 && (st.ChaosResist ?? 0) > 0) res.chaos = u.res.chaos
+    const resSum = Object.values(res).reduce((a, b) => a + (b ?? 0), 0)
+    if (resSum > 0) needs.push({ id: 'res', prop: 'res', value: resSum, res })
+  } else {
+    const given = Math.max(0, u.res.fire) + Math.max(0, u.res.cold) + Math.max(0, u.res.lightning)
+    if (given > 0) needs.push({ id: 'res', prop: 'res', value: Math.min(given, resSumCap(level)), sum: true })
   }
-  if (u.res.chaos > 0 && (!st || (st.ChaosResist ?? 0) > 0)) res.chaos = u.res.chaos
-  const resSum = Object.values(res).reduce((a, b) => a + (b ?? 0), 0)
-  if (resSum > 0) needs.push({ id: 'res', prop: 'res', value: resSum, res })
 
   // атрибуты — только по статам автора
   if (st) {
@@ -125,6 +138,11 @@ export function slotNeeds(input: NeedsInput): SlotNeeds {
   // особое для слота
   if (kind === 'boots') needs.push({ id: 'speed', prop: 'speed', value: Math.min(u.speed > 0 ? u.speed : 25, speedCap(level)) })
   if ((kind === 'weapon' || kind === 'offhand') && u.spellLevels > 0) needs.push({ id: 'spell', prop: 'build', value: u.spellLevels })
+  if (kind === 'weapon' || kind === 'offhand') {
+    const lines = [...info.implicits, ...info.explicits].map((m) => m.text)
+    if (lines.some((l) => /Spell Damage|to Spells|Cast Speed|for Spells/.test(l))) needs.push({ id: 'dmg', prop: 'build', value: 0, dmg: 'spell' })
+    else if (lines.some((l) => /Physical Damage|Attack Speed|^Adds \d+ to \d+ \w+ Damage$/.test(l))) needs.push({ id: 'dmg', prop: 'build', value: 0, dmg: 'attack' })
+  }
   if (input.mainLinks && input.mainLinks >= 3) needs.push({ id: 'links', prop: 'build', value: Math.min(6, input.mainLinks) })
 
   // что жёлтой не заменить: «больше / меньше», триггеры, умения, кейстоуны — строки «важно для билда»,

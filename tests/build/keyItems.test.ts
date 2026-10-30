@@ -172,8 +172,10 @@ describe('«Купить первым» (§3)', () => {
     expect(rows.filter((r) => r.group === 'key').map((r) => name(r.key)).sort()).toEqual(['Forbidden Flame', 'Forbidden Flesh'])
     expect(rows.filter((r) => r.group === 'important').map((r) => name(r.key))).toEqual(expect.arrayContaining(['Ashes of the Stars', "Ryslatha's Coil"]))
     expect(rows.findIndex((r) => r.group === 'important')).toBeGreaterThan(rows.findIndex((r) => r.group === 'key'))
-    // на 20 уровне Ashes of the Stars (60) и Forbidden (83) не надеть
-    expect(buyFirst(items, labels, 20).map((r) => name(r.key))).not.toContain('Ashes of the Stars')
+    // на 20 уровне Ashes of the Stars (60) не надеть — она в группе «позже, по уровню»
+    const low = buyFirst(items, labels, 20)
+    expect(low.filter((r) => r.group !== 'later').map((r) => name(r.key))).not.toContain('Ashes of the Stars')
+    expect(low.filter((r) => r.group === 'later').map((r) => name(r.key))).toContain('Ashes of the Stars')
   })
   it('с ценами: ключевой дешёвый → важный → ключевой T0 «копить»', () => {
     const b = load('pobcodes-nightblade')

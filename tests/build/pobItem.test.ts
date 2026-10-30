@@ -55,7 +55,7 @@ describe('readPobItem на фикстурах', () => {
     expect(axiom).toMatchObject({ rarity: 'unique', name: 'Axiom Perpetuum', base: 'Bronze Sceptre', variants: 2, variantName: 'Current', links: 3, quality: 20, levelReq: 10 })
     expect(axiom.implicits.map((m) => m.text)).toEqual(['12% increased Elemental Damage'])
     expect(axiom.explicits.map((m) => m.text)).toContain('5% increased Cast Speed')
-    expect(axiom.implicits[0].variant).toBe(true)
+    expect(axiom.implicits[0].variant).toBeUndefined() // варианты — версии («Pre 2.3.0» → «Current»), не выбор
   })
   it('Thousand Ribbons: третий вариант, диапазоны свёрнуты', () => {
     const tr = item('pobbin-leveling-ranges', 17)

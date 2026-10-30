@@ -261,7 +261,7 @@ function isKeystone(tree: TreeData, line: string): boolean {
 
 // ---------------------------------------------------------------------------- «Купить первым»
 
-export type BuyGroup = 'key' | 'important' | 'save'
+export type BuyGroup = 'key' | 'important' | 'save' | 'later'
 
 export interface BuyRow {
   key: string
@@ -272,15 +272,19 @@ const TIER_RANK: Record<PriceTier, number> = { low: 0, T2: 1, T1: 2, T0: 3 }
 
 /**
  * Порядок «Купить первым» (§3): ключевой дешёвый (T2 и дешевле) → ключевой T1 → важный дешёвый → важный T1 →
- * ключевой T0 — «копить» (а пока — замена). Без цен — ключевые, затем важные, по слотам. Только то, что можно
- * надеть на уровне этапа (`level`). Остальное — «по слотам».
+ * ключевой T0 — «копить» (а пока — замена). Без цен — ключевые, затем важные, по слотам. Покупать сейчас — только
+ * то, что можно надеть на уровне этапа (`level`); ключевые и важные выше уровня — группа «later» («позже, с N ур.»).
+ * Остальное — «по слотам».
  */
 export function buyFirst(items: readonly StageItem[], labels: ReadonlyMap<string, ItemLabel>, level: number, prices?: ReadonlyMap<string, ItemPrice> | null): BuyRow[] {
   const rows: Array<BuyRow & { rank: number; order: number }> = []
   items.forEach((it, order) => {
     const mark = labels.get(it.key)?.mark
     if (mark !== 'key' && mark !== 'important') return
-    if (it.info.levelReq !== null && it.info.levelReq > level) return
+    if (it.info.levelReq !== null && it.info.levelReq > level) {
+      rows.push({ key: it.key, group: 'later', rank: 200 + (mark === 'key' ? 0 : 1), order })
+      return
+    }
     const tier = it.info.rarity === 'unique' ? prices?.get(it.info.name)?.tier : undefined
     const t = tier ? TIER_RANK[tier] : 0
     if (mark === 'key' && tier === 'T0') rows.push({ key: it.key, group: 'save', rank: 100, order })

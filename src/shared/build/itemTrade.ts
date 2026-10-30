@@ -117,11 +117,13 @@ function statId(en: Poe1Data, ref: string, type: ModifierType): string | null {
 function uniqueSearch(info: PobItemInfo, en: Poe1Data, opts: SearchOptions): ItemSearch {
   const filters: Array<{ id: string; value?: { min?: number } }> = []
   const lines: SearchLine[] = [{ kind: 'name', name: info.name }]
-  // вариант уника отличают его собственные строки ({variant:…}): «Grants Level 22 Envy Skill» у Aul's Uprising
+  // вариант уника отличают его собственные строки ({variant:…}): «Grants Level 22 Envy Skill» у Aul's Uprising;
+  // у вариантов-старых версий («Pre 3.19.0» → «Current») строк варианта нет (readPobItem), ищем просто по имени
   if (info.variants > 1) {
-    for (const m of [...info.implicits, ...info.explicits]) {
+    const mods = [...info.implicits.map((m) => ({ m, implicit: true })), ...info.explicits.map((m) => ({ m, implicit: false }))]
+    for (const { m, implicit } of mods) {
       if (!m.variant || filters.length >= 3) continue
-      const st = matchStatLine(m.text, en, [ModifierType.Explicit, ModifierType.Implicit])
+      const st = matchStatLine(m.text, en, implicit ? [ModifierType.Implicit] : [ModifierType.Explicit])
       const id = st?.stat.trade.ids[st.type]?.[0]
       if (!st || !id) continue
       filters.push({ id })
@@ -243,8 +245,11 @@ const RES_ID: Record<string, string> = {
 const ATTR_ID: Record<string, string> = { str: '+# total to Strength', dex: '+# total to Dexterity', int: '+# total to Intelligence' }
 
 /**
- * «Трейд: похожая жёлтая» — редкая вещь того же слота с тем, что нужно от слота (K3): жёсткие нужды — группа
- * «и» с минимумом, жизнь (или ЭЩ) и сумма стихийных сопротивлений — группа «вес» с порогом.
+ * «Трейд: похожая жёлтая» — редкая вещь того же слота с тем, что нужно от слота (K3): одна группа «и» с минимумами
+ * псевдо-статов — нехватка каждой стихии и атрибутов (по статам автора) или сумма стихийных сопротивлений, жизнь
+ * (или ЭЩ), скорость, уровни чар. Группу «вес» (как у PoB TradeQueryGenerator) сайт без входа в аккаунт не
+ * принимает: «Query is too complex… Logging in will increase this limit» (проверено 31.10.2026), а трейд-окно
+ * у игрока может быть без входа — поэтому только «и».
  */
 export function similarRareSearch(info: PobItemInfo, kind: SlotKind, needs: SlotNeeds, en: Poe1Data, opts: { level?: number | null } = {}): ItemSearch | null {
   const parsed = parsePobForTrade(info, en)
@@ -252,8 +257,6 @@ export function similarRareSearch(info: PobItemInfo, kind: SlotKind, needs: Slot
   if (!category) return null
   const lines: SearchLine[] = [{ kind: 'category', category }]
   const and: Array<{ id: string; value?: { min?: number } }> = []
-  const weight: Array<{ id: string; value: { weight: number } }> = []
-  let threshold = 0
   const hard = (ref: string, type: ModifierType, min: number, prop: PropKind): void => {
     const id = statId(en, ref, type)
     if (!id || min <= 0) return
@@ -262,35 +265,19 @@ export function similarRareSearch(info: PobItemInfo, kind: SlotKind, needs: Slot
   }
   let links: number | null = null
   for (const n of needs.needs) {
-    if (n.id === 'res') for (const [e, v] of Object.entries(n.res ?? {})) hard(RES_ID[e], ModifierType.Pseudo, v ?? 0, 'res')
+    if (n.id === 'res' && n.sum) hard('+#% total Elemental Resistance', ModifierType.Pseudo, n.value, 'res')
+    else if (n.id === 'res') for (const [e, v] of Object.entries(n.res ?? {})) hard(RES_ID[e], ModifierType.Pseudo, v ?? 0, 'res')
     else if (n.id === 'attr') for (const [a, v] of Object.entries(n.attr ?? {})) hard(ATTR_ID[a], ModifierType.Pseudo, v ?? 0, 'build')
+    else if (n.id === 'life') hard('+# total maximum Life', ModifierType.Pseudo, n.value, 'life')
+    else if (n.id === 'es') hard('+# total maximum Energy Shield', ModifierType.Pseudo, n.value, 'build')
     else if (n.id === 'speed') hard('#% increased Movement Speed', ModifierType.Pseudo, n.value, 'speed')
     else if (n.id === 'spell') hard('+# to Level of all Spell Skill Gems', ModifierType.Explicit, n.value, 'build')
     else if (n.id === 'links') links = n.value
-    else if (n.id === 'life' || n.id === 'es') {
-      const ref = n.id === 'life' ? '+# total maximum Life' : '+# total maximum Energy Shield'
-      const id = statId(en, ref, ModifierType.Pseudo)
-      if (!id) continue
-      weight.push({ id, value: { weight: 1 } })
-      threshold += n.value
-      lines.push({ kind: 'stat', ref, min: null, prop: n.id === 'life' ? 'life' : 'build' })
-    }
-  }
-  const resNeed = needs.needs.find((n) => n.id === 'res')
-  const eleId = statId(en, '+#% total Elemental Resistance', ModifierType.Pseudo)
-  if (eleId && (weight.length || resNeed)) {
-    weight.push({ id: eleId, value: { weight: 1 } })
-    threshold += (resNeed?.res?.fire ?? 0) + (resNeed?.res?.cold ?? 0) + (resNeed?.res?.lightning ?? 0)
-  }
-  const stats: unknown[] = [{ type: 'and', filters: and }]
-  if (weight.length && threshold > 0) {
-    stats.push({ type: 'weight', value: { min: threshold }, filters: weight })
-    lines.push({ kind: 'stat', ref: 'weight', min: threshold, prop: null })
   }
   const body: TradeBody = {
     query: {
       status: STATUS,
-      stats,
+      stats: [{ type: 'and', filters: and }],
       filters: { type_filters: { filters: { category: { option: category }, rarity: { option: 'nonunique' } } } }
     },
     sort: { price: 'asc' }

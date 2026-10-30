@@ -14,7 +14,10 @@ export interface PobModLine {
   crafted?: true
   fractured?: true
   enchant?: true
-  /** строка есть только у выбранного варианта уника ({variant:…}) — по ней вариант отличают на трейде */
+  /**
+   * строка есть только у выбранного варианта уника ({variant:…}) — по ней вариант отличают на трейде; только если
+   * варианты — выбор (ауры Aul's Uprising, кольцо Thread of Hope), а не старые версии («Pre 3.19.0» → «Current»)
+   */
   variant?: true
 }
 
@@ -215,6 +218,9 @@ export function readPobItem(text: string): PobItemInfo | null {
   if (variantNames.length && (selected === null || selected < 1 || selected > variantNames.length)) selected = variantNames.length
   info.variantName = selected !== null ? (variantNames[selected - 1] ?? null) : null
   const chosen = new Set<number>([...(selected !== null ? [selected] : []), ...alt])
+  // варианты-«версии» PoB называет «Pre 3.19.0», «Legacy»…; выбор есть, если кроме выбранного есть ещё не-версии
+  const isVersion = (n: string): boolean => /^(?:Pre |Legacy|Current$)/i.test(n)
+  const choice = variantNames.filter((n, i) => !isVersion(n) && i + 1 !== selected).length > 0 && !isVersion(info.variantName ?? '')
 
   for (const { tags, implicit } of mods) {
     if (tags.variants && variantNames.length && !tags.variants.some((v) => chosen.has(v))) continue
@@ -223,7 +229,7 @@ export function readPobItem(text: string): PobItemInfo | null {
     if (tags.crafted) line.crafted = true
     if (tags.fractured) line.fractured = true
     if (tags.enchant) line.enchant = true
-    if (tags.variants && variantNames.length > 1) line.variant = true
+    if (tags.variants && choice) line.variant = true
     ;(implicit ? info.implicits : info.explicits).push(line)
   }
   info.links = maxLinks(info.sockets)
@@ -278,7 +284,8 @@ export function propKind(line: string): PropKind | null {
   if (SPEED_RE.test(line)) return 'speed'
   if (LIFE_RE.test(line) && !/Regenerat|Leech|Recover|on Kill|on Hit/.test(line)) return 'life'
   if (RES_RE.test(line) && !/Penetrat|maximum/i.test(line)) return 'res'
-  if (BUILD_RE.test(line)) return 'build'
+  // «… урона от ударов становится …», «получаемый урон» — защита, не урон билда
+  if (BUILD_RE.test(line) && !/\btaken\b|from Hits|Damage Taken/i.test(line)) return 'build'
   return null
 }
 
