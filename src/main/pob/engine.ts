@@ -110,6 +110,12 @@ export class PobEngine {
     if (!run) return
     run.stopping = true
     this.run = null
+    const p = this.pending
+    if (p) {
+      clearTimeout(p.timer)
+      this.pending = null
+      p.reject(new EngineError('crashed'))
+    }
     try {
       run.child.stdin.end(encodeRequest({ cmd: 'quit' }) ?? '')
     } catch {

@@ -133,6 +133,17 @@ describe('движок PoB: процесс', () => {
     expect(e.pid()).toBeNull()
   })
 
+  it('stop() во время расчёта — запрос сразу получает ошибку (не ждёт таймаута)', async () => {
+    const e = make('ok', { requestTimeoutMs: 20_000 })
+    await e.request('ping')
+    const t0 = Date.now()
+    const job = code(e.request('compare', { xml: '<x/>', item: 'hang', options: [['Ring 1']] }))
+    await sleep(100)
+    e.stop()
+    expect(await job).toBe('crashed')
+    expect(Date.now() - t0).toBeLessThan(5000)
+  })
+
   it('stop() — только свой процесс; после stop новый запрос стартует заново', async () => {
     const e = make()
     await e.request('ping')
