@@ -92,7 +92,9 @@ export function LootFilterSection() {
   const setLevel = (l: LootFilterLevel): void => {
     setConfirm(null)
     setNote(null)
-    void api.setPrefs({ level: l }).then(setSt)
+    // уровень уже стоит — показываем его стиль, чтобы «Обновить» не сменил стиль незаметно
+    const inst = st.installed.find((i) => i.level === l && !i.missing)
+    void api.setPrefs(inst ? { level: l, style: inst.style } : { level: l }).then(setSt)
   }
   const setStyle = (s: LootFilterStyle): void => {
     setConfirm(null)
@@ -190,7 +192,7 @@ export function LootFilterSection() {
           onClick={() => run(false)}
         >
           <Ico name={updateTo ? 'refresh' : 'import'} />
-          {busy ? t('lf.installing') : updateTo ? t('lf.update', { version: updateTo }) : current ? t('lf.reinstall') : t('lf.install')}
+          {working ? t('lf.installing') : st.busy ? t('lf.checking') : updateTo ? t('lf.update', { version: updateTo }) : current ? t('lf.reinstall') : t('lf.install')}
         </button>
         <span className="small muted lf-file">{t('lf.file', { file })}</span>
       </div>
@@ -218,7 +220,6 @@ export function LootFilterSection() {
       <div className="small muted lf-status">
         {latest ? t('lf.latest', { version: latest.tag, date: fmtDate(latest.publishedAt, lang) }) : t('lf.latest.unknown')}
         {!simple && st.lastCheckAt ? ` · ${t('lf.checked', { when: fmtWhen(st.lastCheckAt, lang) })}` : ''}
-        {st.busy && !working ? ` · ${t('lf.checking')}` : ''}
         {!simple && st.checkError ? ` · ${t(`lf.err.${st.checkError}`)}` : ''}
       </div>
       {anyOutdated && latest && <div className="small lf-newer">{t('lf.newer', { version: latest.tag })}</div>}
@@ -287,7 +288,7 @@ export function LootFilterSection() {
       )}
       {simple && !folder.found && (
         <div className="lf-folder__btns">
-          <button type="button" className="ui-btn ui-btn--sm" disabled={busy} onClick={() => void api.pickFolder().then(setSt)}>
+          <button type="button" className="ui-btn ui-btn--sm" disabled={busy || folder.source === 'env'} onClick={() => void api.pickFolder().then(setSt)}>
             <Ico name="folder" />
             {t('lf.folder.pick')}
           </button>

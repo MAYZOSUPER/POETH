@@ -39,7 +39,7 @@ function push(state: LootFilterState): LootFilterState {
 }
 
 async function backgroundCheck(): Promise<void> {
-  const { state, newTag } = await checkLatest(false)
+  const { state, newTag } = await checkLatest(false, Date.now(), push)
   push(state)
   if (newTag) {
     await markNotified(newTag)
@@ -65,7 +65,7 @@ const PICK_TITLE = { ru: 'Папка фильтров Path of Exile', en: 'Path 
 
 function register(): void {
   ipcMain.handle(IPC.lootFilter.state, () => getLootFilterState())
-  ipcMain.handle(IPC.lootFilter.screenOpened, async () => push((await checkLatest(true)).state))
+  ipcMain.handle(IPC.lootFilter.screenOpened, async () => push((await checkLatest(true, Date.now(), push)).state))
   ipcMain.handle(IPC.lootFilter.install, async (_e, req: unknown) => {
     const res = await installLootFilter(req)
     push(res.state)
@@ -102,6 +102,10 @@ function setupForGame(def: GameDef): void {
   setLootFilterEnabled(on)
   if (on) startTimers()
   else stopTimers()
+  // окно могло спросить состояние раньше, чем домен узнал игру (on: false) — пришлём заново
+  void getLootFilterState()
+    .then(push)
+    .catch(() => undefined)
 }
 
 export const lootFilterDomain: IpcDomain = { register, setupForGame }

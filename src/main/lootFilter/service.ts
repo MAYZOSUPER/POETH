@@ -103,13 +103,18 @@ export interface CheckOutcome {
  * Проверка новой версии без нажатия «Установить»: не чаще раза в сутки и только при открытом экране
  * (screenOpen) или с галочкой «Проверять». Один запрос к API релизов.
  */
-export async function checkLatest(screenOpen: boolean, now = Date.now()): Promise<CheckOutcome> {
+export async function checkLatest(
+  screenOpen: boolean,
+  now = Date.now(),
+  onStart?: (state: LootFilterState) => void
+): Promise<CheckOutcome> {
   const d = await getLootFilterData()
   if (!enabled || busy || !shouldCheck({ now, lastCheckAt: d.lastCheckAt, screenOpen, autoCheck: d.prefs.autoCheck })) {
     return { state: await getLootFilterState(), newTag: null }
   }
   busy = true
   try {
+    onStart?.(await getLootFilterState())
     const r = await net.json(LATEST_RELEASE_URL)
     const release = r.ok ? parseRelease(r.json) : null
     checkError = r.ok ? (release ? null : 'bad-release') : r.error

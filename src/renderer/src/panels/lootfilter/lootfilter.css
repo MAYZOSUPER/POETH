@@ -103,6 +103,7 @@
   margin-top: var(--sp-6);
 }
 .lf-style {
+  flex: 0 1 320px;
   min-width: 220px;
 }
 
@@ -172,7 +173,7 @@
 .lf-svg {
   display: block;
   width: 100%;
-  max-width: 560px;
+  max-width: 600px;
   height: auto;
 }
 .lf-svg text {
@@ -230,7 +231,7 @@
 .lf-svg__file {
   fill: var(--fg);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 10px;
 }
 .lf-svg__chev {
   fill: none;

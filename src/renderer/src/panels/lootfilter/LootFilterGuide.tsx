@@ -17,7 +17,7 @@ function Step({ n, x, y }: { n: number; x: number; y: number }) {
 export function LootFilterGuide({ t, file, onLadder }: { t: T; file: string; onLadder: () => void }) {
   return (
     <div className="lf-guide">
-      <svg className="lf-svg" viewBox="0 0 520 150" role="img" aria-label={t('lf.svg.alt')}>
+      <svg className="lf-svg" viewBox="0 0 560 150" role="img" aria-label={t('lf.svg.alt')}>
         {/* 1: Esc */}
         <rect className="lf-svg__key" x={8} y={46} width={58} height={34} rx={6} />
         <text className="lf-svg__keytext" x={37} y={68} textAnchor="middle">
@@ -28,7 +28,7 @@ export function LootFilterGuide({ t, file, onLadder }: { t: T; file: string; onL
         <path className="lf-svg__arrowhead" d="M92 58 L99 63 L92 68 Z" />
 
         {/* окно настроек игры */}
-        <rect className="lf-svg__frame" x={104} y={10} width={408} height={130} rx={8} />
+        <rect className="lf-svg__frame" x={104} y={10} width={448} height={130} rx={8} />
         <text className="lf-svg__title" x={118} y={30}>
           {t('lf.svg.options')}
         </text>
@@ -46,21 +46,21 @@ export function LootFilterGuide({ t, file, onLadder }: { t: T; file: string; onL
         <text className="lf-svg__label" x={118} y={94}>
           {t('lf.svg.filter')}
         </text>
-        <rect className="lf-svg__drop" x={238} y={78} width={202} height={24} rx={4} />
+        <rect className="lf-svg__drop" x={238} y={78} width={236} height={24} rx={4} />
         <text className="lf-svg__file" x={246} y={94}>
           {file}
         </text>
-        <path className="lf-svg__chev" d="M426 87 L431 93 L436 87" />
+        <path className="lf-svg__chev" d="M458 87 L463 93 L468 87" />
         <Step n={3} x={238} y={76} />
 
         {/* 4: перезагрузить */}
-        <rect className="lf-svg__btn" x={448} y={78} width={30} height={24} rx={4} />
-        <path className="lf-svg__reload" d="M469 86 A6 6 0 1 0 469 94" />
-        <path className="lf-svg__reloadhead" d="M466 82 L471 86 L466 89 Z" />
-        <text className="lf-svg__hint" x={463} y={122} textAnchor="middle">
+        <rect className="lf-svg__btn" x={482} y={78} width={30} height={24} rx={4} />
+        <path className="lf-svg__reload" d="M503 86 A6 6 0 1 0 503 94" />
+        <path className="lf-svg__reloadhead" d="M500 82 L505 86 L500 89 Z" />
+        <text className="lf-svg__hint" x={497} y={122} textAnchor="middle">
           {t('lf.svg.reload')}
         </text>
-        <Step n={4} x={484} y={76} />
+        <Step n={4} x={518} y={76} />
       </svg>
       <ol className="lf-guide__steps small">
         <li>{t('lf.guide.1')}</li>
