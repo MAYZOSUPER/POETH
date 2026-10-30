@@ -1075,6 +1075,12 @@ button.ui-select[aria-expanded="true"] { border-color: var(--accent); }
 }
 
 /* ================= прокрутка ================= */
+/* Одно правило на всё приложение (компаньон, оверлей, сайдбар трейд-окна — все подключают components.css):
+   любой прокручиваемый контейнер — тонкая золотистая полоса, системные элементы (полосы, поля, списки) — тёмные.
+   color-scheme — у body, а не у :root: у прозрачных окон фон холста задаёт схема корня, его не трогаем.
+   Свои ::-webkit-scrollbar больше не действуют: при scrollbar-width/scrollbar-color Chromium берёт стандартные. */
+body { color-scheme: dark; scrollbar-color: var(--scroll) transparent; }
+body * { scrollbar-width: thin; }
 .ui-scroll { overflow: auto; scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
 .ui-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
 .ui-scroll::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 4px; background: var(--scroll) padding-box; }

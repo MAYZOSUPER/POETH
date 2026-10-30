@@ -2,6 +2,9 @@
    и компоненты ui-*: здесь раскладка (модальная панель, списки, раздел «О программе»). */
 
 /* ---------------- мастер ---------------- */
+/* Модальное окно над всем компаньоном: фон непрозрачный — страница под мастером не просвечивает.
+   Шапка остаётся видна над подложкой: «свернуть» и «закрыть» работают, остальное в ней и всё под мастером —
+   inert (ставит Wizard.tsx) и приглушено. Скругление — как у окна (.app), иначе углы подложки торчат. */
 .onb-scrim {
   position: fixed;
   inset: 0;
@@ -9,7 +12,17 @@
   display: grid;
   place-items: center;
   padding: var(--sp-7);
-  background: var(--scrim);
+  border-radius: 10px;
+  background:
+    radial-gradient(70% 55% at 50% 42%, rgba(60, 48, 40, 0.45), transparent 70%),
+    var(--bg);
+}
+.app:has(> .onb-scrim) > .toolbar {
+  position: relative;
+  z-index: 101;
+}
+.toolbar [inert] {
+  opacity: 0.35;
 }
 .onb-wiz {
   width: 540px;
