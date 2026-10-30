@@ -39,6 +39,12 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run test:trade
+      # S44: движок PoB — урезанный PoB и luajit.exe только из закреплённых исходников (tools/pob/pins.json, SHA-256),
+      # luajit.exe собирается здесь MSVC раннера; затем настоящий движок: песочница изнутри, расчёт, RU = EN
+      - name: Движок PoB (сборка из исходников по пинам)
+        run: node tools/pob/prepare.mjs
+      - name: Движок PoB (проверка)
+        run: npx vitest run tests/pob/serverLua.test.ts
       - run: npm run build
       - name: Сборка и публикация (Setup + blockmap + latest.yml, Portable)
         run: npx electron-builder --win --publish always

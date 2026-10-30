@@ -21,12 +21,15 @@ import {
   type TargetNote
 } from '@shared/build/equipCompare'
 import { guideItem, guideVerdict, type GuideVerdict } from '@shared/build/equipCompareGuide'
+import { pobItemText } from '@shared/build/pobItemEn'
 import type { StoredBuild } from '@shared/types/build'
-import type { EquipElement, EquipEntry, EquipItem, EquipSlot, EquipState } from '@shared/types/equip'
+import type { EquipElement, EquipEntry, EquipGearSlot, EquipItem, EquipSlot, EquipState } from '@shared/types/equip'
 import { tKey } from '../../i18n/hotkey'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { buildGuideOn } from '../leveling/buildGuide'
 import { Icon, type IconName } from '../Icon'
+import { PobBox, pobKind } from './PobBox'
+import { rememberWorn } from './pobWorn'
 import './equip.css'
 
 // «Против надетого» (S41, B4; макет build-mockup «3 · Ctrl+D»): блок окна цены под названием предмета. Только PoE 1
@@ -355,12 +358,15 @@ function SaveControl({
   state,
   label,
   primary,
+  onSaved,
   t
 }: {
   item: EquipItem
   state: EquipState
   label: string
   primary?: boolean
+  /** S44: запомнено в слот (текст вещи для PoB — в памяти окна) */
+  onSaved?: (slot: EquipSlot) => void
   t: T
 }) {
   const [choosing, setChoosing] = useState(false)
@@ -376,7 +382,10 @@ function SaveControl({
     const r = await window.overlayApi.equip.save(slot, item).catch(() => null)
     setBusy(false)
     if (!r) setFail(true)
-    else setChoosing(false)
+    else {
+      setChoosing(false)
+      onSaved?.(slot)
+    }
   }
   const used = new Set(state.items.map((e) => e.slot))
   const jewelLabel = (s: EquipSlot): string => (used.has(s) ? slotName(s, t) : t('eq.slot.jewel.new'))
@@ -553,6 +562,17 @@ export function EquipBox({ item, expert, t }: { item: ParsedItem | null; expert:
 function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: EquipItem; state: EquipState; expert: boolean; t: T }) {
   const build = useActiveBuildModel(true)
   const data = useItemData(item.lang)
+  // S44: текст для PoB (EN; RU пересобирается по статам — нужны и английские данные)
+  const en = useItemData('en')
+  const pob = useMemo(() => (state.pob && pobKind(eq.kind) ? (data && en ? pobItemText(item, data, en) : undefined) : undefined), [state.pob, eq.kind, item, data, en])
+  const remember = (slot: EquipSlot): void => {
+    if (pob) rememberWorn(state.character, slot, eq, pob.text)
+  }
+  const worn = state.items.find((e) => sameItem(e, eq))
+  // Ctrl+D по надетой вещи при включённой бете: её текст — для точного расчёта против неё (только в памяти окна)
+  useEffect(() => {
+    if (worn && pob) rememberWorn(state.character, worn.slot, eq, pob.text)
+  }, [worn, pob, state.character, eq])
   const totals = useTotals(state, build)
   const [pick, setPick] = useState<number | null>(null)
   const [mineOpen, setMineOpen] = useState(false)
@@ -614,7 +634,7 @@ function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: Equi
             </span>
           )}
           <span className="eq-acts">
-            <SaveControl item={eq} state={state} label={t('eq.empty.save')} primary t={t} />
+            <SaveControl item={eq} state={state} label={t('eq.empty.save')} primary onSaved={remember} t={t} />
           </span>
         </div>
       </div>
@@ -685,11 +705,15 @@ function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: Equi
       )}
       {mineOpen && <MineEditor state={state} onDone={() => setMineOpen(false)} t={t} />}
       {eq.kind === 'flask' && !expert && <span className="eq-later">{t('eq.flask.mods')}</span>}
-      {eq.kind !== 'flask' && (
+      {eq.kind !== 'flask' && !(state.pob && pobKind(eq.kind)) && (
         <span className="eq-later">
           <Icon name="info" />
           <span>{cmp.dmgUnknown ? t('eq.dmg') : t('eq.later')}</span>
         </span>
+      )}
+      {/* S44: «Точный расчёт (PoB)», бета — галочка и расчёт движком PoB */}
+      {pobKind(eq.kind) && (
+        <PobBox item={pob} options={targets.options.map((o) => o.slots as EquipGearSlot[])} idx={idx} state={state} expert={expert} t={t} />
       )}
       {stale && !expert && <span className="eq-note eq-fresh is-old">{tKey(t, 'eq.fresh.old', pcKey)}</span>}
       <div className="eq-acts">
@@ -698,7 +722,7 @@ function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: Equi
         </span>
         <span className="eq-acts__grow" />
         <ForgetButton slots={entries.map((e) => e.slot)} t={t} />
-        <SaveControl item={eq} state={state} label={t('eq.save')} t={t} />
+        <SaveControl item={eq} state={state} label={t('eq.save')} onSaved={remember} t={t} />
       </div>
     </div>
   )

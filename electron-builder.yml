@@ -41,6 +41,12 @@ extraResources:
   # иконка окон (S10c, src/main/appIcon.ts): тот же ico, что у exe, — 16…256 px для панели задач и Alt+Tab
   - from: build/icon.ico
     to: resources/brand/app_icon.ico
+  # движок PoB для «Точного расчёта (PoB)» (S44): урезанный PoB + luajit.exe, собранный из исходника.
+  # Готовит tools/pob/prepare.mjs (пины и SHA-256 — tools/pob/pins.json); в git папки нет.
+  - from: vendor/pob-engine
+    to: pob-engine
+    filter:
+      - "**/*"
 
 # «Открыть в POETH» на странице стратегии сайта (S17): ссылка poeth-strategy://import#POETH1:…
 # Для NSIS electron-builder протоколы не регистрирует (только mac/linux/appx) — в Windows схему ставит само

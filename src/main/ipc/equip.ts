@@ -6,6 +6,7 @@ import { cleanChar } from '@shared/build/equipCompareStore'
 import type { EquipState } from '@shared/types/equip'
 import { forgetEquipSlot, getEquipState, saveEquip, setEquipMine } from '../build/equipped'
 import { onTaken, startTaken, takenCharacter } from '../build/buildTaken'
+import { registerPobHandlers } from './equipPob'
 import { sendToOverlay } from '../windows/gameOverlay'
 import type { IpcDomain } from './types'
 
@@ -66,6 +67,8 @@ function register(): void {
     const { char, level } = await who()
     return push(await setEquipMine(char, level, res === null ? null : { res }))
   })
+  // «Точный расчёт (PoB)» (S44, бета): equip:setPob, equip:pobCompare
+  registerPobHandlers({ enabled, who, push, empty: EMPTY })
 }
 
 function setupForGame(def: GameDef): void {

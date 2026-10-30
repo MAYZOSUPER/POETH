@@ -8,6 +8,7 @@ import {
   parseEquipFile,
   putEquip,
   setMine,
+  setPob,
   type EquipFile
 } from '@shared/build/equipCompareStore'
 import type { EquipState } from '@shared/types/equip'
@@ -66,4 +67,9 @@ export async function forgetEquipSlot(char: string | null, level: number | null,
 
 export async function setEquipMine(char: string | null, level: number | null, mine: unknown): Promise<EquipState> {
   return equipStateOf(await mutate((f, now) => setMine(f, char, mine, now)), char, level)
+}
+
+/** «Точный расчёт (PoB)» (S44, бета): общий флаг в том же файле. */
+export async function setEquipPob(char: string | null, level: number | null, on: unknown): Promise<EquipState> {
+  return equipStateOf(await mutate((f) => setPob(f, on)), char, level)
 }
