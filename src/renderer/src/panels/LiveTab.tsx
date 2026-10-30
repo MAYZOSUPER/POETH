@@ -170,8 +170,13 @@ export function LiveTab() {
   const [input, setInput] = useState('')
   const [title, setTitle] = useState('')
   const now = useNow()
+  // portable: уведомлений Windows нет (main/services/toastPolicy.ts) — переключатель недоступен
+  const [portable, setPortable] = useState(false)
 
   useEffect(() => init(), [init])
+  useEffect(() => {
+    void window.overlayApi.updates.state().then((st) => setPortable(!!st.portable))
+  }, [])
 
   if (!snap) return <div className="live-tab" />
   const { options, searches, active, max, loggedIn, recent } = snap
@@ -192,7 +197,15 @@ export function LiveTab() {
       <div className="live-top">
         <LiveSwitch live on={options.enabled} label={t('live.opt.enabled')} onChange={(v) => void setOptions({ enabled: v })} />
         <LiveSwitch on={options.sound} label={t('live.opt.sound')} onChange={(v) => void setOptions({ sound: v })} />
-        <LiveSwitch on={options.notifyWindows} label={t('live.opt.notify')} onChange={(v) => void setOptions({ notifyWindows: v })} />
+        <span className="live-opt">
+          <LiveSwitch
+            on={options.notifyWindows && !portable}
+            disabled={portable}
+            label={t('live.opt.notify')}
+            onChange={(v) => void setOptions({ notifyWindows: v })}
+          />
+          {portable && <span className="live-opt__note">{t('live.opt.notify.portable')}</span>}
+        </span>
         <div className="ui-meter live-meter" data-level={meterLevel} style={{ ['--v' as string]: `${Math.min(100, (active / Math.max(1, max)) * 100)}%` }}>
           <div className="ui-meter__row">
             <span>{t('live.meter.active')}</span>
