@@ -27,7 +27,7 @@ const id = (): string => `b${++n}`
 
 describe('реестр сайтов', () => {
   it('сайты по умолчанию — те, что в брифе, id и буквы не повторяются', () => {
-    expect(SITES.map((s) => s.id)).toEqual(['ninja', 'poedb', 'wiki', 'maxroll', 'poelab', 'craft', 'scout'])
+    expect(SITES.map((s) => s.id)).toEqual(['ninja', 'poedb', 'wiki', 'maxroll', 'mobalytics', 'poelab', 'craft', 'scout'])
     expect(new Set(SITES.map((s) => s.mark)).size).toBe(SITES.length)
   })
 
@@ -117,6 +117,8 @@ describe('закладки игрока', () => {
     ['https://poedb.tw/us/', 'site'],
     ['https://www.poe.ninja/', 'site'],
     ['https://poewiki.net/', 'site'],
+    ['https://mobalytics.gg/poe', 'site'],
+    ['https://www.mobalytics.gg/poe-2', 'site'],
     ['не адрес', 'url'],
     ['', 'url']
   ])('%s — отказ (%s)', (url, reason) => {
