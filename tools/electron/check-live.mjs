@@ -12,9 +12,9 @@
 // тестовый POESESSID PoE 2 (safeStorage, secret.json); --expect: оба читаются на этой версии.
 // Закрывает только свой процесс (по PID).
 //
-// Внимание: проверка Cloudflare на pathofexile.com открывает порт на приём (похоже, WebRTC) — для exe, который
-// запускается с этого пути впервые, Windows покажет окно брандмауэра «Безопасность Windows» (так и на Electron 40).
-// Отвечать на него должен человек; правило останется в брандмауэре.
+// Брандмауэр: до S49 первый RTCPeerConnection (вход GGG, проверка Cloudflare) поднимал mDNS-ответчик Chromium на
+// UDP 5353 — Windows показывала окно «Безопасность Windows» для exe с нового пути. Теперь фича выключена
+// (net/session.ts, DISABLED_CHROMIUM_FEATURES); сокеты на приём проверяет tools/electron/check-sockets.mjs.
 
 import { execFileSync, spawn } from 'node:child_process'
 import { createRequire } from 'node:module'
