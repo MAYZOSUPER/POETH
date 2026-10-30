@@ -51,6 +51,8 @@ export interface HotkeyBinding {
 export type HotkeyAction =
   // game scope
   | 'priceCheck'
+  // S51: скопировать предмет под курсором по-английски (для PoB и Discord) — одно Ctrl+C, EN-текст в буфер
+  | 'copyItemEn'
   | 'overlayToggle'
   | 'whisperLastHit'
   | 'pasteSearch1'

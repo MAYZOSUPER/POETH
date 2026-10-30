@@ -20,6 +20,8 @@ export const SETTINGS_VERSION = 2
 /** Все действия хоткеев v2 с дефолтами. Порядок = порядок в экране настроек. */
 export const HOTKEY_DEFAULTS: Readonly<Record<HotkeyAction, HotkeyBinding>> = {
   priceCheck: { accel: 'Control+D', scope: 'game' },
+  // S51: предмет по-английски в буфер; без клавиши — включает сам игрок, кому это нужно
+  copyItemEn: { accel: '', scope: 'game' },
   overlayToggle: { accel: 'Shift+Space', scope: 'game' },
   whisperLastHit: { accel: '', scope: 'game' },
   pasteSearch1: { accel: '', scope: 'game' },

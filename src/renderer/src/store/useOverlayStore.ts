@@ -56,6 +56,8 @@ interface OverlayStore {
   dismissPopups: () => void
   /** Окно цены перетащили (p) или вернули к курсору (null): сразу на экране и в настройках. */
   setPricePlacement: (p: PopupPoint | null) => void
+  /** Показать уведомление поверх игры: от main (onOverlayNotice) или от самого оверлея (S51: «по-английски»). */
+  notify: (notice: OverlayNotice) => void
 }
 
 const api = (): Window['overlayApi'] => window.overlayApi
@@ -90,11 +92,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
       }),
       api().onOverlayAutoHide(() => get().dismissPopups()),
       api().onOverlayDismiss(() => get().dismissPopups()),
-      api().onOverlayNotice((notice) => {
-        const id = ++noticeSeq
-        set({ notices: [...get().notices.slice(-2), { id, notice }] })
-        window.setTimeout(() => set({ notices: get().notices.filter((n) => n.id !== id) }), notice.action ? NOTICE_ACTION_MS : NOTICE_MS)
-      })
+      api().onOverlayNotice((notice) => get().notify(notice))
     ]
     const [state] = await Promise.all([api().overlay.getState(), get().refreshSettings()])
     set({ ready: true, focus: state.focus, status: state.status, item: get().item ?? state.lastItem })
@@ -120,5 +118,11 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
     const overlay = p ? { pricePosition: 'saved' as const, priceWindowPos: p } : { pricePosition: 'cursor' as const, priceWindowPos: null }
     set(overlay)
     void api().settings.set({ overlay })
+  },
+
+  notify: (notice) => {
+    const id = ++noticeSeq
+    set({ notices: [...get().notices.slice(-2), { id, notice }] })
+    window.setTimeout(() => set({ notices: get().notices.filter((n) => n.id !== id) }), notice.action ? NOTICE_ACTION_MS : NOTICE_MS)
   }
 }))

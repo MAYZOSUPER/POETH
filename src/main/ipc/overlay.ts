@@ -24,12 +24,13 @@ import { sendToCompanion } from '../windows/companionWindow'
 import type { IpcDomain } from './types'
 import { getPasteString } from './regex'
 import { setupChatCommands } from '../input/chatCommands'
+import { registerCopyItemEn, setupCopyItemEn } from './itemEn'
 
 // Домен «игровой оверлей» (S1): окно поверх игры (windows/gameOverlay.ts), хоткеи
 // overlayToggle (Shift+Space) и priceCheck (Ctrl+D → текст предмета), кликабельные
 // виджеты (focus/interactiveAreas.ts), ввод в игру для renderer'ов (чат, поиск в стэше),
 // хоткеи pasteSearch1..5 → строка слота regex-библиотеки (S7) → поиск в стэше, команды
-// чата по хоткеям (input/chatCommands.ts).
+// чата по хоткеям (input/chatCommands.ts), предмет по-английски в буфер (S51, ipc/itemEn.ts).
 
 type ItemListener = (item: CapturedItem) => void
 
@@ -99,6 +100,7 @@ function register(): void {
     if (typeof text !== 'string' || !text) return 'no-input'
     return stashSearch(text)
   })
+  registerCopyItemEn()
 
   // Хоткей занят другой программой (APT, Sidekick…): плашка в настройках и раз за сессию —
   // предупреждение поверх игры (или уведомлением Windows) с кнопкой «Сменить клавишу».
@@ -122,6 +124,7 @@ async function setupForGame(def: GameDef): Promise<void> {
   onHotkeyAction('overlayToggle', () => toggleOverlay(true))
   // Команды чата по хоткеям (F5 → /hideout…), Settings.chatCommands
   await setupChatCommands(def)
+  setupCopyItemEn(def)
   // Строки regex из библиотеки S7 по хоткеям: одно нажатие = Ctrl+F + вставка (без Enter).
   if (def.features.regex) {
     for (const slot of [1, 2, 3, 4, 5] as const) {

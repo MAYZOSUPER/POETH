@@ -14,7 +14,8 @@ export function overlayBridge(): OverlayIpcApi {
       typeInChat: (text, opts) => ipcRenderer.invoke(IPC.overlay.typeInChat, text, opts),
       stashSearch: (text) => ipcRenderer.invoke(IPC.overlay.stashSearch, text),
       hotkeyConflicts: () => ipcRenderer.invoke(IPC.overlay.hotkeyConflicts),
-      openHotkeySettings: () => ipcRenderer.send(IPC.overlay.openHotkeySettings)
+      openHotkeySettings: () => ipcRenderer.send(IPC.overlay.openHotkeySettings),
+      copyItemEn: (text) => ipcRenderer.invoke(IPC.overlay.copyItemEn, text)
     },
     onOverlayFocus: (cb) => subscribe(IPC.events.overlayFocus, cb),
     onOverlayStatus: (cb) => subscribe(IPC.events.overlayStatus, cb),
@@ -22,6 +23,7 @@ export function overlayBridge(): OverlayIpcApi {
     onOverlayAutoHide: (cb) => subscribe(IPC.events.overlayAutoHide, () => cb()),
     onOverlayDismiss: (cb) => subscribe(IPC.events.overlayDismiss, () => cb()),
     onOverlayNotice: (cb) => subscribe(IPC.events.overlayNotice, cb),
-    onHotkeyConflicts: (cb) => subscribe(IPC.events.overlayHotkeyConflicts, cb)
+    onHotkeyConflicts: (cb) => subscribe(IPC.events.overlayHotkeyConflicts, cb),
+    onItemEn: (cb) => subscribe(IPC.events.overlayItemEn, cb)
   }
 }

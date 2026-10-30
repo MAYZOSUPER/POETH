@@ -20,6 +20,14 @@ export const overlay: DomainDict = {
     'overlay.set.pricePosition.hint.nokey': 'Окно цены можно перетащить за шапку — в следующий раз оно откроется там же.',
     'overlay.popup.toCursor': 'Вернуть к курсору',
     'overlay.notice.changeKey': 'Сменить клавишу',
+    // S51: предмет по-английски в буфер
+    'set.hk.copyItemEn': 'Скопировать предмет по-английски (для PoB и Discord)',
+    'overlay.itemEn.copied': 'Английский текст в буфере — вставьте в PoB',
+    'overlay.itemEn.partial':
+      'Английский текст в буфере — вставьте в PoB. Не переведено строк: {n} — они оставлены как есть с пометкой (untranslated)',
+    'overlay.itemEn.asIs': 'Клиент игры на английском — текст предмета в буфере как есть, вставьте в PoB',
+    'overlay.itemEn.failed': 'Не удалось перевести предмет на английский — буфер не изменён',
+    'overlay.itemEn.noItem': 'Предмет не скопирован: наведите курсор на вещь в игре и нажмите клавишу ещё раз',
     'overlay.hk.conflict':
       '{key} занят другой программой (возможно, Awakened PoE Trade или Sidekick). Закройте её или назначьте другую клавишу — нажмите на сочетание ниже.',
     'overlay.hk.conflict.chat': '{key} (команда чата) занят другой программой — закройте её или смените клавишу в «Командах чата».',
@@ -71,6 +79,13 @@ export const overlay: DomainDict = {
     'overlay.set.pricePosition.hint.nokey': 'Drag the price window by its header — next time it opens in the same place.',
     'overlay.popup.toCursor': 'Back to the cursor',
     'overlay.notice.changeKey': 'Change key',
+    'set.hk.copyItemEn': 'Copy item in English (for PoB and Discord)',
+    'overlay.itemEn.copied': 'English text is on the clipboard — paste it into PoB',
+    'overlay.itemEn.partial':
+      'English text is on the clipboard — paste it into PoB. Lines not translated: {n} — left as they are, marked (untranslated)',
+    'overlay.itemEn.asIs': 'The game client is in English — the item text is on the clipboard as is, paste it into PoB',
+    'overlay.itemEn.failed': 'Could not translate the item into English — the clipboard is unchanged',
+    'overlay.itemEn.noItem': 'No item copied: hover an item in the game and press the key again',
     'overlay.hk.conflict':
       '{key} is taken by another program (maybe Awakened PoE Trade or Sidekick). Close it or choose another key — click the shortcut below.',
     'overlay.hk.conflict.chat': '{key} (chat command) is taken by another program — close it or change the key in “Chat commands”.',
