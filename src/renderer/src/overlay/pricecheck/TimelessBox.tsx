@@ -57,9 +57,10 @@ function useHasSession(): boolean | null {
   const [has, setHas] = useState<boolean | null>(null)
   useEffect(() => {
     let alive = true
-    void window.overlayApi.trade
-      .hasSession()
-      .then((v) => alive && setHas(Boolean(v)))
+    // вход аккаунта (S47: своего ключа у PoE 2 больше нет — общий вход, домен auth)
+    void window.overlayApi.auth
+      .status()
+      .then((st) => alive && setHas(st.loggedIn))
       .catch(() => alive && setHas(false))
     return () => {
       alive = false

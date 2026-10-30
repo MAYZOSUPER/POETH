@@ -365,7 +365,8 @@ describe('ошибки разбора PoE2 не роняют приложени�
   })
 
   it('CRLF (буфер обмена Windows) = LF', () => {
-    const lf = readFixture('ru', 'ee2-crossbow-all-types')
+    // рабочая копия на Windows может хранить фикстуру с CRLF (core.autocrlf) — сначала к LF
+    const lf = readFixture('ru', 'ee2-crossbow-all-types').replace(/\r\n/g, '\n')
     const a = parseClipboard(lf, data.ru)
     const b = parseClipboard(lf.replace(/\n/g, '\r\n'), data.ru)
     expect(a.ok && b.ok).toBe(true)
