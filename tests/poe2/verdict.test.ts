@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { honestPrice, type Poe1Listing } from '@shared/poe1/pricecheck/results'
-import { poe2MarketPrice, poe2Verdict } from '@shared/poe2/pricecheck/verdict'
+import { honestPrice, type Poe1ExchangeOffer, type Poe1Listing } from '@shared/poe1/pricecheck/results'
+import { orderBulkOffers, poe2MarketPrice, poe2Verdict } from '@shared/poe2/pricecheck/verdict'
 
 // Вердикт PoE2 (S47): база — exalted, дорогое — divine, курса между валютами нет — сравнение в одной валюте.
 
@@ -58,5 +58,28 @@ describe('вердикт PoE2', () => {
     expect(m.mid.currency).toBe('exalted')
     expect(m.lots).toBe(4)
     expect(m.min.amount).toBe(10)
+  })
+})
+
+describe('обмен PoE2: порядок предложений без курсов', () => {
+  const offer = (id: string, exchangeAmount: number, currency: string, itemAmount = 1): Poe1ExchangeOffer => ({
+    id,
+    exchangeAmount,
+    currency,
+    itemAmount,
+    stock: 10,
+    accountName: id,
+    online: 'online'
+  })
+
+  it('опорная валюта — exalted: её предложения первыми, «1 div» не считается дешевле «2 ex»', () => {
+    const got = orderBulkOffers([offer('d', 1, 'divine'), offer('e2', 2, 'exalted'), offer('c', 6, 'chaos'), offer('e1', 3, 'exalted', 2)])
+    expect(got.map((o) => o.id)).toEqual(['e1', 'e2', 'd', 'c'])
+  })
+
+  it('нет exalted — chaos, потом divine', () => {
+    expect(orderBulkOffers([offer('d', 1, 'divine'), offer('c', 5, 'chaos')])[0].id).toBe('c')
+    expect(orderBulkOffers([offer('d2', 2, 'divine'), offer('d1', 1, 'divine')])[0].id).toBe('d1')
+    expect(orderBulkOffers([])).toEqual([])
   })
 })

@@ -16,6 +16,7 @@ import type {
 } from '@shared/types'
 import { characterName } from '@shared/defaultNames'
 import { resolveTab } from '../tabs'
+import { setCurrencyGame } from '../components/Currency'
 
 interface AppState {
   ready: boolean
@@ -258,6 +259,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   async init() {
     const dataset = await api().dataset.get()
     const settings = await api().settings.get()
+    // S47: имена и иконки валют — из данных запущенной игры
+    setCurrencyGame(settings.game)
     let profiles = await api().profiles.list()
     buildZoneIndex(dataset)
 

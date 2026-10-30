@@ -28,7 +28,7 @@ function openHotkeySettings(): void {
   requestAnimationFrame(() => document.getElementById('set-hotkeys')?.scrollIntoView({ block: 'start' }))
 }
 
-/** Что покажет окно цены: иконка и ключи pc1.tab.show.<id> / .<id>.text. */
+/** Что покажет окно цены: иконка и ключи pc1.tab.show.<id> / .<id>.text (у PoE 2 пояснения, кроме mods, — pc2.tab.show.<id>.text). */
 const SHOWS: Array<[string, IcoName]> = [
   ['verdict', 'ask'],
   ['market', 'coins'],
@@ -151,7 +151,7 @@ export function Poe1PriceCheckTab({
               <li key={id}>
                 <Ico name={icon} />
                 <span>
-                  <b>{t(`pc1.tab.show.${id}`)}</b> {t(game === 'poe2' && id === 'actions' ? 'pc2.tab.show.actions.text' : `pc1.tab.show.${id}.text`)}
+                  <b>{t(`pc1.tab.show.${id}`)}</b> {t(game === 'poe2' && id !== 'mods' ? `pc2.tab.show.${id}.text` : `pc1.tab.show.${id}.text`)}
                 </span>
               </li>
             ))}

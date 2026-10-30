@@ -111,7 +111,8 @@ whose full history is kept in this repository.
   (`renderer/specs/Parser/items.ts`, MIT) and, where noted in `tests/fixtures/poe2/README.md`,
   [Sidekick](https://github.com/Sidekick-Poe/Sidekick) tests (MIT). Russian fixtures are generated from
   them with the Exiled Exchange 2 data; Russian item class names are facts from the PoE 2 client tables
-  ([LocalIdentity/poe2-data](https://github.com/LocalIdentity/poe2-data), names only). Test data only, not shipped.
+  ([LocalIdentity/poe2-data](https://github.com/LocalIdentity/poe2-data), pinned commit `6a49dbd`, names only).
+  Sidekick fixtures are pinned to `4ee98ca`. Test data only, not shipped.
 
 Maxroll, Mobalytics, Exilence CE (CC BY-NC) and similar sites/tools are used only as
 references; none of their text, code, images, or layouts are copied or redistributed.

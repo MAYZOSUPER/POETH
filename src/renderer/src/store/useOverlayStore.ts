@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { GameId } from '@shared/games'
+import { setCurrencyGame } from '../components/Currency'
 import type {
   CapturedItem,
   OverlayFocusState,
@@ -102,6 +103,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
 
   refreshSettings: async () => {
     const s = await api().settings.get()
+    setCurrencyGame(s.game)
     set({
       lang: s.uiLang,
       game: s.game,
