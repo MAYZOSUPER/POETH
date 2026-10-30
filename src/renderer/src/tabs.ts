@@ -3,6 +3,7 @@ import type { AppTab } from '@shared/types'
 import { advisorOn } from '@shared/advisor/flag'
 import { buildOn } from '@shared/build/flag'
 import { guideOn } from '@shared/guide/library'
+import { normalizeRailPref, type RailPref } from '@shared/rail'
 
 // Вкладки компаньона, их разделы на рельсе слева (S20, макет навигации — вариант Б)
 // и доступность по игре (GameDef.features).
@@ -98,28 +99,16 @@ export function resolveTab(game: GameId, wanted: AppTab | undefined, dev = advis
 }
 
 // ---- рельс: свёрнут до иконок или развёрнут с названиями ----
+// Правила общие с рельсом сайтов трейд-окна (S58) — в @shared/rail.
 
-export type RailPref = 'wide' | 'narrow'
-
-/** С этой ширины окна развёрнутый рельс стоит рядом с содержимым; на окне уже он открывается поверх. */
-export const RAIL_INLINE_MIN = 820
+export { RAIL_INLINE_MIN, railWide, type RailPref } from '@shared/rail'
 
 /** Выбор «свёрнут / развёрнут» — в localStorage окна, как развёрнутость папок избранного (Settings не трогаем). */
 export const RAIL_KEY = 'poeth.nav.rail'
 
-/**
- * Развёрнут ли рельс рядом с содержимым. На узком окне — никогда (развёрнутый открывается поверх).
- * Пока пользователь не выбрал сам: в простом режиме развёрнут (новичку нужны названия), в экспертном — свёрнут.
- */
-export function railWide(windowWide: boolean, pref: RailPref | null, simple: boolean): boolean {
-  if (!windowWide) return false
-  return pref ? pref === 'wide' : simple
-}
-
 export function readRailPref(storage: { getItem(key: string): string | null } | undefined): RailPref | null {
   try {
-    const v = storage?.getItem(RAIL_KEY)
-    return v === 'wide' || v === 'narrow' ? v : null
+    return normalizeRailPref(storage?.getItem(RAIL_KEY))
   } catch {
     return null
   }

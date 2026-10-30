@@ -1,7 +1,8 @@
 import { app, BaseWindow, globalShortcut, screen, shell, WebContentsView, type Rectangle } from 'electron'
 import path from 'path'
-import type { GameLang, TradeSiteState } from '@shared/types'
+import type { GameLang, TradeRailState, TradeSiteState } from '@shared/types'
 import type { SiteTabId } from '@shared/sites'
+import { normalizeRailPref, type RailPref } from '@shared/rail'
 import { isAllowedExternalUrl } from '@shared/links'
 import { hardenSiteContents, siteWebPreferences } from '../net/siteContents'
 import { isSitePageUrl } from '../net/guards'
@@ -10,13 +11,16 @@ import { isGameFocused, onGameFocusChange } from '../focus/gameFocus'
 import { ensureGameForeground, getOverlayStatus } from './gameOverlay'
 import { loadRendererPage } from './rendererPage'
 import { boundsOverGame, gameSizeOf, TRADE_MIN_SIZE as MIN_SIZE, type GameSize } from './tradeBounds'
+import { tradeLayout, tradeRail } from './tradeLayout'
 import { windowIcon } from '../appIcon'
 import { devEnv } from '../devEnv'
+import { isMainFrameOf, type IpcFrameRef } from '../security/policy'
 import {
   activeTab,
   closeAll as closeSiteTabs,
   isSiteTabFocused,
   layoutSiteTabs,
+  raiseSiteTabViews,
   selectTab,
   setSiteTabsHost,
   setSiteTabsShown,
@@ -40,21 +44,22 @@ import {
 //        focusTarget S1); хоткей при открытом окне прячет его;
 //      · своё: без системной рамки (у них рамка), шапка — адресная строка сайдбара
 //        (перетаскивание, ×), окно над игрой, пока игра или окно в фокусе;
-//  - игры нет — обычное окно с рамкой: размер, позиция и «поверх игры» запоминаются.
-// Всё это — в %APPDATA%/POETH/trade-window.json. Вид меняется при следующем показе окна
-// (рамку у готового окна не переключить — окно создаётся заново на той же странице сайта).
+//  - игры нет — обычное окно, тоже без системной рамки (S58): своя шапка в стиле POETH над адресной строкой
+//    (trade-sidebar/TitleBar.tsx: значок, название, «свернуть / развернуть / закрыть»). Перетаскивание,
+//    двойной клик (развернуть / восстановить) и Aero Snap — системные: шапка — -webkit-app-region: drag, у окна
+//    без рамки остаётся WS_THICKFRAME (thickFrame по умолчанию), поэтому края и углы тянутся. Размер, позиция,
+//    «развёрнуто» и «поверх игры» запоминаются.
+// Всё это — в %APPDATA%/POETH/trade-window.json. Вид меняется при следующем показе окна (окно создаётся заново
+// на той же странице сайта: у видов разные минимальный размер, уровень «поверх» и шапка).
 // ПРАВИЛО (docs/PLAN-POETH.md, риск бана): «Travel to Hideout» и «Direct whisper» — только родные
 // кнопки сайта, которые жмёт игрок. В siteView никаких executeJavaScript, инъекций, программных кликов
 // (sendInputEvent) и своих запросов к эндпоинтам телепорта/whisper. Сторож — tests/fav/siteGuard.test.ts.
-// Вкладки сайтов (S43): у PoE 1 слева — рельс вкладок (RAIL_WIDTH, рисует сайдбар). «Трейд» — siteView этого
+// Вкладки сайтов (S43): у PoE 1 слева — рельс вкладок (рисует сайдбар). «Трейд» — siteView этого
 // файла; poe.ninja, poedb и др. — вью windows/siteTabs.ts на отдельной сессии сайтов, видна только активная.
-// Колонка избранного — только у вкладки «Трейд».
-
-/** ширина колонки избранного и высота адресной строки — те же числа в trade-sidebar.css */
-export const SIDEBAR_WIDTH = 300
-export const BAR_HEIGHT = 40
-/** рельс вкладок сайтов (S43) — то же число в trade-sidebar.css */
-export const RAIL_WIDTH = 48
+// Колонка избранного — только у вкладки «Трейд». Разметка (шапка, рельс, колонка, адресная строка) — tradeLayout.ts.
+// Рельс (S58) раскрывается с названиями, как рельс компаньона: рядом с сайтом, если окну хватает ширины (сайт
+// сдвигается), иначе — шторкой поверх. Шторку рисует сайдбар, а вью сайтов — нативные и лежат над ним, поэтому
+// на время шторки сайдбар поднимается над ними (его фон над сайтом прозрачный — сайт виден под затемнением).
 
 const DEFAULT_BOUNDS = { width: 1280, height: 820 }
 const SAVE_DELAY_MS = 600
@@ -67,6 +72,8 @@ interface WindowState {
   gameSize?: GameSize
   /** колонка избранного свёрнута */
   sidebarCollapsed?: boolean
+  /** рельс сайтов: выбор игрока «развёрнут / свёрнут» (S58); нет — по режиму, как рельс компаньона */
+  rail?: RailPref
 }
 
 let win: BaseWindow | null = null
@@ -90,8 +97,14 @@ let siteState: TradeSiteState = {
   pinned: false,
   activeSearchId: null,
   overGame: false,
-  sidebarCollapsed: false
+  sidebarCollapsed: false,
+  maximized: false,
+  rail: { pref: null, wide: false, room: false }
 }
+/** простой режим интерфейса: развёрнут ли рельс, пока игрок не выбрал сам (задаёт домен fav по настройкам) */
+let railSimple = true
+/** шторка рельса открыта: сайдбар поднят над вью сайтов */
+let railDrawerOpen = false
 const siteListeners = new Set<(s: TradeSiteState) => void>()
 const blockedListeners = new Set<(url: string) => void>()
 
@@ -103,7 +116,13 @@ async function loadState(): Promise<void> {
   if (stateLoaded) return
   stateLoaded = true
   const raw = await readJson<WindowState | null>(stateFile(), null)
-  if (raw && typeof raw === 'object') state = raw
+  if (raw && typeof raw === 'object') {
+    state = raw
+    // выбор рельса из файла — только 'wide' | 'narrow', мусор — «не выбирал»
+    const rail = normalizeRailPref(raw.rail)
+    if (rail) state.rail = rail
+    else delete state.rail
+  }
 }
 
 /**
@@ -142,28 +161,43 @@ function restoredBounds(): Partial<Rectangle> {
   return visible ? b : { width: b.width, height: b.height }
 }
 
-function railWidth(): number {
-  return sitesEnabled() ? RAIL_WIDTH : 0
-}
-
-function sideWidth(): number {
-  return railWidth() + (state.sidebarCollapsed ? 0 : SIDEBAR_WIDTH)
+/** Рельс сайтов сейчас: выбор игрока и хватает ли ширины окна, чтобы развёрнутый стоял рядом с сайтом. */
+function railState(): TradeRailState {
+  const pref = state.rail ?? null
+  if (!sitesEnabled() || !win || win.isDestroyed()) return { pref, wide: false, room: false }
+  return { pref, ...tradeRail(win.getContentBounds().width, pref, railSimple) }
 }
 
 function layout(): void {
   if (!win || win.isDestroyed() || !sidebar || !site) return
   const { width, height } = win.getContentBounds()
-  const side = sideWidth()
-  const rail = railWidth()
-  sidebar.setBounds({ x: 0, y: 0, width, height })
-  site.setBounds({
-    x: side,
-    y: BAR_HEIGHT,
-    width: Math.max(0, width - side),
-    height: Math.max(0, height - BAR_HEIGHT)
+  const box = tradeLayout({
+    width,
+    height,
+    overGame,
+    sites: sitesEnabled(),
+    railWide: railState().wide,
+    sidebarCollapsed: !!state.sidebarCollapsed
   })
+  sidebar.setBounds({ x: 0, y: 0, width, height })
+  site.setBounds(box.site)
   site.setVisible(activeTab() === 'trade')
-  layoutSiteTabs({ x: rail, y: BAR_HEIGHT, width: Math.max(0, width - rail), height: Math.max(0, height - BAR_HEIGHT) })
+  layoutSiteTabs(box.tabs)
+}
+
+/**
+ * Порядок вью (S58): шторка рельса открыта — сайдбар поверх сайтов (иначе нативные вью закрыли бы шторку);
+ * закрыта — сайты снова поверх сайдбара. Новая вью сайта ложится наверх сама — при открытой шторке
+ * сайдбар поднимается снова (host.changed).
+ */
+function stackViews(): void {
+  if (!win || win.isDestroyed() || !sidebar || !site) return
+  if (railDrawerOpen) {
+    win.contentView.addChildView(sidebar)
+    return
+  }
+  win.contentView.addChildView(site)
+  raiseSiteTabViews()
 }
 
 function publishSite(patch: Partial<TradeSiteState> = {}): void {
@@ -182,6 +216,8 @@ function publishSite(patch: Partial<TradeSiteState> = {}): void {
     pinned: !!state.pinned,
     overGame,
     sidebarCollapsed: !!state.sidebarCollapsed,
+    maximized: !!win && !win.isDestroyed() && win.isMaximized(),
+    rail: railState(),
     ...patch
   }
   if (JSON.stringify(next) === JSON.stringify(siteState)) return
@@ -232,6 +268,8 @@ function hookOnce(): void {
     gameLang: () => gameLangOf(),
     changed: () => {
       layout()
+      // новая вью сайта легла поверх открытой шторки рельса
+      if (railDrawerOpen) stackViews()
       publishSite()
     }
   })
@@ -260,8 +298,9 @@ async function create(title: string, area: Rectangle | null): Promise<BaseWindow
     minWidth: area ? Math.min(MIN_SIZE.width, area.width) : MIN_SIZE.width,
     minHeight: area ? Math.min(MIN_SIZE.height, area.height) : MIN_SIZE.height,
     show: false,
-    // поверх игры — без системной рамки (шапка — адресная строка сайдбара); края тянутся
-    frame: !area,
+    // без системной рамки в обоих видах (S58): шапка — наша (обычное окно — TitleBar, поверх игры — адресная
+    // строка). thickFrame по умолчанию: края и углы тянутся, Aero Snap и двойной клик по шапке — системные
+    frame: false,
     autoHideMenuBar: true,
     backgroundColor: '#0f0c0a'
   })
@@ -277,6 +316,9 @@ async function create(title: string, area: Rectangle | null): Promise<BaseWindow
       sandbox: true
     }
   })
+  // фон сайдбара — прозрачный: страница красит себя сама, а под шторкой рельса (сайдбар поднят над сайтом)
+  // место сайта у неё прозрачное — сайт виден под затемнением (trade-sidebar.css, .ts--drawer)
+  side.setBackgroundColor('#00000000')
   const siteView = new WebContentsView({ webPreferences: siteWebPreferences() })
   siteView.setBackgroundColor('#0f0c0a')
   w.contentView.addChildView(side)
@@ -307,6 +349,8 @@ async function create(title: string, area: Rectangle | null): Promise<BaseWindow
 
   w.on('resize', () => {
     layout()
+    // ширина окна решает, стоит ли развёрнутый рельс рядом с сайтом (rail.room)
+    publishSite()
     if (!overGame) scheduleSave()
   })
   // поверх игры: игрок растянул окно сам ('resized' — только ручной ресайз, не setBounds) —
@@ -332,9 +376,15 @@ async function create(title: string, area: Rectangle | null): Promise<BaseWindow
     syncEsc()
     if (!state.pinned && !overGame && !w.isDestroyed()) w.setAlwaysOnTop(false)
   })
-  w.on('maximize', layout)
-  w.on('unmaximize', layout)
-  w.on('restore', layout)
+  // шапка показывает «Развернуть» или «Восстановить» (state.maximized); развёрнутость запоминается
+  const resized = (): void => {
+    layout()
+    publishSite()
+    if (!overGame) scheduleSave()
+  }
+  w.on('maximize', resized)
+  w.on('unmaximize', resized)
+  w.on('restore', resized)
   w.on('close', (e) => {
     if (quitting) return
     e.preventDefault()
@@ -345,6 +395,7 @@ async function create(title: string, area: Rectangle | null): Promise<BaseWindow
       win = null
       sidebar = null
       site = null
+      railDrawerOpen = false
     }
   })
 
@@ -370,6 +421,7 @@ function destroyWindow(): string {
   win = null
   sidebar = null
   site = null
+  railDrawerOpen = false
   if (w && !w.isDestroyed()) w.destroy()
   syncEsc()
   // webContents вью BaseWindow сами не закрываются
@@ -523,13 +575,63 @@ export function setTradeWindowTitle(title: string): void {
   if (win && !win.isDestroyed()) win.setTitle(title)
 }
 
+// ---- S58: шапка обычного окна и рельс сайтов (каналы — только сайдбар этого окна, см. isTradeSidebarSender) ----
+
+/** «Свернуть» в шапке обычного окна. Поверх игры шапки нет — окно прячут Esc и ×. */
+export function minimizeTradeWindow(): void {
+  if (win && !win.isDestroyed() && !overGame) win.minimize()
+}
+
+/** «Развернуть / Восстановить» (то же — двойной клик по шапке, его делает система). */
+export function toggleMaximizeTradeWindow(): void {
+  if (!win || win.isDestroyed() || overGame) return
+  if (win.isMaximized()) win.unmaximize()
+  else win.maximize()
+}
+
+/** Рельс развёрнут или свёрнут — выбор игрока, запоминается в trade-window.json; сайт сдвигается. */
+export function setTradeRailPref(pref: RailPref): void {
+  state = { ...state, rail: pref }
+  layout()
+  scheduleSave()
+  publishSite()
+}
+
+/** Шторка рельса (узкое окно) открыта или закрыта: сайдбар над вью сайтов или под ними. */
+export function setTradeRailDrawer(open: boolean): void {
+  if (railDrawerOpen === open) return
+  railDrawerOpen = open
+  stackViews()
+}
+
+/** Простой режим интерфейса (настройки): рельс развёрнут по умолчанию, пока игрок не выбрал сам. */
+export function setTradeRailSimple(simple: boolean): void {
+  if (railSimple === simple) return
+  railSimple = simple
+  layout()
+  publishSite()
+}
+
+/** IPC пришёл из главного кадра сайдбара именно этого трейд-окна (не компаньона, не оверлея, не iframe). */
+export function isTradeSidebarSender(sender: unknown, frame: IpcFrameRef | null | undefined): boolean {
+  const wc = sidebar && !sidebar.webContents.isDestroyed() ? sidebar.webContents : null
+  return isMainFrameOf(sender, frame, wc)
+}
+
 export function currentSiteUrl(): string | null {
   const url = site?.webContents.getURL()
   return url || null
 }
 
 export function getTradeSiteState(): TradeSiteState {
-  return { ...siteState, pinned: !!state.pinned, overGame, sidebarCollapsed: !!state.sidebarCollapsed }
+  return {
+    ...siteState,
+    pinned: !!state.pinned,
+    overGame,
+    sidebarCollapsed: !!state.sidebarCollapsed,
+    maximized: !!win && !win.isDestroyed() && win.isMaximized(),
+    rail: railState()
+  }
 }
 
 export function setActiveSearch(id: string | null): void {

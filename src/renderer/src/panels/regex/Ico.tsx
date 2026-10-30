@@ -31,6 +31,7 @@ export type IcoName =
   | 'close'
   | 'min'
   | 'max'
+  | 'restore'
   | 'search'
   | 'star'
   | 'bolt'

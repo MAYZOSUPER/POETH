@@ -10,12 +10,14 @@ import { useFavStore } from './useFavStore'
 import { SiteRail } from './SiteRail'
 import { SiteBar } from './SiteBar'
 import { SitesManage, SitesNote, SiteWait } from './SitePages'
+import { TitleBar } from './TitleBar'
 
 // Сайдбар трейд-окна (S5) по утверждённому макету: «Избранное» + лига, поиск по избранному,
 // «Сохранить текущий поиск», папки, live-счётчик, импорт/экспорт Better Trading, новая папка,
 // статус входа. Справа сверху — адресная строка сайта; сам сайт — отдельный siteView.
 // S43: у PoE 1 слева — рельс вкладок сайтов; на вкладке сайта колонки избранного нет, а под вью сайта —
 // заметка о приватности, страница «Сайты» или «Загрузка…».
+// S58: обычное окно (не поверх игры) — без рамки Windows, сверху своя шапка (TitleBar); рельс раскрывается.
 
 const api = (): Window['overlayApi'] => window.overlayApi
 
@@ -25,10 +27,14 @@ export function TradeSidebarApp() {
   const init = useFavStore((s) => s.init)
   const collapsed = useFavStore((s) => !!s.site?.sidebarCollapsed)
   const overGame = useFavStore((s) => !!s.site?.overGame)
+  // S58: обычное окно — своя шапка (пока состояние окна не пришло, шапки нет: вид ещё неизвестен)
+  const chrome = useFavStore((s) => !!s.site && !s.site.overGame)
+  const railWide = useFavStore((s) => !!s.site?.rail.wide)
   const sites = useFavStore((s) => s.sites)
   const [filter, setFilter] = useState('')
   const rail = !!sites?.on
   const trade = !rail || sites.active === 'trade'
+  const frame = `${overGame ? ' ts--game' : ''}${chrome ? ' ts--chrome' : ''}${rail && railWide ? ' ts--rail-wide' : ''}`
 
   useEffect(() => init(), [init])
 
@@ -48,7 +54,8 @@ export function TradeSidebarApp() {
 
   if (!trade && sites) {
     return (
-      <div className={`ts ts--rail ts--web${overGame ? ' ts--game' : ''}`}>
+      <div className={`ts ts--rail ts--web${frame}`}>
+        {chrome && <TitleBar />}
         <SiteRail />
         <SiteBar />
         {sites.active === 'manage' ? <SitesManage /> : sites.needsNote ? <SitesNote /> : <SiteWait />}
@@ -57,7 +64,8 @@ export function TradeSidebarApp() {
   }
 
   return (
-    <div className={`ts${collapsed ? ' ts--collapsed' : ''}${overGame ? ' ts--game' : ''}${rail ? ' ts--rail' : ''}`}>
+    <div className={`ts${collapsed ? ' ts--collapsed' : ''}${rail ? ' ts--rail' : ''}${frame}`}>
+      {chrome && <TitleBar />}
       {rail && <SiteRail />}
       <aside className="ts-side">
         <Head />

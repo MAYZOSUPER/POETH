@@ -3,6 +3,7 @@
 // чистые функции @shared/favorites/model.
 
 import type { GameId, TradeSiteKind } from '../games'
+import type { RailPref } from '../rail'
 
 export interface FavFolder {
   id: string
@@ -134,10 +135,24 @@ export interface TradeSiteState {
   pinned: boolean
   /** открыт ли поиск избранного (по slug) */
   activeSearchId: string | null
-  /** окно открыто поверх игры: без системной рамки, шапка — адресная строка (перетаскивание, ×, Esc) */
+  /** окно открыто поверх игры: шапка — адресная строка (перетаскивание, ×, Esc); иначе своя шапка окна (S58) */
   overGame: boolean
   /** колонка избранного свёрнута */
   sidebarCollapsed: boolean
+  /** обычное окно развёрнуто на весь экран (кнопка «Развернуть / Восстановить» в шапке, S58) */
+  maximized: boolean
+  /** рельс вкладок сайтов (S58) */
+  rail: TradeRailState
+}
+
+/** Рельс вкладок сайтов трейд-окна: что выбрал игрок и как рельс стоит сейчас (считает main — от него разметка вью сайта). */
+export interface TradeRailState {
+  /** выбор «развёрнут / свёрнут» (запоминается в trade-window.json); null — не выбирал: по режиму, как рельс компаньона */
+  pref: RailPref | null
+  /** развёрнут рядом с сайтом (названия видны, сайт сдвинут) */
+  wide: boolean
+  /** окну хватает ширины, чтобы развёрнутый рельс стоял рядом; не хватает — он открывается поверх, шторкой */
+  room: boolean
 }
 
 /**

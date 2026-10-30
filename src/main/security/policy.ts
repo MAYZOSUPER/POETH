@@ -7,7 +7,8 @@ import { IPC } from '@shared/ipc'
 //    overlay — игровой оверлей, trade-sidebar — сайдбар трейд-окна) из собранной папки renderer или
 //    с dev-сервера electron-vite. Сайт GGG (siteView, окно входа) и любые другие адреса — не наши.
 //  - Какие каналы IPC может звать страница: всё приложение — только наши страницы; ввод в игру —
-//    компаньон и оверлей (сайдбару он не нужен); секреты (вставить POESESSID) — только компаньон.
+//    компаньон и оверлей (сайдбару он не нужен); секреты (вставить POESESSID) — только компаньон;
+//    шапка и рельс трейд-окна (свернуть, развернуть, рельс) — только его сайдбар (S58).
 //  - Куда можно уйти нашей странице и какие разрешения ей дать.
 
 export type AppPage = 'index' | 'overlay' | 'trade-sidebar'
@@ -77,13 +78,45 @@ export const OVERLAY_CHANNELS: ReadonlySet<string> = new Set([...Object.values(I
  */
 export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([IPC.build.importPob, IPC.build.reload, ...Object.values(IPC.lootFilter)])
 
+/**
+ * Управление трейд-окном из его шапки и рельса (S58): свернуть, развернуть, рельс и его шторка — только сайдбар
+ * трейд-окна. Обработчик (main/ipc/fav.ts) вдобавок проверяет, что звал главный кадр сайдбара именно этого окна
+ * (isMainFrameOf). Сайт GGG и вкладки сайтов (без preload, чужой адрес) сюда не достают вовсе.
+ */
+export const TRADE_WINDOW_CHANNELS: ReadonlySet<string> = new Set([
+  IPC.tradeWindow.minimize,
+  IPC.tradeWindow.toggleMaximize,
+  IPC.tradeWindow.setRail,
+  IPC.tradeWindow.railDrawer
+])
+
 /** Может ли страница звать этот канал IPC. */
 export function ipcAllowed(page: AppPage | null, channel: string): boolean {
   if (!page) return false
+  if (TRADE_WINDOW_CHANNELS.has(channel)) return page === 'trade-sidebar'
   if (OVERLAY_CHANNELS.has(channel)) return page === 'overlay'
   if (GAME_INPUT_CHANNELS.has(channel)) return page === 'index' || page === 'overlay'
   if (SECRET_CHANNELS.has(channel) || COMPANION_CHANNELS.has(channel)) return page === 'index'
   return true
+}
+
+/** Кадр, приславший IPC (WebFrameMain): процесс и номер кадра в нём. */
+export interface IpcFrameRef {
+  processId: number
+  routingId: number
+}
+
+/**
+ * Звал главный кадр именно этих webContents (S58): отправитель — те же webContents, кадр — их главный, а не iframe
+ * и не уже ушедший (senderFrame null). owner null — окна нет, звать некому.
+ */
+export function isMainFrameOf(
+  sender: unknown,
+  frame: IpcFrameRef | null | undefined,
+  owner: { readonly mainFrame: IpcFrameRef } | null | undefined
+): boolean {
+  if (!owner || sender !== owner || !frame) return false
+  return frame.processId === owner.mainFrame.processId && frame.routingId === owner.mainFrame.routingId
 }
 
 /**

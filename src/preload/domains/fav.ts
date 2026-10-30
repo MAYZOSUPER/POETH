@@ -33,7 +33,11 @@ export function favBridge(): FavIpcApi {
       setPinned: (pinned) => ipcRenderer.invoke(IPC.tradeWindow.setPinned, pinned),
       setSidebar: (collapsed) => ipcRenderer.invoke(IPC.tradeWindow.setSidebar, collapsed),
       state: () => ipcRenderer.invoke(IPC.tradeWindow.state),
-      openInBrowser: () => ipcRenderer.invoke(IPC.tradeWindow.openInBrowser)
+      openInBrowser: () => ipcRenderer.invoke(IPC.tradeWindow.openInBrowser),
+      minimize: () => ipcRenderer.invoke(IPC.tradeWindow.minimize),
+      toggleMaximize: () => ipcRenderer.invoke(IPC.tradeWindow.toggleMaximize),
+      setRail: (pref) => ipcRenderer.invoke(IPC.tradeWindow.setRail, pref),
+      railDrawer: (open) => ipcRenderer.invoke(IPC.tradeWindow.railDrawer, open)
     },
     sites: {
       state: () => ipcRenderer.invoke(IPC.sites.state),

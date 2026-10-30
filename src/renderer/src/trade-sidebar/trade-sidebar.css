@@ -1,7 +1,9 @@
 /* Сайдбар трейд-окна (S5) по макету «трейд-окно с избранным». Только токены tokens.css и
    компоненты ui-*. Числа 300px (колонка) и 40px (адресная строка) совпадают с SIDEBAR_WIDTH и
-   BAR_HEIGHT в src/main/windows/tradeWindow.ts: правее и ниже лежит siteView с сайтом.
-   S43: рельс вкладок сайтов слева (--rail, 48px = RAIL_WIDTH); на вкладке сайта колонки избранного нет (--side: 0). */
+   BAR_HEIGHT в src/main/windows/tradeLayout.ts: правее и ниже лежит siteView с сайтом.
+   S43: рельс вкладок сайтов слева (--rail = RAIL_WIDTH); на вкладке сайта колонки избранного нет (--side: 0).
+   S58: обычное окно — своя шапка сверху (--title = TITLE_HEIGHT); рельс — .ui-rail рельса компаньона:
+   52px, развёрнутый — 188px (RAIL_WIDE_WIDTH), на узком окне — шторка поверх. */
 
 html,
 body {
@@ -9,6 +11,7 @@ body {
 }
 
 .ts {
+  --title: 0px;
   --rail: 0px;
   --side: 300px;
   position: relative;
@@ -22,7 +25,7 @@ body {
 /* ---- колонка избранного ---- */
 .ts-side {
   position: absolute;
-  inset: 0 auto 0 var(--rail);
+  inset: var(--title) auto 0 var(--rail);
   width: 300px;
   display: flex;
   flex-direction: column;
@@ -275,7 +278,7 @@ body {
 /* ---- адресная строка сайта ---- */
 .ts-bar {
   position: absolute;
-  top: 0;
+  top: var(--title);
   left: calc(var(--rail) + var(--side));
   right: 0;
   height: 40px;
@@ -345,7 +348,7 @@ body {
 /* место под сайт (пока siteView не нарисовался) */
 .ts-site-wait {
   position: absolute;
-  top: 40px;
+  top: calc(var(--title) + 40px);
   left: calc(var(--rail) + var(--side));
   right: 0;
   bottom: 0;
@@ -382,59 +385,34 @@ body {
   color: var(--bad);
 }
 
-/* ---- S43: рельс вкладок сайтов ---- */
+/* ---- S43: рельс вкладок сайтов; S58 — это .ui-rail рельса компаньона (styles/components.css) ---- */
 .ts--rail {
-  --rail: 48px;
+  --rail: 52px;
+}
+.ts--rail-wide {
+  --rail: 188px;
 }
 .ts--web {
   --side: 0px;
 }
-.ts-rail {
+/* ниже шапки окна; ширину сайта двигает main сразу (нативная вью) — рельс тоже без анимации */
+.ts-rail.ui-rail {
   position: absolute;
-  inset: 0 auto 0 0;
-  width: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-3) 0;
-  border-right: 1px solid var(--border);
-  background: var(--sunken);
-  overflow-y: auto;
-  scrollbar-width: none;
+  inset: var(--title) auto 0 0;
+  transition: none;
 }
-.ts-rail__tab {
-  position: relative;
-  flex: none;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 1px;
-  width: 38px;
-  min-height: 34px;
-  padding: var(--sp-1) 0;
-  border: 1px solid transparent;
-  border-radius: var(--r-sm);
-  background: none;
-  color: var(--fg-muted);
-  cursor: pointer;
+/* значок-буква шире иконки — колонка 26px; иконки «Трейд» и «Сайты» — по её центру */
+.ts-rail .ts-rail__item {
+  grid-template-columns: 26px minmax(0, 1fr);
 }
-.ts-rail__tab:hover {
-  background: var(--hover);
-  color: var(--fg);
+.ui-rail:not(.ui-rail--wide):not(.ui-rail--drawer) .ts-rail__item {
+  grid-template-columns: 26px;
 }
-.ts-rail__tab[aria-pressed='true'] {
-  background: var(--selected);
-  border-color: var(--border-strong);
-  color: var(--accent-hi);
-  box-shadow: inset 2px 0 0 var(--accent);
-}
-.ts-rail__tab:focus-visible {
-  outline: 1px solid var(--accent);
-  outline-offset: 1px;
+.ts-rail__item > .ui-ico {
+  justify-self: center;
 }
 /* вью вкладки жива (открыта недавно) — точка в углу */
-.ts-rail__tab.is-live::after {
+.ts-rail__item.is-live::after {
   content: '';
   position: absolute;
   top: 3px;
@@ -444,16 +422,20 @@ body {
   border-radius: 50%;
   background: var(--fg-faint);
 }
+/* «Трейд» свёрнутого рельса — с короткой подписью под значком (⇄ без слова читается как «Обмен») */
 .ts-rail__cap {
+  display: none;
   font: 600 var(--fs-2xs) / 1 var(--font-ui);
   letter-spacing: 0.02em;
 }
-.ts-rail__sep {
-  flex: none;
-  width: 24px;
-  height: 1px;
-  margin: var(--sp-1) 0;
-  background: var(--border);
+.ui-rail:not(.ui-rail--wide):not(.ui-rail--drawer) .ts-rail__cap {
+  display: block;
+}
+.ui-rail:not(.ui-rail--wide):not(.ui-rail--drawer) .ts-rail__item:has(> .ts-rail__cap) {
+  height: 40px;
+  align-content: center;
+  justify-items: center;
+  row-gap: 3px;
 }
 .ts-rail__mark {
   display: grid;
@@ -467,12 +449,87 @@ body {
   font: 700 var(--fs-xs) / 1 var(--font-ui);
   letter-spacing: 0.02em;
 }
-.ts-rail__tab[aria-pressed='true'] .ts-rail__mark {
+.ts-rail__item.is-current .ts-rail__mark {
   border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   color: var(--accent-hi);
 }
 .ts-rail__mark--own {
   border-style: dashed;
+}
+/* обёртка списка в шторке ловит только стрелки */
+.ts-rail__keys {
+  display: contents;
+}
+/* шторка (узкое окно): затемнение ниже шапки окна; место сайта у страницы прозрачное — сайдбар в это время
+   поднят над вью сайтов (main, setTradeRailDrawer), и сайт виден под затемнением */
+.ts .ui-rail-scrim {
+  top: var(--title);
+}
+html.ts-drawer,
+html.ts-drawer body,
+html.ts-drawer .ts {
+  background: transparent;
+}
+html.ts-drawer .ts-site-wait {
+  visibility: hidden;
+}
+
+/* ---- S58: своя шапка обычного окна (вместо рамки Windows) ---- */
+.ts--chrome {
+  --title: 32px;
+}
+.ts-title {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: 0 var(--sp-2) 0 var(--sp-5);
+  border-bottom: 1px solid var(--border);
+  background: var(--head-bg), var(--surface-solid);
+  /* перетаскивание, Aero Snap и двойной клик (развернуть / восстановить) — системные */
+  -webkit-app-region: drag;
+}
+.ts-title__brand {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ts-title__mark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  color: var(--accent);
+}
+.ts-title__app {
+  font: 700 var(--fs-lg) / 1 var(--font-display);
+  letter-spacing: 0.08em;
+  color: var(--accent-hi);
+}
+.ts-title__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.ts-title__acts {
+  flex: none;
+  display: flex;
+  gap: var(--sp-1);
+}
+/* кнопки шапки нажимаются (не тянут окно) */
+.ts-title__acts,
+.ts-title button {
+  -webkit-app-region: no-drag;
+}
+.ts-title .ui-btn--icon {
+  width: 30px;
 }
 
 /* ---- S43: строка вкладки сайта ---- */
@@ -495,7 +552,7 @@ body {
 /* ---- S43: место под сайтом — заметка, страница «Сайты», ожидание ---- */
 .ts-page {
   position: absolute;
-  top: 40px;
+  top: calc(var(--title) + 40px);
   left: var(--rail);
   right: 0;
   bottom: 0;

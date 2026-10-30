@@ -16,6 +16,7 @@ import type {
 } from '../types'
 import type { GameId } from '../games'
 import type { BookmarkError, SitesState, SitesTarget, SiteTabId } from '../sites'
+import type { RailPref } from '../rail'
 
 export const favChannels = {
   fav: {
@@ -46,7 +47,13 @@ export const favChannels = {
     setPinned: 'tradeWindow:setPinned',
     setSidebar: 'tradeWindow:setSidebar',
     state: 'tradeWindow:state',
-    openInBrowser: 'tradeWindow:openInBrowser'
+    openInBrowser: 'tradeWindow:openInBrowser',
+    // S58: шапка обычного окна и рельс сайтов — только сайдбар трейд-окна (policy.ts TRADE_WINDOW_CHANNELS
+    // + проверка, что звал именно сайдбар этого окна)
+    minimize: 'tradeWindow:minimize',
+    toggleMaximize: 'tradeWindow:toggleMaximize',
+    setRail: 'tradeWindow:setRail',
+    railDrawer: 'tradeWindow:railDrawer'
   },
   // вкладки сайтов трейд-окна (S43)
   sites: {
@@ -113,6 +120,14 @@ export interface FavIpcApi {
     state(): Promise<TradeSiteState>
     /** текущую страницу сайта — в системный браузер */
     openInBrowser(): Promise<boolean>
+    /** S58, шапка обычного окна: свернуть в панель задач (поверх игры — ничего) */
+    minimize(): Promise<void>
+    /** S58: развернуть на весь экран или восстановить (поверх игры — ничего) */
+    toggleMaximize(): Promise<void>
+    /** S58: рельс сайтов развёрнут или свёрнут — запоминается между запусками */
+    setRail(pref: RailPref): Promise<void>
+    /** S58: шторка рельса на узком окне открыта — сайдбар поднимается над вью сайта, закрыта — опускается */
+    railDrawer(open: boolean): Promise<void>
   }
   /** вкладки сайтов трейд-окна (S43): poe.ninja, poedb, вики… и закладки игрока */
   sites: {

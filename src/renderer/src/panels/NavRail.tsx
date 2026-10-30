@@ -10,6 +10,7 @@ import { useGuideStore } from '../store/useGuideStore'
 import { useLiveStore } from './live/useLiveStore'
 import { useT } from '../i18n'
 import { ShellIcon } from '../components/ShellIcon'
+import { RailDrawer, RailToggle } from '../components/RailParts'
 import {
   badgeFor,
   badgeText,
@@ -148,7 +149,6 @@ export function NavRail() {
   const [flash, setFlash] = useState<AppTab | null>(null)
 
   const railRef = useRef<HTMLElement>(null)
-  const drawerRef = useRef<HTMLElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
   const tipRef = useRef<HTMLDivElement>(null)
   const chosen = useRef<AppTab | null>(null)
@@ -182,20 +182,6 @@ export function NavRail() {
     const id = window.setTimeout(() => setFlash(null), FLASH_MS)
     return () => window.clearTimeout(id)
   }, [appTab])
-
-  // шторка: фокус на открытую вкладку, Esc закрывает и возвращает фокус на кнопку
-  useEffect(() => {
-    if (!drawer) return
-    drawerRef.current?.querySelector<HTMLElement>('[tabindex="0"]')?.focus()
-    const onKey = (e: globalThis.KeyboardEvent): void => {
-      if (e.key !== 'Escape') return
-      e.preventDefault()
-      setDrawerOpen(false)
-      toggleRef.current?.focus()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [drawer])
 
   // подсказка у нижнего края не уходит за окно: поднимаем её, стрелка остаётся у иконки
   useLayoutEffect(() => {
@@ -301,18 +287,7 @@ export function NavRail() {
     <>
       <nav ref={railRef} className={`ui-rail${wide ? ' ui-rail--wide' : ''}`} aria-label={t('nav.label')}>
         {list(false)}
-        <button
-          ref={toggleRef}
-          type="button"
-          className="ui-rail__item ui-rail__toggle"
-          aria-expanded={open}
-          aria-label={t(open ? 'nav.collapse' : 'nav.expand')}
-          title={locked ? undefined : t(open ? 'nav.collapse' : 'nav.expand')}
-          onClick={toggle}
-        >
-          <ShellIcon name="chev-r" />
-          <span className="ui-rail__label">{t('nav.collapse.short')}</span>
-        </button>
+        <RailToggle ref={toggleRef} open={open} title={!locked} onClick={toggle} />
         {tips && tipTab && (
           <div ref={tipRef} className="ui-rail__tip" style={{ top: tip.top }}>
             <div className="ui-tip" id={TIP_ID} role="tooltip">
@@ -331,34 +306,9 @@ export function NavRail() {
         )}
       </nav>
       {drawer && (
-        <>
-          <button type="button" className="ui-rail-scrim" aria-label={t('nav.close')} tabIndex={-1} onClick={() => setDrawerOpen(false)} />
-          <nav
-            ref={drawerRef}
-            className="ui-rail ui-rail--drawer"
-            aria-label={t('nav.label')}
-            onBlur={(e) => {
-              // фокус ушёл из шторки (Tab дальше) — закрываем, чтобы он не оказался под затемнением
-              const to = e.relatedTarget as Node | null
-              if (to && !e.currentTarget.contains(to)) setDrawerOpen(false)
-            }}
-          >
-            {list(true)}
-            <button
-              type="button"
-              className="ui-rail__item ui-rail__toggle"
-              aria-expanded="true"
-              aria-label={t('nav.collapse')}
-              onClick={() => {
-                setDrawerOpen(false)
-                toggleRef.current?.focus()
-              }}
-            >
-              <ShellIcon name="chev-r" />
-              <span className="ui-rail__label">{t('nav.collapse.short')}</span>
-            </button>
-          </nav>
-        </>
+        <RailDrawer label={t('nav.label')} toggleRef={toggleRef} onClose={() => setDrawerOpen(false)}>
+          {list(true)}
+        </RailDrawer>
       )}
       {locked && (
         // мышь проходит сквозь окно — снять замок можно только хоткеем или из трея; наведение делает плашку прозрачной
