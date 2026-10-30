@@ -34,6 +34,15 @@ export interface CapturedItem {
   at: number
 }
 
+/**
+ * «Скопировать предмет по-английски» (S51): main скопировал предмет по хоткею и просит оверлей собрать английский
+ * текст (данные PoE1 загружены в оверлее). Только в памяти — на диск и в сеть не уходит.
+ */
+export interface ItemEnRequest {
+  text: string
+  lang: ItemLang
+}
+
 /** Где открывать окно цены (popup) по Ctrl+D; 'saved' — там, куда игрок перетащил окно в прошлый раз. */
 export type PricePopupPosition = 'cursor' | 'left' | 'right' | 'saved'
 
