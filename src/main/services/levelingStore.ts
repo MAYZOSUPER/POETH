@@ -7,6 +7,7 @@ import type {
   LevelingCursor,
   LevelingData,
   LevelingFinished,
+  LevelingLabs,
   LevelingProfile,
   LevelingProgress,
   LevelingSession,
@@ -28,7 +29,8 @@ import {
   type FlatStep
 } from '@shared/leveling/route'
 import { isAfter, parseLevelingLog } from '@shared/leveling/log'
-import { applyLevel, applyLogin, applyZone, emptySession, guideState, zoneKind, type SyncEnv } from '@shared/leveling/sync'
+import { applyAscendancy, applyLevel, applyLogin, applyZone, emptySession, guideState, zoneKind, type SyncEnv } from '@shared/leveling/sync'
+import { LABS, emptyLabs, hideLab, markLab } from '@shared/leveling/labs'
 import { readJson, writeJsonAtomic, writeJsonAtomicSync } from './atomicJson'
 
 // Прокачка PoE1 в main (S14, S22): персонажи и прогресс по маршруту — userData/leveling.json (свой файл: профили
@@ -81,6 +83,17 @@ function normFinished(v: unknown): LevelingFinished | null {
   return out
 }
 
+/** Лабиринты из файла (S52): журнал 0–4, галочки — только известные лабиринты, «скрыть» — пара лабиринтов. */
+function normLabs(v: unknown): LevelingLabs {
+  const x = (v ?? {}) as Partial<LevelingLabs>
+  const labs = emptyLabs()
+  if (num(x.log)) labs.log = Math.max(0, Math.min(LABS.length, Math.floor(x.log)))
+  if (x.marked && typeof x.marked === 'object') for (const l of LABS) if (num(x.marked[l])) labs.marked[l] = x.marked[l]
+  const h = x.hidden
+  if (h && LABS.includes(h.lab) && LABS.includes(h.bracket)) labs.hidden = { lab: h.lab, bracket: h.bracket }
+  return labs
+}
+
 function normProgress(v: unknown, now: number): LevelingProgress {
   const x = (v ?? {}) as Partial<LevelingProgress>
   const done: Record<string, number> = {}
@@ -93,6 +106,7 @@ function normProgress(v: unknown, now: number): LevelingProgress {
     variant: normVariant(x.variant),
     finished: normFinished(x.finished),
     showAnyway: x.showAnyway === true,
+    labs: normLabs(x.labs),
     updatedAt: Number.isFinite(x.updatedAt) ? (x.updatedAt as number) : now
   }
 }
@@ -246,7 +260,13 @@ export class LevelingStore extends EventEmitter {
     return {
       profiles: f.profiles.map((x) => ({ ...x })),
       activeId: f.activeId,
-      progress: { ...p, done: { ...p.done }, variant: { ...p.variant }, finished: p.finished ? { ...p.finished } : null },
+      progress: {
+        ...p,
+        done: { ...p.done },
+        variant: { ...p.variant },
+        finished: p.finished ? { ...p.finished } : null,
+        labs: { ...p.labs, marked: { ...p.labs.marked }, hidden: p.labs.hidden ? { ...p.labs.hidden } : null }
+      },
       config: { ...f.config, pos: f.config.pos ? { ...f.config.pos } : null },
       log: { ...this.log },
       offRoute: returnIndex(this.flat(), p),
@@ -274,7 +294,8 @@ export class LevelingStore extends EventEmitter {
 
   /**
    * Новые строки Client.txt: вход в игру, зона (шаг маршрута, «кампания пройдена»), повышение уровня
-   * (персонаж, уровень, класс). Пока читаем хвост лога при запуске — копятся в очереди.
+   * (персонаж, уровень, класс), `/passives` (очки восхождения — S52). Пока читаем хвост лога при запуске —
+   * копятся в очереди.
    */
   ingestLines(lines: string[]): void {
     if (this.queue) {
@@ -299,6 +320,8 @@ export class LevelingStore extends EventEmitter {
       } else if (e.type === 'zone') {
         applyZone(f, e.areaId, e.level, this.env(r.at?.ts))
         this.forced = false
+      } else if (e.type === 'ascendancy') {
+        applyAscendancy(f, e.total, this.env(r.at?.ts))
       } else {
         applyLevel(f, e, this.env(r.at?.ts))
       }
@@ -358,10 +381,17 @@ export class LevelingStore extends EventEmitter {
         this.progress = jumpTo(flat, p, a.index, now)
         break
       case 'reset':
-        this.progress = { ...emptyProgress(p.variant, now), level: p.level, areaId: p.areaId }
+        // маршрут с начала; уровень и лабиринты — того же персонажа, остаются
+        this.progress = { ...emptyProgress(p.variant, now), level: p.level, areaId: p.areaId, labs: p.labs }
         break
       case 'showAnyway':
         this.progress = { ...p, showAnyway: a.on, updatedAt: now }
+        break
+      case 'lab':
+        this.progress = { ...p, labs: markLab(p.labs, a.lab, a.done, now), updatedAt: now }
+        break
+      case 'labHide':
+        this.progress = { ...p, labs: hideLab(p.labs, p.level), updatedAt: now }
         break
     }
     this.changed()

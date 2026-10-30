@@ -236,3 +236,79 @@
   margin-left: var(--sp-4);
   vertical-align: 1px;
 }
+
+/* S52: «Зона 45 · вы 52 · опыт −38 % — …» и «Пора пройти лабиринт» — строки гида и вкладки. Цвет — у иконки
+   того же смысла (ниже — «к сведению», выше — «внимание»), текст — обычный: строка короткая и не кричит. */
+.lv-xp {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  color: var(--fg);
+}
+.lv-xp > .ui-ico {
+  margin-top: 1px;
+  color: var(--info);
+}
+.lv-xp--high > .ui-ico {
+  color: var(--warn);
+}
+.lv-xp__extra,
+.lv-lab__extra {
+  color: var(--fg-muted);
+}
+.lv-lab {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  align-items: center;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+.lv-lab > .ui-ico {
+  flex: none;
+  color: var(--info);
+}
+.lv-lab__text {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.lv-lab__btns {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+/* «Лабиринты» во вкладке: галочка, имя как в игре, уровень и откуда известно */
+.lv-labrow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--sp-3);
+  align-items: center;
+  font-size: var(--fs-sm);
+}
+.lv-labrow__meta {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+.lv-labrow.is-done .lv-labrow__name {
+  color: var(--fg-muted);
+}
+.lv-labs__hint {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+}
+.lv-zoneline {
+  padding: var(--sp-3) var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--info) 6%, transparent);
+}
+.lv-zoneline.lv-xp--high {
+  border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+  background: color-mix(in srgb, var(--warn) 7%, transparent);
+}

@@ -2,7 +2,8 @@ import { app, ipcMain } from 'electron'
 import path from 'path'
 import { IPC } from '@shared/ipc'
 import type { GameDef, GameId } from '@shared/games'
-import type { LevelingAction, LevelingConfig, LevelingVariant } from '@shared/types/leveling'
+import type { LevelingAction, LevelingConfig, LevelingVariant, LvLab } from '@shared/types/leveling'
+import { LABS } from '@shared/leveling/labs'
 import { LevelingStore } from '../services/levelingStore'
 import { getGameLogStatus, onGameLogStatus, readLogTail, subscribeGameLog } from '../services/gameLog'
 import { resourcesDir } from '../services/questDataset'
@@ -103,6 +104,10 @@ function cleanAction(a: unknown): LevelingAction | null {
       return Number.isInteger(a.index) ? { type: 'jump', index: a.index as number } : null
     case 'showAnyway':
       return { type: 'showAnyway', on: a.on === true }
+    case 'lab':
+      return (LABS as readonly unknown[]).includes(a.lab) ? { type: 'lab', lab: a.lab as LvLab, done: a.done === true } : null
+    case 'labHide':
+      return { type: 'labHide' }
     default:
       return null
   }
