@@ -200,6 +200,22 @@ export class Poe1Data {
 const PLURAL_WORD_RE = /([A-Za-zА-Яа-яЁё]+)\((-[A-Za-zА-Яа-яЁё]+(?:,\s*-[A-Za-zА-Яа-яЁё]+)*)\)/g
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
+/**
+ * Источник регулярки для строки с обобщённым мн. числом: слово → основа + любые буквы окончания, остальное —
+ * дословно (экранировано). Без таких слов — просто экранированная строка (S51: и перевод строки мода, pobItemEn).
+ */
+export function pluralMatcherSource(canonical: string): string {
+  let source = ''
+  let last = 0
+  for (const match of canonical.matchAll(PLURAL_WORD_RE)) {
+    const word = match[1]
+    const stem = word.slice(0, Math.max(1, word.length - 2))
+    source += escapeRe(canonical.slice(last, match.index)) + escapeRe(stem) + '[A-Za-zА-Яа-яЁё]*'
+    last = match.index! + match[0].length
+  }
+  return source + escapeRe(canonical.slice(last))
+}
+
 /** Регулярки для строк-матчеров с обобщённым мн. числом: слово → основа + любые буквы окончания. */
 function buildPluralMatchers(statsNdjson: string): Array<{ re: RegExp; canonical: string }> {
   const out: Array<{ re: RegExp; canonical: string }> = []
@@ -211,16 +227,7 @@ function buildPluralMatchers(statsNdjson: string): Array<{ re: RegExp; canonical
         for (const canonical of [m.string, m.advanced]) {
           if (!canonical || seen.has(canonical) || canonical.search(PLURAL_WORD_RE) === -1) continue
           seen.add(canonical)
-          let source = ''
-          let last = 0
-          for (const match of canonical.matchAll(PLURAL_WORD_RE)) {
-            const word = match[1]
-            const stem = word.slice(0, Math.max(1, word.length - 2))
-            source += escapeRe(canonical.slice(last, match.index)) + escapeRe(stem) + '[A-Za-zА-Яа-яЁё]*'
-            last = match.index! + match[0].length
-          }
-          source += escapeRe(canonical.slice(last))
-          out.push({ re: new RegExp(`^${source}$`), canonical })
+          out.push({ re: new RegExp(`^${pluralMatcherSource(canonical)}$`), canonical })
         }
       }
     }
