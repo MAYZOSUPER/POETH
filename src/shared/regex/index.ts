@@ -29,6 +29,31 @@ export {
   type VendorPreset
 } from './vendor'
 export { VENDOR_DATA, VENDOR_DATA_META } from './vendorData'
+export {
+  CLASSIC_INFLUENCES,
+  FLASK_CLASSES,
+  FLASK_MOD_IDS,
+  GEM_CLASSES,
+  INFLUENCE_KEYS,
+  ITEMS_PRESETS,
+  ITEMS_PRESET_GROUPS,
+  ITEM_CLASS_KEYS,
+  ITEM_RARITIES,
+  VAAL_TOKEN,
+  buildItemsRegex,
+  emptyItemsQuery,
+  getItemsIndex,
+  hasGemFilter,
+  hasThreshold,
+  isItemsPresetQuery,
+  itemsParts,
+  itemsPresetQuery,
+  modFitsClass,
+  selectedProps,
+  type ItemsBuildResult,
+  type ItemsPreset,
+  type ItemsPresetGroup
+} from './items'
 export type { VendorData, VendorLangData, VendorModPattern, VendorSideReason } from './vendorTypes'
 export { REGEX_PRESETS, presetText, type RegexPreset } from './presets'
 export {

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type {
+  ItemRegexData,
   MapRegexData,
   PasteSlot,
   RegexEntryInput,
@@ -12,18 +13,20 @@ import type {
 import { defaultRegexPrefs } from '@shared/regex'
 
 // Состояние вкладки Regex (S7): библиотека строк, настройки страниц (запоминаются в
-// regex-library.json с задержкой), данные модов карт по языкам клиента.
+// regex-library.json с задержкой), данные модов карт и предметов (S46) по языкам клиента.
 
 interface RegexState {
   ready: boolean
   library: RegexLibrary | null
   prefs: RegexPrefs
   mapData: Partial<Record<RegexLang, MapRegexData | null>>
+  itemData: Partial<Record<RegexLang, ItemRegexData | null>>
   /** когда последний раз скопировали (для «Скопировано ✓») и что */
   copied: { text: string; at: number } | null
 
   init: () => Promise<void>
   ensureMapData: (lang: RegexLang) => Promise<void>
+  ensureItemData: (lang: RegexLang) => Promise<void>
   setPrefs: (patch: Partial<RegexPrefs>) => void
   saveEntry: (input: RegexEntryInput) => Promise<void>
   deleteEntry: (id: string) => Promise<void>
@@ -39,12 +42,14 @@ const PREFS_DELAY_MS = 400
 let pendingPrefs: Partial<RegexPrefs> = {}
 let prefsTimer: ReturnType<typeof setTimeout> | null = null
 const loadingLangs = new Set<RegexLang>()
+const loadingItemLangs = new Set<RegexLang>()
 
 export const useRegexStore = create<RegexState>((set, get) => ({
   ready: false,
   library: null,
   prefs: defaultRegexPrefs(),
   mapData: {},
+  itemData: {},
   copied: null,
 
   init: async () => {
@@ -61,6 +66,17 @@ export const useRegexStore = create<RegexState>((set, get) => ({
       set((s) => ({ mapData: { ...s.mapData, [lang]: data } }))
     } finally {
       loadingLangs.delete(lang)
+    }
+  },
+
+  ensureItemData: async (lang) => {
+    if (lang in get().itemData || loadingItemLangs.has(lang)) return
+    loadingItemLangs.add(lang)
+    try {
+      const data = await api().itemData(lang)
+      set((s) => ({ itemData: { ...s.itemData, [lang]: data } }))
+    } finally {
+      loadingItemLangs.delete(lang)
     }
   },
 

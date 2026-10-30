@@ -65,14 +65,15 @@ export function vendorModText(lang: RegexLang, key: VendorModKey): string[] {
   return VENDOR_DATA[lang].mods[key].text
 }
 
-interface Threshold {
+/** Порог «≥ N»: <pre><atLeast(n)>(<posts>) — общий для свойств «Торговца» и строк модов «Предметов» (S46). */
+export interface Threshold {
   pre: string
   digit: '.' | '\\d'
   n: number
   posts: string[]
 }
 
-function threshold(lang: RegexLang, key: VendorModKey, n: number): Threshold {
+export function threshold(lang: RegexLang, key: VendorModKey, n: number): Threshold {
   const d = VENDOR_DATA[lang].mods[key]
   return { pre: d.pre ?? '', digit: d.digit ?? '\\d', n: Math.max(0, Math.min(999, Math.round(n))), posts: d.posts ?? [] }
 }
@@ -95,7 +96,7 @@ export function joinPosts(posts: string[]): string {
   return `${lcp}(${list.map((p) => p.slice(lcp.length)).join('|')})`
 }
 
-function thresholdBody(t: Threshold): string {
+export function thresholdBody(t: Threshold): string {
   // с контекстом слева («\+») число должно совпасть целиком, без него хватает «хвоста»
   return `${t.pre}${atLeast(t.n, { digit: t.digit, whole: t.pre !== '' })}${joinPosts(t.posts)}`
 }
@@ -146,7 +147,7 @@ export function selectedMods(q: VendorQuery): VendorModKey[] {
   return VENDOR_MOD_KEYS.filter((k) => (q.mods[k] ?? 0) > 0)
 }
 
-interface Part {
+export interface Part {
   /** ключ для подсказки «что убрать»: links, quality… или mod.<VendorModKey> */
   key: string
   body: string
@@ -179,7 +180,7 @@ export function vendorParts(lang: RegexLang, q: VendorQuery): Part[] {
  * Режим «любое»: части через | в один терм. Пороги с одинаковыми pre, цифрой и числом — одной группой
  * («\+(1[5-9]|…)% to (fire r|cold r|lightning r|…)» вместо трёх atLeast): сопротивления на всё влезают в 250.
  */
-function anyBody(parts: Part[]): string {
+export function anyBody(parts: Part[]): string {
   const out: string[] = []
   const groups = new Map<string, { index: number; thr: Threshold }>()
   for (const p of parts) {

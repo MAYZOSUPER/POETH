@@ -2,6 +2,7 @@ import { app } from 'electron'
 import path from 'path'
 import { randomUUID } from 'crypto'
 import type {
+  ItemRegexData,
   MapRegexData,
   PasteSlot,
   RegexEntryInput,
@@ -24,7 +25,7 @@ import { readJson, writeJsonAtomic } from './atomicJson'
 import { resourcesDir } from './questDataset'
 
 // Библиотека regex-строк (%APPDATA%/POETH/regex-library.json, атомарная запись) и данные
-// карт для движка. Логика правок — чистые функции @shared/regex/library.
+// карт и предметов (S46) для движка. Логика правок — чистые функции @shared/regex/library.
 
 let cache: RegexLibrary | null = null
 let writing: Promise<void> = Promise.resolve()
@@ -124,5 +125,42 @@ export async function loadMapData(lang: RegexLang): Promise<MapRegexData | null>
     }
   }
   console.error(`[regex] нет данных карт для ${lang}`)
+  return null
+}
+
+// ---------------------------------------------------------------------------
+// Данные «Предметов» (resources/data/poe1/regex/items.<lang>.json, S46)
+// ---------------------------------------------------------------------------
+
+const itemCache = new Map<RegexLang, ItemRegexData>()
+
+function isItemData(v: unknown): v is ItemRegexData {
+  const d = v as ItemRegexData | null
+  return (
+    !!d &&
+    Array.isArray(d.mods) &&
+    Array.isArray(d.bases) &&
+    !!d.classes &&
+    !!d.rarity &&
+    !!d.influence &&
+    !!d.flags &&
+    typeof d.itemLevel === 'string' &&
+    !!d.meta
+  )
+}
+
+/** Как данные карт: сначала userData/data (обновление без переустановки), затем bundled resources. */
+export async function loadItemData(lang: RegexLang): Promise<ItemRegexData | null> {
+  const hit = itemCache.get(lang)
+  if (hit) return hit
+  const rel = path.join('data', 'poe1', 'regex', `items.${lang}.json`)
+  for (const file of [path.join(app.getPath('userData'), rel), path.join(resourcesDir(), rel)]) {
+    const data = await readJson<unknown>(file, null)
+    if (isItemData(data)) {
+      itemCache.set(lang, data)
+      return data
+    }
+  }
+  console.error(`[regex] нет данных предметов для ${lang}`)
   return null
 }

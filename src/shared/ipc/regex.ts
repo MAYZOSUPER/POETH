@@ -1,9 +1,10 @@
-// IPC домена «regex-строки» (S7): данные карт для движка, библиотека строк, копирование.
+// IPC домена «regex-строки» (S7): данные карт и предметов (S46) для движка, библиотека строк, копирование.
 // Соглашение: каналы '<домен>:<метод>' (вложенный объект с ключом домена),
 // события 'event:<домен>.<имя>'. Новые ключи не должны совпадать с другими доменами
 // (проверяет tests/ipc.test.ts).
 
 import type {
+  ItemRegexData,
   MapRegexData,
   PasteSlot,
   RegexEntryInput,
@@ -17,6 +18,7 @@ import type {
 export const regexChannels = {
   regex: {
     mapData: 'regex:mapData',
+    itemData: 'regex:itemData',
     library: 'regex:library',
     saveEntry: 'regex:saveEntry',
     deleteEntry: 'regex:deleteEntry',
@@ -34,6 +36,8 @@ export interface RegexIpcApi {
   regex: {
     /** Данные карт для языка клиента (userData/data — обновление без переустановки, потом bundled). */
     mapData(lang: RegexLang): Promise<MapRegexData | null>
+    /** Данные «Предметов» (S46): строки модов, базы, классы, влияние — так же, как данные карт. */
+    itemData(lang: RegexLang): Promise<ItemRegexData | null>
     library(): Promise<RegexLibrary>
     /** Добавить (нет id) или изменить запись; строка длиннее 250 не сохраняется. */
     saveEntry(input: RegexEntryInput): Promise<RegexLibrary>

@@ -31,6 +31,7 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import {
   DEFAULT_PATCH,
   ROOT,
@@ -216,10 +217,11 @@ const PAIR_PART_MAX = 6
 // Источники
 // ---------------------------------------------------------------------------
 
-async function ensureExtra(refresh) {
+/** Докачать дополнительные источники RePoE в кэш (S46 добавляет свои: ремесло, RU-названия модов). */
+export async function ensureExtra(refresh, sources = EXTRA_SOURCES) {
   const infoFile = path.join(SRC_DIR, 'sources.json')
   const info = fs.existsSync(infoFile) ? JSON.parse(fs.readFileSync(infoFile, 'utf8')) : {}
-  for (const rel of Object.values(EXTRA_SOURCES)) {
+  for (const rel of Object.values(sources)) {
     const file = path.join(SRC_DIR, rel.replace(/\//g, '_'))
     if (!refresh && fs.existsSync(file)) continue
     const url = 'https://repoe-fork.github.io/' + rel
@@ -233,11 +235,11 @@ async function ensureExtra(refresh) {
   fs.writeFileSync(infoFile, JSON.stringify(info, null, 2))
 }
 
-function readExtra(key) {
-  return JSON.parse(fs.readFileSync(path.join(SRC_DIR, EXTRA_SOURCES[key].replace(/\//g, '_')), 'utf8'))
+export function readExtra(key, sources = EXTRA_SOURCES) {
+  return JSON.parse(fs.readFileSync(path.join(SRC_DIR, sources[key].replace(/\//g, '_')), 'utf8'))
 }
 
-function readClientStrings(lang) {
+export function readClientStrings(lang) {
   return JSON.parse(fs.readFileSync(path.join(APT_DATA, lang, 'client_strings.json'), 'utf8'))
 }
 
@@ -275,7 +277,7 @@ function statLines(trEn, trRu, statId) {
   return out
 }
 
-function fixtureLines(lang) {
+export function fixtureLines(lang) {
   const dir = path.join(FIXTURES, lang)
   const lines = []
   for (const f of fs.readdirSync(dir).sort()) {
@@ -291,7 +293,7 @@ function fixtureLines(lang) {
   return lines
 }
 
-function collectCorpus(lang, ctx) {
+export function collectCorpus(lang, ctx) {
   const { mods, trEn, trRu, bases, basesLang, classes, classesLang } = ctx
   const lines = new Set()
   for (const id of Object.keys(mods).sort()) {
@@ -329,12 +331,12 @@ function collectCorpus(lang, ctx) {
 // ---------------------------------------------------------------------------
 
 /** В RU подстрока не должна задевать буквы, заглавные в подсказке (регистр кириллицы в игре не проверен). */
-function caseOk(raw, displays) {
+export function caseOk(raw, displays) {
   return displays.every((d) => d.includes(raw))
 }
 
 /** Кандидат-хвост после числа: начало post длиной 1…POST_MAX, без края-пробела и без «#». */
-function postCandidates(post) {
+export function postCandidates(post) {
   const out = []
   for (let len = 1; len <= Math.min(POST_MAX, post.length); len++) {
     const p = post.slice(0, len)
@@ -358,7 +360,7 @@ export function isVariant(line, own) {
 }
 
 /** Кандидат-контекст перед числом: конец pre длиной 0…PRE_MAX («+» отсекает «-#% to fire resistance»). */
-function preCandidates(pre) {
+export function preCandidates(pre) {
   const out = ['']
   for (let len = 1; len <= Math.min(PRE_MAX, pre.length); len++) {
     const s = pre.slice(pre.length - len)
@@ -370,7 +372,7 @@ function preCandidates(pre) {
 }
 
 /** Цена фрагмента: длина в регулярке + штраф за «ё» (в игре ё/е могут различаться — лучше без неё). */
-const cost = (raw) => toRegex(raw).length + (raw.match(/ё/g) ?? []).length * 1.5
+export const cost = (raw) => toRegex(raw).length + (raw.match(/ё/g) ?? []).length * 1.5
 
 /**
  * Порог: <pre><atLeast(N)><post>. pre — общий для всех своих строк конец текста до числа (часто пусто или «+»),
@@ -496,7 +498,7 @@ function findToken(prop, lang, own, displays, others) {
  * Метка (класс, редкость, «уровень предмета»): уникальна среди всех строк, кроме своих, и с «:» —
  * привязана к строке-свойству, а не к случайному слову в имени редкого предмета.
  */
-function findLabel(name, own, displays, others, lang) {
+export function findLabel(name, own, displays, others, lang) {
   const tokens = own.map((line, i) => {
     const c = labelCandidates(line, displays[i], lang).find((c) => !others.some((o) => c.test.test(o.folded)))
     if (!c) throw new Error(`${lang}: нет уникальной метки для ${name}`)
@@ -696,7 +698,10 @@ async function main() {
   console.log(`→ ${path.relative(ROOT, OUT_TS)}`)
 }
 
-main().catch((e) => {
-  console.error(e)
-  process.exit(1)
-})
+// запуск как скрипт; при импорте (генератор «Предметов», S46) — только помощники
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  main().catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+}

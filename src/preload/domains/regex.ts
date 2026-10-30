@@ -6,6 +6,7 @@ export function regexBridge(): RegexIpcApi {
   return {
     regex: {
       mapData: (lang) => ipcRenderer.invoke(IPC.regex.mapData, lang),
+      itemData: (lang) => ipcRenderer.invoke(IPC.regex.itemData, lang),
       library: () => ipcRenderer.invoke(IPC.regex.library),
       saveEntry: (input) => ipcRenderer.invoke(IPC.regex.saveEntry, input),
       deleteEntry: (id) => ipcRenderer.invoke(IPC.regex.deleteEntry, id),

@@ -229,11 +229,14 @@ export function fold(s) {
   return s.replace(/ё/g, 'е')
 }
 
-/** Видимые строки мода (скрытые статы вроде IIQ карты пропускаются) и id видимых статов. */
+/**
+ * Видимые строки мода (скрытые статы вроде IIQ карты пропускаются) и id видимых статов.
+ * entries — те же строки по записям перевода (S46: «Предметы» выбирают строку, а не мод целиком).
+ */
 export function renderMod(mod, trEn, trRu) {
   const stats = new Map(mod.stats.map((s) => [s.id, s]))
   const used = new Set()
-  const out = { en: [], ru: [], displayEn: [], displayRu: [], ids: [], decimal: false }
+  const out = { en: [], ru: [], displayEn: [], displayRu: [], ids: [], decimal: false, entries: [] }
   for (const stat of mod.stats) {
     if (used.has(stat.id)) continue
     const cands = trEn.byStat.get(stat.id) ?? []
@@ -261,14 +264,20 @@ export function renderMod(mod, trEn, trRu) {
     const en = renderVariant(vEn, vals, info)
     const ruText = vRu ? renderVariant(vRu, vals, info) : en
     if (info.decimal) out.decimal = true
+    const e = { ids: entry.ids, en: [], ru: [], displayEn: [], displayRu: [], decimal: !!info.decimal }
     for (const l of en.split('\n')) {
-      out.en.push(normLine(l))
-      out.displayEn.push(normLine(l, false))
+      e.en.push(normLine(l))
+      e.displayEn.push(normLine(l, false))
     }
     for (const l of ruText.split('\n')) {
-      out.ru.push(normLine(l))
-      out.displayRu.push(normLine(l, false))
+      e.ru.push(normLine(l))
+      e.displayRu.push(normLine(l, false))
     }
+    out.en.push(...e.en)
+    out.ru.push(...e.ru)
+    out.displayEn.push(...e.displayEn)
+    out.displayRu.push(...e.displayRu)
+    out.entries.push(e)
     out.ids.push(...entry.ids.filter((id) => stats.has(id)))
   }
   return out
