@@ -20,6 +20,7 @@ import { gameLang } from './dict/gameLang'
 import { buildTree } from './dict/buildTree'
 import { build } from './dict/build'
 import { equip } from './dict/equip'
+import { lootFilter } from './dict/lootFilter'
 
 // Строки интерфейса по доменам: этап добавляет ключи только в свой ./dict/<домен>.ts.
 // Этот список ЗАМОРОЖЕН после S0 (новый домен подключает лид; onboarding — S9). Полнота RU/EN и
@@ -45,5 +46,6 @@ export const DOMAIN_DICTS: Record<string, DomainDict> = {
   gameLang,
   buildTree,
   build,
-  equip
+  equip,
+  lootFilter
 }

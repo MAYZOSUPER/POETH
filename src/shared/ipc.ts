@@ -24,6 +24,7 @@ import { advisorChannels, advisorEvents, type AdvisorIpcApi } from './ipc/adviso
 import { buildTreeChannels, buildTreeEvents, type BuildTreeIpcApi } from './ipc/buildTree'
 import { buildChannels, buildEvents, type BuildIpcApi } from './ipc/build'
 import { equipChannels, equipEvents, type EquipIpcApi } from './ipc/equip'
+import { lootFilterChannels, lootFilterEvents, type LootFilterIpcApi } from './ipc/lootFilter'
 
 /** Каналы и события по доменам — для проверки уникальности в тестах. */
 export const IPC_DOMAINS = {
@@ -44,7 +45,8 @@ export const IPC_DOMAINS = {
   advisor: { channels: advisorChannels, events: advisorEvents },
   buildTree: { channels: buildTreeChannels, events: buildTreeEvents },
   build: { channels: buildChannels, events: buildEvents },
-  equip: { channels: equipChannels, events: equipEvents }
+  equip: { channels: equipChannels, events: equipEvents },
+  lootFilter: { channels: lootFilterChannels, events: lootFilterEvents }
 } as const
 
 export const IPC = {
@@ -66,6 +68,7 @@ export const IPC = {
   ...buildTreeChannels,
   ...buildChannels,
   ...equipChannels,
+  ...lootFilterChannels,
   events: {
     ...campaignEvents,
     ...tradeEvents,
@@ -84,7 +87,8 @@ export const IPC = {
     ...advisorEvents,
     ...buildTreeEvents,
     ...buildEvents,
-    ...equipEvents
+    ...equipEvents,
+    ...lootFilterEvents
   }
 } as const
 
@@ -107,7 +111,8 @@ export interface OverlayApi
     AdvisorIpcApi,
     BuildTreeIpcApi,
     BuildIpcApi,
-    EquipIpcApi {}
+    EquipIpcApi,
+    LootFilterIpcApi {}
 
 export type {
   CampaignIpcApi,
@@ -127,5 +132,6 @@ export type {
   AdvisorIpcApi,
   BuildTreeIpcApi,
   BuildIpcApi,
-  EquipIpcApi
+  EquipIpcApi,
+  LootFilterIpcApi
 }
