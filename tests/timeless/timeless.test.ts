@@ -1,3 +1,4 @@
+import { createHash } from 'crypto'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 import { inflateSync } from 'zlib'
@@ -95,6 +96,14 @@ describe('timeless.json', () => {
         if (o.rep) expect(o.name?.[1]).toBeTruthy()
       }
     }
+  })
+
+  it('SHA-256 лукапов = записанным в timeless.json (приложение сверяет при загрузке); лицензия PoB рядом', () => {
+    for (const kind of TIMELESS_KINDS) {
+      const j = data.jewels[kind]
+      expect(createHash('sha256').update(readFileSync(resolve(DATA, j.file))).digest('hex'), kind).toBe(j.sha256)
+    }
+    expect(readFileSync(resolve(DATA, 'timeless-LICENSE.txt'), 'utf8')).toContain('Copyright (c) 2016 David Gowor')
   })
 
   it('лукап: размер = нотаблы × сиды, коды исходов в пределах списка', () => {
