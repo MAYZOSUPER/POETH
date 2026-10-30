@@ -24,6 +24,7 @@ import { useLevelingStore } from '../../store/useLevelingStore'
 import type { IconName } from '../../overlay/Icon'
 import { formatAccel } from '../../overlay/useOverlayT'
 import { ItemsBox } from './ItemsBox'
+import { AnointBox } from './AnointBox'
 import { ascOrClass, buildTitle, mainSkillName } from './names'
 import { StagesDialog } from './StagesDialog'
 import { useProgress, useStage } from './useStage'
@@ -32,7 +33,7 @@ import { PoedbButton } from './SiteLink'
 
 // Открытый билд (макет v0.2, раздел 1): шапка с этапами, «Камни сейчас», «Связки», «Дерево: следующие ноды»,
 // «Проверка», «Заметки автора». До 760 px содержимого — одна колонка в порядке пользы, шире — две.
-// «Предметы этапа» (S40, ItemsBox.tsx) — в левой колонке после «Связок».
+// «Предметы этапа» (S40, ItemsBox.tsx) — в левой колонке после «Связок»; за ними «Анойнт амулета» (S54, AnointBox.tsx).
 
 type T = ReturnType<typeof useT>
 
@@ -684,6 +685,7 @@ export function BuildView({ build, expert }: { build: StoredBuild; expert: boole
             <GemsBox gems={gems} expert={expert} />
             <LinksBox build={build} plan={plan} shown={shown} expert={expert} />
             <ItemsBox build={build} plan={plan} shown={shown} level={level} expert={expert} />
+            <AnointBox build={build} plan={plan} shown={shown} labels={labels} expert={expert} />
           </div>
           <div className="bd-col">
             <TreeBox build={build} plan={plan} shown={shown} labels={labels} expert={expert} />
