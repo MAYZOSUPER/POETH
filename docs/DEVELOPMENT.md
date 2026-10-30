@@ -31,7 +31,13 @@ npm test            # юнит-тесты (vitest)
 npm run test:trade  # тесты ядра прайс-чека PoE2
 npm run build       # сборка main/preload/renderer
 node tools/ci/scan-secrets.mjs   # поиск секретов (как в CI)
+npm audit --omit=dev --audit-level=high   # уязвимости в пакетах приложения (как в CI)
+npm audit                                 # все пакеты, включая сборку и тесты
 ```
+
+Electron и React записаны в devDependencies, но попадают в установщик — CI проверяет их отдельно:
+`npm audit --json > audit.json && node tools/ci/audit-shipped.mjs audit.json`. Что и как проверяем в чужом
+коде — `docs/security.md`, раздел «Чужой код и зависимости».
 
 Живые проверки на тестовом окне «Path of Exile» (настоящие нажатия клавиш, запускать, когда за ПК
 никто не работает): `node tools/overlay/check-overlay.mjs`; обновления без клавиатуры —
@@ -49,8 +55,9 @@ npm run package:dir   # распакованная сборка dist-release/win
 npm run package       # POETH-Setup-<версия>.exe (+ .blockmap, latest.yml) и POETH-Portable-<версия>.exe
 ```
 
-- Настройки сборки — `electron-builder.yml`: fuses (`build/afterPack.cjs`), нативные модули из prebuilds
-  (`npmRebuild: false`), `asarUnpack` для `electron-overlay-window` и `uiohook-napi`.
+- Настройки сборки — `electron-builder.yml`: fuses (`build/afterPack.cjs`), ProductName «POE Trade Helper» в
+  ресурсах exe (`build/afterSign.cjs`, resedit), нативные модули из prebuilds (`npmRebuild: false`),
+  `asarUnpack` для `electron-overlay-window` и `uiohook-napi`.
 - Установщик — NSIS-мастер «как у APT»: только для текущего пользователя
   (`%LOCALAPPDATA%\Programs\POETH`, без прав администратора; страницу «для меня / для всех» скрывает
   `build/installer.nsh`), выбор папки, язык мастера RU/EN по языку Windows, ярлыки «POE Trade Helper»
@@ -60,8 +67,9 @@ npm run package       # POETH-Setup-<версия>.exe (+ .blockmap, latest.yml)
 - Portable — один exe без установки: распаковывается во `%TEMP%` и запускается; настройки — в обычном
   `%APPDATA%\POETH`. Автообновления нет (ограничение electron-updater): окно обновления ведёт на
   страницу релиза («Скачать новую версию»).
-- Установщик на своём ПК без нужды не запускайте — он ставит программу в систему; содержимое можно
-  посмотреть так: `node_modules/7zip-bin/win/x64/7za.exe l dist-release/POETH-Setup-<версия>.exe`.
+- Установщик на своём ПК без нужды не запускайте — он ставит программу в систему. Содержимое можно
+  посмотреть 7-Zip 24+: `7za l dist-release/POETH-Setup-<версия>.exe`. С electron-builder 26 пакета `7zip-bin`
+  нет — 7za лежит в его кэше: `%LOCALAPPDATA%\electron-builder\Cache\7zip@1.0.0\7zip-win-x64-*\bin\7za.exe`.
 
 ## Выпуск
 

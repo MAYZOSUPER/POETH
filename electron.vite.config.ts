@@ -1,14 +1,15 @@
 import { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
 const sharedAlias = {
   '@shared': resolve('src/shared')
 }
 
+// main и preload: пакеты из dependencies не вшиваются в бандл (build.externalizeDeps, в electron-vite 5 включено
+// по умолчанию; раньше — externalizeDepsPlugin()). electron-builder кладёт их в app.asar/node_modules.
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()],
     resolve: { alias: sharedAlias },
     build: {
       rollupOptions: {
@@ -17,7 +18,6 @@ export default defineConfig({
     }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()],
     resolve: { alias: sharedAlias },
     build: {
       rollupOptions: {
