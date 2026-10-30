@@ -470,6 +470,7 @@ export const trade: DomainDict = {
     'pc1.s50.title': 'Поставьте ~{price}, не дешевле {floor}',
     'pc1.s50.title.same': 'Поставьте ~{price}',
     'pc1.s50.title.whisper': 'Ориентир ~{price}, не дешевле {floor}',
+    'pc1.s50.title.whisperSame': 'Ориентир ~{price}',
     'pc1.s50.why.ok':
       'За {floor} купят быстрее всего: это цена самого дешёвого мгновенного лота, дешевле ставить незачем. За ~{price} — выгоднее: вы будете {place}-м в очереди, придётся подождать.',
     'pc1.s50.why.first': 'Столько просят самые дешёвые мгновенные лоты: купят быстро, дешевле ставить незачем.',
@@ -979,6 +980,7 @@ export const trade: DomainDict = {
     'pc1.s50.title': 'List it at ~{price}, not below {floor}',
     'pc1.s50.title.same': 'List it at ~{price}',
     'pc1.s50.title.whisper': 'Rough price ~{price}, not below {floor}',
+    'pc1.s50.title.whisperSame': 'Rough price ~{price}',
     'pc1.s50.why.ok':
       'At {floor} it sells fastest: that is the cheapest instant-buyout listing, no point going lower. At ~{price} you earn more: you will be number {place} in line, so expect to wait.',
     'pc1.s50.why.first': 'That is what the cheapest instant-buyout listings ask: it sells quickly, no point going lower.',
