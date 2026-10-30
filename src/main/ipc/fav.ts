@@ -119,8 +119,11 @@ async function liveOff(searches: FavSearch[]): Promise<void> {
 // ---------------------------------------------------------------------------
 
 async function currentLeague(game: GameId): Promise<string> {
-  if (game === 'poe1') return getEffectiveLeague()
-  return (await getSettings()).poe2.league
+  // S47: лиги PoE2 — тот же модуль net/leagues (trade2, 'auto'); он отвечает за запущенную игру
+  if (game === getRunningGame()) return getEffectiveLeague()
+  // поиск другой игры: списка её лиг нет — выбор из настроек, 'auto' → Standard
+  const league = (await getSettings())[game].league
+  return league && league !== 'auto' ? league : 'Standard'
 }
 
 async function siteHost(): Promise<'www.pathofexile.com' | 'ru.pathofexile.com'> {

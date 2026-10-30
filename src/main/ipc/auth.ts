@@ -1,7 +1,13 @@
-import { ipcMain, webContents, type IpcMainInvokeEvent } from 'electron'
+import { app, ipcMain, webContents, type IpcMainInvokeEvent } from 'electron'
+import { promises as fs } from 'fs'
+import path from 'path'
 import { IPC } from '@shared/ipc'
 import type { GameDef } from '@shared/games'
+import type { Poe2SessionNotice } from '@shared/types'
 import { getSettings } from '../services/settingsStore'
+import { readJson, writeJsonAtomic } from '../services/atomicJson'
+import { hasLegacyPoe2SessionFile, readLegacyPoe2Session, removeLegacyPoe2Session } from '../services/secretStore'
+import { migratePoe2Session, settledAuthStatus } from '../services/poe2SessionMigration'
 import { initNetIdentity } from '../net/session'
 import { isTrustedAppUrl } from '../net/guards'
 import {
@@ -52,6 +58,36 @@ function broadcast(channel: string, payload: unknown): void {
   }
 }
 
+// ---------------------------------------------------------------- S47: старый POESESSID прайс-чека PoE2
+
+const POE2_NOTICES = new Set<Poe2SessionNotice>(['moved', 'expired', 'already'])
+
+function poe2NoticeFile(): string {
+  return path.join(app.getPath('userData'), 'poe2-session-notice.json')
+}
+
+async function readPoe2Notice(): Promise<Poe2SessionNotice | null> {
+  const f = await readJson<{ notice?: unknown }>(poe2NoticeFile(), {})
+  return POE2_NOTICES.has(f.notice as Poe2SessionNotice) ? (f.notice as Poe2SessionNotice) : null
+}
+
+async function dismissPoe2Notice(): Promise<void> {
+  const file = poe2NoticeFile()
+  await Promise.all([file, `${file}.bak`, `${file}.tmp`].map((f) => fs.rm(f, { force: true })))
+}
+
+/** Один раз при старте (после первой проверки входа): перенести ключ из secret.json во вход аккаунта. */
+function runPoe2SessionMigration(): void {
+  void migratePoe2Session({
+    hasLegacyFile: hasLegacyPoe2SessionFile,
+    readLegacy: readLegacyPoe2Session,
+    removeLegacy: removeLegacyPoe2Session,
+    authStatus: () => settledAuthStatus(getAuthStatus, onAuthStatus),
+    pasteSession: (value) => pasteSession(value),
+    saveNotice: (notice) => writeJsonAtomic(poe2NoticeFile(), { notice, at: Date.now() })
+  }).catch((e) => console.warn('[auth] перенос ключа PoE2:', e instanceof Error ? e.message : e))
+}
+
 function register(): void {
   // UA для окон/API (повторно — no-op; переключатель Chromium ставит вызов в main/index.ts до ready)
   initNetIdentity()
@@ -65,13 +101,16 @@ function register(): void {
   handle(IPC.auth.logout, () => logout())
   handle(IPC.auth.recheck, () => recheck())
   handle(IPC.auth.pasteSession, (value) => pasteSession(value))
+  handle(IPC.auth.poe2Notice, () => readPoe2Notice())
+  handle(IPC.auth.poe2NoticeDismiss, () => dismissPoe2Notice())
   handle(IPC.leagues.get, () => getLeagueState())
   handle(IPC.leagues.refresh, () => refreshLeagues())
+  runPoe2SessionMigration()
 }
 
 function setupForGame(def: GameDef): void {
-  // лиги нужны трейду PoE1; в режиме PoE2 их список у прайс-чека компаса свой
-  if (def.id === 'poe1') startLeagueRefresh()
+  // лиги нужны трейду обеих игр (S47: окно цены PoE2 тоже поверх игры); без прайс-чека — не опрашиваем
+  if (def.features.priceCheck) startLeagueRefresh()
   else stopLeagueRefresh()
 }
 

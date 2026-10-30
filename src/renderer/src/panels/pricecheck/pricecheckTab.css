@@ -99,3 +99,36 @@
   padding: 0;
   color: var(--fg-muted);
 }
+
+/* S47: PoE 2 — лига trade2, вход, уведомление о переносе ключа */
+.pct-tab > .pct-banner--info {
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.ui-box__body.pct-poe2 {
+  display: grid;
+  gap: var(--sp-4);
+}
+.pct-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-4);
+}
+.pct-row__label {
+  min-width: 96px;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.pct-row > .ui-select {
+  min-width: 220px;
+}
+.pct-account {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.pct-note {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}

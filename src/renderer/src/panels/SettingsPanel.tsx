@@ -272,7 +272,10 @@ export function SettingsPanel() {
         </>
       )}
 
-      {game === 'poe1' && <AccountPanel />}
+      {/* S47: вход общий для PoE 1 и PoE 2 (cookies pathofexile.com одни на trade и trade2) */}
+      <div id="set-account">
+        <AccountPanel />
+      </div>
 
       <div className="block" id="set-hotkeys">
         <div className="block-title">{t('set.hotkeys')}</div>

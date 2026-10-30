@@ -20,6 +20,7 @@ import { saveCapture } from './captureLog'
 import { toGameLine } from './chatLine'
 import { isFocusTracking, isGameFocused } from '../focus/gameFocus'
 import { ensureGameForeground } from '../windows/gameOverlay'
+import { getRunningGame } from '../gameContext'
 
 type UiohookLib = typeof import('uiohook-napi')
 type KeyTable = UiohookLib['UiohookKey']
@@ -254,9 +255,14 @@ export function releaseAcceleratorKeys(accel: string): void {
 function pressCopyKeys(k: UiohookLib): void {
   // 3.29: Copying an item's text now always copies the advanced description format.
   // (APT: mergeTwoHotkeys('Ctrl + C', showModsKey='Ctrl') → Ctrl down, tap C, Ctrl up)
+  // S47: PoE2 расширенный текст (тиры и диапазоны модов) копирует только Ctrl+Alt+C — как EE2
+  // (mergeTwoHotkeys('Ctrl + C', showModsKey='Alt')); одно нажатие игрока = одно копирование.
   const K = k.UiohookKey
+  const alt = getRunningGame() === 'poe2'
   k.uIOhook.keyToggle(K.Ctrl, 'down')
+  if (alt) k.uIOhook.keyToggle(K.Alt, 'down')
   k.uIOhook.keyTap(K.C)
+  if (alt) k.uIOhook.keyToggle(K.Alt, 'up')
   k.uIOhook.keyToggle(K.Ctrl, 'up')
 }
 

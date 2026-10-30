@@ -3,7 +3,8 @@ import os from 'os'
 import path from 'path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-// POESESSID прайс-чека PoE 2 (secret.json, safeStorage): «забыть ключ» не оставляет шифротекст в .bak (S29).
+// Старый POESESSID прайс-чека PoE 2 (secret.json, safeStorage): S47 только читает его для переноса во вход
+// аккаунта и удаляет вместе с .bak/.tmp — на диске не остаётся ни ключа, ни шифротекста (S29).
 
 const state = vi.hoisted(() => ({ dir: '' }))
 vi.mock('electron', () => ({
@@ -11,7 +12,11 @@ vi.mock('electron', () => ({
   safeStorage: {
     isEncryptionAvailable: () => true,
     encryptString: (s: string) => Buffer.from(`enc:${s}`),
-    decryptString: (b: Buffer) => b.toString().replace(/^enc:/, '')
+    decryptString: (b: Buffer) => {
+      const s = b.toString()
+      if (!s.startsWith('enc:')) throw new Error('bad ciphertext')
+      return s.slice(4)
+    }
   }
 }))
 
@@ -30,29 +35,41 @@ afterEach(async () => {
 
 const A = '0123456789abcdef0123456789abcdef'
 const B = 'fedcba9876543210fedcba9876543210'
+const enc = (v: string) => Buffer.from(`enc:${v}`).toString('base64')
+const write = (name: string, data: unknown) => fs.writeFile(path.join(state.dir, name), JSON.stringify(data))
 
-describe('secretStore: очистка без следов', () => {
-  it('после смены ключа и очистки на диске нет ни ключа, ни шифротекста', async () => {
-    await store.setSession(A)
-    await store.setSession(B) // прежний A уехал в secret.json.bak
-    expect(await store.getSession()).toBe(B)
-    await store.clearSession()
-    const files = await fs.readdir(state.dir)
-    expect(files).toEqual(['secret.json'])
-    const text = await fs.readFile(path.join(state.dir, 'secret.json'), 'utf8')
-    expect(JSON.parse(text)).toEqual({})
-    expect(await store.hasSession()).toBe(false)
+describe('secretStore: старый ключ PoE 2 — прочитать и удалить без следов', () => {
+  it('нет файла — null, удалять нечего', async () => {
+    expect(await store.hasLegacyPoe2SessionFile()).toBe(false)
+    expect(await store.readLegacyPoe2Session()).toBeNull()
   })
 
-  it('пустой ключ = очистка, и после перезапуска ключ не восстанавливается из .bak', async () => {
-    await store.setSession(A)
-    await store.setSession(B)
-    await store.setSession('  ')
-    vi.resetModules()
-    const again = await import('../../src/main/services/secretStore')
-    expect(await again.getSession()).toBeNull()
-    const all = (await Promise.all((await fs.readdir(state.dir)).map((f) => fs.readFile(path.join(state.dir, f))))).join('')
-    expect(all).not.toContain(Buffer.from(`enc:${A}`).toString('base64'))
-    expect(all).not.toContain(Buffer.from(`enc:${B}`).toString('base64'))
+  it('шифротекст DPAPI расшифровывается; после удаления нет ни файла, ни .bak/.tmp', async () => {
+    await write('secret.json', { poesessid: enc(B), encrypted: true })
+    await write('secret.json.bak', { poesessid: enc(A), encrypted: true })
+    await write('secret.json.tmp', {})
+    expect(await store.hasLegacyPoe2SessionFile()).toBe(true)
+    expect(await store.readLegacyPoe2Session()).toBe(B)
+    await store.removeLegacyPoe2Session()
+    expect(await fs.readdir(state.dir)).toEqual([])
+    expect(await store.hasLegacyPoe2SessionFile()).toBe(false)
+  })
+
+  it('пустой, битый или чужой (DPAPI другого пользователя) файл — null', async () => {
+    await write('secret.json', {})
+    expect(await store.readLegacyPoe2Session()).toBeNull()
+    await fs.writeFile(path.join(state.dir, 'secret.json'), '{oops')
+    expect(await store.readLegacyPoe2Session()).toBeNull()
+    await write('secret.json', { poesessid: Buffer.from('junk').toString('base64'), encrypted: true })
+    expect(await store.readLegacyPoe2Session()).toBeNull()
+  })
+
+  it('старый фолбэк без шифрования ОС читается как есть', async () => {
+    await write('secret.json', { poesessid: A, encrypted: false })
+    expect(await store.readLegacyPoe2Session()).toBe(A)
+  })
+
+  it('в модуле больше нет записи ключа', () => {
+    expect(Object.keys(store).sort()).toEqual(['hasLegacyPoe2SessionFile', 'readLegacyPoe2Session', 'removeLegacyPoe2Session'])
   })
 })

@@ -99,8 +99,8 @@ export interface Settings {
   /** хост сайта/API трейда (cookies сессии привязаны к хосту) */
   siteHost: SiteHost
   poe1: { league: LeagueChoice }
-  /** PoE2 trade league for price-check, e.g. "Standard" (v1: `league`) */
-  poe2: { league: string }
+  /** лига трейда PoE2 (S47: 'auto' = текущая челлендж-лига trade2, как у PoE1; v1: `league`) */
+  poe2: { league: LeagueChoice }
   // ---- общее (из компаса) ----
   activeProfileId: string | null
   /** interface language */

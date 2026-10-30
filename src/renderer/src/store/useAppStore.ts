@@ -4,7 +4,6 @@ import type {
   Dataset,
   HotkeyAction,
   LevelEvent,
-  PriceCheckResult,
   ProfileExportResult,
   ProfileImportResult,
   ProfileMeta,
@@ -40,22 +39,9 @@ interface AppState {
   viewMode: 'checklist' | 'whatsnext'
   /** pointer into the linear route (getRoute()) for "What's Next" */
   currentStepIndex: number
-  // ---- price check ----
-  /** whether a POESESSID is stored in main */
-  sessionSet: boolean
-  /** available PoE2 trade leagues */
-  leagues: string[]
-  /** last price-check result (null = none yet) */
-  priceResult: PriceCheckResult | null
-  /** a price-check is in flight */
-  priceLoading: boolean
 
   init: () => Promise<void>
   setAppTab: (tab: AppTab) => void
-  /** store the POESESSID (encrypted in main); refreshes sessionSet */
-  setSession: (poesessid: string) => Promise<void>
-  /** price-check pasted item text (manual fallback for the hotkey) */
-  runPriceCheck: (itemText: string) => Promise<void>
   selectAct: (actId: string) => void
   selectZone: (areaId: string | null) => void
   setViewMode: (mode: 'checklist' | 'whatsnext') => void
@@ -268,10 +254,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   appTab: 'campaign',
   viewMode: 'whatsnext',
   currentStepIndex: 0,
-  sessionSet: false,
-  leagues: [],
-  priceResult: null,
-  priceLoading: false,
 
   async init() {
     const dataset = await api().dataset.get()
@@ -313,8 +295,6 @@ export const useAppStore = create<AppState>((set, get) => ({
         if (st.progress?.completedQuestIds[e.questId]) return
         void st.applyAutoChecks([e.questId])
       })
-      // Hotkey-triggered price-check result arrives from main; surface it.
-      api().onPriceResult((result) => set({ priceResult: result, priceLoading: false }))
     }
 
     const tailerStatus = await api().tailer.status()
@@ -343,47 +323,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       })
     }
     if (tailerStatus.level) void get().setLevel(tailerStatus.level)
-
-    // PoE2 price-check metadata in the background (network for leagues).
-    if (settings.game !== 'poe2') return
-    void api()
-      .trade.hasSession()
-      .then((sessionSet) => set({ sessionSet }))
-    void api()
-      .trade.getLeagues()
-      .then((leagues) => {
-        set({ leagues })
-        // If the saved league no longer exists (temp leagues rotate), pick a valid one
-        // so price-checks don't fail on a stale league.
-        const cur = get().settings?.poe2.league
-        if (leagues.length && cur && !leagues.includes(cur)) {
-          void get().patchSettings({
-            poe2: { league: leagues.includes('Standard') ? 'Standard' : leagues[0] }
-          })
-        }
-      })
   },
 
   setAppTab(tab) {
     set({ appTab: tab })
     void api().settings.set({ lastAppTab: tab })
-  },
-
-  async setSession(poesessid) {
-    const sessionSet = await api().trade.setSession(poesessid)
-    set({ sessionSet })
-  },
-
-  async runPriceCheck(itemText) {
-    if (get().priceLoading) return
-    set({ appTab: 'priceCheck', priceLoading: true })
-    void api().settings.set({ lastAppTab: 'priceCheck' })
-    try {
-      const result = await api().trade.priceCheck(itemText)
-      set({ priceResult: result, priceLoading: false })
-    } catch {
-      set({ priceResult: { status: 'error', message: 'unexpected error' }, priceLoading: false })
-    }
   },
 
   selectAct(actId) {
@@ -573,13 +517,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ settings })
       return
     }
-    if (action === 'priceCheck') {
-      // main is reading the clipboard + querying; show the tab + spinner now.
-      // The result arrives via onPriceResult.
-      set({ appTab: 'priceCheck', priceLoading: true })
-      void api().settings.set({ lastAppTab: 'priceCheck' })
-      return
-    }
+    // priceCheck (Ctrl+D): окно цены живёт поверх игры (обе игры, S4/S47) — вкладку компаньона не переключаем
     if (action === 'nextStep') get().stepNext()
     else if (action === 'prevStep') get().stepPrev()
   },

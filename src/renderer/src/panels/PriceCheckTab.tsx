@@ -1,203 +1,130 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import type { LeaguesState, Poe2SessionNotice } from '@shared/types'
 import { useAppStore } from '../store/useAppStore'
+import { useShellStore } from '../store/useShellStore'
 import { useT } from '../i18n'
-import type { PriceCheckResult, PriceResult, TradeListing } from '@shared/types'
+import { Ico } from './regex/Ico'
+import { useAuthStore } from './account/useAuthStore'
+import { Poe1PriceCheckTab } from './Poe1PriceCheckTab'
 
-/** Pretty-print an Electron accelerator for the how-to hint. */
-function formatAccel(a?: string): string {
-  if (!a) return ''
-  return a
-    .split('+')
-    .map((p) => (p === 'Control' ? 'Ctrl' : p === 'Super' ? 'Win' : p))
-    .join('+')
+// Вкладка «Прайс-чек» PoE 2 в компаньоне (S47): окно цены теперь, как у PoE 1, поверх игры (Ctrl+D) — здесь та же
+// страница S37 (как пользоваться, клавиша, «Сменить клавишу») и своё у PoE 2: лига trade2 и вход в аккаунт.
+// Поля POESESSID больше нет: вход общий для PoE 1 и PoE 2 — официальная страница pathofexile.com (cookies сайта
+// общие для trade и trade2). Старый ключ из компаса main один раз перенёс во вход — об этом баннер.
+
+const NOTICE_KEYS: Record<Poe2SessionNotice, string> = {
+  moved: 'pc2.notice.moved',
+  expired: 'pc2.notice.expired',
+  already: 'pc2.notice.already'
 }
 
-function priceLabel(amount: number, currency: string): string {
-  const n = Math.round(amount * 100) / 100
-  return `${n} ${currency}`
+/** Настройки, раздел «Аккаунт» (id блока — в SettingsPanel). */
+function openAccountSettings(): void {
+  useShellStore.getState().setPage('settings')
+  requestAnimationFrame(() => document.getElementById('set-account')?.scrollIntoView({ block: 'start' }))
 }
 
-export function PriceCheckTab() {
+/** Разовое уведомление: чем кончился перенос старого POESESSID PoE 2 во вход. */
+function SessionNotice() {
   const t = useT()
-  const settings = useAppStore((s) => s.settings)
-  const leagues = useAppStore((s) => s.leagues)
-  const sessionSet = useAppStore((s) => s.sessionSet)
-  const priceResult = useAppStore((s) => s.priceResult)
-  const priceLoading = useAppStore((s) => s.priceLoading)
-  const setSession = useAppStore((s) => s.setSession)
-  const runPriceCheck = useAppStore((s) => s.runPriceCheck)
+  const [notice, setNotice] = useState<Poe2SessionNotice | null>(null)
+  useEffect(() => {
+    void window.overlayApi.auth.poe2Notice().then(setNotice).catch(() => undefined)
+  }, [])
+  if (!notice) return null
+  const dismiss = (): void => {
+    setNotice(null)
+    void window.overlayApi.auth.poe2NoticeDismiss()
+  }
+  return (
+    <div className="ui-banner pct-banner pct-banner--info" role="status">
+      <Ico name="info" />
+      <span>{t(NOTICE_KEYS[notice])}</span>
+      <button type="button" className="ui-btn ui-btn--sm" onClick={dismiss}>
+        {t('pc2.notice.ok')}
+      </button>
+    </div>
+  )
+}
+
+/** Лига trade2 (auto = текущая челлендж-лига) и вход в аккаунт. */
+function LeagueAndAccount() {
+  const t = useT()
+  const choice = useAppStore((s) => s.settings?.poe2.league ?? 'auto')
   const patchSettings = useAppStore((s) => s.patchSettings)
+  const status = useAuthStore((s) => s.status)
+  const initAuth = useAuthStore((s) => s.init)
+  const login = useAuthStore((s) => s.login)
+  const [leagues, setLeagues] = useState<LeaguesState | null>(null)
 
-  const [poeInput, setPoeInput] = useState('')
-  const [pasteInput, setPasteInput] = useState('')
+  useEffect(() => initAuth(), [initAuth])
+  useEffect(() => {
+    void window.overlayApi.leagues.get().then(setLeagues).catch(() => undefined)
+    return window.overlayApi.onLeagues(setLeagues)
+  }, [])
 
-  const hotkey = formatAccel(settings?.hotkeys.priceCheck.accel)
+  const list = leagues?.leagues ?? []
+  const loggedIn = !!status?.loggedIn
 
   return (
-    <div className="price-check">
-      {/* POESESSID */}
-      <div className="pc-block">
-        <div className="pc-block-title">{t('pc.session.title')}</div>
-        <div className="pc-row">
-          <input
-            type="password"
-            className="pc-input"
-            placeholder={t('pc.session.placeholder')}
-            value={poeInput}
-            onChange={(e) => setPoeInput(e.target.value)}
-          />
-          <button
-            className="btn"
-            disabled={!poeInput.trim()}
-            onClick={() => {
-              void setSession(poeInput.trim())
-              setPoeInput('')
-            }}
+    <section className="ui-box">
+      <div className="ui-box__head">
+        <span className="ui-label">{t('pc2.tab.trade')}</span>
+      </div>
+      <div className="ui-box__body pct-poe2">
+        <label className="pct-row">
+          <span className="pct-row__label">{t('pc2.tab.league')}</span>
+          <select
+            className="ui-select"
+            value={choice}
+            title={t('pc2.tab.league.title')}
+            onChange={(e) => void patchSettings({ poe2: { league: e.target.value } })}
           >
-            {t('pc.session.save')}
+            <option value="auto">{t('pc2.tab.league.auto', { league: leagues?.auto ?? '…' })}</option>
+            {list.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.text}
+              </option>
+            ))}
+            {choice !== 'auto' && !list.some((l) => l.id === choice) && <option value={choice}>{choice}</option>}
+          </select>
+        </label>
+        {leagues?.stale && <p className="pct-note">{t('pc2.tab.league.stale', { league: choice, auto: leagues.auto })}</p>}
+
+        <div className="pct-row">
+          <span className="pct-row__label">{t('pc2.tab.account')}</span>
+          <span className="pct-account">
+            {loggedIn ? (
+              <>
+                <span className="ui-dot" />
+                {status?.accountName ? t('pc2.tab.account.in', { name: status.accountName }) : t('pc2.tab.account.inAnon')}
+              </>
+            ) : (
+              t(status && !status.checking ? 'pc2.tab.account.out' : 'pc2.tab.account.checking')
+            )}
+          </span>
+          <span className="pct-grow" />
+          {!loggedIn && (
+            <button type="button" className="ui-btn ui-btn--sm ui-btn--primary" onClick={() => void login()}>
+              <Ico name="external" />
+              {t('pc2.tab.login')}
+            </button>
+          )}
+          <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" onClick={openAccountSettings}>
+            {t('pc2.tab.accountSettings')}
           </button>
         </div>
-        {sessionSet && (
-          <div className="pc-row">
-            <span className="pc-ok small">{t('pc.session.set')}</span>
-            <button className="btn small" onClick={() => void setSession('')}>
-              {t('pc.session.clear')}
-            </button>
-          </div>
-        )}
-        <div className="small muted">{t('pc.session.hint')}</div>
+        <p className="pct-note">{t('pc2.tab.account.why')}</p>
       </div>
-
-      {/* League */}
-      <div className="pc-block">
-        <div className="pc-row">
-          <label className="pc-label">{t('pc.league')}</label>
-          {leagues.length > 0 ? (
-            <select
-              className="lang-select"
-              value={settings?.poe2.league ?? ''}
-              onChange={(e) => void patchSettings({ poe2: { league: e.target.value } })}
-            >
-              {!leagues.includes(settings?.poe2.league ?? '') && (
-                <option value={settings?.poe2.league ?? ''}>{settings?.poe2.league ?? ''}</option>
-              )}
-              {leagues.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <input
-              className="pc-input"
-              placeholder={t('pc.league.placeholder')}
-              value={settings?.poe2.league ?? ''}
-              onChange={(e) => void patchSettings({ poe2: { league: e.target.value } })}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* How-to + manual paste fallback */}
-      <div className="pc-block">
-        <div className="small muted">
-          {hotkey ? t('pc.howto', { key: hotkey }) : t('pc.howto.nokey')}
-        </div>
-        <label className="pc-label small">{t('pc.paste.label')}</label>
-        <textarea
-          className="pc-textarea"
-          placeholder={t('pc.paste.placeholder')}
-          value={pasteInput}
-          onChange={(e) => setPasteInput(e.target.value)}
-          rows={4}
-        />
-        <button
-          className="btn"
-          disabled={!pasteInput.trim() || priceLoading}
-          onClick={() => void runPriceCheck(pasteInput)}
-        >
-          {t('pc.paste.btn')}
-        </button>
-      </div>
-
-      {/* Result */}
-      <div className="pc-result">
-        {priceLoading ? (
-          <div className="pc-empty">{t('pc.loading')}</div>
-        ) : (
-          <PriceResultView result={priceResult} />
-        )}
-      </div>
-    </div>
+    </section>
   )
 }
 
-function PriceResultView({ result }: { result: PriceCheckResult | null }) {
-  const t = useT()
-  if (!result) return <div className="pc-empty">{t('pc.empty')}</div>
-  switch (result.status) {
-    case 'no-session':
-      return <div className="pc-note">{t('pc.status.noSession')}</div>
-    case 'not-an-item':
-      return <div className="pc-note">{t('pc.status.notItem')}</div>
-    case 'empty':
-      return <div className="pc-note">{t('pc.status.empty', { name: result.item.name })}</div>
-    case 'error':
-      return <div className="pc-note danger">{t('pc.status.error', { message: result.message })}</div>
-    case 'ok':
-      return <PriceOk result={result.result} item={result.item} />
-  }
-  return null
-}
-
-function PriceOk({
-  result,
-  item
-}: {
-  result: PriceResult
-  item: { name: string; rarity: string }
-}) {
-  const t = useT()
-  const url = result.searchUrl
+/** Вкладка «Прайс-чек» в режиме PoE 2. */
+export function PriceCheckTab() {
   return (
-    <div className="pc-ok-result">
-      <div className="pc-item-head">
-        <span className={`pc-rarity ${item.rarity.toLowerCase()}`}>{item.name}</span>
-      </div>
-      <div className="pc-summary">
-        {result.min && (
-          <span className="pc-stat">
-            <b>{t('pc.result.min')}</b> {priceLabel(result.min.amount, result.min.currency)}
-          </span>
-        )}
-        {result.median && (
-          <span className="pc-stat">
-            <b>{t('pc.result.median')}</b> {priceLabel(result.median.amount, result.median.currency)}
-          </span>
-        )}
-      </div>
-      <div className="small muted">{t('pc.result.total', { n: result.total })}</div>
-      {result.note && <div className="small muted pc-approx">⚠ {result.note}</div>}
-      <ul className="pc-listings">
-        {result.listings.map((l, i) => (
-          <ListingRow key={i} l={l} />
-        ))}
-      </ul>
-      {url && (
-        <button className="btn small" onClick={() => window.overlayApi.window.openExternal(url)}>
-          {t('pc.result.open')}
-        </button>
-      )}
-    </div>
-  )
-}
-
-function ListingRow({ l }: { l: TradeListing }) {
-  const t = useT()
-  return (
-    <li className="pc-listing">
-      <span className="pc-price">{priceLabel(l.amount, l.currency)}</span>
-      <span className="pc-account small muted">{l.account || t('pc.result.anon')}</span>
-    </li>
+    <Poe1PriceCheckTab game="poe2" banner={<SessionNotice />}>
+      <LeagueAndAccount />
+    </Poe1PriceCheckTab>
   )
 }

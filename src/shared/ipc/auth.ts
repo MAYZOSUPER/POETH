@@ -5,7 +5,7 @@
 // события 'event:<домен>.<имя>'. Новые ключи не должны совпадать с другими доменами
 // (проверяет tests/ipc.test.ts).
 
-import type { AuthStatus, LeaguesState, PasteSessionResult } from '../types'
+import type { AuthStatus, LeaguesState, PasteSessionResult, Poe2SessionNotice } from '../types'
 
 export const authChannels = {
   auth: {
@@ -13,7 +13,9 @@ export const authChannels = {
     login: 'auth:login',
     logout: 'auth:logout',
     recheck: 'auth:recheck',
-    pasteSession: 'auth:pasteSession'
+    pasteSession: 'auth:pasteSession',
+    poe2Notice: 'auth:legacyNotice',
+    poe2NoticeDismiss: 'auth:legacyNoticeDismiss'
   },
   leagues: {
     get: 'leagues:get',
@@ -38,9 +40,13 @@ export interface AuthIpcApi {
     recheck(): Promise<AuthStatus>
     /** фолбэк: сохранить POESESSID, вставленный вручную (значение назад не возвращается) */
     pasteSession(poesessid: string): Promise<PasteSessionResult>
+    /** S47: чем кончился перенос старого POESESSID прайс-чека PoE2 во вход аккаунта; null — нечего показать */
+    poe2Notice(): Promise<Poe2SessionNotice | null>
+    /** S47: игрок прочитал уведомление о переносе — больше не показывать */
+    poe2NoticeDismiss(): Promise<void>
   }
   leagues: {
-    /** лиги PoE1 и выбранная/авто лига */
+    /** лиги трейда запущенной игры (PoE1 — trade, PoE2 — trade2) и выбранная/авто лига */
     get(): Promise<LeaguesState>
     /** обновить список с сервера */
     refresh(): Promise<LeaguesState>

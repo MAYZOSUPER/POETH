@@ -22,7 +22,7 @@ describe('defaultSettings', () => {
     expect(s.game).toBe('poe1')
     expect(s.siteHost).toBe('www.pathofexile.com')
     expect(s.poe1).toEqual({ league: 'auto' })
-    expect(s.poe2).toEqual({ league: 'Standard' })
+    expect(s.poe2).toEqual({ league: 'auto' })
     expect(s.sound).toEqual({ enabled: true, volume: 0.6 })
     expect(s.live).toEqual({ maxSearches: 10 })
     expect(s.deals).toEqual({ enabled: true, stashGrid: 'auto', calibration: null })
