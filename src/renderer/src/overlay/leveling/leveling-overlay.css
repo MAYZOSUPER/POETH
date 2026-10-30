@@ -157,3 +157,25 @@
   color: var(--rarity-gem);
   font-weight: 600;
 }
+
+/* S52: кнопки строки лабиринта ловят мышь; маленькая полоса на месте скрытого гида (опыт / лабиринт) */
+.lv-ov .lv-lab__btns {
+  pointer-events: auto;
+}
+.lv-ov--strip {
+  display: grid;
+  gap: var(--sp-3);
+  width: auto;
+  max-width: min(540px, calc(100vw - 32px));
+  padding: var(--sp-3) var(--sp-5);
+}
+.lv-ov__hudxp {
+  gap: var(--sp-2);
+  white-space: nowrap;
+}
+.lv-ov__hudxp > .ui-ico {
+  color: var(--info);
+}
+.lv-ov__hudxp.lv-xp--high > .ui-ico {
+  color: var(--warn);
+}

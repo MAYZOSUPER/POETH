@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { LevelingData, LevelingShow, LevelingState, LvBandit } from '@shared/types/leveling'
-import { banditPassives, counters, currentIndex, stepPassives, stepTags, type FlatStep } from '@shared/leveling/route'
+import { banditPassives, counters, currentIndex, stepLab, stepPassives, stepTags, type FlatStep } from '@shared/leveling/route'
 import { BASE_CLASSES, baseClass } from '@shared/leveling/classes'
-import { areaName, nameOf, questName } from '@shared/leveling/render'
+import { LABS, LAB_LEVEL, LAB_POINTS, labSource, labsDone } from '@shared/leveling/labs'
+import { areaName, labName, nameOf, questName } from '@shared/leveling/render'
 import { translate, useLang, useT } from '../../i18n'
 import { tKey } from '../../i18n/hotkey'
 import { useAppStore } from '../../store/useAppStore'
@@ -10,6 +11,7 @@ import { useGameLang } from '../../gameLang'
 import { useLevelingStore } from '../../store/useLevelingStore'
 import { Ico, Switch, useSimple } from '../deals/common'
 import { StepTags, StepText } from './StepText'
+import { LabLine, ZoneXpLine, openPoelab, stateLab, stateZoneXp, type ZoneLabIcon } from './ZoneLab'
 import { useBuildGemIds } from '../../overlay/leveling/buildGuide'
 import './leveling.css'
 
@@ -19,10 +21,13 @@ import './leveling.css'
 // вариант маршрута (старт лиги, бандиты) и гид поверх игры — в шапке. S22: шаги, персонаж и «кампания пройдена»
 // — сами по журналу игры; «Показывать гид: авто / всегда / никогда», почему гид сейчас скрыт, баннер «Кампания
 // пройдена — гид скрыт» с «Показать всё равно» и «Начать заново (новый персонаж)».
+// S52: строка «опыт в зоне» (где игрок сейчас по журналу), напоминание о лабиринте и блок «Лабиринты» с
+// галочками «Пройден» (по журналу — класс восхождения и /passives), «Раскладка на poelab» у шагов лабиринта.
 
 const BANDITS: LvBandit[] = ['kill', 'alira', 'kraityn', 'oak']
 const BANDIT_NPC: Record<Exclude<LvBandit, 'kill'>, string> = { alira: 'Alira', kraityn: 'Kraityn', oak: 'Oak' }
 const SHOW: LevelingShow[] = ['auto', 'always', 'never']
+const ico = (n: ZoneLabIcon): JSX.Element => <Ico name={n} />
 
 /** Где гид сейчас: виден, показан хоткеем или почему скрыт; gameLang — язык клиента (имя зоны). */
 function guideText(state: LevelingState, data: LevelingData, gameLang: 'ru' | 'en', t: (k: string) => string): string {
@@ -89,6 +94,88 @@ function FinishedBanner() {
         </button>
       </span>
     </div>
+  )
+}
+
+/** «Зона 45 · вы 52 · опыт −38 % — …» (где игрок сейчас) и «Пора пройти лабиринт» — как в гиде. */
+function ZoneLabLines() {
+  const t = useT()
+  const lang = useLang()
+  const simple = useSimple()
+  const state = useLevelingStore((s) => s.state)!
+  const flat = useLevelingStore((s) => s.flat)
+  const { act } = useLevelingStore.getState()
+  const xp = stateZoneXp(state, simple)
+  const lab = stateLab(state, flat)
+  if (!xp && !lab) return null
+  return (
+    <>
+      {xp && <ZoneXpLine x={xp} t={t} lang={lang} simple={simple} icon={ico} className="lv-zoneline" />}
+      {lab && (
+        <LabLine
+          r={lab}
+          t={t}
+          simple={simple}
+          icon={ico}
+          className="lv-zoneline"
+          onDone={(l) => void act({ type: 'lab', lab: l, done: true })}
+          onHide={() => void act({ type: 'labHide' })}
+        />
+      )}
+    </>
+  )
+}
+
+/** «Лабиринты»: четыре по порядку — галочка «Пройден», имя как в игре, с какого уровня, откуда известно. */
+function Labs({ data }: { data: LevelingData }) {
+  const t = useT()
+  const gameLang = useGameLang(useLang())
+  const state = useLevelingStore((s) => s.state)!
+  const { act } = useLevelingStore.getState()
+  const labs = state.progress.labs
+  const done = labsDone(labs)
+  return (
+    <section className="ui-box">
+      <div className="ui-box__head">
+        <span className="ui-label">{t('lev.labs.title')}</span>
+        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" title={t('lev.lab.poelab.hint')} onClick={() => void openPoelab()}>
+          <Ico name="external" />
+          {t('lev.lab.poelab')}
+        </button>
+      </div>
+      <div className="ui-box__body">
+        {LABS.map((lab) => {
+          const src = labSource(labs, lab)
+          const name = labName(data, lab, gameLang)
+          return (
+            <div key={lab} className={`lv-labrow${src ? ' is-done' : ''}`}>
+              <button
+                type="button"
+                className="ui-check"
+                role="checkbox"
+                aria-checked={!!src}
+                aria-label={name}
+                title={src === 'log' ? t('lev.labs.log') : t('lev.lab.done.hint')}
+                disabled={src === 'log'}
+                onClick={() => void act({ type: 'lab', lab, done: !src })}
+              >
+                <Ico name="check" />
+              </button>
+              <span className="lv-labrow__name">{name}</span>
+              <span className="lv-labrow__meta">
+                {src === 'log'
+                  ? t('lev.labs.log')
+                  : src === 'mark'
+                    ? t('lev.labs.mark')
+                    : `${t('lev.labs.level').replace('{n}', String(LAB_LEVEL[lab]))} · ${t('lev.labs.points').replace('{n}', String(LAB_POINTS))}`}
+              </span>
+            </div>
+          )
+        })}
+        <Meter label={t('lev.labs.meter')} done={done * LAB_POINTS} total={LABS.length * LAB_POINTS} />
+        <p className="lv-labs__hint">{t('lev.labs.logHint')}</p>
+      </div>
+    </section>
   )
 }
 
@@ -236,6 +323,12 @@ function Route({ act, flat, data }: { act: number; flat: FlatStep[]; data: Level
                   <StepText parts={f.step.parts} data={data} lang={lang} gameLang={gameLang} />
                   <StepTags tags={stepTags(f.step)} t={t} icon={(n) => <Ico name={n} />} passives={stepPassives(f.step, data)} />
                   {now && <span className="lv-here">{t('lev.here')}</span>}
+                  {stepLab(f.step) && (
+                    <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm lv-row__lab" title={t('lev.lab.poelab.hint')} onClick={() => void openPoelab()}>
+                      <Ico name="external" />
+                      {t('lev.lab.poelab')}
+                    </button>
+                  )}
                   {!simple && zl !== null && <span className="lv-zl">{t('lev.zoneLevel').replace('{n}', String(zl))}</span>}
                 </div>
                 {f.step.lvl && <div className="lv-row__sub">{t('lev.recLevel').replace('{lvl}', f.step.lvl)}</div>}
@@ -337,6 +430,7 @@ function Side({ act, flat, data }: { act: number; flat: FlatStep[]; data: Leveli
           </div>
         </div>
       </section>
+      <Labs data={data} />
       <section className="ui-box">
         <div className="ui-box__head">
           <span className="ui-label">{t('lev.rewards.title').replace('{act}', String(act))}</span>
@@ -415,6 +509,7 @@ export function LevelingTab() {
     <div className="lv">
       <Header />
       <FinishedBanner />
+      <ZoneLabLines />
       {!state.log.connected && (
         <div className="ui-banner ui-banner--bad">
           <Ico name="warn" />
