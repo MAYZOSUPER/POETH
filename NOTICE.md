@@ -14,6 +14,10 @@ whose full history is kept in this repository.
 
 ## Third-party code & data (trade helper, PoE 1)
 
+- **[NeverSink's Indepth Loot Filter](https://github.com/NeverSinkDev/NeverSink-Filter)** — NeverSink, **MIT License**.
+  Not bundled: the “Loot filter” section downloads the official release from GitHub to the player's computer on request
+  and writes one unmodified `.filter` file as `POETH-NeverSink-<level>.filter` into the game's filter folder.
+
 - **[Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade)** — SnosMe, **MIT License**.
   Parts of its code (item parser, price-check filters/presets/pseudo stats, trade query
   builder, clipboard helper, chat/copy shortcuts, rate-limit header sync, whisper regexes)
