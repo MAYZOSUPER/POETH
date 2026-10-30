@@ -1,0 +1,13 @@
+# Выбор формы при «New issue» (S56): формы «Ошибка / Bug» и «Предложить стратегию», пустое сообщение — для идей
+# и вопросов. Ссылки ниже показываются над формами.
+blank_issues_enabled: true
+contact_links:
+  - name: Гайд по функциям / Feature guide
+    url: https://mayzosuper.github.io/POETH/guide/
+    about: Как пользоваться каждой функцией POETH — по шагам. / How to use every POETH feature, step by step.
+  - name: Частые вопросы / FAQ
+    url: https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.md
+    about: Окно не видно, Ctrl+D не работает, SmartScreen, где настройки. / Overlay not visible, Ctrl+D does nothing, SmartScreen, where settings live.
+  - name: Как сообщить об ошибке / How to report a bug
+    url: https://mayzosuper.github.io/POETH/bug/
+    about: Аккаунт GitHub, скриншоты, что приложить и что не показывать. / A GitHub account, screenshots, what to attach and what to keep private.

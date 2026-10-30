@@ -1,0 +1,107 @@
+# Форма «Ошибка / Bug» (S56). Её открывает кнопка «Сообщить об ошибке» в POETH («О программе», меню значка в трее)
+# с уже подставленными полями: ?template=bug.yml&version=…&game=…&client_lang=…&ui_lang=… (src/shared/bugReport.ts).
+# id полей ниже совпадают с параметрами адреса — не переименовывать. Страница с подсказками: site/bug/.
+name: Ошибка / Bug
+description: Что-то в POETH работает не так — опишите и приложите скриншоты / Something in POETH is broken — describe it and attach screenshots
+title: "Ошибка: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **RU.** Спасибо, что помогаете сделать POETH лучше! Одна ошибка — одно сообщение. Сначала загляните в
+        [гайд](https://mayzosuper.github.io/POETH/guide/) и [частые вопросы](https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.md):
+        возможно, ответ уже есть. Сообщения здесь видят все — **не вставляйте POESESSID, пароли и коды входа**,
+        а ники и чат на скриншотах лучше закрасить.
+
+        **EN.** Thanks for helping make POETH better! One bug per report. Please check the
+        [guide](https://mayzosuper.github.io/POETH/guide/?lang=en) and the [FAQ](https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.en.md)
+        first — the answer may already be there. Reports here are public — **never paste your POESESSID, passwords or
+        sign-in codes**, and it's best to paint over nicknames and chat in screenshots.
+  - type: input
+    id: version
+    attributes:
+      label: Версия POETH / POETH version
+      description: «О программе» или меню значка POETH в трее. / “About” or the POETH tray icon menu.
+      placeholder: "0.1.0-rc.12"
+    validations:
+      required: true
+  - type: input
+    id: game
+    attributes:
+      label: Игра / Game
+      placeholder: "PoE 1 / PoE 2"
+    validations:
+      required: true
+  - type: input
+    id: client_lang
+    attributes:
+      label: Язык клиента игры / Game client language
+      placeholder: "English / Русский"
+    validations:
+      required: false
+  - type: input
+    id: ui_lang
+    attributes:
+      label: Язык интерфейса POETH / POETH interface language
+      placeholder: "Русский / English"
+    validations:
+      required: false
+  - type: input
+    id: system
+    attributes:
+      label: Windows и экран / Windows and display
+      description: Если ошибка в окнах поверх игры — режим окна игры, разрешение и масштаб Windows. / For overlay bugs — the game's window mode, resolution and Windows scaling.
+      placeholder: "Windows 11, окно без рамки, 2560×1440, 125 %"
+    validations:
+      required: false
+  - type: textarea
+    id: what
+    attributes:
+      label: Что случилось / What happened
+      description: Коротко и по делу. Что вы делали и что пошло не так? / Short and to the point. What were you doing and what went wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Как повторить / How to reproduce
+      description: По шагам, если получается повторить. / Step by step, if you can reproduce it.
+      placeholder: |
+        1. Открыл(а) … / Opened …
+        2. Нажал(а) … / Pressed …
+        3. Появилось … / Saw …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Что ожидали / What you expected
+    validations:
+      required: false
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Скриншоты / Screenshots
+      description: |
+        Перетащите картинки в это поле или вставьте их через Ctrl+V. Снимок части экрана — Win+Shift+S. Закрасьте ники, чат и всё личное.
+        Drag images into this field or paste them with Ctrl+V. To capture part of the screen, press Win+Shift+S. Paint over nicknames, chat and anything personal.
+    validations:
+      required: false
+  - type: textarea
+    id: details
+    attributes:
+      label: Текст ошибки / Error text
+      description: |
+        По желанию: точный текст сообщения POETH или игры. Никогда не вставляйте POESESSID, cookies, пароли и коды входа.
+        Optional: the exact message from POETH or the game. Never paste your POESESSID, cookies, passwords or sign-in codes.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Проверка / Check
+      options:
+        - label: В тексте и на скриншотах нет POESESSID, паролей и личных данных. / There is no POESESSID, password or personal data in the text and screenshots.
+          required: true
