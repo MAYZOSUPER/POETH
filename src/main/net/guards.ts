@@ -236,3 +236,16 @@ export function buildUserAgent(defaultUa: string, version: string, appNames: str
   const base = defaultUa.replace(re, '').replace(/\s{2,}/g, ' ').trim()
   return `${base} POETH/${version}`
 }
+
+/**
+ * Значение `--disable-features`: уже заданные фичи + наши, без повторов. Chromium берёт последнее значение
+ * переключателя, поэтому второй appendSwitch затёр бы первый — список собирается в одну строку.
+ */
+export function mergeFeatureList(current: string, add: readonly string[]): string {
+  const list = current
+    .split(',')
+    .map((f) => f.trim())
+    .filter(Boolean)
+  for (const f of add) if (!list.includes(f)) list.push(f)
+  return list.join(',')
+}

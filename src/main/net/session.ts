@@ -1,6 +1,6 @@
 import { app, session, type Session } from 'electron'
 import { SITES_PARTITION, isSitePermissionAllowed } from '@shared/sites'
-import { buildUserAgent, isPoeHost, stripPartitioned } from './guards'
+import { buildUserAgent, isPoeHost, mergeFeatureList, stripPartitioned } from './guards'
 
 // Сессии сети (этап S3).
 //  - persist:poe-account — ТОЛЬКО pathofexile.com: окно входа, трейд-окно S5 (siteView),
@@ -24,17 +24,32 @@ let anonSession: Session | null = null
 let sitesSession: Session | null = null
 
 /**
+ * Фичи Chromium, выключенные до ready (S49): POETH не открывает портов на приём.
+ *  - WebRtcHideLocalIpsWithMdns. Первый RTCPeerConnection в процессе renderer (вход GGG, проверка Cloudflare —
+ *    Turnstile) создаёт MdnsResponderAdapter, а сетевой процесс под него — mDNS-ответчик на UDP 0.0.0.0:5353 и
+ *    [::]:5353. Это порт на приём: Windows спрашивает про брандмауэр для каждого нового пути exe. Политика
+ *    WEBRTC_IP_POLICY этого не останавливает — ответчик заводится вместе с фабрикой PeerConnection, а не под
+ *    кандидата. Прятать за mDNS-именем нечего: при disable_non_proxied_udp локальных кандидатов нет вовсе.
+ */
+export const DISABLED_CHROMIUM_FEATURES = ['WebRtcHideLocalIpsWithMdns'] as const
+
+/**
  * Сетевая «личность» приложения. Вызвать в main/index.ts ДО app.whenReady()
  * (переключатель командной строки читается при старте Chromium):
  *  - app.userAgentFallback = UA Chromium + ` POETH/<версия>` — один UA у окон и API
  *    (cf_clearance Cloudflare привязан к UA);
- *  - disable-blink-features=AutomationControlled (navigator.webdriver = false).
+ *  - disable-blink-features=AutomationControlled (navigator.webdriver = false);
+ *  - disable-features=DISABLED_CHROMIUM_FEATURES (к уже заданным, если есть).
  * Повторный вызов — no-op.
  */
 export function initNetIdentity(): void {
   if (identityReady) return
   identityReady = true
   app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled')
+  app.commandLine.appendSwitch(
+    'disable-features',
+    mergeFeatureList(app.commandLine.getSwitchValue('disable-features'), DISABLED_CHROMIUM_FEATURES)
+  )
   userAgent = buildUserAgent(app.userAgentFallback, app.getVersion(), [app.getName()])
   app.userAgentFallback = userAgent
 }

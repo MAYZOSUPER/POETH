@@ -12,6 +12,7 @@ import {
   isValidPoesessid,
   maskHeaders,
   maskSecrets,
+  mergeFeatureList,
   parseAccountName,
   stripPartitioned
 } from '../../src/main/net/guards'
@@ -237,6 +238,12 @@ describe('cookies и User-Agent', () => {
     expect(buildUserAgent(ua, '0.1.0', ['poeth'])).toBe(
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.7559.236 Safari/537.36 POETH/0.1.0'
     )
+  })
+
+  it('--disable-features: свои фичи к уже заданным, без повторов и пустых', () => {
+    expect(mergeFeatureList('', ['WebRtcHideLocalIpsWithMdns'])).toBe('WebRtcHideLocalIpsWithMdns')
+    expect(mergeFeatureList('A, B,,', ['B', 'C'])).toBe('A,B,C')
+    expect(mergeFeatureList('WebRtcHideLocalIpsWithMdns', ['WebRtcHideLocalIpsWithMdns'])).toBe('WebRtcHideLocalIpsWithMdns')
   })
 
   it('формат POESESSID', () => {
