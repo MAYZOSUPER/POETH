@@ -4,6 +4,8 @@ import { banditPassives, counters, currentIndex, stepPassives, stepTags, type Fl
 import { BASE_CLASSES, baseClass } from '@shared/leveling/classes'
 import { areaName, nameOf, questName } from '@shared/leveling/render'
 import { translate, useLang, useT } from '../../i18n'
+import { tKey } from '../../i18n/hotkey'
+import { useAppStore } from '../../store/useAppStore'
 import { useGameLang } from '../../gameLang'
 import { useLevelingStore } from '../../store/useLevelingStore'
 import { Ico, Switch, useSimple } from '../deals/common'
@@ -101,6 +103,7 @@ function Header() {
   // имена из игры (классы, бандиты, зона) — на языке клиента игры (S31)
   const gameLang = useGameLang(lang)
   const simple = useSimple()
+  const showKey = useAppStore((s) => s.settings?.hotkeys.levelingToggle.accel)
   const state = useLevelingStore((s) => s.state)!
   const data = useLevelingStore((s) => s.data)!
   const { createProfile, selectProfile, removeProfile, updateProfile, setVariant, setConfig, act } = useLevelingStore.getState()
@@ -172,7 +175,7 @@ function Header() {
         </select>
       </label>
       <span className="lv-grow" />
-      <div className="lv-field" title={t('lev.show.hint')}>
+      <div className="lv-field" title={tKey(t, 'lev.show.hint', showKey)}>
         <span className="ui-label">{t('lev.show')}</span>
         <div className="ui-seg" role="group" aria-label={t('lev.show')}>
           {SHOW.map((m) => (

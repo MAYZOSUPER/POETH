@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { WealthDiff, WealthDiffLine, WealthItemNs } from '@shared/types'
 import { useT } from '../../i18n'
+import { tKey } from '../../i18n/hotkey'
+import { useAppStore } from '../../store/useAppStore'
 import { WIco } from './ui'
 import { itemClass, lineFacts, nf, sg, span, unitPrice } from './format'
 
@@ -26,6 +28,7 @@ export function Gains({
   nameOf: (l: { name: string; ns: WealthItemNs }) => string
 }) {
   const t = useT()
+  const pcKey = useAppStore((s) => s.settings?.hotkeys.priceCheck.accel)
   const [all, setAll] = useState(false)
   const head = (
     <div className="ui-box__head">
@@ -98,7 +101,7 @@ export function Gains({
                 )}
                 {l.unit === undefined ? (
                   <td className="is-num">
-                    <span className="ui-tag" title={t(l.reason === 'rare' ? 'wealth.unpriced.rare' : `wealth.reason.${l.reason ?? 'no-price'}`)}>
+                    <span className="ui-tag" title={l.reason === 'rare' ? tKey(t, 'wealth.unpriced.rare', pcKey) : t(`wealth.reason.${l.reason ?? 'no-price'}`)}>
                       {t('wealth.unpriced')}
                     </span>
                   </td>

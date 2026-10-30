@@ -3,6 +3,7 @@ import type { AuthStatus, OverlayStatus, UiLang } from '@shared/types'
 import type { GameId, SiteHost } from '@shared/games'
 import { BOOSTY_URL } from '@shared/links'
 import { useT } from '../../i18n'
+import { tKey } from '../../i18n/hotkey'
 import { useAppStore } from '../../store/useAppStore'
 import { BrandImg } from '../../components/BrandImg'
 import { Ico } from '../regex/Ico'
@@ -180,7 +181,7 @@ export function Wizard({ onClose }: { onClose: () => void }) {
             </li>
             <li>
               <Ico name="shield" />
-              <span>{t('wiz.window.admin')}</span>
+              <span>{tKey(t, 'wiz.window.admin', hk.priceCheck.accel)}</span>
             </li>
           </ul>
           {live?.attached && live.hasAccess === false && <Banner kind="bad">{t('wiz.window.adminNow')}</Banner>}

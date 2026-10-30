@@ -18,6 +18,7 @@ import { netErrorText } from '../../panels/account/netError'
 import { Icon, type IconName } from '../Icon'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { useOverlayT } from '../useOverlayT'
+import { tKey } from '../../i18n/hotkey'
 import { PopupPositionButton } from '../PopupPosition'
 import { activePresetOf, usePriceCheckStore, type PcResult } from './store'
 import { ageKey, currencyLabel, fmtNum, tierWordKey, waitClock } from './format'
@@ -1378,6 +1379,7 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
   const loosen = usePriceCheckStore((s) => s.loosen)
   const preset = usePriceCheckStore((s) => activePresetOf(s))
   const now = useNow(phase === 'limit')
+  const pcKey = useOverlayStore((s) => s.priceCheckKey)
 
   if (phase === 'parsing' || phase === 'loading') {
     return (
@@ -1413,7 +1415,7 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
         </div>
         <div className="ui-hint">
           <Icon name="help" />
-          <span>{t('pc1.limit.cache')}</span>
+          <span>{tKey(t, 'pc1.limit.cache', pcKey)}</span>
         </div>
       </>
     )
@@ -1448,7 +1450,7 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
       return (
         <div className="ui-empty">
           <span className="ui-empty__title">{t('pc1.error.title')}</span>
-          <span>{t(key)}</span>
+          <span>{key === 'pc1.parse.error' ? tKey(t, key, pcKey) : t(key)}</span>
         </div>
       )
     }

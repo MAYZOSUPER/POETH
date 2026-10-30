@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import type { UiLang, WealthItemNs, WealthState } from '@shared/types'
 import { useT } from '../../i18n'
+import { tKey } from '../../i18n/hotkey'
+import { useAppStore } from '../../store/useAppStore'
 import { CurrencyTipBody, TipAnchor, useCurrencyNames } from '../../components/Currency'
 import { SiteCheckBanner } from '../account/SiteCheckBanner'
 import { useWealthStore } from './useWealthStore'
@@ -16,6 +18,12 @@ import { ago, df, nf, sg, span, timeOf, toDivine, until } from './format'
 
 type T = ReturnType<typeof useT>
 type NameOf = (l: { name: string; ns: WealthItemNs }) => string
+
+/** Текущая клавиша прайс-чека — в подсказках про рарки (переназначается в настройках). */
+const usePriceCheckKey = (): string | undefined => useAppStore((st) => st.settings?.hotkeys.priceCheck.accel)
+
+/** Ошибки, после которых сам POETH снимок повторяет — если повтор вообще запланирован. */
+const RETRY_CODES = new Set(['network', 'server', 'bad-response'])
 
 function LoginEmpty({ s, t }: { s: WealthState; t: T }) {
   const [why, setWhy] = useState(false)
@@ -115,10 +123,15 @@ function Problems({ s, t, now }: { s: WealthState; t: T; now: number }) {
   }
   if (!err) return s.prices.problem ? <div className="w-wait">{t('wealth.prices.problem')}</div> : null
   if (err.code === 'blocked') return <SiteCheckBanner context="account" />
+  // повтор есть, только пока стоит таймер авто-снимков (manager.schedule): в ручном режиме без сессии
+  // фарма его нет — не обещаем «повторим позже», а зовём к «Обновить»
+  const manual = s.nextAutoAt === undefined
   const text =
     err.code === 'rate-limited'
-      ? t('wealth.err.rate-limited', { t: err.retryAt ? until(t, err.retryAt, now) : t('wealth.in.min', { n: 1 }) })
-      : t(`wealth.err.${err.code}`, { league: s.league ?? '' })
+      ? t(manual ? 'wealth.err.rate-limited.manual' : 'wealth.err.rate-limited', {
+          t: err.retryAt ? until(t, err.retryAt, now) : t('wealth.in.min', { n: 1 })
+        })
+      : t(`wealth.err.${err.code}${manual && RETRY_CODES.has(err.code) ? '.manual' : ''}`, { league: s.league ?? '' })
   const account = err.code === 'no-account' || err.code === 'forbidden'
   return (
     <div className={`ui-banner ${err.code === 'rate-limited' ? '' : 'ui-banner--bad '}wl-banner`} role="status">
@@ -264,6 +277,7 @@ function Filter({ s, t }: { s: WealthState; t: T }) {
 }
 
 function Breakdown({ s, t, lang, expert }: { s: WealthState; t: T; lang: string; expert: boolean }) {
+  const pcKey = usePriceCheckKey()
   const latest = s.latest
   const totals = new Map((latest?.tabs ?? []).map((x) => [x.id, x]))
   const on = s.tabs.filter((x) => x.selected).sort((a, b) => (totals.get(b.id)?.chaos ?? 0) - (totals.get(a.id)?.chaos ?? 0))
@@ -299,7 +313,7 @@ function Breakdown({ s, t, lang, expert }: { s: WealthState; t: T; lang: string;
                 <div key={x.id} className={cls('')}>
                   {name}
                   {noval ? (
-                    <span className="ui-tag ui-bars__note" title={t('wealth.unpriced.rare')}>
+                    <span className="ui-tag ui-bars__note" title={tKey(t, 'wealth.unpriced.rare', pcKey)}>
                       {t('wealth.unpriced')}
                     </span>
                   ) : (
@@ -387,6 +401,7 @@ export function StashView({
   nameOf: NameOf
 }) {
   const diff = useWealthStore((st) => st.diff)
+  const pcKey = usePriceCheckKey()
   if (!s.loggedIn && !s.latest) return <LoginEmpty s={s} t={t} />
   const first = !!s.latest && s.history.length < 2
   return (
@@ -397,7 +412,7 @@ export function StashView({
       {!expert && (
         <div className="ui-hint" style={{ padding: 0 }}>
           <WIco name="help" />
-          <span>{t(s.options.autoEnabled ? 'wealth.hint' : 'wealth.hint.manual', { n: s.budget.intervalMin })}</span>
+          <span>{tKey(t, s.options.autoEnabled ? 'wealth.hint' : 'wealth.hint.manual', pcKey, { n: s.budget.intervalMin })}</span>
         </div>
       )}
       <div className="w-grid">

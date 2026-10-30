@@ -60,7 +60,7 @@ export function LayoutViewerPanel() {
                   src={u}
                   className={i === active ? 'active' : ''}
                   onClick={() => setActive(i)}
-                  alt={`вариант ${i + 1}`}
+                  alt={t('lv.variant', { n: i + 1 })}
                 />
               ))}
             </div>

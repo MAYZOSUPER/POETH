@@ -10,6 +10,7 @@ import { useAppStore } from '../store/useAppStore'
 import { useShellStore } from '../store/useShellStore'
 import { Ico } from './regex/Ico'
 import { useT } from '../i18n'
+import { tKey } from '../i18n/hotkey'
 import { AccountPanel } from './account/AccountPanel'
 import { ChatCommandsPanel } from './chat/ChatCommandsPanel'
 import { UpdatesSettings } from '../updates/UpdatesSettings'
@@ -255,7 +256,7 @@ export function SettingsPanel() {
           </select>
         </div>
       )}
-      {game === 'poe1' && <div className="hint small muted">{t('overlay.set.pricePosition.hint')}</div>}
+      {game === 'poe1' && <div className="hint small muted">{tKey(t, 'overlay.set.pricePosition.hint', settings?.hotkeys.priceCheck.accel)}</div>}
 
       {game === 'poe1' && (
         <>
