@@ -1,0 +1,256 @@
+import { useEffect, useMemo, useState } from 'react'
+import type { NetError, UiLang } from '@shared/types'
+import type { ParsedItem } from '@shared/poe1/parser'
+import { getDefaultPoe1DataStore } from '@shared/poe1/data'
+import { buildRequest, localizeTradeRequest, type TimelessSearch, type TradeRequest } from '@shared/poe1/pricecheck'
+import { honestPrice, marketPrice, type MarketPrice } from '@shared/poe1/pricecheck/results'
+import { chaosRates } from '@shared/poe1/pricecheck/currency'
+import { marketView } from '@shared/poe1/pricecheck/priceBlock'
+import type { TimelessDataRaw } from '@shared/poe1/timeless/data'
+import { dataKindOf, dataSeedOf, itemSeedOf, type SocketScore } from '@shared/poe1/timeless/evaluate'
+import { analogPreset, maxAnalogSeeds } from '@shared/poe1/timeless/query'
+import { netErrorText } from '../../panels/account/netError'
+import { Currency } from '../../components/Currency'
+import { Icon } from '../Icon'
+import { activePresetOf, usePriceCheckStore } from './store'
+import { fmtNum } from './format'
+import { calcTimeless, timelessData } from './timelessClient'
+import type { TimelessCalc } from './timelessEngine'
+import './timeless.css'
+
+// «Умная оценка» timeless-самоцвета (S45) в окне цены Ctrl+D (PoE 1): что сид даёт в 21 гнезде дерева, лучшее
+// гнездо по правилам самоцвета (shared/poe1/timeless/rules.ts) и цена реальных аналогов — один count-запрос на трейд
+// «сиды с таким же или лучшим исходом», только по кнопке игрока (шлюз main: interactive, лимиты, кэш).
+// Простой режим — одна строка; эксперт — заметки гнезда, другие гнёзда, редкость исхода. Имена нод и строки исходов —
+// на языке клиента игры (их ищут в игре), остальное — на языке интерфейса.
+
+type T = (key: string, params?: Record<string, string | number>) => string
+
+type Analog =
+  | { phase: 'idle' }
+  | { phase: 'busy' }
+  | { phase: 'done'; total: number; market?: MarketPrice; siteUrl: string; cached: boolean; seeds: number }
+  | { phase: 'fail'; error?: NetError }
+
+/** Сколько других гнёзд показать эксперту и сколько заметок у гнезда. */
+const OTHER_SOCKETS = 2
+const NOTES = 3
+
+function openExternal(url: string): void {
+  window.overlayApi.window.openExternal(url)
+}
+
+function useTimeless(info: TimelessSearch): { data: TimelessDataRaw | null; calc: TimelessCalc | null; state: 'loading' | 'ready' | 'na' } {
+  const kind = dataKindOf(info.jewel)
+  const max = maxAnalogSeeds(info)
+  const [data, setData] = useState<TimelessDataRaw | null>(null)
+  const [calc, setCalc] = useState<TimelessCalc | null>(null)
+  const [state, setState] = useState<'loading' | 'ready' | 'na'>(kind ? 'loading' : 'na')
+  useEffect(() => {
+    if (!kind) return setState('na')
+    let alive = true
+    setState('loading')
+    void (async () => {
+      const d = await timelessData()
+      const seed = d ? dataSeedOf(d, kind, info.seed) : null
+      const c = d && seed != null ? await calcTimeless({ kind, seed, max }) : null
+      if (!alive) return
+      setData(d)
+      setCalc(c)
+      setState(c ? 'ready' : 'na')
+    })()
+    return () => {
+      alive = false
+    }
+  }, [kind, info.seed, max])
+  return { data, calc, state }
+}
+
+/** Подпись гнезда на языке клиента игры: «у «Iron Reflexes»». */
+function socketName(data: TimelessDataRaw, s: SocketScore, game: 'en' | 'ru', t: T): string {
+  const pair = data.names[data.sockets[s.socket].near]
+  return t('pc1.tl.socket', { name: pair ? pair[game === 'ru' ? 1 : 0] : '?' })
+}
+
+function scoreText(s: SocketScore, t: T): string {
+  return s.theme === 'devotion' ? t('pc1.tl.devotion', { n: s.score }) : t('pc1.tl.theme', { theme: t(`pc1.tl.theme.${s.theme}`), n: s.score })
+}
+
+function naText(info: TimelessSearch, t: T): string {
+  if (info.jewel === 'GV') return t('pc1.tl.na.gv')
+  if (info.jewel === 'ABYSS') return t('pc1.tl.na.abyss')
+  return t('pc1.tl.na.data')
+}
+
+async function searchAnalogs(info: TimelessSearch, data: TimelessDataRaw, calc: TimelessCalc): Promise<Analog> {
+  const st = usePriceCheckStore.getState()
+  const preset = activePresetOf(st)
+  const kind = dataKindOf(info.jewel)
+  if (!st.item || !st.data || !preset || !kind || !calc.analogs.seeds.length) return { phase: 'fail' }
+  const seeds = calc.analogs.seeds.map((s) => itemSeedOf(data, kind, s))
+  const req = buildRequest(st.item, st.data, analogPreset(preset, info, seeds))
+  if (req.api !== 'trade') return { phase: 'fail' }
+  let body: unknown = req.body
+  // ru.pathofexile.com не принимает английские имена (как основной поиск окна)
+  if (st.siteHost === 'ru.pathofexile.com') {
+    const ru = await getDefaultPoe1DataStore().ensureLanguage('ru').catch(() => null)
+    if (ru) body = localizeTradeRequest(req.body as TradeRequest, ru)
+  }
+  const res = await window.overlayApi.trade.poe1Search({ league: req.league, body, fetch: 10 })
+  if (!res.ok) return { phase: 'fail', error: res.error }
+  const now = usePriceCheckStore.getState()
+  const rates = chaosRates(now.rate?.chaosPerDivine, now.rates)
+  const market = marketPrice(res.listings, honestPrice(res.listings, res.total, rates), rates)
+  return { phase: 'done', total: res.total, market, siteUrl: res.siteUrl, cached: res.cached, seeds: seeds.length }
+}
+
+function AnalogResult({ a, simple, lang, t }: { a: Extract<Analog, { phase: 'done' }>; simple: boolean; lang: UiLang; t: T }) {
+  const rate = usePriceCheckStore((s) => s.rate?.chaosPerDivine)
+  const rates = usePriceCheckStore((s) => s.rates)
+  if (!a.total) return <span className="tl-none">{t('pc1.tl.similar.none')}</span>
+  if (!a.market) return <span className="tl-none">{t('pc1.tl.similar.noprice', { n: a.total })}</span>
+  const shown = marketView(a.market, rate, chaosRates(rate, rates))
+  return (
+    <span className="tl-price">
+      {t('pc1.tl.similar')}{' '}
+      <Currency tag={shown.mid.currency} text={`~${fmtNum(shown.mid.amount, lang)}`} full={simple} lang={lang} className="pc-price" />
+      <span className="tl-muted">
+        {' '}
+        · {t('pc1.tl.similar.found', { n: a.total })}
+        {a.cached && ` · ${t('pc1.cached')}`}
+      </span>
+    </span>
+  )
+}
+
+export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem; info: TimelessSearch; simple: boolean; lang: UiLang; t: T }) {
+  const { data, calc, state } = useTimeless(info)
+  const [analog, setAnalog] = useState<Analog>({ phase: 'idle' })
+  const game = item.lang === 'ru' ? 'ru' : 'en'
+  // другой сид, самоцвет или режим завоевателя — другой запрос аналогов
+  useEffect(() => setAnalog({ phase: 'idle' }), [info.seed, info.jewel, info.mode, calc])
+
+  const best = calc?.evaluation.best ?? null
+  const others = useMemo(
+    () => (calc && best ? calc.evaluation.sockets.filter((s) => s !== best && s.score > 0).slice(0, OTHER_SOCKETS) : []),
+    [calc, best]
+  )
+
+  if (state === 'loading') {
+    return (
+      <div className="tl" aria-busy="true">
+        <span className="tl-muted">{t('pc1.tl.loading')}</span>
+      </div>
+    )
+  }
+  if (state === 'na' || !data || !calc) {
+    // GV/Abyss: калькулятор Vilsol и подсказка про PoB уже есть в блоке сида; здесь — одна честная строка
+    return (
+      <div className="tl">
+        <span className="tl-muted">{naText(info, t)}</span>
+      </div>
+    )
+  }
+
+  const kind = dataKindOf(info.jewel)!
+  const outcomes = data.jewels[kind].outcomes
+  const run = async (): Promise<void> => {
+    if (analog.phase === 'busy') return
+    setAnalog({ phase: 'busy' })
+    setAnalog(await searchAnalogs(info, data, calc).catch(() => ({ phase: 'fail' }) as Analog))
+  }
+  const analogsHelp = t('pc1.tl.similar.help', { n: calc.analogs.seeds.length })
+  const analogLine =
+    analog.phase === 'done' ? (
+      <AnalogResult a={analog} simple={simple} lang={lang} t={t} />
+    ) : analog.phase === 'fail' ? (
+      <span className="tl-bad">
+        {analog.error ? t(...netErrorText(analog.error)) : t('pc1.tl.similar.fail')}{' '}
+        <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" onClick={() => void run()}>
+          <Icon name="refresh" />
+          {t('pc1.error.retry')}
+        </button>
+      </span>
+    ) : (
+      <button
+        type="button"
+        className="ui-btn ui-btn--sm"
+        title={analogsHelp}
+        disabled={analog.phase === 'busy' || !best || !calc.analogs.seeds.length}
+        onClick={() => void run()}
+      >
+        <Icon name={analog.phase === 'busy' ? 'refresh' : 'search'} />
+        {analog.phase === 'busy' ? t('pc1.tl.similar.busy') : t('pc1.tl.similar.find')}
+      </button>
+    )
+
+  if (!best) {
+    return (
+      <div className="tl">
+        <span className="tl-muted">{t('pc1.tl.none')}</span>
+      </div>
+    )
+  }
+
+  if (simple) {
+    return (
+      <div className="tl tl--simple">
+        <span className="tl-line">
+          <Icon name="passive" />
+          <span>{t('pc1.tl.simple', { socket: socketName(data, best, game, t), score: scoreText(best, t) })}</span>
+        </span>
+        <span className="tl-analog">{analogLine}</span>
+      </div>
+    )
+  }
+
+  const rare = calc.analogs
+  return (
+    <div className="tl">
+      <div className="tl-head">
+        <span className="ui-label">{t('pc1.tl.title')}</span>
+        <span className="ui-q" title={t('pc1.tl.help')}>
+          ?
+        </span>
+      </div>
+      <div className="tl-best">
+        <span className="tl-best__k">{t('pc1.tl.best')}</span>
+        <b>{socketName(data, best, game, t)}</b>
+        <span className="ui-tag">{scoreText(best, t)}</span>
+      </div>
+      {best.notes.length > 0 && (
+        <ul className="tl-notes">
+          {best.notes.slice(0, NOTES).map((n) => {
+            const o = outcomes[n.code]
+            const text = o.name ? o.name[game === 'ru' ? 1 : 0] : o.lines.map((l) => l[game === 'ru' ? 1 : 0]).join(' · ')
+            return (
+              <li key={n.code} title={o.lines.map((l) => l[game === 'ru' ? 1 : 0]).join('\n')}>
+                {text}
+                {n.count > 1 && <span className="tl-muted"> ×{n.count}</span>}
+              </li>
+            )
+          })}
+        </ul>
+      )}
+      {best.unknown > 0 && <span className="tl-muted">{t('pc1.tl.unknown', { n: best.unknown })}</span>}
+      {others.length > 0 && (
+        <span className="tl-muted">
+          {t('pc1.tl.others')}: {others.map((s) => `${socketName(data, s, game, t)} — ${scoreText(s, t)}`).join(' · ')}
+        </span>
+      )}
+      <span className="tl-muted">
+        {t('pc1.tl.rare', { n: fmtNum(rare.qualifying, lang), total: fmtNum(rare.total, lang) })}
+        {rare.seeds.length > 0 && ` · ${t('pc1.tl.query', { n: rare.seeds.length })}`}
+      </span>
+      <div className="tl-analog">
+        {analogLine}
+        {analog.phase === 'done' && analog.total > 0 && (
+          <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" onClick={() => openExternal(analog.siteUrl)}>
+            <Icon name="external" />
+            {t('pc1.tl.similar.open')}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
