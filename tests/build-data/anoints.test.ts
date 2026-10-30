@@ -198,12 +198,26 @@ describe('поиск ноты по имени: RU = EN', () => {
     expect(searchAnoints(data, tree, 'рока', 'ru').map((h) => h.hash)).toContain(wod)
   })
 
-  it('порядок: имя с начала, слово с начала, часть имени, статы; предел', () => {
+  it('по-русски — с падежами; часть слова в имени («мана» в «шамана») — после статов', () => {
+    const hits = searchAnoints(data, tree, 'мана', 'ru', 200)
+    const shaman = hits.findIndex((h) => tree.nodes.get(h.hash)!.ru.toLowerCase().includes('шамана'))
+    expect(shaman).toBeGreaterThan(0)
+    expect(hits[shaman].by).toBe('part')
+    expect(hits.slice(0, shaman).every((h) => h.by !== 'part')).toBe(true)
+    // «маны» в тексте статов Харизмы находится по запросу «мана», «Потоки маны» — по слову имени; «Мантия» — нет
+    expect(hits.find((h) => h.hash === hashOf('Charisma'))?.by).toBe('stat')
+    expect(hits.find((h) => h.hash === hashOf('Mana Flows'))?.by).toBe('word')
+    expect(hits.find((h) => h.hash === hashOf('Cloth and Chain'))?.by).not.toBe('word')
+    // несколько слов — подстрокой
+    expect(searchAnoints(data, tree, 'дополнительное проклятие', 'ru', 50).map((h) => h.hash)).toContain(hashOf('Whispers of Doom'))
+  })
+
+  it('порядок: имя с начала, слово с начала, статы, часть слова в имени; предел', () => {
     const hits = searchAnoints(data, tree, 'charisma', 'en')
     expect(hits[0]).toEqual({ hash: hashOf('Charisma'), by: 'start' })
     const frost = searchAnoints(data, tree, 'frost', 'en')
     expect(frost.find((h) => h.hash === hashOf('Ash, Frost and Storm'))?.by).toBe('word')
-    const ranks = { start: 0, word: 1, part: 2, stat: 3 }
+    const ranks = { start: 0, word: 1, stat: 2, part: 3 }
     const many = searchAnoints(data, tree, 'mana', 'en', 50)
     expect(many.length).toBeGreaterThan(8)
     expect(many.some((h) => h.by === 'stat')).toBe(true)

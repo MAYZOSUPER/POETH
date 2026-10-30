@@ -156,28 +156,41 @@ export function anointByName(data: AnointData, tree: TreeData, name: string): nu
 
 export interface AnointHit {
   hash: number
-  /** совпало: имя с начала, слово имени с начала, часть имени, строка стата */
-  by: 'start' | 'word' | 'part' | 'stat'
+  /** совпало: имя с начала, слово имени с начала, слово в тексте статов, часть слова в имени */
+  by: 'start' | 'word' | 'stat' | 'part'
 }
 
-const RANK: Record<AnointHit['by'], number> = { start: 0, word: 1, part: 2, stat: 3 }
+const RANK: Record<AnointHit['by'], number> = { start: 0, word: 1, stat: 2, part: 3 }
+
+const words = (s: string): string[] => s.split(/[^\p{L}\p{N}']+/u).filter(Boolean)
+
+/**
+ * Слово подходит к запросу из одного слова: начинается с него или, у русского от 4 букв, это то же слово в другом
+ * падеже — основа без последней буквы и окончание до двух букв («мана» найдёт «маны», «маной», но не «мантию»).
+ */
+function wordMatcher(q: string): (w: string) => boolean {
+  const stem = q.length >= 4 && /[а-я]$/.test(q) ? q.slice(0, -1) : null
+  return (w) => w.startsWith(q) || (stem !== null && w.startsWith(stem) && w.length <= q.length + 1)
+}
 
 /**
  * Поиск ноты для анойнта по имени на любом языке (RU-клиент, а имя из английского гайда — тоже найдётся);
- * от 3 букв — и по тексту статов («мана», «aura»). Порядок: имя с начала, слово с начала, часть имени, статы;
- * внутри — по имени на языке клиента.
+ * от 3 букв — и по тексту статов («мана», «aura»). Порядок: имя с начала, слово имени с начала, слово в статах,
+ * часть слова в имени («мана» в «шамана» — последним); внутри — по имени на языке клиента.
  */
 export function searchAnoints(data: AnointData, tree: TreeData, query: string, lang: GameLang, limit = 8): AnointHit[] {
   const q = normName(query)
   if (!q) return []
+  const match = wordMatcher(q)
+  const wordHit = (s: string): boolean => (q.includes(' ') ? s.includes(q) : words(s).some(match))
   const hits: (AnointHit & { name: string })[] = []
   for (const n of notes(data, tree)) {
     const names = [normName(n.en), normName(n.ru)]
     let by: AnointHit['by'] | null = null
     if (names.some((s) => s.startsWith(q))) by = 'start'
-    else if (names.some((s) => s.split(/[\s,-]+/).some((w) => w.startsWith(q)))) by = 'word'
+    else if (names.some(wordHit)) by = 'word'
+    else if (q.length >= 3 && n.stats.some((l) => wordHit(normName(l.en)) || (l.ru !== null && wordHit(normName(l.ru))))) by = 'stat'
     else if (names.some((s) => s.includes(q))) by = 'part'
-    else if (q.length >= 3 && n.stats.some((l) => normName(l.en).includes(q) || (l.ru !== null && normName(l.ru).includes(q)))) by = 'stat'
     if (by) hits.push({ hash: n.hash, by, name: lang === 'ru' ? n.ru : n.en })
   }
   hits.sort((a, b) => RANK[a.by] - RANK[b.by] || a.name.localeCompare(b.name, lang) || a.hash - b.hash)
