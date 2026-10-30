@@ -165,3 +165,90 @@
   .bd-map__row { grid-template-columns: minmax(0, 1fr) 56px auto; }
   .bd-map__row > :nth-child(2) { display: none; }
 }
+
+/* ---------- предметы этапа (S40; макет v0.2, раздел 1б) ---------- */
+/* строка предмета складывается по ширине своей колонки (в две колонки — уже, чем вкладка) */
+.bd-col { container: bdcol / inline-size; }
+/* новые компоненты макета — .ui-props (свойства чипами), .ui-tag--key, подсказка кнопки «Трейд» — кандидаты в components.css */
+.ui-props { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); min-width: 0; }
+.ui-props__p { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-xs); line-height: 1.3; color: var(--fg-faint); overflow-wrap: anywhere; }
+.ui-props__p .ui-ico { width: 12px; height: 12px; flex: none; }
+.ui-props__p.is-key { padding: 1px 7px; border: 1px solid var(--border); border-radius: var(--r-pill); background: var(--sunken); color: var(--fg); }
+.ui-props__p.is-life .ui-ico { color: var(--bad); }
+.ui-props__p.is-res .ui-ico { color: var(--info); }
+.ui-props__p.is-speed .ui-ico { color: var(--good); }
+.ui-props__p.is-build .ui-ico { color: var(--accent); }
+.ui-tag--key { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--accent-ink); background: var(--accent-grad); border-color: transparent; }
+.ui-tag--key .ui-ico { width: 11px; height: 11px; }
+
+.bd-ihint { padding: var(--sp-4) var(--sp-6); border-bottom: 1px solid var(--border); }
+.bd-ihint .ui-props__p { margin-right: var(--sp-2); vertical-align: 1px; }
+.bd-it { position: relative; display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 5px var(--sp-5); align-items: start; padding: 9px var(--sp-6); border-top: 1px solid var(--border); }
+.bd-rows > .bd-it:first-child { border-top: 0; }
+.bd-it > .ui-ico { width: 16px; height: 16px; margin-top: 2px; color: var(--fg-faint); }
+.bd-it__t { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--sp-4); min-width: 0; }
+.bd-it__slot { flex-basis: 100%; font-size: var(--fs-xs); color: var(--fg-muted); }
+.bd-it__t b { font-weight: 600; overflow-wrap: anywhere; }
+.bd-it__acts { position: relative; grid-column: 3; grid-row: 1 / span 2; display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-3); }
+.bd-it__btns { position: relative; display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sp-2); }
+.bd-it > .ui-props { grid-column: 2; }
+.bd-it__alt { grid-column: 2 / -1; font-size: var(--fs-xs); color: var(--info); }
+.bd-it.is-later .ui-item--unique { opacity: 0.85; }
+.bd-it.is-key { background: color-mix(in srgb, var(--accent) 8%, transparent); box-shadow: inset 3px 0 0 var(--accent); }
+.bd-it.is-key > .ui-ico { color: var(--accent-hi); }
+.bd-rar { font-size: 9.5px; }
+.bd-rar--unique { color: var(--rarity-unique); border-color: color-mix(in srgb, var(--rarity-unique) 50%, transparent); }
+.bd-rar--rare { color: var(--rarity-rare); border-color: color-mix(in srgb, var(--rarity-rare) 50%, transparent); }
+.bd-rar--magic { color: var(--rarity-magic); border-color: color-mix(in srgb, var(--rarity-magic) 50%, transparent); }
+.bd-rar--normal { color: var(--fg-muted); }
+.bd-price { font-size: var(--fs-sm); font-weight: 600; color: var(--fg); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bd-keym[aria-pressed="true"] { color: var(--accent-hi); }
+.bd-keym .ui-ico { width: 14px; height: 14px; }
+.bd-link-btn { padding: 0; border: 0; background: none; color: var(--accent-hi); font: inherit; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.bd-link-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
+.bd-more { font-size: var(--fs-xs); }
+.bd-key, .bd-save { grid-column: 2 / -1; display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: var(--sp-3); align-items: start; font-size: var(--fs-sm); line-height: 1.4; }
+.bd-key > .ui-ico { width: 15px; height: 15px; margin-top: 1px; color: var(--accent-hi); }
+.bd-key b { color: var(--accent-hi); font-weight: 600; }
+.bd-key__src { display: block; font-size: var(--fs-2xs); color: var(--fg-faint); }
+.bd-save > .ui-ico { width: 15px; height: 15px; margin-top: 1px; color: var(--accent); }
+.bd-save b { color: var(--fg); font-variant-numeric: tabular-nums; }
+.bd-save span span { color: var(--fg-muted); }
+.bd-key__off { grid-column: 2 / -1; font-size: var(--fs-xs); color: var(--fg-faint); }
+.bd-why { grid-column: 2 / -1; font-size: var(--fs-xs); color: var(--fg-muted); }
+.bd-why--important { color: var(--accent-hi); }
+.bd-why--luxury { color: var(--info); }
+.bd-need { grid-column: 2 / -1; display: grid; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5); border: 1px dashed var(--border-strong); border-radius: var(--r-sm); background: var(--sunken); }
+.bd-need__h { display: flex; align-items: center; gap: var(--sp-3); font-size: var(--fs-xs); font-weight: 600; color: var(--info); }
+.bd-need__h .ui-ico { width: 13px; height: 13px; }
+.bd-need__lose { font-size: var(--fs-xs); color: var(--fg-muted); }
+.bd-need__acts { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-5); }
+.bd-grp { display: flex; align-items: center; gap: var(--sp-3); padding: 7px var(--sp-6) 5px; font: 600 var(--fs-2xs) / 1.2 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-hi); border-top: 1px solid var(--border); }
+.bd-rows > .bd-grp:first-child { border-top: 0; }
+.bd-grp .ui-ico { width: 12px; height: 12px; }
+.bd-grp--rest { color: var(--fg-faint); }
+.bd-grp--later { color: var(--warn); }
+.bd-lvlreq { color: var(--fg-muted); }
+.bd-it > .ui-props .ui-sock { margin-right: var(--sp-3); }
+.bd-grp + .bd-it { border-top: 0; }
+.bd-jewels { justify-self: start; margin: var(--sp-2) var(--sp-6) var(--sp-4); }
+
+/* подсказка кнопки «Трейд»: что уйдёт в поиск (наведение и фокус, aria-describedby) */
+.bd-tbtn { position: relative; display: inline-flex; }
+/* .bd-tbtn > — сильнее .ui-tip (position: relative): подсказка не должна раздвигать строку */
+.bd-tbtn > .bd-ttip { position: absolute; z-index: 7; top: calc(100% + 8px); right: 0; width: 270px; max-width: 80vw; text-align: left; white-space: normal; }
+.bd-ttip::before { left: auto; right: 22px; }
+.bd-ttip ul { display: grid; gap: var(--sp-2); margin: var(--sp-3) 0; padding: 0; list-style: none; }
+.bd-ttip li { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: var(--sp-3); font-size: var(--fs-xs); color: var(--fg); }
+.bd-ttip li .ui-ico { width: 12px; height: 12px; margin-top: 1px; color: var(--accent); }
+.bd-ttip > span { display: block; font-size: var(--fs-2xs); color: var(--fg-muted); }
+.bd-need .bd-tbtn > .bd-ttip { left: 0; right: auto; }
+.bd-need .bd-ttip::before { left: 22px; right: auto; }
+
+@container bdcol (max-width: 520px) {
+  .bd-it { grid-template-columns: 18px minmax(0, 1fr); }
+  .bd-it__acts { grid-column: 2; grid-row: auto; flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .bd-it__btns { justify-content: flex-start; }
+  .bd-tbtn > .bd-ttip { right: auto; left: 0; }
+  .bd-ttip::before { right: auto; left: 22px; }
+}

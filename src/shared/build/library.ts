@@ -227,8 +227,20 @@ export function cleanEdits(v: unknown): PobStageEdits {
     }
     if (Object.keys(stages).length) out.stages = stages
   }
+  // S40: ручные метки «ключевой» у предметов: `u:<имя уника>` или `i:<id предмета PoB>` → true / false
+  if (isObj(v.marks)) {
+    const marks: Record<string, boolean> = {}
+    for (const [key, x] of Object.entries(v.marks).slice(0, MARKS_MAX)) {
+      if (typeof x === 'boolean' && MARK_KEY_RE.test(key)) marks[key] = x
+    }
+    if (Object.keys(marks).length) out.marks = marks
+  }
   return out
 }
+
+const MARKS_MAX = 200
+/** Ключ метки: имя уника (без управляющих символов, ≤ 100) или id предмета PoB. */
+const MARK_KEY_RE = /^(?:u:[^\u0000-\u001f\u007f]{1,100}|i:\d{1,9})$/
 
 const ID_RE = /^[A-Za-z0-9_-]{4,40}$/
 
