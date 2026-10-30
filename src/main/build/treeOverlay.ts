@@ -21,7 +21,7 @@ import {
   type TreeView
 } from '@shared/build/treeOverlay'
 import { stageDrawing, type TreeDrawing } from '@shared/build/treeOverlayDraw'
-import { TreeLogTracker } from '@shared/build/treeOverlayLog'
+import { takenHashes } from '@shared/build/treeOverlayLog'
 import { treeBuildFromPob, treeStageFor, type TreeBuild } from '@shared/build/treeOverlayStages'
 import type {
   TreeOverlayDrift,
@@ -33,32 +33,32 @@ import { resolveGameLang } from '@shared/gameLang'
 import { importPobCode } from '@shared/pob/import'
 import type { PobBuild } from '@shared/pob/model'
 import type { PobStagePlan } from '@shared/pob/stages'
+import type { BuildTaken } from '@shared/types/build'
 import type { GameLang } from '@shared/types/settings'
-import { parseLevelingLine } from '@shared/leveling/log'
 import { devEnv } from '../devEnv'
 import { getGameFocus, onGameFocusChange } from '../focus/gameFocus'
 import { onHotkeyAction } from '../hotkeys'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
-import { readLogTail, subscribeGameLog } from '../services/gameLog'
 import { resourcesDir } from '../services/questDataset'
 import { getSettings } from '../services/settingsStore'
 import { getOverlayStatus, sendToOverlay } from '../windows/gameOverlay'
+import { getTaken, onTaken, takenCharacter } from './buildTaken'
 import { startTreeInput } from './treeOverlayInput'
 
 // Дерево этапа билда поверх игрового дерева пассивок (S38). Хоткей buildTree (Alt+P) показывает и прячет
 // наложение; оверлей только рисует и пропускает мышь в игру. Опора — стартовый круг класса: сначала считаем, что
 // он в центре окна и дерево отдалено до упора (так игра открывает дерево после входа); средняя кнопка мыши над
 // кругом — совместить точно. Игрок тянет дерево — наложение едет вместе; колесо (зум) — пометка «съехало».
-// Положение помним по разрешению окна (userData/build-tree.json). «Взято» — по Client.txt (TreeLogTracker).
+// Положение помним по разрешению окна (userData/build-tree.json). «Взято» и уровень персонажа — общий с вкладкой
+// «Билд» подсчёт по Client.txt (buildTaken.ts, S39): журнал начинает читаться при первом показе.
 // Снимков экрана здесь нет; таймеров, которые что-то делают в игре, тоже.
 //
-// Откуда билд: вкладка «Билд» (B3) вызовет setTreeBuild(); пока её нет — в разработке файл с кодом PoB из
-// POETH_TREE_POB (только в незапакованной сборке, как devEnv S29). POETH_TREE_SHOW=1 (тоже только в разработке) —
-// показать наложение, как только окно игры в фокусе: стенд tools/tree-bench проверяет его без нажатий клавиш.
+// Откуда билд: активный билд вкладки «Билд» (S39: registerTreeSink(setTreeBuild) в main/ipc/build.ts); без него в
+// разработке — файл с кодом PoB из POETH_TREE_POB (только в незапакованной сборке, как devEnv S29).
+// POETH_TREE_SHOW=1 (тоже только в разработке) — показать наложение, как только окно игры в фокусе: стенд
+// tools/tree-bench проверяет его без нажатий клавиш.
 
 const CALIBRATION_FILE = 'build-tree.json'
-/** Хвост журнала при первом показе: вложения нод за последние часы игры. */
-const LOG_TAIL_BYTES = 1024 * 1024
 
 let def: GameDef | null = null
 let enabled = false
@@ -75,15 +75,17 @@ let viewClient: ClientSize | null = null
 let aligned = false
 let drift: TreeOverlayDrift | null = null
 let calibration: TreeCalibration | null = null
-let tracker: TreeLogTracker | null = null
+/** последний снимок «взято» (buildTaken.ts) и его номер — ключ кэша рисунка */
+let taken: BuildTaken | null = null
+let takenRev = 0
+/** персонаж снимка: сменился (новый вход) — игра снова открывает дерево у круга класса */
+let character: string | null = null
 let level: number | null = null
 let lang: GameLang = 'en'
 let panel: TreeOverlayPanelRect | null = null
 let drawingCache: { key: string; drawing: TreeDrawing } | null = null
 let offInput: (() => void) | null = null
-let offLog: (() => void) | null = null
-let logPath: string | null = null
-let tailRead = false
+let offTaken: (() => void) | null = null
 let offFocus: (() => void) | null = null
 let devShown = false
 
@@ -141,14 +143,13 @@ function drawing(): TreeDrawing | null {
   if (!tree || !build || !build.stages.length) return null
   const s = build.stages[stageIndex]
   if (!s) return null
-  const log = tracker?.nodes() ?? null
-  const key = `${stageIndex}|${log ? [...log.taken].join(',') + '/' + [...log.removed].join(',') : '-'}`
+  const key = `${stageIndex}|${takenRev}`
   if (drawingCache?.key === key) return drawingCache.drawing
   const d = stageDrawing(tree, {
     classId: s.classId,
     nodes: s.nodes,
     prev: s.prev !== null ? stageNodes(s.prev) : null,
-    log
+    log: takenHashes(tree, taken)
   })
   drawingCache = { key, drawing: d }
   return d
@@ -207,7 +208,16 @@ function pushView(): void {
 
 async function show(): Promise<void> {
   if (!def || !enabled) return
-  await Promise.all([loadTree(def), loadCalibration(), loadDevBuild(), readTailOnce()])
+  const [snap] = await Promise.all([
+    getTaken(def).catch((e: unknown) => {
+      console.warn('[buildTree] game log:', e)
+      return null
+    }),
+    loadTree(def),
+    loadCalibration(),
+    loadDevBuild()
+  ])
+  if (snap) applyTaken(snap)
   lang = await gameLang()
   visible = true
   autoStage()
@@ -332,38 +342,20 @@ async function loadDevBuild(): Promise<void> {
   }
 }
 
-function ingest(lines: string[]): void {
-  if (!tree) return
-  tracker ??= new TreeLogTracker(tree)
-  let loggedIn = false
-  for (const line of lines) {
-    const ev = parseLevelingLine(line)
-    if (ev?.type === 'level') level = ev.level
-    if (ev?.type === 'login') loggedIn = true
-  }
-  const changed = tracker.ingest(lines)
+/** Снимок «взято» (журнал прочитан, вложение, вход, повышение уровня своего персонажа). */
+function applyTaken(snap: BuildTaken): void {
+  if (snap === taken) return
   // после входа персонажем игра открывает дерево у круга класса — прежнее положение больше не верно
-  if (loggedIn && !visible) {
+  if (snap.character !== character && !visible) {
     view = null
     viewClient = null
   }
-  if (!changed) return
+  taken = snap
+  takenRev++
+  character = snap.character
+  level = takenCharacter()?.level ?? null
   autoStage()
   if (visible) push()
-}
-
-/** Хвост журнала один раз: что персонаж вкладывал до запуска POETH. */
-async function readTailOnce(): Promise<void> {
-  if (tailRead || !logPath || !def) return
-  tailRead = true
-  if (!(await loadTree(def))) return
-  try {
-    const lines = await readLogTail(logPath, LOG_TAIL_BYTES)
-    tracker = new TreeLogTracker(tree as TreeData)
-    ingest(lines)
-  } catch (e) {
-    console.warn('[buildTree] log tail failed:', e)
-  }
 }
 
 async function gameLang(): Promise<GameLang> {
@@ -378,8 +370,12 @@ async function gameLang(): Promise<GameLang> {
 export async function setupTreeOverlay(game: GameDef): Promise<void> {
   def = game
   enabled = buildOn(game, buildDevFlag(process.env))
-  offLog?.()
-  offLog = null
+  offTaken?.()
+  offTaken = null
+  taken = null
+  takenRev++
+  character = null
+  level = null
   offFocus?.()
   offFocus = null
   if (!enabled) {
@@ -402,9 +398,6 @@ export async function setupTreeOverlay(game: GameDef): Promise<void> {
   offFocus = onGameFocusChange((f) => onFocus(f.game))
   // игра могла получить фокус раньше, чем домен настроился (оверлей цепляется к окну до нас)
   onFocus(getGameFocus().game)
-  const sub = await subscribeGameLog(game, (lines) => {
-    if (tailRead) ingest(lines)
-  })
-  offLog = sub.off
-  logPath = sub.logPath
+  // снимки приходят, когда журнал читается (вкладка открыта или дерево показано)
+  offTaken = onTaken(applyTaken)
 }
