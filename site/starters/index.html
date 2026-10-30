@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ru" data-lang="ru">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Стартеры лиги — POETH</title>
+<meta name="description" content="Стартовые билды авторов гайдов для начала лиги Path of Exile 1: класс, навык, бюджет, сложность и ссылки автора. Играть по стартеру — во вкладке «Билд» приложения POETH.">
+<meta name="theme-color" content="#0f0c0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="POETH">
+<meta property="og:title" content="Стартеры лиги — POETH">
+<meta property="og:description" content="Стартовые билды авторов гайдов для начала лиги Path of Exile 1 — и как играть по ним в POETH.">
+<meta property="og:url" content="https://mayzosuper.github.io/POETH/starters/">
+<meta property="og:image" content="https://mayzosuper.github.io/POETH/assets/img/og.png">
+<link rel="icon" href="../assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="preload" href="../assets/fonts/GolosText-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="starters.css">
+<script src="lang.js"></script>
+<script src="starters-core.js" defer></script>
+<script src="starters.js" defer></script>
+</head>
+<body>
+<svg class="sr-sprite" width="0" height="0" aria-hidden="true">
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
+<symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-8.5 8.5M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M5 5.5a1.5 1.5 0 0 1 1.5-1.5H19v14H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4.5l8.5 15h-17z"/><path d="M12 10v4.2M12 17v.1"/></symbol>
+<symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="10" cy="7.5" rx="5.5" ry="2.5"/><path d="M4.5 7.5v4c0 1.4 2.5 2.5 5.5 2.5M4.5 11.5v4c0 1.4 2.5 2.5 5.5 2.5"/><ellipse cx="15.5" cy="13.5" rx="4.5" ry="2"/><path d="M11 13.5v3.5c0 1.1 2 2 4.5 2s4.5-.9 4.5-2v-3.5"/></symbol>
+<symbol id="i-dash" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+<symbol id="i-passive" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-history" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v4h4"/><path d="M12 8v4.3l3 1.7"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap top__bar">
+    <a class="brand" href="../" aria-label="POETH">
+      <img src="../assets/brand/mark.svg" alt="" width="30" height="30">
+      <img class="brand__word" src="../assets/brand/wordmark.svg" alt="" width="78" height="16">
+    </a>
+    <nav class="nav nav--guide" aria-label="Разделы / Sections">
+      <a href="../"><span lang="ru">Главная</span><span lang="en">Home</span></a>
+      <a class="nav__guide" href="../guide/"><span lang="ru">Гайд</span><span lang="en">Guide</span></a>
+      <a href="./" aria-current="page"><span lang="ru">Стартеры</span><span lang="en">Starters</span></a>
+      <a href="../#install"><span lang="ru">Установка</span><span lang="en">Install</span></a>
+    </nav>
+    <div class="langs" role="group" aria-label="Язык / Language">
+      <button type="button" data-set-lang="ru" aria-pressed="false">RU</button>
+      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="btn btn--sm btn--primary" href="https://github.com/MAYZOSUPER/POETH/releases/latest">
+      <svg class="ico" aria-hidden="true"><use href="#i-download"/></svg><span lang="ru">Скачать</span><span lang="en">Download</span>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="sr-hero">
+    <div class="wrap">
+      <p class="eyebrow"><span lang="ru">Path of Exile 1 · старт лиги</span><span lang="en">Path of Exile 1 · league start</span></p>
+      <h1 id="sr-title"><span lang="ru">Стартеры лиги</span><span lang="en">League starters</span></h1>
+      <p class="lead"><span lang="ru">Билды авторов гайдов для начала лиги: класс, навык, бюджет и сложность, ссылки на гайд и PoB автора. Здесь — только посмотреть. Играть по стартеру — во вкладке «Билд» приложения POETH: оно скачает PoB автора и поведёт по этапам.</span><span lang="en">Guide authors' builds for the league start: class, skill, budget and difficulty, links to the author's guide and PoB. This page is view only. To play a starter, use the Build tab of the POETH app: it downloads the author's PoB and guides you stage by stage.</span></p>
+      <div class="sr-cta">
+        <a class="btn btn--primary" href="../guide/#starters"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span lang="ru">Как играть по стартеру в POETH</span><span lang="en">How to play a starter in POETH</span></a>
+        <a class="btn" href="https://github.com/MAYZOSUPER/POETH/releases/latest"><svg class="ico" aria-hidden="true"><use href="#i-download"/></svg><span lang="ru">Скачать POETH</span><span lang="en">Download POETH</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sr-sec" aria-labelledby="sr-title">
+    <div class="wrap" id="sr-root">
+      <noscript><p class="sr-msg"><span lang="ru">Список показывает скрипт страницы — включите JavaScript.</span><span lang="en">The list is shown by the page script — please enable JavaScript.</span></p></noscript>
+    </div>
+  </section>
+
+  <section class="sec sec--band" id="how" aria-labelledby="h-how">
+    <div class="wrap">
+      <div class="sh">
+        <span class="orn" aria-hidden="true"></span>
+        <h2 id="h-how"><span lang="ru">Как играть по стартеру</span><span lang="en">How to play a starter</span></h2>
+        <p><span lang="ru">Стартер — это PoB, который автор выложил сам, плюс наши метки. Чужих текстов, рейтингов и мест «№1» здесь нет: это билды авторов, мы не судьи.</span><span lang="en">A starter is a PoB the author posted themselves, plus our labels. No copied texts, ratings or “#1” spots here: these are the authors' builds, and we don't judge them.</span></p>
+      </div>
+      <div class="sr-how">
+        <ol class="steps">
+          <li><div><h3><span lang="ru">Откройте «Билд» в POETH</span><span lang="en">Open Build in POETH</span></h3><p><span lang="ru">«Прокачка» → «Билд» → «Мои билды · Стартеры» → «Стартеры». Тот же список, что на этой странице.</span><span lang="en">Levelling → Build → My builds · Starters → Starters. The same list as on this page.</span></p></div></li>
+          <li><div><h3><span lang="ru">«Играть по этому гайду»</span><span lang="en">“Play this guide”</span></h3><p><span lang="ru">POETH скачает PoB автора одним запросом и сделает билд активным: этап — по уровню вашего персонажа.</span><span lang="en">POETH downloads the author's PoB in one request and makes the build active: the stage follows your character level.</span></p></div></li>
+          <li><div><h3><span lang="ru">Играйте по этапам</span><span lang="en">Play stage by stage</span></h3><p><span lang="ru">Камни этапа — в гиде прокачки, дерево — поверх игры по Alt+P, предметы этапа — с кнопкой «Трейд».</span><span lang="en">Stage gems show in the leveling guide, the tree over the game on Alt+P, stage items with a Trade button.</span></p></div></li>
+        </ol>
+        <div class="sr-priv">
+          <h3><span lang="ru">Что значат метки</span><span lang="en">What the labels mean</span></h3>
+          <p><span lang="ru"><b>«Проверено POETH»</b> — импорт проходит, этапы узнаны, ссылки живые. Это не обещание силы билда.</span><span lang="en"><b>“Checked by POETH”</b> — the import works, stages are recognized, links are alive. It is not a promise about build strength.</span></p>
+          <p><span lang="ru"><b>«Обновлён к лиге»</b> — PoB сделан под эту версию игры, <b>«Устарел»</b> — под прошлую.</span><span lang="en"><b>“Updated for the league”</b> — the PoB was made for this game version, <b>“Outdated”</b> — for the previous one.</span></p>
+          <p><span lang="ru"><b>«Ведёт по актам»</b> — в PoB есть этапы прокачки, и POETH поведёт по ним. Без этапов — только камни и предметы.</span><span lang="en"><b>“Guides through acts”</b> — the PoB has leveling stages and POETH follows them. Without stages — gems and items only.</span></p>
+          <p class="sr-more"><a href="../guide/#starters"><span lang="ru">Подробнее — в гайде</span><span lang="en">More in the guide</span></a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div>
+      <p class="sr-rights" lang="ru">Гайды и PoB — авторов, по ссылке. Название и логотип POETH не лицензируются. Not affiliated with GGG.</p>
+      <p class="sr-rights" lang="en">Guides and PoBs belong to their authors and are linked. The POETH name and logo are not licensed. Not affiliated with GGG.</p>
+      <p lang="ru">POETH — неофициальный фанатский инструмент. Он не связан с Grinding Gear Games и не одобрен компанией. Path of Exile и Path of Exile 2 — товарные знаки Grinding Gear Games.</p>
+      <p lang="en">POETH is an unofficial fan-made tool. It is not affiliated with or endorsed by Grinding Gear Games. Path of Exile and Path of Exile 2 are trademarks of Grinding Gear Games.</p>
+      <p>© 2026 POETH contributors · MIT</p>
+    </div>
+    <nav class="foot__links" aria-label="Ссылки / Links">
+      <a href="https://github.com/MAYZOSUPER/POETH">GitHub</a>
+      <a href="../guide/"><span lang="ru">Гайд</span><span lang="en">Guide</span></a>
+      <a href="../bug/"><span lang="ru">Сообщить об ошибке</span><span lang="en">Report a bug</span></a>
+      <a href="https://github.com/MAYZOSUPER/POETH/blob/main/LICENSE"><span lang="ru">Лицензия</span><span lang="en">License</span></a>
+      <a href="https://github.com/MAYZOSUPER/POETH/blob/main/NOTICE.md"><span lang="ru">Атрибуция</span><span lang="en">Notices</span></a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

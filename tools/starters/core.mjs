@@ -14,7 +14,7 @@ export const STARTERS_DATA_DIR = path.join(DATA_DIR, 'starters')
 
 let cached = null
 
-/** schema, load, play, fingerprint + разбор ссылок PoB, allowlist ссылок автора, zlib, данные дерева. */
+/** schema, load, play, fingerprint + разбор ссылок PoB, allowlist ссылок автора, zlib, данные дерева и камней. */
 export async function loadStartersCore() {
   if (cached) return cached
   const res = await esbuild.build({
@@ -28,7 +28,7 @@ export async function loadStartersCore() {
         "export { POB_CODE_MAX_CHARS } from './src/shared/pob/decode'",
         "export { isAuthorLinkUrl } from './src/shared/links'",
         "export { inflateNode } from './src/shared/advisor/codecNode'",
-        "export { parseTreeData } from './src/shared/build/data'"
+        "export { parseTreeData, parseGemsData, findGem, gemName } from './src/shared/build/data'"
       ].join('\n'),
       resolveDir: ROOT,
       loader: 'ts',

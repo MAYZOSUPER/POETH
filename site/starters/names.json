@@ -1,0 +1,62 @@
+{
+ "tree": "3.29.1",
+ "classes": {
+  "Scion": {
+   "ru": "Дворянка",
+   "asc": {
+    "Ascendant": "Вознесшаяся",
+    "Reliquarian": "Реликварианка",
+    "Luminary": "Светоч"
+   }
+  },
+  "Marauder": {
+   "ru": "Дикарь",
+   "asc": {
+    "Juggernaut": "Покоритель",
+    "Berserker": "Берсерк",
+    "Chieftain": "Вождь"
+   }
+  },
+  "Ranger": {
+   "ru": "Охотница",
+   "asc": {
+    "Warden": "Хранитель",
+    "Deadeye": "Снайпер",
+    "Pathfinder": "Следопыт"
+   }
+  },
+  "Witch": {
+   "ru": "Ведьма",
+   "asc": {
+    "Occultist": "Оккультист",
+    "Elementalist": "Маг стихий",
+    "Necromancer": "Некромант"
+   }
+  },
+  "Duelist": {
+   "ru": "Дуэлянт",
+   "asc": {
+    "Slayer": "Рубака",
+    "Gladiator": "Гладиатор",
+    "Champion": "Чемпион"
+   }
+  },
+  "Templar": {
+   "ru": "Жрец",
+   "asc": {
+    "Inquisitor": "Инквизитор",
+    "Hierophant": "Иерофант",
+    "Guardian": "Защитник"
+   }
+  },
+  "Shadow": {
+   "ru": "Бандит",
+   "asc": {
+    "Assassin": "Убийца",
+    "Trickster": "Плут",
+    "Saboteur": "Диверсант"
+   }
+  }
+ },
+ "skills": {}
+}
