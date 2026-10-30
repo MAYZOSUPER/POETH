@@ -1,0 +1,3533 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`запрос по каждой фикстуре > ee2-amulet-desecrated: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "accessory.amulet",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_total_elemental_resistance",
+                "value": {
+                  "min": 49,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_cold_resistance",
+                "value": {
+                  "min": 36,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_total_chaos_resistance",
+                "value": {
+                  "min": 15,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_mana",
+                "value": {
+                  "min": 90,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "enchant.stat_2954116742|56776",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "implicit.stat_3917489142",
+                "value": {
+                  "min": 16,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2974417149",
+                "value": {
+                  "min": 27,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_124131830",
+                "value": {
+                  "min": 3,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "fractured.stat_4220027924",
+                "value": {
+                  "min": 36,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "desecrated.stat_378817135",
+                "value": {
+                  "min": 15,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_2704225257",
+                "value": {
+                  "min": 30,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_3981240776",
+                "value": {
+                  "min": 30,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-belt-charm-slots: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "accessory.belt",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_total_elemental_resistance",
+                "value": {
+                  "min": 31,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_fire_resistance",
+                "value": {
+                  "min": 31,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_strength",
+                "value": {
+                  "min": 31,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_total_life",
+                "value": {
+                  "min": 212,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "implicit.stat_1570770415",
+                "value": {
+                  "min": 12,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "implicit.stat_1416292992",
+                "value": {
+                  "min": 2,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1389754388",
+                "value": {
+                  "min": 10,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_915769802",
+                "value": {
+                  "min": 84,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_number_of_empty_prefix_mods",
+                "value": {
+                  "min": 1,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "max": 1,
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-body-armour-runes: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "ar": {
+                "min": 2927,
+              },
+              "rune_sockets": {
+                "min": 3,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "armour.chest",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_strength",
+                "value": {
+                  "min": 31,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1692879867",
+                "value": {
+                  "max": -46,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_3855016469",
+                "value": {
+                  "min": 40,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-boots-unidentified: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_exact",
+  "presets": [
+    "filters.preset_exact",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "fractured_item": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "ilvl": {
+                "min": 68,
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Dunerunner Sandals",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-bow-fractured: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "pdps": {
+                "min": 562,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.bow",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "implicit.stat_3398402065",
+                "value": {
+                  "min": -50,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1881230714",
+                "value": {
+                  "min": 20,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_3035140377",
+                "value": {
+                  "min": 3,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "fractured.stat_1940865751",
+                "value": {
+                  "min": 40,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_691932474",
+                "value": {
+                  "min": 101,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_803737631",
+                "value": {
+                  "min": 101,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-bow-rare: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "dps": {
+                "min": 155,
+              },
+              "edps": {
+                "min": 92,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.bow",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_1263695895",
+                "value": {
+                  "min": 15,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_number_of_empty_suffix_mods",
+                "value": {
+                  "min": 2,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "max": 1,
+              "min": 1,
+            },
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_691932474",
+                "value": {
+                  "min": 51,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_803737631",
+                "value": {
+                  "min": 51,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-bow-three-runes: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "dps": {
+                "min": 549,
+              },
+              "pdps": {
+                "min": 469,
+              },
+              "rune_sockets": {
+                "min": 3,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "mirrored": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.bow",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "rune.stat_3885405204",
+                "value": {
+                  "min": 1,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "implicit.stat_3398402065",
+                "value": {
+                  "min": -50,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_55876295",
+                "value": {
+                  "min": 9,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-charm-quality: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "flask.charm",
+              },
+              "quality": {
+                "min": 14,
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "implicit.stat_2778646494",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2365392475",
+                "value": {
+                  "min": 96,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1366840608",
+                "value": {
+                  "min": 47,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-crossbow-all-types: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "dps": {
+                "min": 500,
+              },
+              "edps": {
+                "min": 240,
+              },
+              "rune_sockets": {
+                "min": 2,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "mirrored": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.crossbow",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "enchant.stat_387439868",
+                "value": {
+                  "min": 45,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "rune.stat_1368271171",
+                "value": {
+                  "min": 30,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "implicit.stat_1967051901",
+                "value": {
+                  "min": 1,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "skill.hyena_cackle",
+                "value": {
+                  "min": 18,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_387439868",
+                "value": {
+                  "min": 100,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_669069897",
+                "value": {
+                  "min": 7,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1368271171",
+                "value": {
+                  "min": 21,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-crossbow-runes: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "pdps": {
+                "min": 1357,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.crossbow",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "implicit.stat_1980802737",
+                "value": {
+                  "min": 1,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1202301673",
+                "value": {
+                  "min": 7,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1967051901",
+                "value": {
+                  "min": 2,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "desecrated.stat_1940865751",
+                "value": {
+                  "min": 66,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_691932474",
+                "value": {
+                  "min": 175,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_803737631",
+                "value": {
+                  "min": 175,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "fractured.stat_210067635",
+                "value": {
+                  "min": 23,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "fractured.stat_681332047",
+                "value": {
+                  "min": 23,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-focus-unique: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+        },
+        "name": "The Eternal Spark",
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "explicit.stat_4015621042",
+                "value": {
+                  "min": 54,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_3308030688",
+                "value": {},
+              },
+              {
+                "disabled": false,
+                "id": "explicit.stat_1671376347",
+                "value": {
+                  "min": 25,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1011760251",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_789117908",
+                "value": {},
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Crystal Focus",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-gem-meta: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "gem_sockets": {
+                "min": 4,
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Mirage Archer",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-gem-uncut-skill: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "bulk",
+    "body": {
+      "engine": "new",
+      "query": {
+        "have": [
+          "divine",
+          "exalted",
+          "chaos",
+        ],
+        "status": {
+          "option": "online",
+        },
+        "want": [
+          "uncut-skill-gem-19",
+        ],
+      },
+      "sort": {
+        "have": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-helmet-normal: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_exact",
+  "presets": [
+    "filters.preset_exact",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "fractured_item": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "ilvl": {
+                "min": 81,
+              },
+              "rarity": {
+                "option": "normal",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Divine Crown",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-mace-magic: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "dps": {
+                "min": 105,
+              },
+              "edps": {
+                "min": 28,
+              },
+              "pdps": {
+                "min": 77,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.twomace",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_strength",
+                "value": {
+                  "min": 7,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-ring-implicit: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "accessory.ring",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_all_elemental_resistances",
+                "value": {
+                  "min": 7,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_total_elemental_resistance",
+                "value": {
+                  "min": 35,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_cold_resistance",
+                "value": {
+                  "min": 20,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_strength",
+                "value": {
+                  "min": 10,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_789117908",
+                "value": {
+                  "min": 8,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1263695895",
+                "value": {
+                  "min": 5,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_number_of_empty_prefix_mods",
+                "value": {
+                  "min": 2,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "max": 1,
+              "min": 1,
+            },
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_2144192055",
+                "value": {
+                  "min": 128,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_53045048",
+                "value": {
+                  "min": 128,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-ring-unidentified-tier: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_exact",
+  "presets": [
+    "filters.preset_exact",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "fractured_item": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "ilvl": {
+                "min": 54,
+              },
+              "rarity": {
+                "option": "magic",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "implicit.stat_4220027924",
+                "value": {
+                  "min": 22,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Sapphire Ring",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-sceptre-spirit: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "spirit": {
+                "min": 151,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.sceptre",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_intelligence",
+                "value": {
+                  "min": 25,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_mana",
+                "value": {
+                  "min": 130,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "skill.purity_of_lightning",
+                "value": {
+                  "min": 17,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2854751904",
+                "value": {
+                  "min": 17,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_789117908",
+                "value": {
+                  "min": 16,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_770672621",
+                "value": {
+                  "min": 26,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-shield-normal: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_exact",
+  "presets": [
+    "filters.preset_exact",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "fractured_item": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "ilvl": {
+                "min": 54,
+              },
+              "rarity": {
+                "option": "normal",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Polished Targe",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-wand-skill: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.wand",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "skill.chaosbolt",
+                "value": {
+                  "min": 20,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_736967255",
+                "value": {
+                  "min": 65,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2505884597",
+                "value": {
+                  "min": 28,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_789117908",
+                "value": {
+                  "min": 19,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1263695895",
+                "value": {
+                  "min": 15,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_3639275092",
+                "value": {
+                  "max": -20,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_number_of_empty_affix_mods",
+                "value": {
+                  "min": 2,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "max": 1,
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-waystone: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "map_filters": {
+            "filters": {
+              "map_tier": {
+                "max": 14,
+                "min": 14,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "map",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_3477720557",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1890519597",
+                "value": {
+                  "min": 26,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1309819744",
+                "value": {
+                  "min": 2,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2753083623",
+                "value": {
+                  "min": 263,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > ee2-waystone-all-props: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "map_filters": {
+            "filters": {
+              "map_tier": {
+                "max": 16,
+                "min": 16,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "map",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_1890519597",
+                "value": {
+                  "min": 27,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2539290279",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1629357380",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1994551050",
+                "value": {
+                  "min": 70,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_4101943684",
+                "value": {
+                  "min": 70,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2549889921",
+                "value": {
+                  "min": -35,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1879340377",
+                "value": {
+                  "min": 32,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-boots-desecrated-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "ar": {
+                "min": 149,
+              },
+              "ev": {
+                "min": 118,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "armour.boots",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "pseudo.pseudo_total_all_elemental_resistances",
+                "value": {
+                  "min": 22,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_total_elemental_resistance",
+                "value": {
+                  "min": 90,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_total_life",
+                "value": {
+                  "min": 83,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_increased_movement_speed",
+                "value": {
+                  "min": 25,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "desecrated.stat_3484657501",
+                "value": {
+                  "min": 32,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "desecrated.stat_809229260",
+                "value": {
+                  "min": 32,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "desecrated.stat_2144192055",
+                "value": {
+                  "min": 14,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "desecrated.stat_53045048",
+                "value": {
+                  "min": 14,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-boots-unique-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "rune_sockets": {
+                "min": 1,
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+        },
+        "name": "Thunderstep",
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "rune.stat_3372524247",
+                "value": {
+                  "min": 12,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2250533757",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1011760251",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_1671376347",
+                "value": {},
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": false,
+            "filters": [
+              {
+                "disabled": false,
+                "id": "enchant.stat_124859000",
+                "value": {
+                  "min": 22,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "enchant.stat_2106365538",
+                "value": {
+                  "min": 22,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_124859000",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2106365538",
+                "value": {},
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Steeltoe Boots",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-buckler-magic-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "ev": {
+                "min": 19,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "armour.buckler",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_total_life",
+                "value": {
+                  "min": 12,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-charm-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "flask.charm",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "implicit.stat_1810482573",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_388617051",
+                "value": {
+                  "max": -19,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": true,
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_1256719186",
+                "value": {
+                  "min": 21,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2541588185",
+                "value": {
+                  "min": 21,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-currency-essence: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "bulk",
+    "body": {
+      "engine": "new",
+      "query": {
+        "have": [
+          "divine",
+          "exalted",
+          "chaos",
+        ],
+        "status": {
+          "option": "online",
+        },
+        "want": [
+          "essence-of-enhancement",
+        ],
+      },
+      "sort": {
+        "have": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-flask-life-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_exact",
+  "presets": [
+    "filters.preset_exact",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "fractured_item": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "rarity": {
+                "option": "magic",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_2503377690",
+                "value": {
+                  "min": 23,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_388617051",
+                "value": {
+                  "max": -26,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Ultimate Life Flask",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-gem-skill: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "gem_sockets": {
+                "min": 4,
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "quality": {
+                "min": 20,
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Herald of Ice",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-gem-uncut-spirit: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "bulk",
+    "body": {
+      "engine": "new",
+      "query": {
+        "have": [
+          "divine",
+          "exalted",
+          "chaos",
+        ],
+        "status": {
+          "option": "online",
+        },
+        "want": [
+          "uncut-spirit-gem-16",
+        ],
+      },
+      "sort": {
+        "have": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-jewel-timelost-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "jewel",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_2108821127",
+                "value": {
+                  "min": 2,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_391602279",
+                "value": {
+                  "min": 4,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2392824305",
+                "value": {
+                  "min": 7,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-jewel-unique-enchant: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+        },
+        "name": "Megalomaniac",
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "enchant.stat_2954116742|62310",
+                "value": {},
+              },
+              {
+                "disabled": false,
+                "id": "enchant.stat_2954116742|40990",
+                "value": {},
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Diamond",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-quiver-cannot-use: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_exact",
+  "presets": [
+    "filters.preset_exact",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "fractured_item": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "ilvl": {
+                "min": 8,
+              },
+              "rarity": {
+                "option": "normal",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "implicit.stat_1573130764",
+                "value": {
+                  "min": 4,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Fire Quiver",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-relic-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_exact",
+  "presets": [
+    "filters.preset_exact",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "fractured_item": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "ilvl": {
+                "min": 22,
+              },
+              "rarity": {
+                "option": "magic",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "sanctum.stat_2363402715",
+                "value": {
+                  "min": 6,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "sanctum.stat_1583320325",
+                "value": {
+                  "min": 9,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Urn Relic",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-sceptre-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "spirit": {
+                "min": 100,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.sceptre",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-spear-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "equipment_filters": {
+            "filters": {
+              "dps": {
+                "min": 152,
+              },
+              "edps": {
+                "min": 69,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "weapon.spear",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_821021828",
+                "value": {
+                  "min": 3,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-tablet-rare: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_exact",
+  "presets": [
+    "filters.preset_exact",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+              "fractured_item": {
+                "option": "false",
+              },
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_number_of_uses_remaining",
+                "value": {
+                  "min": 10,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "explicit.stat_1345835998",
+                "value": {
+                  "max": -28,
+                },
+              },
+            ],
+            "type": "and",
+          },
+          {
+            "disabled": false,
+            "filters": [
+              {
+                "disabled": false,
+                "id": "explicit.stat_3917489142",
+                "value": {
+                  "min": 11,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "explicit.stat_2306002879",
+                "value": {
+                  "min": 11,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+          {
+            "disabled": false,
+            "filters": [
+              {
+                "disabled": false,
+                "id": "explicit.stat_3666934677",
+                "value": {
+                  "min": 17,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "explicit.stat_57434274",
+                "value": {
+                  "min": 17,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+          {
+            "disabled": false,
+            "filters": [
+              {
+                "disabled": false,
+                "id": "explicit.stat_1468737867",
+                "value": {
+                  "min": 1,
+                },
+              },
+              {
+                "disabled": false,
+                "id": "explicit.stat_3042527515",
+                "value": {
+                  "min": 1,
+                },
+              },
+            ],
+            "type": "count",
+            "value": {
+              "min": 1,
+            },
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Ritual Tablet",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-tablet-unique: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "misc_filters": {
+            "filters": {
+              "corrupted": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+        },
+        "name": "Freedom of Faith",
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": false,
+                "id": "pseudo.pseudo_number_of_uses_remaining",
+                "value": {
+                  "min": 5,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2500154144",
+                "value": {},
+              },
+              {
+                "disabled": false,
+                "id": "explicit.stat_1228222525",
+                "value": {
+                  "min": 15,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+        "type": "Ritual Tablet",
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;
+
+exports[`запрос по каждой фикстуре > sk-waystone-plain: снапшот тела запроса активного пресета 1`] = `
+{
+  "active": "filters.preset_pseudo",
+  "presets": [
+    "filters.preset_pseudo",
+    "filters.preset_base_item",
+  ],
+  "request": {
+    "api": "trade",
+    "body": {
+      "query": {
+        "filters": {
+          "map_filters": {
+            "filters": {
+              "map_tier": {
+                "max": 13,
+                "min": 13,
+              },
+            },
+          },
+          "misc_filters": {
+            "filters": {
+              "mirrored": {
+                "option": "false",
+              },
+              "sanctified": {
+                "option": "false",
+              },
+            },
+          },
+          "trade_filters": {
+            "filters": {
+              "collapse": {
+                "option": "true",
+              },
+            },
+          },
+          "type_filters": {
+            "filters": {
+              "category": {
+                "option": "map",
+              },
+              "rarity": {
+                "option": "nonunique",
+              },
+            },
+          },
+        },
+        "stats": [
+          {
+            "filters": [
+              {
+                "disabled": true,
+                "id": "explicit.stat_133340941",
+                "value": {},
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2753083623",
+                "value": {
+                  "min": 276,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_3796523155",
+                "value": {
+                  "min": -50,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_4181072906",
+                "value": {
+                  "min": -40,
+                },
+              },
+              {
+                "disabled": true,
+                "id": "explicit.stat_2550456553",
+                "value": {
+                  "min": 1,
+                },
+              },
+            ],
+            "type": "and",
+          },
+        ],
+        "status": {
+          "option": "available",
+        },
+      },
+      "sort": {
+        "price": "asc",
+      },
+    },
+    "league": "Standard",
+  },
+}
+`;

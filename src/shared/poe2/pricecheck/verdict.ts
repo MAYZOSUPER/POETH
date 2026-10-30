@@ -15,6 +15,7 @@ import {
   MARKET_WINDOW,
   type HonestPrice,
   type MarketPrice,
+  type Poe1ExchangeOffer,
   type Poe1Listing,
   type Poe1Price
 } from '../../poe1/pricecheck/results'
@@ -133,4 +134,20 @@ export function poe2MarketPrice(listings: readonly Poe1Listing[], honest: Honest
     ...(honest.instant.min ? { instant: honest.instant.min } : {}),
     ...(honest.person.min ? { person: honest.person.min } : {})
   }
+}
+
+/** Валюты обмена PoE2 по старшинству «базы»: курса между ними нет — цену берём в первой, где есть предложения. */
+const BULK_BASE = ['exalted', 'chaos', 'divine']
+
+/**
+ * Предложения обмена trade2 приходят в разных валютах (main сортирует по числу, не зная курсов: «1 div» оказался бы
+ * «дешевле» «2 ex»). Опорная валюта — exalted, нет — chaos, divine, иначе валюта первого; её предложения — первыми
+ * (дешевле за штуку — выше), остальные — следом в порядке main.
+ */
+export function orderBulkOffers(offers: readonly Poe1ExchangeOffer[]): Poe1ExchangeOffer[] {
+  if (!offers.length) return []
+  const base = BULK_BASE.find((c) => offers.some((o) => o.currency === c)) ?? offers[0].currency
+  const each = (o: Poe1ExchangeOffer): number => (o.itemAmount > 0 ? o.exchangeAmount / o.itemAmount : Infinity)
+  const main = offers.filter((o) => o.currency === base).sort((a, b) => each(a) - each(b))
+  return [...main, ...offers.filter((o) => o.currency !== base)]
 }
