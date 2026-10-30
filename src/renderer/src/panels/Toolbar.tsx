@@ -80,9 +80,11 @@ export function Toolbar({ showSettings, onToggleSettings }: Props) {
           <ShellIcon name="gear" />
         </button>
         <span className="tb-sep" />
+        {/* data-window-control: кнопки окна остаются доступными, когда открыт мастер первого запуска (Wizard.tsx) */}
         <button
           type="button"
           className="icon"
+          data-window-control
           title={t('tb.min.title')}
           aria-label={t('tb.min.title')}
           onClick={() => window.overlayApi.window.minimize()}
@@ -92,6 +94,7 @@ export function Toolbar({ showSettings, onToggleSettings }: Props) {
         <button
           type="button"
           className="icon"
+          data-window-control
           title={hideTitle}
           aria-label={hideTitle}
           onClick={() => window.overlayApi.window.toggleVisible()}

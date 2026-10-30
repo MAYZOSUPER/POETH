@@ -47,6 +47,16 @@ export function Wizard({ onClose }: { onClose: () => void }) {
     }
   }, [])
 
+  // модальность: пока мастер открыт, рельс, вкладка и шапка (кроме «свернуть» / «закрыть» окна) недоступны
+  // ни мышью, ни с клавиатуры — Tab не уходит из мастера
+  useEffect(() => {
+    const under = document.querySelectorAll(
+      '.app-main, .toolbar .brand, .toolbar .tools > :not([data-window-control]):not(.tb-sep)'
+    )
+    under.forEach((el) => el.setAttribute('inert', ''))
+    return () => under.forEach((el) => el.removeAttribute('inert'))
+  }, [])
+
   if (!settings) return null
   const running = settings.game
   const steps: StepId[] = game === 'poe1' ? ['lang', 'client', 'howto', 'account', 'done'] : ['lang', 'client', 'howto', 'done']
