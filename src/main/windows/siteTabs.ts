@@ -68,6 +68,8 @@ export function setSitesEnabled(on: boolean): void {
     closeAll()
     active = 'trade'
   }
+  // рельс появился или пропал — разметка окна другая
+  host?.changed()
   void getSitesData().then(() => publish())
 }
 
