@@ -195,7 +195,16 @@ export function pobItemText(item: ParsedItem, src: Poe1Data | null, en: Poe1Data
   head.push(base)
 
   const parts: string[][] = [head]
-  if (item.quality) parts.push([`Quality: +${item.quality}%`])
+  // качество и защита вещи как в игре: по «Energy Shield: 134» PoB вычисляет разброс базы (у брони он свой у каждой
+  // вещи) — без этих строк он взял бы своё значение базы
+  const props = [
+    item.quality ? `Quality: +${item.quality}%` : '',
+    item.armourAR ? `Armour: ${item.armourAR}` : '',
+    item.armourEV ? `Evasion Rating: ${item.armourEV}` : '',
+    item.armourES ? `Energy Shield: ${item.armourES}` : '',
+    item.armourWARD ? `Ward: ${item.armourWARD}` : ''
+  ].filter(Boolean)
+  if (props.length) parts.push(props)
   const req = equipReq(item.rawText)
   const reqLines = [
     req.level ? `Level: ${req.level}` : '',

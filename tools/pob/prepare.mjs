@@ -12,7 +12,7 @@
 //
 // Источники — только официальные репозитории (git по https, загрузка по SHA коммита, а не по имени тега):
 //   PathOfBuildingCommunity/PathOfBuilding (MIT) — sparse checkout: src/{Modules,Classes,Data}, три файла запуска,
-//     текущее дерево (tree.lua + sprites.lua), runtime/lua без socket.lua; без картинок, без timeless-архивов
+//     текущее дерево (tree.lua + sprites.lua, TreeData/3_19/Assets.lua), runtime/lua без socket.lua; без картинок, без timeless-архивов
 //     (≈ 45 МБ вместо 770), без exe/dll PoB (lcurl, socket, SimpleGraphic — не нужны и не берём);
 //   LuaJIT/LuaJIT (MIT) — исходник ветки v2.1, сборка src/msvcbuild.bat static → один luajit.exe без DLL.
 // Готовых бинарей из интернета не берём: luajit.exe собирается здесь (локально или в CI release.yml).
@@ -55,6 +55,8 @@ export function pobSparse(tree) {
     `/src/TreeData/${tree}/tree.lua`,
     `/src/TreeData/${tree}/sprites.lua`,
     '/src/TreeData/legion/tree-legion.lua',
+    // ссылки на картинки дерева: PassiveTree грузит его всегда (сами картинки не нужны и не скачиваются)
+    '/src/TreeData/3_19/Assets.lua',
     '/runtime/lua/*.lua',
     '/runtime/lua/sha1/*.lua',
     '!/runtime/lua/socket.lua',
@@ -70,7 +72,7 @@ export function pobKeep(rel, tree) {
   if (rel.startsWith('src/Data/TimelessJewelData/')) return /^src\/Data\/TimelessJewelData\/\w+\.lua$/.test(rel)
   if (/^src\/Data\/[\w./ -]+$/.test(rel)) return /\.(lua|jsonc?)$/.test(rel)
   if (rel === `src/TreeData/${tree}/tree.lua` || rel === `src/TreeData/${tree}/sprites.lua`) return true
-  if (rel === 'src/TreeData/legion/tree-legion.lua') return true
+  if (rel === 'src/TreeData/legion/tree-legion.lua' || rel === 'src/TreeData/3_19/Assets.lua') return true
   if (/^runtime\/lua\/(sha1\/)?[\w.-]+\.lua$/.test(rel)) return !/^runtime\/lua\/(socket|lua-profiler)\.lua$/.test(rel)
   return false
 }
@@ -165,10 +167,17 @@ function vcvars() {
 function buildLuaJit(srcDir) {
   if (process.platform !== 'win32') throw new Error('сборка LuaJIT — только Windows (msvcbuild.bat)')
   const bat = vcvars()
-  // static: luajit.exe со статическим рантаймом C (/MT), без lua51.dll и vcruntime
-  execFileSync('cmd.exe', ['/d', '/s', '/c', `call "${bat}" >nul && cd /d "${path.join(srcDir, 'src')}" && msvcbuild.bat static`], {
+  // static: luajit.exe со статическим рантаймом C (/MT), без lua51.dll и vcruntime.
+  // cmd /s снимает первую и последнюю кавычку строки — поэтому вся команда в своих кавычках
+  // NoDefaultCurrentDirectoryInExePath (бывает в защищённых оболочках) запрещает cmd запускать программы из текущей
+  // папки, а сборка так и устроена: vcvars зовёт vswhere.exe из папки установщика VS, msvcbuild.bat — только что
+  // собранные minilua.exe и buildvm.exe. Снимаем её только для этого дочернего процесса.
+  const env = { ...process.env }
+  for (const k of Object.keys(env)) if (k.toLowerCase() === 'nodefaultcurrentdirectoryinexepath') delete env[k]
+  execFileSync('cmd.exe', ['/d', '/s', '/c', `"call "${bat}" >nul && cd /d "${path.join(srcDir, 'src')}" && msvcbuild.bat static"`], {
     stdio: 'inherit',
-    windowsVerbatimArguments: true
+    windowsVerbatimArguments: true,
+    env
   })
   const exe = path.join(srcDir, 'src', 'luajit.exe')
   if (!fs.existsSync(exe)) throw new Error('msvcbuild.bat не собрал luajit.exe')

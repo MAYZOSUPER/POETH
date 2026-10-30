@@ -133,9 +133,15 @@ describe.skipIf(!HAS_ENGINE)('настоящий движок PoB (vendor/pob-en
     const ready = (await engine.request('ping')).ready
     const { xml } = stageXml(m.build, plan, index, { treeVersion: ready.tree, level: 70 })
     const t0 = Date.now()
-    const r = await engine.request('compare', { xml, item: item('en', 'rare-ring'), options: [['Ring 1'], ['Ring 2']] })
+    let r = await engine.request('compare', { xml, item: item('en', 'rare-ring'), options: [['Ring 1'], ['Ring 2']] })
+    // как main (compare.ts): билд не открылся после билда другого формата — ещё раз в новом процессе
+    if (r.reply.ok === false && r.reply.error === 'build') {
+      engine.stop()
+      r = await engine.request('compare', { xml, item: item('en', 'rare-ring'), options: [['Ring 1'], ['Ring 2']] })
+    }
     const ms = Date.now() - t0
     const res = cleanCompareReply(r.reply, 2)
+    if (!res || !res.ok) engine.stop()
     expect(res, JSON.stringify(r.reply).slice(0, 300)).not.toBeNull()
     if (!res || !res.ok) throw new Error(JSON.stringify(r.reply).slice(0, 300))
     expect(res.base.Life ?? 0).toBeGreaterThan(0)
@@ -145,6 +151,36 @@ describe.skipIf(!HAS_ENGINE)('настоящий движок PoB (vendor/pob-en
     await engine.request('compare', { xml, item: item('en', 'rare-boots'), options: [['Boots']] })
     console.log(`[pob] ${name}: загрузка + 2 пересчёта ${ms} мс, пересчёт ${Date.now() - t1} мс`)
   }, 180_000)
+
+  // Наш XML из модели S35 даёт PoB те же итоги, что исходный код билда (дерево — текущее, как у нас): опции конфигурации,
+  // части навыков, включённые флаконы, татуировки, формат кластерных хэшей доходят до движка. Исходник со старым деревом
+  // или с timeless-самоцветом урезанный PoB не грузит — такие пропускаем (сравнивать не с чем).
+  const parity: string[] = []
+  it.each(POE1_FIXTURES)('%s: наш XML = исходный код билда (жизнь, ES, EHP, урон)', async (name) => {
+    const tree = (await engine.request('ping')).ready.tree
+    // как main: не открылся — ещё раз в новом процессе
+    const base = async (xml: string) => {
+      for (let i = 0; i < 2; i++) {
+        const r = cleanCompareReply((await engine.request('compare', { xml, item: item('en', 'rare-ring'), options: [['Ring 1']] })).reply, 1)
+        if (r && r.ok) return r.base
+        engine.stop()
+      }
+      return null
+    }
+    const raw = await base(fixtureXml(name).replace(/treeVersion="[^"]*"/g, `treeVersion="${tree}"`))
+    if (!raw) return
+    const m = parsePobXml(fixtureXml(name))
+    if (!m.ok) throw new Error(name)
+    const ours = await base(stageXml(m.build, null, null, { treeVersion: tree, level: null }).xml)
+    expect(ours).not.toBeNull()
+    for (const k of ['Life', 'EnergyShield', 'TotalEHP', 'CombinedDPS', 'FullDPS'] as const) expect(Math.round(ours?.[k] ?? -1), k).toBe(Math.round(raw[k] ?? -1))
+    parity.push(name)
+  }, 180_000)
+
+  it('сверка с исходным кодом прошла на большинстве билдов', () => {
+    console.log(`[pob] наш XML = исходный: ${parity.length} из ${POE1_FIXTURES.length} (${parity.join(', ')})`)
+    expect(parity.length).toBeGreaterThanOrEqual(10)
+  })
 
   it.each(['rare-ring', 'rare-boots', 'rare-helmet', 'rare-sword', 'adv-weapon', 'unique-01'])('%s: RU-предмет даёт в PoB те же цифры, что EN', async (name) => {
     const m = parsePobXml(fixtureXml('pobbin-guardian'))

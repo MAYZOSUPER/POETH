@@ -12,7 +12,7 @@ import { EngineError, type PobEngine } from './engine'
 // и в stdin движка, на диск не пишется. Сети нет ни здесь, ни в движке.
 
 export interface PobCompareDeps {
-  engine: Pick<PobEngine, 'request'>
+  engine: Pick<PobEngine, 'request' | 'stop'>
   build: () => Promise<StoredBuild | null>
   equip: () => Promise<EquipState & { pob: boolean }>
   version: () => string
@@ -45,11 +45,21 @@ export async function pobCompare(raw: unknown, deps: PobCompareDeps): Promise<Po
       wornTwoHand: twoHand
     })
     const t0 = now()
-    const { reply } = await deps.engine.request('compare', { xml, item: req.item, options: req.options })
+    const run = async () => cleanCompareReply((await deps.engine.request('compare', { xml, item: req.item, options: req.options })).reply, req.options.length)
+    let res = await run()
+    // PoB, загрузив до этого билд другого формата (старые хэши кластерных самоцветов), может не открыть следующий —
+    // его состояние после ошибки битое. Один раз — в новом процессе движка.
+    if (res && !res.ok && res.error === 'build') {
+      deps.engine.stop()
+      res = await run()
+    }
     const calc = now() - t0
-    const res = cleanCompareReply(reply, req.options.length)
     if (!res) return fail('internal')
-    if (!res.ok) return fail(res.error)
+    if (!res.ok) {
+      // после ошибки загрузки или внутри расчёта — следующий запрос тоже в новом процессе
+      if (res.error === 'build' || res.error === 'internal') deps.engine.stop()
+      return fail(res.error)
+    }
     const against = (opt: EngineSlot[]): PobOptionResult['against'] =>
       opt.every((s) => slots[s] === 'worn') ? 'worn' : opt.some((s) => slots[s]) ? 'build' : 'empty'
     return {

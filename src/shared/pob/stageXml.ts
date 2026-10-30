@@ -1,8 +1,8 @@
 // Модель билда S35 + этап → XML для движка PoB (S44; чистый модуль: main, tests/pob/stageXml.test.ts).
 // Исходный код PoB мы не храним (builds.json — только модель), поэтому XML собирается заново: дерево, камни и набор
-// вещей этапа (как вкладка «Билд» и «По гайду»), уровень персонажа, бандиты/пантеон, штраф сопротивлений и «враг —
-// босс» из конфигурации автора. Остальные опции конфигурации автора в модели не сохранены — урон считается без них
-// (окно показывает разницу в процентах, а не «как у автора»).
+// вещей этапа (как вкладка «Билд» и «По гайду»), уровень персонажа, бандиты/пантеон, все опции конфигурации автора,
+// части навыков и приспешники камней, варианты уников, татуировки (у билдов, сохранённых до S44, — только штраф
+// сопротивлений и «враг — босс»: до «Обновить» урон считается без бафов и условий автора).
 // Дерево — всегда последней версии из движка (в урезанный PoB входит только оно): ноды прошлых версий, которых нет,
 // PoB пропустит сам.
 // В слоты, где известен текст надетой вещи (окно цены, только в памяти), ставится она вместо вещи гайда.
@@ -28,11 +28,19 @@ export interface StageXml {
   slots: Partial<Record<PobSlot, 'worn' | 'build'>>
 }
 
-/** Экранирование для атрибута и текста XML: 5 сущностей, переводы строк в атрибутах — числовой ссылкой. */
+/**
+ * Экранирование для атрибута и текста XML: только 5 именованных сущностей. Переводы строк — как есть (так пишет сам
+ * PoB): его xml.lua знает только именованные сущности, а числовые (&#10;) выбрасывает.
+ */
 function esc(s: string, attr: boolean): string {
-  // управляющие символы (кроме \t \n) в XML 1.0 недопустимы
-  let out = s.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f￾￿]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  if (attr) out = out.replace(/"/g, '&quot;').replace(/\r?\n/g, '&#10;').replace(/\t/g, '&#9;')
+  // управляющие символы (кроме \t \n) в XML 1.0 недопустимы; \r — в \n
+  let out = s
+    .replace(/\r\n?/g, '\n')
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f￾￿]/g, '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  if (attr) out = out.replace(/"/g, '&quot;')
   return out
 }
 
@@ -53,7 +61,8 @@ function gemXml(g: PobGem): string {
     level: g.level,
     quality: g.quality,
     enabled: g.enabled,
-    count: g.count
+    count: g.count,
+    ...(g.extra ?? {})
   })
 }
 
@@ -66,7 +75,8 @@ function groupXml(g: PobSkillGroup): string {
       enabled: g.enabled,
       includeInFullDPS: g.includeInFullDPS,
       mainActiveSkill: g.mainActiveSkill ?? 1,
-      source: g.source
+      source: g.source,
+      groupCount: g.groupCount
     },
     g.gems.map(gemXml).join('')
   )
@@ -94,6 +104,13 @@ function stageGroups(build: PobBuild, plan: PobStagePlan | null, index: number |
   return { groups, main: main < 0 ? 1 : main + 1 }
 }
 
+const TIMELESS = /^(?:Timeless Jewel|Glorious Vanity|Lethal Pride|Brutal Restraint|Militant Faith|Elegant Hubris|Heroic Tragedy)$/m
+
+/** Timeless-самоцвет (по базе или имени уника в тексте PoB). */
+export function isTimeless(text: string | undefined): boolean {
+  return !!text && TIMELESS.test(text)
+}
+
 /** XML этапа `index` (null — активные дерево, камни и вещи автора). */
 export function stageXml(build: PobBuild, plan: PobStagePlan | null, index: number | null, o: StageXmlOptions): StageXml {
   const stage = plan && index !== null ? plan.stages[index] : undefined
@@ -104,6 +121,7 @@ export function stageXml(build: PobBuild, plan: PobStagePlan | null, index: numb
   // предметы: набор этапа + самоцветы дерева этапа; надетые — новыми id после всех id билда
   const used = new Map<number, string>()
   const byId = new Map(build.items.map((i) => [i.id, i.text]))
+  const extraById = new Map(build.items.map((i) => [i.id, i.extra]))
   const slots: Partial<Record<PobSlot, number>> = { ...(itemSet?.slots ?? {}) }
   const who: StageXml['slots'] = {}
   for (const s of POB_SLOTS) if (slots[s]) who[s] = 'build'
@@ -127,7 +145,8 @@ export function stageXml(build: PobBuild, plan: PobStagePlan | null, index: numb
   }
   for (const s of POB_SLOTS) take(slots[s])
   for (const x of itemSet?.otherSlots ?? []) take(x.itemId)
-  for (const x of spec?.sockets ?? []) take(x.itemId)
+  // timeless-самоцветы в дереве не ставим: их данные (178 МБ) в урезанный PoB не входят — PoB не загрузил бы билд
+  for (const x of spec?.sockets ?? []) if (!isTimeless(byId.get(x.itemId))) take(x.itemId)
 
   const level = o.level !== null && Number.isInteger(o.level) && o.level >= 1 && o.level <= 100 ? o.level : build.level
 
@@ -152,21 +171,25 @@ export function stageXml(build: PobBuild, plan: PobStagePlan | null, index: numb
           classId: spec.classId,
           ascendClassId: spec.ascendClassId,
           secondaryAscendClassId: spec.secondaryAscendClassId,
-          // текущий формат хэшей кластерных нод (иначе PoB счёл бы билд старым и стал переводить)
-          clusterHashFormatVersion: 2,
+          // формат хэшей кластерных нод — как у автора; нет — старый билд, PoB переведёт его сам
+          clusterHashFormatVersion: spec.clusterHashFormat,
           nodes: spec.nodes.join(','),
           masteryEffects: spec.masteryEffects.map((m) => `{${m.node},${m.effect}}`).join(',')
         },
-        tag('Sockets', {}, spec.sockets.filter((x) => used.has(x.itemId)).map((x) => tag('Socket', { nodeId: x.nodeId, itemId: x.itemId })).join(''))
+        tag('Sockets', {}, spec.sockets.filter((x) => used.has(x.itemId)).map((x) => tag('Socket', { nodeId: x.nodeId, itemId: x.itemId })).join('')) +
+          (spec.overrides?.length ? tag('Overrides', {}, spec.overrides.map((x) => tag('Override', { nodeId: x.nodeId, dn: x.dn })).join('')) : '')
       )
     : ''
 
   const itemsXml = [...used.entries()]
     .sort((a, b) => a[0] - b[0])
-    .map(([id, text]) => tag('Item', { id }, esc(text, false)))
+    .map(([id, text]) => tag('Item', { id, ...(extraById.get(id) ?? {}) }, esc(text, false)))
     .join('')
   const slotXml = [
-    ...POB_SLOTS.filter((s) => slots[s]).map((s) => tag('Slot', { name: s, itemId: slots[s] })),
+    // active — флакон включён в расчёт, как у автора
+    ...POB_SLOTS.filter((s) => slots[s]).map((s) =>
+      tag('Slot', { name: s, itemId: slots[s], active: who[s] === 'build' && itemSet?.active?.includes(s) ? true : undefined })
+    ),
     ...(itemSet?.otherSlots ?? []).filter((x) => used.has(x.itemId)).map((x) => tag('Slot', { name: x.name, itemId: x.itemId }))
   ].join('')
   const setEl = tag('ItemSet', { id: 1, title: itemSet?.title || 'POETH', useSecondWeaponSet: false }, slotXml)
@@ -174,10 +197,13 @@ export function stageXml(build: PobBuild, plan: PobStagePlan | null, index: numb
   const config = tag(
     'Config',
     {},
-    [
-      tag('Input', { name: 'resistancePenalty', number: build.config.resistancePenalty }),
-      build.config.enemyIsBoss ? tag('Input', { name: 'enemyIsBoss', string: build.config.enemyIsBoss }) : ''
-    ].join('')
+    // все опции автора (S44: бафы, заряды, условия — как у автора в PoB); у билдов до S44 — только штраф и «босс»
+    build.config.options?.length
+      ? build.config.options.map((x) => tag('Input', { name: x.name, number: x.number, string: x.string, boolean: x.boolean })).join('')
+      : [
+          tag('Input', { name: 'resistancePenalty', number: build.config.resistancePenalty }),
+          build.config.enemyIsBoss ? tag('Input', { name: 'enemyIsBoss', string: build.config.enemyIsBoss }) : ''
+        ].join('')
   )
 
   const xml =

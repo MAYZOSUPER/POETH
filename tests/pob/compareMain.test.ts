@@ -35,6 +35,7 @@ function deps(reply: (c: Call) => Record<string, unknown> | Error, over: Partial
   const calls: Call[] = []
   const d: PobCompareDeps = {
     engine: {
+      stop: () => void calls.push({ cmd: 'stop', payload: {} }),
       request: async (cmd: string, payload: Record<string, unknown> = {}) => {
         calls.push({ cmd, payload })
         const r = cmd === 'ping' ? { ok: true } : reply({ cmd, payload })
@@ -97,7 +98,19 @@ describe('main: точный расчёт PoB', () => {
   it('ответ движка с другим числом вариантов — «internal»; ошибка PoB — её код', async () => {
     expect(await pobCompare(REQ, deps(() => okReply(1)).d)).toEqual({ ok: false, error: 'internal' })
     expect(await pobCompare(REQ, deps(() => ({ ok: false, error: 'item' })).d)).toEqual({ ok: false, error: 'item' })
+    // билд не открылся — ещё раз в новом процессе; снова нет — ошибка, и следующий запрос тоже в новом процессе
+    const b = deps(() => ({ ok: false, error: 'build' }))
+    expect(await pobCompare(REQ, b.d)).toEqual({ ok: false, error: 'build' })
+    expect(b.calls.map((c) => c.cmd)).toEqual(['ping', 'compare', 'stop', 'compare', 'stop'])
     expect(await pobCompare(REQ, deps(() => ({ ok: false, error: 'something-else' })).d)).toEqual({ ok: false, error: 'internal' })
+  })
+
+  it('билд не открылся из-за прошлого билда — со второй попытки в новом процессе получилось', async () => {
+    let n = 0
+    const { d, calls } = deps(() => (n++ === 0 ? { ok: false, error: 'build' } : okReply(2)))
+    const r = await pobCompare(REQ, d)
+    expect(r.ok).toBe(true)
+    expect(calls.map((c) => c.cmd)).toEqual(['ping', 'compare', 'stop', 'compare'])
   })
 
   it.each(['timeout', 'crashed', 'unavailable', 'no-engine'] as const)('движок: %s — тот же код окну, без исключения', async (code) => {

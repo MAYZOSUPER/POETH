@@ -4,8 +4,8 @@
     "tag": "v2.67.2",
     "commit": "b32759ab0f31a1c8499a0d420cb0f0633d4fe478",
     "tree": "3_29",
-    "files": 259,
-    "sha256": "3fca22f9de25d34dee066cfb3910e26cef538b5334cee9c79ec142f82ff54f49"
+    "files": 260,
+    "sha256": "d0e0b234be12b3d1d67cb06fcea935feceb9388cee4f1dbf66baaab3503138ca"
   },
   "luajit": {
     "repo": "https://github.com/LuaJIT/LuaJIT.git",

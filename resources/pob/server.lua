@@ -342,8 +342,10 @@ local function compare(req)
 end
 
 local function selftest()
+  -- заблокировано: ошибка при загрузке или пустой модуль (lcurl.safe HeadlessWrapper сам гасит в nil)
   local function blocked(name)
-    return not pcall(require, name)
+    local ok, m = pcall(require, name)
+    return not ok or m == nil
   end
   local function noRead(p)
     local f = io.open(p, 'r')
