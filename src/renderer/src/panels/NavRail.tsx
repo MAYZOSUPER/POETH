@@ -1,9 +1,12 @@
 /// <reference types="vite/client" />
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react'
 import type { AppTab } from '@shared/types'
+import type { GameId } from '@shared/games'
+import { unreadCount } from '@shared/guide/library'
 import { useAppStore } from '../store/useAppStore'
 import { useShellStore } from '../store/useShellStore'
 import { useDealsStore } from '../store/useDealsStore'
+import { useGuideStore } from '../store/useGuideStore'
 import { useLiveStore } from './live/useLiveStore'
 import { useT } from '../i18n'
 import { ShellIcon } from '../components/ShellIcon'
@@ -38,6 +41,7 @@ import {
  * В сквозном режиме (замок) подсказки не появляются: мышь проходит в игру, но наведение до страницы доходит.
  * S32: счётчики на иконках — Live (активные поиски) и «Сделки» (новые предложения, railBadges.ts), а при замке
  * внизу окна плашка «Сквозной режим» с тем, как его снять (кнопка замка в это время не нажимается).
+ * S55: счётчик «Справочника» — статьи, новые или обновлённые после последнего прочтения.
  */
 
 const TIP_ID = 'ui-rail-tip'
@@ -79,10 +83,17 @@ function devCounts(): Partial<Record<RailBadgeKind, number>> | null {
 /**
  * Числа на значках из сторов Live и «Сделок» (без новых IPC; сторы подписываются на события main при init()).
  * «Сделки»: пока вкладка на экране, всё в ней просмотрено; первое состояние после запуска — тоже.
+ * «Справочник»: статьи читаются из данных приложения при первом показе рельса (guideGame — игра, если раздел есть).
  */
-function useRailCounts(hasLive: boolean, hasDeals: boolean, viewingDeals: boolean): Record<RailBadgeKind, number> {
+function useRailCounts(
+  hasLive: boolean,
+  hasDeals: boolean,
+  viewingDeals: boolean,
+  guideGame: GameId | null
+): Record<RailBadgeKind, number> {
   const snap = useLiveStore((s) => s.snap)
   const deals = useDealsStore((s) => s.state?.deals)
+  const guideUnread = useGuideStore((s) => unreadCount(s.articles, s.seen))
   const [seen, setSeen] = useState<ReadonlySet<string> | null>(null)
 
   useEffect(() => {
@@ -92,12 +103,16 @@ function useRailCounts(hasLive: boolean, hasDeals: boolean, viewingDeals: boolea
     if (hasDeals) useDealsStore.getState().init().catch(() => undefined)
   }, [hasDeals])
   useEffect(() => setSeen((prev) => nextSeen(prev, deals, viewingDeals)), [deals, viewingDeals])
+  useEffect(() => {
+    if (guideGame) void useGuideStore.getState().init(guideGame)
+  }, [guideGame])
 
   const dev = devCounts()
   return {
     live: dev?.live ?? (hasLive ? liveCount(snap) : 0),
     // на открытой вкладке всё уже видно — без мигания «1», пока эффект не отметил новое просмотренным
-    deals: viewingDeals ? 0 : (dev?.deals ?? (hasDeals ? dealsCount(deals, seen) : 0))
+    deals: viewingDeals ? 0 : (dev?.deals ?? (hasDeals ? dealsCount(deals, seen) : 0)),
+    guide: dev?.guide ?? (guideGame ? guideUnread : 0)
   }
 }
 
@@ -141,7 +156,7 @@ export function NavRail() {
 
   const sections = sectionsFor(game)
   const has = (id: AppTab): boolean => sections.some((s) => s.tabs.some((x) => x.id === id))
-  const counts = useRailCounts(has('live'), has('deals'), appTab === 'deals' && page === null && pageVisible)
+  const counts = useRailCounts(has('live'), has('deals'), appTab === 'deals' && page === null && pageVisible, has('guide') ? game : null)
   const wide = railWide(windowWide, pref, simple)
   const drawer = drawerOpen && !windowWide
   const tips = !wide && !locked

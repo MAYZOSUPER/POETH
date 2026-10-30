@@ -2,6 +2,7 @@ import { GAMES, type GameId } from '@shared/games'
 import type { AppTab } from '@shared/types'
 import { advisorOn } from '@shared/advisor/flag'
 import { buildOn } from '@shared/build/flag'
+import { guideOn } from '@shared/guide/library'
 
 // Вкладки компаньона, их разделы на рельсе слева (S20, макет навигации — вариант Б)
 // и доступность по игре (GameDef.features).
@@ -12,9 +13,9 @@ export interface TabDef {
   icon: TabIcon
 }
 
-type TabIcon = 'ask' | 'bolt' | 'trade' | 'swap' | 'map' | 'coins' | 'search' | 'compass' | 'passive'
+type TabIcon = 'ask' | 'bolt' | 'trade' | 'swap' | 'map' | 'coins' | 'search' | 'compass' | 'passive' | 'book'
 
-export type SectionId = 'trade' | 'farm' | 'level'
+export type SectionId = 'trade' | 'farm' | 'level' | 'help'
 
 export interface SectionDef {
   id: SectionId
@@ -31,14 +32,17 @@ const TABS: Record<AppTab, TabDef> = {
   wealth: { id: 'wealth', key: 'app.wealth', icon: 'coins' },
   regex: { id: 'regex', key: 'app.regex', icon: 'search' },
   campaign: { id: 'campaign', key: 'app.campaign', icon: 'compass' },
-  build: { id: 'build', key: 'app.build', icon: 'passive' }
+  build: { id: 'build', key: 'app.build', icon: 'passive' },
+  guide: { id: 'guide', key: 'app.guide', icon: 'book' }
 }
 
 /** Разделы и порядок вкладок — одни в обеих играх, чтобы рука помнила; чего нет в игре, просто не показывается. */
 const SECTIONS: { id: SectionId; key: string; tabs: AppTab[] }[] = [
   { id: 'trade', key: 'nav.sec.trade', tabs: ['priceCheck', 'live', 'deals', 'flip'] },
   { id: 'farm', key: 'nav.sec.farm', tabs: ['advisor', 'wealth', 'regex'] },
-  { id: 'level', key: 'nav.sec.level', tabs: ['campaign', 'build'] }
+  { id: 'level', key: 'nav.sec.level', tabs: ['campaign', 'build'] },
+  // S55: «Справочник» — своим разделом внизу рельса: новичку проще найти, чем среди инструментов «Фарма»
+  { id: 'help', key: 'nav.sec.help', tabs: ['guide'] }
 ]
 
 /** Флаг разработки POETH_ADVISOR=1 из preload (вкладка «Что фармить» скрыта в релизе, S16). */
@@ -55,6 +59,7 @@ function inGame(game: GameId, id: AppTab, dev: boolean): boolean {
   if (id === 'campaign') return f.campaign || f.leveling
   if (id === 'advisor') return advisorOn(GAMES[game], dev)
   if (id === 'build') return buildOn(GAMES[game], buildDev())
+  if (id === 'guide') return guideOn(game)
   return f[id]
 }
 

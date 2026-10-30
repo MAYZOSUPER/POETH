@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "id": "glossary-basics",
+  "rev": 1,
+  "updated": "2026-10-30",
+  "patch": ["3.29", "3.30"],
+  "title": { "ru": "Словарь: 10 главных слов RU↔EN", "en": "Glossary: 10 key words RU↔EN" },
+  "summary": {
+    "ru": "Сленг торгового чата и гайдов: что значат «хаос», «див», «6л», «b/o» и как это называется в русском и английском клиенте.",
+    "en": "Trade chat and guide slang: what “chaos”, “div”, “6L” and “b/o” mean, and what they are called in the Russian and English game clients."
+  },
+  "sections": [
+    {
+      "id": "words",
+      "title": { "ru": "10 слов", "en": "10 words" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "Слева — как говорят игроки на русском и на английском, справа — что это такое в игре.",
+            "en": "On the left — what players say in Russian and in English; on the right — what it is in the game."
+          }
+        },
+        {
+          "kind": "terms",
+          "items": [
+            {
+              "term": { "ru": "хаос, c", "en": "chaos, c" },
+              "def": {
+                "ru": "**Сфера хаоса** (Chaos Orb) — основная валюта торговли: в ней считают цены большинства вещей. «5c» — пять хаосов.",
+                "en": "**Chaos Orb** — the main trade currency: most prices are counted in it. “5c” means five chaos."
+              }
+            },
+            {
+              "term": { "ru": "див, дивайн", "en": "div, divine" },
+              "def": {
+                "ru": "**Божественная сфера** (Divine Orb) — крупная валюта: дорогие вещи стоят в дивах. Курс к хаосу меняется каждый день.",
+                "en": "**Divine Orb** — the big currency: expensive items are priced in divines. Its chaos rate changes every day."
+              }
+            },
+            {
+              "term": { "ru": "альт", "en": "alt" },
+              "def": {
+                "ru": "**Сфера перемен** (Orb of Alteration) — перебрасывает свойства синей (магической) вещи. Дешёвая валюта крафта.",
+                "en": "**Orb of Alteration** — rerolls the modifiers of a blue (magic) item. Cheap crafting currency."
+              }
+            },
+            {
+              "term": { "ru": "фьюз", "en": "fuse, fusing" },
+              "def": {
+                "ru": "**Сфера соединения** (Orb of Fusing) — заново бросает связи между гнёздами вещи.",
+                "en": "**Orb of Fusing** — rerolls the links between an item's sockets."
+              }
+            },
+            {
+              "term": { "ru": "6л, шестилинк", "en": "6L, 6-link" },
+              "def": {
+                "ru": "Вещь с шестью связанными гнёздами: в неё встаёт главное умение и пять камней поддержки.",
+                "en": "An item with six linked sockets: it holds your main skill and five support gems."
+              }
+            },
+            {
+              "term": { "ru": "илвл, ilvl", "en": "ilvl, item level" },
+              "def": {
+                "ru": "**Уровень предмета** (Item Level) — от него зависит, какие свойства могут выпасть. Для крафта ценят базы ilvl 84 и выше.",
+                "en": "**Item Level** — decides which modifiers can roll on the item. Crafters value bases with ilvl 84 and higher."
+              }
+            },
+            {
+              "term": { "ru": "резисты, резы", "en": "res, resists" },
+              "def": {
+                "ru": "**Сопротивления** огню, холоду, молнии и хаосу. Предел — 75%; после 5 и 10 актов они снижаются на 30%.",
+                "en": "**Resistances** to fire, cold, lightning and chaos. The cap is 75%; after acts 5 and 10 they drop by 30%."
+              }
+            },
+            {
+              "term": { "ru": "b/o, бай-аут", "en": "b/o, buyout" },
+              "def": {
+                "ru": "Цена выкупа: столько продавец просит за вещь. В заметке тайника пишут «~b/o» или «~price» и цену.",
+                "en": "The buyout price: what the seller asks for an item. In a stash note it's written as “~b/o” or “~price” followed by the price."
+              }
+            },
+            {
+              "term": { "ru": "мерчант-вкладка", "en": "merchant tab" },
+              "def": {
+                "ru": "Вкладка торговца в тайнике (с лиги 3.27): вещь покупают сразу, даже когда продавца нет в игре. Покупатель идёт в убежище продавца по кнопке на сайте трейда и платит пошлину золотом.",
+                "en": "A merchant stash tab (since league 3.27): the item can be bought right away, even when the seller is offline. The buyer travels to the seller's hideout from the trade site and pays a gold fee."
+              }
+            },
+            {
+              "term": { "ru": "WTB / WTS", "en": "WTB / WTS" },
+              "def": {
+                "ru": "Want to buy / want to sell — «куплю» и «продам» в торговом чате.",
+                "en": "Want to buy / want to sell — common in the trade chat."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "more",
+      "title": { "ru": "Где смотреть дальше", "en": "Where to look next" },
+      "blocks": [
+        {
+          "kind": "app",
+          "to": "flip",
+          "label": { "ru": "Обмен: курс дива к хаосу", "en": "Exchange: divine to chaos rate" },
+          "text": {
+            "ru": "Текущий курс валюты у Фаустуса.",
+            "en": "The current currency rates at Faustus."
+          }
+        },
+        {
+          "kind": "link",
+          "site": "poedb",
+          "label": { "ru": "poedb: названия на языке клиента", "en": "poedb: names in your client's language" },
+          "text": {
+            "ru": "Сверить русское и английское название предмета — во вкладке трейд-окна.",
+            "en": "Compare the Russian and English item names — in a trade window tab."
+          }
+        },
+        {
+          "kind": "app",
+          "to": "guide/league-start",
+          "label": { "ru": "Статья «Старт лиги: первые дни»", "en": "Article “League start: the first days”" }
+        }
+      ]
+    }
+  ]
+}
