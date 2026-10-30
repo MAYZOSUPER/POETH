@@ -1,0 +1,5 @@
+/* Окно цены PoE 2 (S47): поверх общих стилей окна PoE 1 (pricecheck.css, ui-*) — только то, что у PoE 2 иначе.
+   Валюты лотов у PoE 2 часто с длинным коротким именем («1 transmute», «3 regal») — колонка цены по содержимому. */
+.pc[data-game='poe2'] .ui-listing {
+  grid-template-columns: minmax(66px, max-content) minmax(0, 1fr) auto;
+}

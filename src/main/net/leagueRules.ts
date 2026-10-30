@@ -1,5 +1,5 @@
-// Правила выбора лиги PoE1 (чистый модуль; тесты — tests/net/leagues.test.ts).
-// Источник — GET /api/trade/data/leagues: {result:[{id, realm, text}]}. Сайт трейда
+// Правила выбора лиги PoE1 и PoE2 (чистый модуль; тесты — tests/net/leagues.test.ts).
+// Источник — GET /api/trade/data/leagues (PoE2 — /api/trade2/data/leagues, realm poe2): {result:[{id, realm, text}]}. Сайт трейда
 // перечисляет текущую челлендж-лигу первой (затем её Hardcore/Ruthless, потом Standard).
 
 import type { LeagueChoice, TradeLeague } from '@shared/types'
@@ -17,14 +17,14 @@ export const FALLBACK_LEAGUES: TradeLeague[] = [
 
 const PERMANENT = new Set(['standard', 'hardcore'])
 
-/** Лиги для трейда PoE1: только realm pc, без Ruthless и приватных (PLxxxx), без дублей. */
-export function filterTradeLeagues(raw: unknown): TradeLeague[] {
+/** Лиги для трейда: только свой realm (PoE1 — pc, PoE2 — poe2), без Ruthless и приватных (PLxxxx), без дублей. */
+export function filterTradeLeagues(raw: unknown, realm = 'pc'): TradeLeague[] {
   const list = Array.isArray(raw) ? (raw as RawLeague[]) : []
   const out: TradeLeague[] = []
   const seen = new Set<string>()
   for (const l of list) {
     if (!l || typeof l.id !== 'string' || !l.id.trim()) continue
-    if (l.realm !== undefined && l.realm !== 'pc') continue
+    if (l.realm !== undefined && l.realm !== realm) continue
     const id = l.id.trim()
     if (/ruthless/i.test(id)) continue
     if (/\(PL\d+\)\s*$/i.test(id)) continue

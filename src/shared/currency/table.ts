@@ -22,7 +22,8 @@ export type CurrencyTable = ReadonlyMap<string, CurrencyEntry>
 export function parseCurrencyTable(ndjson: string): Map<string, CurrencyEntry> {
   const out = new Map<string, CurrencyEntry>()
   for (const line of ndjson.split('\n')) {
-    if (!line.includes('"tradeTag":"')) continue
+    // APT пишет компактно ("tradeTag":"x"), EE2 (данные PoE2, S47) — с пробелом ("tradeTag": "x")
+    if (!line.includes('"tradeTag":')) continue
     let r: { name?: unknown; refName?: unknown; tradeTag?: unknown; icon?: unknown }
     try {
       r = JSON.parse(line)

@@ -1,0 +1,7 @@
+Класс предмета: Неогранённые камни умений
+Редкость: Валюта
+Неогранённый камень умения (уровень 19)
+--------
+Creates a Skill Gem or Level an existing gem to level 19
+--------
+Right Click to engrave a Skill Gem.

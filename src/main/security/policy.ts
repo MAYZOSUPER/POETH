@@ -65,8 +65,8 @@ export const GAME_INPUT_CHANNELS: ReadonlySet<string> = new Set([
   IPC.live.whisper
 ])
 
-/** Секреты аккаунта: вставка POESESSID (PoE1 — в partition, PoE2 — прайс-чек компаса). */
-export const SECRET_CHANNELS: ReadonlySet<string> = new Set([IPC.auth.pasteSession, IPC.trade.setSession])
+/** Секреты аккаунта: вставка POESESSID в partition (S47: своего ключа у PoE2 больше нет — вход общий). */
+export const SECRET_CHANNELS: ReadonlySet<string> = new Set([IPC.auth.pasteSession])
 
 /** Каналы, нужные только игровому оверлею: наложение дерева билда (S38), «Против надетого» окна цены (S41). */
 export const OVERLAY_CHANNELS: ReadonlySet<string> = new Set([...Object.values(IPC.buildTree), ...Object.values(IPC.equip)])

@@ -61,7 +61,7 @@ export function defaultSettings(): Settings {
     game: 'poe1',
     siteHost: 'www.pathofexile.com',
     poe1: { league: 'auto' },
-    poe2: { league: 'Standard' },
+    poe2: { league: 'auto' },
     activeProfileId: null,
     uiLang: 'ru',
     nameLang: 'en',

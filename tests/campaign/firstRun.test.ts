@@ -67,8 +67,7 @@ async function boot(opts: { failFirstCreate?: boolean } = {}): Promise<{
     onTailerStatus: off,
     onZoneChange: off,
     onLevelChange: off,
-    onBossDefeat: off,
-    onPriceResult: off
+    onBossDefeat: off
   }
   ;(globalThis as { window?: unknown }).window = { overlayApi }
   const app = (await import(/* @vite-ignore */ APP_STORE)) as AppStore

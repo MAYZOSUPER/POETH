@@ -66,7 +66,7 @@ describe('siteUrl', () => {
     expect(siteUrl(poe1, WWW, 'Standard')).toBe('https://www.pathofexile.com/trade/search/Standard')
   })
 
-  it('PoE2: /trade2/search/poe2/<league>/<id> (как в tradeClient компаса)', () => {
+  it('PoE2: /trade2/search/poe2/<league>/<id>', () => {
     const league = 'Dawn of the Hunt'
     const id = 'abc'
     expect(siteUrl(poe2, WWW, league, id)).toBe(
@@ -94,7 +94,7 @@ describe('apiUrl', () => {
     )
   })
 
-  it('PoE2: /api/trade2/... без realm (строки совпадают с tradeClient компаса)', () => {
+  it('PoE2: /api/trade2/... без realm', () => {
     const league = 'Dawn of the Hunt'
     const host = 'https://www.pathofexile.com'
     expect(apiUrl(poe2, WWW, 'data/leagues')).toBe(`${host}/api/trade2/data/leagues`)

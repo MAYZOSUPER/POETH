@@ -10,7 +10,9 @@ export function authBridge(): AuthIpcApi {
       login: () => ipcRenderer.invoke(IPC.auth.login),
       logout: () => ipcRenderer.invoke(IPC.auth.logout),
       recheck: () => ipcRenderer.invoke(IPC.auth.recheck),
-      pasteSession: (poesessid) => ipcRenderer.invoke(IPC.auth.pasteSession, poesessid)
+      pasteSession: (poesessid) => ipcRenderer.invoke(IPC.auth.pasteSession, poesessid),
+      poe2Notice: () => ipcRenderer.invoke(IPC.auth.poe2Notice),
+      poe2NoticeDismiss: () => ipcRenderer.invoke(IPC.auth.poe2NoticeDismiss)
     },
     leagues: {
       get: () => ipcRenderer.invoke(IPC.leagues.get),

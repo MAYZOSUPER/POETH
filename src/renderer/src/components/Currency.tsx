@@ -1,6 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { GameLang, UiLang } from '@shared/types'
+import type { GameId } from '@shared/games'
 import { currencyNames, currencyShort, parseCurrencyTable, ruGender, type CurrencyTable, type RuCase } from '@shared/currency'
 import { translate } from '../i18n'
 import { useGameLang } from '../gameLang'
@@ -13,33 +14,44 @@ import { useGameLang } from '../gameLang'
 //  - при наведении (и фокусе) — подсказка новичку: что это за валюта, сленг, имя в клиенте на другом языке.
 // Названия — из items.ndjson (данные APT), не хардкодом, на языке клиента игры (S26, gameLang.ts), как в игре;
 // пояснения и падежи — на языке интерфейса, он приходит пропсом lang. Строки — через translate (компаньон и оверлей).
+// S47: в режиме PoE 2 — items.ndjson данных PoE 2 (EE2, тот же формат: tradeTag, имя, иконка): игру ставит стор
+// страницы (setCurrencyGame), как только узнаёт её из настроек; по умолчанию — PoE 1.
 
-const tables: Partial<Record<GameLang, CurrencyTable>> = {}
-const pending: Partial<Record<GameLang, Promise<CurrencyTable | null>>> = {}
+let dataGame: GameId = 'poe1'
 
-function loadTable(lang: GameLang): Promise<CurrencyTable | null> {
-  pending[lang] ??= fetch(`poeth://data/poe1/${lang}/items.ndjson`)
+/** Из данных какой игры брать имена и иконки валют (Settings.game; смена игры — перезапуск). */
+export function setCurrencyGame(game: GameId): void {
+  dataGame = game
+}
+
+type TableKey = `${GameId}/${GameLang}`
+const tables: Partial<Record<TableKey, CurrencyTable>> = {}
+const pending: Partial<Record<TableKey, Promise<CurrencyTable | null>>> = {}
+
+function loadTable(key: TableKey): Promise<CurrencyTable | null> {
+  pending[key] ??= fetch(`poeth://data/${key}/items.ndjson`)
     .then((r) => (r.ok ? r.text() : Promise.reject(new Error(`HTTP ${r.status}`))))
-    .then((text) => (tables[lang] = parseCurrencyTable(text.replace(/\r\n/g, '\n'))))
+    .then((text) => (tables[key] = parseCurrencyTable(text.replace(/\r\n/g, '\n'))))
     .catch(() => {
-      delete pending[lang] // следующая подсказка попробует ещё раз
+      delete pending[key] // следующая подсказка попробует ещё раз
       return null
     })
-  return pending[lang]
+  return pending[key]
 }
 
 /** Таблица валют языка (имя, английское имя, иконка по tradeTag); null — пока грузится или нет данных. */
 export function useCurrencyTable(lang: GameLang): CurrencyTable | null {
   const [, setTick] = useState(0)
+  const key: TableKey = `${dataGame}/${lang}`
   useEffect(() => {
-    if (tables[lang]) return
+    if (tables[key]) return
     let alive = true
-    void loadTable(lang).then(() => alive && setTick((n) => n + 1))
+    void loadTable(key).then(() => alive && setTick((n) => n + 1))
     return () => {
       alive = false
     }
-  }, [lang])
-  return tables[lang] ?? null
+  }, [key])
+  return tables[key] ?? null
 }
 
 /**

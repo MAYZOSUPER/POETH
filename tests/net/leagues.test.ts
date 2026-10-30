@@ -59,3 +59,25 @@ describe('лиги PoE1', () => {
     })
   })
 })
+
+// Ответ www.pathofexile.com/api/trade2/data/leagues (S47, 30.10.2026): realm у всех poe2.
+const RAW2 = [
+  { id: 'Forbidden Rites', realm: 'poe2', text: 'Forbidden Rites' },
+  { id: 'HC Forbidden Rites', realm: 'poe2', text: 'HC Forbidden Rites' },
+  { id: 'Runes of Aldur', realm: 'poe2', text: 'Runes of Aldur' },
+  { id: 'HC Runes of Aldur', realm: 'poe2', text: 'HC Runes of Aldur' },
+  { id: 'Standard', realm: 'poe2', text: 'Standard' },
+  { id: 'Hardcore', realm: 'poe2', text: 'Hardcore' }
+]
+
+describe('лиги PoE2 (trade2)', () => {
+  it('realm poe2: фильтр PoE1 (pc) их отбрасывает, свой — оставляет', () => {
+    expect(filterTradeLeagues(RAW2)).toEqual([])
+    expect(filterTradeLeagues(RAW2, 'poe2').map((l) => l.id)).toEqual(RAW2.map((l) => l.id))
+    expect(filterTradeLeagues(RAW, 'poe2')).toEqual([])
+  })
+
+  it('auto = первая софткор-лига (как у PoE1)', () => {
+    expect(pickAutoLeague(filterTradeLeagues(RAW2, 'poe2'))).toBe('Forbidden Rites')
+  })
+})

@@ -228,3 +228,16 @@ describe('guessCurrencyTag — цена из шёпота', () => {
     ['beer', null]
   ] as const)('«%s» → %s', (text, tag) => expect(guessCurrencyTag(text, [RU, EN])).toBe(tag))
 })
+
+describe('таблица валют PoE 2 (данные EE2, S47)', () => {
+  it('строки с пробелом после двоеточия ("tradeTag": "…") тоже читаются', () => {
+    const read = (lang: string) =>
+      parseCurrencyTable(readFileSync(resolve(__dirname, `../../resources/data/poe2/${lang}/items.ndjson`), 'utf8'))
+    const ru = read('ru')
+    const en = read('en')
+    expect(ru.get('exalted')?.name).toBe('Сфера возвышения')
+    expect(en.get('exalted')?.refName).toBe('Exalted Orb')
+    expect(en.get('divine')?.icon).toMatch(/^https:\/\/web\.poecdn\.com\//)
+    expect(ru.size).toBeGreaterThan(100)
+  })
+})

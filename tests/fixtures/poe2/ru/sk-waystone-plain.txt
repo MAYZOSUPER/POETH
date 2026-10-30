@@ -1,0 +1,25 @@
+Класс предмета: Путевые камни
+Редкость: Редкий
+Putrid Navigation
+Путевой камень (Ур. 13)
+--------
+Уровень путевого камня: 13
+Доступно возрождений: 1 (augmented)
+Monster Pack Size: +10% (augmented)
+Волшебные монстры: +33% (augmented)
+Редкие монстры: +25% (augmented)
+Редкость предметов: +38% (augmented)
+Шанс выпадения путевого камня: +70% (augmented)
+--------
+Уровень предмета: 80
+--------
+В области есть участки подожженной земли
+33% increased number of Magic Monsters
+25% increased number of Rare Monsters
+Монстры имеют 276% повышение шанса критического удара
++30% to Monster Critical Damage Bonus
+На 50% меньше эффекта проклятий на монстрах
+Скорость восстановления здоровья и энергетического щита игроков на 40% меньше
+Редкие монстры на ваших картах имеют 1 дополнительное свойство
+--------
+Can be used in a Map Device, allowing you to enter a Map. Waystones can only be used once.

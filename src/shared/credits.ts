@@ -12,6 +12,7 @@ export interface CreditEntry {
 
 export const CREDITS: readonly CreditEntry[] = [
   { id: 'apt', name: 'Awakened PoE Trade', url: 'github.com/SnosMe/awakened-poe-trade', license: 'MIT' },
+  { id: 'ee2', name: 'Exiled Exchange 2', url: 'github.com/Kvan7/Exiled-Exchange-2', license: 'MIT' },
   { id: 'repoe', name: 'RePoE fork', url: 'github.com/repoe-fork/repoe-fork', license: 'open data' },
   { id: 'bt', name: 'Better Trading', url: 'github.com/exile-center/better-trading', license: 'MIT' },
   { id: 'poeoverlay', name: 'PoE Overlay Community Fork', url: 'github.com/PoE-Overlay-Community/PoE-Overlay-Community-Fork', license: 'MIT' },

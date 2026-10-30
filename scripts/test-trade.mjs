@@ -1,7 +1,7 @@
-// Unit tests for the pure trade-core (item parser, search-body builder, price
-// summary, rate limiter, league filter). tradeCore.ts has no electron imports,
-// so we transpile it with esbuild (already a transitive dep) and exercise it in
-// plain Node. Run: `npm run test:trade`.
+// Быстрая проверка чистого ядра прайс-чека PoE2 без vitest и electron (S47; до S47 здесь проверялся tradeCore.ts
+// компаса — его заменил порт Exiled Exchange 2): данные resources/data/poe2 с диска → парсер → пресеты фильтров →
+// тело запроса trade2. Собирается esbuild'ом (уже есть в зависимостях) и исполняется в обычном Node.
+// Запуск: `npm run test:trade`. Полные проверки — vitest (tests/poe2/**).
 
 import esbuild from 'esbuild'
 import fs from 'fs'
@@ -9,13 +9,25 @@ import os from 'os'
 import path from 'path'
 import { pathToFileURL } from 'url'
 
-const srcPath = path.resolve('src/main/services/tradeCore.ts')
-const { code } = esbuild.transformSync(fs.readFileSync(srcPath, 'utf8'), {
-  loader: 'ts',
-  format: 'esm'
+const ROOT = path.resolve('.')
+const entry = `
+import { createPoe2DataStore } from './src/shared/poe2/data'
+import { parseClipboard } from './src/shared/poe2/parser'
+import { buildRequest, createPriceCheck } from './src/shared/poe2/pricecheck'
+import { honestPrice } from './src/shared/poe1/pricecheck/results'
+import { orderBulkOffers, poe2Verdict } from './src/shared/poe2/pricecheck/verdict'
+export { createPoe2DataStore, parseClipboard, buildRequest, createPriceCheck, honestPrice, orderBulkOffers, poe2Verdict }
+`
+const out = await esbuild.build({
+  stdin: { contents: entry, resolveDir: ROOT, loader: 'ts' },
+  bundle: true,
+  format: 'esm',
+  platform: 'node',
+  write: false,
+  logLevel: 'silent'
 })
-const tmp = path.join(os.tmpdir(), `tradeCore.${process.pid}.mjs`)
-fs.writeFileSync(tmp, code)
+const tmp = path.join(os.tmpdir(), `poeth-trade.${process.pid}.mjs`)
+fs.writeFileSync(tmp, out.outputFiles[0].text)
 const M = await import(pathToFileURL(tmp).href)
 
 let pass = 0
@@ -37,160 +49,63 @@ function ok(cond, msg) {
   }
 }
 
-// ---- fixtures (real PoE2 clipboard shapes, EN + RU) ----
-const UNIQUE_EN = `Item Class: Foci
-Rarity: Unique
-The Eternal Spark
-Crystal Focus
---------
-Energy Shield: 44 (augmented)
---------
-Requires: Level 26, 43 (augmented) Int
---------
-Item Level: 81
---------
-56(50-70)% increased Energy Shield
---------
-A flash of blue, a stormcloud's kiss
-`
+// данные с диска — как protocol.ts приложения отдаёт poeth://data/poe2/<lang>/<file>
+const store = M.createPoe2DataStore({
+  fetch: async (url) => {
+    const m = /^poeth:\/\/data\/poe2\/([a-z-]+)\/([\w.-]+)$/.exec(url)
+    const file = m && path.join(ROOT, 'resources/data/poe2', m[1], m[2])
+    if (!file || !fs.existsSync(file)) return { ok: false, status: 404, text: async () => '', arrayBuffer: async () => new ArrayBuffer(0) }
+    const buf = fs.readFileSync(file)
+    return { ok: true, status: 200, text: async () => buf.toString('utf8'), arrayBuffer: async () => buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) }
+  }
+})
+const [en, ru] = await Promise.all([store.ensureLanguage('en'), store.ensureLanguage('ru')])
+const fixture = (lang, name) => fs.readFileSync(path.join(ROOT, 'tests/fixtures/poe2', lang, `${name}.txt`), 'utf8')
 
-const RARE_RU = `Класс предмета: Луки
-Редкость: Редкий
-Коготь Бури
-Зловещий лук
---------
-Физический урон: 32-61
---------
-Уровень предмета: 74
---------
-Неопознано
-`
+function request(lang, name) {
+  const d = lang === 'en' ? en : ru
+  const p = M.parseClipboard(fixture(lang, name), d)
+  if (!p.ok) return { error: p.error }
+  const pc = M.createPriceCheck(p.value, d, { league: 'Standard' })
+  const preset = pc.presets.find((x) => x.id === pc.active)
+  return { item: p.value, req: M.buildRequest(p.value, d, preset), preset }
+}
 
-const CURRENCY_EN = `Item Class: Stackable Currency
-Rarity: Currency
-Exalted Orb
---------
-Stack Size: 12/10
---------
-Grants additional currency modifiers
-`
+// ---- редкий лук: моды, ±10 %, статус по умолчанию, EN = RU ----
+const bowEn = request('en', 'ee2-bow-rare')
+const bowRu = request('ru', 'ee2-bow-rare')
+eq(bowEn.item.info.refName, 'Rider Bow', 'редкий лук: английская база')
+eq(bowRu.item.info.refName, 'Rider Bow', 'RU-лук: та же английская база')
+eq(bowEn.req.api, 'trade', 'редкий лук → поиск')
+eq(bowEn.req.body.query.status, { option: 'available' }, 'статус по умолчанию — выкуп и продавцы в сети')
+eq(JSON.stringify(bowEn.req.body), JSON.stringify(bowRu.req.body), 'EN и RU одного предмета → одно тело запроса')
+ok(!/[а-яё]/i.test(JSON.stringify(bowRu.req.body)), 'в RU-запросе нет кириллицы')
+const roll = bowEn.preset.stats.find((f) => f.roll && !f.disabled)?.roll
+ok(roll && typeof roll.min === 'number' && roll.min < roll.value, 'у отмеченного свойства min ниже ролла (±10 %)')
 
-const GEM_EN = `Item Class: Skill Gems
-Rarity: Gem
-Lightning Arrow
---------
-Lightning, Projectile, Attack
-Level: 20
---------
-`
+// ---- уник по имени ----
+const uniq = request('en', 'ee2-focus-unique')
+ok(uniq.req.api === 'trade' && typeof uniq.req.body.query.name === 'string', 'уник ищется по имени')
 
-const UNCUT_RARITY_ONLY = `Rarity: Currency
-Uncut Support Gem
---------
-Place into an item socket
-`
+// ---- руны и гнёзда ----
+const runes = request('en', 'ee2-crossbow-all-types')
+ok(runes.item.augmentSockets && runes.item.augmentSockets.current >= 2, 'гнёзда рун разобраны')
 
-const CORRUPTED_EN =
-  UNIQUE_EN +
-  `--------
-Corrupted
-`
+// ---- валюта → обмен trade2 ----
+const ess = request('en', 'sk-currency-essence')
+eq(ess.req.api, 'bulk', 'валюта → обмен')
+ok(Array.isArray(ess.req.body.query.want) && ess.req.body.query.want.length === 1, 'обмен: одна покупаемая валюта')
 
-// ---- parseItem ----
-const u = M.parseItem(UNIQUE_EN)
-eq(
-  { r: u.rarity, k: u.kind, n: u.name, b: u.baseType, c: u.itemClass, il: u.itemLevel, id: u.identified, co: u.corrupted },
-  { r: 'Unique', k: 'unique', n: 'The Eternal Spark', b: 'Crystal Focus', c: 'Foci', il: 81, id: true, co: false },
-  'parse unique EN'
-)
+// ---- не предмет ----
+ok(!M.parseClipboard('just some text\nnot an item', en).ok, 'не предмет — ошибка разбора')
 
-const r = M.parseItem(RARE_RU)
-eq(
-  { r: r.rarity, k: r.kind, n: r.name, b: r.baseType, c: r.itemClass, il: r.itemLevel, id: r.identified },
-  { r: 'Rare', k: 'rare', n: 'Коготь Бури', b: 'Зловещий лук', c: 'Луки', il: 74, id: false },
-  'parse rare RU (unidentified)'
-)
-
-const c = M.parseItem(CURRENCY_EN)
-eq({ r: c.rarity, k: c.kind, n: c.name, b: c.baseType }, { r: 'Currency', k: 'currency', n: 'Exalted Orb', b: undefined }, 'parse currency EN')
-
-const g = M.parseItem(GEM_EN)
-eq({ k: g.kind, n: g.name, gl: g.gemLevel, cls: g.itemClass }, { k: 'gem', n: 'Lightning Arrow', gl: 20, cls: 'Skill Gems' }, 'parse gem EN (gem level)')
-
-const uo = M.parseItem(UNCUT_RARITY_ONLY)
-ok(uo && uo.kind === 'currency' && uo.name === 'Uncut Support Gem', 'parse rarity-only lead (no Item Class)')
-
-const co = M.parseItem(CORRUPTED_EN)
-ok(co.corrupted === true, 'detect corrupted')
-
-ok(M.parseItem('just some random clipboard text\nnot an item') === null, 'reject non-item')
-ok(M.parseItem('') === null, 'reject empty')
-
-// ---- buildSearchBody ----
-const bu = M.buildSearchBody(u)
-eq(bu.query.name, 'The Eternal Spark', 'unique body uses name')
-eq(bu.query.type, 'Crystal Focus', 'unique body uses base type')
-eq(bu.query.stats, [{ type: 'and', filters: [] }], 'unique body has empty stats group')
-eq(bu.sort, { price: 'asc' }, 'unique body sort price asc')
-ok(bu.query.name !== undefined && bu.query.filters && Object.keys(bu.query.filters).length === 0, 'unique body has no extra filters')
-
-const br = M.buildSearchBody(r)
-eq(br.query.type, 'Зловещий лук', 'rare body searches by base type')
-ok(br.query.name === undefined, 'rare body has no name')
-eq(br.query.filters.type_filters.filters.rarity, { option: 'nonunique' }, 'rare body rarity nonunique')
-eq(br.query.filters.type_filters.filters.ilvl, { min: 72 }, 'rare body ilvl min = itemLevel-2')
-
-const bc = M.buildSearchBody(c)
-eq(bc.query.type, 'Exalted Orb', 'currency body searches by type/name')
-ok(bc.query.name === undefined, 'currency body has no name')
-
-const bg = M.buildSearchBody(g)
-eq(bg.query.type, 'Lightning Arrow', 'gem body type = name')
-eq(bg.query.filters.type_filters.filters.category, { option: 'gem.activegem' }, 'gem body category activegem')
-eq(bg.query.filters.misc_filters.filters.gem_level, { min: 20 }, 'gem body gem_level min')
-
-const magic = M.parseItem(`Item Class: Rings
-Rarity: Magic
-Sapphire Ring of the Whelpling
---------
-Item Level: 50
-`)
-const bm = M.buildSearchBody(magic)
-eq(bm.query.filters.type_filters.filters.rarity, { option: 'magic' }, 'magic body rarity option')
-
-// ---- summarizeListings ----
-const listings = [
-  { amount: 5, currency: 'exalted' },
-  { amount: 3, currency: 'exalted' },
-  { amount: 10, currency: 'exalted' },
-  { amount: 1, currency: 'divine' }
-]
-const sum = M.summarizeListings(listings)
-eq(sum.min, { amount: 3, currency: 'exalted' }, 'summary min uses modal currency')
-eq(sum.median, { amount: 5, currency: 'exalted' }, 'summary median (lower-mid of 3,5,10)')
-eq(sum.display.length, 3, 'summary display only modal currency')
-ok(M.summarizeListings([]).min === undefined, 'summary empty -> no min')
-
-// ---- filterLeagues ----
-eq(
-  M.filterLeagues(['Standard', 'Hardcore', 'Standard (PL1)', 'HC Ruthless', 'Rise of the Abyssal']),
-  ['Standard', 'Hardcore', 'Rise of the Abyssal'],
-  'filter private/ruthless leagues'
-)
-
-// ---- RateLimiter ----
-const rl = new M.RateLimiter(2, 1000)
-await rl.take()
-await rl.take()
-let third = false
-const p = rl.take().then(() => (third = true))
-await new Promise((res) => setTimeout(res, 50))
-ok(third === false, 'rate limiter blocks 3rd take within window')
-await p
-ok(third === true, 'rate limiter releases after window')
-
-rl.syncFromState(8, 10, 1)
-ok(rl.max === 8 && rl.windowMs === 10500, 'rate limiter syncs from headers')
+// ---- вердикт и порядок обмена ----
+const lot = (id, amount, currency, kind = 'person') => ({ id, kind, price: { amount, currency }, accountName: id, online: 'online' })
+const lots = [lot('a', 12, 'exalted'), lot('b', 13, 'exalted'), lot('c', 14, 'exalted'), lot('d', 15, 'exalted'), lot('e', 16, 'exalted')]
+const v = M.poe2Verdict({ kind: 'trade', total: 25, listings: lots, honest: M.honestPrice(lots, 25), noVendor: false })
+eq([v.kind, v.price], ['list', { amount: 12, currency: 'exalted' }], 'вердикт: «выставьте за ~12 ex»')
+const offer = (id, exchangeAmount, currency) => ({ id, exchangeAmount, currency, itemAmount: 1, stock: 5, accountName: id, online: 'online' })
+eq(M.orderBulkOffers([offer('d', 1, 'divine'), offer('e', 2, 'exalted')]).map((o) => o.id), ['e', 'd'], 'обмен: exalted — опорная валюта')
 
 console.log(`\n${pass} passed, ${fail} failed`)
 fs.unlinkSync(tmp)

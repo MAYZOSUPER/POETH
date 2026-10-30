@@ -1,0 +1,284 @@
+{
+ "RARITY_NORMAL": "Обычный",
+ "RARITY_MAGIC": "Волшебный",
+ "RARITY_RARE": "Редкий",
+ "RARITY_UNIQUE": "Уникальный",
+ "RARITY_GEM": "Камень",
+ "RARITY_CURRENCY": "Валюта",
+ "RARITY_DIVCARD": "Гадальная карта",
+ "RARITY_QUEST": "Задание",
+ "MAP_TIER": "Карта Ранг: ",
+ "RARITY": "Редкость: ",
+ "ITEM_CLASS": "Класс предмета: ",
+ "ITEM_LEVEL": "Уровень предмета: ",
+ "CORPSE_LEVEL": "Труп Уровень: ",
+ "TALISMAN_TIER": "Уровень талисмана: ",
+ "GEM_LEVEL": "Уровень: ",
+ "STACK_SIZE": "Размер стопки: ",
+ "SOCKETS": "Гнезда: ",
+ "QUALITY": "Качество: ",
+ "PHYSICAL_DAMAGE": "Физический урон: ",
+ "ELEMENTAL_DAMAGE": "Урон от стихий: ",
+ "LIGHTNING_DAMAGE": "Урон от молнии: ",
+ "COLD_DAMAGE": "Урон от холода: ",
+ "FIRE_DAMAGE": "Урон от огня: ",
+ "CRIT_CHANCE": "Шанс крит. попадания: ",
+ "ATTACK_SPEED": "Атак в секунду: ",
+ "ARMOUR": "Броня: ",
+ "EVASION": "Уклонение: ",
+ "ENERGY_SHIELD": "Энергетический щит: ",
+ "RUNIC_WARD": "Рунический барьер: ",
+ "BLOCK_CHANCE": "Шанс блока: ",
+ "CORRUPTED": "Осквернено ",
+ "INFLUENCE_SHAPER": "Предмет Создателя",
+ "INFLUENCE_ELDER": "Древний предмет",
+ "INFLUENCE_CRUSADER": "Предмет Крестоносца",
+ "INFLUENCE_HUNTER": "Предмет Охотника",
+ "INFLUENCE_REDEEMER": "Предмет Избавительницы",
+ "INFLUENCE_WARLORD": "Предмет Вождя",
+ "SECTION_SYNTHESISED": "Синтезированный предмет",
+ "VEILED_PREFIX": "Очернённый префикс",
+ "VEILED_SUFFIX": "Очернённый суффикс",
+ "METAMORPH_HELP": "Объедините эту часть с четырьмя другими в Лаборатории Танэ.",
+ "BEAST_HELP": "Нажмите ПКМ, чтобы добавить это в ваш Бестиарий.",
+ "VOIDSTONE_HELP": "Поместите этот предмет в ваш Атлас, чтобы повысить уровень всех карт.",
+ "CANNOT_USE_ITEM": "Вы не можете использовать этот предмет, его параметры не будут учтены",
+ "AREA_LEVEL": "Уровень области: ",
+ "HEIST_WINGS_REVEALED": "Крыльев обнаружено: ",
+ "HEIST_TARGET": "Предмет кражи: ",
+ "HEIST_BLUEPRINT_ENCHANTS": "Зачарованное вооружение",
+ "HEIST_BLUEPRINT_TRINKETS": "Воровские украшения или валюта",
+ "HEIST_BLUEPRINT_GEMS": "Необычные камни",
+ "HEIST_BLUEPRINT_REPLICAS": "Копии или экспериментальные предметы",
+ "MIRRORED": "Отражено",
+ "PREFIX_MODIFIER": "Префикс",
+ "SUFFIX_MODIFIER": "Суффикс",
+ "IMPLICIT_MODIFIER": "Собственное свойство",
+ "ENCHANT_MODIFIER": "Улучшение",
+ "CORRUPTED_MODIFIER": "Улучшение от осквернения",
+ "CRAFTED_MODIFIER": "Ремесленное",
+ "FRACTURED_MODIFIER": "Расколотое",
+ "DESECRATED_MODIFIER": "Очернённое",
+ "UNSCALABLE_VALUE": " — Неизменяемое значение",
+ "CORRUPTED_IMPLICIT": "Улучшение от осквернения",
+ "INCURSION_OPEN": "Открытые комнаты:",
+ "INCURSION_OBSTRUCTED": "Отделённые комнаты:",
+ "ELDRITCH_MOD_R1": "Мелкий",
+ "ELDRITCH_MOD_R2": "Крупный",
+ "ELDRITCH_MOD_R3": "Великий",
+ "ELDRITCH_MOD_R4": "Превосходный",
+ "ELDRITCH_MOD_R5": "Первоклассный",
+ "ELDRITCH_MOD_R6": "Безупречный",
+ "SENTINEL_CHARGE": "Заряд: ",
+ "FOIL_UNIQUE": "Особый уникальный предмет",
+ "UNMODIFIABLE": "Неизменяемый",
+ "REQUIREMENTS": "Требования",
+ "CHARM_SLOTS": "Ячейки оберегов: ",
+ "BASE_SPIRIT": "Дух: ",
+ "PRICE_NOTE": "Примечание: ",
+ "WAYSTONE_TIER": "Уровень путевого камня: ",
+ "TIMELESS_RADIUS": "Радиус: ",
+ "REQUIRES": "Требуется: ",
+ "TIMELESS_SMALL_PASSIVES": "Малые пассивные умения в радиусе также дают: {0}",
+ "TIMELESS_NOTABLE_PASSIVES": "Значимые пассивные умения в радиусе также дают: {0}",
+ "GRANTS_SKILL": "Дарует умение: ",
+ "RELOAD_SPEED": "Время перезарядки: ",
+ "FRACTURED_ITEM": "Расколотый предмет",
+ "SANCTIFIED": "Освящено",
+ "HYPHEN": "-",
+ "WAYSTONE_REVIVES": "Доступно возрождений: ",
+ "WAYSTONE_PACK_SIZE": "Размер групп монстров: ",
+ "WAYSTONE_MAGIC_MONSTERS": "Волшебные монстры: ",
+ "WAYSTONE_RARE_MONSTERS": "Редкие монстры: ",
+ "WAYSTONE_DROP_CHANCE": "Шанс выпадения путевого камня: ",
+ "WAYSTONE_RARITY": "Редкость предметов: ",
+ "WAYSTONE_MONSTER_RARITY": "Редкость монстров: ",
+ "WAYSTONE_EFFECTIVENESS": "Эффективность монстров: ",
+ "DOUBLE_CORRUPTED": "Дважды осквернено",
+ "UNIQUE_MODIFIER": "Уникальное свойство",
+ "VAAL_UNIQUE_MODIFIER": "Уникальное свойство ваал",
+ "TRIAL_COUNT": "Число испытаний: ",
+ "ULTIMATUM_VICTORIOUS": "Победный",
+ "ULTIMATUM_COWARDLY": "Трусливый",
+ "ULTIMATUM_DEADLY": "Смертельный",
+ "LIFE_TAG": "Здоровье",
+ "MANA_TAG": "Мана",
+ "ARMOUR_TAG": "Броня",
+ "EVASION_TAG": "Уклонение",
+ "ENERGY_SHIELD_TAG": "Энергетический щит",
+ "PHYSICAL_TAG": "Физический",
+ "FIRE_TAG": "Огонь",
+ "COLD_TAG": "Холод",
+ "LIGHTNING_TAG": "Молния",
+ "CHAOS_TAG": "Хаос",
+ "ATTACK_TAG": "Атака",
+ "CASTER_TAG": "Чародейский",
+ "SPEED_TAG": "Скорость",
+ "ATTRIBUTE_TAG": "Характеристика",
+ "MINION_TAG": "Приспешник",
+ "SHAPER_MODS": [
+  "of Shaping",
+  "The Shaper's"
+ ],
+ "ELDER_MODS": [
+  "of the Elder",
+  "The Elder's"
+ ],
+ "CRUSADER_MODS": [
+  "Crusader's",
+  "of the Crusade"
+ ],
+ "HUNTER_MODS": [
+  "Hunter's",
+  "of the Hunt"
+ ],
+ "REDEEMER_MODS": [
+  "Redeemer's",
+  "of Redemption"
+ ],
+ "WARLORD_MODS": [
+  "Warlord's",
+  "of the Conquest"
+ ],
+ "DELVE_MODS": [
+  "Subterranean",
+  "of the Underground"
+ ],
+ "VEILED_MODS": [
+  "Chosen",
+  "of the Order"
+ ],
+ "INCURSION_MODS": [
+  "Guatelitzi's",
+  "Xopec's",
+  "Topotante's",
+  "Tacati's",
+  "Matatl's",
+  "of Matatl",
+  "Citaqualotl's",
+  "of Citaqualotl",
+  "of Tacati",
+  "of Guatelitzi",
+  "of Puhuarte"
+ ],
+ "ITEM_SUPERIOR": {
+  "$re": "^(.*) высокого качества$",
+  "$flags": ""
+ },
+ "ITEM_EXCEPTIONAL": {
+  "$re": "^Образцовое (.*)$",
+  "$flags": ""
+ },
+ "MAP_BLIGHTED": {
+  "$re": "^Заражённая (.*)$",
+  "$flags": ""
+ },
+ "MAP_BLIGHT_RAVAGED": {
+  "$re": "^Разорённая Скверной (.*)$",
+  "$flags": ""
+ },
+ "ITEM_SYNTHESISED": {
+  "$re": "^Синтезированное (.*)$",
+  "$flags": ""
+ },
+ "FLASK_CHARGES": {
+  "$re": "^Содержит зарядов: \\d+$",
+  "$flags": ""
+ },
+ "METAMORPH_BRAIN": {
+  "$re": "^.* Brain$",
+  "$flags": ""
+ },
+ "METAMORPH_EYE": {
+  "$re": "^.* Eye$",
+  "$flags": ""
+ },
+ "METAMORPH_LUNG": {
+  "$re": "^.* Lung$",
+  "$flags": ""
+ },
+ "METAMORPH_HEART": {
+  "$re": "^.* Heart$",
+  "$flags": ""
+ },
+ "METAMORPH_LIVER": {
+  "$re": "^.* Liver$",
+  "$flags": ""
+ },
+ "QUALITY_ANOMALOUS": {
+  "$re": "^Аномальный: (.*)$",
+  "$flags": ""
+ },
+ "QUALITY_DIVERGENT": {
+  "$re": "^Искривлённый: (.*)$",
+  "$flags": ""
+ },
+ "QUALITY_PHANTASMAL": {
+  "$re": "^Фантомный: (.*)$",
+  "$flags": ""
+ },
+ "MODIFIER_LINE": {
+  "$re": "^(?<type>[^\"]+)(?:\\s+\"(?<name>[^\"]*)\")?(?:\\s*\\(Уровень: (?<tier>\\d+)\\))?(?:\\s*\\(Ранг: (?<rank>\\d+)\\))?$",
+  "$flags": ""
+ },
+ "MODIFIER_INCREASED": {
+  "$re": "^(.*)% увеличение$",
+  "$flags": ""
+ },
+ "EATER_IMPLICIT": {
+  "$re": "^Собственное свойство Пожирателя миров \\((?<rank>.+)\\)$",
+  "$flags": ""
+ },
+ "EXARCH_IMPLICIT": {
+  "$re": "^Собственное свойство Пламенного экзарха \\((?<rank>.+)\\)$",
+  "$flags": ""
+ },
+ "CHAT_SYSTEM": {
+  "$re": "^: (?<body>.+)$",
+  "$flags": ""
+ },
+ "CHAT_TRADE": {
+  "$re": "^\\$(?:<(?<guild_tag>.+?)> )?(?<char_name>.+?): (?<body>.+)$",
+  "$flags": ""
+ },
+ "CHAT_GLOBAL": {
+  "$re": "^#(?:<(?<guild_tag>.+?)> )?(?<char_name>.+?): (?<body>.+)$",
+  "$flags": ""
+ },
+ "CHAT_PARTY": {
+  "$re": "^%(?:<(?<guild_tag>.+?)> )?(?<char_name>.+?): (?<body>.+)$",
+  "$flags": ""
+ },
+ "CHAT_GUILD": {
+  "$re": "^&(?:<(?<guild_tag>.+?)> )?(?<char_name>.+?): (?<body>.+)$",
+  "$flags": ""
+ },
+ "CHAT_WHISPER_TO": {
+  "$re": "^@Кому (?<char_name>.+?): (?<body>.+)$",
+  "$flags": ""
+ },
+ "CHAT_WHISPER_FROM": {
+  "$re": "^@От кого (?:<(?<guild_tag>.+?)> )?(?<char_name>.+?): (?<body>.+)$",
+  "$flags": ""
+ },
+ "CHAT_WEBTRADE_GEM": {
+  "$re": "^level (?<gem_lvl>\\d+) (?<gem_qual>\\d+)% (?<gem_name>.+)$",
+  "$flags": ""
+ },
+ "LOG_LEVEL_UP": {
+  "$re": "^(?<char_name>.*) \\((?<char_class>.*)\\) достигает (?<level>\\d+) уровня$",
+  "$flags": ""
+ },
+ "LOG_ZONE_GEN": {
+  "$re": "^Generating level (?<area_level>\\d+) area \"(?<zone>.*)\" with seed (?<seed>\\d+)$",
+  "$flags": ""
+ },
+ "REQUIRES_LINE": {
+  "$re": "^Требуется: \\s*(?:Уровень[^\\d,]*(?<level>\\d+))?\\D*(?:(?<str>\\d+)[^\\d,]*(Сила|Сила))?\\D*(?:(?<dex>\\d+)[^\\d,]*(Ловкость|Ловк))?\\D*(?:(?<int>\\d+)[^\\d,]*(Интеллект|Инт))?$",
+  "$flags": ""
+ },
+ "UNIDENTIFIED": {
+  "$re": "^Неопознано(?:\\s*\\(Ранг\\s*(?<tier>\\d+)\\))?$",
+  "$flags": ""
+ }
+}

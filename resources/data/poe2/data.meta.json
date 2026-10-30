@@ -1,0 +1,28 @@
+{
+  "ee2Repo": "Kvan7/Exiled-Exchange-2",
+  "ee2Sha": "cca30662bf31eaf38bd711e2ec1a6b899a06c40e",
+  "date": "2026-10-30",
+  "langs": [
+    "en",
+    "ru"
+  ],
+  "license": "MIT — Exiled Exchange 2 © Kvan7; Awakened PoE Trade © Alexander Drozdov (SnosMe)",
+  "files": {
+    "en/client_strings.js": "595d3a2f99a824307b0e82f98e903469dc8526e46e483b79f4b5eda64cc7a688",
+    "en/client_strings.json": "a0dae52d1d3ff1d1a96d6e2f5354b1cd00f566d2ad29679a5148b7bdc6fc6812",
+    "en/items-name.index.bin": "291088671a09c8f681eae89c9e8f505d222253ba8cc1f48c2e5da9ac7840a947",
+    "en/items-ref.index.bin": "724a36f94d350840def3bbbd2d8c41103904fed9c8ba66d07e01370e6ac72275",
+    "en/items.ndjson": "b4757b4756433f5d729e93b0b25490fd72cd60cd54f6906aa9bd3a7053dfa139",
+    "en/stats-matcher.index.bin": "8890939f0d617d732bf27e95bcc93a522a3abf2fa7681627fc9f2f15070e7c29",
+    "en/stats-ref.index.bin": "f36032b87a5375254ebf146618c30fc7c4b2e3efa645a11cf70f71716540b06f",
+    "en/stats.ndjson": "2ec9393adfdaef10efa8aacc6720cafe42f5d58661b0b8193ca8efb6923fea30",
+    "ru/client_strings.js": "fa070d16ce6a273edf2c2e115e07da4e3086607df4cbfc86d3dcfd27ed756d02",
+    "ru/client_strings.json": "33203af4b1f9e482261dc93b2be25d13d107c08308af5cabda2fd4f966592fab",
+    "ru/items-name.index.bin": "c8d62b13dab25d4158e3b9d9058bbe96b4a8dca434d81f367af950633175f76f",
+    "ru/items-ref.index.bin": "6ea203db82a9ecf50f209330e2d79ff7701582cd636ce48095ec33b57b3250c6",
+    "ru/items.ndjson": "762cef8cc4bb3d7ec9cec90929e19bb96fcd794ceeb666163d6ceb5fae3ca1f1",
+    "ru/stats-matcher.index.bin": "0835aadf09fa329c32c689bc7bc97fbc9d2291e4c31449ec756fa5ae6e3a797f",
+    "ru/stats-ref.index.bin": "d167e8fb0f77b9804e3b0cfa32f9bd1df6d8c92a40371f8df9f6b6280ce955ff",
+    "ru/stats.ndjson": "0f925e810422947ca3fabbb8507e0cbc656f3739cd7ddb5bd3ff3f6dfbfa5aa5"
+  }
+}

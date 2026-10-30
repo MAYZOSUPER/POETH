@@ -26,6 +26,14 @@ export type PasteSessionError =
   | 'network'
   | 'blocked'
 
+/**
+ * S47: итог переноса старого POESESSID прайс-чека PoE2 (secret.json) во вход аккаунта (partition persist:poe-account):
+ *  - `moved` — ключ перенесён во вход (сайт его узнал или проверить пока не удалось — проверка позже);
+ *  - `expired` — сайт ключ не узнал (сессия кончилась): удалён, войти заново кнопкой «Войти»;
+ *  - `already` — вход в аккаунт уже был: старый ключ просто удалён.
+ */
+export type Poe2SessionNotice = 'moved' | 'expired' | 'already'
+
 export type PasteSessionResult =
   | { ok: true; status: AuthStatus }
   | { ok: false; error: PasteSessionError; status: AuthStatus }

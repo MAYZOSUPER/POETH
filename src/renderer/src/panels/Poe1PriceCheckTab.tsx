@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { HotkeyConflict } from '@shared/types'
 import { isAllowedExternalUrl } from '@shared/links'
 import { useAppStore } from '../store/useAppStore'
@@ -12,6 +12,8 @@ import './pricecheck/pricecheckTab.css'
 // Вкладка «Прайс-чек» PoE 1 в компаньоне (S37): само окно цены живёт поверх игры (S4/S15/S23/S24),
 // здесь — как им пользоваться, что оно покажет, текущая клавиша и переход в настройки.
 // Истории проверок нет: окно цены держит только текущий предмет (overlay/pricecheck/store.ts).
+// S47: та же страница у PoE 2 (PriceCheckTab.tsx): `game` меняет строки, которые у игр разные, `banner` и
+// `children` — свои блоки PoE 2 (уведомление о переносе ключа, лига trade2 и вход).
 
 /** Гайд по функциям на сайте (S30b, якорь #price; EN — ?lang=en). */
 const GUIDE_URL = 'https://mayzosuper.github.io/POETH/guide/'
@@ -26,7 +28,7 @@ function openHotkeySettings(): void {
   requestAnimationFrame(() => document.getElementById('set-hotkeys')?.scrollIntoView({ block: 'start' }))
 }
 
-/** Что покажет окно цены: иконка и ключи pc1.tab.show.<id> / .<id>.text. */
+/** Что покажет окно цены: иконка и ключи pc1.tab.show.<id> / .<id>.text (у PoE 2 пояснения, кроме mods, — pc2.tab.show.<id>.text). */
 const SHOWS: Array<[string, IcoName]> = [
   ['verdict', 'ask'],
   ['market', 'coins'],
@@ -34,7 +36,11 @@ const SHOWS: Array<[string, IcoName]> = [
   ['actions', 'external']
 ]
 
-export function Poe1PriceCheckTab() {
+export function Poe1PriceCheckTab({
+  game = 'poe1',
+  banner,
+  children
+}: { game?: 'poe1' | 'poe2'; banner?: ReactNode; children?: ReactNode } = {}) {
   const t = useT()
   const lang = useAppStore((s) => s.settings?.uiLang ?? 'ru')
   const simple = useAppStore((s) => s.settings?.ui.simpleMode ?? true)
@@ -81,6 +87,8 @@ export function Poe1PriceCheckTab() {
           {t('pc1.tab.expert')}
         </Switch>
       </div>
+
+      {banner}
 
       {(!accel || taken) && (
         <div className="ui-banner pct-banner" role="alert">
@@ -143,13 +151,15 @@ export function Poe1PriceCheckTab() {
               <li key={id}>
                 <Ico name={icon} />
                 <span>
-                  <b>{t(`pc1.tab.show.${id}`)}</b> {t(`pc1.tab.show.${id}.text`)}
+                  <b>{t(`pc1.tab.show.${id}`)}</b> {t(game === 'poe2' && id !== 'mods' ? `pc2.tab.show.${id}.text` : `pc1.tab.show.${id}.text`)}
                 </span>
               </li>
             ))}
           </ul>
         </section>
       )}
+
+      {children}
 
       <div className="ui-hint pct-hint">
         <Ico name="info" />

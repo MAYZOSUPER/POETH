@@ -107,8 +107,22 @@ whose full history is kept in this repository.
 - **Schema / approach references** —
   [HeartofPhos/exile-leveling](https://github.com/HeartofPhos/exile-leveling) (MIT),
   [Lechkolion/poe2-leveling-overlay](https://github.com/Lechkolion/poe2-leveling-overlay) (MIT).
-- **Price-check (PoE 2) research references** — Exiled Exchange 2 (kvan7) and
-  Awakened PoE Trade (SnosMe), both MIT.
+
+## Third-party code & data (trade helper, PoE 2)
+
+- **[Exiled Exchange 2](https://github.com/Kvan7/Exiled-Exchange-2)** — Kvan7, **MIT License**
+  (a fork of Awakened PoE Trade; Copyright (c) 2020 Alexander Drozdov and contributors). Parts of its
+  code (PoE 2 item parser, price-check filters/presets/pseudo stats, trade2 query builder) are **ported**
+  to POETH (`src/shared/poe2/**`) with attribution: every ported file carries a header naming the source
+  file and pinned commit (`cca30662bf`). Its data (`renderer/public/data/{en,ru}/{stats,items}.ndjson`,
+  `client_strings.js`) is synced by `tools/data/sync-ee2-data.mjs` into `resources/data/poe2/{en,ru}`
+  (pin and SHA-256 of every file in `resources/data/poe2/data.meta.json`).
+- **Test fixtures (PoE 2)** — English item texts from Exiled Exchange 2's tests
+  (`renderer/specs/Parser/items.ts`, MIT) and, where noted in `tests/fixtures/poe2/README.md`,
+  [Sidekick](https://github.com/Sidekick-Poe/Sidekick) tests (MIT). Russian fixtures are generated from
+  them with the Exiled Exchange 2 data; Russian item class names are facts from the PoE 2 client tables
+  ([LocalIdentity/poe2-data](https://github.com/LocalIdentity/poe2-data), pinned commit `6a49dbd`, names only).
+  Sidekick fixtures are pinned to `4ee98ca`. Test data only, not shipped.
 
 Maxroll, Mobalytics, Exilence CE (CC BY-NC) and similar sites/tools are used only as
 references; none of their text, code, images, or layouts are copied or redistributed.
