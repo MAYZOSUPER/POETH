@@ -88,7 +88,7 @@ updaterCacheDirName: poeth-updater-test
     // описание релиза двуязычное — в окно раздел языка интерфейса
     void getSettings().then((s) => {
       setState({ phase: 'available', version: info.version, notes: releaseNotesText(info.releaseNotes, s.uiLang), error: undefined })
-      if (show) openUpdateWindow()
+      if (show) openUpdateWindow(s.uiLang)
     })
   })
   u.on('update-not-available', () => {

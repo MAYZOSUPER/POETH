@@ -2,6 +2,8 @@ import { useMemo } from 'react'
 import type { ItemFlipState, ItemRow, UiLang, UniqueTier } from '@shared/types'
 import { groupTiers, type TierGroup } from '@shared/flip/items/tiers'
 import { useT } from '../../../i18n'
+import { tKey } from '../../../i18n/hotkey'
+import { useAppStore } from '../../../store/useAppStore'
 import { useItemsStore } from './useItemsStore'
 import { useBaseName, useUniqueName, pctText } from './format'
 import { FormTags, IIco, Price, TierTag } from './ui'
@@ -17,6 +19,7 @@ const norm = (s: string): string => s.toLowerCase().replace(/ё/g, 'е')
 
 export function TiersView({ s, lang, expert }: { s: ItemFlipState; lang: UiLang; expert: boolean }) {
   const t = useT()
+  const pcKey = useAppStore((st) => st.settings?.hotkeys.priceCheck.accel)
   const q = useItemsStore((st) => st.q)
   const tier = useItemsStore((st) => st.tier)
   const sure = useItemsStore((st) => st.sure)
@@ -47,7 +50,7 @@ export function TiersView({ s, lang, expert }: { s: ItemFlipState; lang: UiLang;
     <div className="fi-view">
       <div className="ui-hint fx-hint">
         <IIco name="help" />
-        <span>{t('flip.items.tiers.hint')}</span>
+        <span>{tKey(t, 'flip.items.tiers.hint', pcKey)}</span>
       </div>
       <div className="ui-chips">
         <div className="ui-seg" role="group" aria-label={t('flip.items.tier')}>
@@ -148,7 +151,9 @@ export function TiersView({ s, lang, expert }: { s: ItemFlipState; lang: UiLang;
                       <td className="is-num">
                         <Price chaos={g.main.chaos} divine={s.divine} lang={lang} prefix="≈ " />
                       </td>
-                      <td className="fi-advice">{t(`flip.items.advice.${g.top && g.main.tier === 'low' ? 'check' : g.main.tier}`)}</td>
+                      <td className="fi-advice">
+                        {g.top && g.main.tier === 'low' ? tKey(t, 'flip.items.advice.check', pcKey) : t(`flip.items.advice.${g.main.tier}`)}
+                      </td>
                     </tr>
                   ))}
               {total === 0 && (
@@ -165,7 +170,7 @@ export function TiersView({ s, lang, expert }: { s: ItemFlipState; lang: UiLang;
         </div>
         <div className="ui-box__foot fx-foot">
           <IIco name="info" size="sm" />
-          <span>{total > SHOW ? t('flip.items.more', { n: SHOW, total }) : t('flip.items.tiers.foot')}</span>
+          <span>{total > SHOW ? t('flip.items.more', { n: SHOW, total }) : tKey(t, 'flip.items.tiers.foot', pcKey)}</span>
         </div>
       </div>
     </div>

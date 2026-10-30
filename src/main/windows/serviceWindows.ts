@@ -1,4 +1,6 @@
 import { BrowserWindow } from 'electron'
+import type { UiLang } from '@shared/types'
+import { dialogTitle } from '../services/dialogText'
 import { loadRendererView, serviceWindowOptions } from './rendererView'
 
 // Служебные окна запуска и обновлений (S10a). Оба показываются без перехвата фокуса
@@ -40,13 +42,16 @@ export function getSplashWindow(): BrowserWindow | null {
   return splash && !splash.isDestroyed() ? splash : null
 }
 
-export function openUpdateWindow(): void {
+/** lang — язык интерфейса для заголовка окна (Alt+Tab, экранный диктор). */
+export function openUpdateWindow(lang?: UiLang): void {
   if (update && !update.isDestroyed()) {
     update.showInactive()
     return
   }
-  update = new BrowserWindow({ ...serviceWindowOptions(440, 380), title: 'POETH — обновление' })
+  update = new BrowserWindow({ ...serviceWindowOptions(440, 380), title: dialogTitle(lang, 'updateWindow') })
   const w = update
+  // иначе после загрузки заголовок станет <title> из index.html («POE Trade Helper»)
+  w.on('page-title-updated', (e) => e.preventDefault())
   w.once('ready-to-show', () => !w.isDestroyed() && w.showInactive())
   w.on('closed', () => {
     if (update === w) update = null

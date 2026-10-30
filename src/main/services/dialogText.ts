@@ -1,8 +1,8 @@
 import type { UiLang } from '@shared/types'
 import { getSettings } from './settingsStore'
 
-// Заголовки системных диалогов «Сохранить / Открыть» (S42) — на языке интерфейса POETH, а не всегда
-// по-русски: у main нет i18n renderer (как services/notify.ts). Чистая часть — dialogTitle (тесты).
+// Заголовки системных диалогов «Сохранить / Открыть» и служебных окон (S42) — на языке интерфейса POETH,
+// а не всегда по-русски: у main нет i18n renderer (как services/notify.ts). Чистая часть — dialogTitle (тесты).
 
 const TITLES = {
   ru: {
@@ -14,7 +14,9 @@ const TITLES = {
     clientLog: 'Выберите Client.txt',
     /** «Сделки» PoE 1 */
     clientLogPoe: 'Выберите Client.txt Path of Exile',
-    dealsExport: 'Экспорт истории сделок'
+    dealsExport: 'Экспорт истории сделок',
+    /** окно «Вышло обновление» (windows/serviceWindows.ts) */
+    updateWindow: 'POETH — обновление'
   },
   en: {
     regexExport: 'Export regex strings',
@@ -23,7 +25,8 @@ const TITLES = {
     profileImport: 'Import profile',
     clientLog: 'Choose Client.txt',
     clientLogPoe: 'Choose the Path of Exile Client.txt',
-    dealsExport: 'Export trade history'
+    dealsExport: 'Export trade history',
+    updateWindow: 'POETH — update'
   }
 } as const
 

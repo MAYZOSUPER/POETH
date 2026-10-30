@@ -23,6 +23,8 @@ import {
 import { guideItem, guideVerdict, type GuideVerdict } from '@shared/build/equipCompareGuide'
 import type { StoredBuild } from '@shared/types/build'
 import type { EquipElement, EquipEntry, EquipItem, EquipSlot, EquipState } from '@shared/types/equip'
+import { tKey } from '../../i18n/hotkey'
+import { useOverlayStore } from '../../store/useOverlayStore'
 import { buildGuideOn } from '../leveling/buildGuide'
 import { Icon, type IconName } from '../Icon'
 import './equip.css'
@@ -203,10 +205,12 @@ interface RowView {
   values: string
   delta: string
   note?: string
+  /** подпись строки — в обоих режимах (note у эксперта — только у потерь) */
+  hint?: string
   bad?: boolean
 }
 
-function rowView(r: CmpRow, item: EquipItem, totals: boolean, t: T): RowView {
+export function rowView(r: CmpRow, item: EquipItem, totals: boolean, t: T): RowView {
   const base = { key: r.id, dir: r.dir }
   switch (r.id) {
     case 'req': {
@@ -271,7 +275,9 @@ function rowView(r: CmpRow, item: EquipItem, totals: boolean, t: T): RowView {
           ? t('eq.n.caster')
           : s && (s.edps[0] || s.edps[1])
             ? t('eq.split', { p: int(s.pdps[0]), p2: int(s.pdps[1]), e: int(s.edps[0]), e2: int(s.edps[1]) })
-            : undefined
+            : undefined,
+        // фильтр окна цены считает DPS при качестве 20 % (calc-q20): у вещи с качеством ниже — там число больше
+        hint: t('eq.n.dps.asIs')
       }
     }
     case 'attr': {
@@ -333,6 +339,7 @@ function CmpList({ rows, item, totals, expert, t }: { rows: CmpRow[]; item: Equi
             </span>
             <span className="ui-cmp__d">{v.delta}</span>
             {note && <span className="ui-cmp__n">{note}</span>}
+            {v.hint && <span className="ui-cmp__n">{v.hint}</span>}
           </li>
         )
       })}
@@ -359,6 +366,7 @@ function SaveControl({
   const [choosing, setChoosing] = useState(false)
   const [busy, setBusy] = useState(false)
   const [fail, setFail] = useState(false)
+  const pcKey = useOverlayStore((s) => s.priceCheckKey)
   const slots = saveSlots(item, state.items)
   if (!slots.length) return null
   const save = async (slot: EquipSlot): Promise<void> => {
@@ -392,7 +400,7 @@ function SaveControl({
         <button
           type="button"
           className={`ui-btn ui-btn--sm${primary ? '' : ' ui-btn--ghost'}`}
-          title={t('eq.save.help')}
+          title={tKey(t, 'eq.save.help', pcKey)}
           disabled={busy}
           onClick={() => (slots.length === 1 ? void save(slots[0]) : setChoosing(true))}
         >
@@ -548,6 +556,7 @@ function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: Equi
   const totals = useTotals(state, build)
   const [pick, setPick] = useState<number | null>(null)
   const [mineOpen, setMineOpen] = useState(false)
+  const pcKey = useOverlayStore((s) => s.priceCheckKey)
   const now = Date.now()
 
   const targets = useMemo(() => equipTargets(eq, state.items), [eq, state.items])
@@ -601,7 +610,7 @@ function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: Equi
             <span>{t(note)}</span>
           ) : (
             <span>
-              <b>{t('eq.empty')}</b> {eq.kind === 'flask' && state.items.some((e) => e.kind === 'flask') ? t('eq.empty.flask') : t('eq.empty.how')}
+              <b>{t('eq.empty')}</b> {eq.kind === 'flask' && state.items.some((e) => e.kind === 'flask') ? t('eq.empty.flask') : tKey(t, 'eq.empty.how', pcKey)}
             </span>
           )}
           <span className="eq-acts">
@@ -682,7 +691,7 @@ function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: Equi
           <span>{cmp.dmgUnknown ? t('eq.dmg') : t('eq.later')}</span>
         </span>
       )}
-      {stale && !expert && <span className="eq-note eq-fresh is-old">{t('eq.fresh.old')}</span>}
+      {stale && !expert && <span className="eq-note eq-fresh is-old">{tKey(t, 'eq.fresh.old', pcKey)}</span>}
       <div className="eq-acts">
         <span className="eq-worn">
           {t('eq.worn')} <b>{entries.map((e) => itemName(e, data)).join(' + ')}</b>
