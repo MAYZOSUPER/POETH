@@ -167,6 +167,8 @@
 }
 
 /* ---------- предметы этапа (S40; макет v0.2, раздел 1б) ---------- */
+/* строка предмета складывается по ширине своей колонки (в две колонки — уже, чем вкладка) */
+.bd-col { container: bdcol / inline-size; }
 /* новые компоненты макета — .ui-props (свойства чипами), .ui-tag--key, подсказка кнопки «Трейд» — кандидаты в components.css */
 .ui-props { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); min-width: 0; }
 .ui-props__p { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-xs); line-height: 1.3; color: var(--fg-faint); overflow-wrap: anywhere; }
@@ -226,6 +228,7 @@
 .bd-grp .ui-ico { width: 12px; height: 12px; }
 .bd-grp--rest { color: var(--fg-faint); }
 .bd-grp--later { color: var(--warn); }
+.bd-lvlreq { color: var(--fg-muted); }
 .bd-it > .ui-props .ui-sock { margin-right: var(--sp-3); }
 .bd-grp + .bd-it { border-top: 0; }
 .bd-jewels { justify-self: start; margin: var(--sp-2) var(--sp-6) var(--sp-4); }
@@ -242,7 +245,7 @@
 .bd-need .bd-tbtn > .bd-ttip { left: 0; right: auto; }
 .bd-need .bd-ttip::before { left: 22px; right: auto; }
 
-@container body (max-width: 600px) {
+@container bdcol (max-width: 520px) {
   .bd-it { grid-template-columns: 18px minmax(0, 1fr); }
   .bd-it__acts { grid-column: 2; grid-row: auto; flex-direction: row; align-items: center; flex-wrap: wrap; }
   .bd-it__btns { justify-content: flex-start; }

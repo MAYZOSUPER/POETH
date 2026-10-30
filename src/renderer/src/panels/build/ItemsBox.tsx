@@ -290,7 +290,7 @@ function ItemRow({ it, ctx }: { it: StageItem; ctx: RowCtx }) {
     .sort((a, b) => (a.prop ? PROP_ORDER[a.prop] : 9) - (b.prop ? PROP_ORDER[b.prop] : 9))
   const cap = expert ? MODS_EXPERT : MODS_SIMPLE
   const shownMods = allMods ? mods : mods.slice(0, cap)
-  const later = unique && !key && ctx.leveling && mark !== 'luxury'
+  const later = unique && !key && ctx.leveling && mark !== 'luxury' && mark !== 'leveling'
   const why = label?.reason ? reasonText(label.reason, t, lang, gameLang, gems, tree) : ''
 
   const markBtn = (
@@ -329,10 +329,10 @@ function ItemRow({ it, ctx }: { it: StageItem; ctx: RowCtx }) {
         {mark === 'important' && <span className="ui-tag ui-tag--merchant">{t('bd.it.mark.important')}</span>}
         {mark === 'luxury' && <span className="ui-tag ui-tag--person">{t('bd.it.mark.luxury')}</span>}
         {mark === 'leveling' && <span className="ui-tag">{t('bd.it.mark.leveling')}</span>}
-        {later && mark !== 'leveling' && <span className="ui-tag ui-tag--person">{t('bd.it.mark.later')}</span>}
+        {later && <span className="ui-tag ui-tag--person">{t('bd.it.mark.later')}</span>}
       </span>
       <span className="bd-it__acts">
-        {locked && <span className="ui-tag ui-tag--warn">{t('bd.it.fromLevel', { n: it.info.levelReq ?? 0 })}</span>}
+        {locked && <span className="ui-tag bd-lvlreq">{t('bd.it.fromLevel', { n: it.info.levelReq ?? 0 })}</span>}
         {price && <span className="bd-price">{priceText(price, t)}</span>}
         <span className="bd-it__btns">
           <TradeButton search={full} mode="full" label={t('bd.it.trade')} primary={key} data={data} expert={expert} />
