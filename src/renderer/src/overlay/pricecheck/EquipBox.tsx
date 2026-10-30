@@ -20,6 +20,7 @@ import {
   type EquipTotals,
   type TargetNote
 } from '@shared/build/equipCompare'
+import { guideItem, guideVerdict, type GuideVerdict } from '@shared/build/equipCompareGuide'
 import type { StoredBuild } from '@shared/types/build'
 import type { EquipElement, EquipEntry, EquipItem, EquipSlot, EquipState } from '@shared/types/equip'
 import { buildGuideOn } from '../leveling/buildGuide'
@@ -41,6 +42,7 @@ const VERDICT: Record<EquipCompare['verdict'], { icon: IconName; tone: string; k
 }
 
 const DAY = 24 * 60 * 60 * 1000
+const NO_ENTRIES: EquipEntry[] = []
 /** Поле ввода в пассивном оверлее: активировать оверлей (иначе клавиатура уйдёт в игру), как в PriceWindow. */
 const activateOverlay = (): void => void window.overlayApi.overlay.activate()
 /** Разница со знаком: «+5», «−13» (минус — типографский, как в макете). */
@@ -135,12 +137,34 @@ function useTotals(state: EquipState, build: StoredBuild | null): EquipTotals | 
     if (!build || !Object.keys(build.build.stats).length) return null
     const b = build.build
     if (state.level !== null && b.level - state.level > 10) return null
-    const plan = resolveStages(b, build.edits)
-    const cur = currentStage(plan, { level: state.level, act: null, campaignDone: false }, build.edits).index
-    const stage = cur !== null ? plan.stages[cur] : undefined
+    const { plan, index } = stageNow(build, state.level)
+    const stage = index !== null ? plan.stages[index] : undefined
     if (stage && stage.items !== null && stage.items !== b.activeItemSet) return null
     return totalsFromStats(b.stats, b.level)
   }, [state.mine, state.level, build])
+}
+
+/** Этап билда по уровню персонажа из журнала (или выбранный игроком во вкладке). */
+function stageNow(build: StoredBuild, level: number | null): { plan: ReturnType<typeof resolveStages>; index: number | null } {
+  const plan = resolveStages(build.build, build.edits)
+  return { plan, index: currentStage(plan, { level, act: null, campaignDone: false }, build.edits).index }
+}
+
+/** Второй вердикт «по гайду»: предмет этапа в этом слоте (S40) против новой и надетой вещи. */
+function useGuide(
+  build: StoredBuild | null,
+  level: number | null,
+  item: EquipItem,
+  worn: readonly EquipEntry[]
+): { v: GuideVerdict; stage: string } | null {
+  return useMemo(() => {
+    if (!build) return null
+    const { plan, index } = stageNow(build, level)
+    if (index === null) return null
+    const g = guideItem(build.build, plan, index, item)
+    const v = g ? guideVerdict(g.info, item, worn) : null
+    return v ? { v, stage: plan.stages[index]?.title ?? '' } : null
+  }, [build, level, item, worn])
 }
 
 // ---------------------------------------------------------------------------- тексты строк
@@ -214,10 +238,11 @@ function rowView(r: CmpRow, item: EquipItem, totals: boolean, t: T): RowView {
       const pick = main && main.delta < 0 ? main : [...shown].sort((a, b) => b.delta - a.delta)[0]
       const below = shown.filter((c) => c.belowCap).map((c) => elName(c.el, t))
       const reach = shown.filter((c) => c.reachCap).map((c) => elName(c.el, t))
+      const over = shown.filter((c) => c.overcap).map((c) => elName(c.el, t))
       const notes: string[] = []
-      if (below.length) notes.push(cap1(t('eq.n.belowCap', { el: below.join(', ') })))
+      if (below.length) notes.push(cap1(t(below.length > 1 ? 'eq.n.belowCap.many' : 'eq.n.belowCap', { el: below.join(', ') })))
       if (reach.length) notes.push(cap1(t('eq.n.reachCap', { el: reach.join(', ') })))
-      if (!notes.length && shown.some((c) => c.overcap)) notes.push(t('eq.n.overcap'))
+      if (over.length) notes.push(cap1(t('eq.n.overcap', { el: over.join(', ') })))
       return {
         ...base,
         label: t(totals ? 'eq.row.res.cap' : 'eq.row.res'),
@@ -448,6 +473,38 @@ function MineEditor({ state, onDone, t }: { state: EquipState; onDone: () => voi
   )
 }
 
+const GUIDE: Record<GuideVerdict['verdict'], { icon: IconName; tone: string; key: string }> = {
+  closer: { icon: 'arrow-up', tone: 'good', key: 'eq.guide.closer' },
+  further: { icon: 'arrow-down', tone: 'bad', key: 'eq.guide.further' },
+  same: { icon: 'check', tone: 'same', key: 'eq.guide.same' }
+}
+
+function GuideRow({ g, data, expert, t }: { g: { v: GuideVerdict; stage: string }; data: Poe1Data | null; expert: boolean; t: T }) {
+  const x = GUIDE[g.v.verdict]
+  const name = g.v.unique ? (data?.itemByRef('UNIQUE', g.v.unique)?.[0]?.name ?? g.v.unique) : null
+  const wants = g.v.wants.map((w) => t(`eq.guide.w.${w.id}`, { n: w.value })).join(' · ')
+  const detail = g.v.match
+    ? t('eq.guide.match')
+    : name
+      ? t('eq.guide.unique', { stage: g.stage, name })
+      : t('eq.guide.wants', { stage: g.stage, what: wants })
+  return (
+    <div className="eq-guide">
+      <Icon name="passive" />
+      <span className="eq-guide__t">
+        <span className="eq-guide__h">
+          <b>{t('eq.guide')}</b>
+          <span className={`ui-verdict ui-verdict--sm ui-verdict--${x.tone}`}>
+            <Icon name={x.icon} />
+            {t(x.key)}
+          </span>
+        </span>
+        {!expert && <span>{detail}</span>}
+      </span>
+    </div>
+  )
+}
+
 // ---------------------------------------------------------------------------- блок
 
 const NOTE_KEYS: Record<Exclude<TargetNote, 'twoHand'>, string> = {
@@ -493,6 +550,8 @@ function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: Equi
   const targets = useMemo(() => equipTargets(eq, state.items), [eq, state.items])
   const results = useMemo(() => targets.options.map((o) => compareEquip(eq, o.entries, totals, state.level)), [eq, targets, totals, state.level])
   const best = bestOption(results)
+  const shownIdx = pick !== null && pick < results.length ? pick : Math.max(0, best)
+  const guide = useGuide(build, state.level, eq, targets.options[shownIdx]?.entries ?? NO_ENTRIES)
   // выбор слота — до смены набора (запомнили, забыли)
   useEffect(() => setPick(null), [state.items])
 
@@ -550,7 +609,7 @@ function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: Equi
     )
   }
 
-  const idx = pick !== null && pick < results.length ? pick : Math.max(0, best)
+  const idx = shownIdx
   const cmp = results[idx]
   const target = targets.options[idx]
   const entries: EquipEntry[] = target.entries
@@ -594,6 +653,7 @@ function EquipInner({ item, eq, state, expert, t }: { item: ParsedItem; eq: Equi
         </div>
       )}
       {rows.length > 0 && <CmpList rows={rows} item={eq} totals={!!cmp.totals} expert={expert} t={t} />}
+      {guide && <GuideRow g={guide} data={data} expert={expert} t={t} />}
       {eq.kind !== 'flask' && (hasRes || !expert) && (
         <span className="eq-note">
           <Icon name="info" />

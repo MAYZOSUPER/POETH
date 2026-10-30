@@ -19,6 +19,12 @@ import {
   type EquipTotals
 } from '@shared/build/equipCompare'
 import type { EquipEntry, EquipItem, EquipKind, EquipNumbers, EquipSlot } from '@shared/types/equip'
+import { guideItem, guideVerdict } from '@shared/build/equipCompareGuide'
+import { readPobItem } from '@shared/build/pobItem'
+import { stageItems } from '@shared/build/stageItems'
+import { parsePobXml } from '@shared/pob/model'
+import { resolveStages } from '@shared/pob/stages'
+import { fixtureXml } from '../pob/fixtures'
 import { fixtureNames, readFixture, store } from '../poe1/helpers'
 
 // S41: «Против надетого» — числа вещи из распознанного предмета (RU = EN), правила слотов §7.2, вердикт §7.3.
@@ -340,6 +346,14 @@ describe('вердикт по приоритетам', () => {
     expect(compareEquip(lifeLoss, [sword], totals({ fire: 80 }), null).verdict).toBe('mixed')
   })
 
+  it('потери в защите, выгода только в прочем (мана) — «Хуже»; у обуви скорость — как DPS: «По-разному»', () => {
+    const ring = worn('Ring 1', 'ring', { life: 88, res: { cold: 25 } })
+    const mana = item('ring', { mana: 44, res: { fire: 36 } })
+    expect(compareEquip(mana, [ring], totals({ fire: 90, cold: 60 }), null).verdict).toBe('worse')
+    const fast = item('boots', { life: 25, speed: 30, res: { fire: 30, cold: 10 } })
+    expect(compareEquip(fast, [old], t, null)).toMatchObject({ verdict: 'mixed', gain: { row: 'speed' }, loss: { row: 'life' } })
+  })
+
   it('DPS: меньше 2 % — шум', () => {
     const sword = worn('Weapon 1', 'weapon1h', { pdps: 100 })
     expect(compareEquip(item('weapon1h', { pdps: 101 }), [sword], null, null).verdict).toBe('same')
@@ -349,8 +363,14 @@ describe('вердикт по приоритетам', () => {
     const nw = item('boots', { life: 42, speed: 30, mana: 20, es: 10, res: { cold: 38, lightning: 24 }, attr: { dex: 10 } }, { req: { level: 40, str: 0, dex: 0, int: 0 } })
     const cmp = compareEquip(nw, [old], t, 60)
     expect(cmp.rows.map((r) => r.id).slice(0, 2)).toEqual(['req', 'res'])
-    expect(shownRows(cmp.rows, false).length).toBeLessThanOrEqual(4)
+    const simple = shownRows(cmp.rows, false)
+    expect(simple).toHaveLength(4)
+    // «Требования ✓» уступают место изменениям; не проходят — первыми
+    expect(simple.map((r) => r.id)).not.toContain('req')
     expect(shownRows(cmp.rows, true)).toHaveLength(cmp.rows.length)
+    expect(shownRows(compareEquip(nw, [old], t, 30).rows, false)[0]).toMatchObject({ id: 'req', hard: true })
+    const few = compareEquip(item('boots', { life: 60, speed: 25, res: { fire: 30, cold: 10 } }, { req: nw.req }), [old], t, 60)
+    expect(shownRows(few.rows, false).map((r) => r.id)).toEqual(['life', 'req'])
   })
 
   it('моды урона без PoB — пометка «оценить нельзя»', () => {
@@ -361,5 +381,53 @@ describe('вердикт по приоритетам', () => {
     const a = item('ring', { life: 30 })
     expect(sameItem(a, { ...a, slot: 'Ring 1', at: 5 } as EquipEntry)).toBe(true)
     expect(sameItem(a, item('ring', { life: 31 }))).toBe(false)
+  })
+})
+
+describe('второй вердикт «по гайду»', () => {
+  const boots = readPobItem('Rarity: RARE\nStorm Stride\nTwo-Toned Boots\nImplicits: 0\n+55 to maximum Life\n30% increased Movement Speed\n+30% to Fire Resistance\n+12% to Cold Resistance')!
+  const goldrim = readPobItem('Rarity: UNIQUE\nGoldrim\nLeather Cap\nImplicits: 0\n+30% to all Elemental Resistances\n10% increased Rarity of Items found')!
+
+  it('жёлтая вещь гайда: что хочет гайд — жизнь, сопротивления, скорость; ближе / дальше / как надетое', () => {
+    const nw = item('boots', { life: 60, speed: 30, res: { fire: 40 } })
+    const old = worn('Boots', 'boots', { life: 20, speed: 10 })
+    const g = guideVerdict(boots, nw, [old])!
+    expect(g.wants).toEqual([
+      { id: 'life', value: 55 },
+      { id: 'res', value: 42 },
+      { id: 'speed', value: 30 }
+    ])
+    expect(g).toMatchObject({ verdict: 'closer', unique: null, match: false })
+    expect(guideVerdict(boots, item('boots', { life: 10 }), [old])!.verdict).toBe('further')
+    expect(guideVerdict(boots, item('boots', { life: 22, speed: 10 }), [old])!.verdict).toBe('same')
+  })
+
+  it('уник гайда — по имени: это он — ближе; надет он, а это жёлтая — дальше', () => {
+    const cap = item('helmet', { res: { fire: 30, cold: 30, lightning: 30 } }, { rarity: 'unique', name: 'Goldrim', base: 'Leather Cap' })
+    const rare = item('helmet', { life: 70, res: { fire: 40 } })
+    expect(guideVerdict(goldrim, cap, [worn('Helmet', 'helmet', { life: 40 })])).toMatchObject({ verdict: 'closer', match: true, unique: 'Goldrim' })
+    const wornCap: EquipEntry = { ...cap, slot: 'Helmet', at: 1 }
+    expect(guideVerdict(goldrim, rare, [wornCap])).toMatchObject({ verdict: 'further', match: false })
+    // уник без жизни и сопротивлений и не он сам — сравнивать нечем
+    const odd = readPobItem('Rarity: UNIQUE\nOdd Thing\nIron Ring\nImplicits: 0\n10% increased Rarity of Items found')!
+    expect(guideVerdict(odd, item('ring', { life: 10 }), [])).toBeNull()
+  })
+
+  it('предмет этапа из настоящего кода PoB — для того же вида вещи', () => {
+    const r = parsePobXml(fixtureXml('pobbin-acts-all-axes'))
+    if (!r.ok) throw new Error('pob')
+    const plan = resolveStages(r.build)
+    const index = plan.stages.findIndex((s) => s.items !== null)
+    const kinds = new Set(stageItems(r.build, plan, index).map((x) => x.kind))
+    for (const [kind, slot] of [
+      ['boots', 'boots'],
+      ['ring', 'ring'],
+      ['weapon2h', 'weapon']
+    ] as const) {
+      const g = guideItem(r.build, plan, index, item(kind))
+      if (kinds.has(slot)) expect(g?.kind, kind).toBe(slot)
+      else expect(g, kind).toBeNull()
+    }
+    expect(guideItem(r.build, plan, index, item('complex'))).toBeNull()
   })
 })

@@ -689,7 +689,8 @@ export function compareEquip(item: EquipItem, replaced: readonly EquipEntry[], t
         rows.push(r)
       }
     }
-    add(numRow('speed', 5, old.speed, nw.speed))
+    // скорость у обуви — главное свойство после защиты (как DPS у оружия), у прочих вещей — «прочее»
+    add(numRow('speed', item.kind === 'boots' ? 4 : 5, old.speed, nw.speed))
     add(numRow('block', 5, old.block, nw.block))
     add(numRow('mana', 5, old.mana, nw.mana))
     const attr = ATTRIBUTES.filter((a) => old.attr[a] || nw.attr[a]).map((a) => ({
@@ -733,10 +734,11 @@ export function compareEquip(item: EquipItem, replaced: readonly EquipEntry[], t
   else if (!losses.length) verdict = 'better'
   else if (!gains.length) verdict = 'worse'
   else {
-    // потеря капа без выгоды в защите (жизнь/ES, сопротивления) — хуже; иначе выигрыш и потеря в разных пунктах
-    const capLoss = losses.some((s) => s.tier === 1)
-    const defenceGain = gains.some((s) => s.tier <= 3)
-    verdict = capLoss && !defenceGain ? 'worse' : 'mixed'
+    // «Хуже»: потерян кап, а выгода только в DPS и прочем; или потеря в защите (жизнь/ES, сопротивления), а выгода
+    // только в прочем. Иначе выигрыш и потеря в разных пунктах — «По-разному».
+    const lossTier = Math.min(...losses.map((s) => s.tier))
+    const gainTier = Math.min(...gains.map((s) => s.tier))
+    verdict = (lossTier === 1 && gainTier > 3) || (lossTier <= 3 && gainTier === 5) ? 'worse' : 'mixed'
   }
   const score = signals.reduce((s, x) => s + x.sign * WEIGHT[x.tier] * x.size, 0) - (hard ? 1e6 : 0)
   return {
@@ -760,9 +762,17 @@ export function bestOption(results: readonly EquipCompare[]): number {
   return best
 }
 
-/** Строки для показа: в простом режиме — 4 главные (требования, если не проходят, — всегда). */
+/**
+ * Строки для показа: в простом режиме — 4 главные изменения (требования, если не проходят, — первыми);
+ * «Требования ✓» — в конце, если осталось место (как в макете).
+ */
 export function shownRows(rows: readonly CmpRow[], expert: boolean): CmpRow[] {
   if (expert) return [...rows]
-  const main = rows.filter((r) => r.dir !== 'same' || r.id === 'req')
-  return (main.length ? main : rows).slice(0, 4)
+  const changed = rows.filter((r) => r.dir !== 'same')
+  const req = rows.find((r) => r.id === 'req' && r.dir === 'same')
+  const out = changed.slice(0, SIMPLE_ROWS)
+  if (req && out.length < SIMPLE_ROWS) out.push(req)
+  return out.length ? out : rows.slice(0, SIMPLE_ROWS)
 }
+
+const SIMPLE_ROWS = 4

@@ -77,8 +77,9 @@ export const equip: DomainDict = {
     'eq.row.flask.utility': 'Длительность',
     'eq.row.charges': 'Глотков из полного',
     'eq.n.belowCap': '{el} упадёт ниже капа.',
+    'eq.n.belowCap.many': '{el} упадут ниже капа.',
     'eq.n.reachCap': 'Закроется кап: {el}.',
-    'eq.n.overcap': 'Изменение уйдёт в запас над капом.',
+    'eq.n.overcap': '{el}: изменение уйдёт в запас над капом.',
     'eq.n.caster': 'Для заклинаний DPS оружия не важен.',
     'eq.n.gems': 'После замены {attr} {after} из {need} — камни и вещи отключатся.',
     'eq.n.pct': '{a} → {b}% к жизни',
@@ -146,7 +147,20 @@ export const equip: DomainDict = {
     'eq.note.quiverNoBow': 'Колчан надевают только с луком.',
     'eq.char': 'набор персонажа {name}',
     'eq.char.none': 'персонаж не определён — общий набор',
-    'eq.flask.mods': 'Свойства флаконов (иммунитеты, скорость) сравните сами.'
+    'eq.flask.mods': 'Свойства флаконов (иммунитеты, скорость) сравните сами.',
+
+    // второй вердикт «по гайду» (вставлен билд)
+    'eq.guide': 'По гайду',
+    'eq.guide.closer': 'Ближе к гайду',
+    'eq.guide.further': 'Дальше от гайда',
+    'eq.guide.same': 'Как надетое',
+    'eq.guide.match': 'Это вещь из гайда.',
+    'eq.guide.unique': 'Гайд на этапе «{stage}»: {name}.',
+    'eq.guide.wants': 'Гайд на этапе «{stage}»: {what}.',
+    'eq.guide.w.life': 'жизнь +{n}',
+    'eq.guide.w.es': 'энергощит +{n}',
+    'eq.guide.w.res': 'сопротивления +{n}',
+    'eq.guide.w.speed': 'скорость {n}%'
   },
   en: {
     'eq.title': 'Versus equipped',
@@ -217,8 +231,9 @@ export const equip: DomainDict = {
     'eq.row.flask.utility': 'Duration',
     'eq.row.charges': 'Uses per full flask',
     'eq.n.belowCap': '{el} drops below the cap.',
+    'eq.n.belowCap.many': '{el} drop below the cap.',
     'eq.n.reachCap': 'Capped: {el}.',
-    'eq.n.overcap': 'The change goes into over-cap.',
+    'eq.n.overcap': '{el}: the change goes into over-cap.',
     'eq.n.caster': 'Weapon DPS does not matter for spells.',
     'eq.n.gems': 'After the swap {attr} is {after} of {need}, so gems and items get disabled.',
     'eq.n.pct': '{a} → {b}% to life',
@@ -282,6 +297,18 @@ export const equip: DomainDict = {
     'eq.note.quiverNoBow': 'A quiver goes only with a bow.',
     'eq.char': '{name}’s set',
     'eq.char.none': 'character unknown — shared set',
-    'eq.flask.mods': 'Compare flask mods (immunities, speed) yourself.'
+    'eq.flask.mods': 'Compare flask mods (immunities, speed) yourself.',
+
+    'eq.guide': 'By the guide',
+    'eq.guide.closer': 'Closer to the guide',
+    'eq.guide.further': 'Further from the guide',
+    'eq.guide.same': 'Same as equipped',
+    'eq.guide.match': 'This is the guide’s item.',
+    'eq.guide.unique': 'The guide at “{stage}”: {name}.',
+    'eq.guide.wants': 'The guide at “{stage}”: {what}.',
+    'eq.guide.w.life': 'life +{n}',
+    'eq.guide.w.es': 'energy shield +{n}',
+    'eq.guide.w.res': 'resistances +{n}',
+    'eq.guide.w.speed': 'speed {n}%'
   }
 }

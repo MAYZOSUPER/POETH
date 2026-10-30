@@ -160,6 +160,36 @@
   font-size: var(--fs-xs);
 }
 
+/* второй вердикт «по гайду» (макет .cv-guide) */
+.eq-guide {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--border);
+}
+.eq-guide > .ui-ico {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  color: var(--rarity-gem);
+}
+.eq-guide__t {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.eq-guide__t > span:last-child:not(.eq-guide__h) {
+  color: var(--fg-muted);
+}
+.eq-guide__h {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
 /* вердикт (новый .ui-verdict): цвет + иконка + слово */
 .ui-verdict {
   --tone: var(--fg-muted);
