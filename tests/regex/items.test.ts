@@ -13,6 +13,7 @@ import {
   buildItemsRegex,
   compileSearch,
   emptyItemsQuery,
+  escapeRegex,
   formatTerm,
   isItemsPresetQuery,
   itemsPresetQuery,
@@ -59,6 +60,13 @@ const fill = (line: string, ...v: number[]): string => {
   return line.replace(/#/g, () => String(v[Math.min(i++, v.length - 1)]))
 }
 const q = (p: Partial<ItemsQuery>): ItemsQuery => ({ ...emptyItemsQuery(), ...p })
+/** «секунд(-ы)» → «секунд»: одна из форм, которую клиент игры показывает сам («на 5 секунд»). */
+const resolved = (l: string): string => l.replace(/\((?:-|\+)?[a-zа-яё]{1,6}\)/giu, '')
+/** Строка мода из данных («"» — склоняемое слово, его клиент пишет сам) → регулярка для строки подсказки. */
+const ownRe = (l: string, whole = true): RegExp => {
+  const body = l.split('"').map(escapeRegex).join('\\S*')
+  return new RegExp(whole ? `^${body}$` : body)
+}
 const term = (body: string): string => formatTerm({ negate: false, body })
 
 /** Шапка предмета без свойств: класс, редкость, имя, база, уровень предмета. */
@@ -77,12 +85,12 @@ function sweep(lang: RegexLang, value = 25): { raw: string[]; filled: string[] }
   return { raw, filled: raw.map((l) => fill(l, value)) }
 }
 
-/** Строки корпуса, где совпал фрагмент, но нет ни одной своей строки целиком. */
+/** Строки корпуса, где совпал фрагмент, но нет ни одной своей строки целиком («"» — любое слово). */
 function strangers(re: RegExp, own: string[], s: { raw: string[]; filled: string[] }): string[] {
-  const ownF = own.map(fold)
+  const ownR = own.map((o) => ownRe(fold(o), false))
   const out: string[] = []
   s.filled.forEach((l, i) => {
-    if (re.test(l) && !ownF.some((o) => s.raw[i].includes(o))) out.push(s.raw[i])
+    if (re.test(l) && !ownR.some((o) => o.test(s.raw[i]))) out.push(s.raw[i])
   })
   return out
 }
@@ -147,6 +155,8 @@ describe.each(LANGS)('строки модов %s', (lang) => {
           own.some((l) => match(item(lang, [fill(l, 25)]))),
           `${JSON.stringify(opts)} ${m.id} «${m.display}» ← ${m.token}`
         ).toBe(true)
+        // клиент сам склоняет «секунд(-ы)» → «секунд» / «секунды»
+        expect(own.some((l) => match(item(lang, [fill(resolved(l), 25)]))), `${m.id}: без «(-ы)»`).toBe(true)
       }
       // дробные статы: «Regenerate 1.5 Life per second»
       if (m.token.includes('[\\d.]+')) expect(own.some((l) => compileSearch(term(m.token))(fill(l, 1.5)))).toBe(true)
@@ -180,7 +190,7 @@ describe.each(LANGS)('строки модов %s', (lang) => {
   it('порог «≥ N»: своя строка совпадает только при значении ≥ N', () => {
     const values = [1, 4, 5, 9, 10, 24, 25, 26, 49, 50, 99, 100, 101, 150, 230]
     for (const m of d.mods.filter((x) => x.posts?.length)) {
-      const [line] = m.display.split('\n')
+      const [line] = m.display.split('\n').map(resolved)
       for (const n of [1, 10, 25, 50, 100]) {
         const r = buildItemsRegex(d, lang, q({ want: { [m.id]: n } }))
         for (const opts of [{}, { foldYo: true, asciiCaseOnly: true }] as EmulatorOptions[]) {
@@ -307,18 +317,27 @@ describe.each(LANGS)('фикстуры предметов %s', (lang) => {
     let seen = 0
     for (const m of d.mods) {
       const own = m.text.split('\n').map(fold)
+      const whole = own.map((o) => ownRe(o))
+      const inside = own.map((o) => ownRe(o, false))
       const match = compileSearch(term(m.token), { foldYo: true })
       for (const f of files) {
-        const has = f.lines.some((l) => own.includes(l))
+        const has = f.lines.some((l) => whole.some((re) => re.test(l)))
         const hit = match(f.text)
         if (has) {
           seen++
           expect(hit, `${f.file}: «${m.display}» не найдена (${m.token})`).toBe(true)
         }
-        if (hit) expect(f.lines.some((l) => own.some((o) => l.includes(o))), `${f.file}: ложное совпадение ${m.id} ← ${m.token}`).toBe(true)
+        if (hit) expect(f.lines.some((l) => inside.some((re) => re.test(l))), `${f.file}: ложное совпадение ${m.id} ← ${m.token}`).toBe(true)
       }
     }
     expect(seen).toBeGreaterThan(20)
+  })
+
+  it('склоняемое слово: «… на 4 секунды / for 4 seconds …» (flask-01) находится своей строкой', () => {
+    const m = d.mods.find((x) => x.id === 'local_flask_chill_or_freeze_immunity_if_chilled_or_frozen_s')!
+    const f = files.find((x) => x.file === 'flask-01.txt')!
+    if (lang === 'ru') expect(m.text).toContain('"')
+    expect(compileSearch(term(m.token))(f.text), m.token).toBe(true)
   })
 
   it('класс, редкость и влияние из фикстуры находятся своими фильтрами', () => {

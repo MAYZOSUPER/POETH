@@ -106,6 +106,14 @@ const UNIT_TYPES = new Set(['prefix', 'suffix'])
 const EXTRA_TYPES = new Set(['enchantment', 'unique'])
 
 const TOKEN_MIN = 2
+
+/**
+ * «секунд(-ы)», «заряда(-ов)» (так пишет RePoE RU): клиент игры то склоняет слово сам («на 4 секунды» — фикстура
+ * flask-01), то показывает как есть (описания камней). Слово целиком заменяем на «"» — такой символ в токен
+ * не попадает, и токен на окончание не опирается. Показ (display) — как в RePoE.
+ */
+const PLURAL = /[a-zа-яё]*\((?:-|\+)?[a-zа-яё]{1,6}\)/giu
+export const stripPlural = (line) => line.replace(PLURAL, '"')
 const TOKEN_MAX = 14
 const FALLBACK_MAX = 44
 const LONGEST_MAX = 64
@@ -145,7 +153,18 @@ function makeIndex(lines) {
   function endingWith(s) {
     return containing(s).filter((i) => lines[i].endsWith(s))
   }
-  return { lines, containing, endingWith }
+  /**
+   * Строки, где своя строка есть целиком: «"» (склоняемое слово, см. stripPlural) — любое слово, так что
+   * «… на # секунды при …» из фикстуры — тоже своя.
+   */
+  function like(s) {
+    if (!s.includes('"')) return containing(s)
+    const parts = s.split('"')
+    const lit = parts.reduce((a, b) => (b.length > a.length ? b : a))
+    const re = new RegExp(parts.map(escapeRegex).join('[^ ]*'))
+    return (lit.length >= 2 ? containing(lit) : lines.map((_, i) => i)).filter((i) => re.test(lines[i]))
+  }
+  return { lines, containing, endingWith, like }
 }
 
 // ---------------------------------------------------------------------------
@@ -236,8 +255,10 @@ function collectUnits(ctx) {
       if (!u) {
         u = {
           ids: e.ids,
-          text: { en: e.en, ru: e.ru },
+          text: { en: e.en.map(stripPlural), ru: e.ru.map(stripPlural) },
           display: { en: e.displayEn, ru: e.displayRu },
+          // для проверки регистра: те же позиции символов, что в text
+          cased: { en: e.displayEn.map(stripPlural), ru: e.displayRu.map(stripPlural) },
           decimal: false,
           kinds: new Set(),
           normal: new Set(),
@@ -303,7 +324,7 @@ function buildCorpus(lang, ctx, units) {
   const cs = readClientStrings(lang)
   for (const v of Object.values(cs)) if (Array.isArray(v)) for (const s of v) if (typeof s === 'string') lines.add(normLine(s))
   lines.delete('')
-  return [...lines].sort()
+  return [...new Set([...lines].map(stripPlural))].sort()
 }
 
 // ---------------------------------------------------------------------------
@@ -316,8 +337,8 @@ function buildCorpus(lang, ctx, units) {
  */
 function unitToken(u, lang, idx) {
   const own = u.text[lang]
-  const disp = u.display[lang]
-  const allowedBy = own.map((l) => new Set(idx.containing(fold(l))))
+  const disp = u.cased[lang]
+  const allowedBy = own.map((l) => new Set(idx.like(fold(l))))
   const caseOkRu = (raw) => lang !== 'ru' || disp.some((d) => d.includes(raw))
   /** Чужие строки, где есть подстрока: свои строки и строки, где своя есть целиком, не считаются. */
   const allowedFor = (test) => {
@@ -456,11 +477,11 @@ function pairToken(own, caseOkRu, allowedFor, idx, re) {
  */
 function unitThreshold(u, lang, idx) {
   const [line] = u.text[lang]
-  const [disp] = u.display[lang]
+  const [disp] = u.cased[lang]
   const i = line.indexOf('#')
   const [pre, post] = [line.slice(0, i), line.slice(i + 1)]
   const [dpre, dpost] = [disp.slice(0, disp.indexOf('#')), disp.slice(disp.indexOf('#') + 1)]
-  const allowed = new Set(idx.containing(fold(line)))
+  const allowed = new Set(idx.like(fold(line)))
   const ok = (raw, text) => lang !== 'ru' || caseOk(raw, [text])
   let best = null
   for (const s of preCandidates(pre)) {
@@ -641,6 +662,11 @@ function buildLang(lang, ctx, units) {
     if (!u.normal.size && u.infl.size) {
       const infl = new Set([...u.infl.values()].flatMap((s) => [...s]))
       m.infl = INFLUENCES.map(([k]) => k).filter((k) => infl.has(k))
+    }
+    // по классам: на шлеме «… урона от молнии к чарам» — только с влиянием, на жезле — обычным образом
+    const inflBy = ITEM_CLASSES.map(([k]) => k).filter((k) => u.infl.has(k) && !u.normal.has(k))
+    if (inflBy.length) {
+      m.inflBy = Object.fromEntries(inflBy.map((k) => [k, INFLUENCES.map(([i]) => i).filter((i) => u.infl.get(k).has(i))]))
     }
     if (u.crafted && !u.other) m.src = 'crafted'
     else if (!cls.size) m.src = 'special'

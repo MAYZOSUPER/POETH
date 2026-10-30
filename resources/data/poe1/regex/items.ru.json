@@ -41,7 +41,17 @@
     "shaper",
     "hunter",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "shaper",
+     "redeemer"
+    ],
+    "ring": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "%_of_your_and_your_minions_physical_damage_cannot_be_reflected",
@@ -62,7 +72,17 @@
     "elder",
     "hunter",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "elder",
+     "warlord"
+    ],
+    "ring": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "X_armour_if_you_have_blocked_recently",
@@ -80,7 +100,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "accuracy_rating_+%_per_frenzy_charge",
@@ -98,7 +123,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "sword1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "accuracy_rating_+%",
@@ -128,7 +158,16 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder",
+     "redeemer"
+    ],
+    "quiver": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "accuracy_rating_+_per_2_dexterity",
@@ -184,7 +223,40 @@
     "shaper",
     "elder",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder",
+     "redeemer"
+    ],
+    "quiver": [
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ],
+    "claw": [
+     "redeemer"
+    ],
+    "bow": [
+     "shaper",
+     "redeemer"
+    ],
+    "sword1h": [
+     "redeemer"
+    ],
+    "axe1h": [
+     "redeemer"
+    ],
+    "sword2h": [
+     "shaper",
+     "redeemer"
+    ],
+    "axe2h": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "add_frenzy_charge_on_skill_hit_%",
@@ -200,7 +272,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "add_power_charge_on_critical_strike_%",
@@ -216,7 +293,18 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "crusader"
+    ],
+    "staff": [
+     "shaper"
+    ],
+    "bow": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "add_power_charge_on_kill_%_chance",
@@ -238,7 +326,29 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper",
+     "redeemer"
+    ],
+    "wand": [
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "staff": [
+     "shaper",
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ],
+    "claw": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "additional_all_attributes",
@@ -285,7 +395,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sword1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "additional_block_%_with_5_or_more_nearby_enemies",
@@ -298,7 +413,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "additional_block_%",
@@ -670,7 +790,16 @@
     "bodyArmour",
     "amulet",
     "belt"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper"
+    ],
+    "belt": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "all_skill_gem_level_+",
@@ -717,7 +846,21 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "warlord"
+    ],
+    "sceptre": [
+     "warlord"
+    ],
+    "staff": [
+     "warlord"
+    ],
+    "dagger": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "anger_mana_reservation_efficiency_+%",
@@ -733,7 +876,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "anger_mana_reservation_efficiency_-2%_per_1",
@@ -799,7 +947,35 @@
     "sword1h",
     "axe1h",
     "mace1h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ],
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "shaper",
+     "elder"
+    ],
+    "dagger": [
+     "shaper",
+     "elder"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "sword1h": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "mace1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "area_of_effect_+%_if_culled_recently",
@@ -822,7 +998,17 @@
    "infl": [
     "elder",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "mace1h": [
+     "elder",
+     "crusader"
+    ],
+    "mace2h": [
+     "elder",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "area_of_effect_+%_per_50_strength",
@@ -835,7 +1021,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "mace1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "area_of_effect_+%_per_endurance_charge",
@@ -848,7 +1039,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "mace2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "armour_%_applies_to_fire_cold_lightning_damage_if_have_blocked_recently",
@@ -891,7 +1087,13 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "attack_and_cast_speed_+%_during_flask_effect",
@@ -950,7 +1152,12 @@
     "gloves",
     "quiver",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "attack_cast_and_movement_speed_+%_during_onslaught",
@@ -1062,7 +1269,41 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "shaper",
+     "hunter"
+    ],
+    "staff": [
+     "shaper",
+     "hunter"
+    ],
+    "sword1h": [
+     "shaper",
+     "hunter"
+    ],
+    "axe1h": [
+     "shaper",
+     "hunter"
+    ],
+    "mace1h": [
+     "shaper",
+     "hunter"
+    ],
+    "sword2h": [
+     "shaper",
+     "hunter"
+    ],
+    "axe2h": [
+     "shaper",
+     "hunter"
+    ],
+    "mace2h": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "attack_minimum_added_lightning_damage,attack_maximum_added_lightning_damage",
@@ -1098,7 +1339,29 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper",
+     "hunter"
+    ],
+    "sceptre": [
+     "shaper",
+     "hunter"
+    ],
+    "staff": [
+     "shaper",
+     "hunter"
+    ],
+    "dagger": [
+     "shaper",
+     "hunter"
+    ],
+    "claw": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "attack_minimum_added_physical_damage,attack_maximum_added_physical_damage",
@@ -1136,7 +1399,13 @@
    "infl": [
     "elder",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "attack_speed_+%_if_enemy_killed_recently",
@@ -1155,7 +1424,28 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder"
+    ],
+    "bow": [
+     "elder"
+    ],
+    "axe1h": [
+     "warlord"
+    ],
+    "sword2h": [
+     "elder"
+    ],
+    "axe2h": [
+     "elder",
+     "warlord"
+    ],
+    "mace2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "attack_speed_+%_if_have_been_hit_recently",
@@ -1168,7 +1458,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "attack_speed_+%_if_rare_or_unique_enemy_nearby",
@@ -1244,7 +1539,12 @@
     "quiver",
     "ring",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "attack_speed_while_fortified_+%",
@@ -1258,7 +1558,15 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "sword1h": [
+     "crusader"
+    ],
+    "sword2h": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "attacks_chance_to_blind_on_hit_%",
@@ -1280,7 +1588,39 @@
     "shaper",
     "elder",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "shaper"
+    ],
+    "dagger": [
+     "redeemer"
+    ],
+    "claw": [
+     "elder",
+     "redeemer"
+    ],
+    "bow": [
+     "elder",
+     "redeemer"
+    ],
+    "sword1h": [
+     "elder",
+     "redeemer"
+    ],
+    "axe1h": [
+     "elder",
+     "redeemer"
+    ],
+    "sword2h": [
+     "elder",
+     "redeemer"
+    ],
+    "axe2h": [
+     "elder",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "attacks_chance_to_taunt_on_hit_%",
@@ -1299,7 +1639,15 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "axe1h": [
+     "crusader"
+    ],
+    "axe2h": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "attacks_impale_on_hit_%_chance",
@@ -1315,7 +1663,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "attacks_intimidate_on_hit_%",
@@ -1351,7 +1704,37 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "shaper",
+     "hunter"
+    ],
+    "claw": [
+     "shaper",
+     "hunter"
+    ],
+    "bow": [
+     "shaper",
+     "hunter"
+    ],
+    "sword1h": [
+     "shaper",
+     "hunter"
+    ],
+    "axe1h": [
+     "shaper",
+     "hunter"
+    ],
+    "sword2h": [
+     "shaper",
+     "hunter"
+    ],
+    "axe2h": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "auras_grant_damage_+%_to_you_and_your_allies",
@@ -1380,7 +1763,45 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "staff": [
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ],
+    "claw": [
+     "redeemer"
+    ],
+    "bow": [
+     "redeemer"
+    ],
+    "sword1h": [
+     "redeemer"
+    ],
+    "axe1h": [
+     "redeemer"
+    ],
+    "mace1h": [
+     "redeemer"
+    ],
+    "sword2h": [
+     "redeemer"
+    ],
+    "axe2h": [
+     "redeemer"
+    ],
+    "mace2h": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "avoid_all_elemental_status_%",
@@ -1416,7 +1837,15 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "warlord"
+    ],
+    "shield": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "avoid_elemental_damage_chance_%_during_soul_gain_prevention",
@@ -1447,7 +1876,15 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "warlord"
+    ],
+    "shield": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "avoid_interruption_while_casting_%",
@@ -1463,7 +1900,16 @@
     "shaper",
     "elder",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper",
+     "crusader"
+    ],
+    "staff": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "avoid_knockback_%",
@@ -1495,7 +1941,15 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "warlord"
+    ],
+    "shield": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "avoid_physical_damage_%",
@@ -1514,7 +1968,15 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "redeemer"
+    ],
+    "quiver": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "avoid_projectiles_%_chance_if_taken_projectile_damage_recently",
@@ -1594,7 +2056,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "base_avoid_bleed_%",
@@ -1649,7 +2116,12 @@
     "bodyArmour",
     "shield",
     "quiver"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_avoid_ignite_%",
@@ -1670,7 +2142,15 @@
     "bodyArmour",
     "shield",
     "quiver"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "crusader"
+    ],
+    "quiver": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_avoid_poison_%",
@@ -1688,7 +2168,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "base_avoid_projectiles_%_chance",
@@ -1707,7 +2192,13 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_avoid_shock_%",
@@ -1728,7 +2219,15 @@
     "bodyArmour",
     "shield",
     "quiver"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "crusader"
+    ],
+    "quiver": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_avoid_stun_%",
@@ -1750,7 +2249,17 @@
     "helmet",
     "bodyArmour",
     "quiver"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder",
+     "warlord"
+    ],
+    "quiver": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_bleed_duration_+%",
@@ -1768,7 +2277,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_cannot_be_frozen",
@@ -1831,7 +2345,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_chance_to_ignite_%",
@@ -1860,7 +2379,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_chance_to_poison_on_hit_%",
@@ -1882,7 +2406,13 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "base_chance_to_shock_%",
@@ -1911,7 +2441,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_chaos_damage_resistance_%",
@@ -1958,7 +2493,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "base_cold_damage_resistance_%",
@@ -2005,7 +2545,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_cooldown_speed_+%",
@@ -2016,7 +2561,13 @@
    "cls": [
     "boots",
     "belt"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_critical_strike_multiplier_+",
@@ -2045,7 +2596,16 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "warlord"
+    ],
+    "ring": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_damage_removed_from_mana_before_life_%",
@@ -2071,7 +2631,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_energy_shield_leech_from_fire_damage_permyriad",
@@ -2084,7 +2649,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_energy_shield_leech_from_lightning_damage_permyriad",
@@ -2097,7 +2667,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_energy_shield_regeneration_rate_per_minute_%",
@@ -2184,7 +2759,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_frenzy_charge_duration_+%",
@@ -2224,7 +2804,21 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "staff": [
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_inflict_fire_exposure_on_hit_%_chance",
@@ -2240,7 +2834,21 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "warlord"
+    ],
+    "sceptre": [
+     "warlord"
+    ],
+    "staff": [
+     "warlord"
+    ],
+    "dagger": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_inflict_lightning_exposure_on_hit_%_chance",
@@ -2256,7 +2864,21 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "crusader"
+    ],
+    "sceptre": [
+     "crusader"
+    ],
+    "staff": [
+     "crusader"
+    ],
+    "dagger": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_item_found_quantity_+%",
@@ -2353,7 +2975,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_life_leech_from_chaos_damage_permyriad",
@@ -2366,7 +2994,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "base_life_leech_from_cold_damage_permyriad",
@@ -2383,7 +3016,13 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_life_leech_from_fire_damage_permyriad",
@@ -2400,7 +3039,13 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_life_leech_from_lightning_damage_permyriad",
@@ -2417,7 +3062,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_life_leech_from_physical_damage_permyriad",
@@ -2431,7 +3082,13 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "base_life_regeneration_rate_per_minute",
@@ -2501,7 +3158,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_mana_cost_+_with_channelling_skills",
@@ -2619,7 +3281,16 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "redeemer"
+    ],
+    "amulet": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_maximum_chaos_damage_resistance_%",
@@ -2640,7 +3311,12 @@
    "cls": [
     "gloves",
     "shield"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_maximum_energy_shield",
@@ -2672,7 +3348,12 @@
    "cls": [
     "boots",
     "shield"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_maximum_life",
@@ -2706,7 +3387,12 @@
    "cls": [
     "helmet",
     "shield"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_maximum_mana",
@@ -2757,7 +3443,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_minimum_endurance_charges",
@@ -2774,7 +3465,12 @@
     "shield",
     "ring",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_minimum_frenzy_charges",
@@ -2791,7 +3487,12 @@
     "shield",
     "ring",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_minimum_power_charges",
@@ -2808,7 +3509,12 @@
     "shield",
     "ring",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_minion_duration_+%",
@@ -2849,7 +3555,37 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "shaper",
+     "hunter"
+    ],
+    "amulet": [
+     "shaper",
+     "hunter"
+    ],
+    "staff": [
+     "shaper",
+     "redeemer"
+    ],
+    "bow": [
+     "shaper",
+     "redeemer"
+    ],
+    "sword2h": [
+     "shaper",
+     "redeemer"
+    ],
+    "axe2h": [
+     "shaper",
+     "redeemer"
+    ],
+    "mace2h": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_number_of_essence_spirits_allowed",
@@ -2873,7 +3609,12 @@
    "cls": [
     "helmet",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "base_number_of_spectres_allowed",
@@ -2889,7 +3630,12 @@
    "cls": [
     "helmet",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "base_number_of_zombies_allowed,quality_display_raise_zombie_is_gem",
@@ -2905,7 +3651,12 @@
    "cls": [
     "helmet",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "base_penetrate_elemental_resistances_%",
@@ -2943,7 +3694,57 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder",
+     "hunter"
+    ],
+    "sceptre": [
+     "elder",
+     "hunter"
+    ],
+    "staff": [
+     "elder",
+     "hunter"
+    ],
+    "dagger": [
+     "elder",
+     "hunter"
+    ],
+    "claw": [
+     "elder",
+     "hunter"
+    ],
+    "bow": [
+     "elder",
+     "hunter"
+    ],
+    "sword1h": [
+     "elder",
+     "hunter"
+    ],
+    "axe1h": [
+     "elder",
+     "hunter"
+    ],
+    "mace1h": [
+     "elder",
+     "hunter"
+    ],
+    "sword2h": [
+     "elder",
+     "hunter"
+    ],
+    "axe2h": [
+     "elder",
+     "hunter"
+    ],
+    "mace2h": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "base_physical_damage_%_to_convert_to_cold",
@@ -2961,7 +3762,33 @@
     "axe1h",
     "sword2h",
     "axe2h"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "crusader"
+    ],
+    "sceptre": [
+     "crusader"
+    ],
+    "dagger": [
+     "crusader"
+    ],
+    "claw": [
+     "crusader"
+    ],
+    "sword1h": [
+     "crusader"
+    ],
+    "axe1h": [
+     "crusader"
+    ],
+    "sword2h": [
+     "crusader"
+    ],
+    "axe2h": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_physical_damage_%_to_convert_to_fire",
@@ -2980,7 +3807,36 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "crusader"
+    ],
+    "sceptre": [
+     "crusader"
+    ],
+    "staff": [
+     "crusader"
+    ],
+    "sword1h": [
+     "crusader"
+    ],
+    "axe1h": [
+     "crusader"
+    ],
+    "mace1h": [
+     "crusader"
+    ],
+    "sword2h": [
+     "crusader"
+    ],
+    "axe2h": [
+     "crusader"
+    ],
+    "mace2h": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_physical_damage_%_to_convert_to_lightning",
@@ -2995,7 +3851,24 @@
     "staff",
     "dagger",
     "claw"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "crusader"
+    ],
+    "sceptre": [
+     "crusader"
+    ],
+    "staff": [
+     "crusader"
+    ],
+    "dagger": [
+     "crusader"
+    ],
+    "claw": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_physical_damage_reduction_and_evasion_rating",
@@ -3056,7 +3929,22 @@
     "shaper",
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder"
+    ],
+    "quiver": [
+     "elder",
+     "hunter"
+    ],
+    "ring": [
+     "hunter"
+    ],
+    "dagger": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "base_poison_duration_+%",
@@ -3076,7 +3964,15 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "hunter"
+    ],
+    "dagger": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "base_projectile_speed_+%",
@@ -3116,7 +4012,24 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "redeemer"
+    ],
+    "wand": [
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "staff": [
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_reduce_enemy_fire_resistance_%",
@@ -3138,7 +4051,24 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "warlord"
+    ],
+    "wand": [
+     "warlord"
+    ],
+    "sceptre": [
+     "warlord"
+    ],
+    "staff": [
+     "warlord"
+    ],
+    "dagger": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_reduce_enemy_lightning_resistance_%",
@@ -3160,7 +4090,24 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "crusader"
+    ],
+    "wand": [
+     "crusader"
+    ],
+    "sceptre": [
+     "crusader"
+    ],
+    "staff": [
+     "crusader"
+    ],
+    "dagger": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_resist_all_elements_%",
@@ -3182,7 +4129,16 @@
     "ring",
     "amulet",
     "belt"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "warlord"
+    ],
+    "belt": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_self_critical_strike_multiplier_-%",
@@ -3221,7 +4177,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_self_ignite_duration_-%",
@@ -3235,7 +4196,12 @@
    "cls": [
     "helmet",
     "ring"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_skill_area_of_effect_+%",
@@ -3280,7 +4246,66 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "elder",
+     "warlord"
+    ],
+    "quiver": [
+     "elder",
+     "warlord"
+    ],
+    "ring": [
+     "warlord"
+    ],
+    "amulet": [
+     "elder",
+     "warlord"
+    ],
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper",
+     "elder",
+     "warlord"
+    ],
+    "staff": [
+     "elder",
+     "warlord"
+    ],
+    "dagger": [
+     "shaper",
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "bow": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder",
+     "warlord"
+    ],
+    "sword2h": [
+     "elder"
+    ],
+    "axe2h": [
+     "elder"
+    ],
+    "mace2h": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "base_spell_block_%",
@@ -3305,7 +4330,17 @@
     "bodyArmour",
     "shield",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder",
+     "crusader"
+    ],
+    "amulet": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_spell_damage_%_suppressed",
@@ -3323,7 +4358,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "base_spell_suppression_chance_%",
@@ -3424,7 +4464,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "base_unaffected_by_poison",
@@ -3451,7 +4496,13 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "bleeding_damage_+%",
@@ -3472,7 +4523,19 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder"
+    ],
+    "quiver": [
+     "elder",
+     "warlord"
+    ],
+    "ring": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "blind_chilled_enemies_on_hit_%",
@@ -3493,7 +4556,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "block_chance_on_damage_taken_%",
@@ -3506,7 +4574,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "block_while_dual_wielding_%",
@@ -3524,7 +4597,28 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "redeemer"
+    ],
+    "claw": [
+     "shaper",
+     "redeemer"
+    ],
+    "sword1h": [
+     "shaper",
+     "redeemer"
+    ],
+    "axe1h": [
+     "shaper",
+     "redeemer"
+    ],
+    "mace1h": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "bow_critical_strike_chance_+%",
@@ -3567,7 +4661,22 @@
     "elder",
     "redeemer",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder",
+     "redeemer"
+    ],
+    "wand": [
+     "warlord"
+    ],
+    "sceptre": [
+     "warlord"
+    ],
+    "staff": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "cannot_be_blinded",
@@ -3613,7 +4722,13 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "cast_speed_+%_if_enemy_killed_recently",
@@ -3630,7 +4745,22 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "staff": [
+     "shaper",
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "chance_to_block_spells_%_if_damaged_by_a_hit_recently",
@@ -3643,7 +4773,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "chance_to_crush_on_hit_%",
@@ -3669,7 +4804,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "chance_to_deal_double_damage_%_while_focused",
@@ -3744,7 +4884,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "chance_to_double_stun_duration_%",
@@ -3763,7 +4908,15 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "mace1h": [
+     "redeemer"
+    ],
+    "mace2h": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "chance_to_evade_attacks_%",
@@ -3792,7 +4945,16 @@
     "shaper",
     "elder",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder",
+     "crusader"
+    ],
+    "mace1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "chance_to_freeze_shock_ignite_%",
@@ -3811,7 +4973,13 @@
    "infl": [
     "shaper",
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "shaper",
+     "elder"
+    ]
+   }
   },
   {
    "id": "chance_to_gain_endurance_charge_on_block_%",
@@ -3824,7 +4992,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sword1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "chance_to_gain_endurance_charge_on_crit_%",
@@ -3838,7 +5011,15 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "axe1h": [
+     "shaper"
+    ],
+    "axe2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "chance_to_gain_endurance_charge_on_hit_%_vs_bleeding_enemy",
@@ -3851,7 +5032,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "axe1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "chance_to_gain_endurance_charge_when_you_taunt_enemy_%",
@@ -3864,7 +5050,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "axe2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "chance_to_gain_frenzy_charge_on_block_%",
@@ -3877,7 +5068,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "sword1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "chance_to_gain_onslaught_on_kill_%,onslaught_time_granted_on_kill_ms",
@@ -3888,7 +5084,12 @@
    "cls": [
     "boots",
     "quiver"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "chance_to_gain_onslaught_on_kill_for_4_seconds_%",
@@ -3910,7 +5111,42 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "shaper"
+    ],
+    "wand": [
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ],
+    "claw": [
+     "shaper",
+     "redeemer"
+    ],
+    "bow": [
+     "shaper",
+     "redeemer"
+    ],
+    "sword1h": [
+     "shaper",
+     "redeemer"
+    ],
+    "axe1h": [
+     "shaper",
+     "redeemer"
+    ],
+    "sword2h": [
+     "shaper",
+     "redeemer"
+    ],
+    "axe2h": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "chance_to_gain_power_charge_on_killing_frozen_enemy_%",
@@ -3934,7 +5170,20 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "warlord"
+    ],
+    "staff": [
+     "elder",
+     "warlord"
+    ],
+    "claw": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "chance_to_intimidate_on_hit_%",
@@ -3950,7 +5199,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "chance_to_intimidate_on_hit_%~2",
@@ -3978,7 +5232,24 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "hunter"
+    ],
+    "wand": [
+     "hunter"
+    ],
+    "sceptre": [
+     "hunter"
+    ],
+    "staff": [
+     "hunter"
+    ],
+    "dagger": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "chance_to_unnerve_on_hit_%~2",
@@ -4022,7 +5293,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "chaos_damage_does_not_bypass_energy_shield_while_not_low_life",
@@ -4047,7 +5323,24 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "hunter"
+    ],
+    "claw": [
+     "hunter"
+    ],
+    "bow": [
+     "hunter"
+    ],
+    "sword1h": [
+     "hunter"
+    ],
+    "sword2h": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "chaos_damage_over_time_multiplier_+_with_attacks",
@@ -4060,7 +5353,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "chaos_damage_taken_+%",
@@ -4102,7 +5400,17 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder",
+     "hunter"
+    ],
+    "amulet": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "chaos_resistance_+_while_using_flask",
@@ -4120,7 +5428,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "chaos_skill_effect_duration_+%",
@@ -4210,7 +5523,16 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "shaper",
+     "crusader"
+    ],
+    "staff": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "chill_duration_+%",
@@ -4266,7 +5588,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "cold_and_chaos_damage_resistance_%",
@@ -4365,7 +5692,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "cold_damage_can_ignite",
@@ -4417,7 +5749,17 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper",
+     "hunter"
+    ],
+    "amulet": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "cold_resistance_cannot_be_penetrated",
@@ -4462,7 +5804,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "critical_strike_chance_+%_if_enemy_killed_recently",
@@ -4483,7 +5830,33 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "shaper"
+    ],
+    "dagger": [
+     "crusader"
+    ],
+    "claw": [
+     "crusader"
+    ],
+    "bow": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "sword2h": [
+     "shaper"
+    ],
+    "axe2h": [
+     "shaper"
+    ],
+    "mace2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "critical_strike_chance_+%_if_have_been_shocked_recently",
@@ -4504,7 +5877,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "critical_strike_chance_+%_per_10_strength",
@@ -4525,7 +5903,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "claw": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "critical_strike_chance_+%_vs_poisoned_enemies",
@@ -4538,7 +5921,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "critical_strike_chance_+%_vs_shocked_enemies",
@@ -4551,7 +5939,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "critical_strike_chance_+%",
@@ -4591,7 +5984,15 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "warlord"
+    ],
+    "claw": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "critical_strike_multiplier_+_if_enemy_shattered_recently",
@@ -4619,7 +6020,24 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder"
+    ],
+    "bow": [
+     "elder"
+    ],
+    "sword2h": [
+     "elder"
+    ],
+    "axe2h": [
+     "elder"
+    ],
+    "mace2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "critical_strike_multiplier_+_if_rare_or_unique_enemy_nearby",
@@ -4654,7 +6072,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "critical_strike_multiplier_vs_enemies_on_full_life_+",
@@ -4668,7 +6091,13 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "shaper",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "curse_area_of_effect_+%",
@@ -4768,7 +6197,15 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "crusader"
+    ],
+    "wand": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "curse_on_hit_level_despair",
@@ -4782,7 +6219,15 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "hunter"
+    ],
+    "wand": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "curse_on_hit_level_elemental_weakness",
@@ -4795,7 +6240,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "curse_on_hit_level_flammability",
@@ -4809,7 +6259,15 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "warlord"
+    ],
+    "wand": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "curse_on_hit_level_frostbite",
@@ -4823,7 +6281,15 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "redeemer"
+    ],
+    "wand": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "curse_on_hit_level_poachers_mark",
@@ -4852,7 +6318,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "curse_on_hit_level_warlords_mark",
@@ -4931,7 +6402,13 @@
    "infl": [
     "elder",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "elder",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "damage_+%_per_15_dex",
@@ -4945,7 +6422,13 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "damage_+%_per_15_int",
@@ -4959,7 +6442,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "damage_+%_per_15_strength",
@@ -4973,7 +6462,13 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "damage_+%_per_endurance_charge",
@@ -5000,7 +6495,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "damage_+%_per_frenzy_charge",
@@ -5027,7 +6527,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "damage_+%_per_power_charge",
@@ -5054,7 +6559,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "damage_+%_vs_blinded_enemies",
@@ -5075,7 +6585,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "damage_+%_while_leeching",
@@ -5093,7 +6608,15 @@
     "amulet",
     "sword1h",
     "sword2h"
-   ]
+   ],
+   "inflBy": {
+    "sword1h": [
+     "crusader"
+    ],
+    "sword2h": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "damage_+%_with_bow_skills",
@@ -5220,7 +6743,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "damage_over_time_multiplier_+_with_attacks",
@@ -5325,7 +6853,21 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "hunter"
+    ],
+    "sceptre": [
+     "hunter"
+    ],
+    "staff": [
+     "hunter"
+    ],
+    "dagger": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "determination_mana_reservation_efficiency_+%",
@@ -5341,7 +6883,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "determination_mana_reservation_efficiency_-2%_per_1",
@@ -5371,7 +6918,19 @@
     "elder",
     "hunter",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "hunter"
+    ],
+    "bodyArmour": [
+     "elder",
+     "redeemer"
+    ],
+    "amulet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "dexterity_skill_gem_level_+",
@@ -5400,7 +6959,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "discipline_mana_reservation_efficiency_-2%_per_1",
@@ -5467,7 +7031,21 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "staff": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "elemental_damage_+%_if_have_crit_recently",
@@ -5504,7 +7082,18 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "warlord"
+    ],
+    "belt": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "elemental_damage_taken_+%",
@@ -5517,7 +7106,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "elemental_damage_taken_+%~2",
@@ -5554,7 +7148,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "elemental_penetration_%_during_flask_effect",
@@ -5601,7 +7200,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "enchantment_boots_movement_speed_+%_when_not_hit_for_4_seconds",
@@ -5642,7 +7246,41 @@
    "infl": [
     "elder",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder",
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "staff": [
+     "elder",
+     "redeemer"
+    ],
+    "sword1h": [
+     "redeemer"
+    ],
+    "axe1h": [
+     "redeemer"
+    ],
+    "mace1h": [
+     "redeemer"
+    ],
+    "sword2h": [
+     "elder",
+     "redeemer"
+    ],
+    "axe2h": [
+     "elder",
+     "redeemer"
+    ],
+    "mace2h": [
+     "elder",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "enemies_explode_for_%_life_as_physical_damage",
@@ -5673,7 +7311,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "claw": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "enemy_life_leech_from_any_damage_permyriad_while_focused",
@@ -5769,7 +7412,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "energy_shield_degeneration_%_per_minute_not_in_grace",
@@ -5831,7 +7480,16 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "crusader"
+    ],
+    "belt": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "energy_shield_regeneration_rate_per_minute_if_rare_or_unique_enemy_nearby",
@@ -5910,7 +7568,15 @@
     "ring",
     "amulet",
     "belt"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "redeemer"
+    ],
+    "belt": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "evasion_rating_increased_by_overcapped_cold_resistance",
@@ -5937,7 +7603,13 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "explode_enemies_for_10%_life_as_physical_on_kill_chance_%",
@@ -5955,7 +7627,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "explode_on_kill_%_fire_damage_to_deal",
@@ -5970,7 +7647,17 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "mace1h": [
+     "shaper",
+     "redeemer"
+    ],
+    "mace2h": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "extra_critical_rolls_during_focus",
@@ -6001,7 +7688,33 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "hunter"
+    ],
+    "bow": [
+     "hunter"
+    ],
+    "sword1h": [
+     "hunter"
+    ],
+    "axe1h": [
+     "hunter"
+    ],
+    "mace1h": [
+     "hunter"
+    ],
+    "sword2h": [
+     "hunter"
+    ],
+    "axe2h": [
+     "hunter"
+    ],
+    "mace2h": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "faster_burn_%",
@@ -6017,7 +7730,21 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "hunter"
+    ],
+    "wand": [
+     "hunter"
+    ],
+    "sceptre": [
+     "hunter"
+    ],
+    "staff": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "faster_poison_%",
@@ -6035,7 +7762,27 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "hunter"
+    ],
+    "dagger": [
+     "hunter"
+    ],
+    "claw": [
+     "hunter"
+    ],
+    "bow": [
+     "hunter"
+    ],
+    "sword1h": [
+     "hunter"
+    ],
+    "sword2h": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "fire_and_chaos_damage_resistance_%",
@@ -6163,7 +7910,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "fire_damage_can_shock",
@@ -6184,7 +7936,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "fire_damage_taken_+%",
@@ -6231,7 +7988,17 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper",
+     "hunter"
+    ],
+    "amulet": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "fire_resistance_cannot_be_penetrated",
@@ -6454,7 +8221,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "from_self_minimum_added_attack_chaos_damage_taken,from_self_maximum_added_attack_chaos_damage_taken",
@@ -6543,7 +8315,13 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "claw": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "gain_accuracy_rating_equal_to_strength",
@@ -6556,7 +8334,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "gain_alchemists_genius_on_flask_use_%",
@@ -6577,7 +8360,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "gain_arcane_surge_on_kill_chance_%",
@@ -6612,7 +8400,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "gain_endurance_charge_per_second_if_have_been_hit_recently",
@@ -6625,7 +8418,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "gain_flask_chance_on_crit_%",
@@ -6638,7 +8436,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "gain_flask_charge_when_crit_%,gain_flask_charge_when_crit_amount",
@@ -6670,7 +8473,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "gain_maximum_endurance_charges_on_endurance_charge_gained_%_chance",
@@ -6733,7 +8541,13 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "gain_single_conflux_for_3_seconds_every_8_seconds",
@@ -6746,7 +8560,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "gain_single_conflux_for_3_seconds_every_8_seconds~2",
@@ -6759,7 +8578,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "gain_single_conflux_for_3_seconds_every_8_seconds~3",
@@ -6772,7 +8596,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "gain_vaal_pact_while_focused",
@@ -6816,7 +8645,16 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper",
+     "redeemer"
+    ],
+    "quiver": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "global_defences_+%_if_no_defence_modifiers_on_equipment_except_body_armour",
@@ -6856,7 +8694,13 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "global_minimum_added_cold_damage,global_maximum_added_cold_damage",
@@ -6899,7 +8743,13 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "global_minimum_added_fire_damage,global_maximum_added_fire_damage",
@@ -6938,7 +8788,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "global_minimum_added_fire_damage_vs_ignited_enemies,global_maximum_added_fire_damage_vs_ignited_enemies",
@@ -6952,7 +8807,13 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "global_minimum_added_lightning_damage,global_maximum_added_lightning_damage",
@@ -6992,7 +8853,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "global_reduce_enemy_block_%",
@@ -7021,7 +8888,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "grace_mana_reservation_efficiency_-2%_per_1",
@@ -7042,7 +8914,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "hatred_aura_effect_+%",
@@ -7058,7 +8935,21 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "staff": [
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "hatred_mana_reservation_efficiency_+%",
@@ -7074,7 +8965,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "hatred_mana_reservation_efficiency_-2%_per_1",
@@ -7136,7 +9032,24 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "hunter"
+    ],
+    "wand": [
+     "hunter"
+    ],
+    "sceptre": [
+     "hunter"
+    ],
+    "staff": [
+     "hunter"
+    ],
+    "dagger": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "ignite_duration_+%",
@@ -7149,7 +9062,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "immune_to_status_ailments_while_focused",
@@ -7181,7 +9099,36 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "crusader"
+    ],
+    "claw": [
+     "crusader"
+    ],
+    "bow": [
+     "crusader"
+    ],
+    "sword1h": [
+     "crusader"
+    ],
+    "axe1h": [
+     "crusader"
+    ],
+    "mace1h": [
+     "crusader"
+    ],
+    "sword2h": [
+     "crusader"
+    ],
+    "axe2h": [
+     "crusader"
+    ],
+    "mace2h": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "intelligence_+%",
@@ -7203,7 +9150,19 @@
     "shaper",
     "crusader",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "hunter"
+    ],
+    "bodyArmour": [
+     "shaper",
+     "crusader"
+    ],
+    "amulet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "intelligence_skill_gem_level_+",
@@ -7630,7 +9589,32 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "warlord"
+    ],
+    "staff": [
+     "elder",
+     "warlord"
+    ],
+    "bow": [
+     "elder",
+     "warlord"
+    ],
+    "sword2h": [
+     "elder",
+     "warlord"
+    ],
+    "axe2h": [
+     "elder",
+     "warlord"
+    ],
+    "mace2h": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "life_degeneration_%_per_minute_not_in_grace",
@@ -7652,7 +9636,7 @@
    "id": "life_flask_charges_recovered_per_3_seconds",
    "text": "флаконы здоровья получают # заряд каждые # секунды",
    "display": "Флаконы здоровья получают # заряд каждые # секунды",
-   "token": "вь.*д ка",
+   "token": "я получают \\d+ з",
    "kind": "suffix",
    "src": "special"
   },
@@ -7717,7 +9701,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "life_recovery_rate_+%_if_havent_killed_recently",
@@ -7744,7 +9733,16 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "warlord"
+    ],
+    "belt": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "life_regeneration_rate_+%",
@@ -7830,7 +9828,13 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "lightning_and_chaos_damage_resistance_%",
@@ -7905,7 +9909,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "lightning_damage_can_freeze",
@@ -8326,7 +10335,45 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "elder"
+    ],
+    "staff": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "bow": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ],
+    "sword2h": [
+     "elder"
+    ],
+    "axe2h": [
+     "elder"
+    ],
+    "mace2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_block_chance_+%",
@@ -8457,7 +10504,45 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "hunter"
+    ],
+    "sceptre": [
+     "hunter"
+    ],
+    "staff": [
+     "hunter"
+    ],
+    "dagger": [
+     "hunter"
+    ],
+    "claw": [
+     "hunter"
+    ],
+    "bow": [
+     "hunter"
+    ],
+    "sword1h": [
+     "hunter"
+    ],
+    "axe1h": [
+     "hunter"
+    ],
+    "mace1h": [
+     "hunter"
+    ],
+    "sword2h": [
+     "hunter"
+    ],
+    "axe2h": [
+     "hunter"
+    ],
+    "mace2h": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "local_chaos_penetration_%",
@@ -8565,7 +10650,45 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "staff": [
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ],
+    "claw": [
+     "redeemer"
+    ],
+    "bow": [
+     "redeemer"
+    ],
+    "sword1h": [
+     "redeemer"
+    ],
+    "axe1h": [
+     "redeemer"
+    ],
+    "mace1h": [
+     "redeemer"
+    ],
+    "sword2h": [
+     "redeemer"
+    ],
+    "axe2h": [
+     "redeemer"
+    ],
+    "mace2h": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "local_critical_strike_chance_+%",
@@ -8618,7 +10741,15 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "axe1h": [
+     "elder"
+    ],
+    "axe2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_avoid_interruption_%_while_using_socketed_attack_skills",
@@ -8652,7 +10783,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_level_X_envy",
@@ -8665,7 +10801,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_grants_level_X_ghost_cannons",
@@ -8712,7 +10853,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_anger_level",
@@ -8730,7 +10876,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_bird_aspect_level",
@@ -8774,7 +10925,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_crab_aspect_level",
@@ -8805,7 +10961,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_determination_level",
@@ -8823,7 +10984,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_discipline_level",
@@ -8841,7 +11007,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_enduring_cry_level",
@@ -8859,7 +11030,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_grace_level",
@@ -8877,7 +11053,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_haste_level",
@@ -8895,7 +11076,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_hatred_level",
@@ -8913,7 +11099,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_herald_of_ash_level",
@@ -8931,7 +11122,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_herald_of_ice_level",
@@ -8949,7 +11145,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_herald_of_thunder_level",
@@ -8967,7 +11168,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_rallying_cry_level",
@@ -8985,7 +11191,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_spider_aspect_level",
@@ -9016,7 +11227,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_grants_skill_wrath_level",
@@ -9034,7 +11250,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_nearby_enemies_are_blinded",
@@ -9047,7 +11268,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "local_display_nearby_enemy_chaos_damage_resistance_%",
@@ -9065,7 +11291,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "local_display_nearby_enemy_cold_damage_resistance_%",
@@ -9083,7 +11314,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "local_display_nearby_enemy_elemental_damage_taken_+%",
@@ -9096,7 +11332,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_nearby_enemy_fire_damage_resistance_%",
@@ -9114,7 +11355,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "local_display_nearby_enemy_lightning_damage_resistance_%",
@@ -9132,7 +11378,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "local_display_nearby_enemy_physical_damage_taken_+%",
@@ -9150,7 +11401,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_attack_damage_+%_final",
@@ -9179,7 +11435,45 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "staff": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "bow": [
+     "shaper"
+    ],
+    "sword1h": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "mace1h": [
+     "shaper"
+    ],
+    "sword2h": [
+     "shaper"
+    ],
+    "axe2h": [
+     "shaper"
+    ],
+    "mace2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_attacks_additional_critical_strike_chance",
@@ -9192,7 +11486,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_attacks_critical_strike_multiplier_+",
@@ -9205,7 +11504,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_attacks_mana_cost_+",
@@ -9223,7 +11527,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_additional_critical_strike_chance_%",
@@ -9258,7 +11567,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "bow": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_damage_+%_final_while_on_low_life",
@@ -9316,7 +11631,30 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "sword1h": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "mace1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_additional_accuracy_level",
@@ -9334,7 +11672,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_blind_level",
@@ -9352,7 +11695,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_cast_on_crit_level",
@@ -9367,7 +11715,18 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "bow": [
+     "shaper"
+    ],
+    "sword2h": [
+     "shaper"
+    ],
+    "axe2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_concentrated_area_level",
@@ -9385,7 +11744,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_elemental_proliferation_level",
@@ -9403,7 +11767,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_faster_attacks_level",
@@ -9429,7 +11798,33 @@
    "infl": [
     "shaper",
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder"
+    ],
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "sword1h": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "mace1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_faster_cast_level",
@@ -9450,7 +11845,21 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ],
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_faster_projectiles_level",
@@ -9468,7 +11877,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_increased_area_level",
@@ -9485,7 +11899,21 @@
    "infl": [
     "shaper",
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper"
+    ],
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_increased_critical_damage_level",
@@ -9504,7 +11932,30 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_life_leech_level",
@@ -9517,7 +11968,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_melee_physical_damage_level",
@@ -9535,7 +11991,27 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_melee_splash_level",
@@ -9553,7 +12029,27 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "sword1h": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "mace1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_multistrike_level",
@@ -9571,7 +12067,27 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_reduced_mana_cost_level",
@@ -9589,7 +12105,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_remote_mine_level",
@@ -9607,7 +12128,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_spell_totem_level",
@@ -9625,7 +12151,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_trap_level",
@@ -9643,7 +12174,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_get_weapon_elemental_damage_level",
@@ -9662,7 +12198,30 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "sword1h": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "mace1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_have_%_chance_to_ignite_with_fire_damage",
@@ -9694,7 +12253,13 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_minimum_added_fire_damage,local_display_socketed_gems_maximum_added_fire_damage",
@@ -9739,7 +12304,27 @@
    "infl": [
     "shaper",
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder"
+    ],
+    "dagger": [
+     "shaper"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_arcane_surge",
@@ -9757,7 +12342,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_brutality",
@@ -9775,7 +12365,27 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_cast_on_damage_taken",
@@ -9793,7 +12403,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_cast_on_kill",
@@ -9809,7 +12424,21 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "shaper"
+    ],
+    "sword2h": [
+     "shaper"
+    ],
+    "axe2h": [
+     "shaper"
+    ],
+    "mace2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_cast_while_channelling",
@@ -9822,7 +12451,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_chance_to_bleed",
@@ -9845,7 +12479,27 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_efficacy",
@@ -9865,7 +12519,18 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_elemental_focus",
@@ -9878,7 +12543,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_empower",
@@ -9907,7 +12577,21 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder"
+    ],
+    "sword2h": [
+     "elder"
+    ],
+    "axe2h": [
+     "elder"
+    ],
+    "mace2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_enhance",
@@ -9947,7 +12631,15 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_fortify",
@@ -9969,7 +12661,24 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder"
+    ],
+    "staff": [
+     "elder"
+    ],
+    "sword2h": [
+     "elder"
+    ],
+    "axe2h": [
+     "elder"
+    ],
+    "mace2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_immolate",
@@ -9987,7 +12696,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_increased_burning_damage",
@@ -10000,7 +12714,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_increased_critical_strikes",
@@ -10019,7 +12738,30 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "sword1h": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "mace1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_increased_duration",
@@ -10037,7 +12779,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_iron_grip",
@@ -10063,7 +12810,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_lifetap",
@@ -10091,7 +12843,18 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_maim",
@@ -10113,7 +12876,24 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "shaper"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "sword1h": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "mace1h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_multicast",
@@ -10128,7 +12908,18 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_onslaught",
@@ -10149,7 +12940,21 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder"
+    ],
+    "bow": [
+     "elder"
+    ],
+    "sword2h": [
+     "elder"
+    ],
+    "axe2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_parallel_projectiles",
@@ -10162,7 +12967,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_physical_projectile_attack_damage",
@@ -10183,7 +12993,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_power_charge_on_crit",
@@ -10196,7 +13011,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_ranged_attack_totem",
@@ -10214,7 +13034,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_reduced_duration",
@@ -10232,7 +13057,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_ruthless",
@@ -10255,7 +13085,27 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_slower_projectiles",
@@ -10268,7 +13118,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_spell_cascade",
@@ -10283,7 +13138,18 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_spirit_strike",
@@ -10301,7 +13167,27 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_trap_and_mine_damage",
@@ -10320,7 +13206,15 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ],
+    "helmet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_trap_cooldown",
@@ -10333,7 +13227,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_level_x_unbound_ailments",
@@ -10346,7 +13245,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_x_cold_penetration",
@@ -10360,7 +13264,15 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_x_combustion_level",
@@ -10388,7 +13300,18 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_x_hypothermia",
@@ -10401,7 +13324,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_x_increased_minion_damage_level",
@@ -10414,7 +13342,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_x_increased_minion_life_level",
@@ -10427,7 +13360,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_x_innervate_level",
@@ -10445,7 +13383,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_x_lesser_multiple_projectiles_level",
@@ -10458,7 +13401,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_gems_supported_by_x_mana_leech",
@@ -10476,7 +13424,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_movement_skills_have_no_mana_cost",
@@ -10490,7 +13443,15 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "sword1h": [
+     "shaper"
+    ],
+    "sword2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_non_curse_aura_gems_effect_+%",
@@ -10516,7 +13477,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "bow": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_spell_damage_+%_final",
@@ -10537,7 +13503,21 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "shaper"
+    ],
+    "sceptre": [
+     "shaper"
+    ],
+    "staff": [
+     "shaper"
+    ],
+    "dagger": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_spells_additional_critical_strike_chance",
@@ -10550,7 +13530,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_spells_critical_strike_multiplier_+",
@@ -10563,7 +13548,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "local_display_socketed_triggered_skills_deal_double_damage",
@@ -10825,7 +13815,45 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "warlord"
+    ],
+    "sceptre": [
+     "warlord"
+    ],
+    "staff": [
+     "warlord"
+    ],
+    "dagger": [
+     "warlord"
+    ],
+    "claw": [
+     "warlord"
+    ],
+    "bow": [
+     "warlord"
+    ],
+    "sword1h": [
+     "warlord"
+    ],
+    "axe1h": [
+     "warlord"
+    ],
+    "mace1h": [
+     "warlord"
+    ],
+    "sword2h": [
+     "warlord"
+    ],
+    "axe2h": [
+     "warlord"
+    ],
+    "mace2h": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "local_flask_-%_of_your_damage_cannot_be_reflected",
@@ -10978,10 +14006,13 @@
   },
   {
    "id": "local_flask_bleeding_immunity_if_bleeding_and_remove_corrupted_blood_s",
-   "text": "дарует иммунитет к кровотечению на # секунд(-ы) при использовании, если на вас наложено кровотечение\nдарует иммунитет к оскверненной крови на # секунд(-ы) при использовании, если на вас наложена оскверненная кровь",
+   "text": "дарует иммунитет к кровотечению на # \" при использовании, если на вас наложено кровотечение\nдарует иммунитет к оскверненной крови на # \" при использовании, если на вас наложена оскверненная кровь",
    "display": "Дарует иммунитет к кровотечению на # секунд(-ы) при использовании, если на вас наложено кровотечение\nДарует иммунитет к Оскверненной крови на # секунд(-ы) при использовании, если на вас наложена Оскверненная кровь",
-   "token": "-ы.*ая",
+   "token": "ви н",
    "kind": "suffix",
+   "also": [
+    "local_flask_bleeding_immunity_if_bleeding_and_remove_corrupted_blood"
+   ],
    "cls": [
     "lifeFlask",
     "manaFlask",
@@ -10992,7 +14023,7 @@
    "id": "local_flask_bleeding_immunity_if_bleeding_and_remove_corrupted_blood",
    "text": "дарует иммунитет к кровотечению на # секунды при использовании, если на вас наложено кровотечение\nдарует иммунитет к оскверненной крови на # секунды при использовании, если на вас наложена оскверненная кровь",
    "display": "Дарует иммунитет к кровотечению на # секунды при использовании, если на вас наложено кровотечение\nДарует иммунитет к Оскверненной крови на # секунды при использовании, если на вас наложена Оскверненная кровь",
-   "token": "кв.*ды",
+   "token": "ви на \\d+ с",
    "kind": "suffix",
    "src": "special"
   },
@@ -11019,10 +14050,13 @@
   },
   {
    "id": "local_flask_chill_or_freeze_immunity_if_chilled_or_frozen_s",
-   "text": "дарует иммунитет к охлаждению на # секунд(-ы) при использовании, если вы охлаждены\nдарует иммунитет к заморозке на # секунд(-ы) при использовании, если вы заморожены",
+   "text": "дарует иммунитет к охлаждению на # \" при использовании, если вы охлаждены\nдарует иммунитет к заморозке на # \" при использовании, если вы заморожены",
    "display": "Дарует иммунитет к охлаждению на # секунд(-ы) при использовании, если вы охлаждены\nДарует иммунитет к заморозке на # секунд(-ы) при использовании, если вы заморожены",
-   "token": "-ы.*ох",
+   "token": "зке н",
    "kind": "suffix",
+   "also": [
+    "local_flask_chill_or_freeze_immunity_if_chilled_or_frozen"
+   ],
    "cls": [
     "lifeFlask",
     "manaFlask",
@@ -11033,7 +14067,7 @@
    "id": "local_flask_chill_or_freeze_immunity_if_chilled_or_frozen",
    "text": "дарует иммунитет к охлаждению на # секунды при использовании, если вы охлаждены\nдарует иммунитет к заморозке на # секунды при использовании, если вы заморожены",
    "display": "Дарует иммунитет к охлаждению на # секунды при использовании, если вы охлаждены\nДарует иммунитет к заморозке на # секунды при использовании, если вы заморожены",
-   "token": "зк.*ды",
+   "token": "ке на \\d+ с",
    "kind": "suffix",
    "src": "special"
   },
@@ -11286,9 +14320,9 @@
   },
   {
    "id": "local_flask_ignite_immunity_if_ignited_and_remove_burning_s",
-   "text": "дарует иммунитет к поджогу на # секунд(-ы) при использовании, если вы подожжены\nпри использовании снимает все эффекты горения",
+   "text": "дарует иммунитет к поджогу на # \" при использовании, если вы подожжены\nпри использовании снимает все эффекты горения",
    "display": "Дарует иммунитет к поджогу на # секунд(-ы) при использовании, если вы подожжены\nПри использовании снимает все эффекты горения",
-   "token": "ты г",
+   "token": "гу н",
    "kind": "suffix",
    "also": [
     "local_flask_ignite_immunity_if_ignited_and_remove_burning"
@@ -11332,15 +14366,10 @@
   },
   {
    "id": "local_flask_immune_to_hinder_for_x_seconds_if_hindered",
-   "text": "дарует иммунитет к скованности на # секунд(-ы) при использовании, если вы скованны",
+   "text": "дарует иммунитет к скованности на # \" при использовании, если вы скованны",
    "display": "Дарует иммунитет к скованности на # секунд(-ы) при использовании, если вы скованны",
    "token": "к ск",
    "kind": "suffix",
-   "pre": "ти на ",
-   "posts": [
-    " с"
-   ],
-   "digit": "\\d",
    "cls": [
     "lifeFlask",
     "manaFlask",
@@ -11349,15 +14378,10 @@
   },
   {
    "id": "local_flask_immune_to_maim_for_x_seconds_if_maimed",
-   "text": "дарует иммунитет к увечьям на # секунд(-ы) при использовании, если вы изувечены",
+   "text": "дарует иммунитет к увечьям на # \" при использовании, если вы изувечены",
    "display": "Дарует иммунитет к увечьям на # секунд(-ы) при использовании, если вы изувечены",
    "token": "чьям",
    "kind": "suffix",
-   "pre": "ям на ",
-   "posts": [
-    " с"
-   ],
-   "digit": "\\d",
    "cls": [
     "lifeFlask",
     "manaFlask",
@@ -11533,15 +14557,13 @@
   },
   {
    "id": "local_flask_poison_immunity_if_poisoned_s",
-   "text": "дарует иммунитет к отравлению на # секунд(-ы) при использовании, если вы отравлены",
+   "text": "дарует иммунитет к отравлению на # \" при использовании, если вы отравлены",
    "display": "Дарует иммунитет к отравлению на # секунд(-ы) при использовании, если вы отравлены",
-   "token": "-ы.*ав",
+   "token": "лению н",
    "kind": "suffix",
-   "pre": "лению на ",
-   "posts": [
-    " секунд\\("
+   "also": [
+    "local_flask_poison_immunity_if_poisoned"
    ],
-   "digit": "\\d",
    "cls": [
     "lifeFlask",
     "manaFlask",
@@ -11552,11 +14574,11 @@
    "id": "local_flask_poison_immunity_if_poisoned",
    "text": "дарует иммунитет к отравлению на # секунды при использовании, если вы отравлены",
    "display": "Дарует иммунитет к отравлению на # секунды при использовании, если вы отравлены",
-   "token": "ав.*ды п",
+   "token": "лению на \\d+ с",
    "kind": "suffix",
    "pre": "лению на ",
    "posts": [
-    " секунды"
+    " с"
    ],
    "digit": "\\d",
    "src": "special"
@@ -11704,15 +14726,13 @@
   },
   {
    "id": "local_flask_shock_immunity_if_shocked_s",
-   "text": "дарует иммунитет к шоку на # секунд(-ы) при использовании, если на вас наложен шок",
+   "text": "дарует иммунитет к шоку на # \" при использовании, если на вас наложен шок",
    "display": "Дарует иммунитет к шоку на # секунд(-ы) при использовании, если на вас наложен шок",
-   "token": "шо.*-ы",
+   "token": "оку н",
    "kind": "suffix",
-   "pre": "ку на ",
-   "posts": [
-    " секунд\\("
+   "also": [
+    "local_flask_shock_immunity_if_shocked"
    ],
-   "digit": "\\d",
    "cls": [
     "lifeFlask",
     "manaFlask",
@@ -11723,11 +14743,11 @@
    "id": "local_flask_shock_immunity_if_shocked",
    "text": "дарует иммунитет к шоку на # секунды при использовании, если на вас наложен шок",
    "display": "Дарует иммунитет к шоку на # секунды при использовании, если на вас наложен шок",
-   "token": "ды.*н ш",
+   "token": "оку на \\d+ с",
    "kind": "suffix",
-   "pre": "ку на ",
+   "pre": "оку на ",
    "posts": [
-    " секунды"
+    " с"
    ],
    "digit": "\\d",
    "src": "special"
@@ -11792,7 +14812,45 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "hunter"
+    ],
+    "sceptre": [
+     "hunter"
+    ],
+    "staff": [
+     "hunter"
+    ],
+    "dagger": [
+     "hunter"
+    ],
+    "claw": [
+     "hunter"
+    ],
+    "bow": [
+     "hunter"
+    ],
+    "sword1h": [
+     "hunter"
+    ],
+    "axe1h": [
+     "hunter"
+    ],
+    "mace1h": [
+     "hunter"
+    ],
+    "sword2h": [
+     "hunter"
+    ],
+    "axe2h": [
+     "hunter"
+    ],
+    "mace2h": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "local_item_drops_on_death_if_equipped_by_animate_armour",
@@ -11853,7 +14911,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "claw": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_life_gain_per_target",
@@ -11934,7 +14997,45 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "crusader"
+    ],
+    "sceptre": [
+     "crusader"
+    ],
+    "staff": [
+     "crusader"
+    ],
+    "dagger": [
+     "crusader"
+    ],
+    "claw": [
+     "crusader"
+    ],
+    "bow": [
+     "crusader"
+    ],
+    "sword1h": [
+     "crusader"
+    ],
+    "axe1h": [
+     "crusader"
+    ],
+    "mace1h": [
+     "crusader"
+    ],
+    "sword2h": [
+     "crusader"
+    ],
+    "axe2h": [
+     "crusader"
+    ],
+    "mace2h": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "local_maim_on_hit_%",
@@ -11965,7 +15066,42 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "warlord"
+    ],
+    "dagger": [
+     "shaper"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "bow": [
+     "warlord"
+    ],
+    "sword1h": [
+     "shaper",
+     "warlord"
+    ],
+    "axe1h": [
+     "shaper",
+     "warlord"
+    ],
+    "mace1h": [
+     "shaper",
+     "warlord"
+    ],
+    "sword2h": [
+     "warlord"
+    ],
+    "axe2h": [
+     "warlord"
+    ],
+    "mace2h": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "local_mana_leech_from_physical_damage_permyriad",
@@ -12235,7 +15371,45 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "elder"
+    ],
+    "staff": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ],
+    "claw": [
+     "elder"
+    ],
+    "bow": [
+     "elder"
+    ],
+    "sword1h": [
+     "elder"
+    ],
+    "axe1h": [
+     "elder"
+    ],
+    "mace1h": [
+     "elder"
+    ],
+    "sword2h": [
+     "elder"
+    ],
+    "axe2h": [
+     "elder"
+    ],
+    "mace2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "local_poison_on_hit_%",
@@ -12302,15 +15476,10 @@
   },
   {
    "id": "local_right_ring_slot_shockwave_support_added_cooldown_count",
-   "text": "кольцо в правом слоте: +# заряд(-а) ударной волны",
+   "text": "кольцо в правом слоте: +# \" ударной волны",
    "display": "Кольцо в правом слоте: +# заряд(-а) ударной волны",
-   "token": "яд\\(",
+   "token": "е:.*ой",
    "kind": "prefix",
-   "pre": ": \\+",
-   "posts": [
-    " з"
-   ],
-   "digit": "\\d",
    "src": "special"
   },
   {
@@ -12394,7 +15563,13 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "shaper",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "local_socketed_active_skill_gem_quality_+",
@@ -12448,7 +15623,12 @@
     "boots",
     "staff",
     "dagger"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "local_socketed_chaos_gem_quality_+",
@@ -12468,7 +15648,12 @@
     "boots",
     "staff",
     "dagger"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "local_socketed_cold_gem_quality_+",
@@ -12504,7 +15689,12 @@
     "boots",
     "staff",
     "dagger"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "local_socketed_fire_gem_quality_+",
@@ -12638,7 +15828,12 @@
     "boots",
     "staff",
     "dagger"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "local_socketed_lightning_gem_quality_+",
@@ -12794,7 +15989,13 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "elder",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "local_socketed_support_gem_quality_+",
@@ -12883,11 +16084,29 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder",
+     "warlord"
+    ],
+    "sword2h": [
+     "elder",
+     "warlord"
+    ],
+    "axe2h": [
+     "elder",
+     "warlord"
+    ],
+    "mace2h": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "local_weapon_trigger_socketed_spell_on_skill_use_display_cooldown_ms",
-   "text": "вызывает срабатывание размещенных чар при использовании умения, время перезарядки - # секунд (-ы)\nсработавшие таким образом чары расходуют на #% больше ресурсов",
+   "text": "вызывает срабатывание размещенных чар при использовании умения, время перезарядки - # секунд \"\nсработавшие таким образом чары расходуют на #% больше ресурсов",
    "display": "Вызывает срабатывание размещенных чар при использовании умения, время перезарядки - # секунд (-ы)\nСработавшие таким образом чары расходуют на #% больше ресурсов",
    "token": "ше р",
    "kind": "prefix",
@@ -12942,7 +16161,13 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "shaper",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "malevolence_mana_reservation_efficiency_+%",
@@ -12958,7 +16183,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "malevolence_mana_reservation_efficiency_-2%_per_1",
@@ -12985,7 +16215,13 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "mana_degeneration_per_minute_not_in_grace",
@@ -13023,7 +16259,19 @@
     "shaper",
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "hunter"
+    ],
+    "quiver": [
+     "shaper",
+     "hunter"
+    ],
+    "ring": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "mana_gained_on_block",
@@ -13054,7 +16302,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "mana_leech_from_physical_attack_damage_permyriad",
@@ -13099,7 +16352,16 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "redeemer"
+    ],
+    "belt": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "mana_regeneration_rate_+%_while_shocked",
@@ -13144,7 +16406,13 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "mana_regeneration_rate_per_minute_%",
@@ -13160,7 +16428,21 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "warlord"
+    ],
+    "sceptre": [
+     "warlord"
+    ],
+    "staff": [
+     "warlord"
+    ],
+    "dagger": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "mana_reservation_efficiency_-2%_per_1",
@@ -13217,7 +16499,24 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "warlord"
+    ],
+    "staff": [
+     "shaper"
+    ],
+    "sword2h": [
+     "shaper"
+    ],
+    "axe2h": [
+     "shaper"
+    ],
+    "mace2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "max_fortification_+1_per_5",
@@ -13261,7 +16560,21 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "warlord"
+    ],
+    "bow": [
+     "shaper"
+    ],
+    "sword2h": [
+     "shaper"
+    ],
+    "axe2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "max_power_charges",
@@ -13281,7 +16594,15 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "warlord"
+    ],
+    "staff": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "maximum_block_%",
@@ -13295,7 +16616,13 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "maximum_energy_shield_+%",
@@ -13312,7 +16639,15 @@
     "ring",
     "amulet",
     "belt"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "crusader"
+    ],
+    "belt": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "maximum_energy_shield_from_body_armour_+%",
@@ -13325,7 +16660,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "maximum_energy_shield_leech_rate_+%",
@@ -13339,7 +16679,15 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "crusader"
+    ],
+    "amulet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "maximum_life_%_to_add_as_maximum_energy_shield",
@@ -13380,7 +16728,17 @@
     "bodyArmour",
     "shield",
     "belt"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "elder",
+     "hunter"
+    ],
+    "belt": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "maximum_life_leech_rate_+%",
@@ -13398,7 +16756,16 @@
    "infl": [
     "elder",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "crusader"
+    ],
+    "amulet": [
+     "elder",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "maximum_life_leech_rate_+1%_per_12_stat_value",
@@ -13425,7 +16792,13 @@
    "cls": [
     "helmet",
     "bodyArmour"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "maximum_mana_+_per_2_intelligence",
@@ -13472,7 +16845,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "melee_damage_+%_during_flask_effect",
@@ -13486,7 +16864,13 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "melee_damage_+%",
@@ -13505,7 +16889,12 @@
    "cls": [
     "gloves",
     "ring"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "melee_knockback",
@@ -13526,7 +16915,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "sword2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "melee_range_+",
@@ -13555,7 +16949,16 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "sword1h": [
+     "warlord"
+    ],
+    "sword2h": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "mine_area_of_effect_+%",
@@ -13595,7 +16998,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "mine_detonation_speed_+%",
@@ -13669,7 +17077,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "minimum_added_cold_damage_per_frenzy_charge,maximum_added_cold_damage_per_frenzy_charge",
@@ -13684,7 +17097,15 @@
    "infl": [
     "elder",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "elder"
+    ],
+    "ring": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "minimum_added_cold_damage_to_attacks_per_10_dexterity,maximum_added_cold_damage_to_attacks_per_10_dexterity",
@@ -13713,7 +17134,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "minimum_added_fire_damage_per_endurance_charge,maximum_added_fire_damage_per_endurance_charge",
@@ -13726,7 +17152,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "minimum_added_fire_damage_to_attacks_per_10_strength,maximum_added_fire_damage_to_attacks_per_10_strength",
@@ -13747,7 +17178,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "minimum_added_lightning_damage_per_power_charge,maximum_added_lightning_damage_per_power_charge",
@@ -13760,7 +17196,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "minimum_added_lightning_damage_per_shocked_enemy_killed_recently,maximum_added_lightning_damage_per_shocked_enemy_killed_recently",
@@ -13789,7 +17230,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "minimum_added_physical_damage_per_impaled_on_enemy,maximum_added_physical_damage_per_impaled_on_enemy",
@@ -13991,7 +17437,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "minion_elemental_resistance_%",
@@ -14076,7 +17527,13 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "minion_movement_speed_+%",
@@ -14176,7 +17633,13 @@
    "cls": [
     "gloves",
     "bodyArmour"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "movement_speed_+%_during_flask_effect",
@@ -14190,7 +17653,13 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "movement_speed_+%_if_enemy_hit_recently",
@@ -14205,7 +17674,18 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "redeemer"
+    ],
+    "mace1h": [
+     "redeemer"
+    ],
+    "mace2h": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "movement_speed_+%_per_nearby_enemy_up_to_50%",
@@ -14296,7 +17776,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "non_curse_aura_effect_+%_vs_enemies",
@@ -14321,7 +17806,15 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "redeemer"
+    ],
+    "shield": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "non_damaging_ailment_effect_+%",
@@ -14340,7 +17833,18 @@
     "quiver",
     "ring",
     "amulet"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "redeemer"
+    ],
+    "quiver": [
+     "redeemer"
+    ],
+    "ring": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "number_of_additional_arrows",
@@ -14374,7 +17878,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "number_of_additional_mines_to_place",
@@ -14399,7 +17908,25 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder",
+     "warlord"
+    ],
+    "bow": [
+     "elder",
+     "warlord"
+    ],
+    "sword2h": [
+     "elder",
+     "warlord"
+    ],
+    "axe2h": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "number_of_additional_totems_allowed",
@@ -14417,7 +17944,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "number_of_additional_traps_to_throw",
@@ -14438,9 +17970,9 @@
    "display": "Дарует заряд выносливости каждые # секунды при нахождении на одном месте",
    "token": "ды при нах",
    "kind": "suffix",
-   "pre": "ые ",
+   "pre": "ти каждые ",
    "posts": [
-    " секунды пр"
+    " с"
    ],
    "digit": "\\d",
    "cls": [
@@ -14449,7 +17981,15 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "sword1h": [
+     "elder"
+    ],
+    "sword2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "number_of_skeletons_allowed_per_2_old",
@@ -14470,7 +18010,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "old_do_not_use_base_life_leech_from_cold_damage_permyriad",
@@ -14634,7 +18179,19 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "elder",
+     "warlord"
+    ],
+    "wand": [
+     "warlord"
+    ],
+    "bow": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "physical_attack_damage_taken_+",
@@ -14653,7 +18210,13 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "physical_damage_%_to_add_as_chaos",
@@ -14700,7 +18263,53 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "redeemer"
+    ],
+    "quiver": [
+     "shaper",
+     "redeemer"
+    ],
+    "amulet": [
+     "shaper",
+     "redeemer"
+    ],
+    "wand": [
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "dagger": [
+     "shaper",
+     "redeemer"
+    ],
+    "claw": [
+     "shaper",
+     "redeemer"
+    ],
+    "bow": [
+     "shaper",
+     "redeemer"
+    ],
+    "sword1h": [
+     "shaper",
+     "redeemer"
+    ],
+    "axe1h": [
+     "shaper",
+     "redeemer"
+    ],
+    "sword2h": [
+     "shaper",
+     "redeemer"
+    ],
+    "axe2h": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "physical_damage_%_to_add_as_fire",
@@ -14726,7 +18335,52 @@
     "shaper",
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "warlord"
+    ],
+    "quiver": [
+     "warlord"
+    ],
+    "amulet": [
+     "elder",
+     "warlord"
+    ],
+    "wand": [
+     "warlord"
+    ],
+    "sceptre": [
+     "shaper",
+     "warlord"
+    ],
+    "staff": [
+     "shaper",
+     "warlord"
+    ],
+    "sword1h": [
+     "shaper",
+     "warlord"
+    ],
+    "axe1h": [
+     "shaper",
+     "warlord"
+    ],
+    "mace1h": [
+     "shaper",
+     "warlord"
+    ],
+    "sword2h": [
+     "shaper",
+     "warlord"
+    ],
+    "axe2h": [
+     "warlord"
+    ],
+    "mace2h": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "physical_damage_%_to_add_as_lightning",
@@ -14747,7 +18401,39 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "crusader"
+    ],
+    "quiver": [
+     "crusader"
+    ],
+    "amulet": [
+     "shaper",
+     "crusader"
+    ],
+    "wand": [
+     "shaper",
+     "crusader"
+    ],
+    "sceptre": [
+     "shaper",
+     "crusader"
+    ],
+    "staff": [
+     "shaper",
+     "crusader"
+    ],
+    "dagger": [
+     "shaper",
+     "crusader"
+    ],
+    "claw": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "physical_damage_%_to_add_as_random_element",
@@ -14762,7 +18448,15 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "shaper"
+    ],
+    "bow": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "physical_damage_+%",
@@ -14780,7 +18474,12 @@
     "ring",
     "amulet",
     "belt"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "physical_damage_over_time_+%",
@@ -14804,7 +18503,30 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "bow": [
+     "warlord"
+    ],
+    "sword1h": [
+     "warlord"
+    ],
+    "axe1h": [
+     "warlord"
+    ],
+    "mace1h": [
+     "warlord"
+    ],
+    "sword2h": [
+     "warlord"
+    ],
+    "axe2h": [
+     "warlord"
+    ],
+    "mace2h": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "physical_damage_over_time_multiplier_+_with_attacks",
@@ -14817,7 +18539,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "quiver": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "physical_damage_reduction_rating_%_while_not_moving",
@@ -14849,7 +18576,15 @@
     "ring",
     "amulet",
     "belt"
-   ]
+   ],
+   "inflBy": {
+    "ring": [
+     "warlord"
+    ],
+    "belt": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "physical_damage_reduction_rating_during_soul_gain_prevention",
@@ -14879,7 +18614,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "physical_damage_taken_%_as_cold",
@@ -14894,7 +18634,16 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "redeemer"
+    ],
+    "bodyArmour": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "physical_damage_taken_%_as_fire",
@@ -14909,7 +18658,16 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "warlord"
+    ],
+    "bodyArmour": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "physical_damage_taken_%_as_lightning",
@@ -14924,7 +18682,16 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "crusader"
+    ],
+    "bodyArmour": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "physical_damage_taken_+%",
@@ -14942,7 +18709,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "physical_damage_taken_+%~2",
@@ -14991,7 +18763,28 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "warlord"
+    ],
+    "claw": [
+     "elder",
+     "warlord"
+    ],
+    "sword1h": [
+     "elder",
+     "warlord"
+    ],
+    "axe1h": [
+     "elder",
+     "warlord"
+    ],
+    "mace1h": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "physical_dot_multiplier_+",
@@ -15019,7 +18812,17 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "elder",
+     "hunter"
+    ],
+    "amulet": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "physical_reflect_damage_taken_and_minion_physical_reflect_damage_taken_+%",
@@ -15095,7 +18898,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "power_frenzy_or_endurance_charge_on_kill_%",
@@ -15109,7 +18917,13 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "pride_mana_reservation_efficiency_+%",
@@ -15125,7 +18939,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "pride_mana_reservation_efficiency_-2%_per_1",
@@ -15147,7 +18966,13 @@
    "infl": [
     "elder",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "projectile_attack_damage_+%_per_200_accuracy",
@@ -15160,7 +18985,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "bow": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "projectile_attack_damage_+%",
@@ -15184,19 +19014,30 @@
    "infl": [
     "redeemer",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "warlord"
+    ],
+    "ring": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "projectile_base_number_of_targets_to_pierce",
-   "text": "снаряды пронзают # дополнительных цели(-ей)",
+   "text": "снаряды пронзают # дополнительных \"",
    "display": "Снаряды пронзают # дополнительных цели(-ей)",
-   "token": "ды п.*-е",
+   "token": "ды про.*ых",
    "kind": "both",
    "pre": "ды пронзают ",
    "posts": [
-    " дополнительных цели\\("
+    " дополнительных"
    ],
    "digit": "\\d",
+   "also": [
+    "quiver_projectiles_pierce_2_additional_targets"
+   ],
    "cls": [
     "boots",
     "wand",
@@ -15205,7 +19046,18 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "hunter"
+    ],
+    "wand": [
+     "shaper"
+    ],
+    "bow": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "projectile_base_number_of_targets_to_pierce~2",
@@ -15223,7 +19075,28 @@
     "amulet",
     "wand",
     "bow"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "hunter"
+    ],
+    "quiver": [
+     "elder",
+     "hunter"
+    ],
+    "amulet": [
+     "elder",
+     "hunter"
+    ],
+    "wand": [
+     "shaper",
+     "hunter"
+    ],
+    "bow": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "projectile_damage_+%_per_pierced_enemy",
@@ -15237,7 +19110,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "bow": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "projectile_damage_+%",
@@ -15253,7 +19132,12 @@
    "cls": [
     "gloves",
     "wand"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "projectiles_chain_any_number_of_additional_times_at_close_range",
@@ -15277,7 +19161,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "purity_of_fire_mana_reservation_efficiency_-2%_per_1",
@@ -15302,7 +19191,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "purity_of_ice_mana_reservation_efficiency_-2%_per_1",
@@ -15326,7 +19220,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "purity_of_lightning_mana_reservation_efficiency_-2%_per_1",
@@ -15354,16 +19253,13 @@
    "id": "quiver_projectiles_pierce_2_additional_targets",
    "text": "снаряды пронзают # дополнительных цели",
    "display": "Снаряды пронзают # дополнительных цели",
-   "token": "ды про.*ых",
+   "token": "х цели",
    "kind": "prefix",
-   "pre": "ды пронзают ",
+   "pre": "",
    "posts": [
-    " дополнительных"
+    " дополнительных цели"
    ],
    "digit": "\\d",
-   "also": [
-    "projectile_base_number_of_targets_to_pierce"
-   ],
    "src": "special"
   },
   {
@@ -15390,7 +19286,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "raise_zombie_gem_level_+",
@@ -15403,7 +19304,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "rare_or_unique_monster_dropped_item_rarity_+%",
@@ -15433,7 +19339,13 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "recover_%_maximum_mana_on_kill",
@@ -15452,7 +19364,13 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "recover_%_of_maximum_life_on_block",
@@ -15471,7 +19389,13 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "shaper",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "recover_10%_of_maximum_mana_on_skill_use_%",
@@ -15498,7 +19422,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "reduce_enemy_elemental_resistance_%",
@@ -15532,7 +19462,53 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "shaper",
+     "hunter"
+    ],
+    "wand": [
+     "shaper",
+     "hunter"
+    ],
+    "sceptre": [
+     "shaper",
+     "hunter"
+    ],
+    "staff": [
+     "shaper",
+     "hunter"
+    ],
+    "dagger": [
+     "shaper",
+     "hunter"
+    ],
+    "claw": [
+     "shaper"
+    ],
+    "bow": [
+     "shaper"
+    ],
+    "sword1h": [
+     "shaper"
+    ],
+    "axe1h": [
+     "shaper"
+    ],
+    "mace1h": [
+     "shaper"
+    ],
+    "sword2h": [
+     "shaper"
+    ],
+    "axe2h": [
+     "shaper"
+    ],
+    "mace2h": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "reflect_damage_taken_and_minion_reflect_damage_taken_+%",
@@ -15582,7 +19558,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "axe2h": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "remove_chill_and_freeze_on_flask_use",
@@ -15596,7 +19577,13 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "remove_ignite_and_burning_on_flask_use",
@@ -15610,7 +19597,13 @@
    "infl": [
     "elder",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "elder",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "remove_shock_on_flask_use",
@@ -15624,7 +19617,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "resist_all_%",
@@ -15711,7 +19710,16 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "shaper",
+     "crusader"
+    ],
+    "staff": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "shock_duration_+%",
@@ -15723,7 +19731,7 @@
   },
   {
    "id": "shock_nearby_enemies_for_x_ms_when_you_focus",
-   "text": "в момент получения фокуса вы на # секунд(-ы) накладываете на врагов шок",
+   "text": "в момент получения фокуса вы на # \" накладываете на врагов шок",
    "display": "В момент получения Фокуса вы на # секунд(-ы) накладываете на врагов шок",
    "token": "в шо",
    "kind": "suffix",
@@ -15734,7 +19742,7 @@
   },
   {
    "id": "shock_self_for_x_ms_when_you_focus",
-   "text": "в момент получения фокуса вы на # секунд(-ы) накладываете на себя шок",
+   "text": "в момент получения фокуса вы на # \" накладываете на себя шок",
    "display": "В момент получения Фокуса вы на # секунд(-ы) накладываете на себя шок",
    "token": "бя ш",
    "kind": "suffix",
@@ -15774,7 +19782,12 @@
    "cls": [
     "helmet",
     "ring"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "sigil_target_search_range_+%",
@@ -15805,7 +19818,15 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "mace1h": [
+     "hunter"
+    ],
+    "mace2h": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "skill_effect_duration_+%",
@@ -15818,7 +19839,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "skill_mana_cost_+_with_channelling_skills",
@@ -15886,7 +19912,13 @@
    "infl": [
     "shaper",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "spell_and_attack_minimum_added_cold_damage,spell_and_attack_maximum_added_cold_damage",
@@ -15923,7 +19955,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "spell_block_%_while_on_low_life",
@@ -15952,7 +19989,21 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "redeemer"
+    ],
+    "sceptre": [
+     "redeemer"
+    ],
+    "staff": [
+     "redeemer"
+    ],
+    "dagger": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "spell_critical_strike_chance_+%_if_removed_maximum_number_of_seals",
@@ -15995,7 +20046,13 @@
    "infl": [
     "shaper",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "belt": [
+     "shaper",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "spell_damage_+%_per_10_int",
@@ -16009,7 +20066,13 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "spell_damage_+%_per_10_strength",
@@ -16026,7 +20089,13 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "staff": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "spell_damage_+%_per_16_dex",
@@ -16040,7 +20109,13 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "dagger": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "spell_damage_+%_per_16_int",
@@ -16056,7 +20131,21 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "elder",
+     "hunter"
+    ],
+    "sceptre": [
+     "elder",
+     "hunter"
+    ],
+    "dagger": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "spell_damage_+%_per_16_strength",
@@ -16073,7 +20162,13 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "sceptre": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "spell_damage_+%",
@@ -16110,7 +20205,15 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "warlord"
+    ],
+    "ring": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "spell_minimum_added_chaos_damage,spell_maximum_added_chaos_damage",
@@ -16128,7 +20231,25 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder",
+     "hunter"
+    ],
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "elder"
+    ],
+    "staff": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "spell_minimum_added_cold_damage,spell_maximum_added_cold_damage",
@@ -16153,7 +20274,13 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "spell_minimum_added_cold_damage_per_power_charge,spell_maximum_added_cold_damage_per_power_charge",
@@ -16182,7 +20309,13 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "spell_minimum_added_lightning_damage,spell_maximum_added_lightning_damage",
@@ -16206,7 +20339,13 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "shaper",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "spell_minimum_added_physical_damage,spell_maximum_added_physical_damage",
@@ -16224,7 +20363,25 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "elder",
+     "hunter"
+    ],
+    "wand": [
+     "elder"
+    ],
+    "sceptre": [
+     "elder"
+    ],
+    "staff": [
+     "elder"
+    ],
+    "dagger": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "spell_skill_gem_level_+",
@@ -16299,7 +20456,19 @@
     "elder",
     "hunter",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "hunter"
+    ],
+    "bodyArmour": [
+     "elder",
+     "warlord"
+    ],
+    "amulet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "strength_skill_gem_level_+",
@@ -16346,7 +20515,12 @@
    ],
    "infl": [
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder"
+    ]
+   }
   },
   {
    "id": "summon_totem_cast_speed_+%",
@@ -16375,7 +20549,12 @@
    ],
    "infl": [
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "tailwind_effect_on_self_+%",
@@ -16396,7 +20575,12 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "taunted_enemies_by_warcry_damage_taken_+%",
@@ -16423,7 +20607,13 @@
    "infl": [
     "shaper",
     "elder"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "shaper",
+     "elder"
+    ]
+   }
   },
   {
    "id": "trap_and_mine_throwing_speed_+%",
@@ -16458,7 +20648,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "trap_duration_+%",
@@ -16511,7 +20706,12 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "gloves": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "travel_skills_cannot_be_exerted",
@@ -16574,7 +20774,13 @@
    "infl": [
     "shaper",
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "shaper",
+     "warlord"
+    ]
+   }
   },
   {
    "id": "unaffected_by_chilled_ground",
@@ -16588,7 +20794,13 @@
    "infl": [
     "shaper",
     "redeemer"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "shaper",
+     "redeemer"
+    ]
+   }
   },
   {
    "id": "unaffected_by_chill",
@@ -16610,7 +20822,13 @@
    "infl": [
     "elder",
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder",
+     "hunter"
+    ]
+   }
   },
   {
    "id": "unaffected_by_ignite",
@@ -16632,7 +20850,13 @@
    "infl": [
     "elder",
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "boots": [
+     "elder",
+     "crusader"
+    ]
+   }
   },
   {
    "id": "unaffected_by_shock",
@@ -16674,7 +20898,12 @@
    ],
    "infl": [
     "shaper"
-   ]
+   ],
+   "inflBy": {
+    "bodyArmour": [
+     "shaper"
+    ]
+   }
   },
   {
    "id": "vaal_skill_damage_+%",
@@ -16704,7 +20933,21 @@
     "sword2h",
     "axe2h",
     "mace2h"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "crusader"
+    ],
+    "sword2h": [
+     "crusader"
+    ],
+    "axe2h": [
+     "crusader"
+    ],
+    "mace2h": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "warcry_cooldown_speed_+%",
@@ -16721,7 +20964,24 @@
    ],
    "infl": [
     "hunter"
-   ]
+   ],
+   "inflBy": {
+    "shield": [
+     "hunter"
+    ],
+    "axe1h": [
+     "hunter"
+    ],
+    "sword2h": [
+     "hunter"
+    ],
+    "axe2h": [
+     "hunter"
+    ],
+    "mace2h": [
+     "hunter"
+    ]
+   }
   },
   {
    "id": "warcry_skill_area_of_effect_+%",
@@ -16734,7 +20994,12 @@
    ],
    "infl": [
     "warlord"
-   ]
+   ],
+   "inflBy": {
+    "helmet": [
+     "warlord"
+    ]
+   }
   },
   {
    "id": "warcry_speed_+%",
@@ -16782,7 +21047,21 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "crusader"
+    ],
+    "sceptre": [
+     "crusader"
+    ],
+    "staff": [
+     "crusader"
+    ],
+    "dagger": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "wrath_mana_reservation_efficiency_+%",
@@ -16798,7 +21077,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "wrath_mana_reservation_efficiency_-2%_per_1",
@@ -16835,7 +21119,21 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "wand": [
+     "crusader"
+    ],
+    "sceptre": [
+     "crusader"
+    ],
+    "staff": [
+     "crusader"
+    ],
+    "dagger": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "zealotry_mana_reservation_efficiency_+%",
@@ -16851,7 +21149,12 @@
    ],
    "infl": [
     "crusader"
-   ]
+   ],
+   "inflBy": {
+    "amulet": [
+     "crusader"
+    ]
+   }
   },
   {
    "id": "zealotry_mana_reservation_efficiency_-2%_per_1",

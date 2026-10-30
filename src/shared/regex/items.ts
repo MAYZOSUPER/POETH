@@ -110,6 +110,11 @@ export function modFitsClass(m: ItemModData, cls: ItemClassKey | ''): boolean {
   return !cls || !m.cls || m.cls.includes(cls)
 }
 
+/** Влияния, без которых строка не выпадает (на этом классе; без класса — нигде без влияния). */
+export function modInfluences(m: ItemModData, cls: ItemClassKey | ''): InfluenceKey[] | undefined {
+  return cls ? m.inflBy?.[cls] : m.infl
+}
+
 interface ItemsIndex {
   byId: Map<string, ItemModData>
   baseById: Map<string, ItemRegexData['bases'][number]>

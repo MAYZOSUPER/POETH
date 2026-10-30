@@ -49,6 +49,7 @@ export {
   itemsParts,
   itemsPresetQuery,
   modFitsClass,
+  modInfluences,
   selectedProps,
   type ItemsBuildResult,
   type ItemsPreset,
