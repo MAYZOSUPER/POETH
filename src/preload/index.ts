@@ -17,6 +17,7 @@ import { levelingBridge } from './domains/leveling'
 import { advisorBridge } from './domains/advisor'
 import { buildTreeBridge } from './domains/buildTree'
 import { buildBridge } from './domains/build'
+import { equipBridge } from './domains/equip'
 
 // window.overlayApi — мост contextBridge. Куски по доменам: src/preload/domains/*.ts
 // (этап меняет только свой файл). Этот файл ЗАМОРОЖЕН после S0.
@@ -37,7 +38,8 @@ const api: OverlayApi = {
   ...levelingBridge(),
   ...advisorBridge(),
   ...buildTreeBridge(),
-  ...buildBridge()
+  ...buildBridge(),
+  ...equipBridge()
 }
 
 contextBridge.exposeInMainWorld('overlayApi', api)
