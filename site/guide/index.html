@@ -65,6 +65,13 @@
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 5.5a1.5 1.5 0 0 1 1.5-1.5H19v14H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></symbol>
   <symbol id="i-min" viewBox="0 0 24 24"><path d="M6 13h12"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9.3h16M4 14.6h16M9.3 4v16M14.6 4v16"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5l7 3v5.2c0 4.3-3 7.6-7 8.8-4-1.2-7-4.5-7-8.8V6.5z"/><path d="M8.8 12l2.2 2.2 4.2-4.4"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"/></symbol>
+  <symbol id="i-seal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.6l4.4 4.4-4.4 4.4-4.4-4.4z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19.5h16"/><path d="M5.5 15.5l4.2-5 3.6 3 5.2-7"/></symbol>
+  <symbol id="i-passive" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-gem" viewBox="0 0 24 24"><path d="M7 4.5h10l3.5 5L12 20 3.5 9.5z"/><path d="M3.5 9.5h17M9.5 4.5L8 9.5l4 10.5 4-10.5-1.5-5"/></symbol>
 </svg>
 
 <header class="top">
@@ -80,6 +87,7 @@
       <a href="../#features"><span lang="ru">Возможности</span><span lang="en">Features</span></a>
       <a class="nav__guide" href="./" aria-current="page"><span lang="ru">Гайд</span><span lang="en">Guide</span></a>
       <a href="../#faq"><span lang="ru">Вопросы</span><span lang="en">FAQ</span></a>
+      <a class="nav__bug" href="../bug/"><span lang="ru">Ошибка?</span><span lang="en">Bug?</span></a>
     </nav>
     <div class="langs" role="group" aria-label="Язык / Language">
       <button type="button" data-set-lang="ru" aria-pressed="false">RU</button>
@@ -112,8 +120,20 @@
         <span lang="en">Every feature of the app step by step: what it is, where to find it and how to use it. Pick a feature in the contents or start with “Getting started”.</span>
       </p>
       <p class="lead">
-        <span lang="ru">Картинки — макеты интерфейса и схемы: скриншоты из игры появятся позже. Ответы на частые проблемы — в <a href="https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.md">списке вопросов</a>.</span>
-        <span lang="en">Pictures are interface mockups and diagrams; in-game screenshots will come later. Common problems are answered in the <a href="https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.en.md">FAQ</a>.</span>
+        <span lang="ru">Картинки — макеты и снимки интерфейса с тестовыми данными, скриншоты из игры появятся позже. Ответы на частые проблемы — в <a href="https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.md">списке вопросов</a>, нашли ошибку — <a href="../bug/">сообщите нам</a>.</span>
+        <span lang="en">Pictures are interface mockups and screenshots with test data; in-game screenshots will come later. Common problems are answered in the <a href="https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.en.md">FAQ</a>; found a bug — <a href="../bug/">let us know</a>.</span>
+      </p>
+      <p class="g-new">
+        <b><span lang="ru">Новое в 0.1.0-rc.12:</span><span lang="en">New in 0.1.0-rc.12:</span></b>
+        <a href="#build"><span lang="ru">Билд</span><span lang="en">Build</span></a> ·
+        <a href="#tree"><span lang="ru">дерево по Alt+P</span><span lang="en">tree on Alt+P</span></a> ·
+        <a href="#equipped"><span lang="ru">Против надетого</span><span lang="en">Versus equipped</span></a> ·
+        <a href="#timeless"><span lang="ru">timeless-самоцветы</span><span lang="en">timeless jewels</span></a> ·
+        <a href="#sites"><span lang="ru">сайты в трейд-окне</span><span lang="en">sites in the trade window</span></a> ·
+        <a href="#advisor"><span lang="ru">Что фармить</span><span lang="en">What to farm</span></a> ·
+        <a href="#flip-items"><span lang="ru">Обмен → Предметы</span><span lang="en">Exchange → Items</span></a> ·
+        <a href="#regex-items"><span lang="ru">Regex «Предметы»</span><span lang="en">Regex Items</span></a> ·
+        <a href="#poe2"><span lang="ru">окно цены PoE 2</span><span lang="en">PoE 2 price window</span></a>
       </p>
     </div>
   </section>
@@ -135,26 +155,34 @@
           <p class="g-toc__label"><span lang="ru">Торговля</span><span lang="en">Trade</span></p>
           <ul class="g-toc__list">
             <li><a href="#price"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-ask"/></svg></span><span><b><span lang="ru">Цена предмета (Ctrl+D)</span><span lang="en">Item price (Ctrl+D)</span></b><small><span lang="ru">Окно цены и подсказка, что делать с вещью</span><span lang="en">The price window and what to do with the item</span></small></span></a></li>
+            <li><a href="#equipped"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></span><span><b><span lang="ru">Против надетого</span><span lang="en">Versus equipped</span></b><small><span lang="ru">Лучше или хуже надетой вещи; точный расчёт PoB — бета</span><span lang="en">Better or worse than what you wear; exact PoB math — beta</span></small></span></a></li>
+            <li><a href="#timeless"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-seal"/></svg></span><span><b><span lang="ru">Timeless-самоцветы</span><span lang="en">Timeless jewels</span></b><small><span lang="ru">Лучшее гнездо для сида и цена похожих</span><span lang="en">The best socket for the seed and similar prices</span></small></span></a></li>
             <li><a href="#trade-window"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-star"/></svg></span><span><b><span lang="ru">Трейд-окно и избранное</span><span lang="en">Trade window and favorites</span></b><small><span lang="ru">Сайт трейда поверх игры и папки поисков</span><span lang="en">The trade site over the game and search folders</span></small></span></a></li>
+            <li><a href="#sites"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span><span><b><span lang="ru">Сайты в трейд-окне</span><span lang="en">Sites in the trade window</span></b><small><span lang="ru">poe.ninja, poedb, вики, Maxroll и другие</span><span lang="en">poe.ninja, poedb, the wiki, Maxroll and more</span></small></span></a></li>
             <li><a href="#live"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg></span><span><b>Live search</b><small><span lang="ru">Новые лоты — сразу уведомлением</span><span lang="en">New listings as instant alerts</span></small></span></a></li>
             <li><a href="#deals"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-trade"/></svg></span><span><b><span lang="ru">Сделки</span><span lang="en">Trades</span></b><small><span lang="ru">Кто хочет купить у вас, подсветка тайника</span><span lang="en">Who wants to buy from you, stash highlight</span></small></span></a></li>
             <li><a href="#chat"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b><span lang="ru">Команды чата</span><span lang="en">Chat commands</span></b><small><span lang="ru">F5 — в убежище и свои команды</span><span lang="en">F5 for hideout and your own commands</span></small></span></a></li>
-            <li><a href="#flip"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b><span lang="ru">Обмен</span><span lang="en">Exchange</span></b><small><span lang="ru">Флиппинг валюты у Фаустуса, курс divine</span><span lang="en">Currency flipping at Faustus, divine rate</span></small></span></a></li>
+            <li><a href="#flip"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b><span lang="ru">Обмен: валюта</span><span lang="en">Exchange: currency</span></b><small><span lang="ru">Флиппинг валюты у Фаустуса, курс divine</span><span lang="en">Currency flipping at Faustus, divine rate</span></small></span></a></li>
+            <li><a href="#flip-items"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-gem"/></svg></span><span><b><span lang="ru">Обмен: предметы</span><span lang="en">Exchange: items</span></b><small><span lang="ru">Уники дешевле рынка, тиры уников, 6L — бета</span><span lang="en">Uniques below market, unique tiers, 6L — beta</span></small></span></a></li>
           </ul>
         </div>
         <div class="g-toc__group">
           <p class="g-toc__label"><span lang="ru">Фарм</span><span lang="en">Farming</span></p>
           <ul class="g-toc__list">
+            <li><a href="#advisor"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-map"/></svg></span><span><b><span lang="ru">Что фармить</span><span lang="en">What to farm</span></b><small><span lang="ru">Стратегии с доходом в час, свои стратегии</span><span lang="en">Strategies with income per hour, your own</span></small></span></a></li>
             <li><a href="#wealth"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-coins"/></svg></span><span><b><span lang="ru">Богатство</span><span lang="en">Wealth</span></b><small><span lang="ru">Сколько стоит тайник и что прибавилось</span><span lang="en">What your stash is worth and what you gained</span></small></span></a></li>
-            <li><a href="#maps"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-map"/></svg></span><span><b><span lang="ru">Трекер карт</span><span lang="en">Map tracker</span></b><small><span lang="ru">Сессия фарма: карты, время, доход в час</span><span lang="en">Farming session: maps, time, income per hour</span></small></span></a></li>
+            <li><a href="#maps"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg></span><span><b><span lang="ru">Трекер карт</span><span lang="en">Map tracker</span></b><small><span lang="ru">Сессия фарма: карты, время, доход в час</span><span lang="en">Farming session: maps, time, income per hour</span></small></span></a></li>
             <li><a href="#regex"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg></span><span><b>Regex</b><small><span lang="ru">Строки поиска для карт и торговца</span><span lang="en">Search strings for maps and vendors</span></small></span></a></li>
+            <li><a href="#regex-items"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></span><span><b><span lang="ru">Regex: предметы</span><span lang="en">Regex: items</span></b><small><span lang="ru">Базы под крафт, жёлтые на продажу, камни</span><span lang="en">Crafting bases, rares to sell, gems</span></small></span></a></li>
           </ul>
         </div>
         <div class="g-toc__group">
-          <p class="g-toc__label"><span lang="ru">Прокачка и PoE 2</span><span lang="en">Leveling and PoE 2</span></p>
+          <p class="g-toc__label"><span lang="ru">Прокачка и PoE 2</span><span lang="en">Levelling and PoE 2</span></p>
           <ul class="g-toc__list">
             <li><a href="#leveling"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg></span><span><b><span lang="ru">Гид прокачки и «Кампания»</span><span lang="en">Leveling guide and Campaign</span></b><small><span lang="ru">Маршрут по актам PoE 1 поверх игры</span><span lang="en">PoE 1 act route over the game</span></small></span></a></li>
-            <li><a href="#poe2"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-game"/></svg></span><span><b>PoE 2</b><small><span lang="ru">Трекер кампании и цена предмета</span><span lang="en">Campaign tracker and item price</span></small></span></a></li>
+            <li><a href="#build"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-passive"/></svg></span><span><b><span lang="ru">Билд</span><span lang="en">Build</span></b><small><span lang="ru">Билд из PoB по этапам: камни, связки, вещи</span><span lang="en">A PoB build by stage: gems, links, items</span></small></span></a></li>
+            <li><a href="#tree"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-passive"/></svg></span><span><b><span lang="ru">Дерево поверх игры (Alt+P)</span><span lang="en">Tree over the game (Alt+P)</span></b><small><span lang="ru">Что взять и что снять — прямо на дереве игры</span><span lang="en">What to take and remove — right on the game tree</span></small></span></a></li>
+            <li><a href="#poe2"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-game"/></svg></span><span><b>PoE 2</b><small><span lang="ru">Кампания и окно цены с модами</span><span lang="en">Campaign and a price window with mods</span></small></span></a></li>
           </ul>
         </div>
         <div class="g-toc__group">
@@ -219,10 +247,12 @@
               <a class="g-win__tab" href="#deals"><svg class="ico" aria-hidden="true"><use href="#i-trade"/></svg><span lang="ru">Сделки</span><span lang="en">Trades</span></a>
               <a class="g-win__tab" href="#flip"><svg class="ico" aria-hidden="true"><use href="#i-swap"/></svg><span lang="ru">Обмен</span><span lang="en">Exchange</span></a>
               <span class="g-win__sec"><span lang="ru">Фарм</span><span lang="en">Farming</span></span>
+              <a class="g-win__tab" href="#advisor"><svg class="ico" aria-hidden="true"><use href="#i-map"/></svg><span lang="ru">Что фармить</span><span lang="en">What to farm</span></a>
               <a class="g-win__tab" href="#wealth"><svg class="ico" aria-hidden="true"><use href="#i-coins"/></svg><span lang="ru">Богатство</span><span lang="en">Wealth</span></a>
               <a class="g-win__tab" href="#regex"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>Regex</a>
               <span class="g-win__sec"><span lang="ru">Прокачка</span><span lang="en">Levelling</span></span>
               <a class="g-win__tab" href="#leveling"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg><span lang="ru">Кампания</span><span lang="en">Campaign</span></a>
+              <a class="g-win__tab" href="#build"><svg class="ico" aria-hidden="true"><use href="#i-passive"/></svg><span lang="ru">Билд</span><span lang="en">Build</span></a>
             </div>
             <div class="g-win__main" aria-hidden="true">
               <i class="g-win__line"></i><i class="g-win__line g-win__line--s"></i><i class="g-win__line"></i><i class="g-win__line g-win__line--s"></i>
@@ -248,6 +278,8 @@
               <tr><th><span lang="ru">В убежище (<code>/hideout</code>)</span><span lang="en">Go to hideout (<code>/hideout</code>)</span></th><td><kbd>F5</kbd></td></tr>
               <tr><th><span lang="ru">«Обмен»: считать таблицу «Рыночный курс» (бета)</span><span lang="en">Exchange: read the “Market Ratio” table (beta)</span></th><td><kbd>Alt</kbd>+<kbd>D</kbd></td></tr>
               <tr><th><span lang="ru">Гид прокачки: показать или свернуть</span><span lang="en">Leveling guide: show or collapse</span></th><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd></td></tr>
+              <tr><th><span lang="ru">Билд: дерево этапа поверх игрового дерева</span><span lang="en">Build: stage tree over the in-game tree</span></th><td><kbd>Alt</kbd>+<kbd>P</kbd></td></tr>
+              <tr><th><span lang="ru">Сайты в трейд-окне (последняя вкладка сайта)</span><span lang="en">Sites in the trade window (last site tab)</span></th><td><span lang="ru">не назначена</span><span lang="en">not set</span></td></tr>
               <tr><th><span lang="ru">PoE 2: шаг кампании назад / вперёд</span><span lang="en">PoE 2: campaign step back / forward</span></th><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd></td></tr>
             </tbody>
           </table>
@@ -307,6 +339,10 @@
                 <span lang="en"><b>“In person” listings</b> have “Whisper”: the message to the seller is pasted into game chat, and you press Enter. <b>“Buyout” listings</b> have “Open listing”: in the trade window click “Travel to Hideout” on the site and buy from the merchant in the seller's hideout (gold fee). Hover a listing to see the seller's item and “similar N/M”.</span>
               </div></li>
               <li><div>
+                <span lang="ru">Под названием вещи — «Открыть на» <b>poedb · вики · poe.ninja</b>: страница этой вещи откроется во вкладке <a href="#sites">трейд-окна</a>. Ниже — <a href="#equipped">«Против надетого»</a>, а у timeless-самоцветов — <a href="#timeless">оценка сида</a>.</span>
+                <span lang="en">Under the item name is “Open on” <b>poedb · wiki · poe.ninja</b>: the page for this item opens in a <a href="#sites">trade window</a> tab. Below are <a href="#equipped">Versus equipped</a> and, for timeless jewels, the <a href="#timeless">seed estimate</a>.</span>
+              </div></li>
+              <li><div>
                 <span lang="ru">Внизу окна: «Открыть в трейд-окне», «В избранное» и «Следить (live)». В шапке — курс «1 div = N c», лига и «Обновить».</span>
                 <span lang="en">At the bottom: “Open in trade window”, “Save” (to favorites) and “Live search”. The header shows the “1 div = N c” rate, the league and Refresh.</span>
               </div></li>
@@ -319,7 +355,7 @@
           <div class="g-side">
             <dl class="g-where">
               <div><dt><span lang="ru">Клавиша</span><span lang="en">Key</span></dt><dd><kbd>Ctrl</kbd>+<kbd>D</kbd> <span lang="ru">над предметом в игре</span><span lang="en">over an item in the game</span></dd></div>
-              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">окно поверх игры, у курсора</span><span lang="en">a window over the game, at the cursor</span></dd></div>
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">окно поверх игры, у курсора; во вкладке «Прайс-чек» — как пользоваться и «Сменить клавишу»</span><span lang="en">a window over the game, at the cursor; the Price Check tab explains it and has “Change key”</span></dd></div>
               <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">игра в режиме «Окно» или «Окно без рамки»</span><span lang="en">the game in Windowed or Windowed Fullscreen</span></dd></div>
             </dl>
             <figure class="shot">
@@ -361,6 +397,145 @@
         <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
       </article>
 
+      <article class="g-feat" id="equipped" aria-labelledby="h-equipped">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></span>
+          <div>
+            <h2 id="h-equipped"><span lang="ru">Против надетого</span><span lang="en">Versus equipped</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 1</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">точный расчёт PoB — бета</span><span lang="en">exact PoB math — beta</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Окно цены сравнивает вещь с той, что на вас надета: лучше она или хуже по жизни, сопротивлениям до капа, требованиям и DPS оружия. Считается на вашем компьютере, без интернета.</span>
+          <span lang="en">The price window compares the item with the one you are wearing: is it better or worse for life, resistances up to the cap, requirements and weapon DPS. It is calculated on your computer, without the internet.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru"><b>Запомните надетое.</b> Откройте окно персонажа (<kbd>C</kbd>), наведите курсор на надетую вещь, нажмите <kbd>Ctrl</kbd>+<kbd>D</kbd> и в блоке «Против надетого» — «Запомнить как надетое». Для колец, рук, флаконов и самоцветов выберите слот в «Куда:».</span>
+                <span lang="en"><b>Save what you wear.</b> Open the character window (<kbd>C</kbd>), hover an equipped item, press <kbd>Ctrl</kbd>+<kbd>D</kbd> and click “Save as equipped” in the Versus equipped block. For rings, hands, flasks and jewels, pick the slot under “Slot:”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Теперь <kbd>Ctrl</kbd>+<kbd>D</kbd> по любой вещи того же слота покажет вердикт — «Лучше», «Хуже», «По-разному» или «Почти так же» — и строки «было → станет»: требования, сопротивления до капа, жизнь, энергощит, DPS оружия, скорость передвижения.</span>
+                <span lang="en">Now <kbd>Ctrl</kbd>+<kbd>D</kbd> on any item for that slot shows a verdict — Better, Worse, Mixed or About the same — and “before → after” lines: requirements, resistances to the cap, life, energy shield, weapon DPS, movement speed.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Кап сопротивлений.</b> Нажмите «Указать мои сопротивления» и впишите их как в окне персонажа (<kbd>C</kbd>). Если во вкладке <a href="#build">«Билд»</a> вставлен билд, кап берётся по расчёту автора билда, а строка «По гайду» покажет, ближе ли вещь к предмету этапа.</span>
+                <span lang="en"><b>Resistance cap.</b> Click “Enter my resistances” and type them as shown in the character window (<kbd>C</kbd>). If a build is pasted in the <a href="#build">Build</a> tab, the cap follows the build author's numbers, and “By the guide” shows whether the item is closer to the stage item.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Забыть» — удалить запомненную вещь. Если запись старше суток, она подсвечена жёлтым — обновите её <kbd>Ctrl</kbd>+<kbd>D</kbd> по надетой вещи.</span>
+                <span lang="en">“Forget” removes a saved item. An entry older than a day turns yellow — refresh it with <kbd>Ctrl</kbd>+<kbd>D</kbd> on the equipped item.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Точный расчёт (PoB)» — бета.</b> Галочка в том же блоке. Считает урон билда и запас прочности (EHP) движком Path of Building у вас на компьютере, без интернета. Нужен билд во вкладке «Билд». Первый расчёт — несколько секунд (самый первый после установки — до ~10 с), дальше — мгновенно. Важные решения проверяйте в самом PoB.</span>
+                <span lang="en"><b>“Exact calculation (PoB)” — beta.</b> A checkbox in the same block. It calculates build damage and effective HP with the Path of Building engine on your computer, without the internet. It needs a build in the Build tab. The first run takes a few seconds (the very first after installing — up to ~10 s), then it is instant. Check important decisions in PoB itself.</span>
+              </div></li>
+            </ol>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">окно цены <kbd>Ctrl</kbd>+<kbd>D</kbd>, блок под названием вещи</span><span lang="en">the <kbd>Ctrl</kbd>+<kbd>D</kbd> price window, under the item name</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">запомненная надетая вещь; для «По гайду» и PoB — билд во вкладке «Билд»</span><span lang="en">a saved equipped item; for “By the guide” and PoB — a build in the Build tab</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/equipped-ru.png" width="384" height="826" loading="lazy" alt="Окно цены POETH с блоком «Против надетого»: вердикт «По-разному», строки жизни, сопротивлений и скорости">
+              <img lang="en" src="../assets/img/guide/equipped-en.png" width="384" height="826" loading="lazy" alt="POETH price window with the Versus equipped block: a Mixed verdict, life, resistance and speed lines">
+            </figure>
+            <div class="faq">
+              <details>
+                <summary><span><span lang="ru">«Сравнить не с чем»</span><span lang="en">“Nothing to compare with”</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Для этого слота ещё нет запомненной вещи. Откройте окно персонажа (<kbd>C</kbd>), <kbd>Ctrl</kbd>+<kbd>D</kbd> по надетой вещи и «Запомнить эту как надетую».</p>
+                  <p lang="en">There is no saved item for this slot yet. Open the character window (<kbd>C</kbd>), press <kbd>Ctrl</kbd>+<kbd>D</kbd> on the equipped item and “Save this one as equipped”.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Что не сравнивается</span><span lang="en">What is not compared</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Кластерные и уникальные самоцветы («смотрите в PoB»), свойства флаконов (иммунитеты), моды урона кроме DPS оружия, броня и уклонение. Неопознанную вещь сначала опознайте.</p>
+                  <p lang="en">Cluster and unique jewels (“check it in PoB”), flask properties (immunities), damage mods other than weapon DPS, armour and evasion. Identify an unidentified item first.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Где хранится надетое?</span><span lang="en">Where is the equipped set stored?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">В <code>%APPDATA%\POETH\equipped.json</code>, отдельно для каждого персонажа: только числа и короткие поля (слот, база, жизнь, сопротивления), без текста предмета. Движок PoB — отдельный процесс без сети, он ничего не записывает и закрывается сам через 5 минут простоя.</p>
+                  <p lang="en">In <code>%APPDATA%\POETH\equipped.json</code>, per character: only numbers and short fields (slot, base, life, resistances), without the item text. The PoB engine is a separate process with no network; it writes nothing and closes by itself after 5 idle minutes.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="timeless" aria-labelledby="h-timeless">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-seal"/></svg></span>
+          <div>
+            <h2 id="h-timeless"><span lang="ru">Timeless-самоцветы</span><span lang="en">Timeless jewels</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 1</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru"><kbd>Ctrl</kbd>+<kbd>D</kbd> по timeless-самоцвету — и POETH сам проверит все 21 гнездо дерева: где этот сид сильнее всего, что он даст вашему билду и почём продаются похожие. Работает с Lethal Pride, Brutal Restraint, Militant Faith, Elegant Hubris и Heroic Tragedy.</span>
+          <span lang="en"><kbd>Ctrl</kbd>+<kbd>D</kbd> on a timeless jewel and POETH checks all 21 tree sockets by itself: where this seed is strongest, what it gives your build and what similar ones sell for. Works with Lethal Pride, Brutal Restraint, Militant Faith, Elegant Hubris and Heroic Tragedy.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">Наведите курсор на самоцвет и нажмите <kbd>Ctrl</kbd>+<kbd>D</kbd>. Как и раньше, видны сид, «Любой завоеватель» / «Точный завоеватель» и «Открыть в калькуляторе Timeless Jewels».</span>
+                <span lang="en">Hover the jewel and press <kbd>Ctrl</kbd>+<kbd>D</kbd>. As before, you see the seed, “Any conqueror” / “Exact conqueror” and “Open in Timeless Jewels calculator”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Лучшее гнездо»</b> — где сид даёт больше всего. Гнездо названо по ближайшему кейстоуну или нотаблу: найдите его поиском по дереву в игре.</span>
+                <span lang="en"><b>“Best socket”</b> — where the seed gives the most. The socket is named after the nearest keystone or notable: find it with the in-game tree search.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Для вашего билда»</b> — если во вкладке <a href="#build">«Билд»</a> вставлен билд: гнездо, взятое в билде (или где больше ваших нотаблов), и что сид даст там.</span>
+                <span lang="en"><b>“For your build”</b> — if a build is pasted in the <a href="#build">Build</a> tab: the socket taken in the build (or the one with the most of your notables) and what the seed gives there.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Цена похожих»</b> — один поиск на трейде по сидам с таким же или лучшим исходом: «Похожие продаются за ~X». Со входом в аккаунт в поиск помещается больше сидов; если сайт ответит, что поиск слишком сложный, POETH предложит «Искать по N».</span>
+                <span lang="en"><b>“Price of similar”</b> — one trade search over seeds with the same or a better outcome: “Similar ones sell for ~X”. With an account sign-in more seeds fit into one search; if the site says the search is too complex, POETH offers “Search N”.</span>
+              </div></li>
+            </ol>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">окно цены <kbd>Ctrl</kbd>+<kbd>D</kbd> по timeless-самоцвету</span><span lang="en">the <kbd>Ctrl</kbd>+<kbd>D</kbd> price window on a timeless jewel</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">ничего; для «Для вашего билда» — билд во вкладке «Билд»</span><span lang="en">nothing; for “For your build” — a build in the Build tab</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/timeless-ru.png" width="384" height="460" loading="lazy" alt="Окно цены POETH для Lethal Pride: лучшее гнездо, гнездо для билда и кнопка «Цена похожих»">
+              <img lang="en" src="../assets/img/guide/timeless-en.png" width="384" height="460" loading="lazy" alt="POETH price window for Lethal Pride: the best socket, the socket for your build and the Price of similar button">
+            </figure>
+            <div class="faq">
+              <details>
+                <summary><span><span lang="ru">«Оценка недоступна»</span><span lang="en">“Estimate unavailable”</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Для Glorious Vanity и абиссальных самоцветов умной оценки нет — проверьте сид в калькуляторе. Поиск такого же сида на трейде работает как обычно.</p>
+                  <p lang="en">There is no smart estimate for Glorious Vanity and abyss jewels — check the seed in the calculator. Searching the same seed on trade works as usual.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">«Нет точных аналогов на трейде»</span><span lang="en">“No exact matches on trade”</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Это не значит, что сид ничего не стоит: просто сейчас такие никто не выставил. Загляните позже или сравните в калькуляторе.</p>
+                  <p lang="en">It does not mean the seed is worthless: nobody has listed one right now. Check back later or compare in the calculator.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
       <article class="g-feat" id="trade-window" aria-labelledby="h-trade-window">
         <div class="g-feat__head">
           <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-star"/></svg></span>
@@ -392,6 +567,10 @@
               <li><div>
                 <span lang="ru">Клик по названию открывает поиск справа. Поиски и папки перетаскиваются мышью; в меню «Ещё» — переименовать, заметка, перенести в папку, в архив, удалить. «Найти в избранном» ищет по названию, заметке и лиге.</span>
                 <span lang="en">Click a name to open that search on the right. Drag searches and folders with the mouse; the “More” menu has rename, note, move to folder, archive and delete. “Search favorites” looks through names, notes and leagues.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">На узкой полосе слева — вкладки «Трейд» и <a href="#sites">полезных сайтов</a>: poe.ninja, poedb, вики и другие.</span>
+                <span lang="en">The narrow strip on the left has the Trade tab and <a href="#sites">useful sites</a>: poe.ninja, poedb, the wiki and more.</span>
               </div></li>
               <li><div>
                 <span lang="ru">Молния у поиска включает для него <a href="#live">live search</a>.</span>
@@ -429,6 +608,88 @@
                 <div class="ans">
                   <p lang="ru">Сохранить можно только страницу поиска или обмена после нажатия «Поиск» на сайте. Если сайт ещё грузится, подождите и нажмите снова.</p>
                   <p lang="en">Only a search or exchange page can be saved, after you click Search on the site. If the site is still loading, wait and try again.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="sites" aria-labelledby="h-sites">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
+          <div>
+            <h2 id="h-sites"><span lang="ru">Сайты в трейд-окне</span><span lang="en">Sites in the trade window</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 1</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">В трейд-окне, под вкладкой «Трейд», — полезные сайты по PoE. Они открываются поверх игры: не нужно переключаться в браузер, чтобы посмотреть цену, мод или раскладку лабиринта.</span>
+          <span lang="en">In the trade window, under the Trade tab, are useful PoE sites. They open over the game: no need to switch to a browser to check a price, a mod or today's Labyrinth layout.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">Откройте трейд-окно (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>). На полосе слева — буквы сайтов:</span>
+                <span lang="en">Open the trade window (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>). The strip on the left has the site letters:</span>
+                <ul>
+                  <li><span lang="ru"><b>N</b> poe.ninja — цены и популярные билды;</span><span lang="en"><b>N</b> poe.ninja — prices and popular builds;</span></li>
+                  <li><span lang="ru"><b>DB</b> poedb — база предметов, модов и камней (на языке клиента);</span><span lang="en"><b>DB</b> poedb — a database of items, mods and gems (in your client's language);</span></li>
+                  <li><span lang="ru"><b>W</b> PoE Wiki — вики игры;</span><span lang="en"><b>W</b> PoE Wiki — the game wiki;</span></li>
+                  <li><span lang="ru"><b>M</b> Maxroll — гайды по билдам и механикам;</span><span lang="en"><b>M</b> Maxroll — build and mechanics guides;</span></li>
+                  <li><span lang="ru"><b>MB</b> Mobalytics — билды и тир-листы (только на английском; в версиях новее 0.1.0-rc.12);</span><span lang="en"><b>MB</b> Mobalytics — builds and tier lists (English only; in versions after 0.1.0-rc.12);</span></li>
+                  <li><span lang="ru"><b>L</b> poelab — раскладка лабиринта на сегодня;</span><span lang="en"><b>L</b> poelab — today's Labyrinth layout;</span></li>
+                  <li><span lang="ru"><b>C</b> Craft of Exile — калькулятор крафта;</span><span lang="en"><b>C</b> Craft of Exile — the crafting calculator;</span></li>
+                  <li><span lang="ru"><b>S</b> PoE Scout — история цен валюты.</span><span lang="en"><b>S</b> PoE Scout — currency price history.</span></li>
+                </ul>
+              </div></li>
+              <li><div>
+                <span lang="ru">При первом открытии POETH покажет короткую заметку «Сайты открываются как в браузере» — нажмите «Понятно, открыть…».</span>
+                <span lang="en">The first time, POETH shows a short “Sites open like in a browser” note — click “Got it, open …”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Над сайтом — «Назад», «Вперёд», «Обновить», «На главную сайта», «В браузере» и «Очистить данные сайтов». <kbd>Esc</kbd> прячет окно и возвращает вас в игру.</span>
+                <span lang="en">Above the site are Back, Forward, Refresh, “Site home page”, “In browser” and “Clear site data”. <kbd>Esc</kbd> hides the window and returns you to the game.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Из окна цены: «Открыть на poedb / вики / poe.ninja» — сразу страница этой вещи. Во вкладке <a href="#build">«Билд»</a> — ↗ «Открыть на poedb» у камней и нод.</span>
+                <span lang="en">From the price window: “Open on poedb / wiki / poe.ninja” goes straight to that item's page. In the <a href="#build">Build</a> tab, ↗ “Open on poedb” sits next to gems and nodes.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Свои закладки: ⚙ «Сайты» внизу полосы → «Свои закладки» — адрес <code>https://…</code> и название, до 12 штук.</span>
+                <span lang="en">Your own bookmarks: ⚙ “Sites” at the bottom of the strip → your bookmarks — an <code>https://…</code> address and a name, up to 12.</span>
+              </div></li>
+            </ol>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">трейд-окно, полоса слева</span><span lang="en">the trade window, the strip on the left</span></dd></div>
+              <div><dt><span lang="ru">Клавиша</span><span lang="en">Key</span></dt><dd><span lang="ru">«Сайты в трейд-окне» — не назначена, можно задать в настройках</span><span lang="en">“Sites in the trade window” — not set, assign it in the settings</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/links-ru.png" width="470" height="300" loading="lazy" alt="Окно цены POETH: под названием уника ссылки «Открыть на poedb, вики, poe.ninja»">
+              <img lang="en" src="../assets/img/guide/links-en.png" width="470" height="300" loading="lazy" alt="POETH price window: under the unique's name, “Open on poedb, wiki, poe.ninja” links">
+            </figure>
+            <p class="g-note">
+              <span lang="ru"><b>Безопасность.</b> Сайты открываются в отдельной сессии: вход в аккаунт PoE туда не попадает, POETH страницы не читает и не меняет. Сайт видит ваш IP, реклама остаётся. Не вводите на сайтах пароль от PoE; войти на сам сайт (Google, Discord) можно только кнопкой «В браузере».</span>
+              <span lang="en"><b>Safety.</b> Sites open in a separate session: your PoE account sign-in does not go there, and POETH does not read or change the pages. The site sees your IP, and ads stay. Never type your PoE password on these sites; to sign in to a site itself (Google, Discord), use “In browser”.</span>
+            </p>
+            <div class="faq">
+              <details>
+                <summary><span><span lang="ru">«Переход заблокирован»</span><span lang="en">“Navigation blocked”</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Вкладка открывает только свой сайт. Ссылка на другой сайт из списка откроется в его вкладке, поиск трейда — во вкладке «Трейд», остальное — кнопкой «В браузере».</p>
+                  <p lang="en">A tab opens only its own site. A link to another listed site opens in that site's tab, a trade search in the Trade tab, and anything else with “In browser”.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Сайт просит «Я не робот»</span><span lang="en">The site asks “I'm not a robot”</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Это проверка Cloudflare (бывает у poelab и Mobalytics): галочку нажимаете вы сами, как в браузере.</p>
+                  <p lang="en">That is a Cloudflare check (poelab and Mobalytics sometimes show it): you tick the box yourself, as in a browser.</p>
                 </div>
               </details>
             </div>
@@ -655,8 +916,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Подсказывает, какую валюту выгодно купить и продать у Фаустуса: купить дешевле, продать дороже. Считает по почасовым данным биржи GGG — это оценка, а ордера ставите вы сами.</span>
-          <span lang="en">Suggests which currency is worth buying and selling at Faustus: buy low, sell high. It works from GGG's hourly exchange data — it is an estimate, and you place the orders yourself.</span>
+          <span lang="ru">Подсказывает, какую валюту выгодно купить и продать у Фаустуса: купить дешевле, продать дороже. Считает по почасовым данным биржи GGG — это оценка, а ордера ставите вы сами. Вверху вкладки — «Валюта | Предметы»: про уники — <a href="#flip-items">отдельный раздел</a>.</span>
+          <span lang="en">Suggests which currency is worth buying and selling at Faustus: buy low, sell high. It works from GGG's hourly exchange data — it is an estimate, and you place the orders yourself. At the top of the tab is “Currency | Items”: uniques have <a href="#flip-items">their own section</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -725,6 +986,142 @@
         </div>
         <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
       </article>
+      <article class="g-feat" id="flip-items" aria-labelledby="h-flip-items">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-gem"/></svg></span>
+          <div>
+            <h2 id="h-flip-items"><span lang="ru">Обмен: предметы</span><span lang="en">Exchange: items</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 1</span><span class="tag"><span lang="ru">бета</span><span lang="en">beta</span></span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Какие уники выставляют дешевле обычной цены, сколько стоит уник и выгодно ли связать предмет в 6L. Цены — снимок poe.ninja раз в час: это оценка, а не финансовый совет. Перед покупкой проверяйте лот на трейде.</span>
+          <span lang="en">Which uniques get listed below their usual price, what a unique is worth and whether 6-linking an item pays off. Prices are an hourly poe.ninja snapshot: an estimate, not financial advice. Check the listing on trade before you buy.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">«Обмен» → вверху «Валюта | Предметы» → <b>«Предметы»</b>. В «Что показать» выберите вид: «Купить дешевле», «Тиры уников» или «6L против без связей».</span>
+                <span lang="en">Exchange → “Currency | Items” at the top → <b>Items</b>. Under “What to show”, pick “Buy below price”, “Unique tiers” or “6L vs unlinked”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Купить дешевле».</b> Список «Топ ликвидных» (дорогие уники, которые продаются быстро) или «Мои уники». Порог — «до 60 / 70 / 80% цены». Строка подскажет: «Купи ≤ A, обычно продаётся за B, прибыль ~C».</span>
+                <span lang="en"><b>“Buy below price”.</b> The “Top liquid” list (expensive uniques that sell fast) or “My uniques”. The threshold is “up to 60 / 70 / 80% of the price”. Each row tells you: buy at ≤ A, usually sells for B, profit ~C.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Проверить»</b> — один поиск на трейде: этот уник дешевле порога, продавец в сети или мгновенный выкуп. У каждого лота — вердикт: «Выгодно», «Приманка», «Другой вариант», «Осквернён», «Накрутчик цен» и другие.</span>
+                <span lang="en"><b>“Check”</b> runs one trade search: this unique below the threshold, the seller online or instant buyout. Each listing gets a verdict: worth it, bait, a different variant, corrupted, a price fixer and others.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Открыть на трейде» — тот же поиск в трейд-окне, там же и покупка. «Следить (live)» добавит поиск в <a href="#live">live search</a> — для этого нужен вход в аккаунт.</span>
+                <span lang="en">“Open on trade” shows the same search in the trade window, where you can buy. “Live search” adds it to <a href="#live">live search</a> — that needs an account sign-in.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Тиры уников»</b> — сколько стоит уник: T0 от 10 div, T1 от 1 div, T2 от 0,1 div, дешевле — можно отдать торговцу. Поможет не продать дорогой уник за копейки.</span>
+                <span lang="en"><b>“Unique tiers”</b> — what a unique is worth: T0 from 10 div, T1 from 1 div, T2 from 0.1 div; cheaper ones can go to a vendor. It helps you avoid selling an expensive unique for pennies.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«6L против без связей»</b> — выгодно ли связать предмет на верстаке (350 Jeweller's и 1500 Fusing по курсу биржи GGG). Нужен предмет 50+ уровня.</span>
+                <span lang="en"><b>“6L vs unlinked”</b> — whether linking an item on the crafting bench pays off (350 Jeweller's and 1500 Fusing at GGG exchange rates). The item must be level 50+.</span>
+              </div></li>
+            </ol>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Торговля» → «Обмен» → «Предметы»</span><span lang="en">Trade → Exchange → Items</span></dd></div>
+              <div><dt><span lang="ru">Цены</span><span lang="en">Prices</span></dt><dd><span lang="ru">снимок poe.ninja раз в час через GitHub — сам POETH к poe.ninja не обращается; курсы — биржа GGG</span><span lang="en">an hourly poe.ninja snapshot via GitHub — POETH itself never calls poe.ninja; rates come from the GGG exchange</span></dd></div>
+            </dl>
+            <div class="faq">
+              <details>
+                <summary><span><span lang="ru">«В снимке цен пока нет данных»</span><span lang="en">“No data in the price snapshot yet”</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Обычно это новая лига: данные появляются в течение часа. Если не загрузились цены — POETH покажет последние сохранённые.</p>
+                  <p lang="en">Usually it's a new league: data shows up within an hour. If prices fail to load, POETH shows the last saved ones.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Почему не нашёлся лот в другой валюте?</span><span lang="en">Why wasn't a listing in another currency found?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Порог задаётся в одной валюте: дорогой уник, выставленный в chaos (или наоборот), в поиск не попадёт. Цены 6L на poe.ninja — по объявлениям и часто завышены.</p>
+                  <p lang="en">The threshold is in one currency: an expensive unique listed in chaos (or the other way round) won't show up. 6L prices on poe.ninja come from listings and are often inflated.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="advisor" aria-labelledby="h-advisor">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-map"/></svg></span>
+          <div>
+            <h2 id="h-advisor"><span lang="ru">Что фармить</span><span lang="en">What to farm</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 1</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Стратегии фарма с доходом в час: что вложить в карту, что получите и что делать по шагам. Цены — с биржи GGG (и poe.watch), количества — из стратегии. Это оценка, а не обещание.</span>
+          <span lang="en">Farming strategies with income per hour: what to put into a map, what you get back and what to do step by step. Prices come from the GGG exchange (and poe.watch), amounts from the strategy. It is an estimate, not a promise.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">«Фарм» → <b>«Что фармить»</b>. «Порядок»: «По доходу», «Сначала лёгкие» или «Дешёвый вход»; «Только лёгкие»; «Источник» — наши, сообщество, мои, импорт.</span>
+                <span lang="en">Farming → <b>What to farm</b>. “Order”: by income, easiest first or cheapest entry; “Easy only”; “Source” — official, community, mine, imported.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Главное число карточки — доход в час. «Подробнее» раскроет: «Что вложить за карту», «Что получите за карту», «Почему это выгодно», «На атласе», «Дерево атласа», «Что делать», «Осторожно». Слова с «?» объясняются при наведении.</span>
+                <span lang="en">The card's main number is income per hour. “Details” opens what to put in per map, what you get per map, why it pays, the Atlas, the Atlas tree, what to do and what to watch out for. Words with “?” are explained on hover.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Начать сессию фарма с этой стратегией» — <a href="#maps">трекер карт</a> запишет ваши карты, а в «Мой результат» появится ваш настоящий доход в час. Доход считается по тайнику, поэтому для него нужен вход в аккаунт.</span>
+                <span lang="en">“Start a farming session with this strategy” — the <a href="#maps">map tracker</a> records your maps, and “My result” shows your real income per hour. Income comes from your stash, so it needs an account sign-in.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Свои стратегии:</b> «Новая стратегия» — мастер из шести шагов, «Копия» — изменить нашу. «Поделиться» — код <code>POETH1:…</code> или ссылка; «Импорт» — вставить чужой код (ничего не добавится без вашей кнопки).</span>
+                <span lang="en"><b>Your own strategies:</b> “New strategy” is a six-step wizard, “Copy” lets you edit ours. “Share” gives a <code>POETH1:…</code> code or a link; “Import” takes someone else's code (nothing is added without your click).</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Отправить в каталог» — предложить свою стратегию для <a href="../strategies/">каталога на сайте</a> (форма на GitHub). Мы проверим её в игре.</span>
+                <span lang="en">“Submit to the catalog” suggests your strategy for the <a href="../strategies/">site catalog</a> (a GitHub form). We test it in game.</span>
+              </div></li>
+            </ol>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Фарм» → «Что фармить»</span><span lang="en">Farming → What to farm</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">ничего; для «Мой результат» — вход и <a href="#wealth">«Богатство»</a></span><span lang="en">nothing; “My result” needs a sign-in and <a href="#wealth">Wealth</a></span></dd></div>
+            </dl>
+            <p class="g-note">
+              <span lang="ru">Пока в приложении черновики стратегий для 3.29 — после патчноутов новой лиги их обновят. Метка «может устареть» значит, что стратегия написана для другой версии игры.</span>
+              <span lang="en">For now the app has draft strategies for 3.29 — they will be updated after the new league's patch notes. The “may be outdated” tag means the strategy was written for another game version.</span>
+            </p>
+            <div class="faq">
+              <details>
+                <summary><span><span lang="ru">Что попадает в код «Поделиться»?</span><span lang="en">What goes into a Share code?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Только сама стратегия и ник автора, если вы его указали. Аккаунт, вход, тайник, цены и история сессий в код не попадают.</p>
+                  <p lang="en">Only the strategy itself and the author's nickname if you added one. Your account, sign-in, stash, prices and session history are never included.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">«≥ ~X» или «нет цены»</span><span lang="en">“≥ ~X” or “no price”</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">У части добычи нет цены в источниках — доход как минимум такой. «Нет времени карты» — у стратегии не указано время, а своих карт с ней вы ещё не проходили.</p>
+                  <p lang="en">Some of the loot has no price in the sources, so income is at least that. “No map time” means the strategy has no time set and you haven't run maps with it yet.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
       <article class="g-feat" id="wealth" aria-labelledby="h-wealth">
         <div class="g-feat__head">
           <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-coins"/></svg></span>
@@ -877,8 +1274,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Строки для поиска в игре (<kbd>Ctrl</kbd>+<kbd>F</kbd>): подсвечивают нужные карты в тайнике и нужные вещи у торговца. Вы выбираете, что ищете, — POETH собирает строку на языке вашей игры.</span>
-          <span lang="en">Strings for the in-game search (<kbd>Ctrl</kbd>+<kbd>F</kbd>): they highlight the right maps in your stash and the right items at vendors. You pick what you want — POETH builds the string in your game's language.</span>
+          <span lang="ru">Строки для поиска в игре (<kbd>Ctrl</kbd>+<kbd>F</kbd>): подсвечивают нужные карты в тайнике и нужные вещи у торговца. Вы выбираете, что ищете, — POETH собирает строку на языке вашей игры. Для поиска предметов в тайнике есть страница <a href="#regex-items">«Предметы»</a>.</span>
+          <span lang="en">Strings for the in-game search (<kbd>Ctrl</kbd>+<kbd>F</kbd>): they highlight the right maps in your stash and the right items at vendors. You pick what you want — POETH builds the string in your game's language. To find items in your stash, use the <a href="#regex-items">Items</a> page.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -908,7 +1305,7 @@
           </div>
           <div class="g-side">
             <dl class="g-where">
-              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Фарм» → «Regex»: «Карты», «Торговец», «Библиотека»</span><span lang="en">Farming → Regex: Maps, Vendor, Library</span></dd></div>
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Фарм» → «Regex»: «Карты», «Торговец», «Предметы», «Библиотека»</span><span lang="en">Farming → Regex: Maps, Vendor, Items, Library</span></dd></div>
               <div><dt><span lang="ru">Язык</span><span lang="en">Language</span></dt><dd><span lang="ru">«Язык игры» вверху вкладки: авто, English или Русский</span><span lang="en">“Game language” at the top of the tab: auto, English or Russian</span></dd></div>
             </dl>
             <figure class="shot">
@@ -935,6 +1332,66 @@
                 <div class="ans">
                   <p lang="ru">У неопознанных карт моды не видны, поэтому «не хочу» их не уберёт. Выберите «Неопознанные: Без».</p>
                   <p lang="en">Unidentified maps do not show their mods, so “don't want” cannot remove them. Set Unidentified to “None”.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="regex-items" aria-labelledby="h-regex-items">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></span>
+          <div>
+            <h2 id="h-regex-items"><span lang="ru">Regex: предметы в тайнике</span><span lang="en">Regex: items in your stash</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 1</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Строка поиска для тайника: базы под крафт, жёлтые вещи на продажу, камни 20 уровня, флаконы и любые моды предметов. Выберите готовый набор — POETH соберёт строку и объяснит, зачем она.</span>
+          <span lang="en">A stash search string: crafting bases, rares to sell, level 20 gems, flasks and any item mods. Pick a ready-made set — POETH builds the string and explains what it's for.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">Regex → <b>«Предметы»</b>. В «Что ищем» выберите набор: «Белые базы высокого уровня», «Базы с влиянием», «Жёлтые на продажу», «Ботинки себе», «Камни 20 уровня», «Камни с качеством 20%», «Ваал-камни», «Флакон жизни от кровотечения» или «Особые флаконы». Под набором — объяснение, зачем это.</span>
+                <span lang="en">Regex → <b>Items</b>. Under “What are you looking for”, pick a set: high-level white bases, influenced bases, rares to sell, boots for yourself, level 20 gems, gems with 20% quality, Vaal gems, a life flask against bleeding or utility flasks. Under the set is an explanation of why.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Поправьте условия: «Предмет» (класс, база, редкость, уровень, влияние, осквернённые), «Свойства предметов» (число — «не меньше»), «Камни» и «Моды предмета» — больше тысячи модов: клик — «хочу» / «не хочу», поиск «Найти мод».</span>
+                <span lang="en">Adjust the conditions: “Item” (class, base, rarity, level, influence, corrupted), “Item properties” (a number means “at least”), “Gems” and “Item modifiers” — over a thousand mods: click for want / don't want, or use “Find mod”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Строка появится справа — до 250 символов. «Копировать», затем в игре откройте тайник, нажмите <kbd>Ctrl</kbd>+<kbd>F</kbd> и вставьте. Или «В библиотеку» и горячая клавиша слота: POETH сам нажмёт <kbd>Ctrl</kbd>+<kbd>F</kbd> и вставит строку.</span>
+                <span lang="en">The string appears on the right — up to 250 characters. Click Copy, then in the game open your stash, press <kbd>Ctrl</kbd>+<kbd>F</kbd> and paste. Or “Save to library” and a slot hotkey: POETH presses <kbd>Ctrl</kbd>+<kbd>F</kbd> and pastes the string by itself.</span>
+              </div></li>
+            </ol>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Фарм» → «Regex» → «Предметы»</span><span lang="en">Farming → Regex → Items</span></dd></div>
+              <div><dt><span lang="ru">Язык</span><span lang="en">Language</span></dt><dd><span lang="ru">как у клиента игры — переключатель вверху вкладки</span><span lang="en">your game client's — the switch at the top of the tab</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/regex-items-ru.png" width="820" height="440" loading="lazy" alt="Вкладка Regex, страница «Предметы»: наборы «Что ищем» и объяснение набора «Жёлтые на продажу»">
+              <img lang="en" src="../assets/img/guide/regex-items-en.png" width="820" height="440" loading="lazy" alt="Regex tab, Items page: the “What are you looking for” sets and the explanation for Rares to sell">
+            </figure>
+            <div class="faq">
+              <details>
+                <summary><span><span lang="ru">Чего здесь нет</span><span lang="en">What is not here</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Самоцветы (в том числе абиссальные) и кластеры, а также условия «Неопознанные», «Расколотый», «Синтезированный».</p>
+                  <p lang="en">Jewels (including abyss jewels) and clusters, as well as the Unidentified, Fractured and Synthesised conditions.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">«Строка также заденет…»</span><span lang="en">“The string will also match…”</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Поиск игры не различает похожие тексты модов: POETH перечисляет, что ещё подсветится, — решите, мешает ли это.</p>
+                  <p lang="en">The game's search can't tell similar mod texts apart: POETH lists what else will light up — decide whether that matters.</p>
                 </div>
               </details>
             </div>
@@ -992,8 +1449,8 @@
               <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">журнал игры <code>Client.txt</code> — обычно находится сам</span><span lang="en">the game log <code>Client.txt</code> — usually found automatically</span></dd></div>
             </dl>
             <p class="g-note">
-              <span lang="ru">Справа во вкладке: «Не пропустить за кампанию» (очки пассивов с квестов, испытания для Лабиринта), награды акта и «Камни для класса» — какие камни дают за квесты и что продаёт Несса. Названия зон, квестов и NPC — на языке вашего клиента игры.</span>
-              <span lang="en">On the right of the tab: “Don't miss in the campaign” (quest passive points, Labyrinth trials), act rewards and “Gems for your class” — quest reward gems and what Nessa sells. Zone, quest and NPC names follow your game client's language.</span>
+              <span lang="ru">Справа во вкладке: «Не пропустить за кампанию» (очки пассивов с квестов, испытания для Лабиринта), награды акта и «Камни для класса» — какие камни дают за квесты и что продаёт Несса. Названия зон, квестов и NPC — на языке вашего клиента игры. Если во вкладке <a href="#build">«Билд»</a> вставлен билд, гид подскажет и его камни.</span>
+              <span lang="en">On the right of the tab: “Don't miss in the campaign” (quest passive points, Labyrinth trials), act rewards and “Gems for your class” — quest reward gems and what Nessa sells. Zone, quest and NPC names follow your game client's language. If a build is pasted in the <a href="#build">Build</a> tab, the guide also points out its gems.</span>
             </p>
             <div class="faq">
               <details>
@@ -1023,17 +1480,173 @@
         <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
       </article>
 
+      <article class="g-feat" id="build" aria-labelledby="h-build">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-passive"/></svg></span>
+          <div>
+            <h2 id="h-build"><span lang="ru">Билд</span><span lang="en">Build</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 1</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Вставьте билд из Path of Building — POETH разложит его по этапам прокачки: какие камни взять за квест или купить, как связать, какие ноды брать дальше и какие вещи искать на трейде.</span>
+          <span lang="en">Paste a build from Path of Building and POETH splits it into leveling stages: which gems to take as quest rewards or buy, how to link them, which nodes to take next and which items to look for on trade.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">«Прокачка» → <b>«Билд»</b>. Вставьте код PoB или ссылку и нажмите «Открыть». Ссылки: pobb.in, pastebin.com, pob.codes, poedb.tw, maxroll.gg/poe/pob. Код из самого PoB: Import/Export Build → Generate → Copy. У гайда Maxroll — кнопка PoB, у Mobalytics — Copy Code у блока PoB.</span>
+                <span lang="en">Levelling → <b>Build</b>. Paste a PoB code or a link and click Open. Links: pobb.in, pastebin.com, pob.codes, poedb.tw, maxroll.gg/poe/pob. A code from PoB itself: Import/Export Build → Generate → Copy. On a Maxroll guide use the PoB button, on Mobalytics — Copy Code by the PoB block.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Этапы</b> — чипы вверху («Акт 2», «Ур. 40–60», «Карты»…). Текущий выбирается по уровню персонажа из журнала игры. Угадал неверно — ⋯ → «Этапы…».</span>
+                <span lang="en"><b>Stages</b> are the chips at the top (“Act 2”, “Lvl 40–60”, “Maps”…). The current one is picked by your character level from the game log. Wrong guess? ⋯ → “Stages…”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Камни сейчас»</b>: «за квест» (какой квест и у кого), «купить» (у кого), «есть». «Строка для продавца» — вставьте её в поиск окна Нессы или Йины, и нужные камни подсветятся.</span>
+                <span lang="en"><b>“Gems now”</b>: quest rewards (which quest and NPC), what to buy (and from whom), what you have. “Vendor string” — paste it into Nessa's or Yeena's search and the gems you need light up.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Связки»</b> — что с чем связать в каждом предмете. <b>«Дерево: следующие ноды»</b> — что взять и что снять при переходе; «Строка поиска для дерева» и «Показать поверх дерева в игре» — см. <a href="#tree">дерево поверх игры</a>.</span>
+                <span lang="en"><b>“Links”</b> — what to link in each item. <b>“Tree: next nodes”</b> — what to take and what to remove when moving on; the tree search string and “Show over the in-game tree” — see <a href="#tree">tree over the game</a>.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Проверка»</b> — сопротивления до капа, жизнь и атрибуты по расчёту автора гайда в PoB, а «Чек-лист этапа» напомнит про бандитов, лабиринт и пантеон.</span>
+                <span lang="en"><b>“Check”</b> — resistances to the cap, life and attributes as calculated by the guide's author in PoB, and the stage checklist reminds you about bandits, the Labyrinth and the Pantheon.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Предметы этапа»</b>: «Купить первым», метка «ключевой» — без этой вещи билд не работает. «Трейд» откроет поиск вещи в трейд-окне: уник — по имени, жёлтую — по главным свойствам от ~80% авторских; «дешевле» — без редких свойств.</span>
+                <span lang="en"><b>“Stage items”</b>: “Buy first” and the “key item” tag — the build does not work without it. “Trade” opens a search for the item in the trade window: a unique by name, a rare by its main mods at ~80% of the author's values; “cheaper” drops the rare mods.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Камни билда появятся и в <a href="#leveling">гиде прокачки</a> («Возьмите … в награду»), и во вкладке «Кампания» («Камни билда»).</span>
+                <span lang="en">Build gems also show up in the <a href="#leveling">leveling guide</a> (“Take … as a reward”) and in the Campaign tab (“Build gems”).</span>
+              </div></li>
+            </ol>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Прокачка» → «Билд»</span><span lang="en">Levelling → Build</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">код PoB или ссылка; журнал игры — чтобы знать уровень и этап</span><span lang="en">a PoB code or link; the game log for your level and stage</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/build-ru.png" width="820" height="1320" loading="lazy" alt="Вкладка «Билд»: этапы по актам, «Камни сейчас», «Связки» и «Дерево: следующие ноды»">
+              <img lang="en" src="../assets/img/guide/build-en.png" width="820" height="1320" loading="lazy" alt="Build tab: stages by act, Gems now, Links and Tree: next nodes">
+            </figure>
+            <p class="g-note">
+              <span lang="ru">Билд хранится только у вас на компьютере (до 10 недавних). По ссылке POETH делает один запрос — когда вы нажали «Открыть».</span>
+              <span lang="en">The build stays on your computer only (up to 10 recent ones). For a link, POETH makes one request — when you click Open.</span>
+            </p>
+            <div class="faq">
+              <details>
+                <summary><span><span lang="ru">«Это страница гайда, а не код»</span><span lang="en">“This is a guide page, not a code”</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Страницы гайдов Maxroll, Mobalytics и poe.ninja не подходят — скопируйте сам код PoB или ссылку на него (кнопка PoB у гайда).</p>
+                  <p lang="en">Maxroll, Mobalytics and poe.ninja guide pages won't work — copy the PoB code itself or a link to it (the PoB button on the guide).</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Чьи это цифры в «Проверке»?</span><span lang="en">Whose numbers are in “Check”?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Это расчёт автора гайда в PoB, а не ваш персонаж. Свои цифры смотрите в окне персонажа (<kbd>C</kbd>). «Есть» у камня значит, что он был на прошлом этапе билда, а не что он лежит у вас.</p>
+                  <p lang="en">They are the guide author's PoB numbers, not your character. Check your own in the character window (<kbd>C</kbd>). A gem marked “have” was in the previous build stage, not necessarily in your inventory.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+        <figure class="shot g-wide">
+          <img lang="ru" src="../assets/img/guide/build-items-ru.png" width="820" height="640" loading="lazy" alt="«Предметы этапа»: группа «Купить первым», ключевой уник с кнопкой «Трейд»">
+          <img lang="en" src="../assets/img/guide/build-items-en.png" width="820" height="640" loading="lazy" alt="Stage items: the Buy first group and a key unique with a Trade button">
+        </figure>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="tree" aria-labelledby="h-tree">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-passive"/></svg></span>
+          <div>
+            <h2 id="h-tree"><span lang="ru">Дерево поверх игры (Alt+P)</span><span lang="en">Tree over the game (Alt+P)</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 1</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Дерево этапа из вкладки «Билд» поверх игрового дерева пассивок: что взять, что уже взято и что снять — прямо в окне дерева игры.</span>
+          <span lang="en">The stage tree from the Build tab drawn over the in-game passive tree: what to take, what you already have and what to remove — right in the game's tree window.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">Вставьте билд во вкладке <a href="#build">«Билд»</a>.</span>
+                <span lang="en">Paste a build in the <a href="#build">Build</a> tab.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">В игре откройте дерево пассивок (<kbd>P</kbd>) и нажмите <kbd>Alt</kbd>+<kbd>P</kbd>. Кнопка «Показать поверх дерева в игре» во вкладке покажет выбранный там этап.</span>
+                <span lang="en">In the game, open the passive tree (<kbd>P</kbd>) and press <kbd>Alt</kbd>+<kbd>P</kbd>. The “Show over the in-game tree” button in the tab shows the stage you picked there.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Сразу после входа в игру наложение совпадает само. Если дерево сдвинули или приблизили, POETH подгонит наложение по снимку экрана — примерно за полсекунды.</span>
+                <span lang="en">Right after you log in, the overlay lines up by itself. If the tree was moved or zoomed, POETH fits the overlay from a screen capture — in about half a second.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Не совпало?</b> Наведите курсор на круг класса и нажмите колесо мыши. Не совпал размер — сначала отдалите дерево колесом до упора.</span>
+                <span lang="en"><b>Not lined up?</b> Hover the class circle and press the mouse wheel. Size off too? Zoom the tree all the way out first.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Тяните дерево левой кнопкой и крутите колесо — наложение едет вместе с ним. Зелёные кольца — взять, приглушённые — уже взято, красные пунктиром — снять.</span>
+                <span lang="en">Drag the tree with the left button and use the wheel — the overlay moves with it. Green rings are to take, dimmed ones are already taken, dashed red ones are to remove.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Плашка сверху: этап ← →, «взять / взято / снять», «В центр» и ✕. Закрыть: <kbd>Esc</kbd>, <kbd>P</kbd> или ещё раз <kbd>Alt</kbd>+<kbd>P</kbd>.</span>
+                <span lang="en">The bar at the top: stage ← →, “take / taken / remove”, “Center” and ✕. To close: <kbd>Esc</kbd>, <kbd>P</kbd> or <kbd>Alt</kbd>+<kbd>P</kbd> again.</span>
+              </div></li>
+            </ol>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Клавиша</span><span lang="en">Key</span></dt><dd><kbd>Alt</kbd>+<kbd>P</kbd> <span lang="ru">при открытом дереве в игре</span><span lang="en">with the in-game tree open</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">билд во вкладке «Билд»; журнал игры — для «взято»</span><span lang="en">a build in the Build tab; the game log for “taken”</span></dd></div>
+            </dl>
+            <p class="g-note">
+              <span lang="ru"><b>Безопасность.</b> Снимок окна игры по <kbd>Alt</kbd>+<kbd>P</kbd> живёт только в памяти. Пока наложение на экране, POETH только слушает мышь и клавиши <kbd>Esc</kbd> и <kbd>P</kbd>; в игру ничего не отправляет.</span>
+              <span lang="en"><b>Safety.</b> The game window capture on <kbd>Alt</kbd>+<kbd>P</kbd> stays in memory only. While the overlay is on screen, POETH only listens to the mouse and the <kbd>Esc</kbd> and <kbd>P</kbd> keys; it sends nothing to the game.</span>
+            </p>
+            <div class="faq">
+              <details>
+                <summary><span><span lang="ru">Наложение уехало</span><span lang="en">The overlay drifted</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Наведите курсор на круг класса и нажмите колесо мыши или нажмите <kbd>Alt</kbd>+<kbd>P</kbd> ещё раз. Если тянуть дерево за край, где игра его уже не двигает, наложение может уехать.</p>
+                  <p lang="en">Hover the class circle and press the mouse wheel, or press <kbd>Alt</kbd>+<kbd>P</kbd> again. Dragging past the point where the game stops moving the tree can make the overlay drift.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Что ещё проверяем</span><span lang="en">What we are still checking</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Проверено на 1920×1080 при масштабе Windows 100 %; другие разрешения и масштаб 125–150 % ещё проверяем. В группе: если сразу после входа товарищ получит уровень раньше вас, этап может посчитаться по нему — до следующего входа.</p>
+                  <p lang="en">Tested at 1920×1080 with 100% Windows scaling; other resolutions and 125–150% scaling are still being checked. In a party: if a party member levels up before you right after login, the stage may follow them until your next login.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
       <article class="g-feat" id="poe2" aria-labelledby="h-poe2">
         <div class="g-feat__head">
           <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-game"/></svg></span>
           <div>
             <h2 id="h-poe2">Path of Exile 2</h2>
-            <p class="g-feat__tags"><span class="tag">PoE 2</span></p>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span></p>
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Для PoE 2 в POETH пока два раздела: трекер кампании («Кампания») и цена предмета («Прайс-чек»). Остальные функции этого гайда — только для PoE 1.</span>
-          <span lang="en">For PoE 2, POETH currently has two sections: the campaign tracker (Campaign) and item prices (Price Check). Everything else in this guide is PoE 1 only.</span>
+          <span lang="ru">Для PoE 2 в POETH два раздела: окно цены по <kbd>Ctrl</kbd>+<kbd>D</kbd> поверх игры — с модами, как в PoE 1, — и трекер кампании. Остальные функции этого гайда пока только для PoE 1.</span>
+          <span lang="en">For PoE 2, POETH has two sections: the <kbd>Ctrl</kbd>+<kbd>D</kbd> price window over the game — with mods, like in PoE 1 — and the campaign tracker. The other features in this guide are PoE 1 only for now.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -1044,45 +1657,51 @@
                 <span lang="en">In the POETH window header click <b>PoE 2</b> and confirm “Restart”: the app restarts for the chosen game.</span>
               </div></li>
               <li><div>
-                <span lang="ru"><b>«Кампания»:</b> вкладки актов, вид «Что дальше?» (текущая зона, квесты «Обязательно» и «Необязательно», куда идти дальше) или «Чек-лист» квестов. Шаги листаются кнопками ◀ ▶ или <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd>.</span>
-                <span lang="en"><b>Campaign:</b> act tabs, the “What's Next” view (current zone, required and optional quests, where to go next) or the quest “Checklist”. Move between steps with ◀ ▶ or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd>.</span>
+                <span lang="ru"><b>Цена предмета.</b> Наведите курсор на предмет в игре и нажмите <kbd>Ctrl</kbd>+<kbd>D</kbd> — у курсора откроется «Прайс-чек PoE 2»: моды с галочками, вердикт, «Скопировать заметку цены», «Цена на рынке», лоты, «Написать» и «Открыть в трейд-окне». POETH сам копирует расширенный текст предмета (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>) — одно нажатие, одно копирование.</span>
+                <span lang="en"><b>Item price.</b> Hover an item in the game and press <kbd>Ctrl</kbd>+<kbd>D</kbd> — the “PoE 2 price check” opens at the cursor: mods with checkboxes, the verdict, “Copy price note”, “Market price”, listings, Whisper and “Open in trade window”. POETH copies the item's advanced text by itself (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>) — one press, one copy.</span>
               </div></li>
               <li><div>
-                <span lang="ru">«Награды» — очки пассивов, дух и сопротивления за квесты. Кнопка «🗺 карта» у зоны открывает схему её расположения.</span>
-                <span lang="en">“Rewards” shows quest passive points, spirit and resistances. The “🗺 map” button next to a zone opens its layout.</span>
+                <span lang="ru"><b>Вход общий с PoE 1</b> — через официальную страницу GGG, отдельного POESESSID больше нет. Цена работает и без входа; вход нужен сайту трейда в трейд-окне (например, чтобы купить у торговца).</span>
+                <span lang="en"><b>One sign-in for PoE 1 and PoE 2</b> — through the official GGG page; there is no separate POESESSID any more. Prices work without signing in; the trade site in the trade window needs it (for example, to buy from a merchant).</span>
               </div></li>
               <li><div>
-                <span lang="ru">Чтобы текущая зона подсвечивалась сама, включите <b>«Авто»</b> в шапке (по умолчанию выключено). POETH будет читать журнал игры. В настройках, в блоке «Автоопределение зоны», можно указать <code>Client.txt</code> вручную и включить «Авто-отмечать пройденные квесты».</span>
-                <span lang="en">To highlight the current zone automatically, turn on <b>Auto</b> in the header (off by default). POETH then reads the game log. In the settings, under “Zone auto-detect”, you can point to <code>Client.txt</code> yourself and turn on “Auto-mark completed quests”.</span>
+                <span lang="ru"><b>«Кампания»:</b> вкладки актов, вид «Что дальше?» (текущая зона, квесты «Обязательно» и «Необязательно», куда идти дальше) или «Чек-лист». Шаги листаются кнопками ◀ ▶ или <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd>; «🗺 карта» у зоны открывает схему её расположения.</span>
+                <span lang="en"><b>Campaign:</b> act tabs, the “What's Next” view (current zone, required and optional quests, where to go next) or the “Checklist”. Move between steps with ◀ ▶ or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd>; “🗺 map” next to a zone opens its layout.</span>
               </div></li>
               <li><div>
-                <span lang="ru"><b>«Прайс-чек»:</b> вставьте POESESSID в блок «Авторизация (POESESSID)» и нажмите «Сохранить». Затем наведите курсор на предмет в игре и нажмите <kbd>Ctrl</kbd>+<kbd>D</kbd> — цена («Мин.», «Медиана» и список лотов) появится во вкладке окна POETH. Можно и вставить текст предмета вручную и нажать «Проверить цену».</span>
-                <span lang="en"><b>Price Check:</b> paste your POESESSID into “Authorization (POESESSID)” and click Save. Then hover an item in the game and press <kbd>Ctrl</kbd>+<kbd>D</kbd> — the price (minimum, median and the listings) appears in the POETH window tab. You can also paste the item text yourself and click “Check price”.</span>
+                <span lang="ru">Чтобы текущая зона подсвечивалась сама, включите <b>«Авто»</b> в шапке (по умолчанию выключено) — POETH будет читать журнал игры. В настройках, в блоке «Автоопределение зоны», можно указать <code>Client.txt</code> вручную и включить «Авто-отмечать пройденные квесты».</span>
+                <span lang="en">To highlight the current zone automatically, turn on <b>Auto</b> in the header (off by default) — POETH then reads the game log. In the settings, under “Zone auto-detect”, you can point to <code>Client.txt</code> yourself and turn on “Auto-mark completed quests”.</span>
               </div></li>
             </ol>
           </div>
           <div class="g-side">
             <dl class="g-where">
-              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">переключатель «PoE 1 | PoE 2» в шапке</span><span lang="en">the “PoE 1 | PoE 2” switch in the header</span></dd></div>
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">переключатель «PoE 1 | PoE 2» в шапке; вкладки «Прайс-чек» и «Кампания»</span><span lang="en">the “PoE 1 | PoE 2” switch in the header; the Price Check and Campaign tabs</span></dd></div>
               <div><dt><span lang="ru">Клавиши</span><span lang="en">Keys</span></dt><dd><kbd>Ctrl</kbd>+<kbd>D</kbd> · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd></dd></div>
-              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">для цены — POESESSID; для «Авто» — журнал игры</span><span lang="en">POESESSID for prices; the game log for Auto</span></dd></div>
             </dl>
-            <p class="g-note">
-              <span lang="ru">POESESSID — ключ входа на pathofexile.com. POETH хранит его зашифрованным у вас на компьютере. Никому его не передавайте.</span>
-              <span lang="en">POESESSID is your pathofexile.com sign-in key. POETH keeps it encrypted on your computer. Never share it with anyone.</span>
-            </p>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/poe2-price-ru.png" width="400" height="842" loading="lazy" alt="Окно «Прайс-чек PoE 2»: моды лука с галочками, вердикт «Выставьте за ~18 Сфер возвышения» и цена на рынке">
+              <img lang="en" src="../assets/img/guide/poe2-price-en.png" width="400" height="842" loading="lazy" alt="PoE 2 price check window: bow mods with checkboxes, a “List it for ~18 Exalted Orbs” verdict and the market price">
+            </figure>
             <div class="faq">
               <details>
-                <summary><span><span lang="ru">Где взять POESESSID?</span><span lang="en">Where do I get POESESSID?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <summary><span><span lang="ru">Чем PoE 2 отличается от PoE 1?</span><span lang="en">How is PoE 2 different from PoE 1?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
                 <div class="ans">
-                  <p lang="ru">Как подсказывает само приложение: откройте pathofexile.com в браузере, войдите, нажмите F12 → Application (Хранилище) → Cookies и скопируйте значение POESESSID.</p>
-                  <p lang="en">As the app itself suggests: open pathofexile.com in your browser, sign in, press F12 → Application (Storage) → Cookies and copy the POESESSID value.</p>
+                  <p lang="ru">Нет пересчёта exalted ↔ divine: сравниваются лоты в одной валюте. Нет live search, сделок, «Против надетого», ссылок на сайты и трейд-окна на русском (сайт трейда PoE 2 — английский).</p>
+                  <p lang="en">There is no exalted ↔ divine conversion: listings are compared in one currency. There is no live search, trades, Versus equipped, site links, or a Russian trade site (the PoE 2 trade site is in English).</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Куда делось поле POESESSID?</span><span lang="en">Where did the POESESSID field go?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Если вы его вводили, POETH один раз перенёс его во вход в аккаунт — теперь он общий для PoE 1 и PoE 2 — и сообщил об этом плашкой. Войти заново можно кнопкой «Войти» на официальной странице GGG.</p>
+                  <p lang="en">If you had entered one, POETH moved it once into the account sign-in — now shared by PoE 1 and PoE 2 — and told you with a notice. To sign in again, use “Sign in” on the official GGG page.</p>
                 </div>
               </details>
               <details>
                 <summary><span><span lang="ru">Схема зоны не открывается</span><span lang="en">A zone layout does not open</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
                 <div class="ans">
-                  <p lang="ru">Схемы скачиваются при первом показе — нужен интернет. Помните, что зона в игре может быть повёрнута или отражена: ориентируйтесь на форму.</p>
+                  <p lang="ru">Схемы скачиваются при первом показе — нужен интернет. Зона в игре может быть повёрнута или отражена: ориентируйтесь на форму.</p>
                   <p lang="en">Layouts are downloaded the first time you open them, so you need internet. The zone in the game may be rotated or mirrored: go by its shape.</p>
                 </div>
               </details>
@@ -1117,8 +1736,8 @@
                 <span lang="en"><b>Game client language</b> — “Auto (from the game)”, English or Russian. In Auto, POETH detects it from the last item or the game log and shows “Detected: …”. Item and currency names follow the game's language, explanations follow the interface language.</span>
               </div></li>
               <li><div>
-                <span lang="ru"><b>Прозрачность</b> окна и «Показывать на панели задач».</span>
-                <span lang="en">Window <b>Opacity</b> and “Show on the taskbar”.</span>
+                <span lang="ru"><b>Прозрачность</b> окна, «Показывать на панели задач» и <b>«Экспертный режим»</b> — общий для всего POETH.</span>
+                <span lang="en">Window <b>Opacity</b>, “Show on the taskbar” and <b>“Expert mode”</b> — shared by all of POETH.</span>
               </div></li>
               <li><div>
                 <span lang="ru"><b>Позиция окна цены</b> — «У курсора», «У левого края», «У правого края» или «Где оставил». <b>«Отправлять whisper сразу»</b> — по умолчанию выключено: сообщение вставляется в чат, Enter нажимаете вы.</span>
@@ -1137,8 +1756,8 @@
                 <span lang="en"><b>“Startup and updates”</b> — “Start with Windows” (off), “Start minimized” (on: POETH starts in the tray), “Check for updates” (on) and “Check now”.</span>
               </div></li>
               <li><div>
-                <span lang="ru">Внизу — «О программе» и «Мастер первого запуска».</span>
-                <span lang="en">At the bottom are “About” and “First-run wizard”.</span>
+                <span lang="ru">Внизу — «О программе» (в версиях новее 0.1.0-rc.12 там же «Сообщить об ошибке») и «Мастер первого запуска».</span>
+                <span lang="en">At the bottom are “About” (in versions after 0.1.0-rc.12 it has “Report a bug”) and “First-run wizard”.</span>
               </div></li>
             </ol>
           </div>
@@ -1152,8 +1771,22 @@
               <details>
                 <summary><span><span lang="ru">Простой и экспертный режим</span><span lang="en">Simple and expert mode</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
                 <div class="ans">
-                  <p lang="ru">По умолчанию включён простой режим: подписи и подсказки для новичков. Переключатель «Экспертный режим» есть во вкладках, например «Сделки» и «Regex». Он общий: меняет вид во всём приложении — компактнее, с тирами и цифрами.</p>
-                  <p lang="en">Simple mode is on by default: labels and hints for newcomers. The “Expert mode” switch is in the tabs, for example Trades and Regex. It is shared: it changes the whole app to a compact view with tiers and numbers.</p>
+                  <p lang="ru">По умолчанию включён простой режим: подписи и подсказки для новичков. «Экспертный режим» включается в настройках (под «Показывать на панели задач») или во вкладках «Прайс-чек», «Сделки» и «Regex». Он общий: меняет вид во всём приложении — компактнее, с тирами и цифрами.</p>
+                  <p lang="en">Simple mode is on by default: labels and hints for newcomers. Turn on “Expert mode” in the settings (under “Show on the taskbar”) or in the Price Check, Trades and Regex tabs. It is shared: it changes the whole app to a compact view with tiers and numbers.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Пропал звук</span><span lang="en">The sound is gone</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">Если звук POETH выключен, во вкладке «Сделки» → «История» будет «Звук POETH выключен» и кнопка «Включить звук» — она включает звук и сделок, и находок live search.</p>
+                  <p lang="en">If POETH sound is off, Trades → History says so and shows a “Turn sound on” button — it turns on sound for both trades and live search hits.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Нашли ошибку?</span><span lang="en">Found a bug?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">В версиях новее 0.1.0-rc.12 — «О программе» → «Сообщить об ошибке» или тот же пункт в меню значка POETH в трее: откроется форма на GitHub с подставленной версией и игрой. Подробнее — <a href="../bug/">как сообщить об ошибке</a>.</p>
+                  <p lang="en">In versions after 0.1.0-rc.12 — About → “Report a bug”, or the same item in the POETH tray icon menu: a GitHub form opens with the version and game filled in. More — <a href="../bug/">how to report a bug</a>.</p>
                 </div>
               </details>
               <details>
@@ -1196,6 +1829,7 @@
     <nav class="foot__links" aria-label="Ссылки / Links">
       <a href="https://github.com/MAYZOSUPER/POETH">GitHub</a>
       <a href="https://github.com/MAYZOSUPER/POETH/releases"><span lang="ru">Релизы</span><span lang="en">Releases</span></a>
+      <a href="../bug/"><span lang="ru">Сообщить об ошибке</span><span lang="en">Report a bug</span></a>
       <a href="https://github.com/MAYZOSUPER/POETH/blob/main/LICENSE"><span lang="ru">Лицензия</span><span lang="en">License</span></a>
       <a href="https://github.com/MAYZOSUPER/POETH/blob/main/NOTICE.md"><span lang="ru">Атрибуция</span><span lang="en">Notices</span></a>
     </nav>
