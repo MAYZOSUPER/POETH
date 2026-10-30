@@ -52,6 +52,9 @@
       `tools/build-data/sources.mjs` (и `DAT_COMMIT` в `tools/leveling/game-names.mjs`), `node tools/build-data/build.mjs
       --refresh`, `npx vitest run tests/build-data` (порядок и отчёт — `tools/build-data/README.md`). Скилл-три выходит
       в день патча, RePoE — обычно через 0–2 дня; дерево без RU-имён не публиковать.
+- [ ] Анойнты (S54): после `node tools/build-data/build.mjs --refresh` смотреть отчёт `anoints.mjs` (новое масло → поднять
+      `DAT_COMMIT`), после обновления данных APT — `npx vitest run tests/build-data/anoints.test.ts` (рецепты и RU-имена
+      сверяются с APT; поправить число 472 и известные пары, если GGG поменяли рецепты).
 - [ ] Timeless (S45), после данных «Билда»: новый коммит PoB с обновлёнными `src/Data/TimelessJewelData` → `POB_COMMIT` и
       SHA-256 в `tools/timeless/build.mjs`, `node tools/timeless/build.mjs --refresh`, `npx vitest run tests/timeless`;
       смотреть отчёт «нотаблы без исхода» и эталонные сиды (`tools/timeless/README.md`).
