@@ -13,6 +13,7 @@
 // прокачки. Запись проверяется строгим валидатором приложения и пишется в resources/data/poe1/starters/<лига>.json
 // (лига — из index.json, если не задана). Чужих текстов не пишем: note — наша строка своими словами.
 // Дальше: npm test → коммит → пакет данных (tools/data/publish-data.mjs) — игроки получат список без переустановки.
+// Копию списка для страницы сайта site/starters (tools/starters/build-site.mjs) инструмент обновляет сам.
 //
 // Для тестов: --dir <папка списка>, --pob-file <файл с кодом PoB> (без сети), --today YYYY-MM-DD.
 
@@ -313,6 +314,12 @@ async function add(args) {
   if (facts.ascendancy && asc && !asc.includes(facts.ascendancy)) warns.push(`восхождения «${facts.ascendancy}» нет в данных дерева ${trees.version}`)
   if (index && index.current !== league) warns.push(`текущая лига в index.json — ${index.current}; список ${league} игроки увидят, когда её сделают текущей`)
   for (const w of warns) console.log(`  ! ${w}`)
+  // страница сайта «Стартеры» (ST3) показывает копию этого же списка — обновляем её сразу, как add-strategy
+  if (args.dir === STARTERS_DATA_DIR) {
+    const { writeSiteFiles } = await import('./build-site.mjs')
+    await writeSiteFiles()
+    console.log('  сайт: site/starters обновлён (tools/starters/build-site.mjs)')
+  }
   console.log('Дальше: add-starter --check → npm test → коммит → пакет данных (tools/data/publish-data.mjs).')
 }
 
