@@ -67,8 +67,9 @@ npm run package       # POETH-Setup-<версия>.exe (+ .blockmap, latest.yml)
 - Portable — один exe без установки: распаковывается во `%TEMP%` и запускается; настройки — в обычном
   `%APPDATA%\POETH`. Автообновления нет (ограничение electron-updater): окно обновления ведёт на
   страницу релиза («Скачать новую версию»).
-- Установщик на своём ПК без нужды не запускайте — он ставит программу в систему; содержимое можно
-  посмотреть так: `node_modules/7zip-bin/win/x64/7za.exe l dist-release/POETH-Setup-<версия>.exe`.
+- Установщик на своём ПК без нужды не запускайте — он ставит программу в систему. Содержимое можно
+  посмотреть 7-Zip 24+: `7za l dist-release/POETH-Setup-<версия>.exe`. С electron-builder 26 пакета `7zip-bin`
+  нет — 7za лежит в его кэше: `%LOCALAPPDATA%\electron-builder\Cache\7zip@1.0.0\7zip-win-x64-*\bin\7za.exe`.
 
 ## Выпуск
 
