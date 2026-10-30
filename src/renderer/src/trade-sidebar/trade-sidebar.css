@@ -1,6 +1,7 @@
 /* Сайдбар трейд-окна (S5) по макету «трейд-окно с избранным». Только токены tokens.css и
    компоненты ui-*. Числа 300px (колонка) и 40px (адресная строка) совпадают с SIDEBAR_WIDTH и
-   BAR_HEIGHT в src/main/windows/tradeWindow.ts: правее и ниже лежит siteView с сайтом. */
+   BAR_HEIGHT в src/main/windows/tradeWindow.ts: правее и ниже лежит siteView с сайтом.
+   S43: рельс вкладок сайтов слева (--rail, 48px = RAIL_WIDTH); на вкладке сайта колонки избранного нет (--side: 0). */
 
 html,
 body {
@@ -8,6 +9,8 @@ body {
 }
 
 .ts {
+  --rail: 0px;
+  --side: 300px;
   position: relative;
   height: 100vh;
   overflow: hidden;
@@ -19,7 +22,7 @@ body {
 /* ---- колонка избранного ---- */
 .ts-side {
   position: absolute;
-  inset: 0 auto 0 0;
+  inset: 0 auto 0 var(--rail);
   width: 300px;
   display: flex;
   flex-direction: column;
@@ -277,7 +280,7 @@ body {
 .ts-bar {
   position: absolute;
   top: 0;
-  left: 300px;
+  left: calc(var(--rail) + var(--side));
   right: 0;
   height: 40px;
   display: flex;
@@ -347,7 +350,7 @@ body {
 .ts-site-wait {
   position: absolute;
   top: 40px;
-  left: 300px;
+  left: calc(var(--rail) + var(--side));
   right: 0;
   bottom: 0;
   display: grid;
@@ -356,12 +359,11 @@ body {
 }
 
 /* ---- колонка избранного свёрнута: сайт и адресная строка — на всю ширину ---- */
+.ts--collapsed {
+  --side: 0px;
+}
 .ts--collapsed .ts-side {
   display: none;
-}
-.ts--collapsed .ts-bar,
-.ts--collapsed .ts-site-wait {
-  left: 0;
 }
 .ts-side-toggle[aria-pressed='true'] {
   color: var(--accent-hi);
@@ -382,4 +384,215 @@ body {
 }
 .ts-close:hover {
   color: var(--bad);
+}
+
+/* ---- S43: рельс вкладок сайтов ---- */
+.ts--rail {
+  --rail: 48px;
+}
+.ts--web {
+  --side: 0px;
+}
+.ts-rail {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) 0;
+  border-right: 1px solid var(--border);
+  background: var(--sunken);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.ts-rail__tab {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1px;
+  width: 38px;
+  min-height: 34px;
+  padding: var(--sp-1) 0;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+.ts-rail__tab:hover {
+  background: var(--hover);
+  color: var(--fg);
+}
+.ts-rail__tab[aria-pressed='true'] {
+  background: var(--selected);
+  border-color: var(--border-strong);
+  color: var(--accent-hi);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.ts-rail__tab:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 1px;
+}
+/* вью вкладки жива (открыта недавно) — точка в углу */
+.ts-rail__tab.is-live::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--fg-faint);
+}
+.ts-rail__cap {
+  font: 600 var(--fs-2xs) / 1 var(--font-ui);
+  letter-spacing: 0.02em;
+}
+.ts-rail__sep {
+  flex: none;
+  width: 24px;
+  height: 1px;
+  margin: var(--sp-1) 0;
+  background: var(--border);
+}
+.ts-rail__mark {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 22px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface-solid);
+  color: var(--fg);
+  font: 700 var(--fs-xs) / 1 var(--font-ui);
+  letter-spacing: 0.02em;
+}
+.ts-rail__tab[aria-pressed='true'] .ts-rail__mark {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: var(--accent-hi);
+}
+.ts-rail__mark--own {
+  border-style: dashed;
+}
+
+/* ---- S43: строка вкладки сайта ---- */
+.ts-url.is-warn {
+  color: var(--warn);
+}
+.ts-url.is-warn .ui-ico {
+  color: var(--warn);
+}
+.ts-url.is-ok .ui-ico {
+  color: var(--info);
+}
+.ts-url__tag.ui-tag {
+  flex: none;
+  padding: 0 4px;
+  color: var(--fg-muted);
+  font-size: var(--fs-2xs);
+}
+
+/* ---- S43: место под сайтом — заметка, страница «Сайты», ожидание ---- */
+.ts-page {
+  position: absolute;
+  top: 40px;
+  left: var(--rail);
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: var(--sp-8) var(--sp-8);
+}
+.ts-note {
+  display: grid;
+  gap: var(--sp-5);
+  max-width: 620px;
+  margin: 0 auto;
+}
+.ts-page__title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin: 0;
+  color: var(--fg);
+  font: 600 var(--fs-lg) / 1.3 var(--font-ui);
+}
+.ts-page__title .ui-ico {
+  color: var(--accent);
+}
+.ts-page__lead {
+  margin: 0;
+  color: var(--fg-muted);
+}
+.ts-note h3.ui-label {
+  margin: var(--sp-4) 0 0;
+}
+.ts-note__list {
+  display: grid;
+  gap: var(--sp-4);
+  margin: 0;
+  padding-left: var(--sp-8);
+  color: var(--fg-muted);
+}
+.ts-site-list {
+  display: grid;
+  gap: var(--sp-2);
+}
+.ts-site-row {
+  display: grid;
+  grid-template-columns: 28px minmax(110px, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: 34px;
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface-solid);
+  color: var(--fg);
+  text-align: left;
+  font: var(--fs-md) / 1.3 var(--font-ui);
+  cursor: pointer;
+}
+.ts-site-row:hover {
+  background: var(--hover);
+}
+.ts-site-row > span:last-child {
+  overflow: hidden;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ts-site-row--own {
+  grid-template-columns: minmax(0, 1fr) auto;
+  cursor: default;
+}
+.ts-site-row__open {
+  display: grid;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+}
+.ts-site-row__open b {
+  font-weight: 500;
+}
+.ts-site-row__open span {
+  overflow: hidden;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ts-bm-form .ui-banner {
+  align-items: start;
+}
+.ts-site-wait--site {
+  left: var(--rail);
 }

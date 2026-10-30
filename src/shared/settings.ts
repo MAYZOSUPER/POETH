@@ -41,6 +41,8 @@ export const HOTKEY_DEFAULTS: Readonly<Record<HotkeyAction, HotkeyBinding>> = {
   toggleCompanion: { accel: 'Control+Shift+O', scope: 'always' },
   toggleLock: { accel: 'Control+Shift+L', scope: 'always' },
   toggleTradeWindow: { accel: 'Control+Shift+T', scope: 'always' },
+  // вкладки сайтов трейд-окна (S43): последняя вкладка сайта; без клавиши — глобальное сочетание отняло бы его у браузера
+  toggleSites: { accel: '', scope: 'always' },
   prevStep: { accel: 'Control+Shift+[', scope: 'always' },
   nextStep: { accel: 'Control+Shift+]', scope: 'always' }
 }

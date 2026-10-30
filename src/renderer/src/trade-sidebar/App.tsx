@@ -7,10 +7,15 @@ import { Ico } from '../panels/regex/Ico'
 import { FavList, InlineEdit } from './FavList'
 import { UrlBar } from './UrlBar'
 import { useFavStore } from './useFavStore'
+import { SiteRail } from './SiteRail'
+import { SiteBar } from './SiteBar'
+import { SitesManage, SitesNote, SiteWait } from './SitePages'
 
 // Сайдбар трейд-окна (S5) по утверждённому макету: «Избранное» + лига, поиск по избранному,
 // «Сохранить текущий поиск», папки, live-счётчик, импорт/экспорт Better Trading, новая папка,
 // статус входа. Справа сверху — адресная строка сайта; сам сайт — отдельный siteView.
+// S43: у PoE 1 слева — рельс вкладок сайтов; на вкладке сайта колонки избранного нет, а под вью сайта —
+// заметка о приватности, страница «Сайты» или «Загрузка…».
 
 const api = (): Window['overlayApi'] => window.overlayApi
 
@@ -20,7 +25,10 @@ export function TradeSidebarApp() {
   const init = useFavStore((s) => s.init)
   const collapsed = useFavStore((s) => !!s.site?.sidebarCollapsed)
   const overGame = useFavStore((s) => !!s.site?.overGame)
+  const sites = useFavStore((s) => s.sites)
   const [filter, setFilter] = useState('')
+  const rail = !!sites?.on
+  const trade = !rail || sites.active === 'trade'
 
   useEffect(() => init(), [init])
 
@@ -38,8 +46,19 @@ export function TradeSidebarApp() {
     return () => window.removeEventListener('keydown', onKey)
   }, [overGame])
 
+  if (!trade && sites) {
+    return (
+      <div className={`ts ts--rail ts--web${overGame ? ' ts--game' : ''}`}>
+        <SiteRail />
+        <SiteBar />
+        {sites.active === 'manage' ? <SitesManage /> : sites.needsNote ? <SitesNote /> : <SiteWait />}
+      </div>
+    )
+  }
+
   return (
-    <div className={`ts${collapsed ? ' ts--collapsed' : ''}${overGame ? ' ts--game' : ''}`}>
+    <div className={`ts${collapsed ? ' ts--collapsed' : ''}${overGame ? ' ts--game' : ''}${rail ? ' ts--rail' : ''}`}>
+      {rail && <SiteRail />}
       <aside className="ts-side">
         <Head />
         <div className="ts-top">

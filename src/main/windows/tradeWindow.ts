@@ -1,6 +1,7 @@
 import { app, BaseWindow, globalShortcut, screen, shell, WebContentsView, type Rectangle } from 'electron'
 import path from 'path'
-import type { TradeSiteState } from '@shared/types'
+import type { GameLang, TradeSiteState } from '@shared/types'
+import type { SiteTabId } from '@shared/sites'
 import { isAllowedExternalUrl } from '@shared/links'
 import { hardenSiteContents, siteWebPreferences } from '../net/siteContents'
 import { isSitePageUrl } from '../net/guards'
@@ -11,6 +12,16 @@ import { loadRendererPage } from './rendererPage'
 import { boundsOverGame, gameSizeOf, TRADE_MIN_SIZE as MIN_SIZE, type GameSize } from './tradeBounds'
 import { windowIcon } from '../appIcon'
 import { devEnv } from '../devEnv'
+import {
+  activeTab,
+  closeAll as closeSiteTabs,
+  isSiteTabFocused,
+  layoutSiteTabs,
+  selectTab,
+  setSiteTabsHost,
+  setSiteTabsShown,
+  sitesEnabled
+} from './siteTabs'
 
 // Трейд-окно (S5): слева наш сайдбар (trade-sidebar.html, preload), справа официальный сайт
 // трейда как есть (siteView: без preload, sandbox, сессия аккаунта persist:poe-account,
@@ -35,10 +46,15 @@ import { devEnv } from '../devEnv'
 // ПРАВИЛО (docs/PLAN-POETH.md, риск бана): «Travel to Hideout» и «Direct whisper» — только родные
 // кнопки сайта, которые жмёт игрок. В siteView никаких executeJavaScript, инъекций, программных кликов
 // (sendInputEvent) и своих запросов к эндпоинтам телепорта/whisper. Сторож — tests/fav/siteGuard.test.ts.
+// Вкладки сайтов (S43): у PoE 1 слева — рельс вкладок (RAIL_WIDTH, рисует сайдбар). «Трейд» — siteView этого
+// файла; poe.ninja, poedb и др. — вью windows/siteTabs.ts на отдельной сессии сайтов, видна только активная.
+// Колонка избранного — только у вкладки «Трейд».
 
 /** ширина колонки избранного и высота адресной строки — те же числа в trade-sidebar.css */
 export const SIDEBAR_WIDTH = 300
 export const BAR_HEIGHT = 40
+/** рельс вкладок сайтов (S43) — то же число в trade-sidebar.css */
+export const RAIL_WIDTH = 48
 
 const DEFAULT_BOUNDS = { width: 1280, height: 820 }
 const SAVE_DELAY_MS = 600
@@ -126,14 +142,19 @@ function restoredBounds(): Partial<Rectangle> {
   return visible ? b : { width: b.width, height: b.height }
 }
 
+function railWidth(): number {
+  return sitesEnabled() ? RAIL_WIDTH : 0
+}
+
 function sideWidth(): number {
-  return state.sidebarCollapsed ? 0 : SIDEBAR_WIDTH
+  return railWidth() + (state.sidebarCollapsed ? 0 : SIDEBAR_WIDTH)
 }
 
 function layout(): void {
   if (!win || win.isDestroyed() || !sidebar || !site) return
   const { width, height } = win.getContentBounds()
   const side = sideWidth()
+  const rail = railWidth()
   sidebar.setBounds({ x: 0, y: 0, width, height })
   site.setBounds({
     x: side,
@@ -141,6 +162,8 @@ function layout(): void {
     width: Math.max(0, width - side),
     height: Math.max(0, height - BAR_HEIGHT)
   })
+  site.setVisible(activeTab() === 'trade')
+  layoutSiteTabs({ x: rail, y: BAR_HEIGHT, width: Math.max(0, width - rail), height: Math.max(0, height - BAR_HEIGHT) })
 }
 
 function publishSite(patch: Partial<TradeSiteState> = {}): void {
@@ -189,9 +212,29 @@ function keepOnTop(w: BaseWindow): void {
   w.moveTop()
 }
 
+/** Адрес сайта трейда по умолчанию (из последнего показа окна) — для вкладки «Трейд», открытой из рельса. */
+let tradeDefaultUrl: (() => Promise<string>) | null = null
+/** язык клиента игры (домашняя страница poedb) — задаёт домен fav по настройкам */
+let gameLangOf: () => GameLang = () => 'en'
+
+export function setSiteGameLang(fn: () => GameLang): void {
+  gameLangOf = fn
+}
+
 function hookOnce(): void {
   if (hooked) return
   hooked = true
+  setSiteTabsHost({
+    window: () => win,
+    overGame: () => overGame,
+    hide: () => hideTradeWindow(),
+    openTrade: (url) => void openTradeTab(url),
+    gameLang: () => gameLangOf(),
+    changed: () => {
+      layout()
+      publishSite()
+    }
+  })
   app.on('before-quit', () => {
     quitting = true
   })
@@ -323,6 +366,7 @@ function destroyWindow(): string {
     saveTimer = null
     void writeJsonAtomic(stateFile(), state).catch(() => undefined)
   }
+  closeSiteTabs()
   win = null
   sidebar = null
   site = null
@@ -345,18 +389,38 @@ export function isTradeWindowVisible(): boolean {
   return isTradeWindowOpen() && win!.isVisible()
 }
 
+export interface ShowTradeOptions {
+  title: string
+  /** страница сайта трейда (вкладка «Трейд») */
+  url?: string
+  defaultUrl: () => Promise<string>
+  /** вкладка (S43); по умолчанию — «Трейд» */
+  tab?: SiteTabId
+  /** страница сайта этой вкладки (глубокая ссылка) */
+  siteUrl?: string
+}
+
 /**
  * Показать окно (создать при первом вызове); url — открыть эту страницу сайта.
  * Игра запущена — поверх неё, по центру и в её границах; нет — обычное окно.
+ * S43: tab — вкладка сайта (siteUrl — её страница); сайт трейда тогда грузится, только когда откроют «Трейд».
  */
-export async function showTradeWindow(opts: { title: string; url?: string; defaultUrl: () => Promise<string> }): Promise<void> {
+export async function showTradeWindow(opts: ShowTradeOptions): Promise<void> {
   const area = gameArea()
   let keepUrl = ''
+  tradeDefaultUrl = opts.defaultUrl
   if (win && !win.isDestroyed() && overGame !== !!area) keepUrl = destroyWindow()
   const w = win && !win.isDestroyed() ? win : await create(opts.title, area)
   const wc = site!.webContents
-  if (opts.url) loadSite(opts.url)
-  else if (!wc.getURL()) loadSite(keepUrl && isSitePageUrl(keepUrl) ? keepUrl : await opts.defaultUrl())
+  const tab = opts.tab && sitesEnabled() ? opts.tab : 'trade'
+  if (tab === 'trade') {
+    if (activeTab() !== 'trade') await selectTab('trade')
+    if (opts.url) loadSite(opts.url)
+    else if (!wc.getURL()) loadSite(keepUrl && isSitePageUrl(keepUrl) ? keepUrl : await opts.defaultUrl())
+  } else {
+    if (keepUrl && isSitePageUrl(keepUrl) && !wc.getURL()) loadSite(keepUrl)
+    await selectTab(tab, opts.siteUrl)
+  }
   if (overGame && area) {
     // игру могли подвинуть или поменять ей размер — снова по центру
     w.setBounds(boundsOverGame(area, state.gameSize))
@@ -365,7 +429,18 @@ export async function showTradeWindow(opts: { title: string; url?: string; defau
   if (w.isMinimized()) w.restore()
   w.show()
   w.focus()
+  setSiteTabsShown(true)
   publishSite()
+}
+
+/** Вкладка «Трейд» из рельса или по ссылке с сайта (поиск трейда): сайт трейда, при первом открытии — по умолчанию. */
+export async function openTradeTab(url?: string): Promise<void> {
+  await selectTab('trade')
+  const wc = site?.webContents
+  if (!wc || wc.isDestroyed()) return
+  if (url) loadSite(url)
+  else if (!wc.getURL() && tradeDefaultUrl) loadSite(await tradeDefaultUrl())
+  wc.focus()
 }
 
 /** Спрятать окно; если игра запущена — вернуть ей фокус. */
@@ -373,6 +448,7 @@ export function hideTradeWindow(): void {
   if (!win || win.isDestroyed()) return
   scheduleSave()
   win.hide()
+  setSiteTabsShown(false)
   syncEsc()
   try {
     ensureGameForeground()
@@ -383,18 +459,25 @@ export function hideTradeWindow(): void {
 
 /**
  * Хоткей: скрыто → показать; видно поверх игры → спрятать (фокус — игре); обычное окно:
- * видно, но не в фокусе → на передний план, в фокусе → спрятать.
+ * видно, но не в фокусе → на передний план, в фокусе → спрятать. S43: окно видно на вкладке другого вида —
+ * переключить (Ctrl+Shift+T — на «Трейд», «Сайты» — на последнюю вкладку сайта).
  */
-export async function toggleTradeWindow(opts: { title: string; defaultUrl: () => Promise<string> }): Promise<void> {
+export async function toggleTradeWindow(opts: { title: string; defaultUrl: () => Promise<string>; tab?: SiteTabId }): Promise<void> {
+  const tab = opts.tab && sitesEnabled() ? opts.tab : 'trade'
+  const onTab = tab === 'trade' ? activeTab() === 'trade' : activeTab() !== 'trade'
   if (win && !win.isDestroyed() && win.isVisible() && !win.isMinimized() && overGame === !!gameArea()) {
-    if (overGame || win.isFocused() || sidebar?.webContents.isFocused() || site?.webContents.isFocused()) {
+    if (!onTab) {
+      await showTradeWindow({ ...opts, tab })
+      return
+    }
+    if (overGame || win.isFocused() || sidebar?.webContents.isFocused() || site?.webContents.isFocused() || isSiteTabFocused()) {
       hideTradeWindow()
       return
     }
     win.focus()
     return
   }
-  await showTradeWindow(opts)
+  await showTradeWindow({ ...opts, tab })
 }
 
 /** Открыть страницу сайта в siteView (только pathofexile.com / проверка Cloudflare). */

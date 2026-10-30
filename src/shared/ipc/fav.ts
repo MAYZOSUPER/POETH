@@ -15,6 +15,7 @@ import type {
   TradeWindowTarget
 } from '../types'
 import type { GameId } from '../games'
+import type { BookmarkError, SitesState, SitesTarget, SiteTabId } from '../sites'
 
 export const favChannels = {
   fav: {
@@ -46,6 +47,16 @@ export const favChannels = {
     setSidebar: 'tradeWindow:setSidebar',
     state: 'tradeWindow:state',
     openInBrowser: 'tradeWindow:openInBrowser'
+  },
+  // вкладки сайтов трейд-окна (S43)
+  sites: {
+    state: 'sites:state',
+    select: 'sites:select',
+    open: 'sites:open',
+    ackNote: 'sites:ackNote',
+    addBookmark: 'sites:addBookmark',
+    removeBookmark: 'sites:removeBookmark',
+    clearData: 'sites:clearData'
   }
 } as const
 
@@ -53,7 +64,9 @@ export const favEvents = {
   favChanged: 'event:fav.changed',
   favSite: 'event:fav.site',
   favLive: 'event:fav.live',
-  favBlocked: 'event:fav.blocked'
+  favBlocked: 'event:fav.blocked',
+  favSites: 'event:fav.sites',
+  favSitesBlocked: 'event:fav.sitesBlocked'
 } as const
 
 export interface FavIpcApi {
@@ -101,9 +114,26 @@ export interface FavIpcApi {
     /** текущую страницу сайта — в системный браузер */
     openInBrowser(): Promise<boolean>
   }
+  /** вкладки сайтов трейд-окна (S43): poe.ninja, poedb, вики… и закладки игрока */
+  sites: {
+    state(): Promise<SitesState>
+    /** переключить вкладку открытого окна */
+    select(tab: SiteTabId): Promise<void>
+    /** показать окно на вкладке сайта (по умолчанию — последней); url — страница этого сайта (глубокая ссылка) */
+    open(target?: SitesTarget): Promise<void>
+    /** «Понятно» в заметке о приватности */
+    ackNote(): Promise<void>
+    addBookmark(input: { title: string; url: string }): Promise<{ ok: true; tab: SiteTabId } | { ok: false; reason: BookmarkError }>
+    removeBookmark(id: string): Promise<void>
+    /** стереть cookies и кэш сессии сайтов (сессию аккаунта не трогает) */
+    clearData(): Promise<void>
+  }
   onFavChanged(cb: (data: FavData) => void): () => void
   onTradeSite(cb: (state: TradeSiteState) => void): () => void
   onFavLive(cb: (snapshot: FavLiveSnapshot) => void): () => void
   /** сайт попытался уйти с pathofexile.com (ссылка открыта в браузере или заблокирована) */
   onTradeBlocked(cb: (info: { host: string; external: boolean }) => void): () => void
+  onSites(cb: (state: SitesState) => void): () => void
+  /** вкладка сайта попыталась уйти со своего сайта (ссылка открыта в браузере или заблокирована) */
+  onSitesBlocked(cb: (info: { host: string; external: boolean }) => void): () => void
 }

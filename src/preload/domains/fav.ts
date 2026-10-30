@@ -35,9 +35,20 @@ export function favBridge(): FavIpcApi {
       state: () => ipcRenderer.invoke(IPC.tradeWindow.state),
       openInBrowser: () => ipcRenderer.invoke(IPC.tradeWindow.openInBrowser)
     },
+    sites: {
+      state: () => ipcRenderer.invoke(IPC.sites.state),
+      select: (tab) => ipcRenderer.invoke(IPC.sites.select, tab),
+      open: (target) => ipcRenderer.invoke(IPC.sites.open, target),
+      ackNote: () => ipcRenderer.invoke(IPC.sites.ackNote),
+      addBookmark: (input) => ipcRenderer.invoke(IPC.sites.addBookmark, input),
+      removeBookmark: (id) => ipcRenderer.invoke(IPC.sites.removeBookmark, id),
+      clearData: () => ipcRenderer.invoke(IPC.sites.clearData)
+    },
     onFavChanged: (cb) => subscribe(IPC.events.favChanged, cb),
     onTradeSite: (cb) => subscribe(IPC.events.favSite, cb),
     onFavLive: (cb) => subscribe(IPC.events.favLive, cb),
-    onTradeBlocked: (cb) => subscribe(IPC.events.favBlocked, cb)
+    onTradeBlocked: (cb) => subscribe(IPC.events.favBlocked, cb),
+    onSites: (cb) => subscribe(IPC.events.favSites, cb),
+    onSitesBlocked: (cb) => subscribe(IPC.events.favSitesBlocked, cb)
   }
 }

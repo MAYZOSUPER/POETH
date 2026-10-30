@@ -28,6 +28,7 @@ import { ascOrClass, buildTitle, mainSkillName } from './names'
 import { StagesDialog } from './StagesDialog'
 import { useProgress, useStage } from './useStage'
 import { BIco, classLine, CopyLine, slotLabel, Sock, stageLabels } from './ui'
+import { PoedbButton } from './SiteLink'
 
 // Открытый билд (макет v0.2, раздел 1): шапка с этапами, «Камни сейчас», «Связки», «Дерево: следующие ноды»,
 // «Проверка», «Заметки автора». До 760 px содержимого — одна колонка в порядке пользы, шире — две.
@@ -307,6 +308,7 @@ function GemsBox({ gems, expert }: { gems: StageGems; expert: boolean }) {
                 <span className="bd-row__end">
                   {r.need > 1 && <span className="bd-copies">{t('bd.gems.copies', { have: r.have, need: r.need })}</span>}
                   <span className={`ui-tag ${tag[0]}`}>{t(tag[1])}</span>
+                  <PoedbButton name={r.gem?.en ?? r.name} />
                 </span>
               </div>
             )
@@ -377,6 +379,9 @@ function LinksBox({ build, plan, shown, expert }: { build: StoredBuild; plan: Po
 }
 
 // ---------------------------------------------------------------------------- дерево
+
+/** S43: у этих нод есть страница poedb */
+const POEDB_NODE = new Set<NodeRow['kind']>(['notable', 'keystone', 'asc'])
 
 const NODE_ICON: Record<NodeRow['kind'], IconName> = {
   notable: 'passive',
@@ -463,6 +468,7 @@ function TreeBox({
                   {n.kind !== 'small' && <span className="ui-tag">{t(`bd.tree.kind.${n.kind}`)}</span>}
                   {n.state === 'done' && <span className="ui-tag ui-tag--good">{t('bd.tree.taken')}</span>}
                   {drop && <span className="ui-tag ui-tag--warn">{t('bd.tree.drop')}</span>}
+                  {POEDB_NODE.has(n.kind) && n.hash !== null && tree?.nodes.get(n.hash)?.en && <PoedbButton name={tree.nodes.get(n.hash)!.en} />}
                 </span>
               </div>
             )
