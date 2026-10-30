@@ -137,7 +137,8 @@ docs/          PLAN-POETH · ARCHITECTURE · stages · poe1-trade-api · regex �
     - Его поднимает первый `RTCPeerConnection` (вход GGG, Turnstile); политика WebRTC S29 этого не останавливала.
     - Исправление: `--disable-features=WebRtcHideLocalIpsWithMdns` до ready (`mergeFeatureList`). На упакованной сборке
       «после» нет 5353 и правил Query User.
-    - Ждём второй коммит S49: прогон «после-2» (сайты, три сессии) и `tools/electron/check-sockets.mjs`.
+    - Второй заход (`289c4b9`, `26be3eb`) слит: `tools/electron/check-sockets.mjs` (`--offscreen`), «после-2» 16/16 —
+      WebRTC 0 кандидатов во всех сессиях (компаньон, аккаунт, Turnstile, сайты), 5353 нет, TCP LISTEN только loopback CDP.
   - **S52** (`7a00ee5`…`d40d88a`): гид прокачки.
     - «Зона 43 · вы 52 · опыт −30 %» и «зона на 6 уровней выше, опасно»; в картах — полоса «карта слишком лёгкая».
     - «Пора пройти лабиринт: +2 очка восхождения» с раскладкой poelab; лабиринты — по журналу и `/passives`.
