@@ -17,8 +17,16 @@ import {
   type TimelessDataRaw,
   type TimelessTable
 } from '@shared/poe1/timeless/data'
-import { dataKindOf, dataSeedOf, evaluateSeed, findAnalogs, itemSeedOf, seedScore } from '@shared/poe1/timeless/evaluate'
-import { MAX_ANALOG_FILTERS, analogConquerors, analogPreset, maxAnalogSeeds } from '@shared/poe1/timeless/query'
+import { MIN_THEME_COUNT, dataKindOf, dataSeedOf, evaluateSeed, findAnalogs, itemSeedOf, seedScore } from '@shared/poe1/timeless/evaluate'
+import {
+  ANON_ANALOG_FILTERS,
+  MAX_ANALOG_FILTERS,
+  analogConquerors,
+  analogPreset,
+  isTooComplex,
+  maxAnalogSeeds,
+  nextAnalogFilters
+} from '@shared/poe1/timeless/query'
 import { readFixture, store } from '../poe1/helpers'
 
 // «Умная оценка» timeless-самоцветов (S45): данные tools/timeless/build.mjs (лукапы PoB, MIT), исход сида по гнёздам,
@@ -171,32 +179,58 @@ describe('сиды', () => {
 })
 
 describe('лучшее гнездо', () => {
-  it('Militant Faith: Преданность = атрибутные ×10 + мелкие ×5 + незаменённые нотаблы ×5', () => {
+  it('Militant Faith: набожность гнезда справкой = атрибутные ×10 + мелкие ×5 + незаменённые нотаблы ×5', () => {
     const ev = evaluateSeed(data, table('MF'), 2000)
     const s = ev.sockets.find((x) => data.sockets[x.socket].id === 26725)!
     const sock = socketOf(26725)
-    expect(s.theme).toBe('devotion')
-    expect(s.score).toBe(sock.attr * 10 + sock.small * 5 + 20 * 5)
-    expect(s.notes.map((n) => data.jewels.MF.outcomes[n.code].name![0]).sort()).toEqual(['Calming Devotion', 'Cloistered'])
-    expect(ev.best!.score).toBe(Math.max(...ev.sockets.map((x) => x.score)))
+    expect(s.total).toBe(sock.attr * 10 + sock.small * 5 + 20 * 5)
+    // две замены разных тем (конверсия и защита) — ни одна тема не набрала двух: гнездо не «лучшее»
+    expect(s.lift).toBe(0)
     expect(ev.sockets).toHaveLength(21)
+    for (const x of ev.sockets) expect(x.total).toBeGreaterThan(0)
   })
 
-  it('Lethal Pride: счёт гнезда — нотаблы лучшей темы; гнёзда по убыванию', () => {
+  it('Militant Faith: лучшее гнездо — повтор храмовых нотаблов одной темы', () => {
+    const t = table('MF')
+    let found = 0
+    for (let seed = t.seedMin; seed < t.seedMin + 400 && found < 5; seed++) {
+      const ev = evaluateSeed(data, t, seed)
+      if (!ev.best) continue
+      found++
+      expect(ev.best.score).toBeGreaterThanOrEqual(MIN_THEME_COUNT)
+      for (const n of ev.best.notes) expect(data.jewels.MF.outcomes[n.code].rep).toBe(1)
+    }
+    expect(found).toBe(5)
+  })
+
+  it('Lethal Pride 12345, гнездо 26725: двойной урон ×2 (доля ~3,7%) важнее частых тем', () => {
     const ev = evaluateSeed(data, table('LP'), 12345)
     const s = ev.sockets.find((x) => data.sockets[x.socket].id === 26725)!
-    // в гнезде 26725: двойной урон ×2, жизнь 4% ×1 + реген ×1, крит ближнего боя ×1, физ ×2+… — лучшая тема набирает ≥ 2
-    expect(s.score).toBeGreaterThanOrEqual(2)
+    // в гнезде (Vilsol): двойной урон ×2, жизнь 4% ×1 + реген ×1 (2), физ 20% + ближний бой 20% (2), сила 5% ×1
+    expect(s).toMatchObject({ theme: 'dd', score: 2 })
+    expect(s.lift).toBeCloseTo(2 / (0.03705 * 22), 2)
     expect(s.notes.reduce((a, n) => a + n.count, 0)).toBe(s.score)
-    for (let i = 1; i < ev.sockets.length; i++) expect(ev.sockets[i - 1].score).toBeGreaterThanOrEqual(ev.sockets[i].score)
+    for (let i = 1; i < ev.sockets.length; i++) expect(ev.sockets[i - 1].lift).toBeGreaterThanOrEqual(ev.sockets[i].lift)
     expect(ev.best).toBe(ev.sockets[0])
   })
 
-  it('счёт по теме лучшего гнезда = seedScore', () => {
+  it('тема засчитывается от двух нотаблов; ни одной — оценить нельзя', () => {
+    for (const kind of ['LP', 'BR', 'EH', 'HT'] as const) {
+      const t = table(kind)
+      for (let seed = t.seedMin; seed < t.seedMin + 50; seed++) {
+        const ev = evaluateSeed(data, t, seed)
+        for (const s of ev.sockets) if (s.lift > 0) expect(s.score).toBeGreaterThanOrEqual(MIN_THEME_COUNT)
+        expect(ev.best === null).toBe(ev.sockets.every((s) => s.lift === 0))
+      }
+    }
+  })
+
+  it('seedScore — лучший счёт темы по всем гнёздам (не меньше, чем в лучшем гнезде)', () => {
     for (const [kind, seed] of [['LP', 12345], ['BR', 6375], ['EH', 3000], ['HT', 4000], ['MF', 5528]] as const) {
       const ev = evaluateSeed(data, table(kind), seed)
       expect(ev.best).not.toBeNull()
-      expect(seedScore(data, table(kind), seed, ev.best!.theme)).toBe(ev.best!.score)
+      const sameTheme = ev.sockets.filter((s) => s.theme === ev.best!.theme).map((s) => s.score)
+      expect(seedScore(data, table(kind), seed, ev.best!.theme)).toBeGreaterThanOrEqual(Math.max(...sameTheme))
     }
   })
 })
@@ -271,6 +305,25 @@ describe('count-запрос аналогов', () => {
       'explicit.pseudo_timeless_jewel_akoya',
       'explicit.pseudo_timeless_jewel_kiloava'
     ])
+  })
+
+  it('без входа — меньший лимит; «слишком сложно» → вдвое меньше, но не меньше одного сида', () => {
+    const { item, preset } = check('en', 'timeless-08')
+    const info = preset.timeless as TimelessSearch
+    expect(maxAnalogSeeds(info, ANON_ANALOG_FILTERS)).toBe(4)
+    const body = buildRequest(item, pdata.en, analogPreset(preset, info, Array.from({ length: 45 }, (_, i) => 10000 + i), ANON_ANALOG_FILTERS))
+      .body as { query: { stats: { type: string; filters: unknown[] }[] } }
+    expect(body.query.stats.find((g) => g.type === 'count')!.filters).toHaveLength(16)
+    expect(nextAnalogFilters(info, 16)).toBe(8)
+    expect(nextAnalogFilters(info, 4)).toBe(4)
+    const tooComplex = {
+      code: 'bad-request',
+      message: 'Query is too complex. Please reduce the amount of filters used. Logging in will increase this limit.'
+    }
+    expect(isTooComplex(tooComplex)).toBe(true)
+    expect(isTooComplex({ code: 'bad-request', message: 'Unknown item name' })).toBe(false)
+    expect(isTooComplex({ code: 'rate-limited' })).toBe(false)
+    expect(isTooComplex(undefined)).toBe(false)
   })
 
   it('RU и EN предмет дают одинаковые оценку и запрос аналогов', () => {

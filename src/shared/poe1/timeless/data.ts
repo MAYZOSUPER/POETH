@@ -28,6 +28,8 @@ export interface TimelessOutcome {
   lines: Pair[]
   /** stat id → значение (как в игре) */
   stats: Record<string, number>
+  /** доля этого исхода среди всех нотаблов в радиусе гнёзд по всем сидам (насколько он обычен) */
+  share: number
 }
 
 export interface TimelessSocket {

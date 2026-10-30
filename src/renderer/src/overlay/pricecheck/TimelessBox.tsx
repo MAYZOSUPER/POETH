@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { NetError, UiLang } from '@shared/types'
 import type { ParsedItem } from '@shared/poe1/parser'
 import { getDefaultPoe1DataStore } from '@shared/poe1/data'
@@ -8,7 +8,15 @@ import { chaosRates } from '@shared/poe1/pricecheck/currency'
 import { marketView } from '@shared/poe1/pricecheck/priceBlock'
 import type { TimelessDataRaw } from '@shared/poe1/timeless/data'
 import { dataKindOf, dataSeedOf, itemSeedOf, type SocketScore } from '@shared/poe1/timeless/evaluate'
-import { analogPreset, maxAnalogSeeds } from '@shared/poe1/timeless/query'
+import {
+  ANON_ANALOG_FILTERS,
+  MAX_ANALOG_FILTERS,
+  analogConquerors,
+  analogPreset,
+  isTooComplex,
+  maxAnalogSeeds,
+  nextAnalogFilters
+} from '@shared/poe1/timeless/query'
 import { netErrorText } from '../../panels/account/netError'
 import { Currency } from '../../components/Currency'
 import { Icon } from '../Icon'
@@ -20,7 +28,9 @@ import './timeless.css'
 
 // «Умная оценка» timeless-самоцвета (S45) в окне цены Ctrl+D (PoE 1): что сид даёт в 21 гнезде дерева, лучшее
 // гнездо по правилам самоцвета (shared/poe1/timeless/rules.ts) и цена реальных аналогов — один count-запрос на трейд
-// «сиды с таким же или лучшим исходом», только по кнопке игрока (шлюз main: interactive, лимиты, кэш).
+// «сиды с таким же или лучшим исходом», только по кнопке игрока (шлюз main: interactive, лимиты, кэш). Без входа сайт
+// принимает меньше фильтров: начинаем с ANON_ANALOG_FILTERS, на «слишком сложно» — кнопка «искать по N сидов»
+// (вдвое меньше), выученный лимит живёт до перезапуска окна.
 // Простой режим — одна строка; эксперт — заметки гнезда, другие гнёзда, редкость исхода. Имена нод и строки исходов —
 // на языке клиента игры (их ищут в игре), остальное — на языке интерфейса.
 
@@ -30,11 +40,29 @@ type Analog =
   | { phase: 'idle' }
   | { phase: 'busy' }
   | { phase: 'done'; total: number; market?: MarketPrice; siteUrl: string; cached: boolean; seeds: number }
-  | { phase: 'fail'; error?: NetError }
+  | { phase: 'fail'; error?: NetError; /** «слишком сложно»: повторить с таким лимитом фильтров */ retryFilters?: number }
 
 /** Сколько других гнёзд показать эксперту и сколько заметок у гнезда. */
 const OTHER_SOCKETS = 2
 const NOTES = 3
+
+/** Лимит фильтров без входа, выученный по ответам сайта за эту сессию окна. */
+let anonFilters = ANON_ANALOG_FILTERS
+
+function useHasSession(): boolean | null {
+  const [has, setHas] = useState<boolean | null>(null)
+  useEffect(() => {
+    let alive = true
+    void window.overlayApi.trade
+      .hasSession()
+      .then((v) => alive && setHas(Boolean(v)))
+      .catch(() => alive && setHas(false))
+    return () => {
+      alive = false
+    }
+  }, [])
+  return has
+}
 
 function openExternal(url: string): void {
   window.overlayApi.window.openExternal(url)
@@ -66,14 +94,14 @@ function useTimeless(info: TimelessSearch): { data: TimelessDataRaw | null; calc
   return { data, calc, state }
 }
 
-/** Подпись гнезда на языке клиента игры: «у «Iron Reflexes»». */
+/** Подпись гнезда на языке клиента игры: «Iron Reflexes» (ближайший кейстоун или нотабл). */
 function socketName(data: TimelessDataRaw, s: SocketScore, game: 'en' | 'ru', t: T): string {
   const pair = data.names[data.sockets[s.socket].near]
   return t('pc1.tl.socket', { name: pair ? pair[game === 'ru' ? 1 : 0] : '?' })
 }
 
 function scoreText(s: SocketScore, t: T): string {
-  return s.theme === 'devotion' ? t('pc1.tl.devotion', { n: s.score }) : t('pc1.tl.theme', { theme: t(`pc1.tl.theme.${s.theme}`), n: s.score })
+  return t('pc1.tl.theme', { theme: t(`pc1.tl.theme.${s.theme}`), n: s.score })
 }
 
 function naText(info: TimelessSearch, t: T): string {
@@ -82,13 +110,13 @@ function naText(info: TimelessSearch, t: T): string {
   return t('pc1.tl.na.data')
 }
 
-async function searchAnalogs(info: TimelessSearch, data: TimelessDataRaw, calc: TimelessCalc): Promise<Analog> {
+async function searchAnalogs(info: TimelessSearch, data: TimelessDataRaw, calc: TimelessCalc, maxFilters: number): Promise<Analog> {
   const st = usePriceCheckStore.getState()
   const preset = activePresetOf(st)
   const kind = dataKindOf(info.jewel)
   if (!st.item || !st.data || !preset || !kind || !calc.analogs.seeds.length) return { phase: 'fail' }
-  const seeds = calc.analogs.seeds.map((s) => itemSeedOf(data, kind, s))
-  const req = buildRequest(st.item, st.data, analogPreset(preset, info, seeds))
+  const seeds = calc.analogs.seeds.slice(0, maxAnalogSeeds(info, maxFilters)).map((s) => itemSeedOf(data, kind, s))
+  const req = buildRequest(st.item, st.data, analogPreset(preset, info, seeds, maxFilters))
   if (req.api !== 'trade') return { phase: 'fail' }
   let body: unknown = req.body
   // ru.pathofexile.com не принимает английские имена (как основной поиск окна)
@@ -97,7 +125,11 @@ async function searchAnalogs(info: TimelessSearch, data: TimelessDataRaw, calc: 
     if (ru) body = localizeTradeRequest(req.body as TradeRequest, ru)
   }
   const res = await window.overlayApi.trade.poe1Search({ league: req.league, body, fetch: 10 })
-  if (!res.ok) return { phase: 'fail', error: res.error }
+  if (!res.ok) {
+    if (!isTooComplex(res.error)) return { phase: 'fail', error: res.error }
+    const next = nextAnalogFilters(info, seeds.length * analogConquerors(info).length)
+    return { phase: 'fail', error: res.error, ...(next < maxFilters ? { retryFilters: next } : {}) }
+  }
   const now = usePriceCheckStore.getState()
   const rates = chaosRates(now.rate?.chaosPerDivine, now.rates)
   const market = marketPrice(res.listings, honestPrice(res.listings, res.total, rates), rates)
@@ -125,14 +157,19 @@ function AnalogResult({ a, simple, lang, t }: { a: Extract<Analog, { phase: 'don
 
 export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem; info: TimelessSearch; simple: boolean; lang: UiLang; t: T }) {
   const { data, calc, state } = useTimeless(info)
+  const hasSession = useHasSession()
   const [analog, setAnalog] = useState<Analog>({ phase: 'idle' })
   const game = item.lang === 'ru' ? 'ru' : 'en'
-  // другой сид, самоцвет или режим завоевателя — другой запрос аналогов
-  useEffect(() => setAnalog({ phase: 'idle' }), [info.seed, info.jewel, info.mode, calc])
+  // другой сид, самоцвет или режим завоевателя — другой запрос аналогов; ответ прежнего поиска не показываем
+  const query = useRef(0)
+  useEffect(() => {
+    query.current++
+    setAnalog({ phase: 'idle' })
+  }, [info.seed, info.jewel, info.mode, calc])
 
   const best = calc?.evaluation.best ?? null
   const others = useMemo(
-    () => (calc && best ? calc.evaluation.sockets.filter((s) => s !== best && s.score > 0).slice(0, OTHER_SOCKETS) : []),
+    () => (calc && best ? calc.evaluation.sockets.filter((s) => s !== best && s.lift > 0).slice(0, OTHER_SOCKETS) : []),
     [calc, best]
   )
 
@@ -154,18 +191,34 @@ export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem;
 
   const kind = dataKindOf(info.jewel)!
   const outcomes = data.jewels[kind].outcomes
-  const run = async (): Promise<void> => {
+  // со входом — лимит PoB (180), без входа — выученный; пока не знаем, есть ли вход, — как без входа
+  const maxFilters = hasSession ? MAX_ANALOG_FILTERS : anonFilters
+  const querySeeds = Math.min(calc.analogs.seeds.length, maxAnalogSeeds(info, maxFilters))
+  const run = async (filters = maxFilters): Promise<void> => {
     if (analog.phase === 'busy') return
     setAnalog({ phase: 'busy' })
-    setAnalog(await searchAnalogs(info, data, calc).catch(() => ({ phase: 'fail' }) as Analog))
+    const my = query.current
+    const r = await searchAnalogs(info, data, calc, filters).catch(() => ({ phase: 'fail' }) as Analog)
+    if (r.phase === 'fail' && r.retryFilters && !hasSession) anonFilters = Math.min(anonFilters, r.retryFilters)
+    if (my === query.current) setAnalog(r)
   }
-  const analogsHelp = t('pc1.tl.similar.help', { n: calc.analogs.seeds.length })
+  const analogsHelp = t('pc1.tl.similar.help', { n: querySeeds })
   const analogLine =
     analog.phase === 'done' ? (
       <AnalogResult a={analog} simple={simple} lang={lang} t={t} />
+    ) : analog.phase === 'fail' && analog.retryFilters ? (
+      // сайт: «слишком сложно» — повторить по кнопке с меньшим числом сидов (без входа лимит ниже)
+      <span className="tl-bad">
+        {t('pc1.tl.similar.complex')}
+        <button type="button" className="ui-btn ui-btn--sm" onClick={() => void run(analog.retryFilters)}>
+          <Icon name="search" />
+          {t('pc1.tl.similar.fewer', { n: maxAnalogSeeds(info, analog.retryFilters) })}
+        </button>
+      </span>
     ) : analog.phase === 'fail' ? (
       <span className="tl-bad">
-        {analog.error ? t(...netErrorText(analog.error)) : t('pc1.tl.similar.fail')}{' '}
+        {analog.error ? t(...netErrorText(analog.error)) : t('pc1.tl.similar.fail')}
+        {!simple && analog.error?.message && <span className="tl-muted">({analog.error.message})</span>}{' '}
         <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" onClick={() => void run()}>
           <Icon name="refresh" />
           {t('pc1.error.retry')}
@@ -197,7 +250,7 @@ export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem;
       <div className="tl tl--simple">
         <span className="tl-line">
           <Icon name="passive" />
-          <span>{t('pc1.tl.simple', { socket: socketName(data, best, game, t), score: scoreText(best, t) })}</span>
+          <span title={t('pc1.tl.socket.help')}>{t('pc1.tl.simple', { socket: socketName(data, best, game, t), score: scoreText(best, t) })}</span>
         </span>
         <span className="tl-analog">{analogLine}</span>
       </div>
@@ -215,23 +268,25 @@ export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem;
       </div>
       <div className="tl-best">
         <span className="tl-best__k">{t('pc1.tl.best')}</span>
-        <b>{socketName(data, best, game, t)}</b>
+        <b title={t('pc1.tl.socket.help')}>{socketName(data, best, game, t)}</b>
         <span className="ui-tag">{scoreText(best, t)}</span>
       </div>
       {best.notes.length > 0 && (
         <ul className="tl-notes">
           {best.notes.slice(0, NOTES).map((n) => {
             const o = outcomes[n.code]
-            const text = o.name ? o.name[game === 'ru' ? 1 : 0] : o.lines.map((l) => l[game === 'ru' ? 1 : 0]).join(' · ')
+            const lines = o.lines.map((l) => l[game === 'ru' ? 1 : 0]).join(' · ')
             return (
-              <li key={n.code} title={o.lines.map((l) => l[game === 'ru' ? 1 : 0]).join('\n')}>
-                {text}
-                {n.count > 1 && <span className="tl-muted"> ×{n.count}</span>}
+              <li key={n.code}>
+                {o.name ? o.name[game === 'ru' ? 1 : 0] : lines}
+                {n.count > 1 && ` ×${n.count}`}
+                {o.name && <span className="tl-muted"> — {lines}</span>}
               </li>
             )
           })}
         </ul>
       )}
+      {best.total != null && <span className="tl-muted">{t('pc1.tl.devotion', { n: best.total })}</span>}
       {best.unknown > 0 && <span className="tl-muted">{t('pc1.tl.unknown', { n: best.unknown })}</span>}
       {others.length > 0 && (
         <span className="tl-muted">
@@ -240,7 +295,7 @@ export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem;
       )}
       <span className="tl-muted">
         {t('pc1.tl.rare', { n: fmtNum(rare.qualifying, lang), total: fmtNum(rare.total, lang) })}
-        {rare.seeds.length > 0 && ` · ${t('pc1.tl.query', { n: rare.seeds.length })}`}
+        {querySeeds > 0 && ` · ${t('pc1.tl.query', { n: querySeeds })}`}
       </span>
       <div className="tl-analog">
         {analogLine}

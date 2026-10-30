@@ -289,6 +289,15 @@ async function main() {
       }
     })
     if (outcomes.length >= UNKNOWN) throw new Error(`${kind}: исходов ${outcomes.length} ≥ ${UNKNOWN}`)
+    // доля исхода среди всех нотаблов в радиусе по всем сидам — «насколько обычен» (правила сравнивают с ней)
+    const hits = new Array(outcomes.length).fill(0)
+    let known = 0
+    for (const code of bin) {
+      if (code === UNKNOWN) continue
+      hits[code]++
+      known++
+    }
+    outcomes.forEach((o, code) => (o.share = Math.round((hits[code] / known) * 1e5) / 1e5))
     const file = `timeless-${kind.toLowerCase()}.bin`
     files[file] = deflateSync(bin, { level: 9 })
     jewelsOut[kind] = {

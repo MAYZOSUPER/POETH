@@ -7,6 +7,7 @@ import type { TimelessWorkerRequest, TimelessWorkerResponse } from './timeless.w
 
 const IDLE_MS = 2 * 60_000
 const TIMEOUT_MS = 20_000
+const MEMO = 32
 
 /** Данные для показа (тексты, гнёзда) и запасной расчёт — в окне. */
 const local = createTimelessEngine()
@@ -76,6 +77,8 @@ export function calcTimeless(req: TimelessCalcRequest): Promise<TimelessCalc | n
   let p = memo.get(key)
   if (!p) {
     p = viaWorker(req).then((r) => (r === undefined ? local.calc(req) : r))
+    // последние MEMO результатов (предметы открывают по одному — больше не нужно)
+    if (memo.size >= MEMO) memo.delete(memo.keys().next().value as string)
     memo.set(key, p)
     void p.then((r) => {
       if (!r) memo.delete(key)

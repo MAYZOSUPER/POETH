@@ -39,12 +39,16 @@ export interface TimelessNote {
 export interface SocketScore {
   /** индекс в `data.sockets` */
   socket: number
-  /** `devotion` или id темы */
+  /** id темы (строка `pc1.tl.theme.<id>`) */
   theme: string
-  /** Преданность или сколько нотаблов темы */
+  /** сколько нотаблов гнезда получили исход темы */
   score: number
-  /** главные исходы гнезда: исходы темы (у Militant Faith — заменённые нотаблы), по убыванию */
+  /** во сколько раз счёт больше обычного для этого гнезда; 0 — ни одна тема не набрала MIN_THEME_COUNT */
+  lift: number
+  /** исходы темы в гнезде, по убыванию */
   notes: TimelessNote[]
+  /** справка по гнезду (Militant Faith — набожность в радиусе), если у правила есть `total` */
+  total?: number
   /** нотаблов в радиусе без данных (новее лукапа) — оценка гнезда неполная */
   unknown: number
 }
@@ -53,17 +57,21 @@ export interface TimelessEvaluation {
   kind: TimelessDataKind
   /** сид в данных */
   seed: number
-  /** null — оценить нельзя: ни в одном гнезде нет исходов из правил */
+  /** null — оценить нельзя: ни в одном гнезде ни одна тема не набрала MIN_THEME_COUNT */
   best: SocketScore | null
-  /** лучшая тема каждого гнезда, по убыванию счёта */
+  /** лучшая тема каждого гнезда, лучшие — первыми */
   sockets: SocketScore[]
 }
 
 interface Compiled {
   kind: TimelessDataKind
-  devotion?: { perCode: Int32Array; attr: number; small: number; rank: Int16Array }
-  themes?: { id: string; mask: Uint8Array }[]
+  themes: { id: string; mask: Uint8Array; share: number }[]
+  /** справочная сумма: значение стата по исходу нотабла, мелкие атрибутные и прочие мелкие */
+  total?: { perCode: Int32Array; attr: number; small: number }
 }
+
+/** Тема засчитывается гнезду от стольких нотаблов: один случайный исход — не повод выбирать гнездо. */
+export const MIN_THEME_COUNT = 2
 
 const compiledCache = new WeakMap<TimelessDataRaw, Map<TimelessDataKind, Compiled>>()
 
@@ -75,54 +83,40 @@ function compile(data: TimelessDataRaw, kind: TimelessDataKind): Compiled {
   const rule = TIMELESS_RULES[kind]
   const jewel = data.jewels[kind]
   const keys = jewel.outcomes.map((o) => outcomeKey(o.id))
-  let out: Compiled
-  if (rule.metric === 'devotion') {
-    const perCode = new Int32Array(256)
-    const rank = new Int16Array(256).fill(-1)
-    jewel.outcomes.forEach((o, code) => {
-      perCode[code] = o.stats[rule.stat] ?? 0
-      if (o.rep) rank[code] = rule.notable.indexOf(keys[code])
-    })
-    out = { kind, devotion: { perCode, attr: jewel.attr.stats[rule.stat] ?? 0, small: jewel.small.stats[rule.stat] ?? 0, rank } }
-  } else {
-    out = {
-      kind,
-      themes: rule.themes.map((t) => {
-        const mask = new Uint8Array(256)
-        keys.forEach((k, code) => {
-          if (t.outcomes.includes(k)) mask[code] = 1
-        })
-        return { id: t.id, mask }
+  const out: Compiled = {
+    kind,
+    themes: rule.themes.map((t) => {
+      const mask = new Uint8Array(256)
+      let share = 0
+      keys.forEach((k, code) => {
+        if (!t.outcomes.includes(k)) return
+        mask[code] = 1
+        share += jewel.outcomes[code].share
       })
-    }
+      return { id: t.id, mask, share }
+    })
+  }
+  if (rule.total) {
+    const stat = rule.total
+    const perCode = new Int32Array(256)
+    jewel.outcomes.forEach((o, code) => (perCode[code] = o.stats[stat] ?? 0))
+    out.total = { perCode, attr: jewel.attr.stats[stat] ?? 0, small: jewel.small.stats[stat] ?? 0 }
   }
   byKind.set(kind, out)
   return out
 }
 
-function notesOf(counts: Map<number, number>, order: (code: number) => number): TimelessNote[] {
-  return [...counts]
-    .map(([code, count]) => ({ code, count }))
-    .sort((a, b) => b.count - a.count || order(a.code) - order(b.code) || a.code - b.code)
+function notesOf(counts: Map<number, number>): TimelessNote[] {
+  return [...counts].map(([code, count]) => ({ code, count })).sort((a, b) => b.count - a.count || a.code - b.code)
 }
 
 function scoreSocket(c: Compiled, data: TimelessDataRaw, t: TimelessTable, si: number, seed: number): SocketScore {
   const s = data.sockets[si]
   const codes = s.notables.map((row) => outcomeAt(t, row, seed))
   const unknown = codes.filter((x) => x === TIMELESS_UNKNOWN).length
-  if (c.devotion) {
-    const d = c.devotion
-    let score = s.attr * d.attr + s.small * d.small
-    const replaced = new Map<number, number>()
-    for (const code of codes) {
-      if (code === TIMELESS_UNKNOWN) continue
-      score += d.perCode[code]
-      if (d.rank[code] >= 0) replaced.set(code, (replaced.get(code) ?? 0) + 1)
-    }
-    return { socket: si, theme: 'devotion', score, notes: notesOf(replaced, (x) => d.rank[x]), unknown }
-  }
-  let best: SocketScore = { socket: si, theme: c.themes![0].id, score: 0, notes: [], unknown }
-  for (const th of c.themes!) {
+  const known = codes.length - unknown
+  let best: SocketScore = { socket: si, theme: c.themes[0].id, score: 0, lift: 0, notes: [], unknown }
+  for (const th of c.themes) {
     const counts = new Map<number, number>()
     let score = 0
     for (const code of codes) {
@@ -131,7 +125,16 @@ function scoreSocket(c: Compiled, data: TimelessDataRaw, t: TimelessTable, si: n
         counts.set(code, (counts.get(code) ?? 0) + 1)
       }
     }
-    if (score > best.score) best = { socket: si, theme: th.id, score, notes: notesOf(counts, () => 0), unknown }
+    if (score < MIN_THEME_COUNT || th.share <= 0 || known === 0) continue
+    const lift = score / (th.share * known)
+    if (lift > best.lift || (lift === best.lift && score > best.score)) {
+      best = { socket: si, theme: th.id, score, lift, notes: notesOf(counts), unknown }
+    }
+  }
+  if (c.total) {
+    let total = s.attr * c.total.attr + s.small * c.total.small
+    for (const code of codes) if (code !== TIMELESS_UNKNOWN) total += c.total.perCode[code]
+    best.total = total
   }
   return best
 }
@@ -141,29 +144,21 @@ export function evaluateSeed(data: TimelessDataRaw, t: TimelessTable, seed: numb
   const c = compile(data, t.kind)
   const sockets = data.sockets
     .map((_, si) => scoreSocket(c, data, t, si, seed))
-    .sort((a, b) => b.score - a.score || a.unknown - b.unknown || a.socket - b.socket)
-  const best = sockets[0] && sockets[0].score > 0 ? sockets[0] : null
+    .sort((a, b) => b.lift - a.lift || b.score - a.score || a.unknown - b.unknown || a.socket - b.socket)
+  const best = sockets[0] && sockets[0].lift > 0 ? sockets[0] : null
   return { kind: t.kind, seed, best, sockets }
 }
 
-/** Счёт сида по теме: лучшее гнездо (Преданность или сколько нотаблов темы). */
+/** Счёт сида по теме: сколько нотаблов темы в лучшем для неё гнезде. */
 export function seedScore(data: TimelessDataRaw, t: TimelessTable, seed: number, theme: string): number {
-  const c = compile(data, t.kind)
-  const th = c.themes?.find((x) => x.id === theme)
+  const th = compile(data, t.kind).themes.find((x) => x.id === theme)
+  if (!th) return 0
   let best = 0
   for (const s of data.sockets) {
     let score = 0
-    if (c.devotion) {
-      score = s.attr * c.devotion.attr + s.small * c.devotion.small
-      for (const row of s.notables) {
-        const code = outcomeAt(t, row, seed)
-        if (code !== TIMELESS_UNKNOWN) score += c.devotion.perCode[code]
-      }
-    } else if (th) {
-      for (const row of s.notables) {
-        const code = outcomeAt(t, row, seed)
-        if (code !== TIMELESS_UNKNOWN && th.mask[code]) score++
-      }
+    for (const row of s.notables) {
+      const code = outcomeAt(t, row, seed)
+      if (code !== TIMELESS_UNKNOWN && th.mask[code]) score++
     }
     if (score > best) best = score
   }

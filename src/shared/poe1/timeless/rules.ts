@@ -1,10 +1,12 @@
-// Правила «лучшего гнезда» timeless-самоцветов (S45) — коротко и проверяемо:
-//  - Militant Faith: сумма Преданности в радиусе (атрибутные ноды +10, прочие мелкие и не заменённые нотаблы +5);
-//    заменённые храмовые нотаблы — заметки, самые ходовые первыми.
-//  - остальные: «тема» — набор исходов одного назначения (двойной урон, крит, приспешники…); счёт гнезда — сколько
-//    нотаблов в радиусе получили исход этой темы. Лучшее гнездо — где тема набрала больше всего.
-// Это мерка, а не цена: что ценно для конкретного билда, решает игрок (калькулятор Vilsol, PoB). Исходы
-// без темы в счёт не идут.
+// Правила «лучшего гнезда» timeless-самоцветов (S45) — коротко и проверяемо.
+// «Тема» — набор исходов одного назначения (двойной урон, крит, приспешники…); счёт гнезда — сколько нотаблов в
+// радиусе получили исход этой темы (в счёт — от двух: один случайный исход — не повод выбирать гнездо). Темы
+// сравниваются по тому, во сколько раз счёт больше обычного для гнезда (доля темы по всем сидам × нотаблов в
+// радиусе): редкий двойной урон ×3 важнее частой силы ×5. Лучшее гнездо — с самым необычным счётом.
+// У Militant Faith темы — заменённые храмовые нотаблы; набожность гнезда показывается справкой: от сида она
+// зависит только через число заменённых нотаблов и сама по себе цену не объясняет.
+// Это мерка, а не цена: что ценно для конкретного билда, решает игрок (калькулятор Vilsol, PoB). Исходы без темы
+// в счёт не идут.
 
 import type { TimelessDataKind } from './data'
 
@@ -15,9 +17,11 @@ export interface TimelessTheme {
   outcomes: readonly string[]
 }
 
-export type TimelessRule =
-  | { metric: 'devotion'; stat: string; /** заменённые нотаблы по убыванию спроса */ notable: readonly string[] }
-  | { metric: 'themes'; themes: readonly TimelessTheme[] }
+export interface TimelessRule {
+  themes: readonly TimelessTheme[]
+  /** stat id, сумма которого по гнезду показывается справкой (Militant Faith — набожность) */
+  total?: string
+}
 
 /** `karui_notable_add_double_damage` → `double_damage`, `eternal_notable_crit_1` → `crit_1`, `kalguur_notable_17` → `17` */
 export function outcomeKey(id: string): string {
@@ -26,7 +30,6 @@ export function outcomeKey(id: string): string {
 
 export const TIMELESS_RULES: Record<TimelessDataKind, TimelessRule> = {
   LP: {
-    metric: 'themes',
     themes: [
       { id: 'dd', outcomes: ['double_damage'] },
       { id: 'life', outcomes: ['life', 'life_regen'] },
@@ -36,7 +39,6 @@ export const TIMELESS_RULES: Record<TimelessDataKind, TimelessRule> = {
     ]
   },
   BR: {
-    metric: 'themes',
     themes: [
       { id: 'speed', outcomes: ['speed'] },
       { id: 'life', outcomes: ['life'] },
@@ -48,27 +50,17 @@ export const TIMELESS_RULES: Record<TimelessDataKind, TimelessRule> = {
     ]
   },
   MF: {
-    metric: 'devotion',
-    stat: 'base_devotion',
-    notable: [
-      'max_resistances',
-      'additional_physical_reduction',
-      'minimum_power_charge',
-      'minimum_frenzy_charge',
-      'minimum_endurance_charge',
-      'mana_added_as_energy_shield',
-      'arcane_surge',
-      'consecrated_ground_ailments',
-      'fire_conversion',
-      'cold_conversion',
-      'lightning_conversion',
-      'fire_exposure',
-      'cold_exposure',
-      'lightning_exposure'
+    total: 'base_devotion',
+    themes: [
+      { id: 'maxres', outcomes: ['max_resistances'] },
+      { id: 'charges', outcomes: ['minimum_power_charge', 'minimum_frenzy_charge', 'minimum_endurance_charge'] },
+      { id: 'defence', outcomes: ['additional_physical_reduction', 'consecrated_ground_ailments'] },
+      { id: 'spell', outcomes: ['mana_added_as_energy_shield', 'arcane_surge'] },
+      { id: 'conv', outcomes: ['fire_conversion', 'cold_conversion', 'lightning_conversion'] },
+      { id: 'exposure', outcomes: ['fire_exposure', 'cold_exposure', 'lightning_exposure'] }
     ]
   },
   EH: {
-    metric: 'themes',
     themes: [
       { id: 'crit', outcomes: ['crit_1', 'crit_2', 'spell_2', 'power_1'] },
       { id: 'spell', outcomes: ['spell_1', 'spell_2', 'cast_speed_1'] },
@@ -83,7 +75,6 @@ export const TIMELESS_RULES: Record<TimelessDataKind, TimelessRule> = {
     ]
   },
   HT: {
-    metric: 'themes',
     themes: [
       { id: 'ward', outcomes: ['17', '18', '19', '20', '21', '23', '9', '10', '11'] },
       { id: 'aura', outcomes: ['14'] },
