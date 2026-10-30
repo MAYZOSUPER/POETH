@@ -14,6 +14,10 @@ whose full history is kept in this repository.
 
 ## Third-party code & data (trade helper, PoE 1)
 
+- **[NeverSink's Indepth Loot Filter](https://github.com/NeverSinkDev/NeverSink-Filter)** — NeverSink, **MIT License**.
+  Not bundled: the “Loot filter” section downloads the official release from GitHub to the player's computer on request
+  and writes one unmodified `.filter` file as `POETH-NeverSink-<level>.filter` into the game's filter folder.
+
 - **[Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade)** — SnosMe, **MIT License**.
   Parts of its code (item parser, price-check filters/presets/pseudo stats, trade query
   builder, clipboard helper, chat/copy shortcuts, rate-limit header sync, whisper regexes)
@@ -47,7 +51,9 @@ whose full history is kept in this repository.
   the official Path of Exile data export by Grinding Gear Games (tag `3.29.1`, pinned commit). POETH is not
   affiliated with or endorsed by Grinding Gear Games. `tools/build-data/tree.mjs` reduces it to node ids, names,
   stat texts, groups and orbits in `resources/data/poe1/build/tree.json`; no sprites or images are used.
-  Russian node names, string ids, stat ids and stat translations come from the
+  Anoint recipes (the `recipe` field of the same export) and oil tiers from the client table
+  `BlightCraftingItems` (dat-export, facts only) are reduced by `tools/build-data/anoints.mjs` to
+  `resources/data/poe1/build/anoints.json`. Russian node names, string ids, stat ids and stat translations come from the
   **[RePoE fork](https://github.com/repoe-fork/repoe-fork)** (MIT; pinned commit of repoe-fork.github.io), mastery
   effects and ascendancy names — from the PoE 1 client tables exported by
   [repoe-fork/dat-export](https://github.com/repoe-fork/dat-export) (pinned commit; facts only).

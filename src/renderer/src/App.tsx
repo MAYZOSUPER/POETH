@@ -23,6 +23,7 @@ import { WealthTab } from './panels/WealthTab'
 import { FlipTab } from './panels/FlipTab'
 import { AdvisorTab } from './panels/AdvisorTab'
 import { BuildTab } from './panels/build/BuildTab'
+import { GuideTab } from './panels/guide/GuideTab'
 import { ViewToggle } from './components/ViewToggle'
 import { Wizard } from './panels/onboarding/Wizard'
 import { AboutPanel } from './panels/onboarding/AboutPanel'
@@ -81,6 +82,8 @@ function TabBody() {
       return <AdvisorTab />
     case 'build':
       return <BuildTab />
+    case 'guide':
+      return <GuideTab />
     default:
       return null
   }

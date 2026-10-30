@@ -17,7 +17,8 @@ vi.mock('../../src/main/services/iconCache', () => ({ iconResponse: vi.fn() }))
 
 describe('вставка кода PoB — только компаньон (политика S29)', () => {
   it('importPob и reload: компаньон да, оверлей и сайдбар нет', () => {
-    expect([...COMPANION_CHANNELS]).toEqual([IPC.build.importPob, IPC.build.reload])
+    // S53: в наборе ещё каналы фильтра лута (tests/lootFilter/store.test.ts) — здесь проверяем только свои
+    expect([...COMPANION_CHANNELS].filter((c) => c.startsWith('build:'))).toEqual([IPC.build.importPob, IPC.build.reload])
     for (const ch of COMPANION_CHANNELS) {
       expect(ipcAllowed('index', ch)).toBe(true)
       expect(ipcAllowed('overlay', ch)).toBe(false)

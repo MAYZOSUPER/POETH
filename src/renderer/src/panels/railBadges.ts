@@ -3,8 +3,9 @@ import type { AppTab, Deal, LiveSnapshot } from '@shared/types'
 // Счётчики на иконках рельса и плашка «Сквозной режим» (S32, макет навигации — вариант Б).
 // Live — сколько живых поисков сейчас работает (зелёный .ui-count--live), «Сделки» — новые входящие
 // предложения, которых вы ещё не видели. Данные — из сторов Live и «Сделок», без новых IPC.
+// S55: «Справочник» — статьи, новые или обновлённые после последнего прочтения (стор «Справочника»).
 
-export type RailBadgeKind = 'live' | 'deals'
+export type RailBadgeKind = 'live' | 'deals' | 'guide'
 
 export interface RailBadge {
   kind: RailBadgeKind
@@ -48,9 +49,9 @@ export function dealsCount(deals: readonly Deal[] | undefined, seen: ReadonlySet
 }
 
 /** Счётчик пункта рельса; у остальных вкладок счётчиков нет. 0 — не показываем. */
-export function badgeFor(tab: AppTab, counts: Record<RailBadgeKind, number>): RailBadge | null {
-  if (tab !== 'live' && tab !== 'deals') return null
-  const n = counts[tab]
+export function badgeFor(tab: AppTab, counts: Partial<Record<RailBadgeKind, number>>): RailBadge | null {
+  if (tab !== 'live' && tab !== 'deals' && tab !== 'guide') return null
+  const n = counts[tab] ?? 0
   return n > 0 ? { kind: tab, n } : null
 }
 

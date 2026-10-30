@@ -1,0 +1,50 @@
+/* «Анойнт амулета» и поиск «Нота ↔ масла» (S54) во вкладке «Билд». Токены — tokens.css, строки — .bd-row (build.css).
+   Ширина — по колонке вкладки (@container bdcol из build.css). */
+
+.an-row { align-items: start; }
+.an-row > .ui-ico { color: var(--accent); }
+/* .bd-row__t span (build.css) — мелкий бледный текст; имя ноты и масла — обычного размера */
+.bd-row__t .an-name { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--sp-4); font-size: var(--fs-md); color: var(--fg); }
+.an-name b { color: var(--fg); }
+.bd-row__t .an-oils,
+.bd-row__t .an-oil > span:not(.an-sign) { font-size: var(--fs-sm); color: var(--fg); }
+.bd-row__t .an-other { font-size: var(--fs-xs); color: var(--fg-faint); }
+.an-name .ui-tag { align-self: center; }
+.bd-row__t .an-recipe { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); font-size: var(--fs-sm); color: var(--fg); }
+.an-oils { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); }
+.an-oil { display: inline-flex; align-items: center; gap: var(--sp-2); white-space: nowrap; }
+.an-oil .ui-coin { width: 18px; height: 18px; }
+.an-sign { color: var(--fg-faint); margin-right: var(--sp-1); }
+.bd-row__t .an-from { color: var(--info); }
+.bd-row__t .an-stats { display: grid; gap: 1px; color: var(--fg-muted); }
+.bd-row__t .an-stats span { font-size: var(--fs-xs); }
+.an-noprice { cursor: help; white-space: nowrap; }
+.an-cost { font-weight: 600; white-space: nowrap; }
+.an-what { margin: 0; padding: var(--sp-4) var(--sp-6); border-top: 1px solid var(--border); font-size: var(--fs-xs); color: var(--fg-muted); line-height: 1.4; }
+
+/* поиск */
+.an-find-wrap { border-top: 1px solid var(--border); }
+.an-find { display: grid; gap: var(--sp-5); padding: var(--sp-5) var(--sp-6); }
+.an-find__mode { display: flex; }
+.an-find__q { margin: 0; }
+.an-find__help { margin: 0; }
+.an-list { margin: 0 calc(-1 * var(--sp-6)); border-top: 1px solid var(--border); }
+.an-list > .bd-none + .bd-row { border-top: 0; }
+.an-more, .an-left { font-size: var(--fs-xs); }
+
+.an-slots { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+.an-slot { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 28px; padding: 3px var(--sp-4); border: 1px dashed var(--border-strong); border-radius: var(--r-sm); font-size: var(--fs-xs); color: var(--fg-faint); }
+.an-slot.is-full { border-style: solid; border-color: var(--accent); background: var(--accent-soft); color: var(--fg); font: inherit; font-size: var(--fs-sm); cursor: pointer; }
+.an-slot.is-full .ui-coin { width: 18px; height: 18px; }
+.an-slot.is-full .ui-ico { width: 11px; height: 11px; color: var(--fg-faint); }
+.an-slot.is-full:hover .ui-ico { color: var(--fg); }
+.an-slot.is-full:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.an-pal { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-3); }
+.an-pal__oil { gap: var(--sp-2); }
+.an-pal__oil .ui-coin { width: 18px; height: 18px; }
+.an-pal__oil:disabled { opacity: 0.45; cursor: not-allowed; }
+
+@container bdcol (max-width: 420px) {
+  .an-row { grid-template-columns: 18px minmax(0, 1fr); }
+  .an-row > .bd-row__end { grid-column: 2; justify-content: flex-start; }
+}

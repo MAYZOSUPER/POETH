@@ -21,7 +21,9 @@ const TEXT = {
     upToDate: 'У вас последняя версия POETH ({version}).',
     checkFailed: 'Не удалось проверить обновления: нет связи с GitHub.',
     hotkeyTaken:
-      '{key} занят другой программой (возможно, Awakened PoE Trade или Sidekick). Закройте её или назначьте другую клавишу.'
+      '{key} занят другой программой (возможно, Awakened PoE Trade или Sidekick). Закройте её или назначьте другую клавишу.',
+    /** S53: «Проверять» у фильтра лута нашло новую версию NeverSink (один раз на версию) */
+    lootFilterUpdate: 'Вышел фильтр NeverSink {version}. Обновить: Настройки → «Фильтр лута».'
   },
   en: {
     started: 'POETH is running — hover an item in the game and press {key}.',
@@ -29,7 +31,8 @@ const TEXT = {
     dataUpdated: 'Data updated ({version}). Restart POETH to apply it.',
     upToDate: 'You have the latest POETH ({version}).',
     checkFailed: 'Could not check for updates: no connection to GitHub.',
-    hotkeyTaken: '{key} is taken by another program (maybe Awakened PoE Trade or Sidekick). Close it or choose another key.'
+    hotkeyTaken: '{key} is taken by another program (maybe Awakened PoE Trade or Sidekick). Close it or choose another key.',
+    lootFilterUpdate: 'NeverSink filter {version} is out. To update: Settings → “Loot filter”.'
   }
 } as const
 

@@ -1,0 +1,287 @@
+/* Раздел настроек «Фильтр лута» (S53). Только токены дизайн-системы (docs/design-system.md). */
+
+.lf-label {
+  color: var(--fg-muted);
+  font: 600 var(--fs-xs) / 1.3 var(--font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.lf > .lf-label {
+  display: block;
+  margin: var(--sp-6) 0 var(--sp-3);
+}
+
+.lf-levels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.lf-level {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+  width: 100%;
+  padding: var(--sp-3) var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-btn);
+  background: var(--inset);
+  color: var(--fg);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.lf-level:hover:not(:disabled) {
+  background: var(--hover);
+  border-color: var(--border-strong);
+}
+.lf-level:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.lf-level:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.lf-level.is-on {
+  background: var(--selected);
+  border-color: var(--accent);
+}
+.lf-level__dot {
+  width: 12px;
+  height: 12px;
+  margin-top: 3px;
+  border: 2px solid var(--border-strong);
+  border-radius: 50%;
+}
+.lf-level.is-on .lf-level__dot {
+  border-color: var(--accent);
+  background: radial-gradient(circle, var(--accent) 0 45%, transparent 50%);
+}
+.lf-level__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.lf-level__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  font-weight: 600;
+}
+.lf-level__desc {
+  line-height: 1.35;
+}
+.lf-when--start {
+  color: var(--good);
+  border-color: color-mix(in srgb, var(--good) 50%, transparent);
+}
+.lf-when--maps,
+.lf-when--late {
+  color: var(--accent-hi);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.lf-code,
+.lf-mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--fg-muted);
+  overflow-wrap: anywhere;
+}
+
+.lf-hint {
+  margin-top: var(--sp-4);
+}
+
+.lf-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-6);
+}
+.lf-style {
+  flex: 0 1 320px;
+  min-width: 220px;
+}
+
+.lf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+  margin: var(--sp-6) 0 var(--sp-3);
+}
+.lf-file {
+  overflow-wrap: anywhere;
+}
+
+.lf-confirm {
+  margin: var(--sp-3) 0;
+}
+.lf-confirm__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.lf-ok {
+  color: var(--good);
+}
+.lf-newer {
+  color: var(--warn);
+}
+.lf-status {
+  margin-top: var(--sp-3);
+}
+
+.lf-installed {
+  list-style: none;
+  margin: var(--sp-3) 0;
+  padding: 0;
+}
+.lf-installed li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 2px 0;
+}
+
+.lf-guide-toggle {
+  margin-top: var(--sp-4);
+}
+.lf-guide {
+  margin: var(--sp-3) 0 var(--sp-4);
+  padding: var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-btn);
+  background: var(--inset);
+}
+.lf-guide__steps {
+  margin: var(--sp-4) 0;
+  padding-left: 20px;
+}
+.lf-guide__steps li {
+  margin: 2px 0;
+}
+.lf-inline {
+  margin: 0 var(--sp-2);
+}
+
+.lf-svg {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+}
+.lf-svg text {
+  font-family: var(--font-ui);
+}
+.lf-svg__frame {
+  fill: var(--sunken);
+  stroke: var(--border-strong);
+}
+.lf-svg__key {
+  fill: var(--raised);
+  stroke: var(--border-strong);
+}
+.lf-svg__keytext {
+  fill: var(--fg);
+  font-size: 14px;
+  font-weight: 700;
+}
+.lf-svg__arrow {
+  fill: none;
+  stroke: var(--fg-muted);
+  stroke-width: 2;
+}
+.lf-svg__arrowhead {
+  fill: var(--fg-muted);
+}
+.lf-svg__title {
+  fill: var(--fg);
+  font-size: 13px;
+  font-weight: 700;
+}
+.lf-svg__tab {
+  fill: var(--raised);
+  stroke: var(--border);
+}
+.lf-svg__tab--on {
+  fill: var(--selected);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.lf-svg__tabtext {
+  fill: var(--accent-hi);
+  font-size: 12px;
+  font-weight: 700;
+}
+.lf-svg__label {
+  fill: var(--fg);
+  font-size: 12px;
+}
+.lf-svg__drop {
+  fill: var(--raised);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.lf-svg__file {
+  fill: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+.lf-svg__chev {
+  fill: none;
+  stroke: var(--fg-muted);
+  stroke-width: 1.5;
+}
+.lf-svg__btn {
+  fill: var(--raised);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.lf-svg__reload {
+  fill: none;
+  stroke: var(--accent-hi);
+  stroke-width: 1.8;
+}
+.lf-svg__reloadhead {
+  fill: var(--accent-hi);
+}
+.lf-svg__hint {
+  fill: var(--fg-muted);
+  font-size: 11px;
+}
+.lf-svg__step circle {
+  fill: var(--accent);
+}
+.lf-svg__step text {
+  fill: var(--accent-ink);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lf-folder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+}
+.lf-folder__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+
+.lf-credit {
+  margin-top: var(--sp-5);
+}
+.lf-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}

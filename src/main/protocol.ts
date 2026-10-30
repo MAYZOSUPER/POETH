@@ -13,6 +13,7 @@ import { iconResponse } from './services/iconCache'
 //   poeth://data/<game>/<lang>/<file>   -> userData/data/... (updates without reinstall),
 //                                          then bundled resources/data/...
 //   poeth://data/poe1/build/<file>      -> то же для данных вкладки «Билд» (S36: tree.json, gems.json; S39)
+//   poeth://data/poe1/guide/<file>      -> то же для статей «Справочника» (S55: index.json, <id>.json)
 //   poeth://icon/?u=<https://web.poecdn.com/…> -> userData/icons (S18, services/iconCache.ts)
 export const SCHEME = 'poeth'
 
@@ -35,8 +36,8 @@ export function registerPoethScheme(): void {
 
 const GAME_RE = /^poe[12]$/
 const LANG_RE = /^[a-z]{2,3}(-[A-Za-z]{2,4})?$/
-/** Подпапки данных, которые не язык: только перечисленные (`build` — дерево и камни «Билда», S36). */
-const DATA_SUBDIRS: ReadonlySet<string> = new Set(['build'])
+/** Подпапки данных, которые не язык: только перечисленные (`build` — дерево и камни «Билда», S36; `guide` — статьи «Справочника», S55). */
+const DATA_SUBDIRS: ReadonlySet<string> = new Set(['build', 'guide'])
 // a single plain file name — no separators, no "..", no leading dot
 const FILE_RE = /^[\w][\w.-]*$/
 

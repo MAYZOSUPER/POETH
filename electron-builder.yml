@@ -16,7 +16,8 @@ files:
   - package.json
 
 # Автообновление (S10a): релизы GitHub MAYZOSUPER/POETH. В сборку кладётся app-update.yml,
-# в релиз — latest.yml + установщик (CI: .github/workflows/release.yml, --publish always).
+# в релиз — latest.yml + установщик + blockmap (CI: .github/workflows/release.yml собирает с --publish never и
+# публикует через gh: публикация electron-builder 26 раскладывает файлы по двум релизам, см. там).
 publish:
   provider: github
   owner: MAYZOSUPER
