@@ -8,14 +8,19 @@
 // «POE Trade Helper», деинсталлятор его удаляет.
 //
 // Поменять ProductName в electron-builder.yml нельзя: productName задаёт и имя exe, и папку установки, и
-// userData (%APPDATA%\POETH). Поэтому — правка ресурса тем же rcedit, что и у electron-builder, ПОСЛЕ его шага
-// signAndEditResources (afterPack раньше — его rcedit вернул бы «POETH»). FileDescription — то же имя: его
-// показывают диспетчер задач и запросы брандмауэра. Fuses и ресурс целостности asar rcedit не трогает
-// (проверка: npx @electron/fuses read --app dist-release/win-unpacked/POETH.exe).
+// userData (%APPDATA%\POETH). Поэтому — правка ресурса ПОСЛЕ шага electron-builder signAndEditResources
+// (afterPack раньше — тот шаг вернул бы «POETH»). FileDescription — то же имя: его показывают диспетчер задач
+// и запросы брандмауэра.
+//
+// Правка — библиотекой resedit, той же, что у electron-builder 26 (app-builder-lib/out/util/resEdit.js;
+// до 26 был rcedit через builder-util executeAppBuilder — в 26 его нет, S48). Меняются только две строки
+// VersionInfo; остальные ресурсы (иконка, манифест, ресурс целостности asar) переписываются как есть, fuses
+// лежат вне ресурсов (проверка: npx @electron/fuses read --app dist-release/win-unpacked/POETH.exe).
 // Если появится подпись кода — эта правка должна идти до подписи (иначе подпись станет недействительной).
 
+const fs = require('fs/promises')
 const path = require('path')
-const { executeAppBuilder } = require('builder-util')
+const { NtExecutable, NtExecutableResource, Resource } = require('resedit')
 
 const PRODUCT_NAME = 'POE Trade Helper'
 
@@ -23,6 +28,15 @@ const PRODUCT_NAME = 'POE Trade Helper'
 exports.default = async function afterSign(context) {
   if (context.electronPlatformName !== 'win32') return
   const exe = path.join(context.appOutDir, `${context.packager.appInfo.productFilename}.exe`)
-  const args = [exe, '--set-version-string', 'ProductName', PRODUCT_NAME, '--set-version-string', 'FileDescription', PRODUCT_NAME]
-  await executeAppBuilder(['rcedit', '--args', JSON.stringify(args)], undefined, {}, 3)
+  const executable = NtExecutable.from(await fs.readFile(exe))
+  const res = NtExecutableResource.from(executable)
+  const [vi] = Resource.VersionInfo.fromEntries(res.entries)
+  if (!vi) throw new Error(`afterSign: в ${exe} нет VersionInfo`)
+  for (const lang of vi.getAllLanguagesForStringValues()) {
+    vi.setStringValues(lang, { ProductName: PRODUCT_NAME, FileDescription: PRODUCT_NAME })
+  }
+  vi.outputToResourceEntries(res.entries)
+  res.outputResource(executable)
+  await fs.writeFile(exe, Buffer.from(executable.generate()))
+  console.log(`  • product name set  file=${path.relative(process.cwd(), exe)} name="${PRODUCT_NAME}"`)
 }
