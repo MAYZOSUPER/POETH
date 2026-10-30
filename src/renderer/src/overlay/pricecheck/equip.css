@@ -283,3 +283,66 @@
 .ui-cmp .is-down .ui-cmp__n b {
   color: var(--bad);
 }
+
+/* «Точный расчёт (PoB)» (S44, бета): галочка и результат движка под упрощённым сравнением */
+.eq-pob {
+  display: grid;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--border);
+}
+.eq-pob__h {
+  display: flex;
+  align-items: center;
+  gap: 6px 8px;
+}
+.eq-pob__label {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.eq-pob__label:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.eq-pob__busy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.eq-pob__busy .ui-ico {
+  width: 13px;
+  height: 13px;
+  animation: eq-pob-spin 1.2s linear infinite;
+}
+@keyframes eq-pob-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eq-pob__busy .ui-ico {
+    animation: none;
+  }
+}
+.eq-pob__cant {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--bad);
+  font-weight: 600;
+}
+.eq-pob__cant .ui-ico {
+  width: 13px;
+  height: 13px;
+}
+.eq-pob__lines {
+  color: var(--fg-faint);
+  word-break: break-word;
+}

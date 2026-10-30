@@ -48,6 +48,55 @@ export interface PobGem {
   enabled: boolean
   /** сколько копий (PoB: count) */
   count: number
+  /** S44: атрибуты расчёта PoB (часть навыка, приспешник, «глобальные» эффекты ваал-камня) — для движка PoB */
+  extra?: Partial<Record<PobGemExtra, string>>
+}
+
+/** Атрибуты <Gem>, от которых зависит расчёт PoB (части навыка, стадии, приспешники, ваал-камни). */
+export const POB_GEM_EXTRA = [
+  'enableGlobal1',
+  'enableGlobal2',
+  'skillPart',
+  'skillStageCount',
+  'skillMineCount',
+  'skillMinion',
+  'skillMinionSkill',
+  'skillMinionItemSet',
+  'qualityId'
+] as const
+export type PobGemExtra = (typeof POB_GEM_EXTRA)[number]
+
+/** Атрибуты <Item>: выбранные варианты уника. */
+export const POB_ITEM_EXTRA = ['variant', 'variantAlt', 'variantAlt2', 'variantAlt3', 'variantAlt4', 'variantAlt5'] as const
+export type PobItemExtra = (typeof POB_ITEM_EXTRA)[number]
+
+const EXTRA_VALUE_RE = /^[A-Za-z0-9_]{1,64}$/
+
+/** Белый список атрибутов (недоверенные данные: XML или файл): значения — числа, true/false, идентификаторы. */
+export function cleanExtra<K extends string>(get: (k: K) => unknown, keys: readonly K[]): Partial<Record<K, string>> | undefined {
+  const out: Partial<Record<K, string>> = {}
+  let n = 0
+  for (const k of keys) {
+    const v = get(k)
+    if (typeof v === 'string' && EXTRA_VALUE_RE.test(v)) {
+      out[k] = v
+      n++
+    }
+  }
+  return n ? out : undefined
+}
+
+/** Татуировка или рунографт на ноде дерева (<Override nodeId dn>): данные PoB находит по имени. */
+export interface PobOverride {
+  nodeId: number
+  dn: string
+}
+
+/** Татуировка с диска или из XML (недоверенные данные). */
+export function cleanOverride(nodeId: unknown, dn: unknown): PobOverride | null {
+  if (!Number.isInteger(nodeId) || (nodeId as number) < 0 || (nodeId as number) > 0xffffffff || typeof dn !== 'string') return null
+  const s = dn.replace(/[\u0000-\u001f\u007f]+/g, ' ').trim()
+  return s && s.length <= 100 ? { nodeId: nodeId as number, dn: s } : null
 }
 
 export interface PobSkillGroup {
@@ -62,6 +111,8 @@ export interface PobSkillGroup {
   /** камень дан предметом (PoB: source), а не вставлен игроком */
   source: string | null
   gems: PobGem[]
+  /** S44: сколько копий группы считать (PoB: groupCount) — для движка PoB */
+  groupCount?: number
 }
 
 export interface PobSkillSet {
@@ -93,12 +144,18 @@ export interface PobSpec {
   masteryEffects: PobMastery[]
   /** джуэлы в гнёздах дерева: id предмета из PobBuild.items */
   sockets: PobJewelSocket[]
+  /** S44: татуировки и рунографты на нодах — для движка PoB */
+  overrides?: PobOverride[]
+  /** S44: формат хэшей кластерных нод (clusterHashFormatVersion); нет — старый билд, PoB переведёт сам */
+  clusterHashFormat?: number
 }
 
 export interface PobItem {
   id: number
   /** текст предмета как в PoB (почти как в игре, EN), с его служебными строками {range:…}, Prefix: … */
   text: string
+  /** S44: выбранные варианты уника (атрибуты <Item variant…>) — для движка PoB */
+  extra?: Partial<Record<PobItemExtra, string>>
 }
 
 export interface PobItemSet {
@@ -109,6 +166,8 @@ export interface PobItemSet {
   slots: Partial<Record<PobSlot, number>>
   /** прочие слоты (абисс-гнёзда и т. п.) */
   otherSlots: Array<{ name: string; itemId: number }>
+  /** S44: включённые в расчёт флаконы и тинктуры (<Slot active="true">) — для движка PoB */
+  active?: PobSlot[]
 }
 
 export interface PobConfig {
@@ -118,6 +177,36 @@ export interface PobConfig {
   enemyIsBoss: string | null
   /** сколько опций включено автором (условия, бафы, заряды) — повод подписать «конфигурация автора» */
   inputs: number
+  /**
+   * S44: все опции активного набора конфигурации автора — для движка PoB («Точный расчёт»), иначе урон считается без
+   * бафов и условий автора. Нет у билдов, сохранённых до S44 (до «Обновить»).
+   */
+  options?: PobConfigOption[]
+}
+
+/** Опция конфигурации PoB (<Input name number|string|boolean>). */
+export interface PobConfigOption {
+  name: string
+  number?: number
+  string?: string
+  boolean?: boolean
+}
+
+/** Опций в одном наборе: у PoB их ~400 вообще, автор включает десятки. */
+export const POB_CONFIG_OPTIONS_MAX = 500
+const OPTION_NAME_RE = /^[A-Za-z][A-Za-z0-9_]{0,79}$/
+
+/** Опция конфигурации из XML или с диска (недоверенные данные): имя-идентификатор, одно значение, пределы. */
+export function cleanConfigOption(v: { name?: unknown; number?: unknown; string?: unknown; boolean?: unknown }): PobConfigOption | null {
+  if (typeof v.name !== 'string' || !OPTION_NAME_RE.test(v.name)) return null
+  if (typeof v.number === 'number' && Number.isFinite(v.number) && Math.abs(v.number) < 1e9) return { name: v.name, number: v.number }
+  if (typeof v.boolean === 'boolean') return { name: v.name, boolean: v.boolean }
+  if (typeof v.string === 'string') {
+    // переводы строк сохраняются: customMods — моды автора построчно («(Life Mastery)\n15% increased Maximum Life»)
+    const s = v.string.replace(/\r\n?/g, '\n').replace(/[\u0000-\u0009\u000b-\u001f\u007f]+/g, ' ').trim()
+    return s.length <= 4000 ? { name: v.name, string: s } : null
+  }
+  return null
 }
 
 export interface PobBuild {
@@ -244,6 +333,22 @@ function numberList(v: string | undefined, max: number): number[] {
   return out
 }
 
+/** S44: белый список атрибутов элемента — только если есть. */
+function extraOf<K extends string>(el: XmlElement, keys: readonly K[]): { extra?: Partial<Record<K, string>> } {
+  const extra = cleanExtra((k) => el.attrs.get(k), keys)
+  return extra ? { extra } : {}
+}
+
+/** S44: татуировки и рунографты (<Overrides><Override nodeId dn>) — только если есть. */
+function overridesOf(el: XmlElement): { overrides?: PobOverride[] } {
+  const out: PobOverride[] = []
+  for (const o of childrenOf(child(el, 'Overrides'), 'Override')) {
+    const x = cleanOverride(intOrNull(o.attrs.get('nodeId')), o.attrs.get('dn'))
+    if (x && out.length < 200) out.push(x)
+  }
+  return out.length ? { overrides: out } : {}
+}
+
 function parseSpec(el: XmlElement): PobSpec {
   const masteryEffects: PobMastery[] = []
   for (const m of (el.attrs.get('masteryEffects') ?? '').matchAll(/\{\s*(\d{1,10})\s*,\s*(\d{1,10})\s*\}/g)) {
@@ -264,7 +369,11 @@ function parseSpec(el: XmlElement): PobSpec {
     secondaryAscendClassId: intOrNull(el.attrs.get('secondaryAscendClassId'), 0, 255),
     nodes: numberList(el.attrs.get('nodes'), NODES_MAX),
     masteryEffects,
-    sockets
+    sockets,
+    ...overridesOf(el),
+    ...(intOrNull(el.attrs.get('clusterHashFormatVersion'), 1, 99) !== null
+      ? { clusterHashFormat: intOrNull(el.attrs.get('clusterHashFormatVersion'), 1, 99) as number }
+      : {})
   }
 }
 
@@ -277,7 +386,8 @@ function parseGem(el: XmlElement): PobGem {
     level: int(el.attrs.get('level'), 1, 0, 40),
     quality: int(el.attrs.get('quality'), 0, -100, 100),
     enabled: bool(el.attrs.get('enabled'), true),
-    count: int(el.attrs.get('count'), 1, 1, 100)
+    count: int(el.attrs.get('count'), 1, 1, 100),
+    ...extraOf(el, POB_GEM_EXTRA)
   }
 }
 
@@ -289,7 +399,8 @@ function parseSkillGroup(el: XmlElement): PobSkillGroup {
     includeInFullDPS: bool(el.attrs.get('includeInFullDPS'), false),
     mainActiveSkill: intOrNull(el.attrs.get('mainActiveSkill'), 1, 100),
     source: opt(el.attrs.get('source')),
-    gems: childrenOf(el, 'Gem').map(parseGem)
+    gems: childrenOf(el, 'Gem').map(parseGem),
+    ...(intOrNull(el.attrs.get('groupCount'), 1, 100) !== null ? { groupCount: intOrNull(el.attrs.get('groupCount'), 1, 100) as number } : {})
   }
 }
 
@@ -310,14 +421,24 @@ function parseSkills(el: XmlElement | null): { sets: PobSkillSet[]; active: numb
 function parseItemSet(el: XmlElement, id: number): PobItemSet {
   const slots: Partial<Record<PobSlot, number>> = {}
   const otherSlots: Array<{ name: string; itemId: number }> = []
+  const active: PobSlot[] = []
   for (const s of childrenOf(el, 'Slot')) {
     const name = short(s.attrs.get('name'), 64)
     const itemId = int(s.attrs.get('itemId'), 0, 0, 1e9)
     if (!name || !itemId) continue
-    if (SLOT_SET.has(name)) slots[name as PobSlot] = itemId
-    else otherSlots.push({ name, itemId })
+    if (SLOT_SET.has(name)) {
+      slots[name as PobSlot] = itemId
+      if (s.attrs.get('active') === 'true' && !active.includes(name as PobSlot)) active.push(name as PobSlot)
+    } else otherSlots.push({ name, itemId })
   }
-  return { id, title: short(el.attrs.get('title')), useSecondWeaponSet: bool(el.attrs.get('useSecondWeaponSet'), false), slots, otherSlots }
+  return {
+    id,
+    title: short(el.attrs.get('title')),
+    useSecondWeaponSet: bool(el.attrs.get('useSecondWeaponSet'), false),
+    slots,
+    otherSlots,
+    ...(active.length ? { active } : {})
+  }
 }
 
 function parseItems(el: XmlElement | null, warnings: string[]): { items: PobItem[]; sets: PobItemSet[]; active: number } {
@@ -330,7 +451,7 @@ function parseItems(el: XmlElement | null, warnings: string[]): { items: PobItem
       warnings.push(`item ${id}: text too long`)
       continue
     }
-    items.push({ id, text: block(it.text) })
+    items.push({ id, text: block(it.text), ...extraOf(it, POB_ITEM_EXTRA) })
   }
   const sets = childrenOf(el, 'ItemSet').map((s, i) => parseItemSet(s, int(s.attrs.get('id'), i + 1, 1, 1e6)))
   // старый формат: <Slot> прямо в <Items> — один набор
@@ -347,11 +468,25 @@ function parseConfig(el: XmlElement | null): { config: PobConfig; pantheonMajor:
   const inputs = childrenOf(set, 'Input')
   const input = (name: string): XmlElement | undefined => inputs.find((i) => i.attrs.get('name') === name)
   const penalty = int(input('resistancePenalty')?.attrs.get('number'), -60)
+  const options: PobConfigOption[] = []
+  for (const i of inputs) {
+    if (options.length >= POB_CONFIG_OPTIONS_MAX) break
+    const num = i.attrs.get('number')
+    const b = i.attrs.get('boolean')
+    const o = cleanConfigOption({
+      name: i.attrs.get('name'),
+      number: num !== undefined && /^\s*-?\d+(?:\.\d+)?\s*$/.test(num) ? Number(num) : undefined,
+      boolean: b === 'true' ? true : b === 'false' ? false : undefined,
+      string: i.attrs.get('string')
+    })
+    if (o && !options.some((x) => x.name === o.name)) options.push(o)
+  }
   return {
     config: {
       resistancePenalty: penalty === 0 ? 0 : penalty === -30 ? -30 : -60,
       enemyIsBoss: opt(input('enemyIsBoss')?.attrs.get('string')),
-      inputs: inputs.length
+      inputs: inputs.length,
+      options
     },
     pantheonMajor: opt(input('pantheonMajorGod')?.attrs.get('string')),
     pantheonMinor: opt(input('pantheonMinorGod')?.attrs.get('string'))

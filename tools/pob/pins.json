@@ -1,0 +1,17 @@
+{
+  "pob": {
+    "repo": "https://github.com/PathOfBuildingCommunity/PathOfBuilding.git",
+    "tag": "v2.67.2",
+    "commit": "b32759ab0f31a1c8499a0d420cb0f0633d4fe478",
+    "tree": "3_29",
+    "files": 260,
+    "sha256": "d0e0b234be12b3d1d67cb06fcea935feceb9388cee4f1dbf66baaab3503138ca"
+  },
+  "luajit": {
+    "repo": "https://github.com/LuaJIT/LuaJIT.git",
+    "branch": "v2.1",
+    "commit": "c6ffc141a8762b41703f9287d63d93622a13dd8f",
+    "files": 232,
+    "sha256": "9c0c5b0ff890b050e5f6f4056d8f5e88b9b318de7dac2ff52911041a52a4ee37"
+  }
+}

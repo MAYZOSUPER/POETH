@@ -11,6 +11,40 @@ exports[`модель: настоящие коды PoB 1 > nostats-pobbin-crit 1
   "config": {
     "enemyIsBoss": null,
     "inputs": 8,
+    "options": [
+      {
+        "name": "bloodSandStance",
+        "string": "SAND",
+      },
+      {
+        "boolean": true,
+        "name": "conditionHitSpellRecently",
+      },
+      {
+        "boolean": true,
+        "name": "buffArcaneSurge",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyIgnited",
+      },
+      {
+        "name": "waveOfConvictionExposureType",
+        "string": "Fire",
+      },
+      {
+        "name": "ActiveBrands",
+        "number": 6,
+      },
+      {
+        "boolean": false,
+        "name": "targetBrandedEnemy",
+      },
+      {
+        "boolean": true,
+        "name": "conditionBlockedRecently",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -60,6 +94,7 @@ exports[`модель: настоящие коды PoB 1 > pastebin-acts-lv 1`] 
   "config": {
     "enemyIsBoss": null,
     "inputs": 0,
+    "options": [],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -122,6 +157,48 @@ exports[`модель: настоящие коды PoB 1 > pob-spec-occvortex 1`
   "config": {
     "enemyIsBoss": "Shaper",
     "inputs": 10,
+    "options": [
+      {
+        "boolean": true,
+        "name": "conditionCritRecently",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyChilled",
+      },
+      {
+        "boolean": true,
+        "name": "buffFortification",
+      },
+      {
+        "boolean": true,
+        "name": "useEnduranceCharges",
+      },
+      {
+        "boolean": true,
+        "name": "EEIgnoreHitDamage",
+      },
+      {
+        "boolean": true,
+        "name": "brandAttachedToEnemy",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyIgnited",
+      },
+      {
+        "boolean": true,
+        "name": "enemyConditionHitByLightningDamage",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyBleeding",
+      },
+      {
+        "name": "enemyIsBoss",
+        "string": "Shaper",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -170,6 +247,52 @@ exports[`модель: настоящие коды PoB 1 > pobbin-acts-all-axes 
   "config": {
     "enemyIsBoss": "Boss",
     "inputs": 11,
+    "options": [
+      {
+        "name": "multiplierRage",
+        "number": 55,
+      },
+      {
+        "boolean": true,
+        "name": "useFrenzyCharges",
+      },
+      {
+        "name": "prideEffect",
+        "string": "MAX",
+      },
+      {
+        "boolean": true,
+        "name": "buffFortification",
+      },
+      {
+        "name": "enemyIsBoss",
+        "string": "Boss",
+      },
+      {
+        "boolean": true,
+        "name": "buffAdrenaline",
+      },
+      {
+        "boolean": true,
+        "name": "useEnduranceCharges",
+      },
+      {
+        "boolean": true,
+        "name": "conditionStunnedEnemyRecently",
+      },
+      {
+        "boolean": true,
+        "name": "bannerPlanted",
+      },
+      {
+        "boolean": true,
+        "name": "conditionHitsAlwaysStun",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyIntimidated",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -245,6 +368,7 @@ exports[`модель: настоящие коды PoB 1 > pobbin-acts-level-gem
   "config": {
     "enemyIsBoss": null,
     "inputs": 0,
+    "options": [],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -302,6 +426,40 @@ exports[`модель: настоящие коды PoB 1 > pobbin-crit 1`] = `
   "config": {
     "enemyIsBoss": null,
     "inputs": 8,
+    "options": [
+      {
+        "name": "bloodSandStance",
+        "string": "SAND",
+      },
+      {
+        "boolean": true,
+        "name": "conditionHitSpellRecently",
+      },
+      {
+        "boolean": true,
+        "name": "buffArcaneSurge",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyIgnited",
+      },
+      {
+        "name": "waveOfConvictionExposureType",
+        "string": "Fire",
+      },
+      {
+        "name": "ActiveBrands",
+        "number": 6,
+      },
+      {
+        "boolean": false,
+        "name": "targetBrandedEnemy",
+      },
+      {
+        "boolean": true,
+        "name": "conditionBlockedRecently",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -351,6 +509,37 @@ exports[`модель: настоящие коды PoB 1 > pobbin-death-oath-328
   "config": {
     "enemyIsBoss": null,
     "inputs": 7,
+    "options": [
+      {
+        "name": "multiplierWitheredStackCount",
+        "number": 15,
+      },
+      {
+        "boolean": true,
+        "name": "buffLifetap",
+      },
+      {
+        "name": "bloodSandStance",
+        "string": "SAND",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyMalignantMadness",
+      },
+      {
+        "name": "customMods",
+        "string": "#Foulborn Death's Oath#
+40% increased effect of withered",
+      },
+      {
+        "name": "bandit",
+        "string": "Alira",
+      },
+      {
+        "boolean": true,
+        "name": "useEnduranceCharges",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -399,6 +588,88 @@ exports[`модель: настоящие коды PoB 1 > pobbin-guardian 1`] =
   "config": {
     "enemyIsBoss": "Boss",
     "inputs": 20,
+    "options": [
+      {
+        "name": "multiplierNearbyCorpse",
+        "number": 10,
+      },
+      {
+        "name": "enemyCritChance",
+        "number": 300,
+      },
+      {
+        "boolean": true,
+        "name": "deathmarkDeathmarkActive",
+      },
+      {
+        "name": "conditionStationary",
+        "number": 10,
+      },
+      {
+        "boolean": true,
+        "name": "conditionUsedMinionSkillRecently",
+      },
+      {
+        "name": "enemyCritDamage",
+        "number": 300,
+      },
+      {
+        "name": "prideEffect",
+        "string": "MAX",
+      },
+      {
+        "name": "bloodSandStance",
+        "string": "SAND",
+      },
+      {
+        "boolean": true,
+        "name": "conditionLeechingEnergyShield",
+      },
+      {
+        "boolean": true,
+        "name": "minionsConditionLeechingEnergyShield",
+      },
+      {
+        "name": "multiplierCorpseConsumedRecently",
+        "number": 5,
+      },
+      {
+        "boolean": true,
+        "name": "meatShieldEnemyNearYou",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyMaimed",
+      },
+      {
+        "name": "multiplierSummonedMinion",
+        "number": 20,
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyDebilitated",
+      },
+      {
+        "name": "enemyIsBoss",
+        "string": "Boss",
+      },
+      {
+        "name": "multiplierWarcryPower",
+        "number": 30,
+      },
+      {
+        "boolean": true,
+        "name": "minionsConditionFullEnergyShield",
+      },
+      {
+        "boolean": true,
+        "name": "feedingFrenzyFeedingFrenzyActive",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyLowLife",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -448,6 +719,125 @@ exports[`модель: настоящие коды PoB 1 > pobbin-huge 1`] = `
   "config": {
     "enemyIsBoss": "Uber",
     "inputs": 29,
+    "options": [
+      {
+        "boolean": true,
+        "name": "conditionLeeching",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyCoveredInFrost",
+      },
+      {
+        "name": "bandit",
+        "string": "Alira",
+      },
+      {
+        "boolean": true,
+        "name": "useFrenzyCharges",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyChilled",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyBurning",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyFrozen",
+      },
+      {
+        "boolean": true,
+        "name": "buffOnslaught",
+      },
+      {
+        "boolean": true,
+        "name": "buffTailwind",
+      },
+      {
+        "boolean": true,
+        "name": "conditionFullLife",
+      },
+      {
+        "name": "enemyIsBoss",
+        "string": "Uber",
+      },
+      {
+        "name": "customMods",
+        "string": "# vengeant cascade
+40% more damage",
+      },
+      {
+        "name": "pantheonMajorGod",
+        "string": "TheBrineKing",
+      },
+      {
+        "name": "conditionShockEffect",
+        "number": 50,
+      },
+      {
+        "name": "enemyPhysicalOverwhelm",
+        "number": -1,
+      },
+      {
+        "name": "multiplierRage",
+        "number": 50,
+      },
+      {
+        "boolean": true,
+        "name": "summonLightningGolemEnableWrath",
+      },
+      {
+        "name": "multiplierGaleForce",
+        "number": 10,
+      },
+      {
+        "boolean": true,
+        "name": "conditionUsingFlask",
+      },
+      {
+        "name": "conditionEnemyChilledEffect",
+        "number": 30,
+      },
+      {
+        "name": "multiplierFrozenByYouSeconds",
+        "number": 4,
+      },
+      {
+        "name": "enemyCritDamage",
+        "number": 29,
+      },
+      {
+        "name": "projectileDistance",
+        "number": 70,
+      },
+      {
+        "name": "overrideInspirationCharges",
+        "number": 5,
+      },
+      {
+        "boolean": true,
+        "name": "usePowerCharges",
+      },
+      {
+        "name": "pantheonMinorGod",
+        "string": "Shakari",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyIgnited",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyShocked",
+      },
+      {
+        "name": "configResonanceCount",
+        "number": 50,
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -498,6 +888,49 @@ exports[`модель: настоящие коды PoB 1 > pobbin-leveling-acts 
   "config": {
     "enemyIsBoss": "Pinnacle",
     "inputs": 10,
+    "options": [
+      {
+        "boolean": true,
+        "name": "conditionLeeching",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyChilled",
+      },
+      {
+        "boolean": true,
+        "name": "useFrenzyCharges",
+      },
+      {
+        "boolean": true,
+        "name": "conditionConvergence",
+      },
+      {
+        "boolean": true,
+        "name": "conditionFullLife",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyShocked",
+      },
+      {
+        "name": "pantheonMajorGod",
+        "string": "TheBrineKing",
+      },
+      {
+        "name": "pantheonMinorGod",
+        "string": "Garukhan",
+      },
+      {
+        "name": "customMods",
+        "string": "(Life Mastery)
+15% increased Maximum Life",
+      },
+      {
+        "name": "enemyIsBoss",
+        "string": "Pinnacle",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -550,6 +983,78 @@ exports[`модель: настоящие коды PoB 1 > pobbin-leveling-endga
   "config": {
     "enemyIsBoss": null,
     "inputs": 15,
+    "options": [
+      {
+        "boolean": true,
+        "name": "conditionEnemyTaunted",
+      },
+      {
+        "boolean": true,
+        "name": "buffFortification",
+      },
+      {
+        "name": "multiplierAffectedByWarcryBuffDuration",
+        "number": 6,
+      },
+      {
+        "name": "customMods",
+        "string": "Crit stuff
+Most Accuracy should come from Gloves, Abyss Jewels and Rings/Amulets
++1500 to accuracy
+15% increased global accuracy
+
+Anointment
+Allocates Serpent Stance
+
+Simulate Enmity's Embrace Half/Max Effects
+damage penetrates 100% fire resistance.
+damage penetrates 200% fire resistance.",
+      },
+      {
+        "name": "pantheonMajorGod",
+        "string": "TheBrineKing",
+      },
+      {
+        "name": "waveOfConvictionExposureType",
+        "string": "Fire",
+      },
+      {
+        "boolean": true,
+        "name": "usePowerCharges",
+      },
+      {
+        "name": "multiplierWarcryUsedRecently",
+        "number": 3,
+      },
+      {
+        "boolean": true,
+        "name": "useEnduranceCharges",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyFireExposure",
+      },
+      {
+        "name": "multiplierRage",
+        "number": 99,
+      },
+      {
+        "boolean": true,
+        "name": "conditionUsedWarcryRecently",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyIntimidated",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyIgnited",
+      },
+      {
+        "boolean": true,
+        "name": "buffNgamahuFlamesAdvance",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -624,6 +1129,96 @@ exports[`модель: настоящие коды PoB 1 > pobbin-leveling-range
   "config": {
     "enemyIsBoss": "Pinnacle",
     "inputs": 22,
+    "options": [
+      {
+        "boolean": true,
+        "name": "buffElusive",
+      },
+      {
+        "name": "resourceGainMode",
+        "string": "AVERAGE",
+      },
+      {
+        "name": "ActiveBrands",
+        "number": 1,
+      },
+      {
+        "name": "enemyIsBoss",
+        "string": "Pinnacle",
+      },
+      {
+        "boolean": true,
+        "name": "conditionOnConsecratedGround",
+      },
+      {
+        "name": "pantheonMajorGod",
+        "string": "None",
+      },
+      {
+        "name": "bandit",
+        "string": "None",
+      },
+      {
+        "name": "enemySizePreset",
+        "string": "Medium",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyUnnerved",
+      },
+      {
+        "boolean": true,
+        "name": "useFrenzyCharges",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyChilled",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyOnConsecratedGround",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyFrozen",
+      },
+      {
+        "boolean": true,
+        "name": "conditionCritRecently",
+      },
+      {
+        "boolean": true,
+        "name": "infusedChannellingInfusion",
+      },
+      {
+        "name": "conditionEnemyChilledEffect",
+        "number": 30,
+      },
+      {
+        "boolean": true,
+        "name": "usePowerCharges",
+      },
+      {
+        "name": "pantheonMinorGod",
+        "string": "None",
+      },
+      {
+        "boolean": true,
+        "name": "targetBrandedEnemy",
+      },
+      {
+        "boolean": true,
+        "name": "buffTailwind",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyShocked",
+      },
+      {
+        "boolean": true,
+        "name": "conditionLeeching",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -689,6 +1284,94 @@ exports[`модель: настоящие коды PoB 1 > pobbin-short-acts 1`]
   "config": {
     "enemyIsBoss": "Pinnacle",
     "inputs": 21,
+    "options": [
+      {
+        "boolean": true,
+        "name": "conditionLeeching",
+      },
+      {
+        "name": "resourceGainMode",
+        "string": "AVERAGE",
+      },
+      {
+        "boolean": true,
+        "name": "conditionLeechingEnergyShield",
+      },
+      {
+        "name": "enemyIsBoss",
+        "string": "Pinnacle",
+      },
+      {
+        "name": "customMods",
+        "string": "15% increased maximum life
+25% less damage
++200% to all resistances",
+      },
+      {
+        "name": "pantheonMajorGod",
+        "string": "None",
+      },
+      {
+        "name": "bandit",
+        "string": "None",
+      },
+      {
+        "name": "enemySizePreset",
+        "string": "Medium",
+      },
+      {
+        "name": "waveOfConvictionExposureType",
+        "string": "Fire",
+      },
+      {
+        "boolean": true,
+        "name": "conditionShockedEnemyRecently",
+      },
+      {
+        "boolean": true,
+        "name": "conditionIgnitedEnemyRecently",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyOnBrittleGround",
+      },
+      {
+        "boolean": true,
+        "name": "useFrenzyCharges",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyChilled",
+      },
+      {
+        "name": "BrandsAttachedToEnemy",
+        "number": 2,
+      },
+      {
+        "boolean": true,
+        "name": "conditionFocused",
+      },
+      {
+        "name": "pantheonMinorGod",
+        "string": "None",
+      },
+      {
+        "boolean": true,
+        "name": "conditionChilledEnemyRecently",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyIgnited",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyUnnerved",
+      },
+      {
+        "boolean": true,
+        "name": "useEnduranceCharges",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -754,6 +1437,28 @@ exports[`модель: настоящие коды PoB 1 > pobbin-three-trees 1`
   "config": {
     "enemyIsBoss": null,
     "inputs": 5,
+    "options": [
+      {
+        "name": "multiplierWitheredStackCount",
+        "number": 15,
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyCursed",
+      },
+      {
+        "boolean": true,
+        "name": "buffLifetap",
+      },
+      {
+        "name": "bloodSandStance",
+        "string": "SAND",
+      },
+      {
+        "name": "bandit",
+        "string": "Alira",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -804,6 +1509,75 @@ exports[`модель: настоящие коды PoB 1 > pobbin-two-variants 1
   "config": {
     "enemyIsBoss": null,
     "inputs": 15,
+    "options": [
+      {
+        "boolean": true,
+        "name": "conditionEnemyColdExposure",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyChilled",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyFrozen",
+      },
+      {
+        "boolean": true,
+        "name": "buffOnslaught",
+      },
+      {
+        "boolean": true,
+        "name": "conditionSummonedTotemRecently",
+      },
+      {
+        "boolean": true,
+        "name": "buffArcaneSurge",
+      },
+      {
+        "name": "pantheonMajorGod",
+        "string": "TheBrineKing",
+      },
+      {
+        "boolean": true,
+        "name": "conditionTotemsHitSpellRecently",
+      },
+      {
+        "boolean": true,
+        "name": "useEnduranceCharges",
+      },
+      {
+        "boolean": true,
+        "name": "conditionLowLife",
+      },
+      {
+        "name": "conditionEnemyChilledEffect",
+        "number": 30,
+      },
+      {
+        "boolean": true,
+        "name": "usePowerCharges",
+      },
+      {
+        "boolean": true,
+        "name": "meatShieldEnemyNearYou",
+      },
+      {
+        "name": "pantheonMinorGod",
+        "string": "Abberath",
+      },
+      {
+        "name": "customMods",
+        "string": "#Legacy of Fury
+Nearby enemies are scorched
+50% increased Effect of Scorch
+
+#Leer Cast
+You and nearby allies gain 50% increased Damage
+
+I am too noob to add dying breaths mods here so its more DPS",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -855,6 +1629,60 @@ exports[`модель: настоящие коды PoB 1 > pobcodes-nightblade 1
   "config": {
     "enemyIsBoss": null,
     "inputs": 13,
+    "options": [
+      {
+        "boolean": true,
+        "name": "usePowerCharges",
+      },
+      {
+        "name": "multiplierNearbyRareOrUniqueEnemies",
+        "number": 2,
+      },
+      {
+        "name": "multiplierRage",
+        "number": 15,
+      },
+      {
+        "name": "conditionStationary",
+        "number": 1,
+      },
+      {
+        "name": "pantheonMajorGod",
+        "string": "TheBrineKing",
+      },
+      {
+        "name": "pantheonMinorGod",
+        "string": "Tukohama",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyLowLife",
+      },
+      {
+        "boolean": true,
+        "name": "meatShieldEnemyNearYou",
+      },
+      {
+        "name": "multiplierWitheredStackCount",
+        "number": 15,
+      },
+      {
+        "boolean": true,
+        "name": "conditionLowLife",
+      },
+      {
+        "boolean": true,
+        "name": "buffElusive",
+      },
+      {
+        "boolean": true,
+        "name": "infusedChannellingInfusion",
+      },
+      {
+        "boolean": true,
+        "name": "buffUnholyMight",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [
@@ -903,6 +1731,60 @@ exports[`модель: настоящие коды PoB 1 > poedb-deadeye 1`] = `
   "config": {
     "enemyIsBoss": null,
     "inputs": 13,
+    "options": [
+      {
+        "boolean": true,
+        "name": "conditionLeeching",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyIntimidated",
+      },
+      {
+        "name": "multiplierGaleForce",
+        "number": 10,
+      },
+      {
+        "boolean": true,
+        "name": "useFrenzyCharges",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyChilled",
+      },
+      {
+        "name": "projectileDistance",
+        "number": 50,
+      },
+      {
+        "boolean": true,
+        "name": "conditionKilledRecently",
+      },
+      {
+        "name": "multiplierEnsnaredStackCount",
+        "number": 1,
+      },
+      {
+        "boolean": true,
+        "name": "buffOnslaught",
+      },
+      {
+        "boolean": true,
+        "name": "usePowerCharges",
+      },
+      {
+        "name": "multiplierRage",
+        "number": 50,
+      },
+      {
+        "boolean": true,
+        "name": "buffAdrenaline",
+      },
+      {
+        "boolean": true,
+        "name": "conditionEnemyShocked",
+      },
+    ],
     "resistancePenalty": -60,
   },
   "firstGems": [

@@ -38,6 +38,8 @@ export interface EquipSet {
 export interface EquipFile {
   v: typeof EQUIPPED_FORMAT
   sets: EquipSet[]
+  /** «Точный расчёт (PoB)» включён (бета S44, по умолчанию выключен; общий для всех персонажей) */
+  pob?: true
 }
 
 export function emptyEquipFile(): EquipFile {
@@ -172,7 +174,7 @@ export function parseEquipFile(raw: unknown): EquipFile {
     const s = cleanSet(x)
     if (s && !sets.some((o) => o.char === s.char)) sets.push(s)
   }
-  return limitSets({ v: EQUIPPED_FORMAT, sets })
+  return limitSets({ v: EQUIPPED_FORMAT, sets, ...(raw.pob === true ? { pob: true as const } : {}) })
 }
 
 function limitSets(file: EquipFile): EquipFile {
@@ -229,8 +231,15 @@ export function setMine(file: EquipFile, char: string | null, mine: unknown, now
   return withSet(file, { ...set, mine: clean, usedAt: now })
 }
 
+/** «Точный расчёт (PoB)» (S44): включить или выключить; не логическое значение — без изменений. */
+export function setPob(file: EquipFile, on: unknown): EquipFile {
+  if (typeof on !== 'boolean' || on === !!file.pob) return file
+  const { pob: _old, ...rest } = file
+  return on ? { ...rest, pob: true } : rest
+}
+
 /** Состояние окна: набор персонажа текущего входа (или общий). */
 export function equipStateOf(file: EquipFile, char: string | null, level: number | null): EquipState {
   const set = setOf(file, char)
-  return { on: true, character: char, level, items: set.items, mine: set.mine }
+  return { on: true, character: char, level, items: set.items, mine: set.mine, pob: !!file.pob }
 }

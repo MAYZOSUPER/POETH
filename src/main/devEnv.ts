@@ -13,6 +13,8 @@ export type DevEnvName =
   // дерево билда поверх игры без вкладки «Билд» и для стенда tools/tree-bench (S38)
   | 'POETH_TREE_POB'
   | 'POETH_TREE_SHOW'
+  // папка движка PoB (bin/luajit.exe + pob/) вместо vendor/pob-engine (S44)
+  | 'POETH_POB_ENGINE'
 
 /** Значение переменной разработчика; в собранной версии — всегда undefined. */
 export function devEnv(name: DevEnvName): string | undefined {

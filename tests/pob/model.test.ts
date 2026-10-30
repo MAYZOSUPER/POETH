@@ -75,7 +75,7 @@ describe('модель: поля', () => {
   it('камни: gemId, вариант, уровень, качество, выключенный камень', () => {
     const b = build('pobbin-leveling-acts')
     const gems = b.skillSets[0].groups.flatMap((g) => g.gems)
-    expect(gems).toContainEqual({
+    expect(gems.find((g) => g.nameSpec === 'Vortex')).toMatchObject({
       nameSpec: 'Vortex',
       gemId: 'Metadata/Items/Gems/SkillGemFrostBoltNova',
       skillId: 'FrostBoltNova',
@@ -85,6 +85,8 @@ describe('модель: поля', () => {
       enabled: true,
       count: 1
     })
+    // S44: атрибуты расчёта PoB для движка — белым списком
+    expect(Object.keys(gems.find((g) => g.nameSpec === 'Vortex')?.extra ?? {}).every((k) => /^(enableGlobal[12]|skill\w+|qualityId)$/.test(k))).toBe(true)
     expect(gems.find((g) => g.nameSpec === 'Empower')?.enabled).toBe(false)
     expect(b.skillSets[0].groups[0].slot).toBe('Body Armour')
   })

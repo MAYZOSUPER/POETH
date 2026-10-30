@@ -7,9 +7,15 @@ import { parsePobInput, type PobCopySite, type PobSite } from '../pob/links'
 import { POB_GEM_PREFIX } from './data'
 import type { PobSource } from '../pob/import'
 import {
+  POB_CONFIG_OPTIONS_MAX,
+  POB_GEM_EXTRA,
+  POB_ITEM_EXTRA,
+  cleanExtra,
+  cleanOverride,
   POB_ITEM_TEXT_MAX,
   POB_NOTES_MAX,
   POB_SLOTS,
+  cleanConfigOption,
   type PobBandit,
   type PobBuild,
   type PobConfig,
@@ -64,6 +70,12 @@ const BANDITS: readonly PobBandit[] = ['None', 'Oak', 'Kraityn', 'Alira']
 const SLOT_SET: ReadonlySet<string> = new Set(POB_SLOTS)
 const STAT_RE = /^[A-Za-z][A-Za-z0-9:]{0,63}$/
 
+/** S44: атрибуты расчёта PoB с диска — тем же белым списком, что при разборе XML. */
+function extraOf<K extends string>(v: unknown, keys: readonly K[]): { extra?: Partial<Record<K, string>> } {
+  const extra = isObj(v) ? cleanExtra((k) => v[k], keys) : undefined
+  return extra ? { extra } : {}
+}
+
 function cleanSpec(v: unknown): PobSpec | null {
   if (!isObj(v)) return null
   const nodes: number[] = []
@@ -86,7 +98,10 @@ function cleanSpec(v: unknown): PobSpec | null {
     ),
     sockets: list(v.sockets, 200, (s) =>
       isObj(s) && Number.isInteger(s.nodeId) && Number.isInteger(s.itemId) ? { nodeId: s.nodeId as number, itemId: s.itemId as number } : null
-    )
+    ),
+    // S44: татуировки для движка PoB
+    ...(Array.isArray(v.overrides) ? { overrides: list(v.overrides, 200, (o) => (isObj(o) ? cleanOverride(o.nodeId, o.dn) : null)) } : {}),
+    ...(intOrNull(v.clusterHashFormat, 1, 99) !== null ? { clusterHashFormat: intOrNull(v.clusterHashFormat, 1, 99) as number } : {})
   }
 }
 
@@ -100,7 +115,8 @@ function cleanGem(v: unknown): PobGem | null {
     level: int(v.level, 0, 40, 1),
     quality: int(v.quality, -100, 100, 0),
     enabled: bool(v.enabled, true),
-    count: int(v.count, 1, 100, 1)
+    count: int(v.count, 1, 100, 1),
+    ...extraOf(v.extra, POB_GEM_EXTRA)
   }
 }
 
@@ -113,7 +129,8 @@ function cleanGroup(v: unknown): PobSkillGroup | null {
     includeInFullDPS: bool(v.includeInFullDPS, false),
     mainActiveSkill: intOrNull(v.mainActiveSkill, 1, 100),
     source: strOrNull(v.source, 64),
-    gems: list(v.gems, 40, cleanGem)
+    gems: list(v.gems, 40, cleanGem),
+    ...(intOrNull(v.groupCount, 1, 100) !== null ? { groupCount: intOrNull(v.groupCount, 1, 100) as number } : {})
   }
 }
 
@@ -124,7 +141,7 @@ function cleanSkillSet(v: unknown, i: number): PobSkillSet | null {
 
 function cleanItem(v: unknown): PobItem | null {
   if (!isObj(v) || !Number.isInteger(v.id) || typeof v.text !== 'string' || v.text.length > POB_ITEM_TEXT_MAX) return null
-  return { id: v.id as number, text: v.text }
+  return { id: v.id as number, text: v.text, ...extraOf(v.extra, POB_ITEM_EXTRA) }
 }
 
 function cleanItemSet(v: unknown, i: number): PobItemSet | null {
@@ -139,7 +156,9 @@ function cleanItemSet(v: unknown, i: number): PobItemSet | null {
     slots,
     otherSlots: list(v.otherSlots, 100, (s) =>
       isObj(s) && typeof s.name === 'string' && Number.isInteger(s.itemId) ? { name: s.name.slice(0, 64), itemId: s.itemId as number } : null
-    )
+    ),
+    // S44: включённые флаконы для движка PoB
+    ...(Array.isArray(v.active) ? { active: list(v.active, POB_SLOTS.length, (s) => (typeof s === 'string' && SLOT_SET.has(s) ? (s as PobSlot) : null)) } : {})
   }
 }
 
@@ -149,7 +168,9 @@ function cleanConfig(v: unknown): PobConfig {
   return {
     resistancePenalty: p === 0 ? 0 : p === -30 ? -30 : -60,
     enemyIsBoss: strOrNull(c.enemyIsBoss, 64),
-    inputs: int(c.inputs, 0, 1e6, 0)
+    inputs: int(c.inputs, 0, 1e6, 0),
+    // S44: опции автора для движка PoB; у билдов, сохранённых до S44, их нет
+    ...(Array.isArray(c.options) ? { options: list(c.options, POB_CONFIG_OPTIONS_MAX, (o) => (isObj(o) ? cleanConfigOption(o) : null)) } : {})
   }
 }
 

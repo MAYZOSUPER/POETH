@@ -134,4 +134,6 @@ export interface EquipState {
   level: number | null
   items: EquipEntry[]
   mine: EquipMine | null
+  /** «Точный расчёт (PoB)» включён (бета S44; equipped.json → pob) */
+  pob?: boolean
 }

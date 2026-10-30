@@ -13,3 +13,5 @@ tools/dataset-build/sources/
 # stray third-party clone accidentally dropped in the repo root (not part of the project)
 UsersuserAppDataLocalTempawakened-poe-trade/
 dist-data/
+# движок PoB (S44): tools/pob/prepare.mjs собирает сюда урезанный PoB и luajit.exe
+vendor/

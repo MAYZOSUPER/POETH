@@ -62,6 +62,16 @@ whose full history is kept in this repository.
   XML sections and attributes (`Build.lua`, `PassiveSpec.lua`, `SkillsTab.lua`, `ItemsTab.lua`), equipment slot names,
   the `resistancePenalty` option (`ConfigOptions.lua`) and the list of build-sharing sites with their raw-code URLs
   (`src/Modules/BuildSiteTools.lua`). The MIT test build `spec/TestBuilds/3.13/OccVortex.xml` is used as a test fixture.
+  **Since v0.2b (beta «Exact calculation (PoB)», S44) POETH ships an unmodified, trimmed copy of PoB** — its Lua code
+  and data only (`src/Modules`, `src/Classes`, `src/Data` without timeless jewel archives, the current passive tree
+  `tree.lua`/`sprites.lua`, `HeadlessWrapper.lua`, `Launch.lua`, `GameVersions.lua`, `runtime/lua` without `socket.lua`;
+  no images, executables or DLLs) — in `resources/pob-engine/pob/` together with PoB's `LICENSE.md` (which also lists the
+  licenses of the Lua libraries PoB bundles: dkjson, xml, base64, sha1, sha2). Pinned tag and commit, SHA-256 of the
+  file set: `tools/pob/pins.json`. It runs headless in a separate local process via our own `resources/pob/server.lua`
+  (written from scratch; no code from PoE Upgrade Checker, which is GPL).
+- **[LuaJIT](https://github.com/LuaJIT/LuaJIT)** — **MIT License**, Copyright (C) 2005-2026 Mike Pall. `luajit.exe` in
+  `resources/pob-engine/bin/` is built by `tools/pob/prepare.mjs` from the pinned source commit (`tools/pob/pins.json`,
+  `msvcbuild.bat static`); its `COPYRIGHT` file ships next to it as `COPYRIGHT-LuaJIT.txt`.
 - **[Piety](https://github.com/sethryder/piety)** — **MIT License**, Copyright (c) 2026 Seth Ryder. The idea of matching
   PoB tree/gem/item sets to leveling stages by their titles («Act N», «Level N», «Early Maps», «Endgame») and the table
   of typical character levels at the end of acts 1–10 (`src/shared/trees.ts`) are reimplemented in
