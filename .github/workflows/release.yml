@@ -1,7 +1,8 @@
 # Релиз по тегу v* (S10a, S10b): проверки → в GitHub Releases POETH-Setup-<версия>.exe + .blockmap +
 # latest.yml (автообновление установленной версии) и POETH-Portable-<версия>.exe. Описание релиза —
-# build/release-notes.md (RU/EN, electron-builder.yml → releaseInfo). Токен — встроенный GITHUB_TOKEN
-# этого запуска, в сборку он не попадает (только переменная окружения шага публикации).
+# build/release-notes.md (RU/EN, electron-builder.yml → releaseInfo). Собирает electron-builder, публикует gh
+# (см. шаг «Публикация»). Токен — встроенный GITHUB_TOKEN этого запуска, в сборку он не попадает (только
+# переменная окружения шага публикации).
 #
 # Выпуск: поднять "version" в package.json и обновить build/release-notes.md (версия + «что нового»)
 # → commit → git tag v<версия> → git push --tags.
@@ -46,7 +47,30 @@ jobs:
       - name: Движок PoB (проверка)
         run: npx vitest run tests/pob/serverLua.test.ts
       - run: npm run build
-      - name: Сборка и публикация (Setup + blockmap + latest.yml, Portable)
-        run: npx electron-builder --win --publish always
+      # electron-builder только собирает. Его публикация (--publish always) в 26.x создаёт ДВА релиза с одним тегом:
+      # издатель создаётся асинхронно (с PR #9581), Setup и его blockmap грузятся одновременно, и каждый заводит
+      # свой релиз. В rc.12 blockmap попал в отдельный релиз, /releases/download/<тег>/…blockmap — 404, обновление
+      # с rc.11 качает Setup целиком. Исправлено только в v27 (PR #10028).
+      - name: Сборка (Setup + blockmap + latest.yml, Portable)
+        run: npx electron-builder --win --publish never
+      # Один релиз одним вызовом: gh создаёт черновик, загружает все файлы и только потом публикует — electron-updater
+      # не увидит релиз без latest.yml или blockmap. Нет любого из четырёх файлов — шаг падает, релиза нет.
+      # Название — версия, описание — build/release-notes.md (как делал electron-builder). --latest обязателен:
+      # установленные версии ищут обновление по /releases/latest (src/main/services/updaterPolicy.ts).
+      - name: Публикация в GitHub Releases
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          v="$(node -p "require('./package.json').version")"
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --latest \
+            --title "$v" --notes-file build/release-notes.md \
+            "dist-release/POETH-Setup-$v.exe" \
+            "dist-release/POETH-Setup-$v.exe.blockmap" \
+            "dist-release/latest.yml" \
+            "dist-release/POETH-Portable-$v.exe"
+          # как файлы увидит electron-updater — по ссылке тега (в rc.12 blockmap здесь отдавал 404)
+          for f in "POETH-Setup-$v.exe" "POETH-Setup-$v.exe.blockmap" latest.yml "POETH-Portable-$v.exe"; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME/$f")
+            echo "$code $f"; [ "$code" = 302 ] || exit 1
+          done

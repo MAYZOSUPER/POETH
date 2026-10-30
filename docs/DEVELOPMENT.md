@@ -80,7 +80,11 @@ npm run package       # POETH-Setup-<версия>.exe (+ .blockmap, latest.yml)
 
 `.github/workflows/release.yml` проверит тег, описание релиза, секреты, типы и тесты, соберёт и опубликует
 в GitHub Releases `POETH-Setup-<версия>.exe`, `.blockmap`, `latest.yml` и `POETH-Portable-<версия>.exe`.
-Установленные копии увидят новую версию через electron-updater (проверка при запуске и раз в 6 ч).
+Публикует `gh release create` одним релизом и проверяет ссылки по тегу: публикация самого electron-builder 26
+раскладывала файлы по двум релизам с одним тегом (rc.12 вышел без blockmap по ссылке тега).
+Установленные копии увидят новую версию через electron-updater (проверка при запуске и раз в 6 ч). По blockmap
+обновление качает только изменённые блоки Setup: между сборками electron-builder 26 — то, что поменялось; с rc.11
+и старше (electron-builder 25) — около 95 % Setup один раз (другой 7-Zip и BCJ вместо BCJ2 меняют сжатые байты).
 
 Данные игры обновляются без переустановки: `node tools/data/publish-data.mjs --version <версия-данных>` →
 содержимое `dist-data/` в ветку `data` (см. `src/main/services/dataUpdater.ts`).
