@@ -460,7 +460,59 @@ export const trade: DomainDict = {
     'pc1.s24.site.empty': 'На сайте сейчас никто не продаёт.',
     'pc1.s24.site.limit': 'Сайт просит подождать: {time}.',
     'pc1.s24.site.error': 'Объявления не загрузились.',
-    'pc1.s24.site.retry': 'Повторить'
+    'pc1.s24.site.retry': 'Повторить',
+    // S50: режим «Продаю» — цена для мерчант-вкладки по той же выдаче
+    'pc1.s50.mode': 'Режим окна',
+    'pc1.s50.mode.buy': 'Покупаю',
+    'pc1.s50.mode.sell': 'Продаю',
+    'pc1.s50.mode.help':
+      'Покупаю — сколько стоит вещь и где её купить. Продаю — какую цену поставить своей вещи в мерчант-вкладке. Поиск тот же, новых запросов к сайту нет. Выбор запоминается.',
+    'pc1.s50.title': 'Поставьте ~{price}, не дешевле {floor}',
+    'pc1.s50.title.same': 'Поставьте ~{price}',
+    'pc1.s50.title.whisper': 'Ориентир ~{price}, не дешевле {floor}',
+    'pc1.s50.why.ok':
+      'За {floor} купят быстрее всего: это цена самого дешёвого мгновенного лота, дешевле ставить незачем. За ~{price} — выгоднее: вы будете {place}-м в очереди, придётся подождать.',
+    'pc1.s50.why.first': 'Столько просят самые дешёвые мгновенные лоты: купят быстро, дешевле ставить незачем.',
+    'pc1.s50.why.few': 'Мгновенных лотов мало ({n}) — цена только ориентир. Дешевле {floor} ставить незачем: за столько уже продают.',
+    'pc1.s50.why.whisper':
+      'Мгновенных лотов нет — только продавцы «лично» (whisper). Они не всегда отвечают, их цены — только ориентир.',
+    'pc1.s50.why.spread': 'Цены мгновенных лотов сильно разные — сравните свойства с лотами ниже: ваша вещь может стоить больше.',
+    'pc1.s50.help':
+      'Мгновенный выкуп — покупка на сайте из мерчант-вкладки, без whisper: продавцу не нужно быть в игре. Покупатели берут самые дешёвые лоты первыми — чем ниже цена, тем быстрее продажа.',
+    'pc1.s50.ladder': 'Мгновенный выкуп',
+    'pc1.s50.ladder.help':
+      'Лоты в мерчант-вкладках, без подозрительно дешёвых (приманок). Видны только загруженные — самые дешёвые похожие, до 20 лотов.',
+    'pc1.s50.ladder.cheapest': 'Самый дешёвый',
+    'pc1.s50.ladder.fifth': '5-й',
+    'pc1.s50.ladder.median': 'Медиана',
+    'pc1.s50.ladder.count': 'мгновенных лотов в выдаче: {n}',
+    'pc1.s50.ladder.none': 'Мгновенных лотов в выдаче нет',
+    'pc1.s50.fee': 'Комиссию в золоте за мгновенный выкуп (~{n}) платит покупатель — вы получите всю цену.',
+    'pc1.s50.fee.short': 'комиссия ~{n} золота — платит покупатель',
+    'pc1.s50.copy': 'Скопировать {n}',
+    'pc1.s50.copy.done': 'Скопировано',
+    'pc1.s50.copy.fail': 'Не скопировалось',
+    'pc1.s50.copy.help':
+      'Скопирует только число {n}, в игру ничего не отправит. В игре: правый клик по предмету во вкладке торговца → вставьте число в поле цены (Ctrl+V) и выберите валюту «{cur}».',
+    'pc1.s50.copy.helpExchange':
+      'Скопирует только число {n} — цену за 1 шт., в игру ничего не отправит. В окне обмена Фаустуса сверьтесь с «Рыночным курсом».',
+    'pc1.s50.note.under': 'Вы продаёте дешевле рынка на ~{percent}%: в заметке {note}, а похожие продают от {floor}.',
+    'pc1.s50.note.fair': 'В заметке {note} — по рынку: вы будете {place}-м среди похожих лотов.',
+    'pc1.s50.note.fairExchange': 'В заметке {note} — по рынку.',
+    'pc1.s50.note.over': 'В заметке {note} — дороже почти всех похожих: может долго не продаваться.',
+    'pc1.s50.note.unknown': 'В заметке {note} — не с чем сравнить: нет курса этой валюты.',
+    'pc1.s50.note.help':
+      'Заметка цены — строка «~price …» у предмета в игре. Если цена выставлена на всю вкладку, в тексте предмета её не видно — сравнить не получится.',
+    'pc1.s50.more': 'Похожих больше, чем загружено: выберите «Только мгновенный выкуп» — увидите больше мгновенных лотов.',
+    'pc1.s50.fs.title': 'Продайте у Фаустуса: ~{price} за 1 шт., не дешевле {floor}',
+    'pc1.s50.fs.titlePer': 'Продайте у Фаустуса: {one} за ~{n} шт.',
+    'pc1.s50.fs.why':
+      'Это средняя цена сделок за час; нижняя сделка часа — {floor}, дешевле ставить незачем. Поставьте ордер в окне обмена и сверьтесь с «Рыночным курсом».',
+    'pc1.s50.fs.whyPer': 'Штука стоит меньше {one}: в окне обмена задайте соотношение и сверьтесь с «Рыночным курсом».',
+    'pc1.s50.fs.few': 'Мало сделок за час — цена только ориентир.',
+    'pc1.s50.bulk.title': 'Для валюты смотрите «Рыночный курс» у Фаустуса',
+    'pc1.s50.bulk.sub': 'Цены обмена у Фаустуса для этого предмета нет. На сайте лучшее предложение — ~{price} за 1 шт., это только ориентир.',
+    'pc1.s50.bulk.none': 'Цены обмена у Фаустуса для этого предмета нет — откройте «Рыночный курс» в окне обмена.'
   },
   en: {
     // --- PoE 1 Price Check tab in the companion (S37): how to use the price window
@@ -917,6 +969,58 @@ export const trade: DomainDict = {
     'pc1.s24.site.empty': 'Nobody is selling on the site right now.',
     'pc1.s24.site.limit': 'The site asks to wait: {time}.',
     'pc1.s24.site.error': 'Listings did not load.',
-    'pc1.s24.site.retry': 'Retry'
+    'pc1.s24.site.retry': 'Retry',
+    // S50: “Selling” mode — a price for the merchant tab from the same search
+    'pc1.s50.mode': 'Window mode',
+    'pc1.s50.mode.buy': 'Buying',
+    'pc1.s50.mode.sell': 'Selling',
+    'pc1.s50.mode.help':
+      'Buying — what the item is worth and where to buy it. Selling — what price to set for your item in the merchant tab. Same search, no new requests to the site. Your choice is remembered.',
+    'pc1.s50.title': 'List it at ~{price}, not below {floor}',
+    'pc1.s50.title.same': 'List it at ~{price}',
+    'pc1.s50.title.whisper': 'Rough price ~{price}, not below {floor}',
+    'pc1.s50.why.ok':
+      'At {floor} it sells fastest: that is the cheapest instant-buyout listing, no point going lower. At ~{price} you earn more: you will be number {place} in line, so expect to wait.',
+    'pc1.s50.why.first': 'That is what the cheapest instant-buyout listings ask: it sells quickly, no point going lower.',
+    'pc1.s50.why.few': 'Few instant-buyout listings ({n}) — the price is only a rough guide. No point going below {floor}: items already sell for that.',
+    'pc1.s50.why.whisper':
+      'No instant-buyout listings — only in-person sellers (whisper). They do not always reply, so their prices are only a rough guide.',
+    'pc1.s50.why.spread': 'Instant-buyout prices vary a lot — compare the mods with the listings below: your item may be worth more.',
+    'pc1.s50.help':
+      'Instant buyout means buying from a merchant tab on the website, no whisper: the seller does not need to be online. Buyers take the cheapest listings first — the lower the price, the faster it sells.',
+    'pc1.s50.ladder': 'Instant buyout',
+    'pc1.s50.ladder.help':
+      'Merchant-tab listings without suspiciously cheap ones (bait). Only loaded listings count — the cheapest similar ones, up to 20.',
+    'pc1.s50.ladder.cheapest': 'Cheapest',
+    'pc1.s50.ladder.fifth': '5th',
+    'pc1.s50.ladder.median': 'Median',
+    'pc1.s50.ladder.count': 'instant-buyout listings loaded: {n}',
+    'pc1.s50.ladder.none': 'No instant-buyout listings loaded',
+    'pc1.s50.fee': 'The gold fee for instant buyout (~{n}) is paid by the buyer — you get the full price.',
+    'pc1.s50.fee.short': 'fee ~{n} gold — paid by the buyer',
+    'pc1.s50.copy': 'Copy {n}',
+    'pc1.s50.copy.done': 'Copied',
+    'pc1.s50.copy.fail': 'Copy failed',
+    'pc1.s50.copy.help':
+      'Copies just the number {n}, nothing is sent to the game. In the game: right-click the item in your merchant tab → paste the number into the price field (Ctrl+V) and pick “{cur}”.',
+    'pc1.s50.copy.helpExchange':
+      'Copies just the number {n} — the price for 1, nothing is sent to the game. In the Faustus exchange window check it against the “Market Ratio”.',
+    'pc1.s50.note.under': 'You are selling ~{percent}% below the market: the note says {note}, while similar items sell from {floor}.',
+    'pc1.s50.note.fair': 'The note says {note} — in line with the market: you will be number {place} among similar listings.',
+    'pc1.s50.note.fairExchange': 'The note says {note} — in line with the market.',
+    'pc1.s50.note.over': 'The note says {note} — pricier than almost all similar listings: it may take long to sell.',
+    'pc1.s50.note.unknown': 'The note says {note} — nothing to compare with: no rate for this currency.',
+    'pc1.s50.note.help':
+      'A price note is the “~price …” line on the item in the game. If the price is set for the whole tab, the item text does not show it, so there is nothing to compare.',
+    'pc1.s50.more': 'There are more similar items than loaded: pick “Instant buyout only” to see more instant-buyout listings.',
+    'pc1.s50.fs.title': 'Sell to Faustus: ~{price} each, not below {floor}',
+    'pc1.s50.fs.titlePer': 'Sell to Faustus: {one} for ~{n}',
+    'pc1.s50.fs.why':
+      'That is the average trade price over the hour; the lowest trade was {floor}, no point going lower. Place an order in the exchange window and check the “Market Ratio”.',
+    'pc1.s50.fs.whyPer': 'One costs less than {one}: set the ratio in the exchange window and check the “Market Ratio”.',
+    'pc1.s50.fs.few': 'Few trades in the hour — the price is only a rough guide.',
+    'pc1.s50.bulk.title': 'For currency, check the “Market Ratio” at Faustus',
+    'pc1.s50.bulk.sub': 'There is no Faustus exchange price for this item. The best offer on the site is ~{price} each — only a rough guide.',
+    'pc1.s50.bulk.none': 'There is no Faustus exchange price for this item — open the “Market Ratio” in the exchange window.'
   }
 }
