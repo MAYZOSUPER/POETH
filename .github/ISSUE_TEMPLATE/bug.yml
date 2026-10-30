@@ -91,10 +91,10 @@ body:
   - type: textarea
     id: details
     attributes:
-      label: Текст ошибки / Error text
+      label: Текст ошибки, что было на экране / Error text, what was on screen
       description: |
-        По желанию: точный текст сообщения POETH или игры. Никогда не вставляйте POESESSID, cookies, пароли и коды входа.
-        Optional: the exact message from POETH or the game. Never paste your POESESSID, cookies, passwords or sign-in codes.
+        По желанию: точный текст сообщения POETH или игры, что было на экране. POETH не пишет журналов на диск — файл прикладывать не нужно. Никогда не вставляйте POESESSID, cookies, пароли и коды входа; ники других игроков замените, например, на «Игрок1».
+        Optional: the exact message from POETH or the game, what was on screen. POETH keeps no log files on disk — there is no file to attach. Never paste your POESESSID, cookies, passwords or sign-in codes; replace other players' nicknames, e.g. with “Player1”.
       render: text
     validations:
       required: false
