@@ -9,10 +9,12 @@ import type {
   LevelingProgress,
   LevelingVariant,
   LvFrag,
+  LvLab,
   LvPart,
   LvStep,
   LvTag
 } from '../types/leveling'
+import { emptyLabs, type LabRouteAt } from './labs'
 
 export const START_AREA = '1_1_1'
 const START_TOWN = '1_1_town'
@@ -90,7 +92,39 @@ export function flattenRoute(data: LevelingData, variant: LevelingVariant): Flat
 }
 
 export function emptyProgress(variant: LevelingVariant = DEFAULT_VARIANT, now = Date.now()): LevelingProgress {
-  return { done: {}, current: null, level: 1, areaId: null, variant: { ...variant }, finished: null, showAnyway: false, updatedAt: now }
+  return {
+    done: {},
+    current: null,
+    level: 1,
+    areaId: null,
+    variant: { ...variant },
+    finished: null,
+    showAnyway: false,
+    labs: emptyLabs(),
+    updatedAt: now
+  }
+}
+
+/**
+ * Где в маршруте шаги «Лабиринт — восхождение» ({ascend|…}) относительно текущего шага — для напоминания о
+ * лабиринте (S52). Кампания пройдена или маршрут кончился — все позади.
+ */
+export function labRouteAt(flat: FlatStep[], prog: LevelingProgress): LabRouteAt {
+  const out: LabRouteAt = {}
+  const cur = currentIndex(flat, prog)
+  for (const f of flat) {
+    for (const p of f.step.parts) {
+      if (!isFrag(p) || p.k !== 'ascend' || out[p.v]) continue
+      out[p.v] = prog.finished || cur < 0 || f.index < cur || !!prog.done[f.step.id] ? 'passed' : f.index === cur ? 'now' : 'ahead'
+    }
+  }
+  return out
+}
+
+/** Лабиринт шага маршрута ({ascend|…}); null — шаг не про лабиринт. */
+export function stepLab(step: LvStep): LvLab | null {
+  for (const p of step.parts) if (isFrag(p) && p.k === 'ascend') return p.v
+  return null
 }
 
 /** Номер текущего шага: сохранённый, иначе первый неотмеченный; -1 — маршрут пройден. */
