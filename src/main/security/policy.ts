@@ -74,9 +74,16 @@ export const OVERLAY_CHANNELS: ReadonlySet<string> = new Set([...Object.values(I
 
 /**
  * Только компаньон: вставка кода PoB и загрузка билда по ссылке (недоверенный ввод, сеть по действию игрока; S39);
+ * «Играть по этому гайду» и ссылки автора стартера — сеть по кнопке и системный браузер (S59);
  * фильтр лута — сеть GitHub и запись в папку игры по кнопке (S53).
  */
-export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([IPC.build.importPob, IPC.build.reload, ...Object.values(IPC.lootFilter)])
+export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([
+  IPC.build.importPob,
+  IPC.build.reload,
+  IPC.build.playStarter,
+  IPC.build.openStarterLink,
+  ...Object.values(IPC.lootFilter)
+])
 
 /**
  * Управление трейд-окном из его шапки и рельса (S58): свернуть, развернуть, рельс и его шторка — только сайдбар

@@ -6,7 +6,8 @@ import { treeStageIndex } from '@shared/build/view'
 import { POB_CODE_MAX_CHARS } from '@shared/pob/decode'
 import type { PobBuild } from '@shared/pob/model'
 import { resolveStages, type PobStagePlan } from '@shared/pob/stages'
-import type { BuildImportResult, BuildState, BuildTaken, BuildTreeResult, StoredBuild } from '@shared/types/build'
+import { NO_STARTERS } from '@shared/starters/view'
+import type { BuildImportResult, BuildState, BuildTaken, BuildTreeResult, StarterPlayResult, StoredBuild } from '@shared/types/build'
 import { importPob } from '../pob/import'
 import {
   findStored,
@@ -20,6 +21,7 @@ import {
   setStoredEdits
 } from '../build/buildLibrary'
 import { getTaken, onTaken, stopTaken } from '../build/buildTaken'
+import { getStartersState, openStarterLink, playStarter } from '../build/starters'
 import { setTreeBuild } from '../build/treeOverlay'
 import { sendToCompanion } from '../windows/companionWindow'
 import { sendToOverlay } from '../windows/gameOverlay'
@@ -29,6 +31,7 @@ import type { IpcDomain } from './types'
 // билдов (userData/builds.json), правки этапов игрока, «взято» по журналу игры, дерево этапа поверх игры (S38).
 // Вставку и загрузку по ссылке зовёт только компаньон (политика S29). Вкладка скрыта до v0.2: без флага
 // (GameFeatures.build или POETH_BUILD=1 в разработке) каналы отвечают пустым состоянием и в сеть не ходят.
+// S59: «Стартеры» лиги (src/main/build/starters.ts) — список, «Играть по этому гайду» и ссылки автора по id записи.
 
 let game: GameDef | null = null
 
@@ -122,6 +125,11 @@ function register(): void {
     pushTree(await getActiveBuild())
     return { available: true }
   })
+  ipcMain.handle(IPC.build.starters, () => (enabled() ? getStartersState() : NO_STARTERS))
+  ipcMain.handle(IPC.build.playStarter, (_e, id: unknown, mode: unknown) =>
+    enabled() ? playStarter(id, mode) : ({ ok: false, error: 'unknown' } satisfies StarterPlayResult)
+  )
+  ipcMain.handle(IPC.build.openStarterLink, (_e, id: unknown, kind: unknown) => (enabled() ? openStarterLink(id, kind) : false))
 }
 
 function getStateOrEmpty(): Promise<BuildState> {

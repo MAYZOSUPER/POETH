@@ -28,7 +28,7 @@ import {
   type PobSpec
 } from '../pob/model'
 import type { PobStageEdit, PobStageEdits } from '../pob/stages'
-import type { BuildRecent, BuildState, StoredBuild } from '../types/build'
+import type { BuildRecent, BuildState, StarterRef, StoredBuild } from '../types/build'
 
 export const BUILDS_FILE = 'builds.json'
 export const BUILDS_FORMAT = 1
@@ -264,6 +264,16 @@ const MARKS_MAX = 200
 const MARK_KEY_RE = /^(?:u:[^\u0000-\u001f\u007f]{1,100}|i:\d{1,9})$/
 
 const ID_RE = /^[A-Za-z0-9_-]{4,40}$/
+const STARTER_ID_RE = /^[a-z0-9][a-z0-9-]{1,47}$/
+const LEAGUE_RE = /^\d{1,2}\.\d{1,2}$/
+
+/** S59: метка «из Стартеров» с диска — id записи, лига и «PoB изменился после проверки». */
+export function cleanStarterRef(v: unknown): StarterRef | undefined {
+  if (!isObj(v) || typeof v.id !== 'string' || !STARTER_ID_RE.test(v.id) || typeof v.league !== 'string' || !LEAGUE_RE.test(v.league)) {
+    return undefined
+  }
+  return { id: v.id, league: v.league, changed: v.changed === true }
+}
 
 function cleanStored(v: unknown): StoredBuild | null {
   if (!isObj(v) || typeof v.id !== 'string' || !ID_RE.test(v.id)) return null
@@ -271,13 +281,15 @@ function cleanStored(v: unknown): StoredBuild | null {
   if (!build) return null
   const now = Date.now()
   const addedAt = typeof v.addedAt === 'number' && Number.isFinite(v.addedAt) ? v.addedAt : now
+  const starter = cleanStarterRef(v.starter)
   return {
     id: v.id,
     build,
     source: cleanSource(v.source),
     edits: cleanEdits(v.edits),
     addedAt,
-    openedAt: typeof v.openedAt === 'number' && Number.isFinite(v.openedAt) ? v.openedAt : addedAt
+    openedAt: typeof v.openedAt === 'number' && Number.isFinite(v.openedAt) ? v.openedAt : addedAt,
+    ...(starter ? { starter } : {})
   }
 }
 
@@ -325,13 +337,35 @@ function sameBuild(a: StoredBuild, build: PobBuild, source: PobSource): boolean 
   return buildFingerprint(a.build) === buildFingerprint(build)
 }
 
-/** Вставленный билд: новый — в начало и открыть; уже был (та же ссылка или тот же код) — обновить, правки сохранить. */
-export function addBuild(lib: BuildLibrary, build: PobBuild, source: PobSource, now: number, newId: () => string): BuildLibrary {
+/** S59: как добавить билд — открыть его (по умолчанию) или только положить в библиотеку; метка «из Стартеров». */
+export interface AddBuildOptions {
+  activate?: boolean
+  starter?: StarterRef
+}
+
+/**
+ * Вставленный билд: новый — в начало и открыть; уже был (та же ссылка или тот же код) — обновить, правки сохранить.
+ * activate: false (S59, «Добавить в библиотеку») — открытый билд не меняется.
+ */
+export function addBuild(
+  lib: BuildLibrary,
+  build: PobBuild,
+  source: PobSource,
+  now: number,
+  newId: () => string,
+  opts: AddBuildOptions = {}
+): BuildLibrary {
+  const activate = opts.activate !== false
   const old = lib.builds.find((b) => sameBuild(b, build, source))
-  const entry: StoredBuild = old
-    ? { ...old, build, source: source.kind === 'link' ? source : old.source, openedAt: now }
+  const base: StoredBuild = old
+    ? { ...old, build, source: source.kind === 'link' ? source : old.source, openedAt: activate ? now : old.openedAt }
     : { id: newId(), build, source, edits: {}, addedAt: now, openedAt: now }
+  const entry: StoredBuild = opts.starter ? { ...base, starter: opts.starter } : base
   const rest = lib.builds.filter((b) => b.id !== entry.id)
+  if (!activate) {
+    // открытый остаётся открытым и в списке не вытесняется (limit() его не трогает)
+    return limit({ v: BUILDS_FORMAT, active: lib.active, builds: [entry, ...rest] })
+  }
   return limit({ v: BUILDS_FORMAT, active: entry.id, builds: [entry, ...rest] })
 }
 
@@ -398,7 +432,8 @@ export function recentOf(b: StoredBuild): BuildRecent {
     ascendClassName: b.build.ascendClassName,
     source: b.source,
     addedAt: b.addedAt,
-    openedAt: b.openedAt
+    openedAt: b.openedAt,
+    ...(b.starter ? { starter: b.starter.id } : {})
   }
 }
 

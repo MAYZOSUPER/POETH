@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "league": "3.30",
+  "updatedAt": "2026-11-12",
+  "starters": [
+    {
+      "id": "test-hiero-brand",
+      "patch": "3.29",
+      "class": "Templar",
+      "ascendancy": "Hierophant",
+      "skill": { "en": "Armageddon Brand of Recall", "gem": "Metadata/Items/Gems/SkillGemArmageddonBrandAltY" },
+      "author": "Test Author B",
+      "lang": "en",
+      "links": { "pob": "https://pob.codes/b/FakeStarterB2", "guide": "https://maxroll.gg/poe/build-guides/fake-test-guide" },
+      "tags": { "budget": "medium", "difficulty": 2, "newbie": false, "leveling": "none", "modes": ["sc"], "content": ["bossing"] },
+      "pick": false,
+      "note": null,
+      "pob": { "sha256": "6827e6bded5d2fd5ee590b1921d84a3650b246069d24f75d866eb58319c4d2e6", "checkedAt": "2026-11-11" },
+      "checked": null,
+      "added": "2026-11-09"
+    },
+    {
+      "id": "test-champion-boneshatter",
+      "patch": "3.30",
+      "class": "Duelist",
+      "ascendancy": "Champion",
+      "skill": { "en": "Boneshatter of Carnage", "gem": "Metadata/Items/Gems/SkillGemBoneshatterAltY" },
+      "author": "Тестовый Автор",
+      "lang": "ru",
+      "links": { "pob": "https://pobb.in/FakeStarterA1", "video": "https://youtu.be/FakeVideo01", "channel": "https://www.youtube.com/@FakeChannel" },
+      "tags": { "budget": "low", "difficulty": 1, "newbie": true, "leveling": "acts", "modes": ["sc", "hc", "ssf"], "content": ["mapping"] },
+      "pick": true,
+      "note": { "ru": "Тестовая запись: просто играть, дёшево, этапы по актам.", "en": "Test entry: easy to play, cheap, act-by-act stages." },
+      "pob": { "sha256": "7939c644e9b58fc594a2cd11316a600c3e01b074be6268effd977de5e8e88ec8", "checkedAt": "2026-11-12" },
+      "checked": { "league": "3.30", "date": "2026-11-12" },
+      "added": "2026-11-10"
+    },
+    {
+      "id": "test-assassin-flurry",
+      "patch": "3.30",
+      "class": "Shadow",
+      "ascendancy": "Assassin",
+      "skill": { "en": "Blade Flurry", "gem": "Metadata/Items/Gems/SkillGemBladeFlurry" },
+      "author": "Test Author C",
+      "lang": "en",
+      "links": { "pob": "https://pob.codes/b/FakeStarterC3", "video": "https://www.youtube.com/watch?v=FakeVideo03" },
+      "tags": { "budget": "starter", "difficulty": 2, "newbie": true, "leveling": "partial", "modes": ["ssf"], "content": ["mapping"] },
+      "pick": true,
+      "note": { "ru": "Тестовая запись: без вложений, подходит для SSF.", "en": "Test entry: no investment, fits SSF." },
+      "pob": { "sha256": "784535588a814d0193aff3cab1a4c43e3ce40930439ade8efb4fd739f8b2cf14", "checkedAt": "2026-11-13" },
+      "checked": null,
+      "added": "2026-11-12"
+    },
+    {
+      "id": "test-guardian-dom",
+      "patch": "3.30",
+      "class": "Templar",
+      "ascendancy": "Guardian",
+      "skill": { "en": "Dominating Blow", "gem": "Metadata/Items/Gems/SkillGemDominatingBlow" },
+      "author": "Test Author D",
+      "lang": "en",
+      "links": { "pob": "https://pobb.in/FakeStarterD4" },
+      "tags": { "budget": "high", "difficulty": 3, "newbie": false, "leveling": "none", "modes": [], "content": [] },
+      "pick": false,
+      "note": { "ru": "Тестовая запись: дорого, для опытных.", "en": "Test entry: expensive, for experienced players." },
+      "pob": { "sha256": "59cca2ba59adbe3c0a2cbd6f2fa766ff9542eb56da4a2c25b56f698c853cae7e", "checkedAt": "2026-11-10" },
+      "checked": { "league": "3.30", "date": "2026-11-12" },
+      "added": "2026-11-08"
+    }
+  ]
+}

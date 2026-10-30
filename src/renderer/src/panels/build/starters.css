@@ -1,0 +1,81 @@
+/* «Стартеры» вкладки «Билд» (S59) — раскладка bd-st-* поверх общих компонентов (ui-box, ui-tag, ui-chips, ui-seg,
+   ui-dialog). Цвета и размеры — только токены tokens.css. Ширина — по @container body (вкладка), не по окну.
+   Карточка и список — черновик разработчика: дизайнер может отшлифовать (через лида). */
+
+/* переключатель «Мои билды · Стартеры» */
+.bd-sec { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4); }
+.bd-sec .ui-seg > button { display: inline-flex; align-items: center; gap: var(--sp-3); }
+
+/* пустой экран: «Не знаете, чем начать лигу?» рядом со вставкой */
+.bd-st-cta { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--sp-4) var(--sp-6); align-items: center; padding: var(--sp-5) var(--sp-6); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: var(--r-panel); background: var(--accent-soft); }
+.bd-st-cta__t { display: grid; gap: 2px; min-width: 0; }
+.bd-st-cta__t b { font-weight: 600; color: var(--accent-hi); }
+.bd-st-cta__t span { font-size: var(--fs-sm); color: var(--fg-muted); }
+.bd-st-cta > .ui-btn { justify-self: end; }
+@container body (max-width: 560px) {
+  .bd-st-cta { grid-template-columns: auto minmax(0, 1fr); }
+  .bd-st-cta > .ui-btn { grid-column: 1 / -1; justify-self: stretch; justify-content: center; }
+}
+
+/* список */
+.bd-st { gap: var(--sp-6); }
+.bd-st-filters { display: grid; gap: var(--sp-4); }
+.bd-st-filters .ui-chips { flex-wrap: wrap; row-gap: var(--sp-3); }
+.bd-st-filters .ui-label { margin: 0; }
+.bd-st-filters .ui-select { width: auto; min-width: 170px; max-width: 100%; }
+.bd-st-count { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4); font-size: var(--fs-xs); color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.bd-st-sec { display: grid; gap: var(--sp-4); }
+.bd-st-sec__head { display: grid; gap: var(--sp-2); }
+.bd-st-sec__head .ui-label { margin: 0; }
+.bd-st-sec__head .ui-label .ui-ico { width: 14px; height: 14px; }
+.bd-st-list { display: grid; gap: var(--sp-5); }
+@container body (min-width: 980px) { .bd-st-list { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
+
+/* карточка */
+.bd-st-card { display: grid; gap: var(--sp-5); padding: var(--sp-6); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--inset); min-width: 0; }
+.bd-st-card.is-pick { border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.bd-st-card.is-active { box-shadow: inset 3px 0 0 var(--accent); }
+.bd-st-card__main { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--sp-5); align-items: start; }
+.bd-st-card__t { display: grid; gap: var(--sp-3); min-width: 0; }
+.bd-st-card__title { margin: 0; font: 700 18px / 1.15 var(--font-display); letter-spacing: 0.03em; color: var(--accent-hi); overflow-wrap: anywhere; }
+.bd-st-card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--sp-4); font-size: var(--fs-sm); color: var(--fg-muted); }
+.bd-st-card__meta > span + span::before { content: "·"; margin-right: var(--sp-4); color: var(--fg-faint); }
+.bd-st-card__note { margin: 0; font-size: var(--fs-sm); line-height: 1.45; color: var(--fg); overflow-wrap: anywhere; }
+.bd-st-card__acts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+.bd-st-mine { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--good); font-weight: 600; }
+.bd-st-mine.is-active { color: var(--accent-hi); }
+.bd-st-mine .ui-ico { width: 12px; height: 12px; }
+.bd-st-now { display: flex; align-items: center; gap: var(--sp-3); margin: 0; font-size: var(--fs-xs); color: var(--accent-hi); }
+.bd-st-now .ui-ico { width: 12px; height: 12px; }
+
+/* знаки: метки .ui-tag и факты словами (бюджет, сложность, «ведёт по актам») */
+.bd-st-tags { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); }
+.bd-st-tags .ui-tag--key .ui-ico { width: 10px; height: 10px; }
+.bd-st-fact, .bd-st-diff { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-xs); color: var(--fg-muted); white-space: nowrap; }
+.bd-st-fact .ui-ico { width: 12px; height: 12px; color: var(--fg-faint); }
+.bd-st-fact.is-good .ui-ico { color: var(--good); }
+.bd-st-fact.is-warn { color: var(--warn); }
+.bd-st-fact.is-warn .ui-ico { color: var(--warn); }
+.bd-st-diff .ui-pips { margin-right: var(--sp-1); }
+.bd-st-host { font: 500 var(--fs-2xs) / 1 var(--font-mono); color: var(--fg-faint); }
+
+/* «Подробнее» */
+.bd-st-details { display: grid; gap: var(--sp-4); padding-top: var(--sp-5); border-top: 1px solid var(--border); }
+.bd-st-dl { display: grid; grid-template-columns: minmax(110px, 0.32fr) minmax(0, 1fr); gap: var(--sp-2) var(--sp-5); align-items: baseline; font-size: var(--fs-sm); }
+.bd-st-dl b { font-weight: 600; color: var(--fg); }
+.bd-st-dl span { color: var(--fg-muted); }
+@container body (max-width: 560px) { .bd-st-dl { grid-template-columns: minmax(0, 1fr); } }
+.bd-st-links { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.bd-st-small { display: flex; gap: var(--sp-3); align-items: flex-start; margin: 0; font-size: var(--fs-xs); color: var(--fg-faint); }
+.bd-st-small .ui-ico { width: 12px; height: 12px; flex: none; margin-top: 1px; }
+.bd-st-foot { max-width: 90ch; }
+.bd-st-empty-img { width: 112px; height: auto; opacity: 0.85; }
+.bd-st-banner-acts { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+
+/* диалог «Играть по этому гайду» */
+.bd-st-dlg { width: 620px; }
+.bd-st-what { display: grid; gap: var(--sp-4); }
+.bd-st-what .ui-label { margin: 0; }
+.bd-st-what ul { display: grid; gap: var(--sp-3); margin: 0; padding: 0; list-style: none; }
+.bd-st-what li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: var(--sp-4); font-size: var(--fs-sm); line-height: 1.45; }
+.bd-st-what li .ui-ico { width: 14px; height: 14px; margin-top: 2px; color: var(--accent); }
