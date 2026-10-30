@@ -7,7 +7,8 @@
 //   few      — мало данных (точность ≤ 1);
 //   junk     — меньше 1 exalted: продать торговцу (валюте и стопкам — cheap: копить и продавать пачкой);
 //   list     — «выставьте за ~X»: самый дешёвый честный лот (группы «честной цены», без приманок).
-// Цена в прочих валютах (chaos, regal, annul…) — как есть, без «хлама» и без «ценной» (не с чем сравнить).
+// Цена в прочих валютах (chaos, regal, annul…) — как есть, без «хлама» и без «ценной» (не с чем сравнить); исключение —
+// 1 сфера превращения или усиления (минимальная цена на trade2): это заведомо меньше 1 exalted — «хлам».
 // Чистый TS.
 
 import {
@@ -30,6 +31,13 @@ export const EXPENSIVE_FEW_CONFIDENCE = 2
 export const SPREAD_RATIO = 3
 export const SPREAD_MIN_LOTS = 4
 export const NOTE_MIN_CONFIDENCE = 2
+/** самые дешёвые сферы PoE2: одна такая — заведомо меньше 1 exalted */
+export const BELOW_EXALTED: ReadonlySet<string> = new Set(['transmute', 'aug'])
+
+/** Цена заведомо меньше 1 exalted (курса нет): exalted < 1 или одна дешёвая сфера. */
+function belowOneExalted(p: Poe1Price): boolean {
+  return p.currency === 'exalted' ? p.amount < JUNK_EXALTED : BELOW_EXALTED.has(p.currency) && p.amount <= 1
+}
 
 export type Poe2VerdictInput =
   | {
@@ -71,7 +79,7 @@ export function poe2Verdict(input: Poe2VerdictInput): Verdict {
     if (!input.each) return { kind: 'none', count: 0, confidence }
     const base = { price: nicePrice(input.each), count: input.total, confidence }
     if (confidence <= FEW_CONFIDENCE) return { kind: 'few', ...base }
-    if (input.each.currency === 'exalted' && input.each.amount < JUNK_EXALTED) return { kind: 'cheap', ...base }
+    if (belowOneExalted(input.each)) return { kind: 'cheap', ...base }
     return { kind: 'list', ...base }
   }
 
@@ -106,7 +114,7 @@ export function poe2Verdict(input: Poe2VerdictInput): Verdict {
     if (isDiv) return { kind: 'valuable', reason: 'div', ...base, note }
   }
   if (confidence <= FEW_CONFIDENCE) return { kind: 'few', ...base }
-  if (ref.currency === 'exalted' && ref.amount < JUNK_EXALTED) return { kind: input.noVendor ? 'cheap' : 'junk', ...base }
+  if (belowOneExalted(ref)) return { kind: input.noVendor ? 'cheap' : 'junk', ...base }
   return { kind: 'list', ...base, note }
 }
 

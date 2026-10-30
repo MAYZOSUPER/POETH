@@ -46,6 +46,12 @@ describe('вердикт PoE2', () => {
     expect(trade(lots, 30).kind).toBe('list')
   })
 
+  it('одна сфера превращения или усиления — заведомо меньше 1 ex: «хлам»', () => {
+    const lots = Array.from({ length: 12 }, () => lot(1, 'transmute', 'instant'))
+    expect(trade(lots, 800).kind).toBe('junk')
+    expect(trade(Array.from({ length: 12 }, () => lot(3, 'transmute')), 800).kind).toBe('list')
+  })
+
   it('обмен: цена за штуку; дешевле 1 ex — «дешёвка»', () => {
     expect(poe2Verdict({ kind: 'bulk', total: 40, each: { amount: 0.2, currency: 'exalted' } }).kind).toBe('cheap')
     expect(poe2Verdict({ kind: 'bulk', total: 40, each: { amount: 3, currency: 'exalted' } }).kind).toBe('list')

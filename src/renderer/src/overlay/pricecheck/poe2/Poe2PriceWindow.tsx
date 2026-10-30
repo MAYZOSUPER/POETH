@@ -19,6 +19,7 @@ import { CoinIcon, Currency, CurrencyTipBody, TipAnchor, useCurrencyNames } from
 import type { RuCase } from '@shared/currency'
 import { ageKey, currencyLabel, fmtNum, tierWordKey, waitClock } from '../format'
 import { activePreset2Of, usePoe2PriceCheckStore as useStore, type Pc2Result } from './store'
+import './poe2.css'
 
 // Окно цены PoE2 (S47) — то же окно поверх игры, что у PoE1 (../PriceWindow.tsx), те же классы ui-*/pc-* и строки
 // pc1.*, где они одинаковы для обеих игр; своё — у PoE2: фильтры предмета (гнёзда рун, тир путевого камня, уровень
