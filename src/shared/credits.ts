@@ -17,6 +17,7 @@ export const CREDITS: readonly CreditEntry[] = [
   { id: 'poeoverlay', name: 'PoE Overlay Community Fork', url: 'github.com/PoE-Overlay-Community/PoE-Overlay-Community-Fork', license: 'MIT' },
   { id: 'exileui', name: 'Exile-UI (Lailloken)', url: 'github.com/Lailloken/Exile-UI', license: 'MIT' },
   { id: 'leveling', name: 'exile-leveling, poe2-leveling-overlay', url: 'github.com/HeartofPhos/exile-leveling', license: 'MIT' },
+  { id: 'pob', name: 'Path of Building Community', url: 'github.com/PathOfBuildingCommunity/PathOfBuilding', license: 'MIT' },
   { id: 'native', name: 'electron-overlay-window, uiohook-napi, ws', url: 'npmjs.com', license: 'MIT' },
   { id: 'fonts', name: 'Cormorant SC, Golos Text, JetBrains Mono', url: 'fonts.google.com', license: 'SIL OFL 1.1' },
   { id: 'electron', name: 'Electron, React, zustand', url: 'electronjs.org', license: 'MIT' }

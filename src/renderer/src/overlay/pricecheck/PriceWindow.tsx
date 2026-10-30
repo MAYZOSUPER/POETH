@@ -37,6 +37,7 @@ import { compareLot, type LotComparison } from '@shared/poe1/pricecheck/compare'
 import { Select } from '../../components/Select'
 import { LotCard } from './LotCard'
 import { EquipBox } from './EquipBox'
+import { TimelessBox } from './TimelessBox'
 
 // Окно цены PoE1 по утверждённому макету (docs/design-system.md, классы ui-*): шапка с лигой, предмет,
 // свойства и псевдо-статы с галочками, фильтры предмета, вердикт и предупреждения (S15), сводка «честной
@@ -427,6 +428,7 @@ function StatsBlocks({ preset, item, expert, lang, t }: { preset: FilterPreset; 
   return (
     <>
       {timeless && preset.timeless && <TimelessBlock preset={preset} t={t} />}
+      {timeless && preset.timeless && <TimelessBox item={item} info={preset.timeless} simple={!expert} lang={lang} t={t} />}
       {(mods.length > 0 || unknown.length > 0 || hiddenCount > 0) && (
         <div className="pc-blk">
           <div className="ui-label">

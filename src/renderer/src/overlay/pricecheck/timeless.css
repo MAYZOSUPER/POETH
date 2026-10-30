@@ -1,0 +1,81 @@
+/* «Умная оценка» timeless-самоцвета (S45) в окне цены: блок под строкой сида. Только токены дизайн-системы. */
+
+.tl {
+  display: grid;
+  gap: 6px;
+  margin: 0 var(--sp-3) var(--sp-2);
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  background: var(--inset);
+  font-size: var(--fs-sm);
+  min-width: 0;
+}
+.tl-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tl-head .ui-label {
+  margin: 0;
+}
+.tl-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.4;
+  color: var(--fg);
+}
+.tl-fit {
+  padding-top: 2px;
+  border-top: 1px dashed var(--border);
+  overflow-wrap: anywhere;
+}
+.tl-best {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+}
+.tl-best__k {
+  color: var(--fg-muted);
+}
+.tl-notes {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.tl-muted {
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.tl-none {
+  color: var(--fg-muted);
+  line-height: 1.4;
+}
+.tl-bad {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--warn);
+}
+.tl-analog {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  min-width: 0;
+}
+.tl-price {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1.4;
+}
