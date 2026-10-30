@@ -1,5 +1,5 @@
-# Проверки на каждый push и pull request: типы, тесты, ядро прайс-чека PoE2, поиск секретов.
-# Релиз по тегу v* — отдельно (release.yml).
+# Проверки на каждый push и pull request: уязвимости в зависимостях (npm audit), типы, тесты, ядро прайс-чека
+# PoE2, поиск секретов. Релиз по тегу v* — отдельно (release.yml).
 name: CI
 
 on:
@@ -25,6 +25,22 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # S48, docs/security.md «Чужой код и зависимости». Зависимости приложения (то, что попадает в установщик):
+      # известная уязвимость high/critical роняет сборку. Обновить пакет или, если исправления нет, разобрать риск.
+      - name: Уязвимости в зависимостях приложения (npm audit, high и выше — ошибка)
+        run: npm audit --omit=dev --audit-level=high
+      # Electron (сам рантайм) и React (вшит в бандл окон) записаны в devDependencies — шаг выше их не видит.
+      # Итог по всем зависимостям — в сводке запуска.
+      - name: Уязвимости в Electron и React (в установщике, хотя в devDependencies)
+        shell: bash
+        run: |
+          npm audit --json > "$RUNNER_TEMP/audit.json" || true
+          node tools/ci/audit-shipped.mjs "$RUNNER_TEMP/audit.json"
+      # Все зависимости, включая сборку и тесты (electron-builder, vite, vitest…): в приложение они не попадают,
+      # но работают на машине сборки. Только отчёт — сборку не роняет.
+      - name: Уязвимости во всех зависимостях (отчёт, без ошибки)
+        shell: bash
+        run: npm audit || true
       - name: Поиск секретов
         run: node tools/ci/scan-secrets.mjs
       - run: npm run typecheck
