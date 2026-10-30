@@ -413,9 +413,12 @@ function ForgetButton({ slots, t }: { slots: EquipSlot[]; t: T }) {
       className="ui-btn ui-btn--sm ui-btn--ghost"
       title={t('eq.forget.help', { slot: names })}
       aria-label={t('eq.forget.help', { slot: names })}
-      onClick={() => {
-        for (const s of slots) void window.overlayApi.equip.forget(s).catch(() => undefined)
-      }}
+      onClick={() =>
+        void (async () => {
+          // по одному: пара «оружие + щит» — два слота
+          for (const s of slots) await window.overlayApi.equip.forget(s).catch(() => undefined)
+        })()
+      }
     >
       <Icon name="trash" />
       {t('eq.forget')}

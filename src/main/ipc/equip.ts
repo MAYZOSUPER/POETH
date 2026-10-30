@@ -2,6 +2,7 @@ import { ipcMain } from 'electron'
 import { IPC } from '@shared/ipc'
 import type { GameDef } from '@shared/games'
 import { buildDevFlag, buildOn } from '@shared/build/flag'
+import { cleanChar } from '@shared/build/equipCompareStore'
 import type { EquipState } from '@shared/types/equip'
 import { forgetEquipSlot, getEquipState, saveEquip, setEquipMine } from '../build/equipped'
 import { onTaken, startTaken, takenCharacter } from '../build/buildTaken'
@@ -23,7 +24,8 @@ const EMPTY: EquipState = { on: false, character: null, level: null, items: [], 
 async function who(): Promise<{ char: string | null; level: number | null }> {
   if (game) await startTaken(game).catch(() => undefined)
   const c = takenCharacter()
-  return { char: c?.name ?? null, level: c?.level ?? null }
+  // имя — той же проверкой, что в файле (иначе набор не прочитается после перезапуска): чужая форма — общий набор
+  return { char: cleanChar(c?.name ?? null), level: c?.level ?? null }
 }
 
 let last = ''
@@ -41,7 +43,7 @@ function register(): void {
     const key = c ? `${c.name}:${c.level}` : ''
     if (key === last) return
     last = key
-    void getEquipState(c?.name ?? null, c?.level ?? null).then(push)
+    void getEquipState(cleanChar(c?.name ?? null), c?.level ?? null).then(push)
   })
 
   ipcMain.handle(IPC.equip.state, async () => {

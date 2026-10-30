@@ -41,21 +41,29 @@ function commit(next: EquipFile): void {
     .catch((e) => console.warn('[equip] cannot save equipped.json', e))
 }
 
+/** Изменения — по одному: два запроса подряд («Забыть» у пары оружие + щит) не затирают друг друга. */
+let chain: Promise<unknown> = Promise.resolve()
+function mutate(fn: (f: EquipFile, now: number) => EquipFile): Promise<EquipFile> {
+  const run = chain.then(async () => {
+    commit(fn(await load(), Date.now()))
+    return file ?? emptyEquipFile()
+  })
+  chain = run.catch(() => undefined)
+  return run
+}
+
 export async function getEquipState(char: string | null, level: number | null): Promise<EquipState> {
   return equipStateOf(await load(), char, level)
 }
 
 export async function saveEquip(char: string | null, level: number | null, slot: unknown, item: unknown): Promise<EquipState> {
-  commit(putEquip(await load(), char, slot, item, Date.now()))
-  return equipStateOf(await load(), char, level)
+  return equipStateOf(await mutate((f, now) => putEquip(f, char, slot, item, now)), char, level)
 }
 
 export async function forgetEquipSlot(char: string | null, level: number | null, slot: unknown): Promise<EquipState> {
-  commit(forgetEquip(await load(), char, slot, Date.now()))
-  return equipStateOf(await load(), char, level)
+  return equipStateOf(await mutate((f, now) => forgetEquip(f, char, slot, now)), char, level)
 }
 
 export async function setEquipMine(char: string | null, level: number | null, mine: unknown): Promise<EquipState> {
-  commit(setMine(await load(), char, mine, Date.now()))
-  return equipStateOf(await load(), char, level)
+  return equipStateOf(await mutate((f, now) => setMine(f, char, mine, now)), char, level)
 }
