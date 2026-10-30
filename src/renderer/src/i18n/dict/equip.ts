@@ -11,7 +11,8 @@ export const equip: DomainDict = {
     'eq.fresh.min': 'запомнено {n} мин назад',
     'eq.fresh.h': 'запомнено {n} ч назад',
     'eq.fresh.d': 'запомнено {n} дн. назад',
-    'eq.fresh.old': 'Запомнено давно: Ctrl+D по надетой вещи в окне персонажа и «Запомнить как надетое» — обновит.',
+    'eq.fresh.old': 'Запомнено давно: {key} по надетой вещи в окне персонажа и «Запомнить как надетое» — обновит.',
+    'eq.fresh.old.nokey': 'Запомнено давно: прайс-чек надетой вещи в окне персонажа и «Запомнить как надетое» — обновит.',
 
     // вердикт
     'eq.v.better': 'Лучше',
@@ -81,6 +82,7 @@ export const equip: DomainDict = {
     'eq.n.reachCap': 'Закроется кап: {el}.',
     'eq.n.overcap': '{el}: изменение уйдёт в запас над капом.',
     'eq.n.caster': 'Для заклинаний DPS оружия не важен.',
+    'eq.n.dps.asIs': 'DPS вещей как есть; фильтр цены считает его при качестве 20 %.',
     'eq.n.gems': 'После замены {attr} {after} из {need} — камни и вещи отключатся.',
     'eq.n.pct': '{a} → {b}% к жизни',
     'eq.req.have': '{what} — у вас {have}',
@@ -128,7 +130,8 @@ export const equip: DomainDict = {
     // действия
     'eq.worn': 'Надето:',
     'eq.save': 'Запомнить как надетое',
-    'eq.save.help': 'Если это окно открыто по надетой вещи (Ctrl+D в окне персонажа)',
+    'eq.save.help': 'Если это окно открыто по надетой вещи ({key} в окне персонажа)',
+    'eq.save.help.nokey': 'Если это окно открыто по надетой вещи (прайс-чек в окне персонажа)',
     'eq.save.where': 'Куда:',
     'eq.forget': 'Забыть',
     'eq.forget.help': 'Забыть запомненную вещь: {slot}',
@@ -136,7 +139,8 @@ export const equip: DomainDict = {
 
     // состояния
     'eq.empty': 'Сравнить не с чем.',
-    'eq.empty.how': 'Откройте окно персонажа (C), наведите на надетую вещь этого слота, нажмите Ctrl+D и «Запомнить как надетое».',
+    'eq.empty.how': 'Откройте окно персонажа (C), наведите на надетую вещь этого слота, нажмите {key} и «Запомнить как надетое».',
+    'eq.empty.how.nokey': 'Откройте окно персонажа (C), проверьте цену надетой вещи этого слота и нажмите «Запомнить как надетое».',
     'eq.empty.flask': 'Флакона этого вида среди запомненных нет.',
     'eq.empty.save': 'Запомнить эту как надетую',
     'eq.this': 'Это ваша надетая вещь: {slot}.',
@@ -169,7 +173,8 @@ export const equip: DomainDict = {
     'eq.fresh.min': 'saved {n} min ago',
     'eq.fresh.h': 'saved {n} h ago',
     'eq.fresh.d': 'saved {n} d ago',
-    'eq.fresh.old': 'Saved long ago: press Ctrl+D on the equipped item in the character window and “Save as equipped” to update.',
+    'eq.fresh.old': 'Saved long ago: press {key} on the equipped item in the character window and “Save as equipped” to update.',
+    'eq.fresh.old.nokey': 'Saved long ago: price-check the equipped item in the character window and press “Save as equipped” to update.',
 
     'eq.v.better': 'Better',
     'eq.v.worse': 'Worse',
@@ -235,6 +240,7 @@ export const equip: DomainDict = {
     'eq.n.reachCap': 'Capped: {el}.',
     'eq.n.overcap': '{el}: the change goes into over-cap.',
     'eq.n.caster': 'Weapon DPS does not matter for spells.',
+    'eq.n.dps.asIs': 'Item DPS as is; the price filter counts it at 20% quality.',
     'eq.n.gems': 'After the swap {attr} is {after} of {need}, so gems and items get disabled.',
     'eq.n.pct': '{a} → {b}% to life',
     'eq.req.have': '{what} — you have {have}',
@@ -279,14 +285,16 @@ export const equip: DomainDict = {
 
     'eq.worn': 'Equipped:',
     'eq.save': 'Save as equipped',
-    'eq.save.help': 'If this window is for an equipped item (Ctrl+D in the character window)',
+    'eq.save.help': 'If this window is for an equipped item ({key} in the character window)',
+    'eq.save.help.nokey': 'If this window is for an equipped item (price check in the character window)',
     'eq.save.where': 'Slot:',
     'eq.forget': 'Forget',
     'eq.forget.help': 'Forget the saved item: {slot}',
     'eq.fail': 'Not saved — please try again.',
 
     'eq.empty': 'Nothing to compare with.',
-    'eq.empty.how': 'Open the character window (C), hover the item equipped in this slot, press Ctrl+D, then “Save as equipped”.',
+    'eq.empty.how': 'Open the character window (C), hover the item equipped in this slot, press {key}, then “Save as equipped”.',
+    'eq.empty.how.nokey': 'Open the character window (C), price-check the item equipped in this slot, then “Save as equipped”.',
     'eq.empty.flask': 'None of your saved flasks is of this kind.',
     'eq.empty.save': 'Save this one as equipped',
     'eq.this': 'This is your equipped item: {slot}.',

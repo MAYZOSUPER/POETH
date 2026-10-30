@@ -1,5 +1,6 @@
 import type { GameLang, GameLangSettings } from '@shared/types'
 import { useLang, useT } from '../i18n'
+import { tKey } from '../i18n/hotkey'
 import { useAppStore } from '../store/useAppStore'
 import { setGameLangChoice, useGameLangInfo } from '../gameLang'
 import { Ico } from '../panels/regex/Ico'
@@ -13,7 +14,7 @@ export function GameLangSetting() {
   const t = useT()
   const uiLang = useLang()
   const info = useGameLangInfo(uiLang)
-  const key = useAppStore((s) => s.settings?.hotkeys.priceCheck.accel) || 'Control+D'
+  const key = useAppStore((s) => s.settings?.hotkeys.priceCheck.accel)
   const d = info.detected
   const by = d ? t(`glang.by.${d.by}`) : ''
   const note =
@@ -21,7 +22,7 @@ export function GameLangSetting() {
       ? ''
       : d
         ? t('glang.detected', { lang: LANG_NAME[d.lang], by })
-        : t('glang.unknown', { lang: LANG_NAME[uiLang], key: key.replace(/Control/g, 'Ctrl') })
+        : tKey(t, 'glang.unknown', key, { lang: LANG_NAME[uiLang] })
   const mismatch = info.choice !== 'auto' && d && d.lang !== info.choice
   return (
     <>

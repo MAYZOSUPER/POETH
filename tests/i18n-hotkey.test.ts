@@ -93,7 +93,62 @@ const CASES: Case[] = [
     }
   },
   { key: 'wn.prev', action: 'prevStep', was: { ru: 'Назад (Ctrl+Shift+[)', en: 'Back (Ctrl+Shift+[)' } },
-  { key: 'wn.next', action: 'nextStep', was: { ru: 'Вперёд (Ctrl+Shift+])', en: 'Forward (Ctrl+Shift+])' } }
+  { key: 'wn.next', action: 'nextStep', was: { ru: 'Вперёд (Ctrl+Shift+])', en: 'Forward (Ctrl+Shift+])' } },
+  // вторая волна S42: «Тиры уников» (POETH_ITEMFLIP), «Язык клиента игры», «Против надетого» (S41)
+  {
+    key: 'flip.items.tiers.hint',
+    action: 'priceCheck',
+    was: {
+      ru: 'T0 — от 10 div, T1 — от 1 div, T2 — от 0,1 div: такие уники не продавай торговцу, а выстави на трейд (Ctrl+D покажет цену твоего). «?» — мало данных.',
+      en: 'T0 — 10+ div, T1 — 1+ div, T2 — 0.1+ div: don’t vendor these, list them on trade (Ctrl+D shows the price of yours). “?” — little data.'
+    }
+  },
+  {
+    key: 'flip.items.tiers.foot',
+    action: 'priceCheck',
+    was: {
+      ru: 'Цена — обычная форма уника (без связей, не нечестивый). Твой предмет может стоить иначе: проверь по Ctrl+D.',
+      en: 'Price of the plain form (unlinked, not Foulborn). Your item may be worth something else: check it with Ctrl+D.'
+    }
+  },
+  {
+    key: 'flip.items.advice.check',
+    action: 'priceCheck',
+    was: { ru: 'проверь связи и вариант (Ctrl+D)', en: 'check links and variant (Ctrl+D)' }
+  },
+  {
+    key: 'glang.unknown',
+    action: 'priceCheck',
+    params: { lang: 'English' },
+    was: {
+      ru: 'Пока не определено, поэтому как язык интерфейса (English). Наведите курсор на любой предмет в игре и нажмите Ctrl+D.',
+      en: 'Not detected yet, so the interface language is used (English). Hover over any item in the game and press Ctrl+D.'
+    }
+  },
+  {
+    key: 'eq.fresh.old',
+    action: 'priceCheck',
+    was: {
+      ru: 'Запомнено давно: Ctrl+D по надетой вещи в окне персонажа и «Запомнить как надетое» — обновит.',
+      en: 'Saved long ago: press Ctrl+D on the equipped item in the character window and “Save as equipped” to update.'
+    }
+  },
+  {
+    key: 'eq.save.help',
+    action: 'priceCheck',
+    was: {
+      ru: 'Если это окно открыто по надетой вещи (Ctrl+D в окне персонажа)',
+      en: 'If this window is for an equipped item (Ctrl+D in the character window)'
+    }
+  },
+  {
+    key: 'eq.empty.how',
+    action: 'priceCheck',
+    was: {
+      ru: 'Откройте окно персонажа (C), наведите на надетую вещь этого слота, нажмите Ctrl+D и «Запомнить как надетое».',
+      en: 'Open the character window (C), hover the item equipped in this slot, press Ctrl+D, then “Save as equipped”.'
+    }
+  }
 ]
 
 const LANGS: UiLang[] = ['ru', 'en']
@@ -144,5 +199,14 @@ describe('строки с клавишей из настроек (S42)', () => {
         expect(DICT[lang][c.key], `${lang} ${c.key}`).toContain('{key}')
         expect(DICT[lang][c.key], `${lang} ${c.key}`).not.toMatch(/Ctrl\+/)
       }
+  })
+
+  it('ни в одной строке словарей нет сочетания POETH по умолчанию (Ctrl+F и Ctrl+V игры — можно)', () => {
+    const defaults = Object.values(HOTKEY_DEFAULTS)
+      .map((h) => accelText(h.accel))
+      .filter(Boolean)
+    for (const lang of LANGS)
+      for (const [key, s] of Object.entries(DICT[lang]))
+        for (const k of defaults) expect(s.includes(k), `${lang} ${key}: «${k}»`).toBe(false)
   })
 })

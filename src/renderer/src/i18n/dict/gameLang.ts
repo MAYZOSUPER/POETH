@@ -12,6 +12,8 @@ export const gameLang: DomainDict = {
     'glang.by.item': 'по последнему предмету',
     'glang.by.log': 'по журналу игры',
     'glang.unknown': 'Пока не определено, поэтому как язык интерфейса ({lang}). Наведите курсор на любой предмет в игре и нажмите {key}.',
+    'glang.unknown.nokey':
+      'Пока не определено, поэтому как язык интерфейса ({lang}). Назначьте клавишу прайс-чека в настройках, наведите курсор на любой предмет в игре и нажмите её.',
     'glang.mismatch': 'Похоже, игра на другом языке: {lang} ({by}).',
     'glang.toAuto': 'Определять по игре'
   },
@@ -23,6 +25,8 @@ export const gameLang: DomainDict = {
     'glang.by.item': 'from the last item',
     'glang.by.log': 'from the game log',
     'glang.unknown': 'Not detected yet, so the interface language is used ({lang}). Hover over any item in the game and press {key}.',
+    'glang.unknown.nokey':
+      'Not detected yet, so the interface language is used ({lang}). Set the price check hotkey in Settings, then hover over any item in the game and press it.',
     'glang.mismatch': 'The game seems to be in another language: {lang} ({by}).',
     'glang.toAuto': 'Detect from the game'
   }
