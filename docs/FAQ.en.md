@@ -167,4 +167,4 @@ The installed version updates itself: when a new one comes out, POETH offers to 
 
 ---
 
-Didn't find an answer? Open an issue in the repository's [Issues](https://github.com/MAYZOSUPER/POETH/issues).
+Didn't find an answer or found a bug? [Let us know](https://mayzosuper.github.io/POETH/bug/?lang=en): in versions after 0.1.0-rc.12, About → “Report a bug” in POETH itself opens a GitHub form with the version and game already filled in.

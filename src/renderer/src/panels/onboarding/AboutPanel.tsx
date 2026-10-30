@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import type { AppInfo } from '@shared/types'
 import { CREDITS, MIT_LICENSE_TEXT, type Supporter } from '@shared/credits'
 import { BOOSTY_URL } from '@shared/links'
-import { useT } from '../../i18n'
+import { useLang, useT } from '../../i18n'
 import { BrandImg } from '../../components/BrandImg'
 import { Ico } from '../regex/Ico'
 import { useShellStore } from '../../store/useShellStore'
@@ -14,8 +14,16 @@ import './onboarding.css'
 
 const GAME_NAME = { poe1: 'Path of Exile 1', poe2: 'Path of Exile 2' } as const
 
+/** Страница сайта «Сообщить об ошибке» (S56): что приложить, скриншоты, приватность. */
+const BUG_HELP_URL = 'https://mayzosuper.github.io/POETH/bug/'
+
+function bugHelpUrl(lang: string): string {
+  return lang === 'en' ? `${BUG_HELP_URL}?lang=en` : BUG_HELP_URL
+}
+
 export function AboutPanel() {
   const t = useT()
+  const lang = useLang()
   const setPage = useShellStore((s) => s.setPage)
   const openWizard = useShellStore((s) => s.openWizard)
   const [info, setInfo] = useState<AppInfo | null>(null)
@@ -77,6 +85,19 @@ export function AboutPanel() {
           </button>
         </div>
         {licenses && <Licenses />}
+
+        {/* S56: форма GitHub «Ошибка / Bug» — адрес с версией, игрой и языками собирает main */}
+        <div className="onb-row">
+          <button type="button" className="ui-btn ui-btn--sm" title={t('about.bug.title')} onClick={() => void window.overlayApi.app.reportBug()}>
+            <Ico name="warn" />
+            {t('about.bug')}
+          </button>
+          <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" onClick={() => window.overlayApi.window.openExternal(bugHelpUrl(lang))}>
+            <Ico name="help" />
+            {t('about.bug.help')}
+          </button>
+        </div>
+        <span className="onb-faint">{t('about.bug.note')}</span>
 
         <span className="onb-faint">{t('about.privacy')}</span>
         <p className="onb-faint onb-p">{t('set.disclaimer')}</p>
