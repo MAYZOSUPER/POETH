@@ -26,6 +26,11 @@
   line-height: 1.4;
   color: var(--fg);
 }
+.tl-fit {
+  padding-top: 2px;
+  border-top: 1px dashed var(--border);
+  overflow-wrap: anywhere;
+}
 .tl-best {
   display: flex;
   flex-wrap: wrap;

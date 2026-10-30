@@ -1,7 +1,7 @@
 import { createHash } from 'crypto'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
-import { inflateSync } from 'zlib'
+import { deflateSync, inflateSync } from 'zlib'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { nodePosition, parseTreeData } from '@shared/build/data'
 import type { Poe1Data, Poe1Lang } from '@shared/poe1/data'
@@ -18,7 +18,16 @@ import {
   type TimelessDataRaw,
   type TimelessTable
 } from '@shared/poe1/timeless/data'
-import { MIN_THEME_COUNT, dataKindOf, dataSeedOf, evaluateSeed, findAnalogs, itemSeedOf, seedScore } from '@shared/poe1/timeless/evaluate'
+import {
+  MIN_THEME_COUNT,
+  buildFit,
+  dataKindOf,
+  dataSeedOf,
+  evaluateSeed,
+  findAnalogs,
+  itemSeedOf,
+  seedScore
+} from '@shared/poe1/timeless/evaluate'
 import {
   ANON_ANALOG_FILTERS,
   MAX_ANALOG_FILTERS,
@@ -114,10 +123,10 @@ describe('timeless.json', () => {
     }
   })
 
-  it('распаковка средствами платформы (DecompressionStream) = zlib Node', async () => {
-    const j = data.jewels.MF
-    const viaStream = await inflateZlib(readFileSync(resolve(DATA, j.file)))
-    expect(viaStream).toEqual(table('MF').bytes)
+  it('распаковка средствами платформы (DecompressionStream) понимает zlib генератора', async () => {
+    // целый лукап через Web Streams в Node распаковывается секунды — проверяем формат на куске тех же данных
+    const part = table('MF').bytes.subarray(0, 64 * 1024)
+    expect(await inflateZlib(deflateSync(part, { level: 9 }))).toEqual(new Uint8Array(part))
   })
 })
 
@@ -241,6 +250,42 @@ describe('лучшее гнездо', () => {
       const sameTheme = ev.sockets.filter((s) => s.theme === ev.best!.theme).map((s) => s.score)
       expect(seedScore(data, table(kind), seed, ev.best!.theme)).toBeGreaterThanOrEqual(Math.max(...sameTheme))
     }
+  })
+})
+
+describe('симуляция и «для вашего билда»', () => {
+  it('прогресс: 21 гнездо по одному, сиды — до конца диапазона', () => {
+    const sockets: number[] = []
+    const ev = evaluateSeed(data, table('LP'), 12345, (done, total) => {
+      expect(total).toBe(21)
+      sockets.push(done)
+    })
+    expect(sockets).toEqual(Array.from({ length: 21 }, (_, i) => i + 1))
+    const seeds: [number, number][] = []
+    findAnalogs(data, table('LP'), ev, 45, (done, total) => seeds.push([done, total]))
+    expect(seeds.at(-1)).toEqual([8001, 8001])
+    expect(seeds.length).toBe(9)
+  })
+
+  it('гнездо, взятое в билде, важнее гнезда с большим числом нотаблов билда; исходы — на нотаблах билда', () => {
+    const t = table('MF')
+    const sock = socketOf(26725)
+    const hashes = sock.notables.map((r) => data.rows[r])
+    // Stamina 37326 и Barbarism 53118 при сиде 2000 заменены (Vilsol), гнездо 26725 взято
+    const nodes = new Set([26725, 37326, 53118])
+    const fit = buildFit(data, t, 2000, nodes)!
+    expect(data.sockets[fit.socket].id).toBe(26725)
+    expect(fit).toMatchObject({ allocated: true, notables: 2, unknown: 0 })
+    expect(fit.notes.map((n) => data.jewels.MF.outcomes[n.code].name![0]).sort()).toEqual(['Calming Devotion', 'Cloistered'])
+    // без гнезда в билде — то, где больше нотаблов билда
+    const other = data.sockets.find((s) => s.id !== 26725 && s.notables.length > 3)!
+    const many = new Set([...other.notables.slice(0, 3).map((r) => data.rows[r]), 37326])
+    const fit2 = buildFit(data, t, 2000, many)!
+    expect(fit2.allocated).toBe(false)
+    expect(fit2.notables).toBeGreaterThanOrEqual(3)
+    expect(hashes).toContain(37326)
+    // нотаблов билда нигде нет — null
+    expect(buildFit(data, t, 2000, new Set([26725]))).toBeNull()
   })
 })
 

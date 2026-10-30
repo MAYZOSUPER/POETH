@@ -139,11 +139,20 @@ function scoreSocket(c: Compiled, data: TimelessDataRaw, t: TimelessTable, si: n
   return best
 }
 
-/** Исход сида по всем гнёздам и лучшее гнездо. `seed` — сид в данных. */
-export function evaluateSeed(data: TimelessDataRaw, t: TimelessTable, seed: number): TimelessEvaluation {
+/** Исход сида по всем гнёздам и лучшее гнездо. `seed` — сид в данных; `onSocket` — прогресс (гнёзд проверено). */
+export function evaluateSeed(
+  data: TimelessDataRaw,
+  t: TimelessTable,
+  seed: number,
+  onSocket?: (done: number, total: number) => void
+): TimelessEvaluation {
   const c = compile(data, t.kind)
   const sockets = data.sockets
-    .map((_, si) => scoreSocket(c, data, t, si, seed))
+    .map((_, si) => {
+      const s = scoreSocket(c, data, t, si, seed)
+      onSocket?.(si + 1, data.sockets.length)
+      return s
+    })
     .sort((a, b) => b.lift - a.lift || b.score - a.score || a.unknown - b.unknown || a.socket - b.socket)
   const best = sockets[0] && sockets[0].lift > 0 ? sockets[0] : null
   return { kind: t.kind, seed, best, sockets }
@@ -165,6 +174,9 @@ export function seedScore(data: TimelessDataRaw, t: TimelessTable, seed: number,
   return best
 }
 
+/** Прогресс перебора сидов — раз на столько сидов. */
+const PROGRESS_STEP = 1000
+
 export interface TimelessAnalogs {
   /** сиды в данных: сначала свой, затем с таким же счётом, затем с бо́льшим (ближе — раньше) */
   seeds: number[]
@@ -180,7 +192,13 @@ export interface TimelessAnalogs {
  * «Сиды с таким же или лучшим исходом»: в каком-нибудь гнезде та же тема набирает не меньше, чем лучшее гнездо
  * этого сида. Для count-запроса на трейд — не больше `max` сидов.
  */
-export function findAnalogs(data: TimelessDataRaw, t: TimelessTable, ev: TimelessEvaluation, max: number): TimelessAnalogs {
+export function findAnalogs(
+  data: TimelessDataRaw,
+  t: TimelessTable,
+  ev: TimelessEvaluation,
+  max: number,
+  onProgress?: (done: number, total: number) => void
+): TimelessAnalogs {
   const total = t.seedMax - t.seedMin + 1
   if (!ev.best || max <= 0) return { seeds: [], qualifying: 0, equal: 0, total }
   const want = ev.best.score
@@ -188,6 +206,8 @@ export function findAnalogs(data: TimelessDataRaw, t: TimelessTable, ev: Timeles
   for (let seed = t.seedMin; seed <= t.seedMax; seed++) {
     const score = seed === ev.seed ? want : seedScore(data, t, seed, ev.best.theme)
     if (score >= want) found.push({ seed, score })
+    const done = seed - t.seedMin + 1
+    if (onProgress && (done % PROGRESS_STEP === 0 || done === total)) onProgress(done, total)
   }
   found.sort((a, b) => Number(b.seed === ev.seed) - Number(a.seed === ev.seed) || a.score - b.score || Math.abs(a.seed - ev.seed) - Math.abs(b.seed - ev.seed))
   return {
@@ -196,4 +216,44 @@ export function findAnalogs(data: TimelessDataRaw, t: TimelessTable, ev: Timeles
     equal: found.filter((x) => x.score === want).length,
     total
   }
+}
+
+export interface BuildFit {
+  /** индекс в `data.sockets` */
+  socket: number
+  /** гнездо взято в дереве билда */
+  allocated: boolean
+  /** нотаблов билда в радиусе */
+  notables: number
+  /** исходы на нотаблах билда, по убыванию */
+  notes: TimelessNote[]
+  /** из них без данных (новее лукапа) */
+  unknown: number
+}
+
+/**
+ * «Для вашего билда»: гнездо, радиус которого задевает больше всего нотаблов дерева билда, и что самоцвет с ними
+ * сделает. Гнёзда, которые билд уже берёт, — первыми. `nodes` — hash нод дерева билда (PoB). null — ни одно гнездо не
+ * задевает нотаблов билда.
+ */
+export function buildFit(data: TimelessDataRaw, t: TimelessTable, seed: number, nodes: ReadonlySet<number>): BuildFit | null {
+  let best: BuildFit | null = null
+  data.sockets.forEach((s, si) => {
+    const counts = new Map<number, number>()
+    let notables = 0
+    let unknown = 0
+    for (const row of s.notables) {
+      if (!nodes.has(data.rows[row])) continue
+      notables++
+      const code = outcomeAt(t, row, seed)
+      if (code === TIMELESS_UNKNOWN) unknown++
+      else counts.set(code, (counts.get(code) ?? 0) + 1)
+    }
+    if (!notables) return
+    const fit: BuildFit = { socket: si, allocated: nodes.has(s.id), notables, notes: notesOf(counts), unknown }
+    if (!best || Number(fit.allocated) - Number(best.allocated) > 0 || (fit.allocated === best.allocated && fit.notables > best.notables)) {
+      best = fit
+    }
+  })
+  return best
 }

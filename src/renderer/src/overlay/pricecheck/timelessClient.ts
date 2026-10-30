@@ -2,7 +2,7 @@
 // (createTimelessEngine), чтобы оценка не пропадала. Простаивающий worker закрывается (данные — несколько МБ).
 
 import type { TimelessDataRaw } from '@shared/poe1/timeless/data'
-import { createTimelessEngine, type TimelessCalc, type TimelessCalcRequest } from './timelessEngine'
+import { createTimelessEngine, type TimelessCalc, type TimelessCalcRequest, type TimelessProgress } from './timelessEngine'
 import type { TimelessWorkerRequest, TimelessWorkerResponse } from './timeless.worker'
 
 const IDLE_MS = 2 * 60_000
@@ -18,7 +18,10 @@ let broken = false
 let idle: ReturnType<typeof setTimeout> | null = null
 let seq = 0
 const pending = new Map<number, (calc: TimelessCalc | null | undefined) => void>()
+const progressOf = new Map<number, (p: TimelessProgress) => void>()
 const memo = new Map<string, Promise<TimelessCalc | null>>()
+/** прогресс текущего расчёта по ключу — для окна, открытого, пока расчёт уже идёт */
+const listeners = new Map<string, Set<(p: TimelessProgress) => void>>()
 
 function stop(): void {
   if (idle) clearTimeout(idle)
@@ -36,8 +39,11 @@ function getWorker(): Worker | null {
   try {
     const w = new Worker(new URL('./timeless.worker.ts', import.meta.url), { type: 'module' })
     w.onmessage = (e: MessageEvent<TimelessWorkerResponse>) => {
-      pending.get(e.data.id)?.(e.data.calc)
-      pending.delete(e.data.id)
+      const m = e.data
+      if ('progress' in m) return progressOf.get(m.id)?.(m.progress)
+      pending.get(m.id)?.(m.calc)
+      pending.delete(m.id)
+      progressOf.delete(m.id)
     }
     w.onerror = () => {
       broken = true
@@ -51,7 +57,7 @@ function getWorker(): Worker | null {
   }
 }
 
-function viaWorker(req: TimelessCalcRequest): Promise<TimelessCalc | null | undefined> {
+function viaWorker(req: TimelessCalcRequest, onProgress: (p: TimelessProgress) => void): Promise<TimelessCalc | null | undefined> {
   const w = getWorker()
   if (!w) return Promise.resolve(undefined)
   if (idle) clearTimeout(idle)
@@ -60,8 +66,10 @@ function viaWorker(req: TimelessCalcRequest): Promise<TimelessCalc | null | unde
   return new Promise((resolve) => {
     const timer = setTimeout(() => {
       pending.delete(id)
+      progressOf.delete(id)
       resolve(undefined)
     }, TIMEOUT_MS)
+    progressOf.set(id, onProgress)
     pending.set(id, (calc) => {
       clearTimeout(timer)
       resolve(calc)
@@ -71,12 +79,20 @@ function viaWorker(req: TimelessCalcRequest): Promise<TimelessCalc | null | unde
   })
 }
 
-/** Исход сида по гнёздам и сиды-аналоги; null — данных нет или сид вне диапазона. */
-export function calcTimeless(req: TimelessCalcRequest): Promise<TimelessCalc | null> {
-  const key = `${req.kind}:${req.seed}:${req.max}`
+/**
+ * Исход сида по гнёздам, сиды-аналоги и «для вашего билда»; null — данных нет или сид вне диапазона.
+ * `onProgress` — «идёт симуляция» (гнёзда, сиды); готовый результат из памяти приходит без прогресса.
+ */
+export function calcTimeless(req: TimelessCalcRequest, onProgress?: (p: TimelessProgress) => void): Promise<TimelessCalc | null> {
+  const key = `${req.kind}:${req.seed}:${req.max}:${req.build?.join(',') ?? ''}`
+  if (onProgress) {
+    if (!listeners.has(key)) listeners.set(key, new Set())
+    listeners.get(key)!.add(onProgress)
+  }
+  const emit = (pr: TimelessProgress): void => listeners.get(key)?.forEach((f) => f(pr))
   let p = memo.get(key)
   if (!p) {
-    p = viaWorker(req).then((r) => (r === undefined ? local.calc(req) : r))
+    p = viaWorker(req, emit).then((r) => (r === undefined ? local.calc(req, emit) : r))
     // последние MEMO результатов (предметы открывают по одному — больше не нужно)
     if (memo.size >= MEMO) memo.delete(memo.keys().next().value as string)
     memo.set(key, p)
@@ -84,5 +100,10 @@ export function calcTimeless(req: TimelessCalcRequest): Promise<TimelessCalc | n
       if (!r) memo.delete(key)
     })
   }
-  return p
+  return p.finally(() => {
+    if (!onProgress) return
+    const set = listeners.get(key)
+    set?.delete(onProgress)
+    if (set && !set.size) listeners.delete(key)
+  })
 }

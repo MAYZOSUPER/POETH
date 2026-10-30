@@ -7,7 +7,8 @@ import { honestPrice, marketPrice, type MarketPrice } from '@shared/poe1/pricech
 import { chaosRates } from '@shared/poe1/pricecheck/currency'
 import { marketView } from '@shared/poe1/pricecheck/priceBlock'
 import type { TimelessDataRaw } from '@shared/poe1/timeless/data'
-import { dataKindOf, dataSeedOf, itemSeedOf, type SocketScore } from '@shared/poe1/timeless/evaluate'
+import { dataKindOf, dataSeedOf, itemSeedOf, type BuildFit, type SocketScore } from '@shared/poe1/timeless/evaluate'
+import type { StoredBuild } from '@shared/types/build'
 import {
   ANON_ANALOG_FILTERS,
   MAX_ANALOG_FILTERS,
@@ -22,8 +23,9 @@ import { Currency } from '../../components/Currency'
 import { Icon } from '../Icon'
 import { activePresetOf, usePriceCheckStore } from './store'
 import { fmtNum } from './format'
+import { buildGuideOn } from '../leveling/buildGuide'
 import { calcTimeless, timelessData } from './timelessClient'
-import type { TimelessCalc } from './timelessEngine'
+import type { TimelessCalc, TimelessProgress } from './timelessEngine'
 import './timeless.css'
 
 // «Умная оценка» timeless-самоцвета (S45) в окне цены Ctrl+D (PoE 1): что сид даёт в 21 гнезде дерева, лучшее
@@ -31,7 +33,9 @@ import './timeless.css'
 // «сиды с таким же или лучшим исходом», только по кнопке игрока (шлюз main: interactive, лимиты, кэш). Без входа сайт
 // принимает меньше фильтров: начинаем с ANON_ANALOG_FILTERS, на «слишком сложно» — кнопка «искать по N сидов»
 // (вдвое меньше), выученный лимит живёт до перезапуска окна.
-// Простой режим — одна строка; эксперт — заметки гнезда, другие гнёзда, редкость исхода. Имена нод и строки исходов —
+// Пока считается — «Симуляция: проверено N из 21 гнезда» (прогресс из worker'а, окно не ждёт). Есть билд во вкладке
+// «Билд» — строка «Для вашего билда»: гнездо, радиус которого задевает больше всего его нотаблов, и что с ними станет.
+// Простой режим — одна строка (+ строка билда); эксперт — заметки гнезда, другие гнёзда, редкость исхода. Имена нод и строки исходов —
 // на языке клиента игры (их ищут в игре), остальное — на языке интерфейса.
 
 type T = (key: string, params?: Record<string, string | number>) => string
@@ -68,20 +72,52 @@ function openExternal(url: string): void {
   window.overlayApi.window.openExternal(url)
 }
 
-function useTimeless(info: TimelessSearch): { data: TimelessDataRaw | null; calc: TimelessCalc | null; state: 'loading' | 'ready' | 'na' } {
+/** Ноды дерева активного билда вкладки «Билд» (спек, выбранный в PoB); null — вкладка выключена или билда нет. */
+function useBuildNodes(): number[] | null {
+  const [build, setBuild] = useState<StoredBuild | null>(null)
+  useEffect(() => {
+    const api = window.overlayApi?.build
+    if (!api || !buildGuideOn()) return
+    let alive = true
+    void api
+      .state()
+      .then((s) => alive && setBuild(s.active))
+      .catch(() => undefined)
+    const off = window.overlayApi.onBuildState((s) => setBuild(s.active))
+    return () => {
+      alive = false
+      off()
+    }
+  }, [])
+  return useMemo(() => {
+    const spec = build?.build.specs[build.build.activeSpec]
+    return spec?.nodes.length ? [...new Set(spec.nodes)].sort((a, b) => a - b) : null
+  }, [build])
+}
+
+function useTimeless(info: TimelessSearch): {
+  data: TimelessDataRaw | null
+  calc: TimelessCalc | null
+  state: 'loading' | 'ready' | 'na'
+  progress: TimelessProgress | null
+} {
   const kind = dataKindOf(info.jewel)
   const max = maxAnalogSeeds(info)
+  const build = useBuildNodes()
   const [data, setData] = useState<TimelessDataRaw | null>(null)
   const [calc, setCalc] = useState<TimelessCalc | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'na'>(kind ? 'loading' : 'na')
+  const [progress, setProgress] = useState<TimelessProgress | null>(null)
   useEffect(() => {
     if (!kind) return setState('na')
     let alive = true
     setState('loading')
+    setProgress(null)
     void (async () => {
       const d = await timelessData()
       const seed = d ? dataSeedOf(d, kind, info.seed) : null
-      const c = d && seed != null ? await calcTimeless({ kind, seed, max }) : null
+      const req = { kind, seed: seed ?? 0, max, ...(build ? { build } : {}) }
+      const c = d && seed != null ? await calcTimeless(req, (p) => alive && setProgress(p)) : null
       if (!alive) return
       setData(d)
       setCalc(c)
@@ -90,8 +126,39 @@ function useTimeless(info: TimelessSearch): { data: TimelessDataRaw | null; calc
     return () => {
       alive = false
     }
-  }, [kind, info.seed, max])
-  return { data, calc, state }
+  }, [kind, info.seed, max, build])
+  return { data, calc, state, progress }
+}
+
+function progressText(p: TimelessProgress | null, t: T): string {
+  if (p?.phase === 'sockets') return t('pc1.tl.sim.sockets', { n: p.done, total: p.total })
+  if (p?.phase === 'seeds') return t('pc1.tl.sim.seeds', { n: Math.round((p.done / p.total) * 100) })
+  return t('pc1.tl.sim.load')
+}
+
+/** «Для вашего билда: гнездо «X» (взято) — N ваших нотаблов: исход ×k, …» на языке клиента игры. */
+function FitLine({ fit, data, kind, game, simple, t }: { fit: BuildFit; data: TimelessDataRaw; kind: NonNullable<ReturnType<typeof dataKindOf>>; game: 'en' | 'ru'; simple: boolean; t: T }) {
+  const outcomes = data.jewels[kind].outcomes
+  const pick = (pair: [string, string]): string => pair[game === 'ru' ? 1 : 0]
+  const name = data.names[data.sockets[fit.socket].near]
+  const notes = fit.notes.slice(0, simple ? 2 : NOTES).map((n) => {
+    const o = outcomes[n.code]
+    const text = o.name ? pick(o.name) : o.lines.map(pick).join(' · ')
+    return n.count > 1 ? `${text} ×${n.count}` : text
+  })
+  return (
+    <span className="tl-line tl-fit" title={t('pc1.tl.fit.help')}>
+      <Icon name="passive" />
+      <span>
+        {t(fit.allocated ? 'pc1.tl.fit.taken' : 'pc1.tl.fit.free', {
+          socket: t('pc1.tl.socket', { name: name ? pick(name) : '?' }),
+          n: fit.notables
+        })}
+        {notes.length > 0 && ` — ${notes.join('; ')}`}
+        {fit.unknown > 0 && <span className="tl-muted"> {t('pc1.tl.fit.unknown', { n: fit.unknown })}</span>}
+      </span>
+    </span>
+  )
 }
 
 /** Подпись гнезда на языке клиента игры: «Iron Reflexes» (ближайший кейстоун или нотабл). */
@@ -156,7 +223,7 @@ function AnalogResult({ a, simple, lang, t }: { a: Extract<Analog, { phase: 'don
 }
 
 export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem; info: TimelessSearch; simple: boolean; lang: UiLang; t: T }) {
-  const { data, calc, state } = useTimeless(info)
+  const { data, calc, state, progress } = useTimeless(info)
   const hasSession = useHasSession()
   const [analog, setAnalog] = useState<Analog>({ phase: 'idle' })
   const game = item.lang === 'ru' ? 'ru' : 'en'
@@ -176,7 +243,9 @@ export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem;
   if (state === 'loading') {
     return (
       <div className="tl" aria-busy="true">
-        <span className="tl-muted">{t('pc1.tl.loading')}</span>
+        <span className="tl-muted" role="status">
+          {progressText(progress, t)}
+        </span>
       </div>
     )
   }
@@ -191,6 +260,7 @@ export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem;
 
   const kind = dataKindOf(info.jewel)!
   const outcomes = data.jewels[kind].outcomes
+  const fitLine = calc.fit ? <FitLine fit={calc.fit} data={data} kind={kind} game={game} simple={simple} t={t} /> : null
   // со входом — лимит PoB (180), без входа — выученный; пока не знаем, есть ли вход, — как без входа
   const maxFilters = hasSession ? MAX_ANALOG_FILTERS : anonFilters
   const querySeeds = Math.min(calc.analogs.seeds.length, maxAnalogSeeds(info, maxFilters))
@@ -241,6 +311,7 @@ export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem;
     return (
       <div className="tl">
         <span className="tl-muted">{t('pc1.tl.none')}</span>
+        {fitLine}
       </div>
     )
   }
@@ -252,6 +323,7 @@ export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem;
           <Icon name="passive" />
           <span title={t('pc1.tl.socket.help')}>{t('pc1.tl.simple', { socket: socketName(data, best, game, t), score: scoreText(best, t) })}</span>
         </span>
+        {fitLine}
         <span className="tl-analog">{analogLine}</span>
       </div>
     )
@@ -288,6 +360,7 @@ export function TimelessBox({ item, info, simple, lang, t }: { item: ParsedItem;
       )}
       {best.total != null && <span className="tl-muted">{t('pc1.tl.devotion', { n: best.total })}</span>}
       {best.unknown > 0 && <span className="tl-muted">{t('pc1.tl.unknown', { n: best.unknown })}</span>}
+      {fitLine}
       {others.length > 0 && (
         <span className="tl-muted">
           {t('pc1.tl.others')}: {others.map((s) => `${socketName(data, s, game, t)} — ${scoreText(s, t)}`).join(' · ')}

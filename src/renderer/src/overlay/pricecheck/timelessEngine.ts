@@ -11,7 +11,14 @@ import {
   type TimelessDataRaw,
   type TimelessTable
 } from '@shared/poe1/timeless/data'
-import { evaluateSeed, findAnalogs, type TimelessAnalogs, type TimelessEvaluation } from '@shared/poe1/timeless/evaluate'
+import {
+  buildFit,
+  evaluateSeed,
+  findAnalogs,
+  type BuildFit,
+  type TimelessAnalogs,
+  type TimelessEvaluation
+} from '@shared/poe1/timeless/evaluate'
 
 export const TIMELESS_BASE = 'poeth://data/poe1/'
 
@@ -21,12 +28,19 @@ export interface TimelessCalcRequest {
   seed: number
   /** сколько сидов-аналогов вернуть (лимит count-запроса) */
   max: number
+  /** hash нод дерева активного билда вкладки «Билд» — для «Для вашего билда» */
+  build?: number[]
 }
 
 export interface TimelessCalc {
   evaluation: TimelessEvaluation
   analogs: TimelessAnalogs
+  /** есть билд: лучшее для него гнездо (null — радиусы не задевают его нотаблов) */
+  fit?: BuildFit | null
 }
+
+/** «Идёт симуляция»: загрузка таблиц, гнёзда (из 21), перебор сидов для аналогов. */
+export type TimelessProgress = { phase: 'load' } | { phase: 'sockets' | 'seeds'; done: number; total: number }
 
 async function sha256Hex(buf: ArrayBuffer): Promise<string | null> {
   const subtle = globalThis.crypto?.subtle
@@ -37,7 +51,7 @@ async function sha256Hex(buf: ArrayBuffer): Promise<string | null> {
 
 export interface TimelessEngine {
   data: () => Promise<TimelessDataRaw | null>
-  calc: (req: TimelessCalcRequest) => Promise<TimelessCalc | null>
+  calc: (req: TimelessCalcRequest, onProgress?: (p: TimelessProgress) => void) => Promise<TimelessCalc | null>
 }
 
 export function createTimelessEngine(base = TIMELESS_BASE): TimelessEngine {
@@ -78,11 +92,15 @@ export function createTimelessEngine(base = TIMELESS_BASE): TimelessEngine {
     return p
   }
 
-  const calc = async (req: TimelessCalcRequest): Promise<TimelessCalc | null> => {
+  const calc = async (req: TimelessCalcRequest, onProgress?: (p: TimelessProgress) => void): Promise<TimelessCalc | null> => {
+    onProgress?.({ phase: 'load' })
     const [d, t] = await Promise.all([data(), table(req.kind)])
     if (!d || !t || req.seed < t.seedMin || req.seed > t.seedMax) return null
-    const evaluation = evaluateSeed(d, t, req.seed)
-    return { evaluation, analogs: findAnalogs(d, t, evaluation, req.max) }
+    const evaluation = evaluateSeed(d, t, req.seed, (done, total) => onProgress?.({ phase: 'sockets', done, total }))
+    const analogs = findAnalogs(d, t, evaluation, req.max, (done, total) => onProgress?.({ phase: 'seeds', done, total }))
+    const out: TimelessCalc = { evaluation, analogs }
+    if (req.build) out.fit = buildFit(d, t, req.seed, new Set(req.build))
+    return out
   }
 
   return { data, calc }
