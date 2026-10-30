@@ -1,4 +1,5 @@
 import { app, session, type Session } from 'electron'
+import { SITES_PARTITION, isSitePermissionAllowed } from '@shared/sites'
 import { buildUserAgent, isPoeHost, stripPartitioned } from './guards'
 
 // Сессии сети (этап S3).
@@ -6,6 +7,7 @@ import { buildUserAgent, isPoeHost, stripPartitioned } from './guards'
 //    net.request шлюза и ws live search S6. Cookies (POESESSID, cf_clearance) живут
 //    только здесь и только в main; на диске их шифрует fuse EnableCookieEncryption.
 //  - poeth-anon (в памяти) — все прочие хосты, без cookies.
+//  - persist:poeth-sites (S43) — вкладки сайтов трейд-окна (getSitesSession): cookies самих сайтов, без аккаунта.
 // Наши окна (компаньон, оверлей, сайдбар) — на сессии по умолчанию: там poeth://.
 //
 // webRequest: у сессии один слушатель на событие — onHeadersReceived аккаунта занят
@@ -19,6 +21,7 @@ let userAgent = ''
 let identityReady = false
 let accountSession: Session | null = null
 let anonSession: Session | null = null
+let sitesSession: Session | null = null
 
 /**
  * Сетевая «личность» приложения. Вызвать в main/index.ts ДО app.whenReady()
@@ -73,6 +76,30 @@ export function getAnonSession(): Session {
   lockDown(ses)
   anonSession = ses
   return ses
+}
+
+/**
+ * Сессия вкладок сайтов трейд-окна (S43): poe.ninja, poedb, вики, закладки игрока. Persist — чтобы помнились
+ * согласие на cookies и проверки Cloudflare; cookies аккаунта сюда не попадают (другая партиция), запросы
+ * API POETH здесь не ходят. Разрешения — только запись в буфер (isSitePermissionAllowed), загрузки — нет.
+ */
+export function getSitesSession(): Session {
+  if (sitesSession) return sitesSession
+  const ses = session.fromPartition(SITES_PARTITION)
+  lockDown(ses)
+  ses.setPermissionRequestHandler((_wc, permission, callback) => callback(isSitePermissionAllowed(permission)))
+  ses.setPermissionCheckHandler((_wc, permission) => isSitePermissionAllowed(permission))
+  ses.setSpellCheckerEnabled(false)
+  sitesSession = ses
+  return ses
+}
+
+/** «Очистить данные сайтов»: cookies, хранилища, кэш сессии сайтов. Сессию аккаунта не трогает. */
+export async function clearSitesData(): Promise<void> {
+  const ses = getSitesSession()
+  await ses.clearStorageData()
+  await ses.clearCache()
+  await ses.clearAuthCache()
 }
 
 /**

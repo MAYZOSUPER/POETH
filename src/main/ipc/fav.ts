@@ -3,7 +3,10 @@ import { gzipSync } from 'zlib'
 import { IPC } from '@shared/ipc'
 import type { GameDef, GameId } from '@shared/games'
 import { isSiteExternalUrl } from '@shared/links'
+import { isKnownTab, isWebTab, sitesOn, validateBookmark, type SitesTarget, type SiteTabId } from '@shared/sites'
+import { resolveGameLang } from '@shared/gameLang'
 import type {
+  Settings,
   CurrentSearchResult,
   FavData,
   FavFolderInput,
@@ -19,7 +22,9 @@ import { buildTradeUrl, parseTradeUrl } from '@shared/favorites/tradeUrl'
 import { searchStateId, targetQuery } from '@shared/favorites/lot'
 import { isTradeSlug } from '@shared/favorites/slug'
 import { getFavorites, newFavId, onFavoritesChanged, updateFavorites } from '../services/favoritesStore'
-import { getSettings } from '../services/settingsStore'
+import { getSettings, onSettingsChange } from '../services/settingsStore'
+import { getSitesData, newBookmarkId } from '../services/sitesStore'
+import * as tabs from '../windows/siteTabs'
 import { getRunningGame } from '../gameContext'
 import { getEffectiveLeague } from '../net/leagues'
 import { onAuthStatus } from '../net/account'
@@ -166,6 +171,19 @@ export async function openTradeWindow(target: TradeWindowTarget = {}): Promise<v
   await tw.showTradeWindow({ title, url: await resolveTarget(target), defaultUrl })
 }
 
+/**
+ * Вкладка сайта (S43): окно на вкладке target.tab (по умолчанию — последней вкладке сайта), url — страница этого
+ * сайта (глубокая ссылка из окна цены или «Билда»; чужой хост main не откроет — isTabUrl в siteTabs).
+ */
+export async function openSites(target: SitesTarget = {}): Promise<void> {
+  if (!tabs.sitesEnabled()) return
+  const d = await getSitesData()
+  const tab = target.tab !== undefined && isKnownTab(target.tab, d.bookmarks) ? target.tab : await tabs.lastSiteTab()
+  const title = await windowTitle()
+  tw.setTradeWindowTitle(title)
+  await tw.showTradeWindow({ title, defaultUrl, tab, siteUrl: typeof target.url === 'string' ? target.url : undefined })
+}
+
 /** Вход в аккаунт: трейд-окно на официальной странице /login. */
 export async function openTradeLogin(): Promise<void> {
   await openTradeWindow({ url: siteLoginUrl(await siteHost()) })
@@ -182,10 +200,10 @@ export async function addFavorite(input: FavSearchInput): Promise<FavSearch | nu
   return saved
 }
 
-async function toggle(): Promise<void> {
+async function toggle(tab?: SiteTabId): Promise<void> {
   const title = await windowTitle()
   tw.setTradeWindowTitle(title)
-  await tw.toggleTradeWindow({ title, defaultUrl })
+  await tw.toggleTradeWindow({ title, defaultUrl, tab })
 }
 
 // ---------------------------------------------------------------------------
@@ -296,6 +314,16 @@ function wire(): void {
     lastUrl = s.url
     void getFavorites().then((d) => syncActive(d, s.url))
   })
+  tabs.onSitesState((s) => broadcast(IPC.events.favSites, s))
+  tabs.onSitesBlocked((info) => broadcast(IPC.events.favSitesBlocked, info))
+  // язык клиента игры — домашняя страница poedb (/ru/ или /us/)
+  let gameLang = resolveGameLang(null, 'en').lang
+  const syncLang = (s: Settings): void => {
+    gameLang = resolveGameLang(s.gameLang, s.uiLang).lang
+  }
+  void getSettings().then(syncLang)
+  onSettingsChange(syncLang)
+  tw.setSiteGameLang(() => gameLang)
   tw.onTradeSiteBlocked((url) => {
     let host = ''
     try {
@@ -401,18 +429,42 @@ function register(): void {
   handle(IPC.tradeWindow.toggle, () => toggle())
   handle(IPC.tradeWindow.hide, () => tw.hideTradeWindow())
   handle(IPC.tradeWindow.nav, async (action) => {
-    if (action === 'home') tw.loadSite(await defaultUrl())
-    else if (action === 'back' || action === 'forward' || action === 'reload' || action === 'stop') tw.siteNav(action)
+    if (action !== 'home' && action !== 'back' && action !== 'forward' && action !== 'reload' && action !== 'stop') return
+    if (isWebTab(tabs.activeTab())) tabs.siteTabNav(action)
+    else if (action === 'home') tw.loadSite(await defaultUrl())
+    else tw.siteNav(action)
   })
   handle(IPC.tradeWindow.setPinned, (pinned) => tw.setTradeWindowPinned(pinned === true))
   handle(IPC.tradeWindow.setSidebar, (collapsed) => tw.setTradeSidebarCollapsed(collapsed === true))
   handle(IPC.tradeWindow.state, () => tw.getTradeSiteState())
-  handle(IPC.tradeWindow.openInBrowser, () => tw.openSiteInBrowser())
+  handle(IPC.tradeWindow.openInBrowser, () => (isWebTab(tabs.activeTab()) ? tabs.openSiteTabInBrowser() : tw.openSiteInBrowser()))
+
+  handle(IPC.sites.state, () => tabs.getSitesState())
+  handle(IPC.sites.select, async (tab) => {
+    if (tab === 'trade') await tw.openTradeTab()
+    else if (typeof tab === 'string') await tabs.selectTab(tab as SiteTabId)
+  })
+  handle(IPC.sites.open, (target) => openSites(typeof target === 'object' && target !== null ? (target as SitesTarget) : {}))
+  handle(IPC.sites.ackNote, () => tabs.ackSitesNote())
+  handle(IPC.sites.addBookmark, async (raw) => {
+    const input = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {}
+    const v = validateBookmark({ title: input.title, url: input.url }, (await getSitesData()).bookmarks, newBookmarkId)
+    if (!v.ok) return v
+    await tabs.addBookmark(v.bookmark)
+    const tab: SiteTabId = `bm:${v.bookmark.id}`
+    await tabs.selectTab(tab)
+    return { ok: true, tab }
+  })
+  handle(IPC.sites.removeBookmark, (id) => (typeof id === 'string' ? tabs.removeBookmark(id) : undefined))
+  handle(IPC.sites.clearData, () => tabs.clearSiteTabsData())
 }
 
-function setupForGame(_def: GameDef): void {
+function setupForGame(def: GameDef): void {
   // трейд-окно есть у обеих игр (PoE2 — сайт trade2); Ctrl+Shift+T, область always
   onHotkeyAction('toggleTradeWindow', () => toggle())
+  // вкладки сайтов (S43) — у PoE 1; хоткей «Сайты» — последняя вкладка сайта
+  tabs.setSitesEnabled(sitesOn(def.id))
+  if (sitesOn(def.id)) onHotkeyAction('toggleSites', () => void tabs.lastSiteTab().then((tab) => toggle(tab)))
 }
 
 export const favDomain: IpcDomain = { register, setupForGame }

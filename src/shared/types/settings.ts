@@ -72,6 +72,8 @@ export type HotkeyAction =
   | 'toggleCompanion'
   | 'toggleLock'
   | 'toggleTradeWindow'
+  // вкладки сайтов трейд-окна (S43): показать окно на последней вкладке сайта / спрятать
+  | 'toggleSites'
   | 'prevStep'
   | 'nextStep'
 

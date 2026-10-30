@@ -37,6 +37,7 @@ const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameI
   bookRead: { labelKey: 'set.hk.bookRead', games: ['poe1'] },
   buildTree: { labelKey: 'set.hk.buildTree', games: ['poe1'], on: (g) => buildOn(GAMES[g], window.overlayApi.buildTree.devFlag) },
   toggleTradeWindow: { labelKey: 'set.hk.tradeWindow', games: ['poe1'] },
+  toggleSites: { labelKey: 'set.hk.sites', games: ['poe1'] },
   prevStep: { labelKey: 'set.hk.prev', games: ['poe2'] },
   nextStep: { labelKey: 'set.hk.next', games: ['poe2'] }
 }

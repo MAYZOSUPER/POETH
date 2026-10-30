@@ -37,6 +37,7 @@ import { compareLot, type LotComparison } from '@shared/poe1/pricecheck/compare'
 import { Select } from '../../components/Select'
 import { LotCard } from './LotCard'
 import { EquipBox } from './EquipBox'
+import { SiteLinks } from './SiteLinks'
 
 // Окно цены PoE1 по утверждённому макету (docs/design-system.md, классы ui-*): шапка с лигой, предмет,
 // свойства и псевдо-статы с галочками, фильтры предмета, вердикт и предупреждения (S15), сводка «честной
@@ -1593,6 +1594,8 @@ export function PriceWindow({ captured, onClose }: { captured: CapturedItem; onC
       </header>
       <div className="pc-body ui-scroll">
         <ItemHead item={item} captured={captured} t={t} />
+        {/* S43: страница предмета на poedb / вики / poe.ninja во вкладке трейд-окна */}
+        <SiteLinks item={item} league={league} t={t} />
         {/* S41: «Против надетого» — только PoE 1 при включённой вкладке «Билд» (иначе ничего не рисует) */}
         <EquipBox item={item} expert={expert} t={t} />
         {expert && presets.length > 1 && (

@@ -1,9 +1,10 @@
 import { create } from 'zustand'
 import type { AuthStatus, FavData, FavLiveSnapshot, LeaguesState, Settings, TradeSiteState } from '@shared/types'
 import { emptyFavorites } from '@shared/favorites/model'
+import type { SitesState } from '@shared/sites'
 import { useAppStore } from '../store/useAppStore'
 
-// Состояние сайдбара трейд-окна (S5): избранное, страница сайта, live (S6), вход и лиги (S3).
+// Состояние сайдбара трейд-окна (S5): избранное, страница сайта, live (S6), вход и лиги (S3), вкладки сайтов (S43).
 // Настройки кладутся в useAppStore — от них берут язык useT/useLang.
 
 /** Короткое сообщение под кнопками: ключ строки i18n + параметры. */
@@ -17,11 +18,15 @@ interface FavState {
   auth: AuthStatus | null
   leagues: LeaguesState | null
   notice: Notice | null
+  /** вкладки сайтов (S43) и короткое сообщение в их адресной строке */
+  sites: SitesState | null
+  siteNotice: Notice | null
   /** развёрнутые папки (id) */
   open: Record<string, boolean>
   init: () => () => void
   refreshSettings: () => Promise<void>
   setNotice: (key: string, params?: Notice['params'], kind?: Notice['kind']) => void
+  setSiteNotice: (key: string, params?: Notice['params'], kind?: Notice['kind']) => void
   toggleFolder: (id: string, value?: boolean) => void
 }
 
@@ -46,6 +51,7 @@ function saveOpen(open: Record<string, boolean>): void {
 }
 
 let noticeTimer: ReturnType<typeof setTimeout> | null = null
+let siteNoticeTimer: ReturnType<typeof setTimeout> | null = null
 
 export const useFavStore = create<FavState>((set, get) => ({
   ready: false,
@@ -55,6 +61,8 @@ export const useFavStore = create<FavState>((set, get) => ({
   auth: null,
   leagues: null,
   notice: null,
+  sites: null,
+  siteNotice: null,
   open: loadOpen(),
 
   init: () => {
@@ -67,19 +75,24 @@ export const useFavStore = create<FavState>((set, get) => ({
       a.onLeagues((leagues) => set({ leagues })),
       a.onTradeBlocked(({ host, external }) => {
         get().setNotice(external ? 'tw.blocked.external' : 'tw.blocked', { host }, external ? 'ok' : 'warn')
+      }),
+      a.onSites((sites) => set({ sites })),
+      a.onSitesBlocked(({ host, external }) => {
+        get().setSiteNotice(external ? 'tw.blocked.external' : 'sites.blocked', { host }, external ? 'ok' : 'warn')
       })
     ]
     void (async () => {
-      const [settings, data, site, live, auth, leagues] = await Promise.all([
+      const [settings, data, site, live, auth, leagues, sites] = await Promise.all([
         a.settings.get(),
         a.fav.list(),
         a.tradeWindow.state(),
         a.fav.live(),
         a.auth.status(),
-        a.leagues.get().catch(() => null)
+        a.leagues.get().catch(() => null),
+        a.sites.state()
       ])
       useAppStore.setState({ settings })
-      set({ ready: true, data, site, live, auth, leagues })
+      set({ ready: true, data, site, live, auth, leagues, sites })
     })()
     const onFocus = (): void => void get().refreshSettings()
     window.addEventListener('focus', onFocus)
@@ -102,6 +115,12 @@ export const useFavStore = create<FavState>((set, get) => ({
     if (noticeTimer) clearTimeout(noticeTimer)
     set({ notice: { key, params, kind, at: Date.now() } })
     noticeTimer = setTimeout(() => set({ notice: null }), 5000)
+  },
+
+  setSiteNotice: (key, params, kind = 'ok') => {
+    if (siteNoticeTimer) clearTimeout(siteNoticeTimer)
+    set({ siteNotice: { key, params, kind, at: Date.now() } })
+    siteNoticeTimer = setTimeout(() => set({ siteNotice: null }), 5000)
   },
 
   toggleFolder: (id, value) => {

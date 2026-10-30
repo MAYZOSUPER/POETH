@@ -1,0 +1,16 @@
+/* «Открыть на poedb / вики / poe.ninja» под предметом окна цены (S43). Только токены и ui-*. */
+.pc-sites {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-2);
+  margin: calc(-1 * var(--sp-2)) 0 var(--sp-2);
+}
+.pc-sites__label {
+  margin-right: var(--sp-1);
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}
+.pc-sites .ui-btn {
+  padding: 0 var(--sp-3);
+}
