@@ -18,6 +18,9 @@ whose full history is kept in this repository.
   Not bundled: the “Loot filter” section downloads the official release from GitHub to the player's computer on request
   and writes one unmodified `.filter` file as `POETH-NeverSink-<level>.filter` into the game's filter folder.
 
+- **League starters** (`resources/data/poe1/starters`) — links to authors' guides, videos and Path of Building pastes.
+  Rights stay with the authors; their content is not copied. Our records contain only our own tags and a one-line note.
+
 - **[Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade)** — SnosMe, **MIT License**.
   Parts of its code (item parser, price-check filters/presets/pseudo stats, trade query
   builder, clipboard helper, chat/copy shortcuts, rate-limit header sync, whisper regexes)
