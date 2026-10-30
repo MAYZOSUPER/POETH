@@ -221,7 +221,8 @@ local STATS = {
   'Armour', 'Evasion', 'Str', 'Dex', 'Int', 'ReqStr', 'ReqDex', 'ReqInt',
   'FireResist', 'ColdResist', 'LightningResist', 'ChaosResist',
   'FireResistOverCap', 'ColdResistOverCap', 'LightningResistOverCap', 'ChaosResistOverCap',
-  'FireResistMax', 'ColdResistMax', 'LightningResistMax', 'ChaosResistMax',
+  -- кап PoB в выходе не пишет: кап = Resist + Missing…Resist (сколько не хватает до капа)
+  'MissingFireResist', 'MissingColdResist', 'MissingLightningResist', 'MissingChaosResist',
   'EffectiveMovementSpeedMod', 'EffectiveBlockChance', 'EffectiveSpellSuppressionChance', 'PhysicalMaximumHitTaken'
 }
 
@@ -266,6 +267,8 @@ local function loadBuild(xml)
     return false, 'no calculator'
   end
   loadedXml = xml
+  -- прошлый билд и временные таблицы загрузки — сразу в мусор (иначе процесс растёт на сотни МБ)
+  collectgarbage('collect')
   return true
 end
 
@@ -384,6 +387,11 @@ local HANDLERS = {
 }
 
 -- ---------------------------------------------------------------------------- цикл
+
+-- Launch.lua PoB ставит ленивую сборку мусора (setpause 400: куча растёт вчетверо до сборки) — для окна, которое
+-- открыто часами, это лишние сотни МБ. Собираем после старта и держим кучу плотнее.
+collectgarbage('collect')
+collectgarbage('setpause', 120)
 
 send({
   ready = true,

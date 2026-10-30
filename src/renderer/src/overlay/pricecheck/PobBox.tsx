@@ -41,7 +41,10 @@ function fmt(t: T) {
   return {
     big: (n: number): string => (Math.abs(n) >= 10000 ? compact.format(n) : whole.format(n)),
     int: (n: number): string => whole.format(n),
-    pct: (d: PobDelta): string => (d.pct === null ? '—' : `${pct.format(d.pct)}%`),
+    // минус — типографский, как во всём блоке
+    pct: (d: PobDelta): string => (d.pct === null ? '—' : `${pct.format(d.pct).replace('-', '−')}%`),
+    signed: (n: number): string => (n > 0 ? `+${whole.format(n)}` : n < 0 ? `−${whole.format(-n)}` : '0'),
+    ms: (n: number): string => (n < 1000 ? t('eq.pob.unit.ms', { n: whole.format(n) }) : t('eq.pob.unit.s', { n: new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(n / 1000) })),
     diff: (d: PobDelta): string => {
       const v = Math.round(d.after - d.before)
       return v > 0 ? `+${whole.format(v)}` : v < 0 ? `−${whole.format(-v)}` : '0'
@@ -95,19 +98,25 @@ function rowsOf(o: PobOptionResult, f: ReturnType<typeof fmt>, t: T): Row[] {
   if (o.res.length) {
     const lost = o.res.filter((r) => r.lost)
     const reach = o.res.filter((r) => r.reach)
-    const worst = [...o.res].sort((a, b) => a.after - a.before - (b.after - b.before))[0]
-    const dir: Row['dir'] = lost.length ? 'down' : reach.length ? 'up' : worst.after < worst.before ? 'down' : worst.after > worst.before ? 'up' : 'same'
+    const el = (r: (typeof o.res)[number]): string => t(`eq.el.${r.el}`)
+    // на капе до и после меняется только запас над капом — его и показываем
+    const held = o.res.filter((r) => r.before === r.after)
+    const moved = o.res.filter((r) => r.before !== r.after)
+    const change = (r: (typeof o.res)[number]): number => (r.before !== r.after ? r.after - r.before : r.overAfter - r.overBefore)
+    const worst = [...(moved.length ? moved : o.res)].sort((a, b) => change(a) - change(b))[0]
+    const dir: Row['dir'] = lost.length ? 'down' : reach.length ? 'up' : moved.length ? (change(worst) < 0 ? 'down' : 'up') : 'same'
     const notes: string[] = []
-    if (lost.length) notes.push(t('eq.pob.res.lost', { el: lost.map((r) => t(`eq.el.${r.el}`)).join(', ') }))
-    if (reach.length) notes.push(t('eq.pob.res.reach', { el: reach.map((r) => t(`eq.el.${r.el}`)).join(', ') }))
+    if (lost.length) notes.push(t('eq.pob.res.lost', { el: lost.map(el).join(', ') }))
+    if (reach.length) notes.push(t('eq.pob.res.reach', { el: reach.map(el).join(', ') }))
+    if (held.length) notes.push(t('eq.pob.res.over', { what: held.map((r) => `${el(r)} ${f.signed(r.overBefore)} → ${f.signed(r.overAfter)}`).join(', ') }))
     rows.push({
       key: 'res',
       icon: icon(dir),
       dir,
       bad: lost.length > 0,
       label: t('eq.pob.res'),
-      values: o.res.map((r) => `${t(`eq.el.${r.el}`)} ${f.int(r.before)} → ${f.int(r.after)}${r.below ? ` / ${f.int(r.cap)}` : ''}`).join(' · '),
-      delta: `${t(`eq.el.${worst.el}`)} ${worst.after - worst.before > 0 ? '+' : worst.after < worst.before ? '−' : ''}${f.int(Math.abs(worst.after - worst.before))}`,
+      values: o.res.map((r) => (r.before === r.after ? `${el(r)} ${f.int(r.after)}` : `${el(r)} ${f.int(r.before)} → ${f.int(r.after)}${r.below ? ` / ${f.int(r.cap)}` : ''}`)).join(' · '),
+      delta: `${el(worst)} ${f.signed(change(worst))}`,
       note: notes.join(' ') || undefined
     })
   }
@@ -253,8 +262,8 @@ export function PobBox({
         )}
         {expert && (
           <span className="eq-later">
-            {t('eq.pob.meta', { v: r.pob, calc: (r.ms.calc / 1000).toFixed(1) })}
-            {r.ms.start !== null && ` · ${t('eq.pob.meta.start', { s: (r.ms.start / 1000).toFixed(1) })}`}
+            {t('eq.pob.meta', { v: r.pob, calc: f.ms(r.ms.calc) })}
+            {r.ms.start !== null && ` · ${t('eq.pob.meta.start', { s: f.ms(r.ms.start) })}`}
           </span>
         )}
         {!expert && o.against !== 'worn' && <span className="eq-later">{t('eq.pob.vs.hint')}</span>}

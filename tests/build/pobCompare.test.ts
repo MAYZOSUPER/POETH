@@ -80,13 +80,13 @@ describe('вердикт PoB', () => {
 
   it('кап: был на капе и стал ниже — потеря; дошёл до капа; хаос без изменений не показывается', () => {
     const o = pobOption(
-      { FireResist: 75, ColdResist: 60, ChaosResist: -20, FireResistMax: 75, ColdResistMax: 75 },
-      { FireResist: 61, ColdResist: 75, ChaosResist: -20, FireResistMax: 75, ColdResistMax: 75 },
+      { FireResist: 75, ColdResist: 60, ChaosResist: -20, MissingFireResist: 0, MissingColdResist: 15 },
+      { FireResist: 61, ColdResist: 75, ChaosResist: -20, MissingFireResist: 14, MissingColdResist: 0 },
       'worn'
     )
     expect(o.res).toEqual([
-      { el: 'fire', before: 75, after: 61, cap: 75, lost: true, reach: false, below: true },
-      { el: 'cold', before: 60, after: 75, cap: 75, lost: false, reach: true, below: false }
+      { el: 'fire', before: 75, after: 61, cap: 75, lost: true, reach: false, below: true, overBefore: 0, overAfter: 0 },
+      { el: 'cold', before: 60, after: 75, cap: 75, lost: false, reach: true, below: false, overBefore: 0, overAfter: 0 }
     ])
     expect(pobSign(o)).toBe('mixed')
   })
@@ -94,7 +94,7 @@ describe('вердикт PoB', () => {
   it('запас над капом тоже изменение (на капе, но запас меньше)', () => {
     const o = pobOption({ FireResist: 75, FireResistOverCap: 20 }, { FireResist: 75, FireResistOverCap: 5 }, 'build')
     expect(o.res).toHaveLength(1)
-    expect(o.res[0].lost).toBe(false)
+    expect(o.res[0]).toMatchObject({ lost: false, before: 75, after: 75, overBefore: 20, overAfter: 5 })
   })
 
   it('нехватка атрибутов — только новая или выросшая', () => {

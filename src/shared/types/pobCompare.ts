@@ -45,6 +45,9 @@ export interface PobResRow {
   reach: boolean
   /** после — ниже капа */
   below: boolean
+  /** запас над капом до и после (на капе — меняется только он) */
+  overBefore: number
+  overAfter: number
 }
 
 export interface PobAttrRow {

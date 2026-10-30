@@ -202,10 +202,13 @@ export const equip: DomainDict = {
     'eq.pob.res': 'Сопротивления с капом',
     'eq.pob.res.lost': 'Потеря капа: {el}.',
     'eq.pob.res.reach': 'Кап: {el}.',
+    'eq.pob.res.over': 'Кап сохраняется; запас над капом: {what}.',
+    'eq.pob.unit.ms': '{n} мс',
+    'eq.pob.unit.s': '{n} с',
     'eq.pob.none': 'На урон и защиту билда вещь почти не влияет.',
     'eq.pob.skipped': 'Не учтено строк: {n} — не перевелись или PoB их не знает.',
-    'eq.pob.meta': 'PoB {v} · расчёт {calc} с',
-    'eq.pob.meta.start': 'старт {s} с'
+    'eq.pob.meta': 'PoB {v} · расчёт {calc}',
+    'eq.pob.meta.start': 'старт {s}'
   },
   en: {
     'eq.title': 'Versus equipped',
@@ -395,9 +398,12 @@ export const equip: DomainDict = {
     'eq.pob.res': 'Resistances with cap',
     'eq.pob.res.lost': 'Cap lost: {el}.',
     'eq.pob.res.reach': 'Capped: {el}.',
+    'eq.pob.res.over': 'Still capped; over-cap: {what}.',
+    'eq.pob.unit.ms': '{n} ms',
+    'eq.pob.unit.s': '{n} s',
     'eq.pob.none': 'The item barely changes the build’s damage and defences.',
     'eq.pob.skipped': 'Lines not counted: {n} — not translated or unknown to PoB.',
-    'eq.pob.meta': 'PoB {v} · calculation {calc} s',
-    'eq.pob.meta.start': 'start {s} s'
+    'eq.pob.meta': 'PoB {v} · calculation {calc}',
+    'eq.pob.meta.start': 'start {s}'
   }
 }

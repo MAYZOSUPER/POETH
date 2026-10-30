@@ -83,8 +83,20 @@ function resRows(base: EngineStats, next: EngineStats): PobResRow[] {
     const overB = base[`${k}ResistOverCap` as const] ?? 0
     const overA = next[`${k}ResistOverCap` as const] ?? 0
     if (before === after && overB === overA) continue
-    const cap = next[`${k}ResistMax` as const] ?? base[`${k}ResistMax` as const] ?? RES_CAP
-    rows.push({ el, before, after, cap, lost: before >= cap && after < cap, reach: before < cap && after >= cap, below: after < cap })
+    // кап PoB: сопротивление + сколько не хватает до капа (на капе — само сопротивление)
+    const miss = next[`Missing${k}Resist` as const]
+    const cap = miss !== undefined ? after + miss : RES_CAP
+    rows.push({
+      el,
+      before,
+      after,
+      cap,
+      lost: before >= cap && after < cap,
+      reach: before < cap && after >= cap,
+      below: after < cap,
+      overBefore: overB,
+      overAfter: overA
+    })
   }
   return rows
 }

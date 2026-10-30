@@ -53,8 +53,8 @@ function deps(reply: (c: Call) => Record<string, unknown> | Error, over: Partial
 
 const okReply = (n: number): Record<string, unknown> => ({
   ok: true,
-  base: { CombinedDPS: 1000, TotalEHP: 5000, Life: 1500, FireResist: 75, FireResistMax: 75 },
-  results: Array.from({ length: n }, (_, i) => ({ ok: true, new: { CombinedDPS: 1100 + i, TotalEHP: 4800, Life: 1500, FireResist: 70, FireResistMax: 75, Bogus: 1 } })),
+  base: { CombinedDPS: 1000, TotalEHP: 5000, Life: 1500, FireResist: 75, MissingFireResist: 0 },
+  results: Array.from({ length: n }, (_, i) => ({ ok: true, new: { CombinedDPS: 1100 + i, TotalEHP: 4800, Life: 1500, FireResist: 70, MissingFireResist: 5, Bogus: 1 } })),
   item: { base: 'Two-Stone Ring', rarity: 'RARE', reqLevel: 64, level: 60, unsupported: ['Some weird mod'] }
 })
 
