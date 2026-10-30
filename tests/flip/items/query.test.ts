@@ -80,13 +80,14 @@ describe('запрос «k × медиана»', () => {
 })
 
 describe('флаг «Предметов»', () => {
-  it('скрыто в релизе, POETH_ITEMFLIP=1 включает в dev, только PoE 1', () => {
-    expect(ITEMFLIP_RELEASED).toBe(false)
+  it('раскрыто (ITEMFLIP_RELEASED), POETH_ITEMFLIP=1 включает в dev, только PoE 1', () => {
+    expect(ITEMFLIP_RELEASED).toBe(true)
     expect(itemFlipDevFlag({ POETH_ITEMFLIP: '1' })).toBe(true)
     expect(itemFlipDevFlag({ POETH_ITEMFLIP: 'true' })).toBe(false)
     expect(itemFlipDevFlag({})).toBe(false)
     expect(itemFlipOn({ id: 'poe1' }, true)).toBe(true)
-    expect(itemFlipOn({ id: 'poe1' }, false)).toBe(false)
+    expect(itemFlipOn({ id: 'poe1' }, false)).toBe(true)
+    expect(itemFlipOn({ id: 'poe1' }, false, false)).toBe(false)
     expect(itemFlipOn({ id: 'poe2' }, true)).toBe(false)
     expect(itemFlipOn({ id: 'poe1' }, false, true)).toBe(true)
   })

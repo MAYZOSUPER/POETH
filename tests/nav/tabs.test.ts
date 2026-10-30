@@ -20,13 +20,10 @@ import { GAME_IDS } from '@shared/games'
 const ids = (game: 'poe1' | 'poe2', dev = false): string[][] => sectionsFor(game, dev).map((s) => s.tabs.map((t) => t.id))
 
 describe('разделы рельса', () => {
-  it('PoE 1 в релизе: «Торговля», «Фарм» без советника, «Прокачка»', () => {
+  it('PoE 1 (советник и «Билд» раскрыты): «Что фармить» первой в «Фарме», «Билд» после «Кампании»', () => {
     expect(sectionsFor('poe1', false).map((s) => s.id)).toEqual(['trade', 'farm', 'level'])
-    expect(ids('poe1')).toEqual([['priceCheck', 'live', 'deals', 'flip'], ['wealth', 'regex'], ['campaign']])
-  })
-
-  it('PoE 1 с POETH_ADVISOR=1: «Что фармить» первой в «Фарме»', () => {
-    expect(ids('poe1', true)).toEqual([['priceCheck', 'live', 'deals', 'flip'], ['advisor', 'wealth', 'regex'], ['campaign']])
+    expect(ids('poe1')).toEqual([['priceCheck', 'live', 'deals', 'flip'], ['advisor', 'wealth', 'regex'], ['campaign', 'build']])
+    expect(ids('poe1', true)).toEqual(ids('poe1'))
   })
 
   it('PoE 2: только прайс-чек и компас, пустой «Фарм» не показывается — и с флагом советника тоже', () => {
@@ -37,7 +34,7 @@ describe('разделы рельса', () => {
   })
 
   it('tabsFor — вкладки подряд в порядке рельса', () => {
-    expect(tabsFor('poe1', false).map((t) => t.id)).toEqual(['priceCheck', 'live', 'deals', 'flip', 'wealth', 'regex', 'campaign'])
+    expect(tabsFor('poe1', false).map((t) => t.id)).toEqual(['priceCheck', 'live', 'deals', 'flip', 'advisor', 'wealth', 'regex', 'campaign', 'build'])
     expect(tabsFor('poe2', true).map((t) => t.id)).toEqual(['priceCheck', 'campaign'])
   })
 
@@ -62,9 +59,10 @@ describe('resolveTab', () => {
     expect(resolveTab('poe2', 'priceCheck', false)).toBe('priceCheck')
   })
 
-  it('нет в игре или скрыта флагом — «Кампания», как до рельса', () => {
+  it('нет в игре — «Кампания», как до рельса', () => {
     expect(resolveTab('poe2', 'live', false)).toBe('campaign')
-    expect(resolveTab('poe1', 'advisor', false)).toBe('campaign')
+    expect(resolveTab('poe2', 'advisor', false)).toBe('campaign')
+    expect(resolveTab('poe1', 'advisor', false)).toBe('advisor')
     expect(resolveTab('poe1', undefined, false)).toBe('campaign')
   })
 

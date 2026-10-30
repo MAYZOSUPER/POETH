@@ -3,10 +3,11 @@ import { GAMES } from '@shared/games'
 import { advisorDevFlag, advisorOn } from '@shared/advisor/flag'
 
 describe('советник: флаг вкладки', () => {
-  it('в релизе скрыт в обеих играх', () => {
-    expect(GAMES.poe1.features.advisor).toBe(false)
+  it('раскрыт в PoE 1, в PoE 2 скрыт', () => {
+    expect(GAMES.poe1.features.advisor).toBe(true)
     expect(GAMES.poe2.features.advisor).toBe(false)
-    expect(advisorOn(GAMES.poe1, false)).toBe(false)
+    expect(advisorOn(GAMES.poe1, false)).toBe(true)
+    expect(advisorOn(GAMES.poe2, false)).toBe(false)
   })
 
   it('POETH_ADVISOR=1 включает только в PoE 1', () => {

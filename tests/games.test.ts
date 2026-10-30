@@ -31,10 +31,9 @@ describe('GameDef', () => {
       flip: true,
       // прокачка по маршруту (S14) — вкладка «Кампания» в PoE 1
       leveling: true,
-      // советник «что фармить» (S16) в v0.1.0 скрыт (в разработке — POETH_ADVISOR=1)
-      advisor: false,
-      // вкладка «Билд» (S39) — v0.2, в v0.1.0 скрыта (в разработке — POETH_BUILD=1)
-      build: false
+      // советник «что фармить» (S16) и вкладка «Билд» (S35–S41) раскрыты лидом 30.10 для проверки в игре
+      advisor: true,
+      build: true
     })
     expect(GAMES.poe2.features.leveling).toBe(false)
     expect(poe2.features.campaign).toBe(true)

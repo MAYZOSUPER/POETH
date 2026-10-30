@@ -57,7 +57,7 @@ export const GAMES: Record<GameId, GameDef> = {
     siteRealm: null,
     logSubdirs: ['Path of Exile/logs', 'PathOfExile/logs'],
     dataDir: 'poe1',
-    features: { campaign: false, priceCheck: true, live: true, regex: true, deals: true, wealth: true, flip: true, leveling: true, advisor: false, build: false }
+    features: { campaign: false, priceCheck: true, live: true, regex: true, deals: true, wealth: true, flip: true, leveling: true, advisor: true, build: true }
   },
   poe2: {
     id: 'poe2',

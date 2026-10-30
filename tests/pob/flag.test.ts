@@ -3,8 +3,8 @@ import { GAMES } from '@shared/games'
 import { buildDevFlag, buildOn } from '@shared/build/flag'
 
 describe('вкладка «Билд»: флаг', () => {
-  it('до релиза скрыта в обеих играх', () => {
-    expect(buildOn(GAMES.poe1, false)).toBe(false)
+  it('раскрыта в PoE 1, в PoE 2 нет (разбор PoB только для PoE 1)', () => {
+    expect(buildOn(GAMES.poe1, false)).toBe(true)
     expect(buildOn(GAMES.poe2, false)).toBe(false)
   })
 

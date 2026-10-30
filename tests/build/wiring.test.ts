@@ -54,9 +54,9 @@ describe('пункт рельса «Билд»', () => {
     delete (globalThis as { overlayApi?: unknown }).overlayApi
   })
 
-  it('без флага его нет; с POETH_BUILD=1 — в «Прокачке» после «Кампании», только PoE 1', () => {
+  it('раскрыт (GameFeatures.build): в «Прокачке» после «Кампании», только PoE 1', () => {
     const level = (game: 'poe1' | 'poe2') => sectionsFor(game, false).find((s) => s.id === 'level')?.tabs.map((t) => t.id)
-    expect(level('poe1')).toEqual(['campaign'])
+    expect(level('poe1')).toEqual(['campaign', 'build'])
     ;(globalThis as { overlayApi?: unknown }).overlayApi = { build: { devFlag: true } }
     expect(level('poe1')).toEqual(['campaign', 'build'])
     expect(level('poe2')).toEqual(['campaign'])
