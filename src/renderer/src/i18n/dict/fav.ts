@@ -87,10 +87,19 @@ export const fav: DomainDict = {
     'tw.blocked.external': 'Ссылка открыта в браузере: {host}',
     'tw.blocked': 'Переход заблокирован: {host}. В трейд-окне открываются только pathofexile.com и вход через Steam.',
     'tw.loading': 'Загрузка сайта трейда…',
+    // S58: шапка обычного трейд-окна
+    'tw.win.title': 'Трейд-окно',
+    'tw.win.min': 'Свернуть',
+    'tw.win.max': 'Развернуть',
+    'tw.win.restore': 'Восстановить',
+    'tw.win.close': 'Закрыть ({key} — открыть снова)',
+    'tw.win.close.nokey': 'Закрыть',
 
     // S43: вкладки сайтов трейд-окна
     'set.hk.sites': 'Сайты в трейд-окне (последняя вкладка сайта)',
     'sites.rail': 'Вкладки трейд-окна',
+    'sites.group.sites': 'Полезные сайты',
+    'sites.group.own': 'Свои закладки',
     'sites.trade': 'Трейд',
     'sites.trade.title': 'Трейд — официальный сайт pathofexile.com, ваш вход в аккаунт',
     'sites.manage': 'Сайты',
@@ -230,10 +239,19 @@ export const fav: DomainDict = {
     'tw.blocked.external': 'Link opened in your browser: {host}',
     'tw.blocked': 'Navigation blocked: {host}. The trade window only opens pathofexile.com and Steam sign-in.',
     'tw.loading': 'Loading the trade site…',
+    // S58: title bar of the regular trade window
+    'tw.win.title': 'Trade window',
+    'tw.win.min': 'Minimize',
+    'tw.win.max': 'Maximize',
+    'tw.win.restore': 'Restore down',
+    'tw.win.close': 'Close ({key} opens it again)',
+    'tw.win.close.nokey': 'Close',
 
     // S43: site tabs in the trade window
     'set.hk.sites': 'Sites in the trade window (last site tab)',
     'sites.rail': 'Trade window tabs',
+    'sites.group.sites': 'Useful sites',
+    'sites.group.own': 'Your bookmarks',
     'sites.trade': 'Trade',
     'sites.trade.title': 'Trade — the official pathofexile.com site, signed in to your account',
     'sites.manage': 'Sites',

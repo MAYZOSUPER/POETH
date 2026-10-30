@@ -5,6 +5,7 @@ import type { GameDef, GameId } from '@shared/games'
 import { isSiteExternalUrl } from '@shared/links'
 import { isKnownTab, isWebTab, sitesOn, validateBookmark, type SitesTarget, type SiteTabId } from '@shared/sites'
 import { resolveGameLang } from '@shared/gameLang'
+import { normalizeRailPref } from '@shared/rail'
 import type {
   Settings,
   CurrentSearchResult,
@@ -231,6 +232,19 @@ function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
   })
 }
 
+/**
+ * S58: шапка и рельс трейд-окна (свернуть, развернуть, рельс, шторка). Кроме общих правил (policy.ts пускает сюда только
+ * страницу trade-sidebar) — звал главный кадр сайдбара именно этого окна: ни компаньон, ни оверлей, ни iframe.
+ */
+function handleTradeWindow(channel: string, fn: (...args: unknown[]) => unknown): void {
+  ipcMain.handle(channel, (e: IpcMainInvokeEvent, ...args: unknown[]) => {
+    if (!isTrustedAppUrl(e.senderFrame?.url, devServerUrl()) || !tw.isTradeSidebarSender(e.sender, e.senderFrame)) {
+      throw new Error('fav: untrusted IPC sender')
+    }
+    return fn(...args)
+  })
+}
+
 /** Какой поиск избранного открыт в siteView (по игре, типу и slug). */
 function syncActive(data: FavData, url: string): void {
   const info = parseTradeUrl(url)
@@ -319,10 +333,12 @@ function wire(): void {
   })
   tabs.onSitesState((s) => broadcast(IPC.events.favSites, s))
   tabs.onSitesBlocked((info) => broadcast(IPC.events.favSitesBlocked, info))
-  // язык клиента игры — домашняя страница poedb (/ru/ или /us/)
+  // язык клиента игры — домашняя страница poedb (/ru/ или /us/); простой режим — развёрнут ли рельс сайтов
+  // по умолчанию (S58, как рельс компаньона)
   let gameLang = resolveGameLang(null, 'en').lang
   const syncLang = (s: Settings): void => {
     gameLang = resolveGameLang(s.gameLang, s.uiLang).lang
+    tw.setTradeRailSimple(s.ui.simpleMode)
   }
   void getSettings().then(syncLang)
   onSettingsChange(syncLang)
@@ -441,6 +457,14 @@ function register(): void {
   handle(IPC.tradeWindow.setSidebar, (collapsed) => tw.setTradeSidebarCollapsed(collapsed === true))
   handle(IPC.tradeWindow.state, () => tw.getTradeSiteState())
   handle(IPC.tradeWindow.openInBrowser, () => (isWebTab(tabs.activeTab()) ? tabs.openSiteTabInBrowser() : tw.openSiteInBrowser()))
+  // S58: «закрыть» в шапке — тот же tradeWindow.hide (окно прячется, как по ×, Esc и хоткею)
+  handleTradeWindow(IPC.tradeWindow.minimize, () => tw.minimizeTradeWindow())
+  handleTradeWindow(IPC.tradeWindow.toggleMaximize, () => tw.toggleMaximizeTradeWindow())
+  handleTradeWindow(IPC.tradeWindow.setRail, (pref) => {
+    const p = normalizeRailPref(pref)
+    if (p) tw.setTradeRailPref(p)
+  })
+  handleTradeWindow(IPC.tradeWindow.railDrawer, (open) => tw.setTradeRailDrawer(open === true))
 
   handle(IPC.sites.state, () => tabs.getSitesState())
   handle(IPC.sites.select, async (tab) => {

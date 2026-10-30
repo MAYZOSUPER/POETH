@@ -93,7 +93,7 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 | `.ui-rail` (`--wide`, `--drawer`) + `__list`, `__group`, `__head`, `__item` (`.is-current`, `.is-flash`), `__label`, `__toggle`, `__tip`; `.ui-rail-scrim` | рельс навигации компаньона слева, см. «Навигация компаньона» |
 
 Иконки: `resources/brand/icons/<имя>.svg` или спрайт `icons-sprite.svg` (`<use href="#i-<имя>"/>`), класс `.ui-ico`
-(`--sm` 13 px, `--lg` 18 px). Список: check, cross, dash, close, min, max, search, star, bolt, external, chat, invite,
+(`--sm` 13 px, `--lg` 18 px). Список: check, cross, dash, close, min, max, restore, search, star, bolt, external, chat, invite,
 trade, kick, heart, sold, ask, home, grid, help, warn, copy, refresh, support, gear, folder, archive, chev-r, chev-d,
 dots, plus, import, export, pin, lock, shield, logout, keyboard, layers, volume, info, game, pause, trash, edit, map,
 book, coins, compass, seal, history, arrow-up, arrow-down, chart, table, play, stop, death, drag, swap, passive, gem,

@@ -244,6 +244,13 @@ export function layoutSiteTabs(b: Rectangle): void {
   for (const l of views.values()) l.view.setBounds(b)
 }
 
+/** Вью сайтов — снова поверх сайдбара (S58: шторку рельса закрыли, сайдбар опускается под сайты). */
+export function raiseSiteTabViews(): void {
+  const w = host?.window()
+  if (!w || w.isDestroyed()) return
+  for (const l of views.values()) w.contentView.addChildView(l.view)
+}
+
 /** Окно спрятано / показано (неактивные вью закрываются по таймеру, пока окна нет на экране). */
 export function setSiteTabsShown(shown: boolean): void {
   hiddenAt = shown ? null : Date.now()
