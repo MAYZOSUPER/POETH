@@ -15,6 +15,7 @@ import {
   panView,
   savedView,
   validClient,
+  wheelView,
   withView,
   type ClientSize,
   type TreeCalibration,
@@ -22,9 +23,9 @@ import {
 } from '@shared/build/treeOverlay'
 import { stageDrawing, type TreeDrawing } from '@shared/build/treeOverlayDraw'
 import { takenHashes } from '@shared/build/treeOverlayLog'
+import { fitPoints, type FitPoint } from '@shared/build/treeOverlayMatch'
 import { treeBuildFromPob, treeStageFor, type TreeBuild } from '@shared/build/treeOverlayStages'
 import type {
-  TreeOverlayDrift,
   TreeOverlayPanelRect,
   TreeOverlayProblem,
   TreeOverlayState
@@ -43,15 +44,18 @@ import { resourcesDir } from '../services/questDataset'
 import { getSettings } from '../services/settingsStore'
 import { getOverlayStatus, sendToOverlay } from '../windows/gameOverlay'
 import { getTaken, onTaken, takenCharacter } from './buildTaken'
+import { captureTreeShot, fitTreeShot, type TreeShot } from './treeOverlayFit'
 import { startTreeInput } from './treeOverlayInput'
 
 // Дерево этапа билда поверх игрового дерева пассивок (S38). Хоткей buildTree (Alt+P) показывает и прячет
 // наложение; оверлей только рисует и пропускает мышь в игру. Опора — стартовый круг класса: сначала считаем, что
-// он в центре окна и дерево отдалено до упора (так игра открывает дерево после входа); средняя кнопка мыши над
-// кругом — совместить точно. Игрок тянет дерево — наложение едет вместе; колесо (зум) — пометка «съехало».
+// он в центре окна при z = 2 (так игра открывает дерево после входа, снимки S38); средняя кнопка мыши над
+// кругом — совместить точно. Игрок тянет дерево — наложение едет вместе; колесо — тот же зум, что у игры
+// (±0,625 к z на щелчок вокруг курсора, пределы 1…5, treeOverlay.ts).
 // Положение помним по разрешению окна (userData/build-tree.json). «Взято» и уровень персонажа — общий с вкладкой
 // «Билд» подсчёт по Client.txt (buildTaken.ts, S39): журнал начинает читаться при первом показе.
-// Снимков экрана здесь нет; таймеров, которые что-то делают в игре, тоже.
+// Автоподгонка: по Alt+P, до показа — снимок окна в памяти, подгонка около подсказок в отдельном потоке
+// (treeOverlayFit.ts); уверенно совпало — наложение встаёт туда само. Таймеров, которые что-то делают в игре, нет.
 //
 // Откуда билд: активный билд вкладки «Билд» (S39: registerTreeSink(setTreeBuild) в main/ipc/build.ts); без него в
 // разработке — файл с кодом PoB из POETH_TREE_POB (только в незапакованной сборке, как devEnv S29).
@@ -73,7 +77,6 @@ let view: TreeView | null = null
 /** разрешение, для которого посчитан view */
 let viewClient: ClientSize | null = null
 let aligned = false
-let drift: TreeOverlayDrift | null = null
 let calibration: TreeCalibration | null = null
 /** последний снимок «взято» (buildTaken.ts) и его номер — ключ кэша рисунка */
 let taken: BuildTaken | null = null
@@ -85,6 +88,12 @@ let lang: GameLang = 'en'
 let panel: TreeOverlayPanelRect | null = null
 let drawingCache: { key: string; drawing: TreeDrawing } | null = null
 let offInput: (() => void) | null = null
+/** ноды для автоподгонки (по данным дерева, один раз) */
+let fitPts: FitPoint[] | null = null
+/** номер подгонки: спрятали или показали снова — старый результат не ставим */
+let fitSeq = 0
+/** панорама и зум игрока, пока считается подгонка, — повторить поверх найденного; null — игрок совместил сам */
+let fitOps: ((v: TreeView) => TreeView)[] | null = null
 let offTaken: (() => void) | null = null
 let offFocus: (() => void) | null = null
 let devShown = false
@@ -163,7 +172,7 @@ function problem(): TreeOverlayProblem | null {
   return null
 }
 
-/** Положение для текущего окна: уже посчитанное → сохранённое → «круг класса в центре, отдалено до упора». */
+/** Положение для текущего окна: уже посчитанное → сохранённое → «круг класса в центре, z = 2» (как после входа). */
 function ensureView(): void {
   const client = clientSize()
   const d = drawing()
@@ -173,7 +182,6 @@ function ensureView(): void {
   view = saved ?? defaultView(client, d.anchor)
   viewClient = client
   aligned = !!saved
-  drift = null
 }
 
 export function getTreeOverlayState(): TreeOverlayState {
@@ -188,7 +196,6 @@ export function getTreeOverlayState(): TreeOverlayState {
     drawing: visible ? drawing() : null,
     view,
     client: viewClient,
-    drift,
     aligned,
     lang
   }
@@ -199,7 +206,7 @@ function push(): void {
 }
 
 function pushView(): void {
-  if (view) sendToOverlay(IPC.events.buildTreeView, { view, drift })
+  if (view) sendToOverlay(IPC.events.buildTreeView, { view })
 }
 
 // ---------------------------------------------------------------------------
@@ -219,6 +226,8 @@ async function show(): Promise<void> {
   ])
   if (snap) applyTaken(snap)
   lang = await gameLang()
+  // снимок — до того, как наложение появится на экране (иначе на снимке наши же кольца)
+  const shot = tree && build?.stages.length ? captureTreeShot() : null
   visible = true
   autoStage()
   ensureView()
@@ -226,30 +235,66 @@ async function show(): Promise<void> {
     offInput = startTreeInput({
       client: gameClient,
       panel: () => panel,
-      pan: (dx, dy) => {
-        if (!view) return
-        view = panView(view, dx, dy)
-        pushView()
-      },
+      pan: (dx, dy) => track((v) => panView(v, dx, dy)),
       align: (at) => alignHere(at),
-      zoom: () => {
-        if (drift === 'zoom') return
-        drift = 'zoom'
-        pushView()
+      zoom: (at, notches) => {
+        const client = clientSize()
+        if (client) track((v) => wheelView(v, client, at, notches))
       },
       close: () => hide()
     })
   push()
+  if (shot) void autoFit(shot)
+}
+
+/** Панорама или зум игрока: сдвинуть наложение (и запомнить, если сейчас считается подгонка). */
+function track(op: (v: TreeView) => TreeView): void {
+  if (!view) return
+  view = op(view)
+  fitOps?.push(op)
+  pushView()
+}
+
+/** Подгонка по снимку около подсказок: где наложение сейчас, сохранённое, «как после входа». */
+async function autoFit(shot: TreeShot): Promise<void> {
+  const client = clientSize()
+  const d = drawing()
+  const t = tree
+  if (!t || !view || !client || !d?.anchor || client.width !== shot.client.width || client.height !== shot.client.height) return
+  const saved = calibration ? savedView(calibration, client) : null
+  const priors = [view, ...(saved ? [saved] : []), defaultView(client, d.anchor)]
+  const my = ++fitSeq
+  fitOps = []
+  try {
+    const r = await fitTreeShot(shot, () => (fitPts ??= fitPoints(t)), priors)
+    const ops = fitOps
+    if (my !== fitSeq) return
+    fitOps = null
+    if (!r || !ops || !visible) return
+    if (!r.ok) {
+      console.info(`[buildTree] fit: not sure (${r.inliers}/${r.checked}, ${r.ms} ms)`)
+      return
+    }
+    view = ops.reduce((v, op) => op(v), r.view)
+    viewClient = client
+    aligned = true
+    push()
+  } catch (e) {
+    if (my === fitSeq) fitOps = null
+    console.warn('[buildTree] fit failed:', e)
+  }
 }
 
 export function hide(): void {
   if (!visible) return
   visible = false
+  fitSeq++
+  fitOps = null
   offInput?.()
   offInput = null
   // где игрок оставил дерево — на следующий показ и следующий запуск
   const client = clientSize()
-  if (view && client && aligned && !drift) saveCalibration(client, view)
+  if (view && client && aligned) saveCalibration(client, view)
   push()
 }
 
@@ -258,15 +303,20 @@ export async function toggleTreeOverlay(): Promise<void> {
   else await show()
 }
 
-/** Средняя кнопка над кругом класса: он здесь. Масштаб — «отдалено до упора» (зум колесом сбрасывается). */
+/**
+ * Средняя кнопка над кругом класса: он здесь. Масштаб — тот, что насчитали по колесу; если он не тот (зум
+ * меняли, пока наложение было спрятано), игрок отдаляет дерево до упора — z = 1 у игры и у нас — и жмёт снова.
+ */
 function alignHere(at: { x: number; y: number }): void {
   const client = clientSize()
   const d = drawing()
   if (!client || !d?.anchor) return
-  view = alignAt(defaultView(client, d.anchor), d.anchor, at)
+  ensureView()
+  // игрок совместил сам — подгонка, если ещё считается, ему не мешает
+  fitOps = null
+  view = alignAt(view ?? defaultView(client, d.anchor), d.anchor, at)
   viewClient = client
   aligned = true
-  drift = null
   saveCalibration(client, view)
   push()
 }
@@ -276,10 +326,10 @@ export function resetTreeView(): TreeOverlayState {
   const client = clientSize()
   const d = drawing()
   if (client && d?.anchor) {
+    fitOps = null
     view = defaultView(client, d.anchor)
     viewClient = client
     aligned = false
-    drift = null
   }
   push()
   return getTreeOverlayState()

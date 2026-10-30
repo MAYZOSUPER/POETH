@@ -11,9 +11,6 @@ export type TreeOverlayProblem =
   | 'no-data' // данные дерева не загрузились
   | 'no-game' // окно игры не найдено
 
-/** Наложение «съехало»: игрок покрутил колесо (зум) — пока не совместит снова, рисунок тусклый. */
-export type TreeOverlayDrift = 'zoom'
-
 export interface TreeOverlayStageInfo {
   index: number
   count: number
@@ -35,7 +32,6 @@ export interface TreeOverlayState {
   /** положение дерева, физические точки клиентской области игры */
   view: TreeView | null
   client: ClientSize | null
-  drift: TreeOverlayDrift | null
   /** игрок уже совмещал наложение в этом разрешении (иначе — догадка «круг класса в центре окна») */
   aligned: boolean
   /** язык подписей нод — язык клиента игры */
@@ -45,7 +41,6 @@ export interface TreeOverlayState {
 /** Частое событие панорамы: только положение. */
 export interface TreeOverlayViewEvent {
   view: TreeView
-  drift: TreeOverlayDrift | null
 }
 
 /** Прямоугольник плашки этапа (CSS-пиксели окна оверлея) — над ней мышь не двигает дерево игры. */

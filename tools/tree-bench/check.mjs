@@ -240,7 +240,8 @@ async function main() {
 
   const st = await evaluate('window.overlayApi.buildTree.state()')
   check('этап из кода PoB', !!st.stage, JSON.stringify(st.stage))
-  check('масштаб «до упора» = высота окна / 10000', st.view && st.client && Math.abs(st.view.scale - st.client.height / 10000) < 1e-9, JSON.stringify({ view: st.view, client: st.client }))
+  // ±0,2 %: автоподгонка по снимку стенда уточняет масштаб наименьшими квадратами
+  check('после входа: z = 2 (точек на единицу дерева = высота окна / 10000 · 2)', st.view && st.client && Math.abs((st.view.scale * 10000) / (2 * st.client.height) - 1) < 2e-3, JSON.stringify({ view: st.view, client: st.client }))
   await compare('после входа (круг класса в центре)')
   if (SHOT) shot(String(SHOT), ready.bounds)
 

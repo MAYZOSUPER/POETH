@@ -18,7 +18,7 @@ import {
 // как обычно, сами мы в игру ничего не шлём:
 // - левая кнопка зажата и мышь движется — игрок тянет игровое дерево: двигаем наложение на ту же дельту;
 // - средняя кнопка — «круг класса под курсором»: калибровка (в игре по кругу класса клик ничего не делает);
-// - колесо — игра меняет зум: наложение пометить «съехало»;
+// - колесо — игра меняет зум вокруг курсора: тот же зум у наложения (щелчки uiohook, < 0 — от себя);
 // - Esc или клавиша дерева (P) без модификаторов — игрок закрыл дерево: спрятать наложение.
 // Над плашкой этапа (её прямоугольник шлёт виджет) мышь попадает в оверлей, а не в игру, — там ничего не делаем.
 // Хук включён, только пока наложение показано; движение мыши — только пока зажата левая кнопка.
@@ -46,7 +46,8 @@ export interface TreeInputHandlers {
   pan(dx: number, dy: number): void
   /** средняя кнопка: точка клиентской области (физические точки) */
   align(at: OverlayPoint): void
-  zoom(): void
+  /** колесо: точка клиентской области (физические точки) и щелчки uiohook (< 0 — от себя, приближение) */
+  zoom(at: OverlayPoint, notches: number): void
   close(): void
 }
 
@@ -110,9 +111,10 @@ export function startTreeInput(h: TreeInputHandlers): () => void {
     onGlobalMouseUp((_p, button) => {
       if (button === BUTTON_LEFT) endDrag()
     }),
-    onGlobalWheel((p) => {
-      if (isOverlayActive() || !inside(p, h.client()) || overPanel(p, h.panel())) return
-      h.zoom()
+    onGlobalWheel((p, rotation) => {
+      const client = h.client()
+      if (rotation === 0 || isOverlayActive() || !inside(p, client) || overPanel(p, h.panel())) return
+      h.zoom({ x: p.x - client.x, y: p.y - client.y }, rotation)
     }),
     onGlobalKeyDown((k: GlobalKey) => {
       if (k.alt || k.ctrl || k.shift || k.meta) return

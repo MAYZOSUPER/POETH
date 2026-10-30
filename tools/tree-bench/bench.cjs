@@ -1,13 +1,13 @@
 // Стенд S38: окно «Path of Exile» с упрощённым деревом пассивок — проверить наложение дерева этапа без игры.
 //
 //   npx electron tools/tree-bench/bench.cjs --pob=tests/fixtures/pob/pobbin-acts-all-axes.txt --stage=3
-//   npx electron tools/tree-bench/bench.cjs --size=1920x1080 --frameless --zoom-step=1.25
+//   npx electron tools/tree-bench/bench.cjs --size=1920x1080 --frameless --zoom-step=0.625
 //   npx electron tools/tree-bench/bench.cjs --image=<скриншот дерева из игры>.png   # картинка фоном, без рисунка
 //
 // Дерево рисуется из resources/data/poe1/build/tree.json СВОЕЙ формулой (bench-page.js, не src/shared/build) —
-// независимая сверка проекции наложения. Ведёт себя как игра (по наблюдениям Exile-UI, проверяется в фазе 3):
-// - открывается с кругом класса в центре окна, отдалённым до упора (точек на единицу дерева = высота / 10000);
-// - левая кнопка тянет дерево 1:1 с курсором; колесо — зум вокруг курсора шагами --zoom-step, не дальше «до упора».
+// независимая сверка проекции наложения. Ведёт себя как игра (по снимкам S38 из игры, 30.10.2026):
+// - открывается с кругом класса в центре окна при z = 2 (точек на единицу дерева = высота / 10000 · z);
+// - левая кнопка тянет дерево 1:1 с курсором; колесо — зум вокруг курсора: ±--zoom-step к z, z от 1 до 5.
 // Взятые ноды — этап --stage кода PoB --pob (золотые); остальные — серые; без арта GGG.
 //
 // Команды (для tools/tree-bench/check.mjs): POST JSON на http://127.0.0.1:<port>/ (порт — в событии ready):
@@ -34,7 +34,7 @@ const ROOT = path.resolve(__dirname, '..', '..')
 const TITLE = arg('title', 'Path of Exile')
 const [W, H] = String(arg('size', '1600x900')).split('x').map(Number)
 const FRAMELESS = !!arg('frameless', false)
-const ZOOM_STEP = Number(arg('zoom-step', 1.25))
+const ZOOM_STEP = Number(arg('zoom-step', 0.625))
 const POB = arg('pob', path.join(ROOT, 'tests/fixtures/pob/pobbin-acts-all-axes.txt'))
 const STAGE = Number(arg('stage', 0))
 const IMAGE = arg('image', '')

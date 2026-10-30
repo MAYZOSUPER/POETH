@@ -8,7 +8,8 @@ const fs = require('fs')
 
 const q = new URLSearchParams(location.search)
 const IMAGE = q.get('image') || ''
-const ZOOM_STEP = Number(q.get('zoomStep') || 1.25)
+// зум как у игры (снимки S38): z от 1 до 5, щелчок — ±0,625 к z
+const ZOOM_STEP = Number(q.get('zoomStep') || 0.625)
 const CLASS_ID = Number(q.get('classId') || 3)
 const STAGE = new Set((q.get('nodes') || '').split(',').filter(Boolean).map(Number))
 const TITLE = q.get('title') || ''
@@ -54,7 +55,8 @@ const minScale = () => innerHeight / 10000
 let view = { scale: 0, ox: 0, oy: 0 }
 
 function reset() {
-  const s = minScale()
+  // как после входа: круг класса в центре, z = 2
+  const s = minScale() * 2
   view = { scale: s, ox: innerWidth / 2 - start.x * s, oy: innerHeight / 2 - start.y * s }
 }
 
@@ -110,7 +112,8 @@ function draw() {
 }
 
 function zoomAt(steps, x, y) {
-  const next = Math.max(minScale(), Math.min(minScale() * 12, view.scale * Math.pow(ZOOM_STEP, steps)))
+  const z = Math.max(1, Math.min(5, view.scale / minScale() + steps * ZOOM_STEP))
+  const next = minScale() * z
   const k = next / view.scale
   view = { scale: next, ox: x - (x - view.ox) * k, oy: y - (y - view.oy) * k }
   draw()

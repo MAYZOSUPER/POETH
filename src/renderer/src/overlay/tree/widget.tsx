@@ -11,7 +11,7 @@ import './tree.css'
 // Дерево этапа билда поверх игрового дерева пассивок (S38). Хоткей buildTree (Alt+P) — main показывает и прячет,
 // здесь только рисунок: кольца нод этапа (зелёные — взять, белые — были, приглушённые — уже взяты по журналу,
 // красные — снять при переходе), пути между ними и подписи нотаблей. Ноды и пути — в координатах дерева под одним
-// transform: панорама вслед за мышью (event:buildTree.view) меняет только его. Мышь проходит в игру везде, кроме
+// transform: панорама и зум вслед за мышью (event:buildTree.view) меняют только его. Мышь проходит в игру везде, кроме
 // плашки этапа сверху по центру: ← →, колесо над плашкой листает этапы, «В центр», спрятать.
 
 /** Подписи нотаблей — только когда дерево не слишком отдалено (иначе налезают друг на друга). */
@@ -24,7 +24,7 @@ function useTreeOverlay(): { st: TreeOverlayState | null; pos: TreeOverlayViewEv
     const api = window.overlayApi
     const apply = (s: TreeOverlayState): void => {
       setSt(s)
-      setPos(s.view ? { view: s.view, drift: s.drift } : null)
+      setPos(s.view ? { view: s.view } : null)
     }
     const offState = api.onBuildTreeState(apply)
     const offView = api.onBuildTreeView(setPos)
@@ -38,11 +38,11 @@ function useTreeOverlay(): { st: TreeOverlayState | null; pos: TreeOverlayViewEv
 }
 
 
-function TreeSvg({ drawing, view, drift, lang }: { drawing: TreeDrawing; view: TreeView; drift: boolean; lang: string }) {
+function TreeSvg({ drawing, view, lang }: { drawing: TreeDrawing; view: TreeView; lang: string }) {
   const { scale, ox, oy } = view
   const labels = scale >= LABEL_MIN_SCALE ? layoutLabels(drawing.nodes.filter((n) => n.label), view, lang) : []
   return (
-    <svg className={`bt-svg${drift ? ' is-drift' : ''}`} aria-hidden="true">
+    <svg className="bt-svg" aria-hidden="true">
       <g transform={`matrix(${scale} 0 0 ${scale} ${ox} ${oy})`}>
         {drawing.edges.map((e) => (
           <path key={`${e.a}-${e.b}`} d={e.d} className={`bt-edge bt--${e.state}`} vectorEffect="non-scaling-stroke" />
@@ -68,7 +68,7 @@ function TreeSvg({ drawing, view, drift, lang }: { drawing: TreeDrawing; view: T
   )
 }
 
-function Panel({ st, drift }: { st: TreeOverlayState; drift: boolean }) {
+function Panel({ st }: { st: TreeOverlayState }) {
   const t = useOverlayT()
   const ref = useRef<HTMLDivElement>(null)
   useInteractive(ref)
@@ -97,13 +97,7 @@ function Panel({ st, drift }: { st: TreeOverlayState; drift: boolean }) {
   const onWheel = (e: ReactWheelEvent): void => {
     if (e.deltaY !== 0) void api.step(e.deltaY > 0 ? 1 : -1)
   }
-  const hint = st.problem
-    ? t(`bt.problem.${st.problem}`)
-    : drift
-      ? t('bt.hint.zoom')
-      : !st.aligned
-        ? t('bt.hint.align')
-        : null
+  const hint = st.problem ? t(`bt.problem.${st.problem}`) : !st.aligned ? t('bt.hint.align') : null
   const version = st.build?.treeVersion && st.dataTree ? st.build.treeVersion.replace('_', '.') : null
   const oldTree = version && st.dataTree && !st.dataTree.startsWith(version) ? version : null
 
@@ -175,7 +169,7 @@ function Panel({ st, drift }: { st: TreeOverlayState; drift: boolean }) {
           </button>
         </div>
       )}
-      {stage && hint && <div className={`bt-panel__hint${drift || st.problem ? ' is-warn' : ''}`}>{hint}</div>}
+      {stage && hint && <div className={`bt-panel__hint${st.problem ? ' is-warn' : ''}`}>{hint}</div>}
       {stage && oldTree && <div className="bt-panel__hint">{t('bt.hint.version', { v: oldTree, d: st.dataTree ?? '' })}</div>}
       {stage && d && d.missing > 0 && <div className="bt-panel__hint">{t('bt.hint.missing', { n: d.missing })}</div>}
     </div>
@@ -187,11 +181,10 @@ function TreeOverlay() {
   if (!st?.enabled || !st.visible) return null
   const dpr = window.devicePixelRatio || 1
   const view = pos ? viewToCss(pos.view, dpr) : null
-  const drift = !!pos?.drift
   return (
     <div className="bt-root">
-      {st.drawing && view && <TreeSvg drawing={st.drawing} view={view} drift={drift} lang={st.lang} />}
-      <Panel st={st} drift={drift} />
+      {st.drawing && view && <TreeSvg drawing={st.drawing} view={view} lang={st.lang} />}
+      <Panel st={st} />
     </div>
   )
 }

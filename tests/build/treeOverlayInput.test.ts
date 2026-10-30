@@ -56,13 +56,18 @@ const key = (keycode: number, mods: Partial<{ alt: boolean; ctrl: boolean; shift
 const CLIENT = { x: 100, y: 50, width: 1600, height: 900 }
 
 function setup() {
-  const calls = { pan: [] as [number, number][], align: [] as { x: number; y: number }[], zoom: 0, close: 0 }
+  const calls = {
+    pan: [] as [number, number][],
+    align: [] as { x: number; y: number }[],
+    zoom: [] as [{ x: number; y: number }, number][],
+    close: 0
+  }
   const stop = startTreeInput({
     client: () => CLIENT,
     panel: () => ({ x: 600, y: 20, width: 400, height: 40 }),
     pan: (dx, dy) => calls.pan.push([dx, dy]),
     align: (at) => calls.align.push(at),
-    zoom: () => calls.zoom++,
+    zoom: (at, n) => calls.zoom.push([at, n]),
     close: () => calls.close++
   })
   return { calls, stop }
@@ -114,15 +119,20 @@ describe('startTreeInput', () => {
     fire(hook.down, { x: 500, y: 400 }, 1)
     fire(hook.wheel, { x: 500, y: 400 }, 1)
     expect(calls.align).toEqual([])
-    expect(calls.zoom).toBe(0)
+    expect(calls.zoom).toEqual([])
     expect(hook.move.size).toBe(0)
     stop()
   })
 
-  it('колесо над деревом — зум игры', () => {
+  it('колесо над деревом — зум игры в точке клиентской области; пустые щелчки (0) — мимо', () => {
     const { calls, stop } = setup()
     fire(hook.wheel, { x: 500, y: 400 }, -1)
-    expect(calls.zoom).toBe(1)
+    fire(hook.wheel, { x: 500, y: 400 }, 0)
+    fire(hook.wheel, { x: 600, y: 450 }, 2)
+    expect(calls.zoom).toEqual([
+      [{ x: 400, y: 350 }, -1],
+      [{ x: 500, y: 400 }, 2]
+    ])
     stop()
   })
 

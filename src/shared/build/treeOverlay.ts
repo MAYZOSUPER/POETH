@@ -2,10 +2,14 @@
 // окна игры, калибровка, сохранение по разрешению окна. Чистый модуль (main, renderer оверлея, tests/build/**).
 //
 // Игровое дерево PoE1 плоское и без поворота: точка окна = scale·(x, y) + (ox, oy), где (x, y) — координаты
-// ноды в tree.json (nodePosition), scale — точек окна на единицу дерева. Когда дерево отдалено колесом до упора,
-// scale = высота клиентской области / 10000: так считает Exile-UI (Lailloken, MIT, `Leveltracker_PobSkilltree`),
-// у нас это первая проверка S38 в игре (docs/check-ingame.md). Точки — физические пиксели клиентской области
-// игры (как снимок экрана и uiohook); renderer оверлея делит их на devicePixelRatio.
+// ноды в tree.json (nodePosition), scale — точек окна на единицу дерева. Точки — физические пиксели клиентской
+// области игры (как снимок экрана и uiohook); renderer оверлея делит их на devicePixelRatio.
+//
+// Зум — по снимкам из игры (S38, 1920×1080, 30.10.2026; подгонка по 13–700 нодам на снимок, ошибка 0,7–1,6 px):
+// scale = высота / 10000 · z. Отдалено до упора — z = 1 (так же считает Exile-UI, Lailloken, MIT,
+// `Leveltracker_PobSkilltree`; на снимках 0,02 %), приближено до упора — z = 5. Щелчок колеса — ровно ±0,625 к z
+// (не множитель: 1 → 1,625 → 2,25 → 3,5 за 4 щелчка), точка под курсором остаётся на месте. Сразу после входа
+// персонажем дерево открывается с z = 2 и стартовым кругом класса в центре окна.
 //
 // Опора калибровки — стартовый круг класса: он есть у каждого персонажа, крупный и сам по клику не вкладывается.
 // Игрок наводит на него курсор и жмёт среднюю кнопку мыши — сдвиг (ox, oy) считается по одной точке при
@@ -13,9 +17,14 @@
 
 /** scale при дереве, отдалённом до упора: высота окна / ZOOM_OUT_DIVISOR. */
 export const ZOOM_OUT_DIVISOR = 10_000
-/** Допустимый масштаб относительно «отдалено до упора» (сохранённое и посчитанное по двум точкам). */
-export const SCALE_MIN_FACTOR = 0.5
-export const SCALE_MAX_FACTOR = 12
+/** Зум z (scale = высота / 10000 · z): пределы, шаг щелчка колеса, после входа персонажем. */
+export const ZOOM_MIN = 1
+export const ZOOM_MAX = 5
+export const ZOOM_STEP = 0.625
+export const ZOOM_AFTER_LOGIN = 2
+/** Допустимый масштаб относительно «отдалено до упора» (сохранённое и посчитанное по двум точкам) — с запасом. */
+export const SCALE_MIN_FACTOR = ZOOM_MIN * 0.9
+export const SCALE_MAX_FACTOR = ZOOM_MAX * 1.1
 /** Две точки калибровки ближе этого (точки окна) — масштаб по ним не считаем. */
 export const MIN_ALIGN_SPAN_PX = 120
 /** Сколько разрешений окна помнить. */
@@ -68,17 +77,34 @@ export function isZoomedOut(v: TreeView, client: ClientSize, tol = 0.02): boolea
   return Math.abs(v.scale - base) <= base * tol
 }
 
+/** Зум z этого положения (1 — отдалено до упора). */
+export function zoomOf(v: TreeView, client: ClientSize): number {
+  return v.scale / zoomedOutScale(client.height)
+}
+
+/**
+ * Щелчки колеса над деревом: notches как у uiohook (< 0 — от себя, приближение). Игра прибавляет ±ZOOM_STEP к z
+ * на щелчок в пределах [ZOOM_MIN, ZOOM_MAX], точка под курсором at остаётся на месте.
+ */
+export function wheelView(v: TreeView, client: ClientSize, at: Point, notches: number): TreeView {
+  if (!finite(notches) || notches === 0) return v
+  const z = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoomOf(v, client) - notches * ZOOM_STEP))
+  const scale = zoomedOutScale(client.height) * z
+  if (scale === v.scale) return v
+  return alignAt({ scale, ox: 0, oy: 0 }, unproject(v, at), at)
+}
+
 /** Точка мира anchor — в точке экрана at, масштаб тот же. */
 export function alignAt(v: TreeView, anchor: Point, at: Point): TreeView {
   return { scale: v.scale, ox: at.x - anchor.x * v.scale, oy: at.y - anchor.y * v.scale }
 }
 
 /**
- * Как дерево открывается после входа персонажем (по наблюдению Exile-UI): стартовый круг класса — в центре окна;
- * масштаб — «отдалено до упора».
+ * Как дерево открывается после входа персонажем: стартовый круг класса — в центре окна, z = 2 (снимок S38-01:
+ * круг в 0,4 px от центра, z = 2,0006).
  */
 export function defaultView(client: ClientSize, anchor: Point): TreeView {
-  return alignAt({ scale: zoomedOutScale(client.height), ox: 0, oy: 0 }, anchor, {
+  return alignAt({ scale: zoomedOutScale(client.height) * ZOOM_AFTER_LOGIN, ox: 0, oy: 0 }, anchor, {
     x: client.width / 2,
     y: client.height / 2
   })
@@ -102,7 +128,7 @@ export function alignTwo(a: AlignPoint, b: AlignPoint, client: ClientSize): Tree
   return alignAt({ scale, ox: 0, oy: 0 }, a.world, a.screen)
 }
 
-/** Игрок потянул дерево мышью: игра двигает его вслед за курсором 1:1 (проверяется в игре, S38). */
+/** Игрок потянул дерево мышью: игра двигает его вслед за курсором 1:1 (где игра упирает дерево в край — не знаем). */
 export function panView(v: TreeView, dx: number, dy: number): TreeView {
   return { scale: v.scale, ox: v.ox + dx, oy: v.oy + dy }
 }
