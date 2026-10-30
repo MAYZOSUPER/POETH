@@ -68,29 +68,26 @@ function Head() {
   const leagues = useFavStore((s) => s.leagues)
   const refreshSettings = useFavStore((s) => s.refreshSettings)
   const game = settings?.game ?? 'poe1'
+  // S47: у PoE2 тоже список лиг trade2 и «текущая» (net/leagues по запущенной игре)
+  const chosen = (game === 'poe2' ? settings?.poe2.league : settings?.poe1.league) ?? 'auto'
   return (
     <div className="ui-panel__head ts-head">
       <span className="ui-panel__title">{t('fav.title')}</span>
-      {game === 'poe1' ? (
-        <select
-          className="ui-select ts-league"
-          aria-label={t('fav.league')}
-          title={t('fav.league.title')}
-          value={settings?.poe1.league ?? 'auto'}
-          onChange={(e) => void api().settings.set({ poe1: { league: e.target.value } }).then(refreshSettings)}
-        >
-          <option value="auto">{t('fav.league.auto', { league: leagues?.auto ?? '…' })}</option>
-          {(leagues?.leagues ?? []).map((l) => (
-            <option key={l.id} value={l.id}>
-              {l.text || l.id}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <span className="ts-league-fixed" title={t('fav.league.title')}>
-          {settings?.poe2.league}
-        </span>
-      )}
+      <select
+        className="ui-select ts-league"
+        aria-label={t('fav.league')}
+        title={t('fav.league.title')}
+        value={chosen}
+        onChange={(e) => void api().settings.set({ [game]: { league: e.target.value } }).then(refreshSettings)}
+      >
+        <option value="auto">{t('fav.league.auto', { league: leagues?.auto ?? '…' })}</option>
+        {(leagues?.leagues ?? []).map((l) => (
+          <option key={l.id} value={l.id}>
+            {l.text || l.id}
+          </option>
+        ))}
+        {chosen !== 'auto' && !(leagues?.leagues ?? []).some((l) => l.id === chosen) && <option value={chosen}>{chosen}</option>}
+      </select>
     </div>
   )
 }

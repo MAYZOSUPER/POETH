@@ -42,6 +42,24 @@ export const trade: DomainDict = {
     'pc1.tab.x.position': 'Окно перетаскивается за шапку; где его открывать — «Позиция окна цены» в настройках.',
     'pc1.tab.window':
       'Игра должна работать в режиме «Окно» или «Окно без рамки». Окно цены работает с русским и английским клиентом игры.',
+    // --- S47: окно цены PoE 2 поверх игры (остальные строки — общие pc1.*)
+    'pc2.title': 'Прайс-чек PoE 2',
+    'pc2.meta.tier': 'уровень {n}',
+    'pc2.meta.sockets': 'гнёзд: {n}',
+    'pc2.f.sockets': 'Гнёзда: {n}',
+    'pc2.f.tier': 'Уровень: {n}',
+    'pc2.f.areaLevel': 'Ур. области: {n}',
+    'pc2.market.help':
+      'Середина самых дешёвых похожих лотов на сайте трейда PoE 2, без подозрительно дешёвых. Считаются лоты в валюте самого дешёвого: курса между валютами у окна PoE 2 пока нет.',
+    'pc2.why.currency': 'Цены в разных валютах не пересчитываются — сравниваются лоты в одной валюте.',
+    'pc2.tag.buyout.help':
+      'Мгновенный выкуп: предмет продаёт торговец в убежище продавца, сам продавец может быть не в сети. Купить: «Открыть» → на сайте «Travel to Hideout» → купить у торговца.',
+    'pc2.lot.open.help': 'Откроет этот поиск в трейд-окне поверх игры (сайт трейда PoE 2).',
+    'pc2.lot.open.buyout.help':
+      'Откроет поиск в трейд-окне: найдите лот, нажмите на сайте «Travel to Hideout» и купите предмет у торговца. Комиссия — в золоте.',
+    'pc2.open.help': 'Откроет этот поиск в трейд-окне POETH на сайте трейда PoE 2.',
+    'pc2.parse.error': 'Не похоже на предмет PoE 2. Наведите курсор на предмет и нажмите {key} ещё раз.',
+    'pc2.parse.error.nokey': 'Не похоже на предмет PoE 2. Наведите курсор на предмет и скопируйте его ещё раз.',
     // --- S47: прайс-чек PoE 2 — вкладка компаньона (как у PoE 1) и уведомление о переносе ключа
     'pc2.tab.show.actions.text': '«Открыть в трейд-окне» — тот же поиск на сайте трейда PoE 2.',
     'pc2.tab.trade': 'Трейд PoE 2',
@@ -408,6 +426,24 @@ export const trade: DomainDict = {
     'pc1.tab.x.position': 'Drag the window by its header; where it opens is “Price window position” in the settings.',
     'pc1.tab.window':
       'The game must run in Windowed or Windowed Fullscreen. The price window works with the English and Russian game client.',
+    // --- S47: PoE 2 price window over the game (the rest is shared pc1.*)
+    'pc2.title': 'PoE 2 price check',
+    'pc2.meta.tier': 'tier {n}',
+    'pc2.meta.sockets': '{n} sockets',
+    'pc2.f.sockets': 'Sockets: {n}',
+    'pc2.f.tier': 'Tier: {n}',
+    'pc2.f.areaLevel': 'Area level: {n}',
+    'pc2.market.help':
+      'The middle of the cheapest similar listings on the PoE 2 trade site, without suspiciously cheap ones. Only listings in the currency of the cheapest one count: the PoE 2 window has no exchange rate between currencies yet.',
+    'pc2.why.currency': 'Prices in different currencies are not converted — listings are compared in one currency.',
+    'pc2.tag.buyout.help':
+      'Instant buyout: a merchant in the seller’s hideout sells the item, the seller may be offline. To buy: “Open” → “Travel to Hideout” on the site → buy from the merchant.',
+    'pc2.lot.open.help': 'Opens this search in the trade window over the game (PoE 2 trade site).',
+    'pc2.lot.open.buyout.help':
+      'Opens the search in the trade window: find the listing, press “Travel to Hideout” on the site and buy from the merchant. The fee is in gold.',
+    'pc2.open.help': 'Opens this search in the POETH trade window on the PoE 2 trade site.',
+    'pc2.parse.error': 'That does not look like a PoE 2 item. Hover an item and press {key} again.',
+    'pc2.parse.error.nokey': 'That does not look like a PoE 2 item. Hover an item and copy it again.',
     // --- S47: PoE 2 price check — companion tab (like PoE 1) and the key migration notice
     'pc2.tab.show.actions.text': '“Open in trade window” — the same search on the PoE 2 trade site.',
     'pc2.tab.trade': 'PoE 2 trade',

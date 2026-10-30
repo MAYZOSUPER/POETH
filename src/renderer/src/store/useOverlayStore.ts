@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { GameId } from '@shared/games'
 import type {
   CapturedItem,
   OverlayFocusState,
@@ -24,6 +25,8 @@ interface OverlayStore {
   ready: boolean
   /** язык интерфейса (Settings.uiLang) */
   lang: UiLang
+  /** S47: игра, с которой запущен POETH (Settings.game; смена — перезапуск) — окно цены PoE1 или PoE2 */
+  game: GameId | null
   /** акселератор overlayToggle — для подсказок ('Shift+Space') */
   toggleKey: string
   /** акселератор priceCheck ('Control+D') — в активном оверлее закрывает окно цены */
@@ -59,6 +62,7 @@ const api = (): Window['overlayApi'] => window.overlayApi
 export const useOverlayStore = create<OverlayStore>((set, get) => ({
   ready: false,
   lang: 'ru',
+  game: null,
   toggleKey: 'Shift+Space',
   priceCheckKey: 'Control+D',
   pricePosition: 'cursor',
@@ -100,6 +104,7 @@ export const useOverlayStore = create<OverlayStore>((set, get) => ({
     const s = await api().settings.get()
     set({
       lang: s.uiLang,
+      game: s.game,
       toggleKey: s.hotkeys.overlayToggle?.accel ?? '',
       priceCheckKey: s.hotkeys.priceCheck?.accel ?? '',
       pricePosition: s.overlay?.pricePosition ?? 'cursor',
