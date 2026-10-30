@@ -23,7 +23,9 @@ export const appChannels = {
   app: {
     info: 'app:info',
     switchGame: 'app:switchGame',
-    supporters: 'app:supporters'
+    supporters: 'app:supporters',
+    /** S56: форма GitHub «Ошибка / Bug» в браузере (адрес собирает main) */
+    reportBug: 'app:reportBug'
   }
 } as const
 
@@ -60,6 +62,8 @@ export interface AppIpcApi {
     switchGame(game: GameId): Promise<void>
     /** «Благодарности» (S9): resources/supporters.json, без сети */
     supporters(): Promise<Supporter[]>
+    /** «Сообщить об ошибке» (S56): main открывает форму GitHub с версией, игрой и языками — без данных игрока */
+    reportBug(): Promise<void>
   }
   onHotkey(cb: (action: HotkeyAction) => void): () => void
   /** main просит открыть страницу компаньона (showCompanionPage в src/main/ipc/app.ts) */
