@@ -57,8 +57,7 @@ export const auth: DomainDict = {
     'net.err.bad-request': 'Сайт трейда отклонил запрос.',
     'net.err.server': 'Сайт трейда недоступен — попробуйте позже.',
     'net.err.network': 'Нет связи с pathofexile.com.',
-    'net.err.bad-response': 'Непонятный ответ сайта трейда.',
-    'net.retry': 'Повторить'
+    'net.err.bad-response': 'Непонятный ответ сайта трейда.'
   },
   en: {
     'auth.title': 'Account',
@@ -113,7 +112,6 @@ export const auth: DomainDict = {
     'net.err.bad-request': 'The trade site rejected the request.',
     'net.err.server': 'The trade site is unavailable — try again later.',
     'net.err.network': 'No connection to pathofexile.com.',
-    'net.err.bad-response': 'Unexpected response from the trade site.',
-    'net.retry': 'Retry'
+    'net.err.bad-response': 'Unexpected response from the trade site.'
   }
 }

@@ -1,6 +1,7 @@
 import type { Act, Reward, RewardKind } from '@shared/types'
 import { useAppStore, getRoute, stepIndexOfZone } from '../store/useAppStore'
 import { useT, useLang, useName, layoutLabel, formatReward } from '../i18n'
+import { tKey } from '../i18n/hotkey'
 import { QuestRow } from '../components/QuestRow'
 
 const PERMANENT = new Set<RewardKind>([
@@ -36,6 +37,9 @@ export function WhatsNextPanel() {
   const t = useT()
   const lang = useLang()
   const localName = useName()
+  // шаги ◀ ▶ переназначаются в настройках (prevStep / nextStep)
+  const prevKey = useAppStore((s) => s.settings?.hotkeys.prevStep.accel)
+  const nextKey = useAppStore((s) => s.settings?.hotkeys.nextStep.accel)
 
   const route = getRoute()
   if (!dataset || route.length === 0) return null
@@ -79,10 +83,10 @@ export function WhatsNextPanel() {
       <div className="panel-head">
         <span>{t('wn.head', { i: idx + 1, n: route.length })}</span>
         <span className="wn-nav">
-          <button className="icon" title={t('wn.prev')} onClick={stepPrev}>
+          <button className="icon" title={tKey(t, 'wn.prev', prevKey)} onClick={stepPrev}>
             ◀
           </button>
-          <button className="icon" title={t('wn.next')} onClick={stepNext}>
+          <button className="icon" title={tKey(t, 'wn.next', nextKey)} onClick={stepNext}>
             ▶
           </button>
         </span>

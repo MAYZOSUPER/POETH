@@ -1,6 +1,8 @@
 import { ipcMain, webContents, type IpcMainInvokeEvent } from 'electron'
 import { IPC } from '@shared/ipc'
 import type { GameDef } from '@shared/games'
+import type { OverlayNotice } from '@shared/types'
+import { whisperLastNotice } from '@shared/live/whisperLast'
 import { isTrustedAppUrl } from '../net/guards'
 import { onHotkeyAction } from '../hotkeys'
 import { LiveManager } from '../games/poe1/liveSearch'
@@ -8,6 +10,7 @@ import { registerFavLiveAdapter } from './fav'
 import type { IpcDomain } from './types'
 import { devEnv } from '../devEnv'
 import { isAppPageUrl } from '../security'
+import { sendToOverlay } from '../windows/gameOverlay'
 
 // Домен «live search» (main, S6): менеджер live-поисков PoE1, хоткей whisperLastHit.
 // Звать каналы могут только наши страницы (file:// или dev-сервер); события уходят в
@@ -72,10 +75,14 @@ async function setupForGame(def: GameDef): Promise<void> {
     manager.stop()
     return
   }
-  // вставляет whisper последней in-person находки в чат и НЕ отправляет — Enter жмёт игрок
+  // вставляет whisper последней in-person находки в чат и НЕ отправляет — Enter жмёт игрок;
+  // не вышло — почему, коротким уведомлением поверх игры (в игру ничего больше не идёт)
   onHotkeyAction('whisperLastHit', () => {
     const r = manager.whisperLast()
-    if (r !== 'ok') console.log('[live] whisperLastHit:', r)
+    if (r === 'ok') return
+    console.log('[live] whisperLastHit:', r)
+    const key = whisperLastNotice(r)
+    if (key) sendToOverlay(IPC.events.overlayNotice, { key, kind: 'warn' } satisfies OverlayNotice)
   })
   await manager.start()
   // после start: до него setLive отвечает 'unsupported' и включённые поиски избранного не поднялись бы

@@ -19,6 +19,20 @@
   min-width: 180px;
   margin-left: auto;
 }
+/* переключатель с пояснением под подписью (portable: уведомлений Windows нет) */
+.live-opt {
+  display: inline-grid;
+  gap: var(--sp-2);
+}
+.live-opt .ui-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.live-opt__note {
+  padding-left: 37px; /* ширина дорожки переключателя + зазор — текст под подписью */
+  color: var(--fg-faint);
+  font-size: var(--fs-sm);
+}
 .live-banner {
   border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
   border-radius: var(--r-panel);

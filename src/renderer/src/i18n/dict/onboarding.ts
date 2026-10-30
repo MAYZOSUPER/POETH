@@ -41,7 +41,9 @@ export const onboarding: DomainDict = {
     'wiz.window.mode':
       'В настройках игры выберите режим «Окно без рамки» (Windowed Fullscreen) — в эксклюзивном полноэкранном режиме окна POETH не видны.',
     'wiz.window.admin':
-      'Не запускайте игру от имени администратора — иначе Ctrl+D и оверлей не смогут до неё достучаться.',
+      'Не запускайте игру от имени администратора — иначе {key} и оверлей не смогут до неё достучаться.',
+    'wiz.window.admin.nokey':
+      'Не запускайте игру от имени администратора — иначе горячие клавиши и оверлей не смогут до неё достучаться.',
     'wiz.window.found': 'Игра найдена — всё работает.',
     'wiz.window.adminNow':
       'Сейчас игра запущена от имени администратора: перезапустите её обычным способом (или POETH тоже от администратора).',
@@ -140,7 +142,8 @@ export const onboarding: DomainDict = {
     'wiz.window.title': 'Game window',
     'wiz.window.mode':
       'In the game settings pick the “Windowed Fullscreen” display mode — in exclusive fullscreen POETH windows are not visible.',
-    'wiz.window.admin': 'Do not run the game as administrator — otherwise Ctrl+D and the overlay cannot reach it.',
+    'wiz.window.admin': 'Do not run the game as administrator — otherwise {key} and the overlay cannot reach it.',
+    'wiz.window.admin.nokey': 'Do not run the game as administrator — otherwise hotkeys and the overlay cannot reach it.',
     'wiz.window.found': 'Game found — everything works.',
     'wiz.window.adminNow':
       'The game is running as administrator right now: restart it normally (or run POETH as administrator too).',

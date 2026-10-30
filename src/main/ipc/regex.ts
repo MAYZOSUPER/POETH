@@ -14,6 +14,7 @@ import { exportPayload } from '@shared/regex/library'
 import * as store from '../services/regexLibraryStore'
 import { readImportJson } from '../services/importFile'
 import { getCompanionWindow } from '../windows/companionWindow'
+import { uiDialogTitle } from '../services/dialogText'
 import type { IpcDomain } from './types'
 
 // Домен «regex-строки» (main): данные карт для движка, библиотека строк, буфер обмена.
@@ -39,7 +40,7 @@ function toInput(raw: unknown): RegexEntryInput | null {
 async function exportLibrary(): Promise<RegexExportResult> {
   const win = getCompanionWindow()
   const opts = {
-    title: 'Экспорт regex-строк',
+    title: await uiDialogTitle('regexExport'),
     defaultPath: 'poeth-regex.json',
     filters: [{ name: 'POETH regex', extensions: ['json'] }]
   }
@@ -60,7 +61,7 @@ const REGEX_IMPORT_MAX_BYTES = 2 * 1024 * 1024
 async function importLibrary(): Promise<RegexImportResult> {
   const win = getCompanionWindow()
   const opts = {
-    title: 'Импорт regex-строк',
+    title: await uiDialogTitle('regexImport'),
     properties: ['openFile' as const],
     filters: [{ name: 'POETH regex', extensions: ['json'] }]
   }

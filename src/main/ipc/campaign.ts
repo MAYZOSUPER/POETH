@@ -14,6 +14,7 @@ import { onHotkeyAction } from '../hotkeys'
 import { getRunningGameDef } from '../gameContext'
 import type { IpcDomain } from './types'
 import { readImportJson } from '../services/importFile'
+import { dialogTitle, uiDialogTitle, uiLang } from '../services/dialogText'
 
 /** Файл профиля кампании — прогресс по квестам, десятки КБ; размер проверяется до чтения (S29). */
 const PROFILE_IMPORT_MAX_BYTES = 1024 * 1024
@@ -61,8 +62,8 @@ async function setupBossMatcher(): Promise<void> {
 function register(): void {
   // ---- profiles ----
   ipcMain.handle(IPC.profiles.list, () => profiles.listProfiles())
-  ipcMain.handle(IPC.profiles.create, (_e, name: string, className?: string) =>
-    profiles.createProfile(name, className)
+  ipcMain.handle(IPC.profiles.create, async (_e, name: string, className?: string) =>
+    profiles.createProfile(name, className, await uiLang())
   )
   ipcMain.handle(IPC.profiles.rename, (_e, id: string, name: string) =>
     profiles.renameProfile(id, name)
@@ -82,7 +83,7 @@ function register(): void {
     const win = getCompanionWindow()
     const safeName = bundle.profile.name.replace(/[^\p{L}\p{N} _-]+/gu, '').trim() || 'profile'
     const opts = {
-      title: 'Экспорт профиля',
+      title: await uiDialogTitle('profileExport'),
       defaultPath: `${safeName}.poeth.json`,
       filters: [{ name: 'POETH profile', extensions: ['json'] }]
     }
@@ -97,8 +98,9 @@ function register(): void {
   })
   ipcMain.handle(IPC.profiles.import, async () => {
     const win = getCompanionWindow()
+    const lang = await uiLang()
     const opts = {
-      title: 'Импорт профиля',
+      title: dialogTitle(lang, 'profileImport'),
       properties: ['openFile' as const],
       filters: [{ name: 'POETH profile', extensions: ['json'] }]
     }
@@ -106,7 +108,7 @@ function register(): void {
     if (result.canceled || result.filePaths.length === 0) return { status: 'canceled' as const }
     const raw = await readImportJson(result.filePaths[0], PROFILE_IMPORT_MAX_BYTES)
     if (raw === undefined) return { status: 'invalid' as const }
-    const meta = await profiles.importProfileBundle(raw)
+    const meta = await profiles.importProfileBundle(raw, lang)
     if (!meta) return { status: 'invalid' as const }
     return { status: 'created' as const, profile: meta, profiles: await profiles.listProfiles() }
   })
@@ -155,7 +157,7 @@ function register(): void {
   ipcMain.handle(IPC.tailer.pickLogFile, async () => {
     const win = getCompanionWindow()
     const opts = {
-      title: 'Выберите Client.txt',
+      title: await uiDialogTitle('clientLog'),
       properties: ['openFile' as const],
       filters: [{ name: 'Client log', extensions: ['txt'] }]
     }
