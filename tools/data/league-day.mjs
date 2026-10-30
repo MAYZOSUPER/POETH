@@ -7,7 +7,7 @@
 // Шаги:
 //   apt      новый пин APT: sync-apt-data --sha <sha>; APT_PIN в sync-apt-data.mjs ← полный SHA
 //   verify   sha256 файлов по data.meta.json (sync-apt-data --verify)
-//   regex    regex-данные карт из свежего RePoE fork (build-regex-data --refresh [--patch])
+//   regex    regex-данные карт, «Торговца» и «Предметов» из свежего RePoE fork (--refresh [--patch])
 //   tests    typecheck, vitest, test:trade
 //   pack     пакет данных: publish-data --version <версия> --out dist-data
 //   publish  ci    — изменения закоммичены и в origin/main → тег data-<версия> → .github/workflows/data.yml
@@ -79,7 +79,10 @@ const run = {
     node('verify', 'tools/data/sync-apt-data.mjs', '--verify')
   },
   regex() {
-    node('regex', 'tools/regex/build-regex-data.mjs', '--refresh', ...(patch ? ['--patch', patch] : []))
+    const p = patch ? ['--patch', patch] : []
+    node('regex', 'tools/regex/build-regex-data.mjs', '--refresh', ...p)
+    node('regex', 'tools/regex/build-vendor-data.mjs', '--refresh', ...p)
+    node('regex', 'tools/regex/build-item-data.mjs', '--refresh', ...p)
   },
   tests() {
     sh('tests', 'npm', ['run', 'typecheck'])

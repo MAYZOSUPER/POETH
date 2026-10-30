@@ -69,6 +69,12 @@ whose full history is kept in this repository.
   licenses of the Lua libraries PoB bundles: dkjson, xml, base64, sha1, sha2). Pinned tag and commit, SHA-256 of the
   file set: `tools/pob/pins.json`. It runs headless in a separate local process via our own `resources/pob/server.lua`
   (written from scratch; no code from PoE Upgrade Checker, which is GPL).
+- **Timeless jewel outcomes** (`resources/data/poe1/build/timeless*.{json,bin}`, `tools/timeless/build.mjs`, S45) — derived
+  from the lookup tables of Path of Building Community (`src/Data/TimelessJewelData`, pinned commit `3dbca44`, files checked
+  by SHA-256), **MIT License**, Copyright (c) 2016 David Gowor; the license text ships next to the data
+  (`timeless-LICENSE.txt`). Outcome texts EN/RU — RePoE fork (MIT) stat translations; Russian names of replaced notables —
+  PoE 1 client tables (facts only). No PoB code is used. The [Timeless Jewels calculator by Vilsol](https://github.com/Vilsol/timeless-jewels)
+  (GPL-3.0) is only linked to and used as a source of reference numbers in tests; none of its code is copied.
 - **[LuaJIT](https://github.com/LuaJIT/LuaJIT)** — **MIT License**, Copyright (C) 2005-2026 Mike Pall. `luajit.exe` in
   `resources/pob-engine/bin/` is built by `tools/pob/prepare.mjs` from the pinned source commit (`tools/pob/pins.json`,
   `msvcbuild.bat static`); its `COPYRIGHT` file ships next to it as `COPYRIGHT-LuaJIT.txt`.

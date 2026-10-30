@@ -42,6 +42,7 @@
 - [ ] Ctrl+D на 10 разных предметах новой лиги (EN + RU клиент): что «не распознано» → покрывает ли фолбэк `/data/stats`.
 - [ ] Поиск/fetch/bulk/live работают, нет новых ошибок шлюза; Cloudflare/капча — путь через трейд-окно.
 - [ ] Whisper-сделка с альта на EN и RU — карточка появляется.
+- [ ] PoE 2: лига trade2 переключилась сама (`/api/trade2/data/leagues`), Ctrl+D на 5 предметах EN и RU.
 
 **D+1…D+3:**
 - [ ] Вышел новый релиз APT (и/или обновился RePoE fork) → **день лиги одной командой** (см. ниже):
@@ -51,6 +52,15 @@
       `tools/build-data/sources.mjs` (и `DAT_COMMIT` в `tools/leveling/game-names.mjs`), `node tools/build-data/build.mjs
       --refresh`, `npx vitest run tests/build-data` (порядок и отчёт — `tools/build-data/README.md`). Скилл-три выходит
       в день патча, RePoE — обычно через 0–2 дня; дерево без RU-имён не публиковать.
+- [ ] Timeless (S45), после данных «Билда»: новый коммит PoB с обновлёнными `src/Data/TimelessJewelData` → `POB_COMMIT` и
+      SHA-256 в `tools/timeless/build.mjs`, `node tools/timeless/build.mjs --refresh`, `npx vitest run tests/timeless`;
+      смотреть отчёт «нотаблы без исхода» и эталонные сиды (`tools/timeless/README.md`).
+- [ ] Движок PoB (S44): релиз PoB под лигу (взять последний за 1–2 дня до выпуска POETH) → `tools/pob/pins.json` (`tag`,
+      полный `commit`, `tree`), `node tools/pob/prepare.mjs --pin`, затем `node tools/pob/prepare.mjs` (нужен VS Build Tools)
+      и `npx vitest run tests/pob/serverLua.test.ts`: selftest зелёный, RU = EN, «наш XML = исходный» ≥ 10. Упало —
+      `pobSparse`/`pobKeep` в `prepare.mjs` или `STATS` ↔ `ENGINE_STATS`. release.yml соберёт и проверит движок сам.
+- [ ] PoE 2 (S47): релиз Exiled Exchange 2 под патч → `node tools/data/sync-ee2-data.mjs --sha <коммит EE2>`, пин
+      `EE2_PIN`, `node tools/data/make-poe2-ru-fixtures.mjs --check`, `npx vitest run tests/poe2 -u` — снапшоты глазами.
 - [ ] Нужен код (не только данные) — релиз v0.1.1 (тег `v*`, release.yml).
 
 **Неделя 1–2:** следить за issues APT/Sidekick и форумом GGG (изменения сайта трейда), хотфиксы. Мид-лиговые
