@@ -64,6 +64,47 @@ export function isAllowedExternalUrl(url: unknown): url is string {
 }
 
 /**
+ * Ссылки авторов билдов и гайдов (S59, решение пользователя 30.10: «открываются в браузере, автор ставит свою»):
+ * видео, стримы, страницы гайдов и пасты PoB. Отдельный список, не EXTERNAL_HOSTS: открывает только main по id
+ * записи из проверенных данных (стартеры, позже гайды), а не по адресу из renderer. Новые хосты — только лид.
+ */
+export const AUTHOR_LINK_HOSTS: readonly string[] = [
+  'www.youtube.com',
+  'youtube.com',
+  'm.youtube.com',
+  'youtu.be',
+  'www.twitch.tv',
+  'twitch.tv',
+  'maxroll.gg',
+  'mobalytics.gg',
+  'www.poe-vault.com',
+  'pobb.in',
+  'pob.codes',
+  'www.reddit.com',
+  'boosty.to',
+  't.me',
+  'www.pathofexile.com',
+  'ru.pathofexile.com'
+]
+
+/** Ссылка автора, которую можно открыть в браузере: https, хост из AUTHOR_LINK_HOSTS, без логина и порта. */
+export function isAuthorLinkUrl(url: unknown): url is string {
+  if (typeof url !== 'string' || url.length > 500) return false
+  try {
+    const parsed = new URL(url)
+    return (
+      parsed.protocol === 'https:' &&
+      !parsed.username &&
+      !parsed.password &&
+      !parsed.port &&
+      AUTHOR_LINK_HOSTS.includes(parsed.hostname)
+    )
+  } catch {
+    return false
+  }
+}
+
+/**
  * Steam (решение лида, вход через Steam): ссылки страницы входа Steam, кроме самого входа
  * (профиль, магазин, «Не могу войти»), main открывает в системном браузере. Только для
  * переходов из окна сайта; renderer эти хосты открыть не может.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BOOSTY_URL, isAllowedExternalUrl, isSiteExternalUrl } from '@shared/links'
+import { BOOSTY_URL, isAllowedExternalUrl, isAuthorLinkUrl, isSiteExternalUrl } from '@shared/links'
 
 describe('isAllowedExternalUrl', () => {
   it('пропускает https на официальный сайт и Boosty', () => {
@@ -34,5 +34,28 @@ describe('isSiteExternalUrl (переходы из окна сайта)', () => 
     expect(isSiteExternalUrl('https://store.steampowered.com.evil.com/')).toBe(false)
     expect(isSiteExternalUrl('https://evil.example.com/')).toBe(false)
     expect(isSiteExternalUrl(42)).toBe(false)
+  })
+})
+
+describe('isAuthorLinkUrl (ссылки авторов, S59)', () => {
+  it('пускает https на хосты авторов', () => {
+    expect(isAuthorLinkUrl('https://www.youtube.com/watch?v=abc&t=90')).toBe(true)
+    expect(isAuthorLinkUrl('https://youtu.be/abc')).toBe(true)
+    expect(isAuthorLinkUrl('https://www.twitch.tv/someone')).toBe(true)
+    expect(isAuthorLinkUrl('https://pobb.in/AbCd123')).toBe(true)
+    expect(isAuthorLinkUrl('https://t.me/channel')).toBe(true)
+  })
+  it('не пускает чужие хосты, http, логин, порт и мусор', () => {
+    expect(isAuthorLinkUrl('http://www.youtube.com/watch?v=abc')).toBe(false)
+    expect(isAuthorLinkUrl('https://youtube.com.evil.example/')).toBe(false)
+    expect(isAuthorLinkUrl('https://user:pw@www.youtube.com/')).toBe(false)
+    expect(isAuthorLinkUrl('https://www.youtube.com:8443/')).toBe(false)
+    expect(isAuthorLinkUrl('javascript:alert(1)')).toBe(false)
+    expect(isAuthorLinkUrl('https://example.com/')).toBe(false)
+    expect(isAuthorLinkUrl(42)).toBe(false)
+    expect(isAuthorLinkUrl('https://www.youtube.com/' + 'a'.repeat(600))).toBe(false)
+  })
+  it('хосты авторов не открываются из renderer как обычные ссылки', () => {
+    expect(isAllowedExternalUrl('https://www.youtube.com/watch?v=abc')).toBe(false)
   })
 })

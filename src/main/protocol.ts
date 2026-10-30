@@ -36,8 +36,11 @@ export function registerPoethScheme(): void {
 
 const GAME_RE = /^poe[12]$/
 const LANG_RE = /^[a-z]{2,3}(-[A-Za-z]{2,4})?$/
-/** Подпапки данных, которые не язык: только перечисленные (`build` — дерево и камни «Билда», S36; `guide` — статьи «Справочника», S55). */
-const DATA_SUBDIRS: ReadonlySet<string> = new Set(['build', 'guide'])
+/**
+ * Подпапки данных, которые не язык: только перечисленные (`build` — дерево и камни «Билда», S36; `guide` — статьи
+ * «Справочника», S55; `starters` — стартеры лиги во вкладке «Билд», S59).
+ */
+const DATA_SUBDIRS: ReadonlySet<string> = new Set(['build', 'guide', 'starters'])
 // a single plain file name — no separators, no "..", no leading dot
 const FILE_RE = /^[\w][\w.-]*$/
 
