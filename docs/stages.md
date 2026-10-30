@@ -47,6 +47,8 @@
 | **S38** | Вкладка «Билд»: дерево этапа поверх игрового дерева пассивок по Alt+P (как Build Planner PoE 2) | с 30.10 | сессия s38-tree-overlay | `s38-tree-overlay` | ✅ фаза 2, правка «взято» и автоподгонка по снимкам слиты 30.10 · ⏳ проверка в игре, снимки упора панорамы и другим классом |
 | **S39** | Вкладка «Билд», B3: интерфейс по макету v0.2 — вставка PoB, этапы, камни, связки, дерево, проверка | 30.10 | сессия s39-b3 | `s39-b3` | ✅ слит 30.10 (скрыта флагом) |
 | **S40** | Вкладка «Билд»: «Предметы этапа» — ключевые предметы, «Купить первым», «Трейд», «что нужно от слота» | 30.10 | сессия s40 | `s40` | ✅ слит 30.10 (скрыта флагом) |
+| **S41** | Вкладка «Билд», B4: «Против надетого» в окне Ctrl+D — «Запомнить как надетое», слоты, упрощённый расчёт, вердикт | с 30.10 | сессия s41-vs-equipped | `s41-vs-equipped` | ⏳ в работе |
+| **S42** | Хвосты S37: клавиши в подсказках по настройкам, RU-строки в EN-интерфейсе, мёртвые ключи, portable и live, `whisperLastHit` | с 30.10 | сессия s42-polish | `s42-polish` | ⏳ в работе |
 | **S10** | Hardening + релиз: матрица EN/RU, DPI, NSIS, тег v0.1.0 | Д13–15 | лид | `main` | S10a ✅ · репо открыт 28.10 ✅ · ⏳ живые проверки, тег v0.1.0 |
 
 ∥ — параллельно с другими этапами, каждый в своём git worktree. Последовательные S1 → S4 → S6 —
@@ -118,6 +120,8 @@
 | **S38** | `src/shared/build/treeOverlay*.ts`, `src/main/build/treeOverlay*.ts`, домен `buildTree` (shared/main/preload/dict), `overlay/tree/**`, `tools/tree-bench/**`, `tests/build/treeOverlay*` (в т. ч. `treeOverlayMatch`, `treeOverlayFit*`); по разрешению лида — хоткей `buildTree`, подписки мыши в `gameInput.ts`, `OVERLAY_CHANNELS` в `policy.ts`. |
 | **S39** | домен `build` (shared/main/preload/dict), `src/main/build/{buildLibrary,buildTaken}.ts`, `src/shared/build/{library,takenLog,view}.ts`, `panels/build/**`, `store/useBuildStore.ts`, `overlay/leveling/buildGuide.ts` + `buildLine.tsx`, `tests/build/*` (кроме treeOverlay); по разрешению лида — `GameFeatures.build`, `tabs.ts`, `AppTab`, `protocol.ts` (`DATA_SUBDIRS`), `COMPANION_CHANNELS`. |
 | **S40** | `src/shared/build/{pobItem,stageItems,keyItems,keyUniques,itemTrade,itemLang,slotNeeds}.ts`, `panels/build/{ItemsBox.tsx,useItemsData.ts}`, ключи `bd.it.*` в `i18n/dict/build.ts`, `build.css`, `tests/build/{pobItem,keyItems,itemTrade}.test.ts`; по разрешению лида — `marks?` в `PobStageEdits` (S35) и `cleanEdits`. |
+| **S41** | новый домен `equip` (shared/main/preload/dict), `src/shared/build/equipCompare*.ts`, `overlay/pricecheck/EquipBox*`, `tests/build/equip*`; по разрешению лида — по строке в агрегаторах, `policy.ts`, место монтирования в `PriceWindow.tsx`. |
+| **S42** | строки `i18n/dict/*` (кроме словаря `equip`), диалоги main (`ipc/regex.ts`, `ipc/campaign.ts`), `profileStore.ts`, `useAppStore.ts`, `levelingStore.ts`, `LayoutViewerPanel.tsx`, `wealth/manager.ts`, блок `.coming-soon*` в `globals.css`; в `PriceWindow.tsx` — только вызовы строк. |
 
 ## Замороженные общие файлы (меняет только лид)
 
