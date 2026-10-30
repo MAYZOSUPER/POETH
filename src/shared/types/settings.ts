@@ -34,7 +34,7 @@ export interface GameLangSettings {
 }
 
 /** top-level tab of the companion window */
-export type AppTab = 'campaign' | 'priceCheck' | 'live' | 'regex' | 'deals' | 'wealth' | 'flip' | 'advisor' | 'build'
+export type AppTab = 'campaign' | 'priceCheck' | 'live' | 'regex' | 'deals' | 'wealth' | 'flip' | 'advisor' | 'build' | 'guide'
 
 /**
  * Область хоткея: 'game' — работает только пока окно игры в фокусе (гейтинг — S1),
@@ -51,6 +51,8 @@ export interface HotkeyBinding {
 export type HotkeyAction =
   // game scope
   | 'priceCheck'
+  // S51: скопировать предмет под курсором по-английски (для PoB и Discord) — одно Ctrl+C, EN-текст в буфер
+  | 'copyItemEn'
   | 'overlayToggle'
   | 'whisperLastHit'
   | 'pasteSearch1'

@@ -13,6 +13,7 @@ import { parseSupporters } from '@shared/credits'
 import { readJson } from '../services/atomicJson'
 import { resourcesDir } from '../services/questDataset'
 import { reconcileTailer } from './campaign'
+import { openBugReport } from '../services/bugReport'
 import type { IpcDomain } from './types'
 
 // Домен «приложение»: настройки, окно компаньона, хоткеи, смена игры.
@@ -105,6 +106,8 @@ function register(): void {
   ipcMain.handle(IPC.app.switchGame, async (_e, game: unknown) => {
     if (isGameId(game)) await switchGame(game)
   })
+  // S56: «Сообщить об ошибке» — только наша форма GitHub, адрес собирает main
+  ipcMain.handle(IPC.app.reportBug, () => openBugReport())
 
   // ---- window controls (fire-and-forget) ----
   ipcMain.on(IPC.window.setLocked, (_e, value: boolean) => setLocked(!!value))

@@ -1,20 +1,22 @@
 # Данные вкладки «Билд» PoE1 (S36)
 
 ```bash
-node tools/build-data/build.mjs              # дерево + камни + сверка текстов журнала (кэш: .cache/build-data/src/)
+node tools/build-data/build.mjs              # дерево + анойнты + камни + сверка текстов журнала (кэш: .cache/build-data/src/)
 node tools/build-data/build.mjs --refresh    # скачать источники заново
 node tools/build-data/tree.mjs               # только дерево
+node tools/build-data/anoints.mjs            # только рецепты анойнта (S54)
 node tools/build-data/gems.mjs               # только камни (после npm run build:leveling — камни берут награды маршрута)
 node tools/build-data/log-strings.mjs        # тексты журнала в src/shared/leveling/log.ts = таблицы клиента?
 ```
 
-Выход — `resources/data/poe1/build/{tree,gems}.json`: минимальный JSON одной строкой (переводы строк git не
+Выход — `resources/data/poe1/build/{tree,anoints,gems}.json`: минимальный JSON одной строкой (переводы строк git не
 трогает, sha256 в канале данных совпадает с собранным). Схема — `src/shared/build/types.ts`, загрузчики и
 сопоставления — `src/shared/build/data.ts`, тесты — `tests/build-data/`.
 
 | Файл | Что | Откуда (закреплено в `sources.mjs`) |
 |---|---|---|
 | `tree.json` | ноды дерева: hash, строковый id (как в журнале), имя EN/RU, вид (обычная, нотабл, кейстоун, мастерство, гнездо самоцвета, стартовая класса и восхождения), восхождение, тексты статов EN/RU, stat id для расчёта защит, группа/орбита/место, соседи; эффекты мастерств; классы и восхождения в порядке PoB (`classId`, `ascendClassId`); родословные | [skilltree-export](https://github.com/grindinggear/skilltree-export) `3.29.1` (Data Export GGG) + [RePoE fork](https://repoe-fork.github.io) `3.29.3.3` (MIT) + таблицы клиента [dat-export](https://github.com/repoe-fork/dat-export) |
+| `anoints.json` | рецепты анойнта (S54): hash ноты → три масла по тиру (масла повторяются, порядок не важен); масла по тиру (Prismatic 0, Clear 1 … Golden 13) — id выгрузки GGG, английское имя (цена у Фаустуса), tradeTag (имя на языке клиента и иконка — данные APT); ноты только для анойнта (`isBlighted`). Имена нот — в `tree.json` | skilltree-export (поле `recipe` нод) + таблица клиента `BlightCraftingItems` (тир и назначение масел; Tainted/Reflective не рецепты) |
 | `gems.json` | камни по ключу PoB (`Metadata/Items/Gems/SkillGem` + variantId), имена EN/RU, цвет, поддержка/Vaal/трансфигурированный, требуемый уровень по уровням камня, id предмета и эффекта, где взять (награда квеста или продавец по классам, уровень квеста по маршруту) | RePoE fork `gems.json` + `Russian/gems_minimal.json`, таблицы клиента `GemEffects`/`GrantedEffects`, наш `leveling/leveling.json` (exile-leveling, MIT) |
 
 ## Как собирается
@@ -44,5 +46,10 @@ node tools/build-data/log-strings.mjs        # тексты журнала в sr
    изменились» (перенести в `BUILD_LOG_STRINGS`).
 3. `npx vitest run tests/build-data` — известные ноды и камни могли поменяться (ноды меняют hash редко, но
    кейстоуны и нотаблы переделывают — поправить ожидания).
+   **Анойнты:** `anoints.mjs` останавливается (файл не пишет), если масло рецепта не найдено в `BlightCraftingItems`
+   (новое масло — поднять `DAT_COMMIT`), рецепт не из трёх масел или два рецепта совпали. Тест сверяет все рецепты
+   и RU-имена нот с данными APT (`stats.ndjson`: «Allocates X») — после обновления данных APT под лигу оба источника
+   должны совпасть; число рецептов (472 в 3.29) и известные пары в `tests/build-data/anoints.test.ts` поправить, если
+   GGG их поменяли. Новое масло — ещё и в `exchange-ids.json` (цена у Фаустуса) и в данных APT (имя, иконка).
 4. Файлы попадают в пакет данных сами (`publish-data.mjs` берёт всё из `resources/data/poe1`) — дальше как в
    `docs/league-update.md`.

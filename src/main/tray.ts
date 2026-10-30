@@ -9,6 +9,7 @@ import { reconcileTailer } from './ipc/campaign'
 import { showCompanionPage, toggleCompanionVisible, toggleLock } from './ipc/app'
 import { getRunningGameDef } from './gameContext'
 import { checkForAppUpdates } from './services/appUpdater'
+import { openBugReport } from './services/bugReport'
 
 let tray: Tray | null = null
 
@@ -46,6 +47,7 @@ const LABELS = {
     about: 'О программе',
     support: '♥ Поддержать проект',
     updates: 'Проверить обновления',
+    bug: 'Сообщить об ошибке',
     quit: 'Выход'
   },
   en: {
@@ -57,6 +59,7 @@ const LABELS = {
     about: 'About',
     support: '♥ Support the project',
     updates: 'Check for updates',
+    bug: 'Report a bug',
     quit: 'Quit'
   }
 }
@@ -87,6 +90,8 @@ async function buildMenu(): Promise<Menu> {
     { label: L.settings, click: () => showCompanionPage('settings') },
     { label: L.about, click: () => showCompanionPage('about') },
     { label: `${L.updates} · v${app.getVersion()}`, click: () => void checkForAppUpdates(true) },
+    // S56: форма GitHub «Ошибка / Bug» в браузере (версия, игра, языки — services/bugReport.ts)
+    { label: L.bug, click: () => void openBugReport() },
     // Boosty: voluntary support, never a popup — just a menu item
     { label: L.support, click: () => void shell.openExternal(BOOSTY_URL) },
     { label: L.quit, click: () => app.quit() }

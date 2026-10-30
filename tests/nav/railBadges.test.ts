@@ -148,6 +148,11 @@ describe('значок на пункте рельса', () => {
     expect(badgeFor('live', counts)).toEqual({ kind: 'live', n: 3 })
     expect(badgeFor('deals', counts)).toBeNull()
     expect(badgeFor('deals', { live: 0, deals: 2 })).toEqual({ kind: 'deals', n: 2 })
+    // S55: «Справочник» — новые и обновлённые статьи; нет числа — нет значка
+    expect(badgeFor('guide', { live: 0, deals: 0, guide: 2 })).toEqual({ kind: 'guide', n: 2 })
+    expect(badgeFor('guide', { live: 5, deals: 5 })).toBeNull()
+    expect(countText(ru, { kind: 'guide', n: 2 })).toBe('новых статей: 2')
+    expect(countText(en, { kind: 'guide', n: 2 })).toBe('new articles: 2')
     for (const tab of ['priceCheck', 'flip', 'advisor', 'wealth', 'regex', 'campaign'] as const) {
       expect(badgeFor(tab, { live: 5, deals: 5 })).toBeNull()
     }

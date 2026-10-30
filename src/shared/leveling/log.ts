@@ -5,6 +5,8 @@
 // Вход в игру — служебная строка движка `Async connecting to <сервер>.login.pathofexile.com:<порт>` (как
 // `Generating level`, не переводится): при запуске игры, после выхода к выбору персонажа ({logout} маршрута)
 // и после разрыва связи; дальше — смена зоны без неё. Сверено по настоящему Client.txt PoE1 3.29.
+// Лабиринты (S52): строки «лабиринт пройден» клиент не пишет; гиду годятся класс восхождения в строке уровня
+// (sync.ts) и строка `/passives` «всего очков восхождения» (PassiveInfoAscendancy ниже).
 //
 // Вкладка «Билд» (S36) — отдельный разбор (parseBuildLogText…), гиду прокачки он не мешает:
 //  - вложение и снятие пассивки — служебная строка движка (в таблицах клиента её нет, как `Generating level`):
@@ -26,6 +28,8 @@ export type LevelingLogEvent =
   | { type: 'zone'; areaId: string; level: number }
   | { type: 'level'; character: string; className: string; level: number }
   | { type: 'login' }
+  /** S52: `/passives` — всего очков восхождения (своего персонажа: команду видит только он) */
+  | { type: 'ascendancy'; total: number }
 
 const LEVEL_UP = [/^: (.+) \((.+)\) is now level (\d+)$/, /^: (.+) \((.+)\) достигает (\d+) уровня$/]
 const LOGIN = /^Async connecting to \S*login\S*/i
@@ -38,6 +42,10 @@ export function parseLevelingText(text: string): LevelingLogEvent | null {
   for (const re of LEVEL_UP) {
     const m = re.exec(text)
     if (m) return { type: 'level', character: m[1], className: m[2], level: Number(m[3]) }
+  }
+  for (const m of ASCENDANCY_TOTAL) {
+    const total = m.re.exec(text)?.[m.order.indexOf(0) + 1]
+    if (total && /^\d+$/.test(total)) return { type: 'ascendancy', total: Number(total) }
   }
   return null
 }
@@ -164,6 +172,9 @@ const BUILD_EVENTS: [BuildLogStringId, ArgsTo][] = [
 const BUILD_MATCHERS = BUILD_EVENTS.flatMap(([id, make]) =>
   (['en', 'ru'] as const).map((lang) => ({ ...compileTemplate(BUILD_LOG_STRINGS[id][lang]), make }))
 )
+
+/** Гид прокачки (S52): строка `/passives` «всего очков восхождения» — сколько лабиринтов пройдено. */
+const ASCENDANCY_TOTAL = (['en', 'ru'] as const).map((lang) => compileTemplate(BUILD_LOG_STRINGS.PassiveInfoAscendancy[lang]))
 
 /** Текст строки журнала (после префикса) → событие вкладки «Билд». */
 export function parseBuildLogText(text: string): BuildLogEvent | null {

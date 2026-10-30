@@ -16,7 +16,7 @@ import { parseTradeUrl } from './favorites/tradeUrl'
 /** Отдельная сессия сайтов: cookies сайтов, согласие на cookies, проверки Cloudflare. Не сессия аккаунта. */
 export const SITES_PARTITION = 'persist:poeth-sites'
 
-export type SiteId = 'ninja' | 'poedb' | 'wiki' | 'maxroll' | 'poelab' | 'craft' | 'scout'
+export type SiteId = 'ninja' | 'poedb' | 'wiki' | 'maxroll' | 'mobalytics' | 'poelab' | 'craft' | 'scout'
 
 /** Вкладка трейд-окна: «Трейд», сайт реестра, закладка игрока (`bm:<id>`) или страница «Сайты» (закладки, данные). */
 export type SiteTabId = 'trade' | 'manage' | SiteId | `bm:${string}`
@@ -74,6 +74,18 @@ export const SITES: readonly SiteDef[] = [
     hosts: ['maxroll.gg'],
     enOnly: true,
     home: () => 'https://maxroll.gg/poe'
+  },
+  {
+    // Mobalytics: PoE 1 — /poe, PoE 2 — /poe-2 (вкладки сайтов пока только у PoE 1). www. перенаправляет сюда же.
+    // Русского интерфейса не нашли (локали в адресе — de_de, fr_fr, es_es и др.). Базы предметов PoE 1 с адресом
+    // у каждой вещи нет — глубоких ссылок нет. Вход (Google/Discord) — чужие хосты: только «В браузере».
+    id: 'mobalytics',
+    name: 'Mobalytics',
+    mark: 'MB',
+    aboutKey: 'sites.about.mobalytics',
+    hosts: ['mobalytics.gg'],
+    enOnly: true,
+    home: () => 'https://mobalytics.gg/poe'
   },
   {
     id: 'poelab',

@@ -6,6 +6,7 @@ import { useOverlayStore } from '../../store/useOverlayStore'
 import { useGameLang } from '../../gameLang'
 import { useLevelingStore } from '../../store/useLevelingStore'
 import { StepTags, StepText } from '../../panels/leveling/StepText'
+import { LabLine, ZoneXpLine, stateLab, stateZoneXp, type ZoneLabIcon } from '../../panels/leveling/ZoneLab'
 import { Icon } from '../Icon'
 import { scheduleRectsFlush, useInteractive } from '../interactive'
 import { useOverlayT } from '../useOverlayT'
@@ -22,9 +23,18 @@ import './leveling-overlay.css'
 // Виден, когда main решил (S22, LevelingState.guide): режим «авто» — только в зонах кампании, пока она не
 // пройдена; хоткей — до входа в другую зону. Текст шага — на языке интерфейса, имена зон, NPC, квестов и
 // предметов — на языке клиента игры (S31), как в игре.
+// S52: штраф опыта в зоне («Зона 45 · вы 52 · опыт −38 % — …») и «Пора пройти лабиринт» — строками в гиде,
+// в свёрнутой полосе — «−38 %»; гид скрыт (карты, город, убежище, Площадь претендентов) — маленькая полоса на
+// месте гида: опыт — в зонах с монстрами, лабиринт — в городе и убежище. Без штрафа и лабиринта — ничего.
 
 const DEFAULT_POS = { left: 16, top: 112 }
 const MAX_MISS = 2
+const ico = (n: ZoneLabIcon): JSX.Element => <Icon name={n} />
+
+/** Место гида на экране: куда перетащили (доли окна) или слева сверху под баффами. */
+function guidePos(pos: { x: number; y: number } | null): { left: number; top: number } {
+  return pos ? { left: pos.x * window.innerWidth, top: pos.y * window.innerHeight } : DEFAULT_POS
+}
 
 /** Игра и простой режим из настроек (перечитываем, когда игрок вернулся в игру). */
 function useSettingsSlice(): { poe1: boolean; simple: boolean } {
@@ -50,25 +60,27 @@ function Guide({ simple }: { simple: boolean }) {
   const headRef = useRef<HTMLDivElement>(null)
   const btnsRef = useRef<HTMLSpanElement>(null)
   const bodyBtnRef = useRef<HTMLButtonElement>(null)
+  const labRef = useRef<HTMLSpanElement>(null)
   const shieldRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const [drag, setDrag] = useState<{ dx: number; dy: number; left: number; top: number } | null>(null)
 
   const collapsed = state.config.collapsed
+  const xp = stateZoneXp(state, simple)
+  const lab = stateLab(state, flat)
   useInteractive(headRef)
   useInteractive(btnsRef)
   useInteractive(bodyBtnRef, state.offRoute !== null && !collapsed)
+  useInteractive(labRef, !!lab && !collapsed)
   useInteractive(shieldRef, !!drag)
 
-  const base = state.config.pos
-    ? { left: state.config.pos.x * window.innerWidth, top: state.config.pos.y * window.innerHeight }
-    : DEFAULT_POS
+  const base = guidePos(state.config.pos)
   const left = drag ? drag.left : base.left
   const top = drag ? drag.top : base.top
 
   useLayoutEffect(() => {
     scheduleRectsFlush()
-  }, [left, top, collapsed, state.offRoute])
+  }, [left, top, collapsed, state.offRoute, !!xp, lab?.lab, lab?.onStep])
 
   const done = (): void => window.overlayApi.overlay.focusGame()
 
@@ -170,6 +182,12 @@ function Guide({ simple }: { simple: boolean }) {
           <span className="ui-hud__seg">
             <b>{t('lev.level').replace('{n}', String(state.progress.level))}</b>
           </span>
+          {xp && (
+            <span className={`ui-hud__seg lv-ov__hudxp lv-xp--${xp.kind}`} title={t('lev.xp.hint')}>
+              <Icon name={xp.kind === 'high' ? 'warn' : 'info'} />
+              {t('lev.xp.hud').replace('{n}', String(xp.loss))}
+            </span>
+          )}
           {miss.length > 0 && (
             <>
               <span className="ui-hud__sep" />
@@ -214,6 +232,7 @@ function Guide({ simple }: { simple: boolean }) {
                 </button>
               </div>
             )}
+            {xp && <ZoneXpLine x={xp} t={t} lang={lang} simple={simple} icon={ico} />}
             {f && nowTags.length > 0 && (
               <div className={`lv-ov__now lv-ov__now--${nowTags[0]}`}>
                 <Icon name={nowTags[0]} />
@@ -235,6 +254,18 @@ function Guide({ simple }: { simple: boolean }) {
             )}
             {f?.step.lvl && <div className="lv-ov__sub">{t('lev.recLevel').replace('{lvl}', f.step.lvl)}</div>}
             {build.lines.length > 0 && <BuildLines lines={build.lines} simple={simple} />}
+            {lab && (
+              <LabLine
+                r={lab}
+                t={t}
+                simple={simple}
+                icon={ico}
+                btnsRef={labRef}
+                onDone={(l) => void act({ type: 'lab', lab: l, done: true })}
+                onHide={() => void act({ type: 'labHide' })}
+                after={done}
+              />
+            )}
             {miss.length > 0 && (
               <div className="lv-ov__miss">
                 <span className="ui-label">{t('lev.dontMiss')}</span>
@@ -255,6 +286,46 @@ function Guide({ simple }: { simple: boolean }) {
   )
 }
 
+/**
+ * Гид скрыт (режим «авто»: город, убежище, карта, после кампании; не «никогда») — на его месте маленькая полоса,
+ * только если есть что сказать: штраф опыта в зоне с монстрами или лабиринт — в городе и убежище (там игрок
+ * свободен; на Площади претендентов — строка шага маршрута с раскладкой). Мышь ловят только кнопки.
+ */
+function Strip({ simple }: { simple: boolean }) {
+  const t = useOverlayT()
+  const lang = useOverlayStore((s) => s.lang)
+  const state = useLevelingStore((s) => s.state)!
+  const flat = useLevelingStore((s) => s.flat)
+  const { act } = useLevelingStore.getState()
+  const labRef = useRef<HTMLSpanElement>(null)
+  const xp = stateZoneXp(state, simple)
+  const kind = state.zone?.kind
+  const lab = kind === 'town' || kind === 'hideout' ? stateLab(state, flat) : null
+  useInteractive(labRef, !!lab)
+  const { left, top } = guidePos(state.config.pos)
+  useLayoutEffect(() => {
+    scheduleRectsFlush()
+  }, [left, top, !!xp, lab?.lab, lab?.onStep])
+  if (!xp && !lab) return null
+  return (
+    <div className="ui-panel lv-ov lv-ov--strip" style={{ left: Math.round(left), top: Math.round(top) }}>
+      {xp && <ZoneXpLine x={xp} t={t} lang={lang} simple={simple} icon={ico} />}
+      {lab && (
+        <LabLine
+          r={lab}
+          t={t}
+          simple={simple}
+          icon={ico}
+          btnsRef={labRef}
+          onDone={(l) => void act({ type: 'lab', lab: l, done: true })}
+          onHide={() => void act({ type: 'labHide' })}
+          after={() => window.overlayApi.overlay.focusGame()}
+        />
+      )}
+    </div>
+  )
+}
+
 function LevelingWidget() {
   const init = useLevelingStore((s) => s.init)
   const ready = useLevelingStore((s) => s.ready)
@@ -271,7 +342,8 @@ function LevelingWidget() {
     }
   }, [init])
 
-  if (!poe1 || !ready || !state?.guide.visible) return null
+  if (!poe1 || !ready || !state) return null
+  if (!state.guide.visible) return state.config.show === 'never' ? null : <Strip simple={simple} />
   return <Guide simple={simple} />
 }
 

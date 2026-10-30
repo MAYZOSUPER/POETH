@@ -71,8 +71,11 @@ export const SECRET_CHANNELS: ReadonlySet<string> = new Set([IPC.auth.pasteSessi
 /** Каналы, нужные только игровому оверлею: наложение дерева билда (S38), «Против надетого» окна цены (S41). */
 export const OVERLAY_CHANNELS: ReadonlySet<string> = new Set([...Object.values(IPC.buildTree), ...Object.values(IPC.equip)])
 
-/** Только компаньон: вставка кода PoB и загрузка билда по ссылке (недоверенный ввод, сеть по действию игрока; S39). */
-export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([IPC.build.importPob, IPC.build.reload])
+/**
+ * Только компаньон: вставка кода PoB и загрузка билда по ссылке (недоверенный ввод, сеть по действию игрока; S39);
+ * фильтр лута — сеть GitHub и запись в папку игры по кнопке (S53).
+ */
+export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([IPC.build.importPob, IPC.build.reload, ...Object.values(IPC.lootFilter)])
 
 /** Может ли страница звать этот канал IPC. */
 export function ipcAllowed(page: AppPage | null, channel: string): boolean {

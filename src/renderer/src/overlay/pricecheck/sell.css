@@ -1,0 +1,53 @@
+/* S50: режим «Продаю» окна цены — переключатель, лестница мгновенных лотов, заметка цены. Токены — tokens.css. */
+
+/* «Покупаю / Продаю» под шапкой предмета: две равные кнопки во всю ширину (узкое окно — переносится «?») */
+.pc-mode {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-1) var(--sp-6) var(--sp-4);
+}
+.pc-mode .ui-seg {
+  flex: 1;
+  min-width: 0;
+}
+.pc-mode .ui-seg > button {
+  flex: 1;
+  min-width: 0;
+}
+
+/* лестница: самый дешёвый · 5-й · медиана — подпись мелко, цена крупно; не влезает — следующая строка */
+.pc-ladder {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  gap: var(--sp-2) var(--sp-4);
+  padding: var(--sp-1) 0;
+}
+.pc-ladder__cell {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.pc-ladder__label {
+  color: var(--fg-muted);
+  font: 500 var(--fs-2xs) / 1.2 var(--font-ui);
+}
+.pc-ladder__price {
+  color: var(--accent-hi);
+  font: 700 var(--fs-md) / 1.2 var(--font-ui);
+  white-space: nowrap;
+}
+
+.pc-sell-fee {
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* заметка цены «по рынку» / «дороже почти всех»: приглушённая строка, у «дороже» — жёлтая иконка */
+.pc-sell-note {
+  padding-block: var(--sp-3);
+  font-size: var(--fs-xs);
+}
+.pc-sell-note[data-status='over'] > .ui-ico {
+  color: var(--warn);
+}

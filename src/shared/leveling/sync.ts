@@ -30,6 +30,7 @@ import type {
   LevelingZoneKind
 } from '../types/leveling'
 import { classifyArea } from '../farm/zones'
+import { isAscendancyClass, labsFromPoints, withLogLabs } from './labs'
 import { currentIndex, emptyProgress, enterZone, type FlatStep } from './route'
 
 /** Новый персонаж начинает здесь (Сумрачное взморье). */
@@ -206,12 +207,26 @@ export function applyLevel(
   target.className = e.className
   target.updatedAt = env.now
   let p: LevelingProgress = { ...book.progress[target.id], level: e.level, updatedAt: env.now }
+  // класс восхождения в строке уровня — обычный лабиринт пройден (S52)
+  if (isAscendancyClass(e.className, env.data.classes)) p = { ...p, labs: withLogLabs(p.labs, 1) }
   if (!p.finished && s.endgame) {
     p = { ...p, finished: s.endgame }
     s.finale = s.endgame.reason === 'epilogue'
   }
   if (!p.finished && e.level >= FINISH_LEVEL) p = { ...p, finished: { reason: 'level', at: env.now, level: e.level } }
   book.progress[target.id] = p
+}
+
+/**
+ * `/passives` (S52): всего очков восхождения → лабиринтов пройдено (очки / 2). Команду видит только свой
+ * персонаж — очки идут активному (как зоны до того, как вход узнан: другой персонаж — откат к снимку входа).
+ */
+export function applyAscendancy(book: LevelingBook, total: number, env: SyncEnv): void {
+  const id = book.activeId
+  const p = book.progress[id]
+  if (!p) return
+  const labs = withLogLabs(p.labs, labsFromPoints(total))
+  if (labs !== p.labs) book.progress[id] = { ...p, labs, updatedAt: env.now }
 }
 
 /**

@@ -156,7 +156,22 @@ export interface LevelingProgress {
   finished: LevelingFinished | null
   /** «Показать всё равно»: гид работает и после кампании */
   showAnyway: boolean
+  /** лабиринты персонажа (S52): по журналу и галочкам игрока */
+  labs: LevelingLabs
   updatedAt: number
+}
+
+/**
+ * Лабиринты персонажа (S52, shared/leveling/labs.ts). Отдельной строки «лабиринт пройден» в журнале нет: по
+ * журналу видно класс восхождения (≥ 1 лабиринта) и очки из `/passives`; остальное отмечает игрок.
+ */
+export interface LevelingLabs {
+  /** пройдено по журналу (0–4) */
+  log: number
+  /** галочка «Пройден»: лабиринт → когда отмечен (отмеченный значит, что и прошлые пройдены) */
+  marked: Partial<Record<LvLab, number>>
+  /** «скрыть» напоминание о лабиринте lab, пока уровень не дорастёт до лабиринта выше bracket */
+  hidden: { lab: LvLab; bracket: LvLab } | null
 }
 
 /** Когда показывать гид поверх игры: авто — только в зонах кампании, пока она не пройдена. */
@@ -239,3 +254,7 @@ export type LevelingAction =
   | { type: 'showAnyway'; on: boolean }
   /** «Начать заново (новый персонаж)»: новый персонаж, маршрут с начала */
   | { type: 'newCharacter'; name: string }
+  /** S52: галочка «Пройден» у лабиринта (снять — и все выше) */
+  | { type: 'lab'; lab: LvLab; done: boolean }
+  /** S52: «Скрыть» напоминание о лабиринте до следующего */
+  | { type: 'labHide' }

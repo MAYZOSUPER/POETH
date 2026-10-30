@@ -15,12 +15,14 @@ import { AccountPanel } from './account/AccountPanel'
 import { ChatCommandsPanel } from './chat/ChatCommandsPanel'
 import { UpdatesSettings } from '../updates/UpdatesSettings'
 import { GameLangSetting } from '../components/GameLangSetting'
+import { LootFilterSection } from './lootfilter/LootFilterSection'
 
 const BOTH: GameId[] = ['poe1', 'poe2']
 
 /** Подпись действия и в каких играх оно показывается в настройках (on — функция включена: скрытые флагом — нет). */
 const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameId[]; on?: (game: GameId) => boolean }> = {
   priceCheck: { labelKey: 'set.hk.priceCheck', games: BOTH },
+  copyItemEn: { labelKey: 'set.hk.copyItemEn', games: ['poe1'] },
   overlayToggle: { labelKey: 'set.hk.overlayToggle', games: ['poe1'] },
   whisperLastHit: { labelKey: 'set.hk.whisperLastHit', games: ['poe1'] },
   pasteSearch1: { labelKey: 'set.hk.pasteSearch', n: 1, games: ['poe1'] },
@@ -345,6 +347,8 @@ export function SettingsPanel() {
       </div>
 
       {game === 'poe1' && <ChatCommandsPanel />}
+      {/* S53: фильтр лута NeverSink (раздел рисует себя только в PoE 1) */}
+      {game === 'poe1' && <LootFilterSection />}
 
       {hasCampaign && (
         <>

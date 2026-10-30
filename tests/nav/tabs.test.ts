@@ -20,13 +20,13 @@ import { GAME_IDS } from '@shared/games'
 const ids = (game: 'poe1' | 'poe2', dev = false): string[][] => sectionsFor(game, dev).map((s) => s.tabs.map((t) => t.id))
 
 describe('разделы рельса', () => {
-  it('PoE 1 (советник и «Билд» раскрыты): «Что фармить» первой в «Фарме», «Билд» после «Кампании»', () => {
-    expect(sectionsFor('poe1', false).map((s) => s.id)).toEqual(['trade', 'farm', 'level'])
-    expect(ids('poe1')).toEqual([['priceCheck', 'live', 'deals', 'flip'], ['advisor', 'wealth', 'regex'], ['campaign', 'build']])
+  it('PoE 1 (советник и «Билд» раскрыты): «Что фармить» первой в «Фарме», «Билд» после «Кампании», «Справочник» внизу (S55)', () => {
+    expect(sectionsFor('poe1', false).map((s) => s.id)).toEqual(['trade', 'farm', 'level', 'help'])
+    expect(ids('poe1')).toEqual([['priceCheck', 'live', 'deals', 'flip'], ['advisor', 'wealth', 'regex'], ['campaign', 'build'], ['guide']])
     expect(ids('poe1', true)).toEqual(ids('poe1'))
   })
 
-  it('PoE 2: только прайс-чек и компас, пустой «Фарм» не показывается — и с флагом советника тоже', () => {
+  it('PoE 2: только прайс-чек и компас, пустые «Фарм» и «Помощь» не показываются — и с флагом советника тоже', () => {
     for (const dev of [false, true]) {
       expect(sectionsFor('poe2', dev).map((s) => s.id)).toEqual(['trade', 'level'])
       expect(ids('poe2', dev)).toEqual([['priceCheck'], ['campaign']])
@@ -34,7 +34,7 @@ describe('разделы рельса', () => {
   })
 
   it('tabsFor — вкладки подряд в порядке рельса', () => {
-    expect(tabsFor('poe1', false).map((t) => t.id)).toEqual(['priceCheck', 'live', 'deals', 'flip', 'advisor', 'wealth', 'regex', 'campaign', 'build'])
+    expect(tabsFor('poe1', false).map((t) => t.id)).toEqual(['priceCheck', 'live', 'deals', 'flip', 'advisor', 'wealth', 'regex', 'campaign', 'build', 'guide'])
     expect(tabsFor('poe2', true).map((t) => t.id)).toEqual(['priceCheck', 'campaign'])
   })
 
@@ -50,6 +50,7 @@ describe('разделы рельса', () => {
     expect(sectionOf('advisor')).toBe('farm')
     expect(sectionOf('regex')).toBe('farm')
     expect(sectionOf('campaign')).toBe('level')
+    expect(sectionOf('guide')).toBe('help')
   })
 })
 

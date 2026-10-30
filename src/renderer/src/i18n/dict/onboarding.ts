@@ -102,6 +102,11 @@ export const onboarding: DomainDict = {
     'about.credit.fonts': 'шрифты интерфейса',
     'about.credit.electron': 'основа приложения',
     'about.wizard': 'Пройти мастер первого запуска снова',
+    'about.bug': 'Сообщить об ошибке',
+    'about.bug.title': 'Откроется форма на GitHub в браузере — версия и игра уже подставлены',
+    'about.bug.help': 'Как описать ошибку',
+    'about.bug.note':
+      'Форма на GitHub — нужен бесплатный аккаунт. POETH сам ничего не отправляет: вы видите всё, что публикуете. Не вставляйте POESESSID и пароли, ники на скриншотах лучше закрасить.',
     'about.privacy':
       'Без телеметрии и своих серверов. На pathofexile.com уходят ваши поиски трейда и ключ входа — только туда. Ещё POETH скачивает общие данные, ничего не сообщая о вас: курсы и иконки валюты (web.poecdn.com, сервер GGG), цены для «Богатства» (api.poe.watch), обновления программы и данных, чёрный список PoE Hub (GitHub). Подробно — docs/security.md в репозитории POETH на GitHub.',
 
@@ -204,6 +209,11 @@ export const onboarding: DomainDict = {
     'about.credit.fonts': 'interface fonts',
     'about.credit.electron': 'the app foundation',
     'about.wizard': 'Run the first-run wizard again',
+    'about.bug': 'Report a bug',
+    'about.bug.title': 'Opens a GitHub form in your browser with the version and game already filled in',
+    'about.bug.help': 'How to describe a bug',
+    'about.bug.note':
+      'The form is on GitHub — a free account is needed. POETH sends nothing by itself: you see everything you publish. Never paste your POESESSID or passwords; it is best to paint over nicknames in screenshots.',
     'about.privacy':
       'No telemetry and no servers of our own. Your trade searches and sign-in key go to pathofexile.com — and only there. POETH also downloads shared data without sending anything about you: currency rates and icons (web.poecdn.com, a GGG server), Wealth prices (api.poe.watch), app and data updates and the PoE Hub blacklist (GitHub). Details: docs/security.md in the POETH repository on GitHub.',
 

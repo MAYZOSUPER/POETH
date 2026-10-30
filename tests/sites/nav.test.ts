@@ -13,6 +13,8 @@ describe('навигация вкладки сайта', () => {
     ['wiki', 'https://www.poewiki.net/wiki/Headhunter'],
     ['wiki', 'https://poewiki.net/'],
     ['maxroll', 'https://maxroll.gg/poe/build-guides/x'],
+    ['mobalytics', 'https://mobalytics.gg/poe'],
+    ['mobalytics', 'https://mobalytics.gg/poe/builds/some-build'],
     ['poelab', 'https://www.poelab.com/'],
     ['craft', 'https://craftofexile.com/?game=poe1'],
     ['scout', 'https://poe2scout.com/'],
@@ -77,6 +79,18 @@ describe('навигация вкладки сайта', () => {
     expect(isSitesExternalUrl('http://poe.ninja/')).toBe(false)
     expect(siteNavDecision('maxroll', 'https://accounts.google.com/o/oauth2', [])).toEqual({ kind: 'block' })
     expect(siteNavDecision('poelab', 'https://doubleclick.net/ad', [])).toEqual({ kind: 'block' })
+  })
+
+  it('Mobalytics: только mobalytics.gg; вход через Google и Discord — не во вкладке и не в браузер (не allowlist)', () => {
+    expect(siteNavDecision('mobalytics', 'https://app.mobalytics.gg/', []).kind).toBe('block')
+    expect(siteNavDecision('mobalytics', 'https://mobalytics.gg.evil.com/poe', []).kind).toBe('block')
+    expect(siteNavDecision('mobalytics', 'https://accounts.google.com/o/oauth2/v2/auth?client_id=x', [])).toEqual({ kind: 'block' })
+    expect(siteNavDecision('mobalytics', 'https://discord.com/oauth2/authorize?client_id=x', [])).toEqual({ kind: 'block' })
+    // ссылки на сайты реестра — в их вкладки, на Mobalytics с poe.ninja — во вкладку Mobalytics
+    expect(siteNavDecision('mobalytics', 'https://poe.ninja/poe1/builds', [])).toEqual({ kind: 'tab', tab: 'ninja' })
+    expect(siteNavDecision('ninja', 'https://mobalytics.gg/poe/builds', [])).toEqual({ kind: 'tab', tab: 'mobalytics' })
+    // «В браузере» и закладки: Mobalytics — сайт реестра
+    expect(isSitesExternalUrl('https://mobalytics.gg/poe')).toBe(true)
   })
 
   it('чужая закладка вкладке закладки не своя', () => {

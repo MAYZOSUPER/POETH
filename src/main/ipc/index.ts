@@ -23,6 +23,7 @@ import { gameLangDomain } from './gameLang'
 import { buildTreeDomain } from './buildTree'
 import { buildDomain } from './build'
 import { equipDomain } from './equip'
+import { lootFilterDomain } from './lootFilter'
 
 // Реестр доменов main-IPC. ЗАМОРОЖЕН после S0: новый домен подключает лид.
 const DOMAINS: IpcDomain[] = [
@@ -44,7 +45,8 @@ const DOMAINS: IpcDomain[] = [
   gameLangDomain,
   buildTreeDomain,
   buildDomain,
-  equipDomain
+  equipDomain,
+  lootFilterDomain
 ]
 
 /** Register every domain's ipcMain handlers (once, at startup). */

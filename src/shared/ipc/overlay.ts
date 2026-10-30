@@ -10,6 +10,7 @@ import type {
   InteractiveRect,
   OverlayFocusState,
   HotkeyConflict,
+  ItemEnRequest,
   OverlayNotice,
   OverlayPoint,
   OverlayState,
@@ -26,7 +27,8 @@ export const overlayChannels = {
     typeInChat: 'overlay:typeInChat',
     stashSearch: 'overlay:stashSearch',
     hotkeyConflicts: 'overlay:hotkeyConflicts',
-    openHotkeySettings: 'overlay:openHotkeySettings'
+    openHotkeySettings: 'overlay:openHotkeySettings',
+    copyItemEn: 'overlay:copyItemEn'
   }
 } as const
 
@@ -37,7 +39,8 @@ export const overlayEvents = {
   overlayAutoHide: 'event:overlay.autoHide',
   overlayDismiss: 'event:overlay.dismiss',
   overlayNotice: 'event:overlay.notice',
-  overlayHotkeyConflicts: 'event:overlay.hotkeyConflicts'
+  overlayHotkeyConflicts: 'event:overlay.hotkeyConflicts',
+  overlayItemEn: 'event:overlay.itemEn'
 } as const
 
 export interface OverlayIpcApi {
@@ -66,6 +69,8 @@ export interface OverlayIpcApi {
     hotkeyConflicts(): Promise<HotkeyConflict[]>
     /** «Сменить клавишу» из уведомления поверх игры: компаньон на странице настроек. */
     openHotkeySettings(): void
+    /** S51: английский текст предмета → в буфер (только окно оверлея; старый буфер не возвращается). */
+    copyItemEn(text: string): Promise<boolean>
   }
   onOverlayFocus(cb: (focus: OverlayFocusState) => void): () => void
   onOverlayStatus(cb: (status: OverlayStatus) => void): () => void
@@ -82,4 +87,6 @@ export interface OverlayIpcApi {
   onOverlayNotice(cb: (notice: OverlayNotice) => void): () => void
   /** Список занятых хоткеев изменился (настройки показывают плашку). */
   onHotkeyConflicts(cb: (conflicts: HotkeyConflict[]) => void): () => void
+  /** S51: хоткей «по-английски» скопировал предмет — собрать EN-текст и отдать в copyItemEn (только оверлей). */
+  onItemEn(cb: (req: ItemEnRequest) => void): () => void
 }
