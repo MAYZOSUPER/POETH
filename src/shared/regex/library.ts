@@ -3,6 +3,7 @@
 
 import type { GameId } from '../games'
 import type {
+  ItemsQuery,
   MapQuery,
   PasteSlot,
   RegexEntry,
@@ -11,9 +12,11 @@ import type {
   RegexLang,
   RegexPrefs,
   TriState,
+  VendorModKey,
   VendorQuery
 } from '../types/regex'
 import { REGEX_LIMIT } from './format'
+import { INFLUENCE_KEYS, ITEM_CLASS_KEYS, ITEM_RARITIES, emptyItemsQuery } from './items'
 import { MAP_LABEL_KEYS, emptyMapQuery } from './maps'
 import { VENDOR_ITEM_CLASSES, VENDOR_MOD_KEYS, VENDOR_RARITIES, emptyVendorQuery, isThresholdMod } from './vendor'
 
@@ -28,7 +31,7 @@ const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !
 const str = (v: unknown): string | null => (typeof v === 'string' ? v : null)
 
 export function defaultRegexPrefs(): RegexPrefs {
-  return { page: 'maps', maps: emptyMapQuery(), vendor: emptyVendorQuery() }
+  return { page: 'maps', maps: emptyMapQuery(), vendor: emptyVendorQuery(), items: emptyItemsQuery() }
 }
 
 export function emptyLibrary(): RegexLibrary {
@@ -101,12 +104,53 @@ function normalizeVendorQuery(raw: unknown): VendorQuery {
   return q
 }
 
+/** Свойства «Торговца»: ключ → порог (у свойств без порога — 1). */
+function normalizeProps(raw: unknown): Partial<Record<VendorModKey, number>> {
+  const out: Partial<Record<VendorModKey, number>> = {}
+  if (!isObj(raw)) return out
+  for (const k of VENDOR_MOD_KEYS) {
+    const n = num(raw[k], 999)
+    if (n > 0) out[k] = isThresholdMod(k) ? n : 1
+  }
+  return out
+}
+
+/** Строк модов в запросе «Предметов» не бывает больше сотни — лишнее (порченый файл) отбрасываем. */
+const ITEM_IDS_MAX = 200
+const ITEM_ID_LEN = 300
+const okId = (id: string): boolean => id.length > 0 && id.length <= ITEM_ID_LEN
+
+function normalizeItemsQuery(raw: unknown): ItemsQuery {
+  const q = emptyItemsQuery()
+  if (!isObj(raw)) return q
+  q.itemClass = ITEM_CLASS_KEYS.find((c) => c === raw.itemClass) ?? ''
+  // база — id из данных (проверяет движок: чужая база или база другого класса не попадает в строку)
+  const base = str(raw.base)
+  q.base = q.itemClass && base && okId(base) ? base : ''
+  q.rarity = Array.isArray(raw.rarity) ? ITEM_RARITIES.filter((r) => (raw.rarity as unknown[]).includes(r)) : []
+  q.itemLevel = num(raw.itemLevel, 100)
+  q.influence = Array.isArray(raw.influence) ? INFLUENCE_KEYS.filter((k) => (raw.influence as unknown[]).includes(k)) : []
+  q.noInfluence = raw.noInfluence === true
+  q.corrupted = tri(raw.corrupted)
+  q.props = normalizeProps(raw.props)
+  if (isObj(raw.want)) {
+    for (const [id, v] of Object.entries(raw.want).slice(0, ITEM_IDS_MAX)) if (okId(id)) q.want[id] = num(v, 999)
+  }
+  q.avoid = [...new Set(strList(raw.avoid).filter(okId))].filter((id) => !(id in q.want)).slice(0, ITEM_IDS_MAX)
+  q.mode = raw.mode === 'all' ? 'all' : 'any'
+  q.gemLevel = num(raw.gemLevel, 40)
+  q.gemQuality = num(raw.gemQuality, 30)
+  q.vaal = tri(raw.vaal)
+  return q
+}
+
 function normalizePrefs(raw: unknown): RegexPrefs {
   const p = defaultRegexPrefs()
   if (!isObj(raw)) return p
-  if (raw.page === 'vendor' || raw.page === 'library') p.page = raw.page
+  if (raw.page === 'vendor' || raw.page === 'items' || raw.page === 'library') p.page = raw.page
   p.maps = normalizeMapQuery(raw.maps)
   p.vendor = normalizeVendorQuery(raw.vendor)
+  p.items = normalizeItemsQuery(raw.items)
   return p
 }
 

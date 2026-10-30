@@ -9,16 +9,18 @@ import { Switch, useSimple } from './regex/common'
 import { Ico, type IcoName } from './regex/Ico'
 import { MapsPage } from './regex/MapsPage'
 import { VendorPage } from './regex/VendorPage'
+import { ItemsPage } from './regex/ItemsPage'
 import { LibraryPage } from './regex/LibraryPage'
 import './regex/regex.css'
 
 // Вкладка «Regex» компаньона (PoE1, этап S7) по утверждённому макету: подвкладки «Карты»,
-// «Торговец», «Библиотека»; справа — язык клиента игры (общая настройка S26, та же, что в настройках)
+// «Торговец», «Предметы» (S46, тайник), «Библиотека»; справа — язык клиента игры (общая настройка S26, та же, что в настройках)
 // и простой/экспертный режим.
 
 const PAGES: { id: RegexPage; icon: IcoName }[] = [
   { id: 'maps', icon: 'map' },
   { id: 'vendor', icon: 'coins' },
+  { id: 'items', icon: 'archive' },
   { id: 'library', icon: 'book' }
 ]
 
@@ -92,6 +94,7 @@ export function RegexTab() {
       <div className="rx-body ui-scroll">
         {page === 'maps' && <MapsPage />}
         {page === 'vendor' && <VendorPage />}
+        {page === 'items' && <ItemsPage />}
         {page === 'library' && <LibraryPage />}
       </div>
     </div>

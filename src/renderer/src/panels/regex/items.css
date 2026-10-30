@@ -1,0 +1,45 @@
+/* «Предметы» (S46): наборы по группам, влияние, строка мода с порогом. Только раскладка на токенах, компоненты — ui-*. */
+
+/* группа наборов: подпись над чипами */
+.rx-i-presets,
+.rx-i-group {
+  display: grid;
+  gap: var(--sp-2);
+}
+.rx-i-why {
+  padding: 0;
+}
+.rx-i-muted {
+  color: var(--fg-faint);
+  font-size: var(--fs-sm);
+}
+/* строка мода: кнопка «хочу / не хочу» и порог справа (у «хочу» с числом); узко — порог уходит под строку */
+.rx-i-mod {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: var(--sp-2) var(--sp-3);
+  min-width: 0;
+}
+.rx-i-mod .rx-tri {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+/* токен в экспертном режиме не отнимает место у текста мода */
+.rx-i-mod .rx-token {
+  max-width: 11em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rx-i-thr {
+  display: grid;
+  grid-template-columns: auto 64px 1.1em;
+  gap: var(--sp-2);
+  align-items: center;
+  flex: none;
+  padding-top: var(--sp-1);
+}
+.rx-i-thr .ui-input--num {
+  width: 100%;
+}

@@ -17,7 +17,7 @@ import { getCompanionWindow } from '../windows/companionWindow'
 import { uiDialogTitle } from '../services/dialogText'
 import type { IpcDomain } from './types'
 
-// Домен «regex-строки» (main): данные карт для движка, библиотека строк, буфер обмена.
+// Домен «regex-строки» (main): данные карт и предметов для движка, библиотека строк, буфер обмена.
 // Хоткеи pasteSearch1..5: текст слота даёт getPasteString(slot), вставку в поле поиска игры
 // (Ctrl+F → вставить) делает stashSearch() S1 в ipc/overlay.ts.
 
@@ -76,6 +76,7 @@ async function importLibrary(): Promise<RegexImportResult> {
 
 function register(): void {
   ipcMain.handle(IPC.regex.mapData, (_e, lang: unknown) => (isLang(lang) ? store.loadMapData(lang) : null))
+  ipcMain.handle(IPC.regex.itemData, (_e, lang: unknown) => (isLang(lang) ? store.loadItemData(lang) : null))
   ipcMain.handle(IPC.regex.library, () => store.getLibrary())
   ipcMain.handle(IPC.regex.saveEntry, async (_e, raw: unknown) => {
     const input = toInput(raw)
