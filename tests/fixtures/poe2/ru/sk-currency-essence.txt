@@ -1,0 +1,9 @@
+Класс предмета: Валюта
+Редкость: Валюта
+Сущность улучшения
+--------
+Размер стопки: 1/10
+--------
+Upgrades a normal item to Magic with one Defence modifier
+--------
+Right click this item then left click a normal item to apply it.

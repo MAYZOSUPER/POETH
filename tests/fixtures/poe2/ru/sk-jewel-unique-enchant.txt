@@ -1,0 +1,20 @@
+Класс предмета: Самоцветы
+Редкость: Уникальный
+Мания величия
+Алмаз
+--------
+Limited to: 1
+--------
+Уровень предмета: 79
+--------
+{ Улучшение }
+Активирует Зажигание() — Неизменяемое значение
+{ Улучшение }
+Активирует Штормовое воздействие() — Неизменяемое значение
+--------
+If you're going to act like you're better
+than everyone else, make sure you are.
+--------
+Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.
+--------
+Осквернено

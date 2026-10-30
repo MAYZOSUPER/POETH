@@ -1,0 +1,29 @@
+Класс предмета: Камни умений
+Редкость: Камень
+Вестник льда
+--------
+Buff, Attack, Persistent, AoE, Cold, Herald, Payoff
+Уровень: 18
+Качество: +20% (augmented)
+Attack Damage: 247%
+--------
+Требуется: Уровень 78, 97 Ловк, 97 Инт
+Требуется: Any Martial Weapon
+--------
+Гнезда: G G G G 
+--------
+While active, Shattering an enemy with an Attack Hit will cause an icy explosion that deals Attack damage to surrounding enemies.
+--------
+Explosion
+--------
+Explosion radius is 2.2 metres
+100% of Explosion Physical Damage
+Converted to Cold Damage
+--------
+Buff
+--------
+Reservation: 30 Spirit
+--------
+Enemies you Shatter explode
+--------
+Skills can be managed in the Skills Panel.

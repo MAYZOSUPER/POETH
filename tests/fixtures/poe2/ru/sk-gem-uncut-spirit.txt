@@ -1,0 +1,7 @@
+Класс предмета: Неогранённые камни духа
+Редкость: Валюта
+Неогранённый камень духа (уровень 16)
+--------
+Creates a Persistent Buff Skill Gem or Level an existing gem to Level 16
+--------
+Right Click to engrave a Persistent Buff Skill Gem.

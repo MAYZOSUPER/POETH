@@ -1,0 +1,5133 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`снапшоты разбора PoE2 (en) > ee2-amulet-desecrated 1`] = `
+{
+  "category": "Amulet",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "isFractured": true,
+    "itemLevel": 81,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 60,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Gold Amulet",
+  "stats": [
+    {
+      "max": 56776,
+      "min": 56776,
+      "ref": "Allocates #",
+      "tradeIds": [
+        "enchant.stat_2954116742",
+      ],
+      "type": "enchant",
+      "value": 56776,
+    },
+    {
+      "max": 20,
+      "min": 12,
+      "ref": "#% increased Rarity of Items found",
+      "tradeIds": [
+        "implicit.stat_3917489142",
+      ],
+      "type": "implicit",
+      "value": 18,
+    },
+    {
+      "max": 33,
+      "min": 30,
+      "ref": "# to Spirit",
+      "tradeIds": [
+        "explicit.stat_2704225257",
+        "explicit.stat_3981240776",
+      ],
+      "type": "explicit",
+      "value": 30,
+    },
+    {
+      "max": 104,
+      "min": 90,
+      "ref": "# to maximum Mana",
+      "tradeIds": [
+        "explicit.stat_1050105434",
+      ],
+      "type": "explicit",
+      "value": 90,
+    },
+    {
+      "max": 30,
+      "min": 27,
+      "ref": "#% increased Spell Damage",
+      "tradeIds": [
+        "explicit.stat_2974417149",
+      ],
+      "type": "explicit",
+      "value": 29,
+    },
+    {
+      "max": 40,
+      "min": 36,
+      "ref": "#% to Cold Resistance",
+      "tradeIds": [
+        "fractured.stat_4220027924",
+      ],
+      "type": "fractured",
+      "value": 37,
+    },
+    {
+      "max": 3,
+      "min": 3,
+      "ref": "# to Level of all Spell Skills",
+      "tradeIds": [
+        "explicit.stat_124131830",
+      ],
+      "type": "explicit",
+      "value": 3,
+    },
+    {
+      "max": 17,
+      "min": 13,
+      "ref": "#% to Fire and Chaos Resistances",
+      "tradeIds": [
+        "desecrated.stat_378817135",
+      ],
+      "type": "desecrated",
+      "value": 17,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-belt-charm-slots 1`] = `
+{
+  "category": "Belt",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 80,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 59,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Ornate Belt",
+  "stats": [
+    {
+      "max": -10,
+      "min": -15,
+      "ref": "#% reduced Charm Charges used",
+      "tradeIds": [
+        "implicit.stat_1570770415",
+      ],
+      "type": "implicit",
+      "value": -14,
+    },
+    {
+      "max": 3,
+      "min": 1,
+      "ref": "Has # Charm Slot",
+      "tradeIds": [
+        "implicit.stat_1416292992",
+      ],
+      "type": "implicit",
+      "value": 2,
+    },
+    {
+      "max": 15,
+      "min": 10,
+      "ref": "#% increased Charm Effect Duration",
+      "tradeIds": [
+        "explicit.stat_1389754388",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 174,
+      "min": 150,
+      "ref": "# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 161,
+    },
+    {
+      "max": 35,
+      "min": 31,
+      "ref": "#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 32,
+    },
+    {
+      "max": 33,
+      "min": 31,
+      "ref": "# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 33,
+    },
+    {
+      "max": 97,
+      "min": 73,
+      "ref": "# to Stun Threshold",
+      "tradeIds": [
+        "explicit.stat_915769802",
+      ],
+      "type": "explicit",
+      "value": 94,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-body-armour-runes 1`] = `
+{
+  "category": "Body Armour",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "armourAR": 3075,
+    "augmentSockets": {
+      "augments": [
+        "Greater Iron Rune",
+        "Greater Iron Rune",
+        "Greater Iron Rune",
+      ],
+      "current": 3,
+      "empty": 0,
+      "normal": 2,
+    },
+    "basePercentile": 0,
+    "itemLevel": 80,
+    "note": "~b/o 10 divine",
+    "quality": 20,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 65,
+      "str": 121,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Soldier Cuirass",
+  "stats": [
+    {
+      "max": 54,
+      "min": 54,
+      "ref": "#% increased Armour, Evasion and Energy Shield",
+      "tradeIds": [
+        "rune.stat_3523867985",
+      ],
+      "type": "rune",
+      "value": 54,
+    },
+    {
+      "max": 152,
+      "min": 140,
+      "ref": "#% increased Armour",
+      "tradeIds": [
+        "explicit.stat_1062208444",
+        "explicit.stat_2866361420",
+      ],
+      "type": "explicit",
+      "value": 144,
+    },
+    {
+      "max": 342,
+      "min": 296,
+      "ref": "# to Armour",
+      "tradeIds": [
+        "explicit.stat_3484657501",
+        "explicit.stat_809229260",
+      ],
+      "type": "explicit",
+      "value": 326,
+    },
+    {
+      "max": 33,
+      "min": 31,
+      "ref": "# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 32,
+    },
+    {
+      "max": -46,
+      "min": -50,
+      "ref": "#% increased Duration of Bleeding on You",
+      "tradeIds": [
+        "explicit.stat_1692879867",
+      ],
+      "type": "explicit",
+      "value": -48,
+    },
+    {
+      "max": 50,
+      "min": 40,
+      "ref": "Hits against you have #% reduced Critical Damage Bonus",
+      "tradeIds": [
+        "explicit.stat_3855016469",
+      ],
+      "type": "explicit",
+      "value": 44,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-boots-unidentified 1`] = `
+{
+  "category": "Boots",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "armourES": 58,
+    "basePercentile": 0,
+    "isUnidentified": true,
+    "itemLevel": 68,
+    "requires": {
+      "dex": 0,
+      "int": 78,
+      "level": 0,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Dunerunner Sandals",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-bow-fractured 1`] = `
+{
+  "category": "Bow",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Greater Iron Rune",
+        "Greater Iron Rune",
+      ],
+      "current": 2,
+      "empty": 0,
+      "normal": 2,
+    },
+    "isFractured": true,
+    "itemLevel": 81,
+    "quality": 25,
+    "requires": {
+      "dex": 163,
+      "int": 0,
+      "level": 78,
+      "str": 0,
+    },
+    "weaponAS": 1.15,
+    "weaponCRIT": 9.4,
+    "weaponPHYSICAL": 543,
+  },
+  "rarity": "Rare",
+  "refName": "Obliterator Bow",
+  "stats": [
+    {
+      "max": 36,
+      "min": 36,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "rune.stat_1509134228",
+      ],
+      "type": "rune",
+      "value": 36,
+    },
+    {
+      "max": -50,
+      "min": -50,
+      "ref": "#% increased Projectile Range",
+      "tradeIds": [
+        "implicit.stat_3398402065",
+      ],
+      "type": "implicit",
+      "value": -50,
+    },
+    {
+      "max": 52.5,
+      "min": 35,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "fractured.stat_1940865751",
+      ],
+      "type": "fractured",
+      "value": 45.5,
+    },
+    {
+      "max": 188,
+      "min": 155,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1509134228",
+      ],
+      "type": "explicit",
+      "value": 188,
+    },
+    {
+      "max": 123,
+      "min": 98,
+      "ref": "# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_691932474",
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 113,
+    },
+    {
+      "max": 25,
+      "min": 20,
+      "ref": "#% chance to gain Onslaught on Killing Hits with this Weapon",
+      "tradeIds": [
+        "explicit.stat_1881230714",
+      ],
+      "type": "explicit",
+      "value": 20,
+    },
+    {
+      "max": 3,
+      "min": 3,
+      "ref": "# to Level of all Attack Skills",
+      "tradeIds": [
+        "explicit.stat_3035140377",
+      ],
+      "type": "explicit",
+      "value": 3,
+    },
+    {
+      "max": 4.4,
+      "min": 3.81,
+      "ref": "#% to Critical Hit Chance",
+      "tradeIds": [
+        "explicit.stat_518292764",
+      ],
+      "type": "explicit",
+      "value": 4.4,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-bow-rare 1`] = `
+{
+  "category": "Bow",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+        null,
+      ],
+      "current": 0,
+      "empty": 2,
+      "normal": 2,
+    },
+    "itemLevel": 80,
+    "requires": {
+      "dex": 103,
+      "int": 0,
+      "level": 51,
+      "str": 0,
+    },
+    "weaponAS": 1.2,
+    "weaponCOLD": 11,
+    "weaponCRIT": 5,
+    "weaponELEMENTAL": 86,
+    "weaponFIRE": 31.5,
+    "weaponLIGHTNING": 43.5,
+    "weaponPHYSICAL": 48.5,
+  },
+  "rarity": "Rare",
+  "refName": "Rider Bow",
+  "stats": [
+    {
+      "max": 47,
+      "min": 31.5,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "explicit.stat_3336890334",
+      ],
+      "type": "explicit",
+      "value": 43.5,
+    },
+    {
+      "max": 38,
+      "min": 25.5,
+      "ref": "Adds # to # Fire Damage",
+      "tradeIds": [
+        "explicit.stat_709508406",
+      ],
+      "type": "explicit",
+      "value": 31.5,
+    },
+    {
+      "max": 12,
+      "min": 8,
+      "ref": "Adds # to # Cold Damage",
+      "tradeIds": [
+        "explicit.stat_1037193709",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 60,
+      "min": 41,
+      "ref": "# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_691932474",
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 57,
+    },
+    {
+      "max": 15,
+      "min": 15,
+      "ref": "#% increased Light Radius",
+      "tradeIds": [
+        "explicit.stat_1263695895",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-bow-three-runes 1`] = `
+{
+  "category": "Bow",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Perfect Iron Rune",
+        "Greater Iron Rune",
+        "Countess Seske's Rune of Archery",
+      ],
+      "current": 3,
+      "empty": 0,
+      "normal": 2,
+    },
+    "isCorrupted": true,
+    "itemLevel": 80,
+    "quality": 20,
+    "requires": {
+      "dex": 163,
+      "int": 0,
+      "level": 78,
+      "str": 0,
+    },
+    "weaponAS": 1.27,
+    "weaponCRIT": 8.45,
+    "weaponELEMENTAL": 69.5,
+    "weaponFIRE": 69.5,
+    "weaponPHYSICAL": 411,
+  },
+  "rarity": "Rare",
+  "refName": "Obliterator Bow",
+  "stats": [
+    {
+      "max": 38,
+      "min": 38,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "rune.stat_1509134228",
+      ],
+      "type": "rune",
+      "value": 38,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Bow Attacks fire # additional Arrows",
+      "tradeIds": [
+        "rune.stat_3885405204",
+      ],
+      "type": "rune",
+      "value": 1,
+    },
+    {
+      "max": -50,
+      "min": -50,
+      "ref": "#% increased Projectile Range",
+      "tradeIds": [
+        "implicit.stat_3398402065",
+      ],
+      "type": "implicit",
+      "value": -50,
+    },
+    {
+      "max": 154,
+      "min": 135,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1509134228",
+      ],
+      "type": "explicit",
+      "value": 151,
+    },
+    {
+      "max": 33,
+      "min": 22,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "desecrated.stat_1940865751",
+      ],
+      "type": "desecrated",
+      "value": 30,
+    },
+    {
+      "max": 78,
+      "min": 60.5,
+      "ref": "Adds # to # Fire Damage",
+      "tradeIds": [
+        "explicit.stat_709508406",
+      ],
+      "type": "explicit",
+      "value": 69.5,
+    },
+    {
+      "max": 16,
+      "min": 14,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_210067635",
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+    {
+      "max": 9.9,
+      "min": 9,
+      "ref": "Leeches #% of Physical Damage as Life",
+      "tradeIds": [
+        "explicit.stat_55876295",
+      ],
+      "type": "explicit",
+      "value": 9.6,
+    },
+    {
+      "max": 3.8,
+      "min": 3.11,
+      "ref": "#% to Critical Hit Chance",
+      "tradeIds": [
+        "crafted.stat_518292764",
+      ],
+      "type": "crafted",
+      "value": 3.45,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-charm-quality 1`] = `
+{
+  "category": "Charm",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 80,
+    "quality": 14,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 37,
+      "str": 0,
+    },
+  },
+  "rarity": "Magic",
+  "refName": "Silver Charm",
+  "stats": [
+    {
+      "ref": "Used when you are affected by a Slow",
+      "tradeIds": [
+        "implicit.stat_2778646494",
+      ],
+      "type": "implicit",
+    },
+    {
+      "max": 130,
+      "min": 96,
+      "ref": "Recover # Life when Used",
+      "tradeIds": [
+        "explicit.stat_2365392475",
+      ],
+      "type": "explicit",
+      "value": 106,
+    },
+    {
+      "max": 54,
+      "min": 47,
+      "ref": "#% increased Charges",
+      "tradeIds": [
+        "explicit.stat_1366840608",
+      ],
+      "type": "explicit",
+      "value": 51,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-crossbow-all-types 1`] = `
+{
+  "category": "Crossbow",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Greater Iron Rune",
+        "Greater Inspiration Rune",
+      ],
+      "current": 2,
+      "empty": 0,
+      "normal": 2,
+    },
+    "isCorrupted": true,
+    "isFractured": true,
+    "itemLevel": 80,
+    "quality": 20,
+    "requires": {
+      "dex": 89,
+      "int": 0,
+      "level": 78,
+      "str": 89,
+    },
+    "weaponAS": 1.89,
+    "weaponCRIT": 5,
+    "weaponELEMENTAL": 141.5,
+    "weaponLIGHTNING": 141.5,
+    "weaponPHYSICAL": 152.5,
+    "weaponRELOAD": 0.93,
+  },
+  "rarity": "Rare",
+  "refName": "Gemini Crossbow",
+  "stats": [
+    {
+      "max": 45,
+      "min": 45,
+      "ref": "#% increased Elemental Damage with Attacks",
+      "tradeIds": [
+        "enchant.stat_387439868",
+      ],
+      "type": "enchant",
+      "value": 45,
+    },
+    {
+      "max": 18,
+      "min": 18,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "rune.stat_1509134228",
+      ],
+      "type": "rune",
+      "value": 18,
+    },
+    {
+      "max": 30,
+      "min": 30,
+      "ref": "Gain # Mana per enemy killed",
+      "tradeIds": [
+        "rune.stat_1368271171",
+      ],
+      "type": "rune",
+      "value": 30,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Loads an additional bolt",
+      "tradeIds": [
+        "implicit.stat_1967051901",
+      ],
+      "type": "implicit",
+      "value": 1,
+    },
+    {
+      "max": 18,
+      "min": 18,
+      "ref": "Grants Skill: Level # Cackling Companions",
+      "tradeIds": [
+        "skill.hyena_cackle",
+      ],
+      "type": "skill",
+      "value": 18,
+    },
+    {
+      "max": 158,
+      "min": 120,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "fractured.stat_3336890334",
+      ],
+      "type": "fractured",
+      "value": 141.5,
+    },
+    {
+      "max": 47,
+      "min": 31,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1940865751",
+      ],
+      "type": "explicit",
+      "value": 37.5,
+    },
+    {
+      "max": 119,
+      "min": 100,
+      "ref": "#% increased Elemental Damage with Attacks",
+      "tradeIds": [
+        "explicit.stat_387439868",
+      ],
+      "type": "explicit",
+      "value": 109,
+    },
+    {
+      "max": 7.9,
+      "min": 7,
+      "ref": "Leeches #% of Physical Damage as Mana",
+      "tradeIds": [
+        "explicit.stat_669069897",
+      ],
+      "type": "explicit",
+      "value": 7.59,
+    },
+    {
+      "max": 27,
+      "min": 21,
+      "ref": "Gain # Mana per enemy killed",
+      "tradeIds": [
+        "desecrated.stat_1368271171",
+      ],
+      "type": "desecrated",
+      "value": 21,
+    },
+    {
+      "max": 19,
+      "min": 17,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_210067635",
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-crossbow-runes 1`] = `
+{
+  "category": "Crossbow",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Greater Iron Rune",
+        "Greater Iron Rune",
+      ],
+      "current": 2,
+      "empty": 0,
+      "normal": 2,
+    },
+    "isFractured": true,
+    "itemLevel": 82,
+    "quality": 29,
+    "requires": {
+      "dex": 89,
+      "int": 0,
+      "level": 79,
+      "str": 89,
+    },
+    "weaponAS": 2.07,
+    "weaponCRIT": 5,
+    "weaponPHYSICAL": 728.5,
+    "weaponRELOAD": 0.6,
+  },
+  "rarity": "Rare",
+  "refName": "Siege Crossbow",
+  "stats": [
+    {
+      "max": 36,
+      "min": 36,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "rune.stat_1509134228",
+      ],
+      "type": "rune",
+      "value": 36,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Grenade Skills Fire an additional Projectile",
+      "tradeIds": [
+        "implicit.stat_1980802737",
+      ],
+      "type": "implicit",
+      "value": 1,
+    },
+    {
+      "max": 258,
+      "min": 245,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1509134228",
+      ],
+      "type": "explicit",
+      "value": 251,
+    },
+    {
+      "max": 200,
+      "min": 175,
+      "ref": "# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_691932474",
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 175,
+    },
+    {
+      "max": 74.5,
+      "min": 50,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "desecrated.stat_1940865751",
+      ],
+      "type": "desecrated",
+      "value": 74,
+    },
+    {
+      "max": 25,
+      "min": 23,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "fractured.stat_210067635",
+        "fractured.stat_681332047",
+      ],
+      "type": "fractured",
+      "value": 25,
+    },
+    {
+      "max": 7,
+      "min": 7,
+      "ref": "# to Level of all Projectile Skills",
+      "tradeIds": [
+        "explicit.stat_1202301673",
+      ],
+      "type": "explicit",
+      "value": 7,
+    },
+    {
+      "max": 2,
+      "min": 2,
+      "ref": "Loads an additional bolt",
+      "tradeIds": [
+        "explicit.stat_1967051901",
+      ],
+      "type": "explicit",
+      "value": 2,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-focus-unique 1`] = `
+{
+  "category": "Focus",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 81,
+    "requires": {
+      "dex": 0,
+      "int": 43,
+      "level": 26,
+      "str": 0,
+    },
+  },
+  "rarity": "Unique",
+  "refName": "The Eternal Spark",
+  "stats": [
+    {
+      "max": 70,
+      "min": 50,
+      "ref": "#% increased Energy Shield",
+      "tradeIds": [
+        "explicit.stat_4015621042",
+      ],
+      "type": "explicit",
+      "value": 56,
+    },
+    {
+      "max": 40,
+      "min": 40,
+      "ref": "#% increased Mana Regeneration Rate while stationary",
+      "tradeIds": [
+        "explicit.stat_3308030688",
+      ],
+      "type": "explicit",
+      "value": 40,
+    },
+    {
+      "max": 30,
+      "min": 20,
+      "ref": "#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 26,
+    },
+    {
+      "max": 5,
+      "min": 5,
+      "ref": "#% to Maximum Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1011760251",
+      ],
+      "type": "explicit",
+      "value": 5,
+    },
+    {
+      "max": 40,
+      "min": 40,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 40,
+    },
+  ],
+  "uniqueBase": "Crystal Focus",
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-gem-meta 1`] = `
+{
+  "category": "Gem",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "gemLevel": 14,
+    "gemSockets": {
+      "linked": undefined,
+      "number": 4,
+      "white": 0,
+    },
+  },
+  "rarity": undefined,
+  "refName": "Mirage Archer",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-gem-uncut-skill 1`] = `
+{
+  "category": "Currency",
+  "format": "plain",
+  "lang": "en",
+  "props": {},
+  "rarity": undefined,
+  "refName": "Uncut Skill Gem (Level 19)",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-helmet-normal 1`] = `
+{
+  "category": "Helmet",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "armourAR": 174,
+    "armourES": 60,
+    "basePercentile": 0,
+    "itemLevel": 81,
+    "quality": 9,
+    "requires": {
+      "dex": 0,
+      "int": 67,
+      "level": 75,
+      "str": 67,
+    },
+  },
+  "rarity": "Normal",
+  "refName": "Divine Crown",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-mace-magic 1`] = `
+{
+  "category": "Two Hand Mace",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+        null,
+      ],
+      "current": 0,
+      "empty": 2,
+      "normal": 2,
+    },
+    "itemLevel": 32,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 28,
+      "str": 57,
+    },
+    "weaponAS": 1.2,
+    "weaponCRIT": 5,
+    "weaponELEMENTAL": 25.5,
+    "weaponLIGHTNING": 25.5,
+    "weaponPHYSICAL": 53.5,
+  },
+  "rarity": "Magic",
+  "refName": "Temple Maul",
+  "stats": [
+    {
+      "max": 35,
+      "min": 23.5,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "explicit.stat_3336890334",
+      ],
+      "type": "explicit",
+      "value": 25.5,
+    },
+    {
+      "max": 8,
+      "min": 5,
+      "ref": "# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 8,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-ring-implicit 1`] = `
+{
+  "category": "Ring",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 79,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 45,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Prismatic Ring",
+  "stats": [
+    {
+      "max": 10,
+      "min": 7,
+      "ref": "#% to all Elemental Resistances",
+      "tradeIds": [
+        "implicit.stat_2901986750",
+      ],
+      "type": "implicit",
+      "value": 8,
+    },
+    {
+      "max": 151,
+      "min": 124,
+      "ref": "# to Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_2144192055",
+        "explicit.stat_53045048",
+      ],
+      "type": "explicit",
+      "value": 143,
+    },
+    {
+      "max": 12,
+      "min": 9,
+      "ref": "# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 12,
+    },
+    {
+      "max": 12,
+      "min": 8,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 8,
+    },
+    {
+      "max": 5,
+      "min": 5,
+      "ref": "#% increased Light Radius",
+      "tradeIds": [
+        "explicit.stat_1263695895",
+      ],
+      "type": "explicit",
+      "value": 5,
+    },
+    {
+      "max": 15,
+      "min": 11,
+      "ref": "#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-ring-unidentified-tier 1`] = `
+{
+  "category": "Ring",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "isUnidentified": true,
+    "itemLevel": 54,
+    "unidentifiedTier": 4,
+  },
+  "rarity": "Magic",
+  "refName": "Sapphire Ring",
+  "stats": [
+    {
+      "max": 30,
+      "min": 20,
+      "ref": "#% to Cold Resistance",
+      "tradeIds": [
+        "implicit.stat_4220027924",
+      ],
+      "type": "implicit",
+      "value": 23,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-sceptre-spirit 1`] = `
+{
+  "category": "Sceptre",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 1,
+      "empty": 1,
+      "normal": 1,
+    },
+    "itemLevel": 79,
+    "requires": {
+      "dex": 0,
+      "int": 98,
+      "level": 72,
+      "str": 39,
+    },
+    "weaponSPIRIT": 152,
+  },
+  "rarity": "Rare",
+  "refName": "Shrine Sceptre",
+  "stats": [
+    {
+      "max": 17,
+      "min": 17,
+      "ref": "Grants Skill: Level # Purity of Lightning",
+      "tradeIds": [
+        "skill.purity_of_lightning",
+      ],
+      "type": "skill",
+      "value": 17,
+    },
+    {
+      "max": 55,
+      "min": 51,
+      "ref": "#% increased Spirit",
+      "tradeIds": [
+        "explicit.stat_1416406066",
+        "explicit.stat_3984865854",
+      ],
+      "type": "explicit",
+      "value": 52,
+    },
+    {
+      "max": 21,
+      "min": 17,
+      "ref": "Allies in your Presence deal # to # added Attack Lightning Damage",
+      "tradeIds": [
+        "explicit.stat_2854751904",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+    {
+      "max": 89,
+      "min": 80,
+      "ref": "# to maximum Mana",
+      "tradeIds": [
+        "explicit.stat_1050105434",
+      ],
+      "type": "explicit",
+      "value": 83,
+    },
+    {
+      "max": 19,
+      "min": 10,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+    {
+      "max": 30,
+      "min": 26,
+      "ref": "Minions have #% increased maximum Life",
+      "tradeIds": [
+        "explicit.stat_770672621",
+      ],
+      "type": "explicit",
+      "value": 28,
+    },
+    {
+      "max": 27,
+      "min": 25,
+      "ref": "# to Intelligence",
+      "tradeIds": [
+        "explicit.stat_328541901",
+      ],
+      "type": "explicit",
+      "value": 27,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-shield-normal 1`] = `
+{
+  "category": "Shield",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "armourAR": 71,
+    "armourBLOCK": 25,
+    "armourEV": 64,
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 0,
+      "empty": 1,
+      "normal": 1,
+    },
+    "basePercentile": 0,
+    "itemLevel": 54,
+    "note": "~b/o 1 aug",
+    "requires": {
+      "dex": 42,
+      "int": 0,
+      "level": 54,
+      "str": 42,
+    },
+  },
+  "rarity": "Normal",
+  "refName": "Polished Targe",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-wand-skill 1`] = `
+{
+  "category": "Wand",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 0,
+      "empty": 1,
+      "normal": 1,
+    },
+    "itemLevel": 82,
+    "note": "~b/o 5 exalted",
+    "requires": {
+      "dex": 0,
+      "int": 125,
+      "level": 90,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Withered Wand",
+  "stats": [
+    {
+      "max": 20,
+      "min": 20,
+      "ref": "Grants Skill: Level # Chaos Bolt",
+      "tradeIds": [
+        "skill.chaosbolt",
+      ],
+      "type": "skill",
+      "value": 20,
+    },
+    {
+      "max": 74,
+      "min": 65,
+      "ref": "#% increased Chaos Damage",
+      "tradeIds": [
+        "explicit.stat_736967255",
+      ],
+      "type": "explicit",
+      "value": 71,
+    },
+    {
+      "max": 30,
+      "min": 28,
+      "ref": "Gain #% of Damage as Extra Cold Damage",
+      "tradeIds": [
+        "explicit.stat_2505884597",
+      ],
+      "type": "explicit",
+      "value": 28,
+    },
+    {
+      "max": 22,
+      "min": 18,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 22,
+    },
+    {
+      "max": 15,
+      "min": 15,
+      "ref": "#% increased Light Radius",
+      "tradeIds": [
+        "explicit.stat_1263695895",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+    {
+      "max": -20,
+      "min": -20,
+      "ref": "#% increased Attribute Requirements",
+      "tradeIds": [
+        "explicit.stat_3639275092",
+      ],
+      "type": "explicit",
+      "value": -20,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-waystone 1`] = `
+{
+  "category": "Map",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 80,
+    "mapDropChance": 75,
+    "mapPackSize": 34,
+    "mapRareMonsters": 28,
+    "mapRevives": 2,
+    "mapTier": 14,
+  },
+  "rarity": "Rare",
+  "refName": "Waystone (Tier 14)",
+  "stats": [
+    {
+      "ref": "Area has patches of Shocked Ground",
+      "tradeIds": [
+        "explicit.stat_3477720557",
+      ],
+      "type": "explicit",
+    },
+    {
+      "max": 30,
+      "min": 26,
+      "ref": "#% increased Monster Damage",
+      "tradeIds": [
+        "explicit.stat_1890519597",
+      ],
+      "type": "explicit",
+      "value": 28,
+    },
+    {
+      "max": 2,
+      "min": 2,
+      "ref": "Monsters fire # additional Projectiles",
+      "tradeIds": [
+        "explicit.stat_1309819744",
+      ],
+      "type": "explicit",
+      "value": 2,
+    },
+    {
+      "max": 300,
+      "min": 260,
+      "ref": "Monsters have #% increased Critical Hit Chance",
+      "tradeIds": [
+        "explicit.stat_2753083623",
+      ],
+      "type": "explicit",
+      "value": 293,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [
+    {
+      "text": "+26(26-30)% to Monster Critical Damage Bonus",
+      "type": "explicit",
+    },
+  ],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > ee2-waystone-all-props 1`] = `
+{
+  "category": "Map",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "isCorrupted": true,
+    "itemLevel": 79,
+    "mapDropChance": 90,
+    "mapEffectiveness": 45,
+    "mapItemRarity": 17,
+    "mapMagicMonsters": 30,
+    "mapMonsterRarity": 32,
+    "mapPackSize": 20,
+    "mapRareMonsters": 71,
+    "mapRevives": 0,
+    "mapTier": 16,
+  },
+  "rarity": "Rare",
+  "refName": "Waystone (Tier 16)",
+  "stats": [
+    {
+      "max": 30,
+      "min": 26,
+      "ref": "#% increased Monster Damage",
+      "tradeIds": [
+        "explicit.stat_1890519597",
+      ],
+      "type": "explicit",
+      "value": 30,
+    },
+    {
+      "ref": "Monsters are Armoured",
+      "tradeIds": [
+        "explicit.stat_2539290279",
+      ],
+      "type": "explicit",
+    },
+    {
+      "ref": "Players are periodically Cursed with Temporal Chains",
+      "tradeIds": [
+        "explicit.stat_1629357380",
+      ],
+      "type": "explicit",
+    },
+    {
+      "max": 79,
+      "min": 70,
+      "ref": "Monsters have #% increased Ailment Threshold",
+      "tradeIds": [
+        "explicit.stat_1994551050",
+      ],
+      "type": "explicit",
+      "value": 71,
+    },
+    {
+      "max": 79,
+      "min": 70,
+      "ref": "Monsters have #% increased Stun Threshold",
+      "tradeIds": [
+        "explicit.stat_4101943684",
+      ],
+      "type": "explicit",
+      "value": 72,
+    },
+    {
+      "max": -30,
+      "min": -35,
+      "ref": "Players gain #% reduced Flask Charges",
+      "tradeIds": [
+        "explicit.stat_2549889921",
+      ],
+      "type": "explicit",
+      "value": -33,
+    },
+    {
+      "max": 45,
+      "min": 30,
+      "ref": "Monsters Break Armour equal to #% of Physical Damage dealt",
+      "tradeIds": [
+        "explicit.stat_1879340377",
+      ],
+      "type": "explicit",
+      "value": 36,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-boots-desecrated-plain 1`] = `
+{
+  "category": "Boots",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "armourAR": 149,
+    "armourEV": 118,
+    "augmentSockets": {
+      "augments": [
+        "Desert Rune",
+      ],
+      "current": 1,
+      "empty": 0,
+      "normal": 1,
+    },
+    "basePercentile": 0,
+    "itemLevel": 66,
+    "quality": 20,
+    "requires": {
+      "dex": 44,
+      "int": 0,
+      "level": 59,
+      "str": 44,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Bastion Sabatons",
+  "stats": [
+    {
+      "max": 14,
+      "min": 14,
+      "ref": "#% to Fire Resistance",
+      "tradeIds": [
+        "rune.stat_3372524247",
+      ],
+      "type": "rune",
+      "value": 14,
+    },
+    {
+      "max": 25,
+      "min": 25,
+      "ref": "#% increased Movement Speed",
+      "tradeIds": [
+        "explicit.stat_2250533757",
+      ],
+      "type": "explicit",
+      "value": 25,
+    },
+    {
+      "max": 83,
+      "min": 83,
+      "ref": "# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 83,
+    },
+    {
+      "max": 20,
+      "min": 20,
+      "ref": "#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 20,
+    },
+    {
+      "max": 22,
+      "min": 22,
+      "ref": "#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 22,
+    },
+    {
+      "max": 34,
+      "min": 34,
+      "ref": "#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 34,
+    },
+    {
+      "max": 32,
+      "min": 32,
+      "ref": "# to Armour",
+      "tradeIds": [
+        "desecrated.stat_3484657501",
+        "desecrated.stat_809229260",
+      ],
+      "type": "desecrated",
+      "value": 32,
+    },
+    {
+      "max": 14,
+      "min": 14,
+      "ref": "# to Evasion Rating",
+      "tradeIds": [
+        "desecrated.stat_2144192055",
+        "desecrated.stat_53045048",
+      ],
+      "type": "desecrated",
+      "value": 14,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-boots-unique-plain 1`] = `
+{
+  "category": "Boots",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 1,
+      "empty": 1,
+      "normal": 1,
+    },
+    "isCorrupted": true,
+    "itemLevel": 36,
+    "requires": {
+      "dex": 49,
+      "int": 0,
+      "level": 28,
+      "str": 0,
+    },
+  },
+  "rarity": "Unique",
+  "refName": "Thunderstep",
+  "stats": [
+    {
+      "max": 22,
+      "min": 22,
+      "ref": "#% increased Evasion Rating",
+      "tradeIds": [
+        "enchant.stat_124859000",
+        "enchant.stat_2106365538",
+      ],
+      "type": "enchant",
+      "value": 22,
+    },
+    {
+      "max": 12,
+      "min": 12,
+      "ref": "#% to Fire Resistance",
+      "tradeIds": [
+        "rune.stat_3372524247",
+      ],
+      "type": "rune",
+      "value": 12,
+    },
+    {
+      "max": 10,
+      "min": 10,
+      "ref": "#% increased Movement Speed",
+      "tradeIds": [
+        "explicit.stat_2250533757",
+      ],
+      "type": "explicit",
+      "value": 10,
+    },
+    {
+      "max": 41,
+      "min": 41,
+      "ref": "#% increased Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_124859000",
+        "explicit.stat_2106365538",
+      ],
+      "type": "explicit",
+      "value": 41,
+    },
+    {
+      "max": 5,
+      "min": 5,
+      "ref": "#% to Maximum Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1011760251",
+      ],
+      "type": "explicit",
+      "value": 5,
+    },
+    {
+      "max": 33,
+      "min": 33,
+      "ref": "#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 33,
+    },
+  ],
+  "uniqueBase": "Steeltoe Boots",
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-buckler-magic-plain 1`] = `
+{
+  "category": "Buckler",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "armourBLOCK": 20,
+    "armourEV": 16,
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 0,
+      "empty": 1,
+      "normal": 1,
+    },
+    "basePercentile": 0,
+    "itemLevel": 5,
+    "requires": {
+      "dex": 11,
+      "int": 0,
+      "level": 5,
+      "str": 0,
+    },
+  },
+  "rarity": "Magic",
+  "refName": "Wooden Buckler",
+  "stats": [
+    {
+      "max": 12,
+      "min": 12,
+      "ref": "# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 12,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-charm-plain 1`] = `
+{
+  "category": "Charm",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "itemLevel": 51,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 16,
+      "str": 0,
+    },
+  },
+  "rarity": "Magic",
+  "refName": "Stone Charm",
+  "stats": [
+    {
+      "ref": "Used when you become Stunned",
+      "tradeIds": [
+        "implicit.stat_1810482573",
+      ],
+      "type": "implicit",
+    },
+    {
+      "max": 21,
+      "min": 21,
+      "ref": "#% increased Duration",
+      "tradeIds": [
+        "explicit.stat_1256719186",
+        "explicit.stat_2541588185",
+      ],
+      "type": "explicit",
+      "value": 21,
+    },
+    {
+      "max": -19,
+      "min": -19,
+      "ref": "#% increased Charges per use",
+      "tradeIds": [
+        "explicit.stat_388617051",
+      ],
+      "type": "explicit",
+      "value": -19,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-currency-essence 1`] = `
+{
+  "category": "Currency",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "stackSize": {
+      "max": 10,
+      "value": 1,
+    },
+  },
+  "rarity": undefined,
+  "refName": "Essence of Enhancement",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-flask-life-plain 1`] = `
+{
+  "category": "Flask",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "itemLevel": 66,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 60,
+      "str": 0,
+    },
+  },
+  "rarity": "Magic",
+  "refName": "Ultimate Life Flask",
+  "stats": [
+    {
+      "max": 23,
+      "min": 23,
+      "ref": "#% of Recovery applied Instantly",
+      "tradeIds": [
+        "explicit.stat_2503377690",
+      ],
+      "type": "explicit",
+      "value": 23,
+    },
+    {
+      "max": -26,
+      "min": -26,
+      "ref": "#% increased Charges per use",
+      "tradeIds": [
+        "explicit.stat_388617051",
+      ],
+      "type": "explicit",
+      "value": -26,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-gem-skill 1`] = `
+{
+  "category": "Gem",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "gemLevel": 18,
+    "gemSockets": {
+      "linked": undefined,
+      "number": 4,
+      "white": 0,
+    },
+    "quality": 20,
+  },
+  "rarity": undefined,
+  "refName": "Herald of Ice",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-gem-uncut-spirit 1`] = `
+{
+  "category": "Currency",
+  "format": "plain",
+  "lang": "en",
+  "props": {},
+  "rarity": undefined,
+  "refName": "Uncut Spirit Gem (Level 16)",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-jewel-timelost-plain 1`] = `
+{
+  "category": "Jewel",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "itemLevel": 64,
+  },
+  "rarity": "Rare",
+  "refName": "Time-Lost Ruby",
+  "stats": [
+    {
+      "max": 2,
+      "min": 2,
+      "ref": "Small Passive Skills in Radius also grant #% increased Totem Damage",
+      "tradeIds": [
+        "explicit.stat_2108821127",
+      ],
+      "type": "explicit",
+      "value": 2,
+    },
+    {
+      "max": 4,
+      "min": 4,
+      "ref": "Notable Passive Skills in Radius also grant #% increased Magnitude of Bleeding you inflict",
+      "tradeIds": [
+        "explicit.stat_391602279",
+      ],
+      "type": "explicit",
+      "value": 4,
+    },
+    {
+      "max": 7,
+      "min": 7,
+      "ref": "Notable Passive Skills in Radius also grant #% increased Stun Buildup with Maces",
+      "tradeIds": [
+        "explicit.stat_2392824305",
+      ],
+      "type": "explicit",
+      "value": 7,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-jewel-unique-enchant 1`] = `
+{
+  "category": "Jewel",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "isCorrupted": true,
+    "itemLevel": 79,
+  },
+  "rarity": "Unique",
+  "refName": "Megalomaniac",
+  "stats": [
+    {
+      "max": 62310,
+      "min": 62310,
+      "ref": "Allocates #",
+      "tradeIds": [
+        "enchant.stat_2954116742",
+      ],
+      "type": "enchant",
+      "value": 62310,
+    },
+    {
+      "max": 40990,
+      "min": 40990,
+      "ref": "Allocates #",
+      "tradeIds": [
+        "enchant.stat_2954116742",
+      ],
+      "type": "enchant",
+      "value": 40990,
+    },
+  ],
+  "uniqueBase": "Diamond",
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-quiver-cannot-use 1`] = `
+{
+  "category": "Quiver",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "itemLevel": 8,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 8,
+      "str": 0,
+    },
+  },
+  "rarity": "Normal",
+  "refName": "Fire Quiver",
+  "stats": [
+    {
+      "max": 4,
+      "min": 4,
+      "ref": "Adds # to # Fire damage to Attacks",
+      "tradeIds": [
+        "implicit.stat_1573130764",
+      ],
+      "type": "implicit",
+      "value": 4,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-relic-plain 1`] = `
+{
+  "category": "Relic",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "itemLevel": 22,
+  },
+  "rarity": "Magic",
+  "refName": "Urn Relic",
+  "stats": [
+    {
+      "max": 6,
+      "min": 6,
+      "ref": "Fountains have #% chance to grant double Sacred Water",
+      "tradeIds": [
+        "sanctum.stat_2363402715",
+      ],
+      "type": "sanctum",
+      "value": 6,
+    },
+    {
+      "max": 9,
+      "min": 9,
+      "ref": "#% increased Honour restored",
+      "tradeIds": [
+        "sanctum.stat_1583320325",
+      ],
+      "type": "sanctum",
+      "value": 9,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-sceptre-plain 1`] = `
+{
+  "category": "Sceptre",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 0,
+      "empty": 1,
+      "normal": 1,
+    },
+    "itemLevel": 70,
+    "requires": {
+      "dex": 0,
+      "int": 117,
+      "level": 66,
+      "str": 46,
+    },
+    "weaponSPIRIT": 100,
+  },
+  "rarity": "Magic",
+  "refName": "Rattling Sceptre",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-spear-plain 1`] = `
+{
+  "category": "Spear",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Storm Rune",
+      ],
+      "current": 1,
+      "empty": 0,
+      "normal": 1,
+    },
+    "itemLevel": 32,
+    "quality": 11,
+    "requires": {
+      "dex": 48,
+      "int": 0,
+      "level": 26,
+      "str": 20,
+    },
+    "weaponAS": 1.84,
+    "weaponCOLD": 3,
+    "weaponCRIT": 6.4,
+    "weaponELEMENTAL": 38,
+    "weaponLIGHTNING": 35,
+    "weaponPHYSICAL": 41.5,
+  },
+  "rarity": "Rare",
+  "refName": "Forked Spear",
+  "stats": [
+    {
+      "max": 10.5,
+      "min": 10.5,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "rune.stat_3336890334",
+      ],
+      "type": "rune",
+      "value": 10.5,
+    },
+    {
+      "max": 13,
+      "min": 13,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1940865751",
+      ],
+      "type": "explicit",
+      "value": 13,
+    },
+    {
+      "max": 3,
+      "min": 3,
+      "ref": "Adds # to # Cold Damage",
+      "tradeIds": [
+        "explicit.stat_1037193709",
+      ],
+      "type": "explicit",
+      "value": 3,
+    },
+    {
+      "max": 24.5,
+      "min": 24.5,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "explicit.stat_3336890334",
+      ],
+      "type": "explicit",
+      "value": 24.5,
+    },
+    {
+      "max": 1.4,
+      "min": 1.4,
+      "ref": "#% to Critical Hit Chance",
+      "tradeIds": [
+        "explicit.stat_518292764",
+      ],
+      "type": "explicit",
+      "value": 1.4,
+    },
+    {
+      "max": 15,
+      "min": 15,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_210067635",
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+    {
+      "max": 3,
+      "min": 3,
+      "ref": "Grants # Life per Enemy Hit",
+      "tradeIds": [
+        "explicit.stat_821021828",
+      ],
+      "type": "explicit",
+      "value": 3,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-tablet-rare 1`] = `
+{
+  "category": "TowerAugment",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 79,
+  },
+  "rarity": "Rare",
+  "refName": "Ritual Tablet",
+  "stats": [
+    {
+      "max": 10,
+      "min": 10,
+      "ref": "Adds Ritual Altars to a Map 
+# use remaining",
+      "tradeIds": [
+        "implicit.stat_3166002380",
+      ],
+      "type": "implicit",
+      "value": 10,
+    },
+    {
+      "max": 12,
+      "min": 8,
+      "ref": "#% increased Rarity of Items found",
+      "tradeIds": [
+        "explicit.stat_3917489142",
+        "explicit.stat_2306002879",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 18,
+      "min": 12,
+      "ref": "#% increased Experience gain",
+      "tradeIds": [
+        "explicit.stat_3666934677",
+        "explicit.stat_57434274",
+      ],
+      "type": "explicit",
+      "value": 17,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Map contains an additional Shrine",
+      "tradeIds": [
+        "explicit.stat_1468737867",
+        "explicit.stat_3042527515",
+      ],
+      "type": "explicit",
+      "value": 1,
+    },
+    {
+      "max": -20,
+      "min": -30,
+      "ref": "Deferring Favours at Ritual Altars in Map costs #% increased Tribute",
+      "tradeIds": [
+        "explicit.stat_1345835998",
+      ],
+      "type": "explicit",
+      "value": -28,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-tablet-unique 1`] = `
+{
+  "category": "TowerAugment",
+  "format": "advanced",
+  "lang": "en",
+  "props": {
+    "itemLevel": 79,
+  },
+  "rarity": "Unique",
+  "refName": "Freedom of Faith",
+  "stats": [
+    {
+      "max": 5,
+      "min": 5,
+      "ref": "Adds Ritual Altars to a Map 
+# use remaining",
+      "tradeIds": [
+        "implicit.stat_3166002380",
+      ],
+      "type": "implicit",
+      "value": 5,
+    },
+    {
+      "ref": "Can Reroll Favours at Ritual Altars in your Maps twice as many times",
+      "tradeIds": [
+        "explicit.stat_2500154144",
+      ],
+      "type": "explicit",
+    },
+    {
+      "max": 15,
+      "min": 10,
+      "ref": "Favours at Ritual Altars in Area costs #% increased Tribute",
+      "tradeIds": [
+        "explicit.stat_1228222525",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+  ],
+  "uniqueBase": "Ritual Tablet",
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (en) > sk-waystone-plain 1`] = `
+{
+  "category": "Map",
+  "format": "plain",
+  "lang": "en",
+  "props": {
+    "itemLevel": 80,
+    "mapDropChance": 70,
+    "mapItemRarity": 38,
+    "mapMagicMonsters": 33,
+    "mapRareMonsters": 25,
+    "mapRevives": 1,
+    "mapTier": 13,
+  },
+  "rarity": "Rare",
+  "refName": "Waystone (Tier 13)",
+  "stats": [
+    {
+      "ref": "Area has patches of Ignited Ground",
+      "tradeIds": [
+        "explicit.stat_133340941",
+      ],
+      "type": "explicit",
+    },
+    {
+      "max": 276,
+      "min": 276,
+      "ref": "Monsters have #% increased Critical Hit Chance",
+      "tradeIds": [
+        "explicit.stat_2753083623",
+      ],
+      "type": "explicit",
+      "value": 276,
+    },
+    {
+      "max": -50,
+      "min": -50,
+      "ref": "#% less effect of Curses on Monsters",
+      "tradeIds": [
+        "explicit.stat_3796523155",
+      ],
+      "type": "explicit",
+      "value": -50,
+    },
+    {
+      "max": -40,
+      "min": -40,
+      "ref": "Players have #% less Recovery Rate of Life and Energy Shield",
+      "tradeIds": [
+        "explicit.stat_4181072906",
+      ],
+      "type": "explicit",
+      "value": -40,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Rare Monsters have # additional Modifier",
+      "tradeIds": [
+        "explicit.stat_2550456553",
+      ],
+      "type": "explicit",
+      "value": 1,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [
+    {
+      "text": "33% increased number of Magic Monsters",
+      "type": "explicit",
+    },
+    {
+      "text": "25% increased number of Rare Monsters",
+      "type": "explicit",
+    },
+    {
+      "text": "+30% to Monster Critical Damage Bonus",
+      "type": "explicit",
+    },
+  ],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-amulet-desecrated 1`] = `
+{
+  "category": "Amulet",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "isFractured": true,
+    "itemLevel": 81,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 60,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Gold Amulet",
+  "stats": [
+    {
+      "max": 56776,
+      "min": 56776,
+      "ref": "Allocates #",
+      "tradeIds": [
+        "enchant.stat_2954116742",
+      ],
+      "type": "enchant",
+      "value": 56776,
+    },
+    {
+      "max": 20,
+      "min": 12,
+      "ref": "#% increased Rarity of Items found",
+      "tradeIds": [
+        "implicit.stat_3917489142",
+      ],
+      "type": "implicit",
+      "value": 18,
+    },
+    {
+      "max": 33,
+      "min": 30,
+      "ref": "# to Spirit",
+      "tradeIds": [
+        "explicit.stat_2704225257",
+        "explicit.stat_3981240776",
+      ],
+      "type": "explicit",
+      "value": 30,
+    },
+    {
+      "max": 104,
+      "min": 90,
+      "ref": "# to maximum Mana",
+      "tradeIds": [
+        "explicit.stat_1050105434",
+      ],
+      "type": "explicit",
+      "value": 90,
+    },
+    {
+      "max": 30,
+      "min": 27,
+      "ref": "#% increased Spell Damage",
+      "tradeIds": [
+        "explicit.stat_2974417149",
+      ],
+      "type": "explicit",
+      "value": 29,
+    },
+    {
+      "max": 40,
+      "min": 36,
+      "ref": "#% to Cold Resistance",
+      "tradeIds": [
+        "fractured.stat_4220027924",
+      ],
+      "type": "fractured",
+      "value": 37,
+    },
+    {
+      "max": 3,
+      "min": 3,
+      "ref": "# to Level of all Spell Skills",
+      "tradeIds": [
+        "explicit.stat_124131830",
+      ],
+      "type": "explicit",
+      "value": 3,
+    },
+    {
+      "max": 17,
+      "min": 13,
+      "ref": "#% to Fire and Chaos Resistances",
+      "tradeIds": [
+        "desecrated.stat_378817135",
+      ],
+      "type": "desecrated",
+      "value": 17,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-belt-charm-slots 1`] = `
+{
+  "category": "Belt",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 80,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 59,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Ornate Belt",
+  "stats": [
+    {
+      "max": -10,
+      "min": -15,
+      "ref": "#% reduced Charm Charges used",
+      "tradeIds": [
+        "implicit.stat_1570770415",
+      ],
+      "type": "implicit",
+      "value": -14,
+    },
+    {
+      "max": 3,
+      "min": 1,
+      "ref": "Has # Charm Slot",
+      "tradeIds": [
+        "implicit.stat_1416292992",
+      ],
+      "type": "implicit",
+      "value": 2,
+    },
+    {
+      "max": 15,
+      "min": 10,
+      "ref": "#% increased Charm Effect Duration",
+      "tradeIds": [
+        "explicit.stat_1389754388",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 174,
+      "min": 150,
+      "ref": "# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 161,
+    },
+    {
+      "max": 35,
+      "min": 31,
+      "ref": "#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 32,
+    },
+    {
+      "max": 33,
+      "min": 31,
+      "ref": "# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 33,
+    },
+    {
+      "max": 97,
+      "min": 73,
+      "ref": "# to Stun Threshold",
+      "tradeIds": [
+        "explicit.stat_915769802",
+      ],
+      "type": "explicit",
+      "value": 94,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-body-armour-runes 1`] = `
+{
+  "category": "Body Armour",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "armourAR": 3075,
+    "augmentSockets": {
+      "augments": [
+        "Greater Iron Rune",
+        "Greater Iron Rune",
+        "Greater Iron Rune",
+      ],
+      "current": 3,
+      "empty": 0,
+      "normal": 2,
+    },
+    "basePercentile": 0,
+    "itemLevel": 80,
+    "note": "~b/o 10 divine",
+    "quality": 20,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 65,
+      "str": 121,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Soldier Cuirass",
+  "stats": [
+    {
+      "max": 54,
+      "min": 54,
+      "ref": "#% increased Armour, Evasion and Energy Shield",
+      "tradeIds": [
+        "rune.stat_3523867985",
+      ],
+      "type": "rune",
+      "value": 54,
+    },
+    {
+      "max": 152,
+      "min": 140,
+      "ref": "#% increased Armour",
+      "tradeIds": [
+        "explicit.stat_1062208444",
+        "explicit.stat_2866361420",
+      ],
+      "type": "explicit",
+      "value": 144,
+    },
+    {
+      "max": 342,
+      "min": 296,
+      "ref": "# to Armour",
+      "tradeIds": [
+        "explicit.stat_3484657501",
+        "explicit.stat_809229260",
+      ],
+      "type": "explicit",
+      "value": 326,
+    },
+    {
+      "max": 33,
+      "min": 31,
+      "ref": "# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 32,
+    },
+    {
+      "max": -46,
+      "min": -50,
+      "ref": "#% increased Duration of Bleeding on You",
+      "tradeIds": [
+        "explicit.stat_1692879867",
+      ],
+      "type": "explicit",
+      "value": -48,
+    },
+    {
+      "max": 50,
+      "min": 40,
+      "ref": "Hits against you have #% reduced Critical Damage Bonus",
+      "tradeIds": [
+        "explicit.stat_3855016469",
+      ],
+      "type": "explicit",
+      "value": 44,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-boots-unidentified 1`] = `
+{
+  "category": "Boots",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "armourES": 58,
+    "basePercentile": 0,
+    "isUnidentified": true,
+    "itemLevel": 68,
+    "requires": {
+      "dex": 0,
+      "int": 78,
+      "level": 0,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Dunerunner Sandals",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-bow-fractured 1`] = `
+{
+  "category": "Bow",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Greater Iron Rune",
+        "Greater Iron Rune",
+      ],
+      "current": 2,
+      "empty": 0,
+      "normal": 2,
+    },
+    "isFractured": true,
+    "itemLevel": 81,
+    "quality": 25,
+    "requires": {
+      "dex": 163,
+      "int": 0,
+      "level": 78,
+      "str": 0,
+    },
+    "weaponAS": 1.15,
+    "weaponCRIT": 9.4,
+    "weaponPHYSICAL": 543,
+  },
+  "rarity": "Rare",
+  "refName": "Obliterator Bow",
+  "stats": [
+    {
+      "max": 36,
+      "min": 36,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "rune.stat_1509134228",
+      ],
+      "type": "rune",
+      "value": 36,
+    },
+    {
+      "max": -50,
+      "min": -50,
+      "ref": "#% increased Projectile Range",
+      "tradeIds": [
+        "implicit.stat_3398402065",
+      ],
+      "type": "implicit",
+      "value": -50,
+    },
+    {
+      "max": 52.5,
+      "min": 35,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "fractured.stat_1940865751",
+      ],
+      "type": "fractured",
+      "value": 45.5,
+    },
+    {
+      "max": 188,
+      "min": 155,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1509134228",
+      ],
+      "type": "explicit",
+      "value": 188,
+    },
+    {
+      "max": 123,
+      "min": 98,
+      "ref": "# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_691932474",
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 113,
+    },
+    {
+      "max": 25,
+      "min": 20,
+      "ref": "#% chance to gain Onslaught on Killing Hits with this Weapon",
+      "tradeIds": [
+        "explicit.stat_1881230714",
+      ],
+      "type": "explicit",
+      "value": 20,
+    },
+    {
+      "max": 3,
+      "min": 3,
+      "ref": "# to Level of all Attack Skills",
+      "tradeIds": [
+        "explicit.stat_3035140377",
+      ],
+      "type": "explicit",
+      "value": 3,
+    },
+    {
+      "max": 4.4,
+      "min": 3.81,
+      "ref": "#% to Critical Hit Chance",
+      "tradeIds": [
+        "explicit.stat_518292764",
+      ],
+      "type": "explicit",
+      "value": 4.4,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-bow-rare 1`] = `
+{
+  "category": "Bow",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+        null,
+      ],
+      "current": 0,
+      "empty": 2,
+      "normal": 2,
+    },
+    "itemLevel": 80,
+    "requires": {
+      "dex": 103,
+      "int": 0,
+      "level": 51,
+      "str": 0,
+    },
+    "weaponAS": 1.2,
+    "weaponCOLD": 11,
+    "weaponCRIT": 5,
+    "weaponELEMENTAL": 86,
+    "weaponFIRE": 31.5,
+    "weaponLIGHTNING": 43.5,
+    "weaponPHYSICAL": 48.5,
+  },
+  "rarity": "Rare",
+  "refName": "Rider Bow",
+  "stats": [
+    {
+      "max": 47,
+      "min": 31.5,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "explicit.stat_3336890334",
+      ],
+      "type": "explicit",
+      "value": 43.5,
+    },
+    {
+      "max": 38,
+      "min": 25.5,
+      "ref": "Adds # to # Fire Damage",
+      "tradeIds": [
+        "explicit.stat_709508406",
+      ],
+      "type": "explicit",
+      "value": 31.5,
+    },
+    {
+      "max": 12,
+      "min": 8,
+      "ref": "Adds # to # Cold Damage",
+      "tradeIds": [
+        "explicit.stat_1037193709",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 60,
+      "min": 41,
+      "ref": "# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_691932474",
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 57,
+    },
+    {
+      "max": 15,
+      "min": 15,
+      "ref": "#% increased Light Radius",
+      "tradeIds": [
+        "explicit.stat_1263695895",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-bow-three-runes 1`] = `
+{
+  "category": "Bow",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Perfect Iron Rune",
+        "Greater Iron Rune",
+        "Countess Seske's Rune of Archery",
+      ],
+      "current": 3,
+      "empty": 0,
+      "normal": 2,
+    },
+    "isCorrupted": true,
+    "itemLevel": 80,
+    "quality": 20,
+    "requires": {
+      "dex": 163,
+      "int": 0,
+      "level": 78,
+      "str": 0,
+    },
+    "weaponAS": 1.27,
+    "weaponCRIT": 8.45,
+    "weaponELEMENTAL": 69.5,
+    "weaponFIRE": 69.5,
+    "weaponPHYSICAL": 411,
+  },
+  "rarity": "Rare",
+  "refName": "Obliterator Bow",
+  "stats": [
+    {
+      "max": 38,
+      "min": 38,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "rune.stat_1509134228",
+      ],
+      "type": "rune",
+      "value": 38,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Bow Attacks fire # additional Arrows",
+      "tradeIds": [
+        "rune.stat_3885405204",
+      ],
+      "type": "rune",
+      "value": 1,
+    },
+    {
+      "max": -50,
+      "min": -50,
+      "ref": "#% increased Projectile Range",
+      "tradeIds": [
+        "implicit.stat_3398402065",
+      ],
+      "type": "implicit",
+      "value": -50,
+    },
+    {
+      "max": 154,
+      "min": 135,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1509134228",
+      ],
+      "type": "explicit",
+      "value": 151,
+    },
+    {
+      "max": 33,
+      "min": 22,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "desecrated.stat_1940865751",
+      ],
+      "type": "desecrated",
+      "value": 30,
+    },
+    {
+      "max": 78,
+      "min": 60.5,
+      "ref": "Adds # to # Fire Damage",
+      "tradeIds": [
+        "explicit.stat_709508406",
+      ],
+      "type": "explicit",
+      "value": 69.5,
+    },
+    {
+      "max": 16,
+      "min": 14,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_210067635",
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+    {
+      "max": 3.8,
+      "min": 3.11,
+      "ref": "#% to Critical Hit Chance",
+      "tradeIds": [
+        "crafted.stat_518292764",
+      ],
+      "type": "crafted",
+      "value": 3.45,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [
+    {
+      "text": "Leeches 9.6(9-9.9)% of Physical Damage as Life",
+      "type": "explicit",
+    },
+  ],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-charm-quality 1`] = `
+{
+  "category": "Charm",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 80,
+    "quality": 14,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 37,
+      "str": 0,
+    },
+  },
+  "rarity": "Magic",
+  "refName": "Silver Charm",
+  "stats": [
+    {
+      "ref": "Used when you are affected by a Slow",
+      "tradeIds": [
+        "implicit.stat_2778646494",
+      ],
+      "type": "implicit",
+    },
+    {
+      "max": 130,
+      "min": 96,
+      "ref": "Recover # Life when Used",
+      "tradeIds": [
+        "explicit.stat_2365392475",
+      ],
+      "type": "explicit",
+      "value": 106,
+    },
+    {
+      "max": 54,
+      "min": 47,
+      "ref": "#% increased Charges",
+      "tradeIds": [
+        "explicit.stat_1366840608",
+      ],
+      "type": "explicit",
+      "value": 51,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-crossbow-all-types 1`] = `
+{
+  "category": "Crossbow",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Greater Iron Rune",
+        "Greater Inspiration Rune",
+      ],
+      "current": 2,
+      "empty": 0,
+      "normal": 2,
+    },
+    "isCorrupted": true,
+    "isFractured": true,
+    "itemLevel": 80,
+    "quality": 20,
+    "requires": {
+      "dex": 89,
+      "int": 0,
+      "level": 78,
+      "str": 89,
+    },
+    "weaponAS": 1.89,
+    "weaponCRIT": 5,
+    "weaponELEMENTAL": 141.5,
+    "weaponLIGHTNING": 141.5,
+    "weaponPHYSICAL": 152.5,
+    "weaponRELOAD": 0.93,
+  },
+  "rarity": "Rare",
+  "refName": "Gemini Crossbow",
+  "stats": [
+    {
+      "max": 45,
+      "min": 45,
+      "ref": "#% increased Elemental Damage with Attacks",
+      "tradeIds": [
+        "enchant.stat_387439868",
+      ],
+      "type": "enchant",
+      "value": 45,
+    },
+    {
+      "max": 18,
+      "min": 18,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "rune.stat_1509134228",
+      ],
+      "type": "rune",
+      "value": 18,
+    },
+    {
+      "max": 30,
+      "min": 30,
+      "ref": "Gain # Mana per enemy killed",
+      "tradeIds": [
+        "rune.stat_1368271171",
+      ],
+      "type": "rune",
+      "value": 30,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Loads an additional bolt",
+      "tradeIds": [
+        "implicit.stat_1967051901",
+      ],
+      "type": "implicit",
+      "value": 1,
+    },
+    {
+      "max": 18,
+      "min": 18,
+      "ref": "Grants Skill: Level # Cackling Companions",
+      "tradeIds": [
+        "skill.hyena_cackle",
+      ],
+      "type": "skill",
+      "value": 18,
+    },
+    {
+      "max": 158,
+      "min": 120,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "fractured.stat_3336890334",
+      ],
+      "type": "fractured",
+      "value": 141.5,
+    },
+    {
+      "max": 47,
+      "min": 31,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1940865751",
+      ],
+      "type": "explicit",
+      "value": 37.5,
+    },
+    {
+      "max": 119,
+      "min": 100,
+      "ref": "#% increased Elemental Damage with Attacks",
+      "tradeIds": [
+        "explicit.stat_387439868",
+      ],
+      "type": "explicit",
+      "value": 109,
+    },
+    {
+      "max": 27,
+      "min": 21,
+      "ref": "Gain # Mana per enemy killed",
+      "tradeIds": [
+        "desecrated.stat_1368271171",
+      ],
+      "type": "desecrated",
+      "value": 21,
+    },
+    {
+      "max": 19,
+      "min": 17,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_210067635",
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [
+    {
+      "text": "Leeches 7.59(7-7.9)% of Physical Damage as Mana",
+      "type": "explicit",
+    },
+  ],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-crossbow-runes 1`] = `
+{
+  "category": "Crossbow",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Greater Iron Rune",
+        "Greater Iron Rune",
+      ],
+      "current": 2,
+      "empty": 0,
+      "normal": 2,
+    },
+    "isFractured": true,
+    "itemLevel": 82,
+    "quality": 29,
+    "requires": {
+      "dex": 89,
+      "int": 0,
+      "level": 79,
+      "str": 89,
+    },
+    "weaponAS": 2.07,
+    "weaponCRIT": 5,
+    "weaponPHYSICAL": 728.5,
+    "weaponRELOAD": 0.6,
+  },
+  "rarity": "Rare",
+  "refName": "Siege Crossbow",
+  "stats": [
+    {
+      "max": 36,
+      "min": 36,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "rune.stat_1509134228",
+      ],
+      "type": "rune",
+      "value": 36,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Grenade Skills Fire an additional Projectile",
+      "tradeIds": [
+        "implicit.stat_1980802737",
+      ],
+      "type": "implicit",
+      "value": 1,
+    },
+    {
+      "max": 258,
+      "min": 245,
+      "ref": "#% increased Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1509134228",
+      ],
+      "type": "explicit",
+      "value": 251,
+    },
+    {
+      "max": 200,
+      "min": 175,
+      "ref": "# to Accuracy Rating",
+      "tradeIds": [
+        "explicit.stat_691932474",
+        "explicit.stat_803737631",
+      ],
+      "type": "explicit",
+      "value": 175,
+    },
+    {
+      "max": 74.5,
+      "min": 50,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "desecrated.stat_1940865751",
+      ],
+      "type": "desecrated",
+      "value": 74,
+    },
+    {
+      "max": 25,
+      "min": 23,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "fractured.stat_210067635",
+        "fractured.stat_681332047",
+      ],
+      "type": "fractured",
+      "value": 25,
+    },
+    {
+      "max": 7,
+      "min": 7,
+      "ref": "# to Level of all Projectile Skills",
+      "tradeIds": [
+        "explicit.stat_1202301673",
+      ],
+      "type": "explicit",
+      "value": 7,
+    },
+    {
+      "max": 2,
+      "min": 2,
+      "ref": "Loads an additional bolt",
+      "tradeIds": [
+        "explicit.stat_1967051901",
+      ],
+      "type": "explicit",
+      "value": 2,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-focus-unique 1`] = `
+{
+  "category": "Focus",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 81,
+    "requires": {
+      "dex": 0,
+      "int": 43,
+      "level": 26,
+      "str": 0,
+    },
+  },
+  "rarity": "Unique",
+  "refName": "The Eternal Spark",
+  "stats": [
+    {
+      "max": 70,
+      "min": 50,
+      "ref": "#% increased Energy Shield",
+      "tradeIds": [
+        "explicit.stat_4015621042",
+      ],
+      "type": "explicit",
+      "value": 56,
+    },
+    {
+      "max": 40,
+      "min": 40,
+      "ref": "#% increased Mana Regeneration Rate while stationary",
+      "tradeIds": [
+        "explicit.stat_3308030688",
+      ],
+      "type": "explicit",
+      "value": 40,
+    },
+    {
+      "max": 30,
+      "min": 20,
+      "ref": "#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 26,
+    },
+    {
+      "max": 5,
+      "min": 5,
+      "ref": "#% to Maximum Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1011760251",
+      ],
+      "type": "explicit",
+      "value": 5,
+    },
+    {
+      "max": 40,
+      "min": 40,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 40,
+    },
+  ],
+  "uniqueBase": "Crystal Focus",
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-gem-meta 1`] = `
+{
+  "category": "Gem",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "gemLevel": 14,
+    "gemSockets": {
+      "linked": undefined,
+      "number": 4,
+      "white": 0,
+    },
+  },
+  "rarity": undefined,
+  "refName": "Mirage Archer",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-gem-uncut-skill 1`] = `
+{
+  "category": "Currency",
+  "format": "plain",
+  "lang": "ru",
+  "props": {},
+  "rarity": undefined,
+  "refName": "Uncut Skill Gem (Level 19)",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-helmet-normal 1`] = `
+{
+  "category": "Helmet",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "armourAR": 174,
+    "armourES": 60,
+    "basePercentile": 0,
+    "itemLevel": 81,
+    "quality": 9,
+    "requires": {
+      "dex": 0,
+      "int": 67,
+      "level": 75,
+      "str": 67,
+    },
+  },
+  "rarity": "Normal",
+  "refName": "Divine Crown",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-mace-magic 1`] = `
+{
+  "category": "Two Hand Mace",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+        null,
+      ],
+      "current": 0,
+      "empty": 2,
+      "normal": 2,
+    },
+    "itemLevel": 32,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 28,
+      "str": 57,
+    },
+    "weaponAS": 1.2,
+    "weaponCRIT": 5,
+    "weaponELEMENTAL": 25.5,
+    "weaponLIGHTNING": 25.5,
+    "weaponPHYSICAL": 53.5,
+  },
+  "rarity": "Magic",
+  "refName": "Temple Maul",
+  "stats": [
+    {
+      "max": 35,
+      "min": 23.5,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "explicit.stat_3336890334",
+      ],
+      "type": "explicit",
+      "value": 25.5,
+    },
+    {
+      "max": 8,
+      "min": 5,
+      "ref": "# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 8,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-ring-implicit 1`] = `
+{
+  "category": "Ring",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 79,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 45,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Prismatic Ring",
+  "stats": [
+    {
+      "max": 10,
+      "min": 7,
+      "ref": "#% to all Elemental Resistances",
+      "tradeIds": [
+        "implicit.stat_2901986750",
+      ],
+      "type": "implicit",
+      "value": 8,
+    },
+    {
+      "max": 151,
+      "min": 124,
+      "ref": "# to Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_2144192055",
+        "explicit.stat_53045048",
+      ],
+      "type": "explicit",
+      "value": 143,
+    },
+    {
+      "max": 12,
+      "min": 9,
+      "ref": "# to Strength",
+      "tradeIds": [
+        "explicit.stat_4080418644",
+      ],
+      "type": "explicit",
+      "value": 12,
+    },
+    {
+      "max": 12,
+      "min": 8,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 8,
+    },
+    {
+      "max": 5,
+      "min": 5,
+      "ref": "#% increased Light Radius",
+      "tradeIds": [
+        "explicit.stat_1263695895",
+      ],
+      "type": "explicit",
+      "value": 5,
+    },
+    {
+      "max": 15,
+      "min": 11,
+      "ref": "#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-ring-unidentified-tier 1`] = `
+{
+  "category": "Ring",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "isUnidentified": true,
+    "itemLevel": 54,
+    "unidentifiedTier": 4,
+  },
+  "rarity": "Magic",
+  "refName": "Sapphire Ring",
+  "stats": [
+    {
+      "max": 30,
+      "min": 20,
+      "ref": "#% to Cold Resistance",
+      "tradeIds": [
+        "implicit.stat_4220027924",
+      ],
+      "type": "implicit",
+      "value": 23,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-sceptre-spirit 1`] = `
+{
+  "category": "Sceptre",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 1,
+      "empty": 1,
+      "normal": 1,
+    },
+    "itemLevel": 79,
+    "requires": {
+      "dex": 0,
+      "int": 98,
+      "level": 72,
+      "str": 39,
+    },
+    "weaponSPIRIT": 152,
+  },
+  "rarity": "Rare",
+  "refName": "Shrine Sceptre",
+  "stats": [
+    {
+      "max": 17,
+      "min": 17,
+      "ref": "Grants Skill: Level # Purity of Lightning",
+      "tradeIds": [
+        "skill.purity_of_lightning",
+      ],
+      "type": "skill",
+      "value": 17,
+    },
+    {
+      "max": 55,
+      "min": 51,
+      "ref": "#% increased Spirit",
+      "tradeIds": [
+        "explicit.stat_1416406066",
+        "explicit.stat_3984865854",
+      ],
+      "type": "explicit",
+      "value": 52,
+    },
+    {
+      "max": 21,
+      "min": 17,
+      "ref": "Allies in your Presence deal # to # added Attack Lightning Damage",
+      "tradeIds": [
+        "explicit.stat_2854751904",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+    {
+      "max": 89,
+      "min": 80,
+      "ref": "# to maximum Mana",
+      "tradeIds": [
+        "explicit.stat_1050105434",
+      ],
+      "type": "explicit",
+      "value": 83,
+    },
+    {
+      "max": 19,
+      "min": 10,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 18,
+    },
+    {
+      "max": 30,
+      "min": 26,
+      "ref": "Minions have #% increased maximum Life",
+      "tradeIds": [
+        "explicit.stat_770672621",
+      ],
+      "type": "explicit",
+      "value": 28,
+    },
+    {
+      "max": 27,
+      "min": 25,
+      "ref": "# to Intelligence",
+      "tradeIds": [
+        "explicit.stat_328541901",
+      ],
+      "type": "explicit",
+      "value": 27,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-shield-normal 1`] = `
+{
+  "category": "Shield",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "armourAR": 71,
+    "armourBLOCK": 25,
+    "armourEV": 64,
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 0,
+      "empty": 1,
+      "normal": 1,
+    },
+    "basePercentile": 0,
+    "itemLevel": 54,
+    "note": "~b/o 1 aug",
+    "requires": {
+      "dex": 42,
+      "int": 0,
+      "level": 54,
+      "str": 42,
+    },
+  },
+  "rarity": "Normal",
+  "refName": "Polished Targe",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-wand-skill 1`] = `
+{
+  "category": "Wand",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 0,
+      "empty": 1,
+      "normal": 1,
+    },
+    "itemLevel": 82,
+    "note": "~b/o 5 exalted",
+    "requires": {
+      "dex": 0,
+      "int": 125,
+      "level": 90,
+      "str": 0,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Withered Wand",
+  "stats": [
+    {
+      "max": 20,
+      "min": 20,
+      "ref": "Grants Skill: Level # Chaos Bolt",
+      "tradeIds": [
+        "skill.chaosbolt",
+      ],
+      "type": "skill",
+      "value": 20,
+    },
+    {
+      "max": 74,
+      "min": 65,
+      "ref": "#% increased Chaos Damage",
+      "tradeIds": [
+        "explicit.stat_736967255",
+      ],
+      "type": "explicit",
+      "value": 71,
+    },
+    {
+      "max": 30,
+      "min": 28,
+      "ref": "Gain #% of Damage as Extra Cold Damage",
+      "tradeIds": [
+        "explicit.stat_2505884597",
+      ],
+      "type": "explicit",
+      "value": 28,
+    },
+    {
+      "max": 22,
+      "min": 18,
+      "ref": "#% increased Mana Regeneration Rate",
+      "tradeIds": [
+        "explicit.stat_789117908",
+      ],
+      "type": "explicit",
+      "value": 22,
+    },
+    {
+      "max": 15,
+      "min": 15,
+      "ref": "#% increased Light Radius",
+      "tradeIds": [
+        "explicit.stat_1263695895",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+    {
+      "max": -20,
+      "min": -20,
+      "ref": "#% increased Attribute Requirements",
+      "tradeIds": [
+        "explicit.stat_3639275092",
+      ],
+      "type": "explicit",
+      "value": -20,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-waystone 1`] = `
+{
+  "category": "Map",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 80,
+    "mapDropChance": 75,
+    "mapPackSize": 34,
+    "mapRareMonsters": 28,
+    "mapRevives": 2,
+    "mapTier": 14,
+  },
+  "rarity": "Rare",
+  "refName": "Waystone (Tier 14)",
+  "stats": [
+    {
+      "ref": "Area has patches of Shocked Ground",
+      "tradeIds": [
+        "explicit.stat_3477720557",
+      ],
+      "type": "explicit",
+    },
+    {
+      "max": 30,
+      "min": 26,
+      "ref": "#% increased Monster Damage",
+      "tradeIds": [
+        "explicit.stat_1890519597",
+      ],
+      "type": "explicit",
+      "value": 28,
+    },
+    {
+      "max": 2,
+      "min": 2,
+      "ref": "Monsters fire # additional Projectiles",
+      "tradeIds": [
+        "explicit.stat_1309819744",
+      ],
+      "type": "explicit",
+      "value": 2,
+    },
+    {
+      "max": 300,
+      "min": 260,
+      "ref": "Monsters have #% increased Critical Hit Chance",
+      "tradeIds": [
+        "explicit.stat_2753083623",
+      ],
+      "type": "explicit",
+      "value": 293,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [
+    {
+      "text": "+26(26-30)% to Monster Critical Damage Bonus",
+      "type": "explicit",
+    },
+  ],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > ee2-waystone-all-props 1`] = `
+{
+  "category": "Map",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "isCorrupted": true,
+    "itemLevel": 79,
+    "mapDropChance": 90,
+    "mapEffectiveness": 45,
+    "mapItemRarity": 17,
+    "mapMagicMonsters": 30,
+    "mapMonsterRarity": 32,
+    "mapPackSize": 20,
+    "mapRareMonsters": 71,
+    "mapRevives": 0,
+    "mapTier": 16,
+  },
+  "rarity": "Rare",
+  "refName": "Waystone (Tier 16)",
+  "stats": [
+    {
+      "max": 30,
+      "min": 26,
+      "ref": "#% increased Monster Damage",
+      "tradeIds": [
+        "explicit.stat_1890519597",
+      ],
+      "type": "explicit",
+      "value": 30,
+    },
+    {
+      "ref": "Monsters are Armoured",
+      "tradeIds": [
+        "explicit.stat_2539290279",
+      ],
+      "type": "explicit",
+    },
+    {
+      "ref": "Players are periodically Cursed with Temporal Chains",
+      "tradeIds": [
+        "explicit.stat_1629357380",
+      ],
+      "type": "explicit",
+    },
+    {
+      "max": 79,
+      "min": 70,
+      "ref": "Monsters have #% increased Ailment Threshold",
+      "tradeIds": [
+        "explicit.stat_1994551050",
+      ],
+      "type": "explicit",
+      "value": 71,
+    },
+    {
+      "max": 79,
+      "min": 70,
+      "ref": "Monsters have #% increased Stun Threshold",
+      "tradeIds": [
+        "explicit.stat_4101943684",
+      ],
+      "type": "explicit",
+      "value": 72,
+    },
+    {
+      "max": -30,
+      "min": -35,
+      "ref": "Players gain #% reduced Flask Charges",
+      "tradeIds": [
+        "explicit.stat_2549889921",
+      ],
+      "type": "explicit",
+      "value": -33,
+    },
+    {
+      "max": 45,
+      "min": 30,
+      "ref": "Monsters Break Armour equal to #% of Physical Damage dealt",
+      "tradeIds": [
+        "explicit.stat_1879340377",
+      ],
+      "type": "explicit",
+      "value": 36,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-boots-desecrated-plain 1`] = `
+{
+  "category": "Boots",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "armourAR": 149,
+    "armourEV": 118,
+    "augmentSockets": {
+      "augments": [
+        "Desert Rune",
+      ],
+      "current": 1,
+      "empty": 0,
+      "normal": 1,
+    },
+    "basePercentile": 0,
+    "itemLevel": 66,
+    "quality": 20,
+    "requires": {
+      "dex": 44,
+      "int": 0,
+      "level": 59,
+      "str": 44,
+    },
+  },
+  "rarity": "Rare",
+  "refName": "Bastion Sabatons",
+  "stats": [
+    {
+      "max": 14,
+      "min": 14,
+      "ref": "#% to Fire Resistance",
+      "tradeIds": [
+        "rune.stat_3372524247",
+      ],
+      "type": "rune",
+      "value": 14,
+    },
+    {
+      "max": 25,
+      "min": 25,
+      "ref": "#% increased Movement Speed",
+      "tradeIds": [
+        "explicit.stat_2250533757",
+      ],
+      "type": "explicit",
+      "value": 25,
+    },
+    {
+      "max": 83,
+      "min": 83,
+      "ref": "# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 83,
+    },
+    {
+      "max": 20,
+      "min": 20,
+      "ref": "#% to Fire Resistance",
+      "tradeIds": [
+        "explicit.stat_3372524247",
+      ],
+      "type": "explicit",
+      "value": 20,
+    },
+    {
+      "max": 22,
+      "min": 22,
+      "ref": "#% to Cold Resistance",
+      "tradeIds": [
+        "explicit.stat_4220027924",
+      ],
+      "type": "explicit",
+      "value": 22,
+    },
+    {
+      "max": 34,
+      "min": 34,
+      "ref": "#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 34,
+    },
+    {
+      "max": 32,
+      "min": 32,
+      "ref": "# to Armour",
+      "tradeIds": [
+        "desecrated.stat_3484657501",
+        "desecrated.stat_809229260",
+      ],
+      "type": "desecrated",
+      "value": 32,
+    },
+    {
+      "max": 14,
+      "min": 14,
+      "ref": "# to Evasion Rating",
+      "tradeIds": [
+        "desecrated.stat_2144192055",
+        "desecrated.stat_53045048",
+      ],
+      "type": "desecrated",
+      "value": 14,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-boots-unique-plain 1`] = `
+{
+  "category": "Boots",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 1,
+      "empty": 1,
+      "normal": 1,
+    },
+    "isCorrupted": true,
+    "itemLevel": 36,
+    "requires": {
+      "dex": 49,
+      "int": 0,
+      "level": 28,
+      "str": 0,
+    },
+  },
+  "rarity": "Unique",
+  "refName": "Thunderstep",
+  "stats": [
+    {
+      "max": 22,
+      "min": 22,
+      "ref": "#% increased Evasion Rating",
+      "tradeIds": [
+        "enchant.stat_124859000",
+        "enchant.stat_2106365538",
+      ],
+      "type": "enchant",
+      "value": 22,
+    },
+    {
+      "max": 12,
+      "min": 12,
+      "ref": "#% to Fire Resistance",
+      "tradeIds": [
+        "rune.stat_3372524247",
+      ],
+      "type": "rune",
+      "value": 12,
+    },
+    {
+      "max": 10,
+      "min": 10,
+      "ref": "#% increased Movement Speed",
+      "tradeIds": [
+        "explicit.stat_2250533757",
+      ],
+      "type": "explicit",
+      "value": 10,
+    },
+    {
+      "max": 41,
+      "min": 41,
+      "ref": "#% increased Evasion Rating",
+      "tradeIds": [
+        "explicit.stat_124859000",
+        "explicit.stat_2106365538",
+      ],
+      "type": "explicit",
+      "value": 41,
+    },
+    {
+      "max": 5,
+      "min": 5,
+      "ref": "#% to Maximum Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1011760251",
+      ],
+      "type": "explicit",
+      "value": 5,
+    },
+    {
+      "max": 33,
+      "min": 33,
+      "ref": "#% to Lightning Resistance",
+      "tradeIds": [
+        "explicit.stat_1671376347",
+      ],
+      "type": "explicit",
+      "value": 33,
+    },
+  ],
+  "uniqueBase": "Steeltoe Boots",
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-buckler-magic-plain 1`] = `
+{
+  "category": "Buckler",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "armourBLOCK": 20,
+    "armourEV": 16,
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 0,
+      "empty": 1,
+      "normal": 1,
+    },
+    "basePercentile": 0,
+    "itemLevel": 5,
+    "requires": {
+      "dex": 11,
+      "int": 0,
+      "level": 5,
+      "str": 0,
+    },
+  },
+  "rarity": "Magic",
+  "refName": "Wooden Buckler",
+  "stats": [
+    {
+      "max": 12,
+      "min": 12,
+      "ref": "# to maximum Life",
+      "tradeIds": [
+        "explicit.stat_3299347043",
+      ],
+      "type": "explicit",
+      "value": 12,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-charm-plain 1`] = `
+{
+  "category": "Charm",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 51,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 16,
+      "str": 0,
+    },
+  },
+  "rarity": "Magic",
+  "refName": "Stone Charm",
+  "stats": [
+    {
+      "ref": "Used when you become Stunned",
+      "tradeIds": [
+        "implicit.stat_1810482573",
+      ],
+      "type": "implicit",
+    },
+    {
+      "max": 21,
+      "min": 21,
+      "ref": "#% increased Duration",
+      "tradeIds": [
+        "explicit.stat_1256719186",
+        "explicit.stat_2541588185",
+      ],
+      "type": "explicit",
+      "value": 21,
+    },
+    {
+      "max": -19,
+      "min": -19,
+      "ref": "#% increased Charges per use",
+      "tradeIds": [
+        "explicit.stat_388617051",
+      ],
+      "type": "explicit",
+      "value": -19,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-currency-essence 1`] = `
+{
+  "category": "Currency",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "stackSize": {
+      "max": 10,
+      "value": 1,
+    },
+  },
+  "rarity": undefined,
+  "refName": "Essence of Enhancement",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-flask-life-plain 1`] = `
+{
+  "category": "Flask",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 66,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 60,
+      "str": 0,
+    },
+  },
+  "rarity": "Magic",
+  "refName": "Ultimate Life Flask",
+  "stats": [
+    {
+      "max": 23,
+      "min": 23,
+      "ref": "#% of Recovery applied Instantly",
+      "tradeIds": [
+        "explicit.stat_2503377690",
+      ],
+      "type": "explicit",
+      "value": 23,
+    },
+    {
+      "max": -26,
+      "min": -26,
+      "ref": "#% increased Charges per use",
+      "tradeIds": [
+        "explicit.stat_388617051",
+      ],
+      "type": "explicit",
+      "value": -26,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-gem-skill 1`] = `
+{
+  "category": "Gem",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "gemLevel": 18,
+    "gemSockets": {
+      "linked": undefined,
+      "number": 4,
+      "white": 0,
+    },
+    "quality": 20,
+  },
+  "rarity": undefined,
+  "refName": "Herald of Ice",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-gem-uncut-spirit 1`] = `
+{
+  "category": "Currency",
+  "format": "plain",
+  "lang": "ru",
+  "props": {},
+  "rarity": undefined,
+  "refName": "Uncut Spirit Gem (Level 16)",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-jewel-timelost-plain 1`] = `
+{
+  "category": "Jewel",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 64,
+  },
+  "rarity": "Rare",
+  "refName": "Time-Lost Ruby",
+  "stats": [
+    {
+      "max": 2,
+      "min": 2,
+      "ref": "Small Passive Skills in Radius also grant #% increased Totem Damage",
+      "tradeIds": [
+        "explicit.stat_2108821127",
+      ],
+      "type": "explicit",
+      "value": 2,
+    },
+    {
+      "max": 4,
+      "min": 4,
+      "ref": "Notable Passive Skills in Radius also grant #% increased Magnitude of Bleeding you inflict",
+      "tradeIds": [
+        "explicit.stat_391602279",
+      ],
+      "type": "explicit",
+      "value": 4,
+    },
+    {
+      "max": 7,
+      "min": 7,
+      "ref": "Notable Passive Skills in Radius also grant #% increased Stun Buildup with Maces",
+      "tradeIds": [
+        "explicit.stat_2392824305",
+      ],
+      "type": "explicit",
+      "value": 7,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-jewel-unique-enchant 1`] = `
+{
+  "category": "Jewel",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "isCorrupted": true,
+    "itemLevel": 79,
+  },
+  "rarity": "Unique",
+  "refName": "Megalomaniac",
+  "stats": [
+    {
+      "max": 62310,
+      "min": 62310,
+      "ref": "Allocates #",
+      "tradeIds": [
+        "enchant.stat_2954116742",
+      ],
+      "type": "enchant",
+      "value": 62310,
+    },
+    {
+      "max": 40990,
+      "min": 40990,
+      "ref": "Allocates #",
+      "tradeIds": [
+        "enchant.stat_2954116742",
+      ],
+      "type": "enchant",
+      "value": 40990,
+    },
+  ],
+  "uniqueBase": "Diamond",
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-quiver-cannot-use 1`] = `
+{
+  "category": "Quiver",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 8,
+    "requires": {
+      "dex": 0,
+      "int": 0,
+      "level": 8,
+      "str": 0,
+    },
+  },
+  "rarity": "Normal",
+  "refName": "Fire Quiver",
+  "stats": [
+    {
+      "max": 4,
+      "min": 4,
+      "ref": "Adds # to # Fire damage to Attacks",
+      "tradeIds": [
+        "implicit.stat_1573130764",
+      ],
+      "type": "implicit",
+      "value": 4,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-relic-plain 1`] = `
+{
+  "category": "Relic",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 22,
+  },
+  "rarity": "Magic",
+  "refName": "Urn Relic",
+  "stats": [
+    {
+      "max": 6,
+      "min": 6,
+      "ref": "Fountains have #% chance to grant double Sacred Water",
+      "tradeIds": [
+        "sanctum.stat_2363402715",
+      ],
+      "type": "sanctum",
+      "value": 6,
+    },
+    {
+      "max": 9,
+      "min": 9,
+      "ref": "#% increased Honour restored",
+      "tradeIds": [
+        "sanctum.stat_1583320325",
+      ],
+      "type": "sanctum",
+      "value": 9,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-sceptre-plain 1`] = `
+{
+  "category": "Sceptre",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        null,
+      ],
+      "current": 0,
+      "empty": 1,
+      "normal": 1,
+    },
+    "itemLevel": 70,
+    "requires": {
+      "dex": 0,
+      "int": 117,
+      "level": 66,
+      "str": 46,
+    },
+    "weaponSPIRIT": 100,
+  },
+  "rarity": "Magic",
+  "refName": "Rattling Sceptre",
+  "stats": [],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-spear-plain 1`] = `
+{
+  "category": "Spear",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "augmentSockets": {
+      "augments": [
+        "Storm Rune",
+      ],
+      "current": 1,
+      "empty": 0,
+      "normal": 1,
+    },
+    "itemLevel": 32,
+    "quality": 11,
+    "requires": {
+      "dex": 48,
+      "int": 0,
+      "level": 26,
+      "str": 20,
+    },
+    "weaponAS": 1.84,
+    "weaponCOLD": 3,
+    "weaponCRIT": 6.4,
+    "weaponELEMENTAL": 38,
+    "weaponLIGHTNING": 35,
+    "weaponPHYSICAL": 41.5,
+  },
+  "rarity": "Rare",
+  "refName": "Forked Spear",
+  "stats": [
+    {
+      "max": 10.5,
+      "min": 10.5,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "rune.stat_3336890334",
+      ],
+      "type": "rune",
+      "value": 10.5,
+    },
+    {
+      "max": 13,
+      "min": 13,
+      "ref": "Adds # to # Physical Damage",
+      "tradeIds": [
+        "explicit.stat_1940865751",
+      ],
+      "type": "explicit",
+      "value": 13,
+    },
+    {
+      "max": 3,
+      "min": 3,
+      "ref": "Adds # to # Cold Damage",
+      "tradeIds": [
+        "explicit.stat_1037193709",
+      ],
+      "type": "explicit",
+      "value": 3,
+    },
+    {
+      "max": 24.5,
+      "min": 24.5,
+      "ref": "Adds # to # Lightning Damage",
+      "tradeIds": [
+        "explicit.stat_3336890334",
+      ],
+      "type": "explicit",
+      "value": 24.5,
+    },
+    {
+      "max": 1.4,
+      "min": 1.4,
+      "ref": "#% to Critical Hit Chance",
+      "tradeIds": [
+        "explicit.stat_518292764",
+      ],
+      "type": "explicit",
+      "value": 1.4,
+    },
+    {
+      "max": 15,
+      "min": 15,
+      "ref": "#% increased Attack Speed",
+      "tradeIds": [
+        "explicit.stat_210067635",
+        "explicit.stat_681332047",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+    {
+      "max": 3,
+      "min": 3,
+      "ref": "Grants # Life per Enemy Hit",
+      "tradeIds": [
+        "explicit.stat_821021828",
+      ],
+      "type": "explicit",
+      "value": 3,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-tablet-rare 1`] = `
+{
+  "category": "TowerAugment",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 79,
+  },
+  "rarity": "Rare",
+  "refName": "Ritual Tablet",
+  "stats": [
+    {
+      "max": 10,
+      "min": 10,
+      "ref": "Adds Ritual Altars to a Map 
+# use remaining",
+      "tradeIds": [
+        "implicit.stat_3166002380",
+      ],
+      "type": "implicit",
+      "value": 10,
+    },
+    {
+      "max": 12,
+      "min": 8,
+      "ref": "#% increased Rarity of Items found",
+      "tradeIds": [
+        "explicit.stat_3917489142",
+        "explicit.stat_2306002879",
+        "explicit.stat_3917489142",
+      ],
+      "type": "explicit",
+      "value": 11,
+    },
+    {
+      "max": 18,
+      "min": 12,
+      "ref": "#% increased Experience gain",
+      "tradeIds": [
+        "explicit.stat_3666934677",
+      ],
+      "type": "explicit",
+      "value": 17,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Map contains an additional Shrine",
+      "tradeIds": [
+        "explicit.stat_1468737867",
+        "explicit.stat_3042527515",
+      ],
+      "type": "explicit",
+      "value": 1,
+    },
+    {
+      "max": -20,
+      "min": -30,
+      "ref": "Deferring Favours at Ritual Altars in Map costs #% increased Tribute",
+      "tradeIds": [
+        "explicit.stat_1345835998",
+      ],
+      "type": "explicit",
+      "value": -28,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-tablet-unique 1`] = `
+{
+  "category": "TowerAugment",
+  "format": "advanced",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 79,
+  },
+  "rarity": "Unique",
+  "refName": "Freedom of Faith",
+  "stats": [
+    {
+      "max": 5,
+      "min": 5,
+      "ref": "Adds Ritual Altars to a Map 
+# use remaining",
+      "tradeIds": [
+        "implicit.stat_3166002380",
+      ],
+      "type": "implicit",
+      "value": 5,
+    },
+    {
+      "ref": "Can Reroll Favours at Ritual Altars in your Maps twice as many times",
+      "tradeIds": [
+        "explicit.stat_2500154144",
+      ],
+      "type": "explicit",
+    },
+    {
+      "max": 15,
+      "min": 10,
+      "ref": "Favours at Ritual Altars in Area costs #% increased Tribute",
+      "tradeIds": [
+        "explicit.stat_1228222525",
+      ],
+      "type": "explicit",
+      "value": 15,
+    },
+  ],
+  "uniqueBase": "Ritual Tablet",
+  "unknown": [],
+}
+`;
+
+exports[`снапшоты разбора PoE2 (ru) > sk-waystone-plain 1`] = `
+{
+  "category": "Map",
+  "format": "plain",
+  "lang": "ru",
+  "props": {
+    "itemLevel": 80,
+    "mapDropChance": 70,
+    "mapItemRarity": 38,
+    "mapMagicMonsters": 33,
+    "mapRareMonsters": 25,
+    "mapRevives": 1,
+    "mapTier": 13,
+  },
+  "rarity": "Rare",
+  "refName": "Waystone (Tier 13)",
+  "stats": [
+    {
+      "ref": "Area has patches of Ignited Ground",
+      "tradeIds": [
+        "explicit.stat_133340941",
+      ],
+      "type": "explicit",
+    },
+    {
+      "max": 276,
+      "min": 276,
+      "ref": "Monsters have #% increased Critical Hit Chance",
+      "tradeIds": [
+        "explicit.stat_2753083623",
+      ],
+      "type": "explicit",
+      "value": 276,
+    },
+    {
+      "max": -50,
+      "min": -50,
+      "ref": "#% less effect of Curses on Monsters",
+      "tradeIds": [
+        "explicit.stat_3796523155",
+      ],
+      "type": "explicit",
+      "value": -50,
+    },
+    {
+      "max": -40,
+      "min": -40,
+      "ref": "Players have #% less Recovery Rate of Life and Energy Shield",
+      "tradeIds": [
+        "explicit.stat_4181072906",
+      ],
+      "type": "explicit",
+      "value": -40,
+    },
+    {
+      "max": 1,
+      "min": 1,
+      "ref": "Rare Monsters have # additional Modifier",
+      "tradeIds": [
+        "explicit.stat_2550456553",
+      ],
+      "type": "explicit",
+      "value": 1,
+    },
+  ],
+  "uniqueBase": undefined,
+  "unknown": [
+    {
+      "text": "33% increased number of Magic Monsters",
+      "type": "explicit",
+    },
+    {
+      "text": "25% increased number of Rare Monsters",
+      "type": "explicit",
+    },
+    {
+      "text": "+30% to Monster Critical Damage Bonus",
+      "type": "explicit",
+    },
+  ],
+}
+`;

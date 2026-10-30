@@ -1,0 +1,19 @@
+Класс предмета: Обереги
+Редкость: Волшебный
+Analyst's Каменный оберег of the Practitioner
+--------
+Lasts 3.60 (augmented) Seconds
+Consumes 16 (augmented) of 40 Charges on use
+Содержит зарядов: 40
+Cannot be Stunned
+--------
+Требуется: Уровень 16
+--------
+Уровень предмета: 51
+--------
+Используется, когда вас оглушают (implicit)
+--------
+21% увеличение длительности
+19% уменьшение количества используемых зарядов
+--------
+Used automatically when condition is met. Can only hold charges while in belt. Refill at Wells or by killing monsters.
