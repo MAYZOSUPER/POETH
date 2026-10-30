@@ -7,6 +7,8 @@
 //
 //   node tools/electron/check-sockets.mjs --exe=dist-release/win-unpacked/POETH.exe [--profile=<папка>] [--force]
 //   --out=<файл> — JSON со всеми сокетами и процессами (для отчёта)
+//   --offscreen — окна СВОЕГО дерева процессов сразу уводятся за левый край экрана без активации (как S39/S45):
+//                 можно гонять, когда за ПК работают (ожидание простоя не нужно)
 //
 // Провал: у процессов POETH появился сокет «на приём» не на loopback:
 //  - TCP в состоянии LISTEN на 0.0.0.0 / :: / адресе сетевой карты;
@@ -41,7 +43,8 @@ const opt = (name) => {
 const EXE = path.resolve(ROOT, String(opt('exe') ?? 'dist-release/win-unpacked/POETH.exe'))
 const PROFILE = opt('profile') ? path.resolve(String(opt('profile'))) : mkdtempSync(path.join(tmpdir(), 'poeth-s49-sockets-'))
 const OUT = typeof opt('out') === 'string' ? path.resolve(String(opt('out'))) : path.join(PROFILE, 's49-sockets.json')
-const FORCE = !!opt('force')
+const OFFSCREEN = !!opt('offscreen')
+const FORCE = !!opt('force') || OFFSCREEN
 const CDP_PORT = 9400 + Math.floor(Math.random() * 400)
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -88,6 +91,23 @@ public static class S49Net {
   [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] static extern bool Process32FirstW(IntPtr s, ref PE pe);
   [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] static extern bool Process32NextW(IntPtr s, ref PE pe);
   [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr h);
+  delegate bool EnumProc(IntPtr h, IntPtr l);
+  [DllImport("user32.dll")] static extern bool EnumWindows(EnumProc f, IntPtr l);
+  [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr h);
+  [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
+  [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out RECT r);
+  [DllImport("user32.dll")] static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint f);
+  struct RECT { public int L, T, R, B; }
+  public static int Moved = 0;
+  // окна СВОЕГО дерева процессов — за левый край экрана, без активации и смены размера (SWP_NOSIZE|NOZORDER|NOACTIVATE)
+  static void Offscreen(HashSet<int> tree) {
+    EnumWindows((h, l) => {
+      uint pid; GetWindowThreadProcessId(h, out pid); RECT r;
+      if (tree.Contains((int)pid) && IsWindowVisible(h) && GetWindowRect(h, out r) && r.L > -5000) {
+        SetWindowPos(h, IntPtr.Zero, -6000, 100, 0, 0, 0x0001 | 0x0004 | 0x0010); Moved++; }
+      return true;
+    }, IntPtr.Zero);
+  }
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)] struct PE {
     public uint dwSize; public uint cntUsage; public uint pid; public IntPtr heap; public uint module; public uint threads;
     public uint ppid; public int pri; public uint flags; [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)] public string exe; }
@@ -108,7 +128,7 @@ public static class S49Net {
   static string V4(int a) { return new IPAddress((long)(uint)a).ToString(); }
   static string V6(IntPtr p, int scope) { byte[] b = new byte[16]; Marshal.Copy(p, b, 0, 16); return new IPAddress(b, scope).ToString(); }
 
-  public static string Snapshot(int root) {
+  public static string Snapshot(int root, bool offscreen) {
     var parent = new Dictionary<int, int>(); var name = new Dictionary<int, string>();
     IntPtr snap = CreateToolhelp32Snapshot(2, 0);
     PE pe = new PE(); pe.dwSize = (uint)Marshal.SizeOf(typeof(PE));
@@ -116,7 +136,8 @@ public static class S49Net {
     CloseHandle(snap);
     var tree = new HashSet<int>(); if (parent.ContainsKey(root)) tree.Add(root);
     for (bool grew = true; grew; ) { grew = false; foreach (var kv in parent) if (!tree.Contains(kv.Key) && tree.Contains(kv.Value) && kv.Key != kv.Value) { tree.Add(kv.Key); grew = true; } }
-    var sb = new StringBuilder("{\"t\":" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + ",\"procs\":[");
+    if (offscreen) Offscreen(tree);
+    var sb = new StringBuilder("{\"t\":" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + ",\"moved\":" + Moved + ",\"procs\":[");
     bool first = true;
     foreach (int p in tree) { sb.Append((first ? "" : ",") + "[" + p + "," + parent[p] + ",\"" + name[p] + "\"]"); first = false; }
     sb.Append("],\"tcp\":["); first = true;
@@ -149,7 +170,7 @@ Add-Type -TypeDefinition @'
 ${WATCHER_CS}
 '@
 while ($true) {
-  try { [Console]::Out.WriteLine([S49Net]::Snapshot(${rootPid})) } catch { [Console]::Out.WriteLine('{"error":"' + ($_.Exception.Message -replace '["\\\\]', ' ') + '"}') }
+  try { [Console]::Out.WriteLine([S49Net]::Snapshot(${rootPid}, $${OFFSCREEN ? 'true' : 'false'})) } catch { [Console]::Out.WriteLine('{"error":"' + ($_.Exception.Message -replace '["\\\\]', ' ') + '"}') }
   [Console]::Out.Flush()
   Start-Sleep -Milliseconds 200
 }`
@@ -181,6 +202,7 @@ while ($true) {
 
 let phase = 'start'
 let snaps = 0
+let moved = 0
 let lastError = ''
 const endpoints = new Map() // key → { proto, pid, addr, port, explicit, first, last, phase }
 const procs = new Map() // pid → { ppid, exe, type, first }
@@ -192,6 +214,7 @@ function onSnap(s) {
     return
   }
   snaps++
+  moved = s.moved ?? moved
   for (const [pid, ppid, exe] of s.procs) if (!procs.has(pid)) procs.set(pid, { ppid, exe, type: '?', phase })
   const add = (proto, pid, addr, port, explicit) => {
     const key = `${proto}|${pid}|${addr}|${port}`
@@ -361,7 +384,7 @@ try {
     const ua = await waitFor(() => comp.ev('window.overlayApi ? navigator.userAgent : null'), 15000)
     check('overlayApi в компаньоне', !!ua, ua?.match(/Chrome\/[\d.]+|Electron\/[\d.]+|POETH\/[\d.]+/g)?.join(' '))
   })
-  check('снимки сокетов идут', snaps > 10, `${snaps} снимков${lastError ? ` · ошибка ${lastError}` : ''}`)
+  check('снимки сокетов идут', snaps > 10, `${snaps} снимков${OFFSCREEN ? ` · окон за край экрана: ${moved}` : ''}${lastError ? ` · ошибка ${lastError}` : ''}`)
 
   await runPhase('trade', 25000, async () => {
     await comp.ev(callIpc('window.overlayApi.tradeWindow.open()'))
@@ -396,14 +419,20 @@ try {
   // последней: свой RTCPeerConnection в каждой сессии (компаньон — default, сайт GGG — аккаунт, poe.ninja — сайты S43)
   await runPhase('probe', 8000, async () => {
     const list = await targets()
-    const pick = (re) => list.find((t) => t.type === 'page' && re.test(t.url))
+    const pick = (type, re) => list.find((t) => t.type === type && re.test(t.url))
+    // трейд-сайт к этому моменту может быть уже закрыт (вкладка сайта, hide) — тогда окно входа: та же сессия аккаунта
     const pages = [
       ['компаньон', comp],
-      ['сайт GGG (сессия аккаунта)', pick(/^https:\/\/(www|ru)\.pathofexile\.com\/(?!login)/)],
-      ['poe.ninja (сессия сайтов S43)', pick(/^https:\/\/poe\.ninja\//)]
+      ['сайт GGG (сессия аккаунта)', pick('page', /^https:\/\/(www|ru)\.pathofexile\.com\/(?!login)/) ?? pick('page', /^https:\/\/(www|ru)\.pathofexile\.com\//)],
+      ['Turnstile (iframe challenges.cloudflare.com, свой процесс)', pick('iframe', /^https:\/\/challenges\.cloudflare\.com\//)],
+      ['poe.ninja (сессия сайтов S43)', pick('page', /^https:\/\/poe\.ninja\//)]
     ]
     for (const [label, target] of pages) {
       const page = target === comp ? comp : target ? await connect(target) : null
+      if (!page && label.startsWith('Turnstile')) {
+        console.log(`  WebRTC: ${label} — нет (Cloudflare не показал проверку)`)
+        continue
+      }
       if (!page) {
         check(`WebRTC: ${label} — страница найдена`, false, list.map((t) => `${t.type} ${t.url.split('?')[0]}`).join(' · '))
         continue
