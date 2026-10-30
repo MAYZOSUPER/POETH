@@ -46,12 +46,18 @@ function Difficulty({ n, t }: { n: 1 | 2 | 3; t: T }) {
   )
 }
 
-/** Знаки карточки: выбор куратора, проверка, версия игры, новичку, бюджет, «ведёт по актам». */
-function Tags({ card, league, t }: { card: Card; league: string | null; t: T }) {
+/** Знаки карточки: «вы играете по нему» / «в библиотеке», выбор куратора, проверка, версия игры, новичку, бюджет, «ведёт по актам». */
+function Tags({ card, league, mine, t }: { card: Card; league: string | null; mine: 'active' | 'saved' | null; t: T }) {
   const b = starterBadges(card, league)
   const lev = card.tags.leveling
   return (
     <div className="bd-st-tags">
+      {mine && (
+        <span className={`bd-st-mine${mine === 'active' ? ' is-active' : ''}`}>
+          <BIco name={mine === 'active' ? 'play' : 'check'} size="sm" />
+          {t(mine === 'active' ? 'bd.st.tag.active' : 'bd.st.tag.saved')}
+        </span>
+      )}
       {card.pick && (
         <span className="ui-tag ui-tag--key" title={t('bd.st.tag.pick.tip')}>
           <BIco name="star" size="sm" />
@@ -206,21 +212,8 @@ export function StarterCard({
             <span>{asc ? `${cls} → ${asc}` : cls}</span>
             <span>{t('bd.st.by', { name: card.author })}</span>
             <span>{t(`bd.st.lang.${card.lang}`)}</span>
-            {active ? (
-              <span className="bd-st-mine is-active">
-                <BIco name="play" size="sm" />
-                {t('bd.st.tag.active')}
-              </span>
-            ) : (
-              saved && (
-                <span className="bd-st-mine">
-                  <BIco name="check" size="sm" />
-                  {t('bd.st.tag.saved')}
-                </span>
-              )
-            )}
           </div>
-          <Tags card={card} league={league} t={t} />
+          <Tags card={card} league={league} mine={active ? 'active' : saved ? 'saved' : null} t={t} />
           {note && <p className="bd-st-card__note">{note}</p>}
           {active && <ActiveStage build={active} />}
         </div>

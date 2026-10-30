@@ -22,7 +22,7 @@
 .bd-st-filters { display: grid; gap: var(--sp-4); }
 .bd-st-filters .ui-chips { flex-wrap: wrap; row-gap: var(--sp-3); }
 .bd-st-filters .ui-label { margin: 0; }
-.bd-st-filters .ui-select { min-width: 150px; }
+.bd-st-filters .ui-select { width: auto; min-width: 170px; max-width: 100%; }
 .bd-st-count { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4); font-size: var(--fs-xs); color: var(--fg-muted); font-variant-numeric: tabular-nums; }
 .bd-st-sec { display: grid; gap: var(--sp-4); }
 .bd-st-sec__head { display: grid; gap: var(--sp-2); }

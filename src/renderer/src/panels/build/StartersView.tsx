@@ -147,7 +147,8 @@ function Filters({ list, expert, f, total, shown }: { list: Card[]; expert: bool
 function StatusBanners({ st, t }: { st: StartersState; t: T }) {
   const tree = useBuildStore((s) => s.tree)
   const treePatch = patchOf(tree?.meta.tree)
-  const noData = !!treePatch && !!st.league && (st.status === 'ready' || st.status === 'empty') && comparePatch(treePatch, st.league) < 0
+  // до анонса показываем прошлую лигу — к ней данные дерева подходят; подсказка нужна, когда список лиги уже пришёл
+  const noData = !!treePatch && !!st.league && st.status === 'ready' && comparePatch(treePatch, st.league) < 0
   return (
     <>
       {st.status === 'empty' && st.league && (

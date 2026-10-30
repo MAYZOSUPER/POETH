@@ -79,7 +79,8 @@ export function PlayDialog({ card, league }: { card: Card; league: string | null
 
   const stale = starterBadges(card, league).stale
   const treePatch = patchOf(tree?.meta.tree)
-  const noData = !!treePatch && !!league && comparePatch(treePatch, league) < 0
+  // стартер текущей лиги, а данные дерева и камней ещё прошлой (до обновления в день лиги)
+  const noData = !!treePatch && !!league && card.patch === league && comparePatch(treePatch, league) < 0
   const err = error ? errorText(error, t) : null
   const guide = card.links.guide ? 'guide' : card.links.video ? 'video' : null
 
@@ -119,7 +120,7 @@ export function PlayDialog({ card, league }: { card: Card; league: string | null
                 </li>
                 <li>
                   <BIco name="passive" size="sm" />
-                  <span>{t('bd.st.dlg.active', { key: formatAccel(accel) })}</span>
+                  <span>{t('bd.st.dlg.active', { key: formatAccel(accel).replace(/ /g, ' ') })}</span>
                 </li>
                 <li>
                   <BIco name="lock" size="sm" />
