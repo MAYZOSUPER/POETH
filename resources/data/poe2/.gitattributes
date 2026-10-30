@@ -1,0 +1,3 @@
+# Данные EE2: без преобразования переводов строк (индексы *.index.bin хранят смещения в ndjson, data.meta.json — sha256).
+* -text
+*.bin binary
