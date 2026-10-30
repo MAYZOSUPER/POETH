@@ -48,7 +48,7 @@ vi.mock('electron', () => ({
     getVersion: () => '0.1.0',
     getName: () => 'POETH',
     getPath: () => '.',
-    commandLine: { appendSwitch: () => undefined }
+    commandLine: { appendSwitch: () => undefined, getSwitchValue: () => '' }
   },
   session: {
     fromPartition: (p: string) => {

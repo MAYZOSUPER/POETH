@@ -73,6 +73,18 @@ describe('main: WebRTC без прямого UDP', () => {
     expect(created.indexOf('setWebRTCIPHandlingPolicy(WEBRTC_IP_POLICY)')).toBeLessThan(created.indexOf('guardAppContents(wc)'))
   })
 
+  it('S49: mDNS-ответчик WebRTC (UDP 5353) выключен до ready — initNetIdentity() на верхнем уровне index.ts', () => {
+    const ses = code(join(ROOT, 'src/main/net/session.ts'))
+    expect(ses).toMatch(/DISABLED_CHROMIUM_FEATURES = \['WebRtcHideLocalIpsWithMdns'\]/)
+    expect(ses).toMatch(/appendSwitch\(\s*'disable-features',\s*mergeFeatureList\(/)
+    const main = code(join(ROOT, 'src/main/index.ts'))
+    const at = main.indexOf('\ninitNetIdentity()')
+    expect(at).toBeGreaterThan(0)
+    expect(at).toBeLessThan(main.indexOf('app.whenReady().then(bootstrap)'))
+    // второй appendSwitch('disable-features') затёр бы список (Chromium берёт последнее значение)
+    for (const f of MAIN) expect((code(f).match(/appendSwitch\(\s*'disable-features'/g) ?? []).length, name(f)).toBeLessThanOrEqual(name(f).endsWith('net/session.ts') ? 1 : 0)
+  })
+
   it('каждое окно сайта (siteWebPreferences) проходит через hardenSiteContents', () => {
     for (const f of MAIN) {
       const src = code(f)
