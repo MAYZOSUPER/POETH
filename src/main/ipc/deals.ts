@@ -28,6 +28,7 @@ import {
   sendToOverlay
 } from '../windows/gameOverlay'
 import { getCompanionWindow, sendToCompanion } from '../windows/companionWindow'
+import { uiDialogTitle } from '../services/dialogText'
 import type { IpcDomain } from './types'
 
 // Домен «менеджер сделок» (main, этап S8).
@@ -152,9 +153,8 @@ async function pickLog(reset: boolean): Promise<DealsLogStatus> {
     await s.setConfig({ logPath: null })
   } else {
     const win = getCompanionWindow()
-    const ru = app.getLocale().startsWith('ru')
     const opts = {
-      title: ru ? 'Выберите Client.txt Path of Exile' : 'Choose the Path of Exile Client.txt',
+      title: await uiDialogTitle('clientLogPoe'),
       properties: ['openFile' as const],
       filters: [{ name: 'Client log', extensions: ['txt'] }]
     }
@@ -230,9 +230,8 @@ async function exportHistory(): Promise<DealsExportResult> {
   const s = getStore()
   await s.load()
   const win = getCompanionWindow()
-  const ru = app.getLocale().startsWith('ru')
   const opts = {
-    title: ru ? 'Экспорт истории сделок' : 'Export trade history',
+    title: await uiDialogTitle('dealsExport'),
     defaultPath: `poeth-deals-${isoDate()}.csv`,
     filters: [
       { name: 'CSV (Excel)', extensions: ['csv'] },

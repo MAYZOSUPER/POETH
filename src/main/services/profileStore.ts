@@ -2,7 +2,8 @@ import { app } from 'electron'
 import path from 'path'
 import { promises as fs } from 'fs'
 import { randomUUID } from 'crypto'
-import type { ProfileMeta, ProgressState } from '@shared/types'
+import type { ProfileMeta, ProgressState, UiLang } from '@shared/types'
+import { importedName, newCharacterName } from '@shared/defaultNames'
 import { readJson, writeJsonAtomic } from './atomicJson'
 
 const PROGRESS_VERSION = 1
@@ -61,12 +62,12 @@ function defaultProgress(profileId: string): ProgressState {
   }
 }
 
-async function addProfile(name: string, className?: string): Promise<ProfileMeta> {
+async function addProfile(name: string, className?: string, lang: UiLang = 'ru'): Promise<ProfileMeta> {
   const profiles = await readProfiles()
   const now = Date.now()
   const meta: ProfileMeta = {
     id: randomUUID(),
-    name: name.trim() || 'Новый персонаж',
+    name: name.trim() || newCharacterName(lang),
     className: className?.trim() || undefined,
     createdAt: now,
     updatedAt: now
@@ -77,8 +78,9 @@ async function addProfile(name: string, className?: string): Promise<ProfileMeta
   return meta
 }
 
-export function createProfile(name: string, className?: string): Promise<ProfileMeta> {
-  return serial(() => addProfile(name, className))
+/** lang — язык интерфейса: на нём имя по умолчанию, если name пустое. */
+export function createProfile(name: string, className?: string, lang: UiLang = 'ru'): Promise<ProfileMeta> {
+  return serial(() => addProfile(name, className, lang))
 }
 
 export function renameProfile(id: string, name: string): Promise<ProfileMeta[]> {
@@ -285,7 +287,7 @@ function clampInt(value: unknown, min: number, max: number, fallback: number): n
 }
 
 /** Validate + sanitize untrusted JSON into a bundle, or null if it isn't one. */
-function sanitizeBundle(raw: unknown): ProfileBundle | null {
+function sanitizeBundle(raw: unknown, lang: UiLang): ProfileBundle | null {
   if (!raw || typeof raw !== 'object') return null
   const b = raw as Record<string, unknown>
   if (b.format !== EXPORT_FORMAT) return null
@@ -326,7 +328,7 @@ function sanitizeBundle(raw: unknown): ProfileBundle | null {
     exportedAt: Number(b.exportedAt) || 0,
     app: { name: 'POETH', version: app.getVersion() },
     profile: {
-      name: profile.name.trim() || 'Импортированный',
+      name: profile.name.trim() || importedName(lang),
       className: typeof profile.className === 'string' ? profile.className : undefined
     },
     progress: {
@@ -346,8 +348,8 @@ function sanitizeBundle(raw: unknown): ProfileBundle | null {
  * Import a parsed bundle as a brand-new profile (fresh id, never overwriting an
  * existing one). Returns the new profile meta, or null if the bundle is invalid.
  */
-export async function importProfileBundle(raw: unknown): Promise<ProfileMeta | null> {
-  const bundle = sanitizeBundle(raw)
+export async function importProfileBundle(raw: unknown, lang: UiLang = 'ru'): Promise<ProfileMeta | null> {
+  const bundle = sanitizeBundle(raw, lang)
   if (!bundle) return null
   return serial(() => addImported(bundle))
 }

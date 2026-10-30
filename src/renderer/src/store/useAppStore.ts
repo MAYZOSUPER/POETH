@@ -12,8 +12,10 @@ import type {
   Settings,
   SettingsPatch,
   TailerStatus,
+  UiLang,
   ZoneEvent
 } from '@shared/types'
+import { characterName } from '@shared/defaultNames'
 import { resolveTab } from '../tabs'
 
 interface AppState {
@@ -103,9 +105,9 @@ let listenersWired = false
 // второй ждёт его же. Не удалось — следующий init() попробует снова.
 let firstProfile: Promise<ProfileMeta> | null = null
 
-function createFirstProfile(): Promise<ProfileMeta> {
+function createFirstProfile(lang: UiLang | undefined): Promise<ProfileMeta> {
   return (firstProfile ??= api()
-    .profiles.create('Персонаж 1')
+    .profiles.create(characterName(lang, 1))
     .catch((e: unknown) => {
       firstProfile = null
       throw e
@@ -279,7 +281,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     let activeProfileId = settings.activeProfileId
     if (!activeProfileId || !profiles.some((p) => p.id === activeProfileId)) {
-      if (profiles.length === 0) profiles = [await createFirstProfile()]
+      if (profiles.length === 0) profiles = [await createFirstProfile(settings.uiLang)]
       activeProfileId = profiles[0].id
       await api().profiles.setActive(activeProfileId)
     }
@@ -538,7 +540,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ profiles: remaining })
     if (get().activeProfileId === id) {
       if (remaining.length > 0) await get().switchProfile(remaining[0].id)
-      else await get().createProfile('Персонаж 1')
+      else await get().createProfile(characterName(get().settings?.uiLang, 1))
     }
   },
 

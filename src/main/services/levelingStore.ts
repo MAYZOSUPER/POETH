@@ -14,6 +14,8 @@ import type {
   LevelingState,
   LevelingVariant
 } from '@shared/types/leveling'
+import type { UiLang } from '@shared/types'
+import { characterName } from '@shared/defaultNames'
 import {
   DEFAULT_VARIANT,
   emptyProgress,
@@ -58,7 +60,7 @@ interface LevelingFile {
 const DEFAULT_CONFIG: LevelingConfig = { show: 'auto', collapsed: false, pos: null }
 
 function newProfile(name: string, now: number): LevelingProfile {
-  return { id: randomUUID(), name: name.trim() || 'Персонаж', className: null, character: null, createdAt: now, updatedAt: now }
+  return { id: randomUUID(), name, className: null, character: null, createdAt: now, updatedAt: now }
 }
 
 const unit = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : null)
@@ -123,7 +125,8 @@ function normShow(c: Partial<LevelingConfig> & { overlay?: unknown }): LevelingS
   return c.overlay === false ? 'never' : DEFAULT_CONFIG.show
 }
 
-export function normalizeLevelingFile(raw: unknown, now: number): LevelingFile {
+/** lang — язык интерфейса: на нём имя первого персонажа, если файла ещё нет (уже сохранённые не трогаем). */
+export function normalizeLevelingFile(raw: unknown, now: number, lang: UiLang = 'ru'): LevelingFile {
   const x = (raw ?? {}) as Partial<LevelingFile>
   const profiles = (Array.isArray(x.profiles) ? x.profiles : [])
     .filter((p): p is LevelingProfile => !!p && typeof p.id === 'string' && typeof p.name === 'string')
@@ -135,7 +138,7 @@ export function normalizeLevelingFile(raw: unknown, now: number): LevelingFile {
       createdAt: Number.isFinite(p.createdAt) ? p.createdAt : now,
       updatedAt: Number.isFinite(p.updatedAt) ? p.updatedAt : now
     }))
-  if (profiles.length === 0) profiles.push(newProfile('Персонаж 1', now))
+  if (profiles.length === 0) profiles.push(newProfile(characterName(lang, 1), now))
   const activeId = profiles.some((p) => p.id === x.activeId) ? (x.activeId as string) : profiles[0].id
   const progress: Record<string, LevelingProgress> = {}
   for (const p of profiles) progress[p.id] = normProgress(x.progress?.[p.id], now)
@@ -173,7 +176,9 @@ export class LevelingStore extends EventEmitter {
   constructor(
     private readonly file: string,
     private readonly dataFile: string,
-    private readonly now: () => number = () => Date.now()
+    private readonly now: () => number = () => Date.now(),
+    /** язык интерфейса — для имён новых персонажей по умолчанию */
+    private readonly uiLang: () => Promise<UiLang> | UiLang = () => 'ru'
   ) {
     super()
   }
@@ -181,7 +186,8 @@ export class LevelingStore extends EventEmitter {
   load(): Promise<void> {
     if (!this.loading) {
       this.loading = (async () => {
-        this.f = normalizeLevelingFile(await readJson<unknown>(this.file, null), this.now())
+        const raw = await readJson<unknown>(this.file, null)
+        this.f = normalizeLevelingFile(raw, this.now(), await this.uiLang())
       })()
     }
     return this.loading
@@ -404,9 +410,10 @@ export class LevelingStore extends EventEmitter {
    */
   async createProfile(name: string): Promise<LevelingState> {
     await this.load()
+    const lang = await this.uiLang()
     const now = this.now()
     const f = this.file_
-    const p = newProfile(name || `Персонаж ${f.profiles.length + 1}`, now)
+    const p = newProfile(name.trim() || characterName(lang, f.profiles.length + 1), now)
     f.profiles.push(p)
     f.progress[p.id] = emptyProgress(this.progress.variant, now)
     f.activeId = p.id

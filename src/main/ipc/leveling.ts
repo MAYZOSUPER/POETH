@@ -9,6 +9,7 @@ import { resourcesDir } from '../services/questDataset'
 import { sendToOverlay } from '../windows/gameOverlay'
 import { sendToCompanion } from '../windows/companionWindow'
 import { onHotkeyAction } from '../hotkeys'
+import { uiLang } from '../services/dialogText'
 import type { IpcDomain } from './types'
 
 // Домен «прокачка PoE1» (main, этапы S14, S22). Строки Client.txt — общий тейлер процесса (services/gameLog.ts:
@@ -33,7 +34,9 @@ function getStore(): LevelingStore {
   if (!store) {
     store = new LevelingStore(
       path.join(app.getPath('userData'), 'leveling.json'),
-      path.join(resourcesDir(), 'data', 'poe1', 'leveling', 'leveling.json')
+      path.join(resourcesDir(), 'data', 'poe1', 'leveling', 'leveling.json'),
+      undefined,
+      uiLang
     )
     store.on('changed', (state) => {
       sendToCompanion(IPC.events.levelingChanged, state)
