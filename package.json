@@ -1,7 +1,7 @@
 {
   "name": "poeth",
   "productName": "POETH",
-  "version": "0.1.0-rc.11",
+  "version": "0.1.0-rc.12",
   "description": "POE Trade Helper — оверлей-помощник по трейду для Path of Exile 1/2 (прайс-чек, live search, regex, сделки) + трекер кампании PoE2",
   "author": "POETH contributors",
   "license": "MIT",
