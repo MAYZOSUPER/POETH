@@ -5,7 +5,7 @@ import { screenTabItems, type ScreenTabItems, type ScreenTabOptions } from '@sha
 import type { ScreenFail, ScreenOverlayState, ScreenRead } from '@shared/types/screen'
 import { sendToOverlay } from '../windows/gameOverlay'
 import { captureScreen, saveScreenFixture, type ScreenShot } from './capture'
-import { loadGamePack } from './catalog'
+import { loadGamePack, type PackProgress } from './catalog'
 import { screenPrices } from './prices'
 import { readScreenImage } from './reader'
 
@@ -20,7 +20,9 @@ const SHOW_MS = 45_000
 
 let state: ScreenOverlayState = { status: 'idle' }
 let last: ScreenRead | null = null
-let busy = false
+/** идёт чтение: отмена (повторное нажатие) и номер чтения — опоздавший результат отменённого не показываем */
+let busy: { abort: AbortController; seq: number } | null = null
+let seq = 0
 let hideTimer: NodeJS.Timeout | null = null
 const listeners = new Set<(r: ScreenRead) => void>()
 
@@ -59,10 +61,11 @@ function fail(f: ScreenFail): void {
  * Снимок уже сделан — распознать. Эталоны игры при первом разе собираются из иконок (прогресс — в оверлей);
  * снимок за это время не устаревает: он в памяти с момента нажатия.
  */
-async function recognize(def: GameDef, shot: ScreenShot, progress: boolean): Promise<ScreenRead | ScreenFail> {
-  const loaded = await loadGamePack(def, progress ? (p) => setState({ status: 'busy', icons: p }) : undefined)
+async function recognize(def: GameDef, shot: ScreenShot, o: { progress?: (p: PackProgress) => void; signal?: AbortSignal } = {}): Promise<ScreenRead | ScreenFail> {
+  const loaded = await loadGamePack(def, { onProgress: o.progress, signal: o.signal })
   if (!loaded) return 'unsupported'
-  if (loaded.missing && !loaded.pack.thumbs.length) return 'no-icons'
+  // ни одной иконки (нет сети при первом запуске) — распознавать нечем
+  if (loaded.count === 0) return 'no-icons'
   const t0 = performance.now()
   const { window, result: r } = await readScreenImage(shot.img, shot.client.height, loaded.pack)
   const read: ScreenRead = {
@@ -88,7 +91,7 @@ async function recognize(def: GameDef, shot: ScreenShot, progress: boolean): Pro
 export async function readStashFromScreen(def: GameDef): Promise<ScreenRead | ScreenFail> {
   const shot = captureScreen()
   if (!shot) return 'no-game'
-  return recognize(def, shot, false).catch(() => 'error' as const)
+  return recognize(def, shot).catch(() => 'error' as const)
 }
 
 /**
@@ -100,9 +103,17 @@ export async function readStashTabItems(def: GameDef, o?: ScreenTabOptions): Pro
   return typeof r === 'string' ? r : screenTabItems(r, o)
 }
 
-/** Хоткей «цены поверх окон»: подписи на экране — спрятать, иначе снимок → распознавание → подписи. */
+/**
+ * Хоткей «цены поверх окон»: подписи на экране — спрятать; идёт чтение (первый раз — закачка иконок) — отменить и
+ * спрятать тост; иначе снимок → распознавание → подписи.
+ */
 export async function onScreenHotkey(def: GameDef): Promise<void> {
-  if (busy) return
+  if (busy) {
+    busy.abort.abort()
+    busy = null
+    hideScreenLabels()
+    return
+  }
   if (state.status === 'shown' || state.status === 'fail') {
     hideScreenLabels()
     return
@@ -113,25 +124,36 @@ export async function onScreenHotkey(def: GameDef): Promise<void> {
     fail('no-game')
     return
   }
-  busy = true
+  const me = { abort: new AbortController(), seq: ++seq }
+  busy = me
+  const current = (): boolean => busy?.seq === me.seq
   try {
     void saveScreenFixture(shot).catch(() => undefined)
     setState({ status: 'busy' })
-    const read = await recognize(def, shot, true)
+    const read = await recognize(def, shot, {
+      signal: me.abort.signal,
+      progress: (p) => {
+        if (current()) setState({ status: 'busy', icons: p })
+      }
+    })
+    if (!current()) return
     if (typeof read === 'string') {
       fail(read)
       return
     }
     const prices = await screenPrices(def)
+    if (!current()) return
     const base = prices?.base ?? (read.game === 'poe2' ? 'exalted' : 'chaos')
     const labels = buildLabels(read, prices?.priceOf ?? (() => null), { base, divine: prices?.divine ?? null })
     setState({ status: 'shown', labels, ms: read.ms })
     if (hideTimer) clearTimeout(hideTimer)
     hideTimer = setTimeout(hideScreenLabels, SHOW_MS)
   } catch (e) {
+    // отмена повторным нажатием — тост уже спрятан
+    if (!current()) return
     console.error('[screen] read failed:', e)
     fail('error')
   } finally {
-    busy = false
+    if (current()) busy = null
   }
 }
