@@ -19,6 +19,7 @@ import { getCompanionWindow, sendToCompanion } from '../windows/companionWindow'
 import { notifyUser } from '../services/notify'
 import { uiLang } from '../services/dialogText'
 import { getSettings } from '../services/settingsStore'
+import { resolveGameLang } from '@shared/gameLang'
 import type { IpcDomain } from './types'
 
 // Домен «Фильтр лута» (main, S53): фильтр NeverSink в один клик. S64: для PoE 1 и PoE 2 — у каждой игры свой
@@ -100,8 +101,10 @@ function register(): void {
   ipcMain.handle(IPC.lootFilter.openLink, async (_e, link: unknown) => {
     if (!LINKS.includes(link as LootFilterLink)) return
     const g = lootFilterGame()
-    const siteHost = (await getSettings()).siteHost
-    const url = linkUrl(link as LootFilterLink, (await getLootFilterData(g)).latest?.tag, g, siteHost)
+    const s = await getSettings()
+    // ладдер: PoE 1 — по хосту сайта (S53), PoE 2 — по языку клиента игры (не узнали — интерфейса)
+    const ladder = { siteHost: s.siteHost, lang: resolveGameLang(s.gameLang, s.uiLang).lang }
+    const url = linkUrl(link as LootFilterLink, (await getLootFilterData(g)).latest?.tag, g, ladder)
     if (url) await shell.openExternal(url)
   })
 }

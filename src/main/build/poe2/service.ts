@@ -6,7 +6,7 @@ import { inflateNode } from '@shared/advisor/codecNode'
 import { importPob2Code } from '@shared/pob/import'
 import type { Pob2Build } from '@shared/pob/poe2'
 import { POE2_GEMS_FILE, POE2_TREE_FILE, parsePoe2Gems, parsePoe2Tree, type Poe2GemData, type Poe2TreeData } from '@shared/poe2/build/data'
-import { buildFileName } from '@shared/poe2/build/fileName'
+import { buildFileName, copyBuildName } from '@shared/poe2/build/fileName'
 import { cleanBuildName, serializeGameBuild, toGameBuild, type ItemNames } from '@shared/poe2/build/gameBuild'
 import { POE2_INSTILL_FILE, parseInstillData, type InstillData } from '@shared/poe2/build/instill'
 import {
@@ -27,7 +27,7 @@ import type { Build2ImportResult, Build2Recent, Build2SaveRequest, Build2SaveRes
 import { importPob2 } from '../../pob/import'
 import { readJson, writeJsonAtomic } from '../../services/atomicJson'
 import { resourcesDir } from '../../services/questDataset'
-import { buildPlannerDir, saveBuildFile } from './saveToGame'
+import { buildPlannerDir, freeFileName, saveBuildFile } from './saveToGame'
 
 // Экран «Билд» PoE 2 (S66), main: импорт PoB2 (код или ссылка — S35/links2), библиотека билдов PoE 2
 // (userData/builds-poe2.json: код + источник, при чтении — полный разбор заново), сводка и предпросмотр этапов,
@@ -203,6 +203,7 @@ export function cleanSaveRequest(v: unknown): Build2SaveRequest | null {
   if (r.lang !== 'ru' && r.lang !== 'en') return null
   if (r.confirm !== undefined && !isBool(r.confirm)) return null
   if (r.overwrite !== undefined && !isBool(r.overwrite)) return null
+  if (r.copy !== undefined && !isBool(r.copy)) return null
   if (r.fileName !== undefined && (typeof r.fileName !== 'string' || r.fileName.length > 100)) return null
   return {
     id: r.id,
@@ -210,13 +211,14 @@ export function cleanSaveRequest(v: unknown): Build2SaveRequest | null {
     lang: r.lang,
     ...(r.confirm ? { confirm: true } : {}),
     ...(r.overwrite ? { overwrite: true } : {}),
+    ...(r.copy ? { copy: true } : {}),
     ...(typeof r.fileName === 'string' ? { fileName: r.fileName } : {})
   }
 }
 
-/** Папка игрового планировщика на этом компьютере. */
+/** Папка игрового планировщика на этом компьютере; подмена POETH_POE2_BUILD_DIR — только не в собранном приложении. */
 export function plannerDir(): ReturnType<typeof buildPlannerDir> {
-  return buildPlannerDir(app.getPath('documents'), process.env, (p) => existsSync(p))
+  return buildPlannerDir(app.getPath('documents'), process.env, (p) => existsSync(p), !app.isPackaged)
 }
 
 export async function save2(raw: unknown): Promise<Build2SaveResult> {
@@ -227,16 +229,25 @@ export async function save2(raw: unknown): Promise<Build2SaveResult> {
   const stored = findBuild2(await load(), req.id)
   const build = stored ? parsedOf(stored) : null
   if (!stored || !build) return { ok: false, error: 'no-build' }
-  const name = cleanBuildName(req.name)
-  const fileName = buildFileName(name)
+  const dir = plannerDir()
+  let name = cleanBuildName(req.name)
+  let fileName = buildFileName(name)
+  if (req.copy) {
+    // «Сохранить копией»: свободное «Имя (N).build» — после обрезки имени, суффикс всегда помещается
+    const free = await freeFileName(dir, fileName)
+    if (!free) return { ok: false, error: 'no-free-name', dir, fileName }
+    fileName = free.fileName
+    name = copyBuildName(name, free.n)
+  }
   const plan = resolveStages2(build, d.tree)
   // ссылку пишем только на публичную пасту, откуда взят код (без неё — ничего)
   const link = stored.source.kind === 'link' ? stored.source.pageUrl ?? null : null
   const items = req.lang === 'ru' ? await itemNamesRu() : null
   const { file: obj } = toGameBuild(build, plan, d.tree, d.gems, { name, lang: req.lang, link, items })
   const res = await saveBuildFile({
-    dir: plannerDir(),
+    dir,
     fileName,
+    name,
     text: serializeGameBuild(obj),
     confirm: req.confirm,
     confirmedName: req.fileName,

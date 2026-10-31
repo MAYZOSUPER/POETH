@@ -10,6 +10,7 @@ import {
   parsePoe2PriceSnapshot,
   pickLeague,
   priceKey,
+  privateBaseOf,
   softcoreOf,
   type Poe2PriceIndex
 } from '@shared/poe2/prices'
@@ -85,6 +86,16 @@ describe('цены PoE 2: выбор лиги', () => {
       expect(pickLeague(idx, l), String(l)).toMatchObject({ entry: { league: 'Forbidden Rites' }, match: 'current' })
     }
     expect(pickLeague({ ...idx, leagues: [] }, 'Standard')).toBeNull()
+  })
+
+  it('частная лига «… (PL123)»: цены лиги без суффикса; хардкор — её софткор-пары', () => {
+    expect(pickLeague(idx, 'Runes of Aldur (PL12345)')).toMatchObject({ entry: { league: 'Runes of Aldur' }, match: 'private' })
+    expect(pickLeague(idx, 'runes of aldur(pl7)')).toMatchObject({ entry: { league: 'Runes of Aldur' }, match: 'private' })
+    expect(pickLeague(idx, 'HC Runes of Aldur (PL9)')).toMatchObject({ entry: { league: 'Runes of Aldur' }, match: 'softcore' })
+    expect(pickLeague(idx, 'Наша лига (PL1)')).toMatchObject({ entry: { league: 'Forbidden Rites' }, match: 'current' })
+    expect(privateBaseOf('Runes of Aldur (PL12345)')).toBe('Runes of Aldur')
+    expect(privateBaseOf('Runes of Aldur')).toBeNull()
+    expect(privateBaseOf('PL (PLX)')).toBeNull()
   })
 
   it('хардкор и его пара', () => {

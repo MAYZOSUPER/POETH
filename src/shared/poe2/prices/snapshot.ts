@@ -155,6 +155,12 @@ export function softcoreOf(league: string): string | null {
   return m ? m[1] : null
 }
 
+/** Частная лига: «Runes of Aldur (PL12345)» → «Runes of Aldur»; не частная — null. */
+export function privateBaseOf(league: string): string | null {
+  const m = /^(.+?)\s*\(PL\d+\)$/i.exec(league.trim())
+  return m ? m[1] : null
+}
+
 /** Одна строка снимка; мусор — null. */
 export function parsePriceLine(v: unknown): Poe2PriceLine | null {
   if (!isObj(v)) return null
@@ -219,10 +225,13 @@ export function parsePoe2PriceIndex(raw: unknown): Poe2PriceIndex | null {
 /**
  * Как цены нашлись для лиги игрока:
  *  - exact     — снимок этой лиги;
- *  - softcore  — хардкор-лига без снимка: цены её софткор-пары («HC X» → «X», «Hardcore» → «Standard»);
- *  - current   — лиги нет в снимке (частная, 'auto', пусто): цены текущей временной лиги (первая в index.json).
+ *  - private   — частная лига «X (PL123)»: цены лиги X (имя без суффикса «(PL…)»);
+ *  - softcore  — хардкор-лига без снимка: цены её софткор-пары («HC X» → «X», «Hardcore» → «Standard»; и частная
+ *                «HC X (PL1)»);
+ *  - current   — лиги нет в снимке ('auto', пусто, частная с другим именем): цены текущей временной лиги (первая
+ *                в index.json).
  */
-export type Poe2PriceMatch = 'exact' | 'softcore' | 'current'
+export type Poe2PriceMatch = 'exact' | 'private' | 'softcore' | 'current'
 
 /** Какой снимок взять для лиги игрока (сравнение без учёта регистра); пустой index — null. */
 export function pickLeague(index: Poe2PriceIndex, league: string | null | undefined): { entry: Poe2PriceIndexLeague; match: Poe2PriceMatch } | null {
@@ -232,7 +241,11 @@ export function pickLeague(index: Poe2PriceIndex, league: string | null | undefi
   if (want && want.toLowerCase() !== 'auto') {
     const exact = find(want)
     if (exact) return { entry: exact, match: 'exact' }
-    const sc = softcoreOf(want)
+    // частная лига — по имени без «(PL…)», как хардкор — по софткор-паре
+    const name = privateBaseOf(want) ?? want
+    const parent = name !== want ? find(name) : undefined
+    if (parent) return { entry: parent, match: 'private' }
+    const sc = softcoreOf(name)
     const soft = sc ? find(sc) : undefined
     if (soft) return { entry: soft, match: 'softcore' }
   }

@@ -125,7 +125,7 @@ function Body(p: { list: RumourRecord[]; patch: string | null; failed: number; t
             <BestLine pick={pick} rows={rows} text={text} t={t} uiLang={uiLang} />
             <ul className="rm-rows">
               {rows.map((r) => (
-                <RowItem key={r.id} r={r} best={r.id === pick.best} t={t} uiLang={uiLang} simple={simple} />
+                <RowItem key={r.id} r={r} best={r.id === pick.best} t={t} uiLang={uiLang} simple={simple} pricesLoaded={prices !== null} />
               ))}
             </ul>
             {user.picked.length < RUMOURS_POOL_MAX && (
@@ -256,7 +256,7 @@ function BestLine({ pick, rows, text, t, uiLang }: { pick: RumourPick; rows: Rum
   )
 }
 
-function RowItem({ r, best, t, uiLang, simple }: { r: RumourRowView; best: boolean; t: T; uiLang: RumourLang; simple: boolean }) {
+function RowItem({ r, best, t, uiLang, simple, pricesLoaded }: { r: RumourRowView; best: boolean; t: T; uiLang: RumourLang; simple: boolean; pricesLoaded: boolean }) {
   const [edit, setEdit] = useState(false)
   const store = useRumoursStore.getState()
   const tier = r.ownTier ?? r.tier
@@ -286,7 +286,12 @@ function RowItem({ r, best, t, uiLang, simple }: { r: RumourRowView; best: boole
           <dd>
             {r.main ? rewardName(r.main, t) : '—'}
             {r.main && r.main.name !== null && (
-              <span className="rm-price">{r.main.price ? priceText(r.main.price, t, uiLang) : t('rumours.price.later')}</span>
+              <span className="rm-price">{r.main.price ? priceText(r.main.price, t, uiLang) : t(pricesLoaded ? 'rumours.price.none' : 'rumours.price.later')}</span>
+            )}
+            {r.main?.price?.low && (
+              <span className="rm-muted" title={t('rumours.price.low')}>
+                {t('rumours.price.lowShort')}
+              </span>
             )}
             {r.more.length > 0 && <span className="rm-muted"> · {r.more.map((x) => rewardName(x, t)).join(' · ')}</span>}
             {!r.checked && (

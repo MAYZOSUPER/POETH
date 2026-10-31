@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "patch": "0.5.5.5",
-  "updatedAt": "2026-10-31",
+  "updatedAt": "2026-11-01",
   "rumours": [
     {
       "id": "all-that-glitters",
@@ -234,12 +234,12 @@
       "rewards": [
         {
           "item": {
-            "ns": "ITEM",
-            "ref": "Medved's Crest of the Circle",
-            "meta": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique1",
+            "ns": "GEM",
+            "ref": "Medved's Felling",
+            "meta": "Metadata/Items/Gem/SupportGemMedvedsFelling",
             "name": {
-              "en": "Medved's Crest of the Circle",
-              "ru": "Знак Круга Медведя"
+              "en": "Medved's Felling",
+              "ru": "Неистовство Медведя"
             }
           }
         }
@@ -248,10 +248,10 @@
         "boss"
       ],
       "difficulty": 3,
-      "tier": 2,
+      "tier": 1,
       "note": {
-        "ru": "Бой с Медведем, смерть не отнимает опыт. Награда — его именные предметы, обычно дешевле, чем у Олрота и Утреда.",
-        "en": "Fight Medved; dying costs no XP. Rewards are his named items, usually cheaper than Olroth's or Uhtred's."
+        "ru": "Бой с Медведем, смерть не отнимает опыт. Его именной камень поддержки дешёвый — брать, если остальные слабее.",
+        "en": "Fight Medved; dying costs no XP. His named support gem is cheap, so take it only if the others are weaker."
       },
       "checked": null
     },
@@ -276,12 +276,12 @@
       "rewards": [
         {
           "item": {
-            "ns": "ITEM",
-            "ref": "Vorana's Crest of the Scythe",
-            "meta": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique2",
+            "ns": "GEM",
+            "ref": "Vorana's Siege",
+            "meta": "Metadata/Items/Gem/SupportGemVoranasSiege",
             "name": {
-              "en": "Vorana's Crest of the Scythe",
-              "ru": "Знак Косы Вораны"
+              "en": "Vorana's Siege",
+              "ru": "Осада Вораны"
             }
           }
         }
@@ -292,8 +292,8 @@
       "difficulty": 3,
       "tier": 2,
       "note": {
-        "ru": "Бой с Вораной, смерть не отнимает опыт. Награда — её именные предметы. Брать, если цена её герба выросла.",
-        "en": "Fight Vorana; dying costs no XP. Rewards are her named items. Worth it when her crest's price is up."
+        "ru": "Бой с Вораной, смерть не отнимает опыт. Её именной камень поддержки стоит заметных денег. Нужен крепкий билд.",
+        "en": "Fight Vorana; dying costs no XP. Her named support gem is worth real money. Needs a sturdy build."
       },
       "checked": null
     },
@@ -318,12 +318,23 @@
       "rewards": [
         {
           "item": {
-            "ns": "ITEM",
-            "ref": "Uhtred's Crest of the Chalice",
-            "meta": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique3",
+            "ns": "GEM",
+            "ref": "Uhtred's Exodus",
+            "meta": "Metadata/Items/Gem/SupportGemUhtredsExodus",
             "name": {
-              "en": "Uhtred's Crest of the Chalice",
-              "ru": "Знак Чаши Утреда"
+              "en": "Uhtred's Exodus",
+              "ru": "Исход Утреда"
+            }
+          }
+        },
+        {
+          "item": {
+            "ns": "GEM",
+            "ref": "Uhtred's Augury",
+            "meta": "Metadata/Items/Gem/SupportGemUhtredsAugury",
+            "name": {
+              "en": "Uhtred's Augury",
+              "ru": "Предчувствие Утреда"
             }
           }
         }
@@ -334,8 +345,8 @@
       "difficulty": 3,
       "tier": 3,
       "note": {
-        "ru": "Бой с Утредом, смерть не отнимает опыт. Его именные предметы ценятся высоко. Идти, если билд держит босса.",
-        "en": "Fight Uhtred; dying costs no XP. His named items are valued highly. Go if your build can handle the boss."
+        "ru": "Бой с Утредом, смерть не отнимает опыт. С него — именные камни поддержки, одни из самых дорогих в игре. Нужен крепкий билд.",
+        "en": "Fight Uhtred; dying costs no XP. He drops named support gems, some of the priciest in the game. Needs a sturdy build."
       },
       "checked": null
     },
@@ -371,12 +382,12 @@
         },
         {
           "item": {
-            "ns": "ITEM",
-            "ref": "Olroth's Crest of the Sun",
-            "meta": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique4",
+            "ns": "GEM",
+            "ref": "Olroth's Conviction",
+            "meta": "Metadata/Items/Gems/SupportOlrothsConviction",
             "name": {
-              "en": "Olroth's Crest of the Sun",
-              "ru": "Знак Солнца Олрота"
+              "en": "Olroth's Conviction",
+              "ru": "Убеждённость Олрота"
             }
           }
         }
@@ -387,8 +398,8 @@
       "difficulty": 3,
       "tier": 3,
       "note": {
-        "ru": "Бой с Олротом, смерть не отнимает опыт. С него ключ к реликварию экспедиции — он дорого продаётся. Нужен крепкий билд.",
-        "en": "Fight Olroth; dying costs no XP. Drops the Expedition reliquary key, which sells well. Needs a sturdy build."
+        "ru": "Бой с Олротом, смерть не отнимает опыт. С него ключ к реликварию экспедиции и именной камень. Нужен крепкий билд.",
+        "en": "Fight Olroth; dying costs no XP. Drops the Expedition reliquary key and a named gem. Needs a sturdy build."
       },
       "checked": null
     },

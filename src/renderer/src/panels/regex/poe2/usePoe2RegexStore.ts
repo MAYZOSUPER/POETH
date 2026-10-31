@@ -46,8 +46,14 @@ export const usePoe2RegexStore = create<Poe2RegexStore>((set, get) => ({
 
   init: async () => {
     if (get().ready) return
-    const s = await api().poe2State()
-    set({ ready: true, prefs: s.prefs, profiles: s.profiles })
+    try {
+      const s = await api().poe2State()
+      set({ ready: true, prefs: s.prefs, profiles: s.profiles })
+    } catch (e) {
+      // файл настроек не прочитался — страница работает с настройками по умолчанию, а не висит на «Загрузке»
+      console.error('[regex] настройки PoE 2 не загрузились:', e)
+      set({ ready: true })
+    }
   },
 
   ensureData: async (lang) => {
@@ -56,6 +62,10 @@ export const usePoe2RegexStore = create<Poe2RegexStore>((set, get) => ({
     try {
       const d = await api().poe2Data(lang)
       set((s) => ({ data: { ...s.data, [lang]: d } }))
+    } catch (e) {
+      // нет данных — страница пишет «нет данных для языка», а не «Загрузка»
+      console.error('[regex] данные PoE 2 не загрузились:', e)
+      set((s) => ({ data: { ...s.data, [lang]: null } }))
     } finally {
       loading.delete(lang)
     }
@@ -69,17 +79,29 @@ export const usePoe2RegexStore = create<Poe2RegexStore>((set, get) => ({
       const p = pending
       pending = {}
       timer = null
-      void api().poe2SetPrefs(p)
+      api()
+        .poe2SetPrefs(p)
+        .catch((e) => console.error('[regex] настройки PoE 2 не сохранились:', e))
     }, PREFS_DELAY_MS)
   },
 
   saveProfile: async (input) => {
-    const s = await api().poe2SaveProfile(input)
-    set({ profiles: s.profiles })
+    try {
+      const s = await api().poe2SaveProfile(input)
+      set({ profiles: s.profiles })
+    } catch (e) {
+      console.error('[regex] профиль PoE 2 не сохранился:', e)
+    }
   },
 
   deleteProfile: async (id) => {
-    const s = await api().poe2DeleteProfile(id)
+    let s: Poe2RegexState
+    try {
+      s = await api().poe2DeleteProfile(id)
+    } catch (e) {
+      console.error('[regex] профиль PoE 2 не удалился:', e)
+      return
+    }
     set((st) => {
       const prices = { ...st.prices }
       delete prices[id]

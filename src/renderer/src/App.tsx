@@ -25,6 +25,7 @@ import { AdvisorTab } from './panels/AdvisorTab'
 import { BuildTab } from './panels/build/BuildTab'
 import { GuideTab } from './panels/guide/GuideTab'
 import { RumoursTab } from './panels/rumours/RumoursTab'
+import { SoonPoe2Page } from './panels/soon/SoonPoe2Page'
 import { ViewToggle } from './components/ViewToggle'
 import { Wizard } from './panels/onboarding/Wizard'
 import { AboutPanel } from './panels/onboarding/AboutPanel'
@@ -99,6 +100,8 @@ function TabBody() {
       return <GuideTab />
     case 'rumours':
       return <RumoursTab />
+    case 'soon':
+      return <SoonPoe2Page />
     default:
       return null
   }

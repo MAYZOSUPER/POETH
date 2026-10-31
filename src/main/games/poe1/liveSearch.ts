@@ -1,6 +1,7 @@
 import { clipboard, Notification } from 'electron'
 import { GAMES, liveUrl, siteUrl, type GameId, type SiteHost } from '@shared/games'
 import { isAllowedExternalUrl } from '@shared/links'
+import { SLUG_MAX } from '@shared/favorites/slug'
 import type {
   AuthStatus,
   LiveAddResult,
@@ -83,7 +84,8 @@ export interface FavoriteLiveSnapshot {
   max: number
 }
 
-const SLUG = /^[A-Za-z0-9_-]{3,512}$/
+// id поиска избранного — до SLUG_MAX, как у самого избранного (длинные запросы окна цены PoE 2 — за 512)
+const SLUG = new RegExp(`^[A-Za-z0-9_-]{3,${SLUG_MAX}}$`)
 
 export type LiveToggleResult = 'ok' | 'limit' | 'not-found'
 

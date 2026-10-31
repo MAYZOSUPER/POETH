@@ -29,13 +29,13 @@ describe('разделы рельса', () => {
   it('PoE 2: трейд (S63), regex (S62) и «Слухи» (S65), компас и «Билд» (S66), «Справочник» (S64) — и с флагом советника тоже', () => {
     for (const dev of [false, true]) {
       expect(sectionsFor('poe2', dev).map((s) => s.id)).toEqual(['trade', 'farm', 'level', 'help'])
-      expect(ids('poe2', dev)).toEqual([['priceCheck', 'live', 'deals'], ['regex', 'rumours'], ['campaign', 'build'], ['guide']])
+      expect(ids('poe2', dev)).toEqual([['priceCheck', 'live', 'deals'], ['regex', 'rumours'], ['campaign', 'build'], ['guide', 'soon']])
     }
   })
 
   it('tabsFor — вкладки подряд в порядке рельса', () => {
     expect(tabsFor('poe1', false).map((t) => t.id)).toEqual(['priceCheck', 'live', 'deals', 'flip', 'advisor', 'wealth', 'regex', 'campaign', 'build', 'guide'])
-    expect(tabsFor('poe2', true).map((t) => t.id)).toEqual(['priceCheck', 'live', 'deals', 'regex', 'rumours', 'campaign', 'build', 'guide'])
+    expect(tabsFor('poe2', true).map((t) => t.id)).toEqual(['priceCheck', 'live', 'deals', 'regex', 'rumours', 'campaign', 'build', 'guide', 'soon'])
   })
 
   it('каждая вкладка ровно в одном разделе, у каждой своя иконка', () => {
@@ -52,6 +52,7 @@ describe('разделы рельса', () => {
     expect(sectionOf('campaign')).toBe('level')
     expect(sectionOf('guide')).toBe('help')
     expect(sectionOf('rumours')).toBe('farm')
+    expect(sectionOf('soon')).toBe('help')
   })
 })
 

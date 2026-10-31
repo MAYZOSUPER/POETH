@@ -72,3 +72,5 @@
   .b2-head__acts { justify-content: flex-start; }
   .b2-paste { flex-direction: column; }
 }
+.b2-low { cursor: help; }
+.b2-foot { display: flex; align-items: center; gap: var(--sp-2); }
