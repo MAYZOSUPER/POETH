@@ -3,6 +3,7 @@ import path from 'path'
 import type { Worker } from 'worker_threads'
 import type { Bitmap } from '@shared/ocr/bitmap'
 import type { StashResult } from '@shared/screen/recognize'
+import type { ScreenWindow } from '@shared/types/screen'
 import { resourcesDir } from '../services/questDataset'
 import createScreenWorker from './worker?nodeWorker'
 import type { ScreenWorkerIn, ScreenWorkerOut } from './worker'
@@ -61,7 +62,7 @@ export interface GamePack {
 }
 
 /** Распознать снимок; эталоны игры уходят в поток один раз. */
-export function readScreenImage(img: Bitmap, clientHeight: number, pack: GamePack): Promise<Omit<StashResult, 'debug'>> {
+export function readScreenImage(img: Bitmap, clientHeight: number, pack: GamePack): Promise<{ window: ScreenWindow; result: Omit<StashResult, 'debug'> }> {
   const w = getWorker()
   if (idle) clearTimeout(idle)
   idle = setTimeout(stop, IDLE_MS)
@@ -73,7 +74,7 @@ export function readScreenImage(img: Bitmap, clientHeight: number, pack: GamePac
     }, TIMEOUT_MS)
     pending.set(id, (r) => {
       clearTimeout(timer)
-      if (r.ok) resolve(r.result)
+      if (r.ok) resolve({ window: r.window, result: r.result })
       else reject(new Error(r.error))
     })
     const key = `${pack.game}:${pack.version}`

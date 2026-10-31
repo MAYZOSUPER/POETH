@@ -63,10 +63,10 @@ async function recognize(def: GameDef, shot: ScreenShot, progress: boolean): Pro
   if (!loaded) return 'unsupported'
   if (loaded.missing && !loaded.pack.thumbs.length) return 'no-icons'
   const t0 = performance.now()
-  const r = await readScreenImage(shot.img, shot.client.height, loaded.pack)
+  const { window, result: r } = await readScreenImage(shot.img, shot.client.height, loaded.pack)
   const read: ScreenRead = {
     game: def.id === 'poe2' ? 'poe2' : 'poe1',
-    window: 'stash',
+    window,
     tab: r.tab,
     scale: r.scale,
     client: shot.client,

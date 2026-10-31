@@ -4,7 +4,8 @@ import { formatPrice, toCss } from '@shared/screen/labels'
 import type { ScreenLabels, ScreenOverlayState } from '@shared/types/screen'
 import { Icon } from '../Icon'
 import { useInteractive } from '../interactive'
-import { useOverlayT } from '../useOverlayT'
+import { translate } from '../../i18n'
+import { screen as SCREEN_DICT } from '../../i18n/dict/screen'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import type { OverlayWidgetDef } from '../registry'
 import './screen.css'
@@ -20,6 +21,19 @@ function api(): ScreenIpcApi | null {
   return a.screen && a.onScreenState ? (a as ScreenIpcApi) : null
 }
 
+/**
+ * Строки домена: сначала свой словарь (виджет пишет верно и до строки словаря в агрегаторе — через лида), потом общий.
+ * Полноту ключей проверяет tests/screen/dict.test.ts.
+ */
+function useSay(): (key: string, params?: Record<string, string | number>) => string {
+  const lang = useOverlayStore((s) => s.lang)
+  return (key, params) => {
+    let s = SCREEN_DICT[lang]?.[key] ?? SCREEN_DICT.ru[key] ?? translate(lang, key)
+    if (params) for (const k of Object.keys(params)) s = s.replace(`{${k}}`, String(params[k]))
+    return s
+  }
+}
+
 function useScreenState(): ScreenOverlayState {
   const [st, setSt] = useState<ScreenOverlayState>({ status: 'idle' })
   useEffect(() => {
@@ -33,7 +47,7 @@ function useScreenState(): ScreenOverlayState {
 }
 
 function Total({ labels, ms }: { labels: ScreenLabels; ms?: number }) {
-  const t = useOverlayT()
+  const say = useSay()
   const lang = useOverlayStore((s) => s.lang)
   const ref = useRef<HTMLDivElement>(null)
   useInteractive(ref)
@@ -44,32 +58,32 @@ function Total({ labels, ms }: { labels: ScreenLabels; ms?: number }) {
   const style = right + 220 <= window.innerWidth ? { left: right, top: a.y } : { left: a.x, top: Math.max(4, a.y - 64) }
   const priced = labels.labels.length > 0
   return (
-    <div ref={ref} className="ui-panel scr-total" style={style} role="status" title={t('scr.total.tip')}>
+    <div ref={ref} className="ui-panel scr-total" style={style} role="status" title={say('scr.total.tip')}>
       <div className="scr-total__row">
-        <span className="scr-total__label">{t('scr.total')}</span>
+        <span className="scr-total__label">{say('scr.total')}</span>
         <b className="scr-total__sum">
           {priced ? `${labels.approx ? '≈ ' : ''}${formatPrice(labels.total, labels.base, labels.divine, lang)}` : '—'}
         </b>
         <button
           type="button"
           className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
-          aria-label={t('scr.close')}
-          title={t('scr.close')}
+          aria-label={say('scr.close')}
+          title={say('scr.close')}
           onClick={() => void api()?.screen.hide()}
         >
           <Icon name="close" />
         </button>
       </div>
-      {!priced && <div className="scr-total__note">{t('scr.noPrices')}</div>}
-      {labels.approx && <div className="scr-total__note">{t('scr.approx')}</div>}
+      {!priced && <div className="scr-total__note">{say('scr.noPrices')}</div>}
+      {labels.approx && <div className="scr-total__note">{say('scr.approx')}</div>}
       {(labels.unpriced > 0 || labels.uncounted > 0) && (
         <div className="scr-total__note">
-          {[labels.unpriced ? t('scr.unpriced', { n: labels.unpriced }) : '', labels.uncounted ? t('scr.uncounted', { n: labels.uncounted }) : '']
+          {[labels.unpriced ? say('scr.unpriced', { n: labels.unpriced }) : '', labels.uncounted ? say('scr.uncounted', { n: labels.uncounted }) : '']
             .filter(Boolean)
             .join(' · ')}
         </div>
       )}
-      {ms !== undefined && <div className="scr-total__ms">{t('scr.ms', { ms: Math.round(ms) })}</div>}
+      {ms !== undefined && <div className="scr-total__ms">{say('scr.ms', { ms: Math.round(ms) })}</div>}
     </div>
   )
 }
@@ -99,7 +113,7 @@ function Labels({ labels }: { labels: ScreenLabels }) {
 
 function ScreenPrices() {
   const st = useScreenState()
-  const t = useOverlayT()
+  const say = useSay()
   if (st.status === 'idle') return null
   if (st.status === 'busy' || st.status === 'fail')
     return (
@@ -108,10 +122,10 @@ function ScreenPrices() {
           <Icon name={st.status === 'fail' ? 'warn' : 'info'} />
           <span>
             {st.status === 'fail'
-              ? t(`scr.fail.${st.fail ?? 'error'}`)
+              ? say(`scr.fail.${st.fail ?? 'error'}`)
               : st.icons
-                ? t('scr.icons', { done: st.icons.done, total: st.icons.total })
-                : t('scr.busy')}
+                ? say('scr.icons', { done: st.icons.done, total: st.icons.total })
+                : say('scr.busy')}
           </span>
         </div>
       </div>

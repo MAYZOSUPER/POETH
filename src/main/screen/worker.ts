@@ -3,7 +3,9 @@ import type { Bitmap } from '@shared/ocr/bitmap'
 import { parseDigitSet, type DigitSet } from '@shared/screen/digits'
 import { describe, type IconDesc } from '@shared/screen/icons'
 import { parseLayoutSet, type LayoutSet } from '@shared/screen/layout'
+import { recognizeGrid } from '@shared/screen/grid'
 import { recognizeStash, type StashResult } from '@shared/screen/recognize'
+import type { ScreenWindow } from '@shared/types/screen'
 import { readStack } from '@shared/screen/stack'
 import { decodeThumbs } from '@shared/screen/thumbs'
 import { createOcrEngine, type OcrEngine } from '../ocr/engine'
@@ -16,7 +18,9 @@ export type ScreenWorkerIn =
   | { type: 'game'; game: string; thumbs: Uint8Array; layouts: unknown; digits: unknown }
   | { type: 'read'; id: number; game: string; img: Bitmap; clientHeight: number }
 
-export type ScreenWorkerOut = { id: number; ok: true; result: Omit<StashResult, 'debug'> } | { id: number; ok: false; error: string }
+export type ScreenWorkerOut =
+  | { id: number; ok: true; window: ScreenWindow; result: Omit<StashResult, 'debug'> }
+  | { id: number; ok: false; error: string }
 
 interface GameData {
   icons: IconDesc[]
@@ -47,7 +51,18 @@ port?.on('message', async (msg: ScreenWorkerIn) => {
       layouts: g.layouts,
       readCount: (img, cell) => readStack(img, cell, ocr ? ocr.read : null, g.digits)
     })
-    port.postMessage({ id: msg.id, ok: true, result } satisfies ScreenWorkerOut)
+    // особая вкладка не узнана — окно с обычной сеткой (награды Ритуала, торговец Экспедиции): берём, если в сетке
+    // узнано больше предметов, чем без раскладки
+    if (!result.tab) {
+      const g2 = recognizeGrid({ img: msg.img, clientHeight: msg.clientHeight, icons: g.icons })
+      const known = (cells: typeof result.cells): number => cells.filter((c) => c.present && c.item).length
+      if (g2.lattice && known(g2.cells) > known(result.cells)) {
+        const grid = { tab: null, scale: null, cells: g2.cells, ms: { find: g2.ms, match: 0, ocr: 0, total: result.ms.total + g2.ms } }
+        port.postMessage({ id: msg.id, ok: true, window: 'grid', result: grid } satisfies ScreenWorkerOut)
+        return
+      }
+    }
+    port.postMessage({ id: msg.id, ok: true, window: 'stash', result } satisfies ScreenWorkerOut)
   } catch (err) {
     port.postMessage({ id: msg.id, ok: false, error: err instanceof Error ? err.message : String(err) } satisfies ScreenWorkerOut)
   }
