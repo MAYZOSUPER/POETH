@@ -271,6 +271,8 @@ export interface ProgressState {
 export interface ZoneEvent {
   /** raw game areaId from the log (e.g. "g1_2"); matches Zone.xref.exileUiAreaId */
   areaId?: string
+  /** уровень области из той же строки `Generating level N area` (S64: штраф опыта, ZoneXpHint) */
+  areaLevel?: number
   /** display name fallback (from the [SCENE] log line) */
   areaName?: string
   at: number
@@ -298,6 +300,8 @@ export interface TailerStatus {
   found: boolean
   /** last detected zone (so the UI can sync current state on startup) */
   areaId?: string
+  /** уровень последней области (S64) */
+  areaLevel?: number
   areaName?: string
   level?: number
 }
