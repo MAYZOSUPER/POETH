@@ -3,7 +3,7 @@ import { promises as fs, readFileSync } from 'fs'
 import os from 'os'
 import path from 'path'
 import type { Deal } from '@shared/types'
-import { parseLogLine, parseSystemMessage, type WhisperEvent } from '@shared/deals/whisperParse'
+import { parseLogLine, parseSystemMessage, parseTradeMessage, type WhisperEvent } from '@shared/deals/whisperParse'
 import {
   addDeal,
   applySystemEvent,
@@ -105,6 +105,45 @@ describe('whisper PoE 2 — разбор RU', () => {
     expect(parseSystemMessage('Сделка совершена.')).toBeNull()
     expect(parseSystemMessage('Сделка совершена.', 'poe1')).toBeNull()
     expect(parseSystemMessage('Trade accepted.', 'poe1')).toEqual({ kind: 'tradeAccepted', lang: 'en' })
+  })
+})
+
+describe('исходящий whisper PoE 2 на языке продавца (de, fr, ko, zh)', () => {
+  // тела — живые listing.whisper trade2 (31.10.2026), ник продавца заменён
+  const OUT = '2026/10/31 21:40:00 74519921 cffb0658 [INFO Client 19012] @To Seller: '
+  const cases: [string, string, Record<string, unknown>][] = [
+    [
+      'de',
+      `Hi, ich möchte 'Schwefel-Finger Saphirring' zum angebotenen Preis von 20 exalted in der Standard-Liga kaufen (Truhenfach "~price 20 exalted"; Position: 4 von links, 22 von oben)`,
+      { item: 'Schwefel-Finger Saphirring', price: '20 exalted', league: 'Standard', tab: '~price 20 exalted', pos: { left: 4, top: 22 } }
+    ],
+    [
+      'fr',
+      `Bonjour, je souhaiterais t'acheter Polcirkeln Bague de saphir pour 1 exalted dans la ligue Standard (onglet de réserve "~b/o 1 exalted" ; 9e en partant de la gauche, 12e en partant du haut)`,
+      { item: 'Polcirkeln Bague de saphir', price: '1 exalted', league: 'Standard', tab: '~b/o 1 exalted', pos: { left: 9, top: 12 } }
+    ],
+    [
+      'ko',
+      '안녕하세요, 1 exalted(으)로 올려놓은 Standard 리그의 대재앙 선회 사파이어 반지(을)를 구매하고 싶습니다 (보관함 탭 "~price 1 exalted", 위치: 왼쪽 5, 상단 9)',
+      { item: '대재앙 선회 사파이어 반지', price: '1 exalted', league: 'Standard', tab: '~price 1 exalted', pos: { left: 5, top: 9 } }
+    ],
+    [
+      'zh',
+      '你好，我想購買 復仇 之旋 藍玉戒指 標價 1 exalted 在 Standard (倉庫頁 "~price 1 divine"; 位置: 左 1, 上 13)',
+      { item: '復仇 之旋 藍玉戒指', price: '1 exalted', league: 'Standard', tab: '~price 1 divine', pos: { left: 1, top: 13 } }
+    ]
+  ]
+
+  for (const [lang, body, want] of cases) {
+    it(`${lang}: предмет, цена, лига, ячейка; ответы — по-английски`, () => {
+      const ev = whisper(OUT + body)
+      expect(ev.dir).toBe('out')
+      expect(ev.trade).toMatchObject({ kind: 'item', lang: 'en', priceValue: { currency: 'exalted' }, ...want })
+    })
+  }
+
+  it('PoE 1 не меняется: эти шаблоны там не разбираются', () => {
+    for (const [, body] of cases) expect(parseTradeMessage(body)).toBeNull()
   })
 })
 
