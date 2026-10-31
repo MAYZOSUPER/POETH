@@ -4,7 +4,19 @@ import os from 'os'
 import path from 'path'
 import type { Deal } from '@shared/types'
 import { parseLogLine, parseSystemMessage, type WhisperEvent } from '@shared/deals/whisperParse'
-import { applySystemEvent, clearDeals, dealGame, emptyDealsFile, normalizeDealsConfig } from '@shared/deals/history'
+import {
+  addDeal,
+  applySystemEvent,
+  clearDeals,
+  dealGame,
+  emptyDealsFile,
+  ignoreKey,
+  normalizeDealsConfig,
+  normalizeDealsFile,
+  setDealStatus,
+  trimHistory,
+  withConfig
+} from '@shared/deals/history'
 import { chatCommand } from '@shared/deals/commands'
 import { DealsStore, demoLines } from '../../src/main/services/dealsStore'
 
@@ -189,6 +201,54 @@ describe('история: функции по игре', () => {
     const r = applySystemEvent(data, { kind: 'tradeAccepted', lang: 'en' }, T0, 'poe1')
     expect(r.changedId).toBe('p1')
     expect(applySystemEvent(data, { kind: 'tradeAccepted', lang: 'en' }, T0).changedId).toBe('p2')
+  })
+
+  it('лимит истории — у каждой игры свой: PoE 2 не вытесняет PoE 1', () => {
+    const p2 = Array.from({ length: 25 }, (_, i) => deal(`p2-${i}`, 'poe2', { ts: T0 - i }))
+    const p1 = Array.from({ length: 5 }, (_, i) => deal(`p1-${i}`, undefined, { ts: T0 - 1000 - i }))
+    // trimHistory: свежие первыми, по 20 на игру
+    const kept = trimHistory([...p2, ...p1], 20)
+    expect(kept.filter((d) => d.game === 'poe2')).toHaveLength(20)
+    expect(kept.filter((d) => !d.game).map((d) => d.id)).toEqual(p1.map((d) => d.id))
+    // addDeal: новая сделка PoE 2 при полном лимите PoE 2 вытесняет старую PoE 2, а не PoE 1
+    let data = withConfig(emptyDealsFile(), normalizeDealsConfig({ historyLimit: 20 }))
+    data = { ...data, deals: kept }
+    const r = addDeal(data, deal('p2-new', 'poe2', { ts: T0 + 1, player: 'New' }), T0 + 1)
+    expect(r.data.deals.filter((d) => d.game === 'poe2')).toHaveLength(20)
+    expect(r.data.deals.filter((d) => !d.game)).toHaveLength(5)
+    // deals.json: обрезка при чтении — тоже по игре
+    const f = normalizeDealsFile({ version: 2, config: { historyLimit: 20 }, deals: [...p2, ...p1] }, T0)
+    expect(f.deals.filter((d) => !d.game)).toHaveLength(5)
+    expect(f.deals.filter((d) => d.game === 'poe2')).toHaveLength(20)
+  })
+
+  it('«Продано» глушит повторы только в своей игре; повтор запроса — тоже по игре', () => {
+    const at = { tab: 'Sale', pos: { left: 2, top: 3 } }
+    let data = { ...emptyDealsFile(), deals: [deal('p1', undefined, at)] }
+    data = setDealStatus(data, 'p1', 'sold', T0)
+    // тот же предмет и ячейка в PoE 2 — не игнор, и это не повтор сделки PoE 1
+    const r2 = addDeal(data, deal('p2', 'poe2', { ...at, ts: T0 + 1 }), T0 + 1)
+    expect(r2.kind).toBe('added')
+    expect(r2.deal.status).toBe('new')
+    // в PoE 1 — игнор, как и было
+    const r1 = addDeal(data, deal('p1b', undefined, { ...at, ts: T0 + 2 }), T0 + 2)
+    expect(r1.deal.status).toBe('ignored')
+    // проданное в PoE 2 глушит только PoE 2
+    let d2 = { ...emptyDealsFile(), deals: [deal('q2', 'poe2', at)] }
+    d2 = setDealStatus(d2, 'q2', 'sold', T0)
+    expect(addDeal(d2, deal('q2b', 'poe2', { ...at, ts: T0 + 1 }), T0 + 1).deal.status).toBe('ignored')
+    expect(addDeal(d2, deal('q1', undefined, { ...at, ts: T0 + 1 }), T0 + 1).deal.status).toBe('new')
+    // одинаковый запрос в другой игре в окне повтора — новая сделка
+    const same = { ...at, player: 'Buyer' }
+    const open = { ...emptyDealsFile(), deals: [deal('o1', undefined, same)] }
+    expect(addDeal(open, deal('o2', 'poe2', { ...same, ts: T0 + 60_000 }), T0 + 60_000).kind).toBe('added')
+    expect(addDeal(open, deal('o3', undefined, { ...same, ts: T0 + 60_000 }), T0 + 60_000).kind).toBe('repeated')
+  })
+
+  it('ключ игнора PoE 1 прежний (старые записи deals.json совпадают), у PoE 2 — с игрой', () => {
+    const at = { tab: 'Sale', pos: { left: 2, top: 3 } }
+    expect(ignoreKey(deal('a', undefined, at))).toBe('gold ring|sale|2,3')
+    expect(ignoreKey(deal('b', 'poe2', at))).toBe('poe2|gold ring|sale|2,3')
   })
 
   it('свой Client.txt PoE 2 в настройках менеджера', () => {
