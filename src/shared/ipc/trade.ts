@@ -11,7 +11,10 @@ import type {
   Poe1FallbackMatch,
   CurrencyRate,
   Poe1FaustusArgs,
-  Poe1FaustusResult
+  Poe1FaustusResult,
+  Poe2AngeArgs,
+  Poe2AngeResult,
+  Poe2CurrencyRate
 } from '../types'
 
 export const tradeChannels = {
@@ -24,7 +27,9 @@ export const tradeChannels = {
     poe2MatchUnknown: 'trade:pcTwoMatchUnknown',
     copyText: 'trade:copyText',
     currencyRate: 'trade:currencyRate',
-    poe1Faustus: 'trade:pcFaustus'
+    poe1Faustus: 'trade:pcFaustus',
+    poe2Rate: 'trade:pcTwoRate',
+    poe2Ange: 'trade:pcTwoAnge'
   }
 } as const
 
@@ -50,5 +55,9 @@ export interface TradeIpcApi {
     currencyRate(league: string): Promise<CurrencyRate | null>
     /** S24: цена у Фаустуса (почасовой фид обмена GGG) по английским именам; запросов к сайту трейда нет */
     poe1Faustus(args: Poe1FaustusArgs): Promise<Poe1FaustusResult>
+    /** S61: PoE2 — курс exalted за divine (и за chaos) по фиду обмена GGG realm poe2; null — данных нет */
+    poe2Rate(league: string): Promise<Poe2CurrencyRate | null>
+    /** S61: PoE2 — цена у Ange (тот же фид) по английским именам; запросов к сайту трейда нет */
+    poe2Ange(args: Poe2AngeArgs): Promise<Poe2AngeResult>
   }
 }

@@ -14,6 +14,8 @@ export type {
 export type { FallbackMatch as Poe1FallbackMatch } from '../poe1/pricecheck/fallback'
 export type { CurrencyRate } from '../poe1/pricecheck/currency'
 export type { FaustusPrice, Poe1FaustusArgs, Poe1FaustusResult } from '../poe1/pricecheck/faustus'
+// S61: PoE 2 — курс ex ↔ div и «цена у Ange» по фиду обмена GGG (realm poe2)
+export type { AngePrice, Poe2AngeArgs, Poe2AngeResult, Poe2CurrencyRate } from '../poe2/pricecheck/ange'
 
 /** Настройки окна цены (Settings v2 `priceCheck`). */
 export interface PriceCheckSettings {
