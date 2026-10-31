@@ -1,5 +1,5 @@
 import type { GameId } from '@shared/games'
-import type { FarmRun, FarmState, FarmStats } from '@shared/types/farm'
+import type { FarmRun, FarmState } from '@shared/types/farm'
 
 // Форматирование трекера карт (S11b; PoE 2 — S69) — общее для панели компаньона и виджета оверлея.
 // Время в снимке посчитано на момент state.at и «тикает» дальше на стороне окна. PoE 2 считает в exalted.
@@ -130,24 +130,32 @@ export function exAmount(v: number, lang: 'ru' | 'en', signed = false): string {
   return signed && v > 0 ? `+${s}` : s
 }
 
-/** Чем считать доход PoE 2: прибыль сессии от «Богатства» (S70), без неё — находки. */
-export function exBase(stats: Pick<FarmStats, 'profitEx' | 'findsEx'> | null | undefined): number | null {
-  return stats?.profitEx ?? stats?.findsEx ?? null
+/**
+ * Сумма PoE 2 по макету: в div с одним знаком («+4,8 div»), а без курса — в exalted. `smallInEx` — мелочь
+ * меньше 100 ex остаётся в ex («+5 ex» у находки).
+ */
+export function money(
+  ex: number,
+  exPerDiv: number | null,
+  lang: 'ru' | 'en',
+  opts: { signed?: boolean; smallInEx?: boolean } = {}
+): string {
+  const sign = opts.signed && ex > 0 ? '+' : ''
+  if (exPerDiv && exPerDiv > 0 && !(opts.smallInEx && Math.abs(ex) < 100)) {
+    const d = ex / exPerDiv
+    const digits = d === 0 || Math.abs(d) >= 0.1 ? 1 : 2
+    return `${sign}${d.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: digits })} div`
+  }
+  return `${sign}${exAmount(ex, lang)} ex`
 }
 
-/**
- * Доход в час PoE 2 по макету PoE 1: от 1 div в час — главная цифра в div (под ней ≈ ex), меньше —
- * наоборот. Без курса ex → div — только ex.
- */
-export function incomeEx(perHourEx: number, exPerDiv: number | null, lang: 'ru' | 'en'): { main: string; sub: string } {
-  const perHour = lang === 'ru' ? 'в час' : 'per hour'
-  if (!exPerDiv || !(exPerDiv > 0)) return { main: `${exAmount(perHourEx, lang)} ex`, sub: perHour }
-  const div = perHourEx / exPerDiv
-  const loc = lang === 'ru' ? 'ru-RU' : 'en-US'
-  const divText = (d: number, digits: number): string => d.toLocaleString(loc, { maximumFractionDigits: digits })
-  return Math.abs(div) >= 1
-    ? { main: `${divText(div, 1)} div`, sub: `≈ ${exAmount(perHourEx, lang)} ex ${perHour}` }
-    : { main: `${exAmount(perHourEx, lang)} ex`, sub: `≈ ${divText(div, 2)} div` }
+/** Ярусы карт забегов: «T15–16», «T15» или '' (карт с ярусом нет). */
+export function tierRange(runs: Pick<FarmRun, 'kind' | 'tier'>[]): string {
+  const tiers = runs.filter((r) => r.kind === 'map' && r.tier !== null).map((r) => r.tier as number)
+  if (!tiers.length) return ''
+  const lo = Math.min(...tiers)
+  const hi = Math.max(...tiers)
+  return lo === hi ? `T${lo}` : `T${lo}–${hi}`
 }
 
 /** «28.10 21:40» / «10/28 21:40». */

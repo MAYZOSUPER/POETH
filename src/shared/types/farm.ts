@@ -78,6 +78,8 @@ export interface FarmFind {
   ref: string
   /** имя на языке клиента для строки в списке; нет — показываем ref */
   name?: string
+  /** редкость — цвет имени в списке (окно цены знает её) */
+  rarity?: FarmFindRarity
   /** штук (≥ 1) */
   qty: number
   /** цена всей находки (за qty штук) в exalted; null — цена неизвестна */
@@ -88,10 +90,13 @@ export interface FarmFind {
   source: 'ctrlD' | 'quick' | 'manual'
 }
 
+export type FarmFindRarity = 'normal' | 'magic' | 'rare' | 'unique' | 'currency' | 'gem'
+
 /** Что присылают окно цены и ручной ввод: забег — текущий, если `runId` не указан. */
 export interface FarmFindInput {
   ref: string
   name?: string
+  rarity?: FarmFindRarity
   /** по умолчанию 1 */
   qty?: number
   valueEx: number | null

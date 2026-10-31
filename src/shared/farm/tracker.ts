@@ -23,6 +23,7 @@ import type {
   FarmConfig,
   FarmEvent,
   FarmFind,
+  FarmFindRarity,
   FarmFindResult,
   FarmLocation,
   FarmProfit,
@@ -128,7 +129,11 @@ function cleanText(v: unknown): string | null {
  * Находка от окна цены или ручного ввода (PoE 2): ref — непустая строка до 200 знаков, qty — целое
  * 1…1 000 000 (по умолчанию 1), valueEx — цена всей находки ≥ 0 или null (неизвестна). Иначе null.
  */
-export function cleanFindInput(v: unknown): { ref: string; name?: string; qty: number; valueEx: number | null; source: FarmFind['source']; runId?: string } | null {
+const RARITIES: readonly FarmFindRarity[] = ['normal', 'magic', 'rare', 'unique', 'currency', 'gem']
+
+export function cleanFindInput(
+  v: unknown
+): { ref: string; name?: string; rarity?: FarmFindRarity; qty: number; valueEx: number | null; source: FarmFind['source']; runId?: string } | null {
   const x = v as Partial<FarmFind & { runId: unknown }> | null
   if (!x || typeof x !== 'object') return null
   const ref = cleanText(x.ref)
@@ -141,6 +146,7 @@ export function cleanFindInput(v: unknown): { ref: string; name?: string; qty: n
   return {
     ref,
     ...(name && name !== ref ? { name } : {}),
+    ...(RARITIES.includes(x.rarity as FarmFindRarity) ? { rarity: x.rarity } : {}),
     qty,
     valueEx,
     source: x.source === 'ctrlD' || x.source === 'quick' ? x.source : 'manual',
@@ -152,7 +158,9 @@ function cleanFind(v: unknown): FarmFind | null {
   const x = v as Partial<FarmFind> | null
   const f = cleanFindInput(x)
   if (!f || typeof x?.id !== 'string' || !finite(x.at)) return null
-  return { id: x.id, ref: f.ref, ...(f.name ? { name: f.name } : {}), qty: f.qty, valueEx: f.valueEx, at: x.at, source: f.source }
+  const { runId: _r, ...rest } = f
+  void _r
+  return { id: x.id, ...rest, at: x.at }
 }
 
 /** Режим прибыли PoE 2 из диалога; иначе undefined. */
@@ -644,6 +652,7 @@ export class FarmTracker {
       id,
       ref: f.ref,
       ...(f.name ? { name: f.name } : {}),
+      ...(f.rarity ? { rarity: f.rarity } : {}),
       qty: f.qty,
       valueEx: f.valueEx,
       at: ts,

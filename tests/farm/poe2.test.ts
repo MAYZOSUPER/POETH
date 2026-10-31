@@ -10,6 +10,7 @@ import {
   type Poe2FarmAreas
 } from '@shared/farm/zonesPoe2'
 import type { FarmEvent, FarmFindResult } from '@shared/types/farm'
+import { money, tierRange } from '../../src/renderer/src/panels/farm/format'
 
 // Трекер карт PoE 2 (S69) на синтетических журналах EN и RU (tests/farm/fixtures/client-poe2-farm-*.txt,
 // ники и имена вымышленные): ярус T1–T16, смерть не закрывает карту (воскрешение — та же строка входа с тем
@@ -356,5 +357,24 @@ describe('«+ находка» и прибыль сессии (API для окн
     const st = tr.snapshot(at('21:05:00'))
     expect(st.game).toBe('poe1')
     expect(st.stats && 'exPerHour' in st.stats).toBe(false)
+  })
+})
+
+describe('показ сумм PoE 2 (макет: «+4,8 div», мелочь в ex)', () => {
+  it('money: div с одним знаком, без курса — ex; мелочь у находки — ex', () => {
+    expect(money(2707, 564, 'ru', { signed: true })).toBe('+4,8 div')
+    expect(money(2707, 564, 'en', { signed: true })).toBe('+4.8 div')
+    expect(money(-282, 564, 'ru', { signed: true })).toBe('-0,5 div')
+    expect(money(25, 564, 'ru', { signed: true })).toBe('+0,04 div')
+    expect(money(25, 564, 'ru', { signed: true, smallInEx: true })).toBe('+25 ex')
+    expect(money(560, null, 'en', { signed: true })).toBe('+560 ex')
+    expect(money(0, 564, 'ru')).toBe('0 div')
+  })
+
+  it('tierRange: «T15–16», один тир, без карт — пусто', () => {
+    const r = (tier: number | null, kind: 'map' | 'other' = 'map') => ({ kind, tier })
+    expect(tierRange([r(16), r(15), r(16)])).toBe('T15–16')
+    expect(tierRange([r(14)])).toBe('T14')
+    expect(tierRange([r(null, 'other')])).toBe('')
   })
 })
