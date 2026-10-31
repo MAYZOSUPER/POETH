@@ -35,7 +35,7 @@ export function TabletPage({ data, other }: { data: Poe2RegexData; other: Poe2Re
     : undefined
 
   return (
-    <div className="rx-two">
+    <div className="rx-two rx-two--p2">
       <div className="rx-stack">
         <Box title={t('regex.poe2.tablet.types')} tip={t('regex.poe2.tablet.typesTip')}>
           <span className="ui-chips">

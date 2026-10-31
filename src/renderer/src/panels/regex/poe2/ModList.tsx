@@ -107,7 +107,7 @@ export function ModList({
           ))}
         </div>
       )}
-      <div className="rx-trilist">
+      <div className="rx-trilist rx-trilist--p2">
         {visible.length === 0 && <div className="ui-empty">{t('regex.maps.empty')}</div>}
         {visible.map((m) => (
           <ModTri
@@ -166,7 +166,7 @@ function ModTri({
         {alt && alt !== mod.display && <span className="rx-tri__alt">{alt.replace(/\n/g, ' · ')}</span>}
       </span>
       <span className="rx-tri__tags">
-        {simple && <em className="rx-tri__word">{t(`regex.state.${state}`)}</em>}
+        {simple && state !== 'any' && <em className="rx-tri__word">{t(`regex.state.${state}`)}</em>}
         {mod.scary && (
           <span
             className="ui-tag ui-tag--bad"

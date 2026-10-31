@@ -170,7 +170,7 @@ function PriceLine({ result, skipped }: { result: Poe2PriceResult; skipped: numb
       </span>
     )
   }
-  const prices = result.listings.map((l) => `${fmt(l.amount)} ${l.currency}`)
+  const prices = result.listings.map((l) => `${fmt(l.amount)} ${SHORT[l.currency] ?? l.currency}`)
   return (
     <span className="rx-p2-price">
       <span>
@@ -204,3 +204,5 @@ function PriceLine({ result, skipped }: { result: Poe2PriceResult; skipped: numb
 }
 
 const fmt = (n: number): string => (Number.isInteger(n) ? String(n) : n.toFixed(1))
+/** Короткие имена валют trade2 в строке цены — как в окне цены PoE 2 (база — ex, дорогое — div). */
+const SHORT: Record<string, string> = { exalted: 'ex', divine: 'div' }

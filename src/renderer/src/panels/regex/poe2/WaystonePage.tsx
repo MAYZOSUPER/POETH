@@ -56,7 +56,7 @@ export function WaystonePage({ data, other }: { data: Poe2RegexData; other: Poe2
   }))
 
   return (
-    <div className="rx-two">
+    <div className="rx-two rx-two--p2">
       <div className="rx-stack">
         <ModList
           mods={ws.mods}
