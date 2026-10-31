@@ -1,7 +1,7 @@
 // Цены главных наград слухов (S65; чистый модуль, tests/rumours/prices.test.ts). Источник цен — интерфейс:
-//  - «exchange» — почасовой фид обмена GGG `currency-exchange/poe2` (обобщает S61): валюта по пути метаданных;
-//  - «ninja» — снимок poe.ninja PoE 2 из CI (делает S67): камни, ключи, уникальные — по имени;
-//  - «stub» — заглушка до их слияния в main: цен нет, окно пишет «цена появится позже».
+//  - «exchange» — цена у Ange по почасовому фиду обмена GGG `currency-exchange/poe2` (S61), адаптер — sources.ts;
+//  - «ninja» — снимок poe.ninja PoE 2 из пакета данных (S67), адаптер — sources.ts;
+//  - «stub» — заглушка (тесты, нет источников): цен нет.
 // Порядок источников — порядок доверия: у ссылки берётся первая найденная цена. Падение одного источника не мешает
 // остальным. Сеть и диск — у источников в main; здесь только сведение и пересчёт в exalted.
 
@@ -18,6 +18,8 @@ export interface RumourPriceQuote {
   source: RumourPriceSourceId
   /** когда источник снял цену (ISO); null — не знает */
   at: string | null
+  /** мало сделок или лотов — цена примерная (S61 AngePrice.low, S67 Poe2Price.low) */
+  low?: boolean
 }
 
 /** Ссылка на награду для источника: имя EE2 (poe.ninja) и путь метаданных (фид обмена). */
@@ -135,6 +137,8 @@ export function inExalted(q: RumourPriceQuote | null | undefined, rates: RumourR
 export interface ShownPrice {
   value: number
   unit: 'exalted' | 'divine'
+  /** цена примерная: мало сделок или лотов */
+  low?: boolean
 }
 
 /**
@@ -143,13 +147,14 @@ export interface ShownPrice {
  */
 export function shownPrice(q: RumourPriceQuote | null | undefined, rates: RumourRates): ShownPrice | null {
   if (!q || !okNumber(q.value)) return null
+  const low = q.low ? { low: true } : {}
   const ex = inExalted(q, rates)
   const div = rates.divineInExalted
   if (ex !== null && okNumber(div)) {
-    if (ex >= div) return { value: Math.round((ex / div) * 10) / 10, unit: 'divine' }
-    return { value: Math.max(1, Math.round(ex)), unit: 'exalted' }
+    if (ex >= div) return { value: Math.round((ex / div) * 10) / 10, unit: 'divine', ...low }
+    return { value: Math.max(1, Math.round(ex)), unit: 'exalted', ...low }
   }
-  if (q.unit === 'divine') return { value: Math.round(q.value * 10) / 10, unit: 'divine' }
-  if (q.unit === 'exalted') return { value: Math.max(1, Math.round(q.value)), unit: 'exalted' }
+  if (q.unit === 'divine') return { value: Math.round(q.value * 10) / 10, unit: 'divine', ...low }
+  if (q.unit === 'exalted') return { value: Math.max(1, Math.round(q.value)), unit: 'exalted', ...low }
   return null
 }
