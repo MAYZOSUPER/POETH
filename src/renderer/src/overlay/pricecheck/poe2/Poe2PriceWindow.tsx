@@ -6,6 +6,7 @@ import type { Poe1ExchangeOffer, Poe1Listing } from '@shared/poe1/pricecheck/res
 import type { StatSource } from '@shared/poe1/parser/modifiers'
 import type { VerdictKind } from '@shared/poe1/pricecheck/verdict'
 import type { MarketPrice2, Verdict2 } from '@shared/poe2/pricecheck/verdict'
+import { VISIBLE_WARNINGS, type PriceWarning } from '@shared/poe2/pricecheck/warnings'
 import { angeConfidence } from '@shared/poe2/pricecheck/ange'
 import { roundExalted } from '@shared/poe2/pricecheck/currency'
 import { angeView, rateFractions2, type AngeRowView } from '@shared/poe2/pricecheck/priceBlock'
@@ -530,8 +531,9 @@ function verdictText(
     case 'valuable':
       return {
         title: t('pc1.v.valuable'),
-        sub:
-          v.reason === 'spread' && v.range
+        sub: v.caution
+          ? t('pc1.v.caution')
+          : v.reason === 'spread' && v.range
             ? t('pc1.v.valuable.spread', { min: priceText(v.range.min, 'gen'), max: priceText(v.range.max, 'gen') })
             : v.reason === 'few'
               ? t('pc1.v.valuable.few', { price, n: v.count })
@@ -541,6 +543,7 @@ function verdictText(
     case 'list':
       return {
         title: t(ctx.bulk ? 'pc1.v.list.each' : 'pc1.v.list', { price: v.price ? priceText(v.price, 'acc') : '' }),
+        sub: v.caution ? t('pc1.v.caution') : undefined,
         help: t(ctx.bulk ? 'pc1.v.list.bulk' : 'pc1.v.list.sub')
       }
   }
@@ -600,7 +603,7 @@ function VerdictPlate({
   const { title, sub, help } = verdictText(v, { bulk, one, exchange }, priceText, t)
   const tip = simple ? help : [sub, help].filter(Boolean).join(' ')
   return (
-    <div className={`pc-verdict pc-verdict--${VERDICT_TONE[v.kind]}`} role="status" data-kind={v.kind}>
+    <div className={`pc-verdict pc-verdict--${v.caution ? 'info' : VERDICT_TONE[v.kind]}`} role="status" data-kind={v.kind}>
       <Icon name={VERDICT_ICON[v.kind]} />
       <span className="pc-verdict__text">
         <b className="pc-verdict__title">{title}</b>
@@ -619,6 +622,39 @@ function VerdictPlate({
         )}
         {!simple && v.note && <NoteButton note={v.note} simple={false} t={t} />}
       </span>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- S61: предупреждения (как S15 у PoE 1)
+
+/** «Цена может быть не про ваш предмет»: важные сверху, больше двух — под «Ещё N». */
+function WarningList({ list, t }: { list: PriceWarning[]; t: T }) {
+  const [open, setOpen] = useState(false)
+  if (!list.length) return null
+  const rest = list.length - VISIBLE_WARNINGS
+  const shown = open || rest <= 0 ? list : list.slice(0, VISIBLE_WARNINGS)
+  return (
+    <div className="pc-warns" role="list">
+      {shown.map((w) => (
+        <div className="pc-warn" role="listitem" key={w.key}>
+          <Icon name="warn" />
+          <span>{t(w.key, w.params)}</span>
+          {w.help ? (
+            <span className="ui-q" title={t(w.help)}>
+              ?
+            </span>
+          ) : (
+            <span />
+          )}
+        </div>
+      ))}
+      {rest > 0 && (
+        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm pc-warns__more" onClick={() => setOpen((o) => !o)}>
+          <Icon name={open ? 'chev-d' : 'chev-r'} />
+          {open ? t('pc1.warn.less') : t('pc1.warn.more', { n: rest })}
+        </button>
+      )}
     </div>
   )
 }
@@ -801,6 +837,7 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<Pc2Result, {
       ) : (
         <VerdictPlate v={result.verdict} bulk={false} simple={simple} lang={lang} t={t} />
       )}
+      <WarningList key={result.siteUrl} list={result.warnings} t={t} />
       {!selling && <MarketSummary result={result} simple={simple} lang={lang} t={t} />}
       {simple && !selling && <WhyHint result={result} lang={lang} t={t} />}
       <div className="pc-blk">

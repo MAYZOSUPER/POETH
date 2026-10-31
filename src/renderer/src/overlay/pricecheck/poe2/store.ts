@@ -15,6 +15,7 @@ import { angeConfidence } from '@shared/poe2/pricecheck/ange'
 import { exaltedRates, type ExaltedRates } from '@shared/poe2/pricecheck/currency'
 import { angeUnit } from '@shared/poe2/pricecheck/priceBlock'
 import { buildQueryUrl } from '@shared/favorites/tradeUrl'
+import { checkedMods2, hasStrongWarning, poe2Warnings, searchContext2, type PriceWarning, type SearchContext2 } from '@shared/poe2/pricecheck/warnings'
 import { honestPrice, type HonestPrice, type Poe1ExchangeOffer, type Poe1Listing } from '@shared/poe1/pricecheck/results'
 import type { PcSiteOffers } from '../store'
 
@@ -47,6 +48,10 @@ export type Pc2Result =
       verdict: Verdict2
       /** сколько свойств было отмечено в момент поиска */
       checked: number
+      /** S61 (хвост S47): «цена может быть не про ваш предмет» — как S15 у PoE 1 */
+      warnings: PriceWarning[]
+      /** что было включено в момент поиска (для предупреждений) */
+      searched: Searched2
     }
   | { kind: 'bulk'; total: number; offers: Poe1ExchangeOffer[]; siteUrl: string; cached: boolean; verdict: Verdict2 }
   | {
@@ -63,6 +68,9 @@ export type Pc2Result =
       site: Pc2SiteOffers
       verdict: Verdict2
     }
+
+/** Контекст поиска для предупреждений: фильтры мутабельны — берём их на момент поиска. */
+export type Searched2 = SearchContext2 & { at: number; defaultOn?: number }
 
 export interface Pc2League {
   id: string
@@ -91,6 +99,8 @@ interface Pc2State {
   rate: Poe2CurrencyRate | null
   /** S61: exalted за 1 шт. прочих валют лотов (regal, annul…) по цене у Ange, лиги `league` */
   more: ExaltedRates
+  /** S61: сколько свойств отмечено по умолчанию в каждом пресете (для «поиск слишком широкий») */
+  defaultsOn: Record<string, number>
 
   open: (captured: CapturedItem) => Promise<void>
   close: () => void
@@ -157,6 +167,7 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
   rev: 0,
   rate: null,
   more: {},
+  defaultsOn: {},
 
   open: async (captured) => {
     const my = ++session
@@ -191,6 +202,7 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
       sendWhisper: settings?.priceCheck?.sendWhisper ?? false,
       presets: pc.presets,
       activePreset: pc.active,
+      defaultsOn: Object.fromEntries(pc.presets.map((p) => [p.id, checkedMods2(p).on])),
       ...(ratesLeague === league ? {} : { rate: null, more: resetRates(league) })
     })
     // курс лиги — фоном (первый раз main качает свежие часы фида PoE 2)
@@ -291,7 +303,8 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
       siteUrl: res.siteUrl,
       cached: res.cached,
       query: req.body,
-      checked: checkedCount(preset)
+      checked: checkedCount(preset),
+      searched: { ...searchContext2(preset), at: Date.now(), defaultOn: get().defaultsOn[preset.id] }
     }
     // валюты лотов кроме exalted/divine/chaos (regal, annul…) — в exalted по Ange; долго — без них, потом пересчёт
     const tags = [...new Set(res.listings.map((l) => l.price?.currency).filter((c): c is string => !!c))]
@@ -371,6 +384,7 @@ interface TradeBase {
   cached: boolean
   query: unknown
   checked: number
+  searched: Searched2
 }
 
 /** Ждём курсы валют лотов не дольше — потом показываем без них и пересчитываем, когда придут. */
@@ -458,14 +472,20 @@ async function ensureRates(
 }
 
 function analyzeTrade(base: TradeBase, item: ParsedItem, rates: ExaltedRates | undefined): Pc2Result {
-  const { total, listings } = base
+  const { total, listings, searched } = base
   const honest = honestPrice(listings, total, rates)
+  const inexact = base.inexact
+  const warnings = poe2Warnings({ item, ...searched, listings, honest, inexact, now: searched.at })
+  const verdict = poe2Verdict({ kind: 'trade', total, listings, honest, noVendor: noVendor(item), rates })
+  // выдача про другой вариант (осквернённость) — заметку цены не предлагаем, просим посмотреть предупреждения
+  const caution = hasStrongWarning(warnings) && (verdict.kind === 'list' || verdict.kind === 'valuable')
   return {
     kind: 'trade',
     ...base,
     honest,
     market: poe2MarketPrice(listings, honest, rates),
-    verdict: poe2Verdict({ kind: 'trade', total, listings, honest, noVendor: noVendor(item), rates })
+    verdict: caution ? { ...verdict, note: undefined, caution: true } : verdict,
+    warnings
   }
 }
 
