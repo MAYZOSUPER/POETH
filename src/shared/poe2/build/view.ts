@@ -21,14 +21,17 @@ export interface Build2GemView {
 
 export interface Build2NodeView {
   en: string
+  /** RU из данных игры (EE2); '' — перевода нет: окно покажет EN с пометкой */
   ru: string
   keystone: boolean
 }
 
 export interface Build2StageView {
-  /** название этапа у автора; '' — «весь билд» */
+  /** название этапа у автора (как в PoB, обычно по-английски); '' — «весь билд». Подпись окно строит само из kind/act */
   title: string
   kind: Poe2StageKind
+  /** акты этапа ([с, по]) — для подписи «Акт 2» / «Акты 1–2» на языке интерфейса */
+  act?: [number, number]
   from: number
   to: number
   /** нод на дереве этапа (без стартовых) */
@@ -88,7 +91,7 @@ export function build2Summary(
       const n = tree.nodes.get(h)
       if (!n || !(n.flags & KEY) || !n.name || n.ascendancy) continue
       if (key.length >= 8) break
-      key.push({ en: n.name, ru: instill?.notables.get(h)?.ru ?? '', keystone: !!(n.flags & NODE_FLAG.keystone) })
+      key.push({ en: n.name, ru: n.ru || instill?.notables.get(h)?.ru || '', keystone: !!(n.flags & NODE_FLAG.keystone) })
     }
     const set = st.skills === null ? undefined : build.skillSets[st.skills]
     const skills: Build2GemView[] = []
@@ -106,7 +109,7 @@ export function build2Summary(
       const item = id ? build.items.find((x) => x.id === id) : undefined
       if (item && itemHead(item)) items++
     }
-    return { title: st.title, kind: st.kind, from: st.from, to: st.to, points: nodes.length, added: added.length, key, skills, items }
+    return { title: st.title, kind: st.kind, ...(st.act ? { act: st.act } : {}), from: st.from, to: st.to, points: nodes.length, added: added.length, key, skills, items }
   })
   const { report } = toGameBuild(build, plan, tree, gems, { name: 'x', lang: 'en' })
   const bi = instill ? buildInstill(build, plan, instill) : null

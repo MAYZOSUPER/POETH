@@ -18,6 +18,8 @@ export interface Poe2Stage {
   /** название этапа как у автора (по основной оси); '' — «весь билд» */
   title: string
   kind: Poe2StageKind
+  /** акты из названия («Act 2» → [2, 2], «Acts 1-2» → [1, 2]) — для подписи на языке интерфейса */
+  act?: [number, number]
   /** уровни персонажа, включительно */
   from: number
   to: number
@@ -43,6 +45,7 @@ interface Guess {
   kind: Poe2StageKind
   from: number
   swap: boolean
+  act?: [number, number]
 }
 
 /** С какого уровня этап по названию (PoE 2); null — не узнан или набор на всю кампанию. */
@@ -69,7 +72,10 @@ function guesses(titles: string[], tree: Pick<Poe2TreeData, 'acts' | 'interlude'
   const out: Guess[] = []
   titles.forEach((title, index) => {
     const s = stageFrom2(title, tree)
-    if (s) out.push({ index, title, kind: s.kind, from: s.from, swap: guessStage(title).swap })
+    if (!s) return
+    const g = guessStage(title)
+    const act: [number, number] | undefined = s.kind === 'act' && g.actFrom !== undefined ? [g.actFrom, g.actTo ?? g.actFrom] : undefined
+    out.push({ index, title, kind: s.kind, from: s.from, swap: g.swap, ...(act ? { act } : {}) })
   })
   // есть и «Maps», и «Endgame» — эндгейм позже первых карт (иначе оба начались бы с 65)
   if (out.some((x) => x.kind === 'maps')) for (const x of out) if (x.kind === 'endgame') x.from = Math.min(tree.maps + ENDGAME_AFTER_MAPS, MAX_LEVEL)
@@ -134,6 +140,7 @@ export function resolveStages2(build: Pob2Build, tree: Pick<Poe2TreeData, 'acts'
     return {
       title: x.title,
       kind: x.kind,
+      ...(x.act ? { act: x.act } : {}),
       // первый этап — с 1 уровня: до него у автора ничего нет, а игроку подсказки нужны сразу
       from: i === 0 ? 1 : x.from,
       to: next ? Math.max(x.from, next.from - 1) : MAX_LEVEL,

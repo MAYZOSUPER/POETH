@@ -18,7 +18,8 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { OUT_DIR, REPOE_SOURCE, ROOT, TREE2_VERSION, TREE_SOURCE, readJson, treeNodes, writeData } from './sources.mjs'
+import { allocatesNames } from './instill.mjs'
+import { OUT_DIR, REPOE_SOURCE, ROOT, TREE2_VERSION, TREE_SOURCE, ee2Source, readEe2, readJson, treeNodes, writeData } from './sources.mjs'
 
 export const TREE2_FORMAT = 1
 const OUT = path.join(OUT_DIR, 'tree.json')
@@ -92,6 +93,8 @@ export function buildTree2(src) {
     ids.set(n.id, n.hash)
     kept.set(n.hash, n)
   }
+  const ruNames = src.ruNames ?? new Map()
+  report.noRu = []
   const nodes = []
   for (const n of kept.values()) {
     const near = new Set()
@@ -103,7 +106,11 @@ export function buildTree2(src) {
     const f = flagsOf(n)
     // имя нужно только для показа заметных нод (нотаблы, кейстоуны, гнёзда, выбор восхождения)
     const named = f & (F.notable | F.keystone | F.jewel | F.choice)
-    nodes.push([n.hash, n.id, named ? String(n.name ?? '') : '', f, n.ascendancyId ?? 0, [...near].sort((a, b) => a - b)])
+    const name = named ? String(n.name ?? '') : ''
+    // RU-имя — только из данных игры (EE2); нет — '' (окно покажет английское с пометкой)
+    const ru = name ? ruNames.get(n.hash) ?? ruNames.get(name) ?? '' : ''
+    if (name && !ru && f & (F.notable | F.keystone) && !n.ascendancyId) report.noRu.push(name)
+    nodes.push([n.hash, n.id, name, f, n.ascendancyId ?? 0, [...near].sort((a, b) => a - b), ru])
   }
   // RU-имена восхождений — данные компаса PoE 2 (resources/data/ascendancy.json, nameRu) по английскому имени
   const ruAsc = new Map()
@@ -130,16 +137,39 @@ export function buildTree2(src) {
   return { data, report }
 }
 
+/**
+ * RU-имена нод из данных EE2 (stats.ndjson EN/RU): нотаблы — стат «Allocates #» (значение — hash ноды, «Активирует X»);
+ * кейстоуны — статы `keystone_*` с одной строкой (текст стата = имя кейстоуна). Ключ — hash или английское имя.
+ */
+export function ruNodeNames(statsEn, statsRu) {
+  const out = new Map()
+  const ruAlloc = allocatesNames(statsRu)
+  for (const [hash, ru] of ruAlloc) out.set(hash, ru)
+  const ruById = new Map()
+  for (const s of statsRu) if (s.id && !ruById.has(s.id)) ruById.set(s.id, s)
+  for (const s of statsEn) {
+    if (typeof s.id !== 'string' || !s.id.startsWith('keystone_') || s.matchers?.length !== 1) continue
+    const en = s.matchers[0].string
+    const ru = ruById.get(s.id)?.matchers?.[0]?.string
+    if (typeof en === 'string' && typeof ru === 'string' && ru && !/[#{}]/.test(ru)) out.set(en, ru)
+  }
+  return out
+}
+
 export async function loadTree2Sources() {
   const [exp, areas] = await Promise.all([readJson('tree-export.json'), readJson('repoe-world-areas.json')])
   const ascendancy = JSON.parse(readFileSync(path.join(ROOT, 'resources/data/ascendancy.json'), 'utf8'))
-  return { exp, areas, ascendancy, meta: { tree: TREE2_VERSION, sources: [TREE_SOURCE, REPOE_SOURCE] } }
+  const ruNames = ruNodeNames(readEe2('en', 'stats.ndjson'), readEe2('ru', 'stats.ndjson'))
+  return { exp, areas, ascendancy, ruNames, meta: { tree: TREE2_VERSION, sources: [TREE_SOURCE, REPOE_SOURCE, ee2Source()] } }
 }
 
 async function main() {
   const { data, report } = buildTree2(await loadTree2Sources())
   if (report.dupId.length) console.log(`\nодинаковый id у разных нод (${report.dupId.length}):\n  ${report.dupId.slice(0, 20).join('\n  ')}`)
   console.log(`нод без строкового id (не в файле): ${report.noId}`)
+  if (report.noRu.length) {
+    console.log(`\nнет RU-имени в данных EE2 — окно покажет EN с пометкой (${report.noRu.length}):\n  ${report.noRu.slice(0, 12).join(' | ')}${report.noRu.length > 12 ? ' | …' : ''}`)
+  }
   if (data.nodes.length < 3000 || data.acts.length < 3) {
     console.error('\nдерево не собрано (мало нод или актов) — tree.json не записан')
     process.exit(1)

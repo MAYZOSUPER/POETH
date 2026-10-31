@@ -81,6 +81,13 @@ describe('план этапов', () => {
       ['Act 3', 32, 64, 1, 0, 0],
       ['Endgame', 65, 100, 2, 1, 1]
     ])
+    // акты — для подписи на языке интерфейса («Акт 1»), у эндгейма их нет
+    expect(plan.stages.map((s) => s.act ?? null)).toEqual([[1, 1], [3, 3], null])
+    expect(resolveStages2(fake(['Acts 1-2', 'Interlude', 'Maps']), t).stages.map((s) => [s.kind, s.act ?? null])).toEqual([
+      ['act', [1, 2]],
+      ['interlude', null],
+      ['maps', null]
+    ])
   })
 
   it('основная ось — где больше узнанных названий; «Swap» того же уровня — не отдельный этап', () => {

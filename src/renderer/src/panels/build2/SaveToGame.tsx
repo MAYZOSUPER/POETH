@@ -3,7 +3,7 @@ import type { Build2Dir, Build2SaveResult, Build2Summary, BuildHintLang } from '
 import type { GameLang } from '@shared/types/settings'
 import { useT } from '../../i18n'
 import { BIco } from '../build/ui'
-import { saveErrorText } from './errors'
+import { dirText, saveErrorText } from './errors'
 
 // «Сохранить билд в игру» (S66; решение пользователя 31.10): файл `.build` в папку игрового планировщика PoE 2.
 // Поток: кнопка → main отвечает, куда запишет и есть ли такой файл (build:twoSave без confirm) → диалог с путём →
@@ -166,7 +166,7 @@ function ConfirmDialog({ ask, busy, onCancel, onSave, onCopy }: {
         <div className="ui-dialog__body b2-dlg__body">
           <div className="b2-path">
             <span className="ui-label">{t('build2.dlg.path')}</span>
-            <code className="ui-code b2-code">{ask.dir.path}</code>
+            <code className="ui-code b2-code">{dirText(ask.dir, t)}</code>
             <span className="ui-label">{t('build2.dlg.file')}</span>
             <code className="ui-code b2-code">{ask.fileName}</code>
           </div>

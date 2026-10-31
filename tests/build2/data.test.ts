@@ -32,6 +32,17 @@ describe('tree.json', () => {
     expect(tree.maps).toBe(65)
   })
 
+  it('RU-имена нод — из данных игры (EE2): нотаблы вложения и кейстоуны; нет перевода — пусто', () => {
+    const byName = (en: string) => [...tree.nodes.values()].find((n) => n.name === en)
+    expect(byName('Fast Acting Toxins')?.ru).toBe('Быстродействующие токсины')
+    expect(byName("Zealot's Oath")?.ru).toBe('Клятва фанатика')
+    expect(byName('Eldritch Battery')?.ru).toBe('Мистический накопитель')
+    // нотабла нельзя вложить — RU-имени в открытых данных нет, окно покажет EN с пометкой
+    expect(byName('Honed Instincts')?.ru).toBe('')
+    const key = [...tree.nodes.values()].filter((n) => n.flags & (NODE_FLAG.notable | NODE_FLAG.keystone) && !n.ascendancy)
+    expect(key.filter((n) => n.ru).length / key.length).toBeGreaterThan(0.85)
+  })
+
   it('соседи — в обе стороны', () => {
     const n = tree.nodes.get(4)
     expect(n?.id).toBe('lightning14')

@@ -7,6 +7,7 @@ import type { Build2Dir, Build2SaveResult } from '@shared/types/build2'
 // игрока и только после подтверждения с показом пути (решение пользователя 31.10). Без electron — tests/build2/
 // saveToGame.test.ts пишет во временную папку.
 //
+//  - окну — только путь от «Документы» (Build2Dir.parts), полный путь с именем пользователя Windows остаётся в main;
 //  - папка: Документы/My Games/Path of Exile 2/BuildPlanner (документы — app.getPath('documents'), с учётом переноса
 //    в OneDrive); игра сама следит за ней (GGG, Build Planner). Подмена POETH_POE2_BUILD_DIR — только для проверок и
 //    тестов, в собранном приложении (app.isPackaged) не действует;
@@ -31,11 +32,25 @@ export function buildPlannerDir(
   env: Readonly<Record<string, string | undefined>>,
   gameDirExists: (p: string) => boolean,
   allowOverride = false
-): Build2Dir {
+): PlannerDir {
   const override = allowOverride ? env[BUILD_DIR_ENV] : undefined
-  if (override && path.isAbsolute(override)) return { path: path.resolve(override), game: true }
+  if (override && path.isAbsolute(override)) {
+    const p = path.resolve(override)
+    return { path: p, game: true, view: { parts: [path.basename(p)], documents: false, game: true } }
+  }
   const game = path.join(documents, 'My Games', 'Path of Exile 2')
-  return { path: path.join(game, 'BuildPlanner'), game: gameDirExists(game) }
+  const found = gameDirExists(game)
+  return { path: path.join(game, 'BuildPlanner'), game: found, view: { parts: [...PLANNER_PARTS], documents: true, game: found } }
+}
+
+/** Путь к папке планировщика внутри «Документы» — так его показывает окно. */
+export const PLANNER_PARTS: readonly string[] = ['My Games', 'Path of Exile 2', 'BuildPlanner']
+
+/** Папка планировщика в main: полный путь (только здесь) и вид для окна (без C:\Users\<имя>). */
+export interface PlannerDir {
+  path: string
+  game: boolean
+  view: Build2Dir
 }
 
 type Kind = 'none' | 'file' | 'other'
@@ -54,7 +69,7 @@ async function kindOf(p: string): Promise<Kind> {
  * «Сохранить копией»: первое свободное имя в папке (само имя или «Имя (N).build»; на Windows регистр не важен).
  * Папки ещё нет — имя свободно. null — свободного нет (99 копий).
  */
-export async function freeFileName(dir: Build2Dir, fileName: string): Promise<{ fileName: string; n: number } | null> {
+export async function freeFileName(dir: PlannerDir, fileName: string): Promise<{ fileName: string; n: number } | null> {
   let names: string[] = []
   try {
     names = await fs.readdir(path.resolve(dir.path))
@@ -66,7 +81,7 @@ export async function freeFileName(dir: Build2Dir, fileName: string): Promise<{ 
 }
 
 export interface SaveArgs {
-  dir: Build2Dir
+  dir: PlannerDir
   fileName: string
   /** название билда в игре (поле `name` в файле) — для ответа окну */
   name: string
@@ -80,10 +95,10 @@ export interface SaveArgs {
 
 /** Записать файл `.build` (или ответить, куда запишем, — без confirm). */
 export async function saveBuildFile(a: SaveArgs): Promise<Build2SaveResult> {
-  const dir = a.dir
+  const dir = a.dir.view
   if (!SAFE_NAME.test(a.fileName) || isReservedName(a.fileName) || path.basename(a.fileName) !== a.fileName) return { ok: false, error: 'io' }
-  if (!dir.game) return { ok: false, error: 'no-game-dir', dir }
-  const root = path.resolve(dir.path)
+  if (!a.dir.game) return { ok: false, error: 'no-game-dir', dir }
+  const root = path.resolve(a.dir.path)
   const target = path.join(root, a.fileName)
   if (path.dirname(target) !== root) return { ok: false, error: 'io' }
   const kind = await kindOf(target)
@@ -106,5 +121,5 @@ export async function saveBuildFile(a: SaveArgs): Promise<Build2SaveResult> {
     console.warn('[build2] cannot write .build:', (e as NodeJS.ErrnoException).code ?? 'error')
     return { ok: false, error: 'io', dir, fileName: a.fileName }
   }
-  return { ok: true, path: target, fileName: a.fileName, name: a.name, replaced: kind === 'file' }
+  return { ok: true, fileName: a.fileName, name: a.name, replaced: kind === 'file' }
 }
