@@ -285,6 +285,8 @@ export interface Poe2Valuable {
   /** мало лотов / сделок — цена примерная */
   low?: boolean
   at: number
+  /** «К забегу»: находка забега трекера карт (id забега, S69) */
+  runId?: string
 }
 
 /** Что присылает окно цены; id и время ставит main. */
@@ -296,6 +298,8 @@ export interface Poe2ValuableInput {
   unit: number
   source: Poe2ValuableSource
   low?: boolean
+  /** «К забегу» (окно цены во время сессии фарма): ещё и находка текущего забега */
+  toRun?: boolean
 }
 
 /** Предмет вкладки, принятой из снимка экрана. */

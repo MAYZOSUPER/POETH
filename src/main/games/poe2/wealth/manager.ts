@@ -72,6 +72,8 @@ export interface Poe2WealthDeps {
   currency: () => Promise<Poe2CurrencyList | null>
   /** действующая лига PoE 2 */
   league: () => Promise<string | null>
+  /** открытый забег идущей сессии фарма (трекер карт) — для «К забегу» */
+  currentRunId?: () => string | null
   emit: (s: Poe2WealthState) => void
   now?: () => number
   log?: (msg: string) => void
@@ -239,7 +241,8 @@ export class Poe2WealthManager {
       if (!input || !this.supported || !this.league) return { ok: false as const }
       const at = this.now()
       const id = `v${at.toString(36)}${(++this.seq).toString(36)}`
-      await this.setSources(addValuable(this.sources(), input, id, at))
+      const runId = input.toRun ? (this.deps.currentRunId?.() ?? null) : null
+      await this.setSources(addValuable(this.sources(), input, id, at, runId))
       await this.record('hard')
       return { ok: true as const, id }
     })

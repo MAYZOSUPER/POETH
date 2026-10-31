@@ -1,6 +1,8 @@
 import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
 import type { CapturedItem, GameInputResult, LiveAddError, UiLang } from '@shared/types'
 import { ItemCategory, ItemRarity, type ParsedItem } from '@shared/poe2/parser'
+import type { Poe2ValuableInput } from '@shared/types'
+import { valuableInput, WealthButtons } from './WealthButtons'
 import { FilterTag, type FilterPreset, type ItemFilters, type ListingType, type StatFilter } from '@shared/poe2/pricecheck'
 import { ModifierType } from '@shared/poe2/parser/modifiers'
 import type { Poe1ExchangeOffer, Poe1Listing } from '@shared/poe1/pricecheck/results'
@@ -1469,7 +1471,7 @@ export function Poe2PriceWindow({ captured, onClose }: { captured: CapturedItem;
         <Results t={t} lang={lang} />
         <SearchAgainBar t={t} />
       </div>
-      <PriceActions result={result} title={searchTitle(captured, item)} league={league} t={t} />
+      <PriceActions result={result} title={searchTitle(captured, item)} league={league} t={t} wealth={item ? valuableInput(item, captured, result) : null} />
     </section>
   )
 }
@@ -1483,7 +1485,20 @@ const LIVE_ERROR_KEYS: Record<LiveAddError, string> = {
   'bad-url': 'pc1.live.fail'
 }
 
-function PriceActions({ result, title, league, t }: { result: Pc2Result | undefined; title: string; league: string; t: T }) {
+function PriceActions({
+  result,
+  title,
+  league,
+  t,
+  wealth
+}: {
+  result: Pc2Result | undefined
+  title: string
+  league: string
+  t: T
+  /** S70: ценный предмет для «В богатство» / «К забегу» (null — цены в ex нет) */
+  wealth: Poe2ValuableInput | null
+}) {
   const [saved, setSaved] = useState<ActionState>('idle')
   const [live, setLive] = useState<ActionState>('idle')
   const [liveError, setLiveError] = useState<LiveAddError | null>(null)
@@ -1580,6 +1595,7 @@ function PriceActions({ result, title, league, t }: { result: Pc2Result | undefi
         <Icon name={live === 'done' ? 'check' : 'bolt'} />
         {liveText}
       </button>
+      <WealthButtons input={wealth} t={t} />
     </footer>
     </>
   )

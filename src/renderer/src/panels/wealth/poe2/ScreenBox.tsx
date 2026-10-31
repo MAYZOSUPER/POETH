@@ -2,23 +2,25 @@ import { useState } from 'react'
 import type { Poe2ScreenCardTab, Poe2ScreenLine, Poe2WealthState, UiLang } from '@shared/types'
 import { cardTotal, needsCheck } from '@shared/wealth/poe2'
 import { useT } from '../../../i18n'
-import { tKey } from '../../../i18n/hotkey'
+import { accelText } from '../../../i18n/hotkey'
+import { useAppStore } from '../../../store/useAppStore'
 import { WIco } from '../ui'
-import { ago } from '../format'
+import { nf, timeOf } from '../format'
 import { usePoe2WealthStore } from './usePoe2WealthStore'
 import { ItemIcon } from './ItemIcon'
 import { usePoe2Item } from './names'
-import { money, tabsCount, unitEx } from './money'
+import { money } from './money'
 import { QtyInput } from './QtyInput'
 
-// «Снимок вкладки» (S70, W4): клавиша в игре → main читает открытую особую вкладку (модуль S68) → здесь карточка:
-// строки с иконками и числами, «проверьте» у неуверенных, правка числа и выбор уровня у одинаковых по рисунку,
-// «Принять» / «Переснять». Без сеанса — как снять и принятые вкладки с давностью (старше суток — серым).
+// Карточка «Снимок вкладки» (S70, макет «Богатство PoE 2»): Alt+F в игре → «Записать в богатство» в панели S68 →
+// здесь строки вкладки с иконками и числами; неуверенное число — жёлтая строка «проверьте: N?» с полем и «верно»
+// (в снимок богатства оно идёт только после правки или «верно»); «Переснять» — ещё раз Alt+F, «Принять» заменяет
+// прошлый снимок этой же вкладки.
 
 type T = ReturnType<typeof useT>
 
-/** Строк карточки в свёрнутом виде (у «Эссенций» их до сотни). */
-const SHORT_LINES = 10
+/** Строк в свёрнутом виде: самые дорогие + все «проверьте». */
+const SHORT_LINES = 8
 
 const LAYOUTS = new Set([
   'orbs',
@@ -40,202 +42,181 @@ export function layoutName(t: T, layout: string | null): string {
   return t(`wealth.p2.layout.${layout && LAYOUTS.has(layout) ? layout : 'other'}`)
 }
 
-function CardLine({ tab, line, lang, rate }: { tab: Poe2ScreenCardTab; line: Poe2ScreenLine; lang: UiLang; rate: number | null }) {
+function ResRow({ tab, line, lang, rate }: { tab: Poe2ScreenCardTab; line: Poe2ScreenLine; lang: UiLang; rate: number | null }) {
   const t = useT()
   const edit = usePoe2WealthStore((s) => s.screenEdit)
   const item = usePoe2Item(lang)
   const view = item(line.name)
   const check = needsCheck(line)
-  const value = line.unit !== undefined && line.qty !== null ? money(line.unit * line.qty, rate, lang).main : null
+  const value = line.unit !== undefined && line.qty ? money(line.unit * line.qty, rate, lang).main : '—'
   return (
-    <tr className={check ? 'w2-check' : undefined}>
-      <td>
-        <span className="w2-item">
-          <ItemIcon icon={view.icon} />
-          <span className="w2-item-name">
-            {line.alt?.length ? (
-              <select
-                className="ui-select w2-alt"
-                aria-label={t('wealth.p2.screen.altHint')}
-                title={t('wealth.p2.screen.altHint')}
-                value={line.name}
-                onChange={(e) => void edit(tab.id, line.key, { name: e.target.value })}
-              >
-                {[line.name, ...line.alt].map((n) => (
-                  <option key={n} value={n}>
-                    {item(n).name}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <span className="ui-item ui-item--currency">{view.name}</span>
-            )}
-            {check && (
-              <span className="ui-tag ui-tag--warn" title={t(line.alt?.length ? 'wealth.p2.screen.altHint' : 'wealth.p2.screen.checkHint')}>
-                {t('wealth.p2.screen.check')}
-              </span>
-            )}
-          </span>
-        </span>
-      </td>
-      <td className="is-num">
-        <QtyInput
-          value={line.qty}
-          label={t('wealth.p2.manual.qty', { name: view.name })}
-          onCommit={(n) => void edit(tab.id, line.key, { qty: n })}
-        />
-      </td>
-      <td className="is-num w2-faint">{line.unit !== undefined ? unitEx(line.unit, lang) : t('wealth.p2.screen.noPrice')}</td>
-      <td className="is-num">{value ?? '—'}</td>
-    </tr>
-  )
-}
-
-function CardTab({ tab, lang, rate, busy }: { tab: Poe2ScreenCardTab; lang: UiLang; rate: number | null; busy: boolean }) {
-  const t = useT()
-  const drop = usePoe2WealthStore((s) => s.screenDrop)
-  const [all, setAll] = useState(false)
-  const total = cardTotal(tab)
-  // свёрнуто: самые дорогие строки и все, что надо проверить или уже поправили (порядок строк не меняется)
-  const shown = all ? tab.lines : tab.lines.filter((l, i) => i < SHORT_LINES || needsCheck(l) || l.edited)
-  return (
-    <div className="w2-cardtab">
-      <div className="w2-row">
-        <b>{layoutName(t, tab.layout)}</b>
-        <span className="w2-faint">
-          {t('wealth.p2.screen.tabTotal', {
-            v: money(total.ex, rate, lang).main
-          })}
-        </span>
-        <span className="ui-label__grow" />
-        <button
-          type="button"
-          className="ui-btn ui-btn--ghost ui-btn--sm"
-          disabled={busy}
-          title={t('wealth.p2.screen.retakeHint')}
-          onClick={() => void drop(tab.id)}
-        >
-          <WIco name="refresh" />
-          {t('wealth.p2.screen.retake')}
-        </button>
-      </div>
-      <div className="w2-table">
-        <table className="ui-table">
-          <tbody>
-            {shown.map((l) => (
-              <CardLine key={l.key} tab={tab} line={l} lang={lang} rate={rate} />
+    <div className={`w2-res__row${check ? ' is-check' : ''}`}>
+      <ItemIcon icon={view.icon} />
+      <span className="w2-res__n">
+        {line.alt?.length ? (
+          <select
+            className="ui-select w2-alt"
+            aria-label={t('wealth.p2.screen.altHint')}
+            value={line.name}
+            onChange={(e) => void edit(tab.id, line.key, { name: e.target.value })}
+          >
+            {[line.name, ...line.alt].map((n) => (
+              <option key={n} value={n}>
+                {item(n).name}
+              </option>
             ))}
-          </tbody>
-        </table>
-      </div>
-      {tab.lines.length > SHORT_LINES && (
-        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm w2-more" aria-expanded={all} onClick={() => setAll(!all)}>
-          {all ? t('wealth.p2.screen.less') : t('wealth.p2.screen.all', { n: tab.lines.length })}
-        </button>
-      )}
-      {(tab.unknown > 0 || total.uncounted > 0) && (
-        <p className="wl-note">
-          <WIco name="info" size="sm" />
-          {[
-            tab.unknown ? t('wealth.p2.screen.unknown', { n: tab.unknown }) : '',
-            total.uncounted ? t('wealth.p2.screen.uncounted', { n: total.uncounted }) : ''
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        </p>
-      )}
+          </select>
+        ) : (
+          view.name
+        )}
+        {check && (
+          <small>
+            {line.alt?.length
+              ? t('wealth.p2.screen.altHint')
+              : line.qty === null
+                ? t('wealth.p2.screen.noQty')
+                : t('wealth.p2.screen.checkQty', { n: nf(line.qty, lang) })}
+          </small>
+        )}
+      </span>
+      <span className="w2-res__q">
+        {check ? (
+          <>
+            <QtyInput
+              value={line.qty}
+              label={t('wealth.p2.manual.qty', { name: view.name })}
+              onCommit={(n) => void edit(tab.id, line.key, { qty: n })}
+            />
+            {line.qty !== null && (
+              <button
+                type="button"
+                className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+                title={t('wealth.p2.screen.ok')}
+                aria-label={t('wealth.p2.screen.ok')}
+                onClick={() => void edit(tab.id, line.key, { qty: line.qty ?? 0, name: line.name })}
+              >
+                <WIco name="check" />
+              </button>
+            )}
+          </>
+        ) : (
+          `×${nf(line.qty ?? 0, lang)}`
+        )}
+      </span>
+      <span className="w2-res__v">{value}</span>
     </div>
   )
 }
 
-export function ScreenBox({ s, lang, now, hotkey }: { s: Poe2WealthState; lang: UiLang; now: number; hotkey?: string }) {
+function Card({
+  tab,
+  s,
+  lang,
+  now,
+  screenKey
+}: {
+  tab: Poe2ScreenCardTab
+  s: Poe2WealthState
+  lang: UiLang
+  now: number
+  screenKey: string
+}) {
   const t = useT()
   const accept = usePoe2WealthStore((st) => st.screenAccept)
   const drop = usePoe2WealthStore((st) => st.screenDrop)
-  const removeTab = usePoe2WealthStore((st) => st.removeTab)
-  const session = s.screen
+  const [all, setAll] = useState(false)
+  const [retake, setRetake] = useState(false)
   const rate = s.exPerDivine
+  const total = cardTotal(tab)
+  const shown = all ? tab.lines : tab.lines.filter((l, i) => i < SHORT_LINES || needsCheck(l) || l.edited)
+  const rest = tab.lines.filter((l) => !shown.includes(l))
+  const restEx = rest.reduce((a, l) => a + (l.unit !== undefined && l.qty && !needsCheck(l) ? l.unit * l.qty : 0), 0)
+  const prev = s.screenTabs.find((x) => x.id === tab.id)
+  const m = money(total.ex, rate, lang)
   return (
-    <div className="ui-box">
-      <div className="ui-box__head">
-        <span className="ui-label">
-          <WIco name="grid" size="sm" />
-          {t('wealth.p2.screen')}
-        </span>
+    <div className="ui-panel ui-panel--flat w2-card" role="region" aria-label={t('wealth.p2.screen')}>
+      <div className="ui-panel__head">
+        <span className="ui-panel__title">{t('wealth.p2.screen')}</span>
+        <span className="ui-badge">PoE 2</span>
         <span className="ui-label__grow" />
-        {session?.busy && <span className="w2-faint">{t('wealth.p2.screen.busy')}</span>}
+        <button
+          type="button"
+          className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+          aria-label={t('wealth.p2.screen.cancel')}
+          title={t('wealth.p2.screen.cancel')}
+          onClick={() => void drop(tab.id)}
+        >
+          ×
+        </button>
       </div>
-      <div className="ui-box__body w2-stack">
-        {session?.fail && (
-          <div className="ui-banner ui-banner--bad" role="status">
-            <WIco name="warn" />
-            <span>{t(`wealth.p2.screen.fail.${session.fail}`)}</span>
-          </div>
-        )}
-        {session && session.tabs.length > 0 ? (
-          <>
-            <span className="ui-label">{t('wealth.p2.screen.card')}</span>
-            {session.tabs.map((tab) => (
-              <CardTab key={tab.id} tab={tab} lang={lang} rate={rate} busy={!!session.busy} />
-            ))}
-            <p className="wl-note">{tKey(t, 'wealth.p2.screen.more', hotkey)}</p>
-            <div className="wl-btns">
-              <button type="button" className="ui-btn ui-btn--primary" disabled={!!session.busy} onClick={() => void accept()}>
-                <WIco name="check" />
-                {t('wealth.p2.screen.accept')}
-              </button>
-              <button type="button" className="ui-btn ui-btn--ghost" disabled={!!session.busy} onClick={() => void drop()}>
-                {t('wealth.p2.screen.cancel')}
-              </button>
+      <div className="w2-card__b">
+        <span className="w2-card__meta">
+          <b>{layoutName(t, tab.layout)}</b>
+          <span>{t('wealth.p2.screen.rows', { n: tab.lines.length, ago: timeOf(tab.at, lang, now - tab.at > 20 * 3_600_000) })}</span>
+          {prev && <span>{t('wealth.p2.screen.replaces', { t: timeOf(prev.at, lang, now - prev.at > 20 * 3_600_000) })}</span>}
+        </span>
+        <div className="w2-res">
+          {shown.map((l) => (
+            <ResRow key={l.key} tab={tab} line={l} lang={lang} rate={rate} />
+          ))}
+          {(rest.length > 0 || tab.unknown > 0) && (
+            <div className="w2-res__more">
+              {[
+                rest.length ? t('wealth.p2.screen.more', { n: rest.length, v: money(restEx, rate, lang).main }) : '',
+                tab.unknown ? t('wealth.p2.screen.unknown', { n: tab.unknown }) : ''
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+              {rest.length > 0 && (
+                <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" onClick={() => setAll(true)}>
+                  {t('wealth.p2.screen.all')}
+                </button>
+              )}
             </div>
-          </>
-        ) : (
-          <>
-            <span>{tKey(t, 'wealth.p2.screen.how', hotkey)}</span>
-            {session && !session.busy && (
-              <div className="wl-btns">
-                <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" onClick={() => void drop()}>
-                  {t('wealth.p2.screen.cancel')}
-                </button>
-              </div>
-            )}
-          </>
-        )}
-        <p className="wl-note">
-          <WIco name="shield" size="sm" />
-          {t('wealth.p2.screen.private')}
-        </p>
-        {s.screenTabs.length > 0 && (
-          <div className="w2-stack">
-            <span className="ui-label">
-              {t('wealth.p2.screen.accepted')} · {tabsCount(t, s.screenTabs.length, lang)}
-            </span>
-            {s.screenTabs.map((x) => (
-              <div
-                key={x.id}
-                className={`w2-row w2-src${x.stale ? ' is-stale' : ''}`}
-                title={x.stale ? t('wealth.p2.src.stale') : undefined}
-              >
-                <b>{layoutName(t, x.layout)}</b>
-                <span className="w2-faint">
-                  {ago(t, x.at, now)} · {t('wealth.p2.screen.items', { n: x.items })}
-                </span>
-                <span className="ui-label__grow" />
-                <span className="w2-num">{money(x.ex, rate, lang).main}</span>
-                <button
-                  type="button"
-                  className="ui-btn ui-btn--ghost ui-btn--sm ui-btn--icon"
-                  title={t('wealth.p2.screen.remove')}
-                  aria-label={t('wealth.p2.screen.remove')}
-                  onClick={() => void removeTab(x.id)}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+          )}
+        </div>
+        <div className="w2-card__sum">
+          {t('wealth.p2.screen.tab')} <b>{m.main}</b>
+          {m.alt && <span>{m.alt}</span>}
+        </div>
+        {total.check > 0 && <span className="w2-card__meta w2-warn">{t('wealth.p2.screen.pending', { n: total.check })}</span>}
+        {retake && <span className="w2-card__meta">{t('wealth.p2.screen.retakeHint', { key: screenKey || 'Alt+F' })}</span>}
+        <div className="w2-card__acts">
+          <button
+            type="button"
+            className="ui-btn ui-btn--ghost ui-btn--sm"
+            onClick={() => {
+              setRetake(true)
+              void drop(tab.id)
+            }}
+          >
+            <WIco name="refresh" />
+            {t('wealth.p2.screen.retake')}
+          </button>
+          <button type="button" className="ui-btn ui-btn--primary ui-btn--sm" onClick={() => void accept(tab.id)}>
+            <WIco name="check" />
+            {t('wealth.p2.screen.accept')}
+          </button>
+        </div>
       </div>
     </div>
   )
+}
+
+/** Карточки вкладок, записанных из панели Alt+F и ещё не принятых. */
+export function ScreenCards({ s, lang, now }: { s: Poe2WealthState; lang: UiLang; now: number }) {
+  const screenKey = useScreenKey()
+  if (!s.screen?.tabs.length) return null
+  return (
+    <div className="w2-cards">
+      {s.screen.tabs.map((tab) => (
+        <Card key={`${tab.id}|${tab.at}`} tab={tab} s={s} lang={lang} now={now} screenKey={screenKey} />
+      ))}
+    </div>
+  )
+}
+
+/** Клавиша «Цены поверх окон» (S68) — ею снимается вкладка для «Богатства»; не назначена — пусто. */
+export function useScreenKey(): string {
+  return accelText(useAppStore((st) => st.settings?.hotkeys.screenPrices?.accel))
 }

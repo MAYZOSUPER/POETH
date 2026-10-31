@@ -89,3 +89,7 @@
   flex: none;
   margin-left: auto;
 }
+
+/* «Богатство PoE 2» (S70): «В богатство» / «К забегу» в подвале и строка «Записано» (макет w2-pc-ok) */
+.ui-panel__foot .w2-pc-ok { display: flex; flex-basis: 100%; align-items: center; gap: var(--sp-3); padding: var(--sp-3) var(--sp-5); border-radius: var(--r-sm); background: color-mix(in srgb, var(--good) 8%, transparent); color: var(--good); font-size: var(--fs-xs); font-weight: 600; }
+.ui-panel__foot .w2-pc-ok.is-fail { background: color-mix(in srgb, var(--bad) 8%, transparent); color: var(--bad); }

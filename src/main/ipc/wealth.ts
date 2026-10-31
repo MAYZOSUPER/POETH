@@ -15,7 +15,7 @@ import { PriceService } from '../games/poe1/wealth/priceService'
 import { WealthManager } from '../games/poe1/wealth/manager'
 import { WealthStore } from '../games/poe1/wealth/store'
 import { getDivineTrack, getFeedStore } from '../games/poe1/exchange/feedService'
-import { onFarmEvent, setRunProfit } from '../services/farmSession'
+import { getFarmState, onFarmEvent, setRunProfit } from '../services/farmSession'
 import type { IpcDomain } from './types'
 import { devEnv } from '../devEnv'
 import { isAppPageUrl } from '../security'
@@ -210,6 +210,10 @@ function getPoe2(): Poe2WealthManager {
       }
     },
     league: () => getEffectiveLeague().catch(() => null),
+    currentRunId: () => {
+      const st = getFarmState(0)
+      return st.session && st.current?.sessionId === st.session.id ? st.current.id : null
+    },
     // карточка снимка вкладки и итог — только окну компаньона
     emit: (s) => sendToCompanion(IPC.events.wealthPoe2, s),
     log

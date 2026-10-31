@@ -128,7 +128,7 @@ export interface ChartGeo {
 }
 
 /** Геометрия графика: ось X по времени (от первой до последней точки диапазона), шкала Y не от нуля. */
-export function chartGeo(pts: WealthPoint[]): ChartGeo | null {
+export function chartGeo(pts: WealthPoint[], minSpan = 20): ChartGeo | null {
   if (pts.length < 2) return null
   let mn = Infinity
   let mx = -Infinity
@@ -136,7 +136,7 @@ export function chartGeo(pts: WealthPoint[]): ChartGeo | null {
     mn = Math.min(mn, p.chaos)
     mx = Math.max(mx, p.chaos)
   }
-  const step = niceStep(Math.max(mx - mn, 20))
+  const step = niceStep(Math.max(mx - mn, minSpan))
   const y0 = Math.floor(mn / step) * step
   let y1 = Math.ceil(mx / step) * step
   if (y1 === y0) y1 = y0 + step

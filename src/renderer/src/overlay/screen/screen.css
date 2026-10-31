@@ -65,3 +65,7 @@
   left: 50%;
   transform: translateX(-50%);
 }
+
+/* «Богатство PoE 2» (S70): «Записать в богатство» под итогом вкладки PoE 2 */
+.scr-wealth { justify-self: start; margin-top: var(--sp-3); }
+.scr-total__note.scr-wealth.is-done { color: var(--good); }

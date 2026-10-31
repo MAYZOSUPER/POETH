@@ -125,6 +125,7 @@ export function cleanValuableInput(raw: unknown): Poe2ValuableInput | null {
   if (base && base !== name) out.base = base
   if (KINDS.includes(r.kind as Poe2ValuableKind)) out.kind = r.kind as Poe2ValuableKind
   if (r.low === true) out.low = true
+  if (r.toRun === true) out.toRun = true
   return out
 }
 
@@ -133,7 +134,10 @@ function cleanValuable(raw: unknown): Poe2Valuable | null {
   const input = cleanValuableInput(r)
   const at = time(r?.at)
   if (!input || !at || typeof r?.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(r.id)) return null
-  return { id: r.id, at, qty: input.qty ?? 1, ...input }
+  const { toRun: _toRun, ...rest } = input
+  const v: Poe2Valuable = { id: r.id, at, ...rest, qty: input.qty ?? 1 }
+  if (typeof r.runId === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(r.runId)) v.runId = r.runId
+  return v
 }
 
 function cleanScreenTab(raw: unknown): Poe2ScreenTab | null {
@@ -206,8 +210,10 @@ export function setGold(s: Poe2Sources, qty: unknown, at: number): Poe2Sources {
 }
 
 /** Добавить ценный предмет (новые — сверху); больше MAX_VALUABLES — самые старые уходят. */
-export function addValuable(s: Poe2Sources, input: Poe2ValuableInput, id: string, at: number): Poe2Sources {
-  const v: Poe2Valuable = { id, at, ...input, qty: input.qty ?? 1 }
+export function addValuable(s: Poe2Sources, input: Poe2ValuableInput, id: string, at: number, runId?: string | null): Poe2Sources {
+  const { toRun: _toRun, ...rest } = input
+  const v: Poe2Valuable = { id, at, ...rest, qty: input.qty ?? 1 }
+  if (runId) v.runId = runId
   return { ...s, valuables: [v, ...s.valuables].slice(0, MAX_VALUABLES) }
 }
 
