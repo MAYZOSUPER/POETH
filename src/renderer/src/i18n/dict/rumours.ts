@@ -24,7 +24,7 @@ export const rumours: DomainDict = {
     'rumours.empty.title': 'Слухи не выбраны',
     'rumours.empty.text': 'Начните вводить первый слух из журнала — так, как он написан в игре.',
 
-    'rumours.best': 'Бери «{text}»',
+    'rumours.best': 'Берите «{text}»',
     'rumours.why.single': 'Сравнить пока не с чем — добавьте остальные слухи журнала.',
     'rumours.why.only': 'Остальные помечены «не беру» или ещё не оценены.',
     'rumours.why.own': 'Так решила ваша оценка.',

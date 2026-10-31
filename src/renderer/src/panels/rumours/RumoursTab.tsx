@@ -208,8 +208,15 @@ function SearchBox({ list, picked, t, gameLang }: { list: RumourRecord[]; picked
   )
 }
 
+const CAT_ICON: Record<RumourRecord['category'], 'expedition' | 'map' | 'death'> = { expedition: 'expedition', unique: 'map', boss: 'death' }
+
 function Category({ c, t }: { c: RumourRecord['category']; t: T }) {
-  return <span className={`ui-tag rm-cat rm-cat--${c}`}>{t(`rumours.cat.${c}`)}</span>
+  return (
+    <span className={`ui-tag rm-cat rm-cat--${c}`}>
+      <ShellIcon name={CAT_ICON[c]} size="sm" />
+      {t(`rumours.cat.${c}`)}
+    </span>
+  )
 }
 
 function Pips({ n, accent }: { n: RumourLevel | null; accent?: boolean }) {
@@ -306,7 +313,7 @@ function RowItem({ r, best, t, uiLang, simple, pricesLoaded }: { r: RumourRowVie
           <dd>
             <Pips n={r.difficulty} accent />
             {r.difficulty !== null && <span>{t(`rumours.diff.${r.difficulty}`)}</span>}
-            {r.risks.map((k) => (
+            {r.risks.filter((k) => !(k === 'boss' && r.category === 'boss')).map((k) => (
               <span key={k} className="ui-tag ui-tag--warn">
                 {t(`rumours.risk.${k}`)}
               </span>

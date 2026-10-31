@@ -56,8 +56,10 @@
   opacity: 0.55;
 }
 .ov-rm__text {
-  font-family: var(--font-display);
-  font-size: var(--fs-md);
+  /* поверх игры — Golos: Cormorant SC мелким кеглем не читается (дизайн-проход 01.11) */
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--fs-sm);
 }
 .ov-rm__price {
   margin-left: auto;
