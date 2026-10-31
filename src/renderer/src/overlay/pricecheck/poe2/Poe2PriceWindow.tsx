@@ -1,7 +1,8 @@
 import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
 import type { CapturedItem, GameInputResult, UiLang } from '@shared/types'
 import { ItemCategory, ItemRarity, type ParsedItem } from '@shared/poe2/parser'
-import type { FilterPreset, ItemFilters, ListingType, StatFilter } from '@shared/poe2/pricecheck'
+import { FilterTag, type FilterPreset, type ItemFilters, type ListingType, type StatFilter } from '@shared/poe2/pricecheck'
+import { ModifierType } from '@shared/poe2/parser/modifiers'
 import type { Poe1ExchangeOffer, Poe1Listing } from '@shared/poe1/pricecheck/results'
 import type { StatSource } from '@shared/poe1/parser/modifiers'
 import type { VerdictKind } from '@shared/poe1/pricecheck/verdict'
@@ -9,7 +10,7 @@ import type { MarketPrice2, Verdict2 } from '@shared/poe2/pricecheck/verdict'
 import { VISIBLE_WARNINGS, type PriceWarning } from '@shared/poe2/pricecheck/warnings'
 import { angeConfidence } from '@shared/poe2/pricecheck/ange'
 import { roundExalted } from '@shared/poe2/pricecheck/currency'
-import { angeView, rateFractions2, type AngeRowView } from '@shared/poe2/pricecheck/priceBlock'
+import { angeView, bulkView, rateFractions2, type AngeRowView } from '@shared/poe2/pricecheck/priceBlock'
 import { hourRange } from '@shared/poe1/pricecheck/faustus'
 import { modText, modTextParts, type ModText } from '@shared/poe1/pricecheck/filters/mod-text'
 import { createClickGuard, lotActions, whisperCommand } from '@shared/poe1/pricecheck/lotActions'
@@ -23,7 +24,7 @@ import { PopupPositionButton } from '../../PopupPosition'
 import { Select } from '../../../components/Select'
 import { CoinIcon, CurrencyTipBody, TipAnchor, useCurrencyNames } from '../../../components/Currency'
 import { ageKey, currencyLabel, fmtNum, tierWordKey, waitClock } from '../format'
-import { activePreset2Of, usePoe2PriceCheckStore as useStore, type Pc2Result } from './store'
+import { activePreset2Of, isWaystone, ratesOf, usePoe2PriceCheckStore as useStore, type Pc2Result } from './store'
 import { Price, usePriceText, type PriceText } from './PriceText'
 import { SellAnge, SellBulk2, SellTrade2 } from './SellBox2'
 import { ModeSwitch } from '../SellBox'
@@ -153,11 +154,24 @@ function ItemHead({ item, captured, t }: { item: ParsedItem | null; captured: Ca
   const base = lines[3] && lines[3] !== '--------' ? lines[3] : null
   const sockets = item?.augmentSockets ? item.augmentSockets.current : 0
   const lang = useOverlayStore((s) => s.lang)
+  const tier = item && isWaystone(item) ? item.mapTier : undefined
+  const nameEl = (
+    <span className="ov-item__name" data-rarity={item ? rarityAttr(item) : undefined} title={name}>
+      {name}
+    </span>
+  )
   return (
     <div className="ov-item pc-item">
-      <span className="ov-item__name" data-rarity={item ? rarityAttr(item) : undefined} title={name}>
-        {name}
-      </span>
+      {tier ? (
+        <span className="pc2-name">
+          {nameEl}
+          <span className="ui-tier ui-tier--lg" title={t('pc2.s61.way.tierTitle')}>
+            {t('pc2.s61.way.tier', { n: tier })}
+          </span>
+        </span>
+      ) : (
+        nameEl
+      )}
       {base && <span className="ov-item__base">{base}</span>}
       <span className="ov-item__meta">
         {item && (
@@ -165,7 +179,7 @@ function ItemHead({ item, captured, t }: { item: ParsedItem | null; captured: Ca
             {t(rarityKey(item))}
             {item.itemLevel ? ` · ${t('pc1.meta.ilvl', { n: item.itemLevel })}` : ''}
             {item.gemLevel ? ` · ${t('pc1.meta.gemLevel', { n: item.gemLevel })}` : ''}
-            {item.mapTier ? ` · ${t('pc2.meta.tier', { n: item.mapTier })}` : ''}
+            {item.mapTier && !tier ? ` · ${t('pc2.meta.tier', { n: item.mapTier })}` : ''}
             {sockets ? ` · ${t('pc2.meta.sockets', { n: sockets })}` : ''}
             {item.isCorrupted ? ` · ${t('pc1.meta.corrupted')}` : ''}
           </span>
@@ -175,6 +189,52 @@ function ItemHead({ item, captured, t }: { item: ParsedItem | null; captured: Ca
         <RateBadge2 lang={lang} t={t} />
       </span>
     </div>
+  )
+}
+
+// ---------------------------------------------------------------- S61: гнёзда и руны
+
+/**
+ * «Гнёзда и руны» (.ui-runes, спецификация дизайнера, раздел 3): каждое гнездо — пилюля в порядке
+ * `augmentSockets.augments`: руна (refName с «Rune») — .is-rune, ядро души, идол и прочее — .is-core, пустое — .is-empty.
+ * Имя — на языке клиента из данных (EditorItem.name). Только гнёзда, которые есть у предмета (augmentSockets.current).
+ */
+function RunesBlock({ item, simple, t }: { item: ParsedItem; simple: boolean; t: T }) {
+  // только настоящие гнёзда: EE2 добавляет и возможные по категории (у лука без гнёзд — два «пустых»)
+  const current = item.augmentSockets?.current ?? 0
+  const slots = current > 0 ? (item.augmentSockets?.augments ?? []).slice(0, current) : []
+  if (!slots.length) return null
+  return (
+    <>
+      <div className="pc-blk pc-blk--tight">
+        <div className="ui-label">
+          {t('pc2.s61.runes')}
+          <span className="ui-label__grow" />
+          {simple && (
+            <span className="ui-q" title={t('pc2.s61.runes.help')}>
+              ?
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="ui-runes pc2-runes">
+        <div className="ui-runes__row">
+          {slots.map((a, i) =>
+            a ? (
+              <span key={i} className={`ui-runes__slot ${/rune/i.test(a.refName) ? 'is-rune' : 'is-core'}`} title={a.name}>
+                <i />
+                {a.name}
+              </span>
+            ) : (
+              <span key={i} className="ui-runes__slot is-empty">
+                <i />
+                {t('pc2.s61.runes.empty')}
+              </span>
+            )
+          )}
+        </div>
+      </div>
+    </>
   )
 }
 
@@ -220,10 +280,14 @@ function ModRow({ f, rawText, expert, lang, t }: { f: StatFilter; rawText: strin
     f.roll[key] = raw.trim() === '' || Number.isNaN(v) ? undefined : v
     touch()
   }
+  // S61: свойство даёт руна (не свойство базы: броня с руной — это броня предмета)
+  const fromRune = f.tag === FilterTag.Augment || (f.tag !== FilterTag.Property && f.sources[0]?.modifier.info.type === ModifierType.Augment)
   const tierTag = pseudo ? (
     <span className="ui-tier">
       Σ{!expert && <em> {t('pc1.pseudoTag')}</em>}
     </span>
+  ) : fromRune ? (
+    <span className="ui-mod__from ui-mod__from--rune">{t('pc2.s61.rune')}</span>
   ) : tier ? (
     <span className={`ui-tier ui-tier--t${Math.min(tier, 3)}`}>
       T{tier}
@@ -301,6 +365,68 @@ function UnknownRow({ text, expert, t }: { text: string; expert: boolean; t: T }
         </>
       )}
     </div>
+  )
+}
+
+/** Строка мода без галочки (трудность карты): текст как в игре, числа по местам. */
+function plainModText(f: StatFilter, rawText: string, lang: UiLang, t: T): string {
+  return modTextParts(filterModText(f, rawText, t), (n) => fmtNum(n, lang))
+    .map((p) => p.text)
+    .join('')
+}
+
+/**
+ * S61: путевой камень (спецификация дизайнера, раздел 4): «Главное для карты» — свойства карты с галочками (по ним
+ * ищут), ниже — «Трудность карты · N» бледным списком без галочек (первые 3 + «ещё N»).
+ */
+function WaystoneBlocks({ preset, item, expert, lang, t }: { preset: FilterPreset; item: ParsedItem; expert: boolean; lang: UiLang; t: T }) {
+  useStore((s) => s.rev)
+  const [all, setAll] = useState(false)
+  // по одному на trade id: у EE2 «Monster Rarity» / «Monster Effectiveness» идут с trade id редких / волшебных монстров
+  const ids = new Set<string>()
+  const main = preset.stats.filter((f) => {
+    if (f.tag !== FilterTag.Property || f.hidden || ids.has(f.tradeId[0])) return false
+    ids.add(f.tradeId[0])
+    return true
+  })
+  const hard = preset.stats.filter((f) => f.tag !== FilterTag.Property && f.tag !== FilterTag.Pseudo)
+  const unknown = item.unknownModifiers.map((u) => u.text)
+  const lines = [...hard.map((f) => plainModText(f, item.rawText, lang, t)), ...unknown]
+  const shown = all ? lines : lines.slice(0, 3)
+  return (
+    <>
+      {main.length > 0 && (
+        <div className="pc-blk">
+          <div className="ui-label">
+            {t('pc2.s61.way.main')}
+            <span className="ui-label__grow" />
+            {!expert && (
+              <span className="ui-q" title={t('pc2.s61.way.mainHelp')}>
+                ?
+              </span>
+            )}
+          </div>
+          {main.map((f, i) => (
+            <ModRow key={`${f.statRef}-${i}`} f={f} rawText={item.rawText} expert={expert} lang={lang} t={t} />
+          ))}
+        </div>
+      )}
+      {lines.length > 0 && (
+        <div className="pc-blk pc-blk--tight">
+          <div className="ui-label">{t('pc2.s61.way.hard', { n: lines.length })}</div>
+          <div className="pc2-aff">
+            {shown.map((l, i) => (
+              <span key={i}>{l}</span>
+            ))}
+            {lines.length > 3 && (
+              <button type="button" className="pc2-aff__more" onClick={() => setAll((v) => !v)}>
+                {all ? t('pc1.less') : t('pc2.s61.way.more', { n: lines.length - 3 })}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -700,21 +826,33 @@ function MarketSummary({ result, simple, lang, t }: { result: Extract<Pc2Result,
   )
 }
 
-function WhyHint({ result, lang, t }: { result: Extract<Pc2Result, { kind: 'trade' }>; lang: UiLang; t: T }) {
+function WhyHint({ result, t }: { result: Extract<Pc2Result, { kind: 'trade' }>; t: T }) {
   const range = useStore((s) => s.searchStatRange)
-  const rate = useStore((s) => s.rate)
   const outliers = result.honest.instant.outliers.length + result.honest.person.outliers.length
   const v = result.verdict
-  // S61: курс известен — цены пересчитаны; честная цена «вторая из ≥ 4 лотов выкупа» — словами
-  const currency = rate ? t('pc2.s61.why.currency', { n: fmtNum(roundExalted(rate.exaltedPerDivine), lang) }) : t('pc2.why.currency')
+  // S61: про пересчёт валют — честная строка под результатом (CurrencyNote); здесь — правило «вторая из ≥ 4 лотов выкупа»
   return (
     <div className="ui-hint">
       <Icon name="help" />
       <span>
-        <b>{t('pc1.why.title')}</b> {t('pc1.why.search', { range, n: result.total })} {currency}
+        <b>{t('pc1.why.title')}</b> {t('pc1.why.search', { range, n: result.total })}
         {v.fair === 'second' && v.fairLots ? <> {t('pc2.s61.why.fair', { n: v.fairLots })}</> : null}
         {outliers > 0 && <> {t('pc1.why.outliers', { n: outliers })}</>}
       </span>
+    </div>
+  )
+}
+
+/**
+ * Честная строка под результатом (спецификация дизайнера, раздел 5): курс у Ange есть — «цены в разных валютах
+ * пересчитаны: 1 div ≈ N ex»; нет — «не пересчитываются, сравниваются в одной валюте» (как S47).
+ */
+function CurrencyNote({ lang, t }: { lang: UiLang; t: T }) {
+  const rate = useStore((s) => s.rate)
+  return (
+    <div className="pc2-note">
+      <Icon name="info" />
+      <span>{rate ? t('pc2.s61.why.currency', { n: fmtNum(roundExalted(rate.exaltedPerDivine), lang) }) : t('pc2.why.currency')}</span>
     </div>
   )
 }
@@ -839,7 +977,7 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<Pc2Result, {
       )}
       <WarningList key={result.siteUrl} list={result.warnings} t={t} />
       {!selling && <MarketSummary result={result} simple={simple} lang={lang} t={t} />}
-      {simple && !selling && <WhyHint result={result} lang={lang} t={t} />}
+      {simple && !selling && <WhyHint result={result} t={t} />}
       <div className="pc-blk">
         <div className="ui-label">
           {t('pc1.listings')}
@@ -859,16 +997,17 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<Pc2Result, {
           </div>
         )}
       </div>
+      <CurrencyNote lang={lang} t={t} />
     </>
   )
 }
 
 function BulkResult({ result, simple, lang, t }: { result: Extract<Pc2Result, { kind: 'bulk' }>; simple: boolean; lang: UiLang; t: T }) {
-  const best = result.offers[0]
-  const each = best ? best.exchangeAmount / best.itemAmount : 0
-  const priceText = usePriceText(lang)
-  const names = useCurrencyNames(lang)
   const selling = usePcMode((s) => s.mode) === 'sell'
+  const stack = useStore((s) => s.item?.stackSize?.value ?? 1)
+  useStore((s) => s.rate)
+  const view = bulkView(result.offers, ratesOf(useStore.getState()), stack)
+  const priceText = usePriceText(lang)
   return (
     <>
       {selling ? (
@@ -876,27 +1015,34 @@ function BulkResult({ result, simple, lang, t }: { result: Extract<Pc2Result, { 
       ) : (
         <VerdictPlate v={result.verdict} bulk simple={simple} lang={lang} t={t} />
       )}
-      <div className="ui-summary">
-        <span className="ui-summary__price">
-          {best && (
-            <TipAnchor className="ui-cur" focusable tip={<CurrencyTipBody tag={best.currency} lang={lang} />}>
-              <CoinIcon tag={best.currency} lang={lang} />
-              {each >= 0.1
-                ? t('pc1.bulk.each', { price: `≈ ${priceText({ amount: each, currency: best.currency })}` })
-                : t('pc1.bulk.forOne', {
-                    n: fmtNum(best.itemAmount / best.exchangeAmount, lang),
-                    cur: simple ? names.after(best.currency, 1, 'acc') : currencyLabel(best.currency)
-                  })}
-            </TipAnchor>
+      <div className="ui-summary pc-summary">
+        <div className="pc-market">
+          <span className="pc-market__label">{t('pc2.s61.bulk.title')}</span>
+          {view && (
+            <span className="pc-market__price">
+              ≈ <Price price={view.each} lang={lang} full={simple} /> <span className="pc-market__each">{t('pc2.s61.bulk.each')}</span>
+            </span>
           )}
-        </span>
+          {view && (
+            <span className="pc-market__note">
+              {view.stack && <>{t('pc2.s61.bulk.all', { n: stack, price: priceText(view.stack) })} · </>}
+              {t('pc2.s61.bulk.by', { n: view.by })}
+            </span>
+          )}
+        </div>
         <span className="ui-summary__conf">
           {t('pc1.bulk.title')} · {t('pc1.conf.similar', { n: result.total })}
         </span>
       </div>
       <div className="pc-blk">
+        <div className="ui-label">
+          {t('pc2.s61.bulk.offers')}
+          <span className="ui-label__grow" />
+          {simple && <span className="pc-listings__order">{t('pc2.s61.bulk.own')}</span>}
+        </div>
         <OffersList offers={result.offers} lang={lang} t={t} />
       </div>
+      <CurrencyNote lang={lang} t={t} />
     </>
   )
 }
@@ -913,7 +1059,7 @@ function OffersList({ offers, lang, t }: { offers: readonly Poe1ExchangeOffer[];
           <span className="ui-listing__meta">
             <span className="ui-listing__who">{o.characterName || o.accountName}</span>
             <span>
-              {t('pc1.bulk.rate', { n: o.itemAmount })} · {t('pc1.bulk.stock', { n: o.stock })}
+              {t('pc1.bulk.rate', { n: o.itemAmount })} · {t('pc2.s61.bulk.stock', { n: o.stock })}
             </span>
           </span>
           <span />
@@ -1258,6 +1404,10 @@ export function Poe2PriceWindow({ captured, onClose }: { captured: CapturedItem;
     <section className={`ui-panel pc${expert ? ' is-expert' : ''}`} data-game="poe2">
       <header className="ui-panel__head" data-drag-handle>
         <span className="ui-panel__title">{t('pc2.title')}</span>
+        <span className="ui-badge" title={t('pc2.s61.badge.title')}>
+          PoE 2
+        </span>
+        <span className="pc2-grow" />
         {leagues.length > 0 && (
           <Select
             className="pc-league"
@@ -1307,7 +1457,12 @@ export function Poe2PriceWindow({ captured, onClose }: { captured: CapturedItem;
         )}
         {item && preset && (
           <>
-            <StatsBlocks preset={preset} item={item} expert={expert} lang={lang} t={t} />
+            <RunesBlock item={item} simple={simple} t={t} />
+            {isWaystone(item) ? (
+              <WaystoneBlocks preset={preset} item={item} expert={expert} lang={lang} t={t} />
+            ) : (
+              <StatsBlocks preset={preset} item={item} expert={expert} lang={lang} t={t} />
+            )}
             <ItemFiltersRow filters={preset.filters} item={item} t={t} />
           </>
         )}

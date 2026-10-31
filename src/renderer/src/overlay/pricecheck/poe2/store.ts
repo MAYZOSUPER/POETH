@@ -13,7 +13,7 @@ import {
 import { orderBulkOffers, poe2MarketPrice, poe2Verdict, type MarketPrice2, type Verdict2 } from '@shared/poe2/pricecheck/verdict'
 import { angeConfidence } from '@shared/poe2/pricecheck/ange'
 import { exaltedRates, type ExaltedRates } from '@shared/poe2/pricecheck/currency'
-import { angeUnit } from '@shared/poe2/pricecheck/priceBlock'
+import { angeUnit, bulkView } from '@shared/poe2/pricecheck/priceBlock'
 import { buildQueryUrl } from '@shared/favorites/tradeUrl'
 import { checkedMods2, hasStrongWarning, poe2Warnings, searchContext2, type PriceWarning, type SearchContext2 } from '@shared/poe2/pricecheck/warnings'
 import { honestPrice, type HonestPrice, type Poe1ExchangeOffer, type Poe1Listing } from '@shared/poe1/pricecheck/results'
@@ -146,6 +146,30 @@ function round(v: number, dp: boolean): number {
   return dp ? Math.round(v * 100) / 100 : Math.round(v)
 }
 
+/** Путевой камень (у парсера — категория Map/Waystone с уровнем). */
+export function isWaystone(item: Pick<ParsedItem, 'category' | 'mapTier'>): boolean {
+  return item.mapTier != null && (item.category === ItemCategory.Map || item.category === ItemCategory.Waystone)
+}
+
+/**
+ * S61: «Главное для карты» (спецификация дизайнера, раздел 4) — по этим свойствам ищут путевые камни: размер групп,
+ * редкие монстры, шанс путевого камня, редкость предметов — отмечены сразу (у EE2 — сняты). По одному на trade id.
+ */
+const WAYSTONE_MAIN = new Set(['item.map_pack_size', 'item.map_rare_monsters', 'item.map_drop_chance', 'item.map_item_rarity'])
+
+function checkWaystoneMain(item: ParsedItem, presets: readonly FilterPreset[]): void {
+  if (!isWaystone(item)) return
+  for (const preset of presets) {
+    const seen = new Set<string>()
+    for (const f of preset.stats) {
+      const id = f.tradeId[0]
+      if (f.hidden || !WAYSTONE_MAIN.has(id) || seen.has(id)) continue
+      seen.add(id)
+      f.disabled = false
+    }
+  }
+}
+
 /** Курсы лиги для сравнения цен: exalted, divine, chaos по курсу + прочие валюты по Ange. */
 export function ratesOf(s: Pick<Pc2State, 'rate' | 'more'>): ExaltedRates | undefined {
   return exaltedRates(s.rate, s.more)
@@ -193,6 +217,7 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
     const known = get().league && leagues?.leagues.some((l) => l.id === get().league)
     const league = known ? get().league : (leagues?.effective ?? 'Standard')
     const pc = createPriceCheck(item, data, { league, listingType: get().listingType, searchStatRange: get().searchStatRange })
+    checkWaystoneMain(item, pc.presets)
     set({
       item,
       data,
@@ -494,8 +519,8 @@ function analyzeBulk(
   rates: ExaltedRates | undefined
 ): Pc2Result {
   const offers = orderBulkOffers(res.offers, rates)
-  const best = offers[0]
-  const each = best && best.itemAmount > 0 ? { amount: best.exchangeAmount / best.itemAmount, currency: best.currency } : undefined
+  // цена за штуку — та же, что в сводке «≈ N за штуку» (средняя по лучшим предложениям, bulkView)
+  const each = bulkView(offers, rates)?.each
   return {
     kind: 'bulk',
     total: res.total,

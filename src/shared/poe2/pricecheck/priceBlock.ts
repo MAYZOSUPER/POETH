@@ -66,6 +66,58 @@ export function angeView(a: AngePrice, stack = 1): AngeView {
   }
 }
 
+// ---------------------------------------------------------------- обмен trade2 (у Ange цены нет)
+
+/** Сколько лучших предложений обмена усреднять для «≈ N за штуку» (спецификация дизайнера, раздел 5). */
+export const BULK_BEST = 5
+
+export interface BulkView {
+  /** «≈ N за штуку»: средняя цена 1 шт. у лучших предложений (exalted по курсу; без курса — в валюте лучшего) */
+  each: Poe1Price
+  /** вся стопка игрока (больше 1 шт.) */
+  stack?: Poe1Price
+  /** по скольким предложениям */
+  by: number
+}
+
+/**
+ * Сводка обмена trade2: предложения уже по порядку (orderBulkOffers). Курсы есть — первые BULK_BEST с известным
+ * курсом в exalted; нет — только в валюте лучшего предложения. Пусто — undefined.
+ */
+export function bulkView(
+  offers: ReadonlyArray<{ exchangeAmount: number; itemAmount: number; currency: string }>,
+  rates: Readonly<Record<string, number>> | undefined,
+  stack = 1
+): BulkView | undefined {
+  const valid = offers.filter((o) => o.itemAmount > 0 && o.exchangeAmount > 0)
+  if (!valid.length) return undefined
+  const each = (o: (typeof valid)[number]): number => o.exchangeAmount / o.itemAmount
+  const inEx = rates
+    ? valid
+        .map((o) => (o.currency === 'exalted' ? each(o) : rates[o.currency] > 0 ? each(o) * rates[o.currency] : undefined))
+        .filter((v): v is number => v != null)
+        .slice(0, BULK_BEST)
+    : []
+  if (inEx.length) {
+    const mean = inEx.reduce((s, v) => s + v, 0) / inEx.length
+    const div = rates?.divine
+    return {
+      each: exaltedIn(mean, unitFor2(mean, div), div),
+      ...(stack > 1 ? { stack: exaltedIn(mean * stack, unitFor2(mean * stack, div), div) } : {}),
+      by: inEx.length
+    }
+  }
+  const currency = valid[0].currency
+  const same = valid.filter((o) => o.currency === currency).slice(0, BULK_BEST).map(each)
+  const mean = same.reduce((s, v) => s + v, 0) / same.length
+  const round = (v: number): number => (currency === 'divine' ? roundDivine2(v) : v < 1 ? Math.max(0.01, Math.round(v * 100) / 100) : roundExalted(v))
+  return {
+    each: { amount: round(mean), currency },
+    ...(stack > 1 ? { stack: { amount: round(mean * stack), currency } } : {}),
+    by: same.length
+  }
+}
+
 /** Дроби курса для подсказки: 0.1 … 1 div в exalted. */
 export function rateFractions2(exaltedPerDivine: number): Array<{ div: number; exalted: number }> {
   if (!(exaltedPerDivine > 0)) return []

@@ -3,7 +3,7 @@ import { readFileSync } from 'fs'
 import { resolve } from 'path'
 import type { FullHour } from '@shared/flip/feed'
 import { angePriceByName, feedIdsByName, poe2Rate, type AngePrice } from '@shared/poe2/pricecheck/ange'
-import { angeView, rateFractions2 } from '@shared/poe2/pricecheck/priceBlock'
+import { angeView, bulkView, rateFractions2 } from '@shared/poe2/pricecheck/priceBlock'
 import { trade as dict } from '../../src/renderer/src/i18n/dict/trade'
 
 // S61: блок «у Ange» окна цены PoE 2 — числа в единице показа; строки RU и EN.
@@ -87,5 +87,24 @@ describe('блок «у Ange»', () => {
     }
     expect(tr('ru', 'pc2.s61.ange.each')).toBe('за штуку · у Ange')
     expect(tr('en', 'pc2.s61.rate', { n: 690 })).toBe('1 div ≈ 690 ex')
+  })
+})
+
+describe('сводка обмена trade2 (у Ange цены нет)', () => {
+  const offer = (exchangeAmount: number, currency: string, itemAmount = 1) => ({ exchangeAmount, currency, itemAmount })
+  const R = { exalted: 1, divine: 690, chaos: 71.5 }
+
+  it('по 5 лучшим предложениям в exalted, стопка — сумма', () => {
+    const v = bulkView([offer(1, 'exalted', 3), offer(1, 'exalted', 3), offer(1, 'chaos', 200), offer(1, 'exalted', 2), offer(2, 'exalted', 5), offer(9, 'exalted')], R, 14)!
+    expect(v.by).toBe(5)
+    expect(v.each.currency).toBe('exalted')
+    expect(v.each.amount).toBeCloseTo((1 / 3 + 1 / 3 + 71.5 / 200 + 0.5 + 0.4) / 5, 2)
+    expect(v.stack?.currency).toBe('exalted')
+  })
+
+  it('без курса — только в валюте лучшего предложения; пусто — нет сводки', () => {
+    const v = bulkView([offer(1, 'divine', 3), offer(1, 'exalted', 2), offer(1, 'divine', 2)], undefined)!
+    expect(v).toEqual({ each: { amount: 0.42, currency: 'divine' }, by: 2 })
+    expect(bulkView([], R)).toBeUndefined()
   })
 })
