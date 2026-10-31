@@ -94,6 +94,8 @@ export const campaign: DomainDict = {
     'lv.variant': 'вариант {n}',
     'lv.variants': 'Варианты схемы',
     // «Скоро в PoE 2» (panels/soon): статусы — в soonPoe2.ts
+    'app.soon': 'Скоро в PoE 2',
+    'nav.d.soon': 'Что из PoE 1 появится в PoE 2 и когда',
     'soon2.title': 'Скоро в PoE 2',
     'soon2.lead': 'Чего из POETH для PoE 1 ещё нет в PoE 2 и когда будет. Обновляем по мере работы.',
     'soon2.group.work': 'В работе',
@@ -225,6 +227,8 @@ export const campaign: DomainDict = {
     'lv.variant': 'variant {n}',
     'lv.variants': 'Map variants',
     'lv.rotateNote': 'The zone may be rotated or mirrored — go by the shape. Maps:',
+    'app.soon': 'Coming to PoE 2',
+    'nav.d.soon': 'What from PoE 1 comes to PoE 2, and when',
     'soon2.title': 'Coming to PoE 2',
     'soon2.lead': 'What POETH has for PoE 1 but not yet for PoE 2, and when it comes. Updated as we go.',
     'soon2.group.work': 'In progress',
