@@ -1,13 +1,17 @@
-// Трекер карт и сессии фарма по Client.txt (этап S11b). Чистые типы: разбор строк —
-// src/shared/farm/zones.ts, забеги и сессия — src/shared/farm/tracker.ts.
+// Трекер карт и сессии фарма по Client.txt (этап S11b; PoE 2 — S69). Чистые типы: разбор строк —
+// src/shared/farm/zones.ts (PoE 2 — zonesPoe2.ts), забеги и сессия — src/shared/farm/tracker.ts.
+
+import type { GameId } from '../games'
 
 /**
  * Что за зона (по id из `Generating level N area "<id>"`, язык-независимо):
  * hideout — хайдаут; town — город или хаб (Rogue Harbour, лобби лабиринта…);
  * campaign — зона кампании; map — карта атласа (в т.ч. уникальная, память); other — прочий
- * контент с устройства/из хаба (ограбление, лабиринт, Мэйвен, Легион…).
+ * контент с устройства/из хаба (ограбление, лабиринт, Мэйвен, Легион…);
+ * sub — подобласть забега (только PoE 2: Abyssal Depths, пещеры Экспедиции): входит в открытый
+ * забег, даже если вернулись в неё через убежище; без открытого забега — забег вида other.
  */
-export type FarmAreaKind = 'hideout' | 'town' | 'campaign' | 'map' | 'other'
+export type FarmAreaKind = 'hideout' | 'town' | 'campaign' | 'map' | 'other' | 'sub'
 
 /** Забег бывает только в карте или прочем контенте. */
 export type FarmRunKind = 'map' | 'other'
@@ -42,7 +46,7 @@ export interface FarmRun {
   kind: FarmRunKind
   /** уровень области */
   areaLevel: number
-  /** ярус карты (уровень области − 67 для 68…84), для прочего контента — null */
+  /** ярус карты (PoE 1: уровень области − 67 для 68…84; PoE 2: − 64 для 65…80), для прочего контента — null */
   tier: number | null
   /** seed экземпляра из строки входа */
   seed: string
@@ -60,7 +64,86 @@ export interface FarmRun {
   sessionId: string | null
   /** прибыль от S11a, если посчитана */
   profit?: FarmProfit
+  /** PoE 2: «+ находка» — ценное из забега (Ctrl+D в окне цены или вручную), свежие в конце */
+  finds?: FarmFind[]
 }
+
+/**
+ * Находка забега (PoE 2, API для окна цены и «Богатства» S70): у PoE 2 нет API тайника, поэтому
+ * прибыль карты — только то, что игрок отметил сам.
+ */
+export interface FarmFind {
+  id: string
+  /** английское имя предмета или `Metadata/…` — ключ цены */
+  ref: string
+  /** имя на языке клиента для строки в списке; нет — показываем ref */
+  name?: string
+  /** редкость — цвет имени в списке (окно цены знает её) */
+  rarity?: FarmFindRarity
+  /** штук (≥ 1) */
+  qty: number
+  /** цена всей находки (за qty штук) в exalted; null — цена неизвестна */
+  valueEx: number | null
+  /** когда добавлена (мс) */
+  at: number
+  /** откуда: окно цены по Ctrl+D, быстрые кнопки «+1 div / +5 ex / +10 ex» или ручной ввод «своё…» */
+  source: 'ctrlD' | 'quick' | 'manual'
+}
+
+export type FarmFindRarity = 'normal' | 'magic' | 'rare' | 'unique' | 'currency' | 'gem'
+
+/** Что присылают окно цены и ручной ввод: забег — текущий, если `runId` не указан. */
+export interface FarmFindInput {
+  ref: string
+  name?: string
+  rarity?: FarmFindRarity
+  /** по умолчанию 1 */
+  qty?: number
+  valueEx: number | null
+  source?: FarmFind['source']
+  runId?: string
+}
+
+/**
+ * Итог «+ находка»: noRun — нет ни открытого забега, ни забега идущей сессии (игрок ещё не
+ * заходил в карту); invalid — пустой ref или неверные числа; full — у забега уже 200 находок.
+ */
+export type FarmFindResult =
+  | { ok: true; runId: string; find: FarmFind }
+  | { ok: false; reason: 'noRun' | 'invalid' | 'full' }
+
+/**
+ * PoE 2: чем считать прибыль сессии — выбор игрока в диалогах «Чем отметить начало?» и «Как посчитать
+ * прибыль?»: снять вкладки (S68), ввести валюту или без прибыли (только карты, время и находки).
+ */
+export type FarmProfitMode = 'snapshot' | 'manual' | 'none'
+
+/** PoE 2: отметка начала сессии от «Богатства» (S70) — снимок вкладок или ввод валюты. */
+export interface FarmProfitMark {
+  source: 'snapshot' | 'manual'
+  /** когда снято или введено (мс) */
+  at: number
+  /** снимок: сколько вкладок */
+  tabs?: number
+}
+
+/**
+ * Прибыль сессии PoE 2 — считает «Богатство» (S70): разница снимков вкладок или ввода валюты в начале и
+ * в конце сессии, по ценам. Находки забегов сюда не входят: итог сессии = прибыль + находки (так в макете
+ * «вкладки +2,9 div · находки +1,9 div»). Трекер только хранит и показывает; source/at/tabs — отметка конца.
+ */
+export interface FarmSessionProfit extends FarmProfitMark {
+  /** в exalted; может быть < 0 */
+  ex: number
+  /** курс: exalted за 1 divine на момент расчёта (показать в div) */
+  exPerDiv?: number
+}
+
+/** Кнопки сессии PoE 2: выбор из диалогов начала и конца (у PoE 1 — без параметров). */
+export interface FarmStartOptions {
+  profitMode?: FarmProfitMode
+}
+export type FarmStopOptions = FarmStartOptions
 
 export interface FarmSession {
   id: string
@@ -73,6 +156,14 @@ export interface FarmSession {
   pausedMs: number
   /** метка стратегии советника «что фармить» (S16) — id из strategies.json */
   strategy?: string
+  /** PoE 2: чем отметить начало (диалог «Чем отметить начало?»); S70 видит в событии session:start */
+  profitMode?: FarmProfitMode
+  /** PoE 2: отметка начала от «Богатства» (S70) — setSessionStart */
+  profitStart?: FarmProfitMark
+  /** PoE 2: как посчитать прибыль в конце (диалог «Как посчитать прибыль?»); S70 видит в событии session:stop */
+  profitEnd?: FarmProfitMode
+  /** PoE 2: прибыль сессии от «Богатства» (S70) — setSessionProfit */
+  profit?: FarmSessionProfit
 }
 
 /** Статистика сессии на момент `FarmState.at` (или на момент «Стоп»). */
@@ -96,6 +187,17 @@ export interface FarmStats {
   profitChaos: number | null
   /** прибыль в час; null — нет прибыли или сессия короче минуты */
   profitPerHour: number | null
+  // ниже — только PoE 2 (у PoE 1 полей нет)
+  /** находок в забегах сессии */
+  finds?: number
+  /** Σ цен находок в exalted; null — ни одной с ценой */
+  findsEx?: number | null
+  /** прибыль сессии от «Богатства» (S70) в exalted — без находок; null — не посчитана */
+  profitEx?: number | null
+  /** итог сессии в exalted: прибыль + находки; null — ни того, ни другого */
+  totalEx?: number | null
+  /** итог в час в exalted; null — нечего считать или сессия короче минуты */
+  exPerHour?: number | null
 }
 
 /** Завершённая сессия в истории. */
@@ -132,6 +234,8 @@ export type FarmConfigPatch = Partial<FarmConfig>
 
 /** Состояние для renderer и S11a. Время «тикает» от `at`, если `ticking` / сессия идёт. */
 export interface FarmState {
+  /** игра трекера: у PoE 1 и PoE 2 своя история (farm.json / farm.poe2.json); трекер ставит всегда, нет — PoE 1 */
+  game?: GameId
   /** момент снимка (мс) */
   at: number
   /** открытый забег (activeMs — на момент `at`) */
@@ -166,6 +270,6 @@ export interface FarmLogStatus {
   /** читаем лог прямо сейчас */
   connected: boolean
   logPath: string | null
-  /** игра поддерживает трекер (пока только PoE1) */
+  /** игра поддерживает трекер (PoE 1 и PoE 2) */
   supported: boolean
 }

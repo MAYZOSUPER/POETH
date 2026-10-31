@@ -2,31 +2,51 @@ import { app, ipcMain } from 'electron'
 import path from 'path'
 import { IPC } from '@shared/ipc'
 import type { GameDef, GameId } from '@shared/games'
-import type { FarmConfigPatch, FarmLogStatus } from '@shared/types/farm'
-import { cleanWidgetPos } from '@shared/farm/tracker'
-import { getFarmService } from '../services/farmSession'
+import type { FarmConfigPatch, FarmLogStatus, FarmProfitMode, FarmStartOptions, FarmState } from '@shared/types/farm'
+import { cleanProfitMode, cleanWidgetPos } from '@shared/farm/tracker'
+import { getRunningGame } from '../gameContext'
+import { getFarmService, type FarmSessionService } from '../services/farmSession'
+import { loadPoe2FarmRules } from '../services/farmData'
 import { getGameLogStatus, onGameLogStatus, readLogTail, subscribeGameLog } from '../services/gameLog'
 import { sendToOverlay } from '../windows/gameOverlay'
 import { sendToCompanion } from '../windows/companionWindow'
 import type { IpcDomain } from './types'
 
-// Домен «трекер карт и сессия фарма» (main, этап S11b). Строки Client.txt — общий тейлер
+// Домен «трекер карт и сессия фарма» (main, этап S11b; PoE 2 — S69). Строки Client.txt — общий тейлер
 // процесса (services/gameLog.ts, его же читают команды чата и менеджер сделок; свой путь к логу
-// задаёт вкладка «Сделки»). Забеги и сессия — services/farmSession.ts (там же API для S11a).
-// Только чтение лога: никаких действий в игре.
+// задаёт вкладка «Сделки»). Забеги и сессия — services/farmSession.ts (там же API для S11a и S70):
+// у каждой игры свой сервис и своя история — farm.json (PoE 1) и farm.poe2.json (PoE 2); окна видят
+// сервис запущенной игры. Только чтение лога: никаких действий в игре.
 
-/** Игры с трекером: зоны и строки событий сверены для PoE1 (у PoE2 свои id зон и кампания). */
-const FARM_GAMES: readonly GameId[] = ['poe1']
+/** Игры с трекером: зоны и строки событий PoE 1 сверены по настоящему Client.txt, PoE 2 — по данным игры. */
+const FARM_GAMES: readonly GameId[] = ['poe1', 'poe2']
+const HISTORY_FILE: Record<GameId, string> = { poe1: 'farm.json', poe2: 'farm.poe2.json' }
 const MAX_SIM_LINES = 500
 const MAX_LINE_LEN = 4000
+const MAX_ID_LEN = 64
 const HEARTBEAT_MS = 60_000
-
-const farm = getFarmService()
 
 let logDef: GameDef | null = null
 let logOff: (() => void) | null = null
 let logGame: GameId | null = null
 let heartbeat: ReturnType<typeof setInterval> | null = null
+
+/** Окно компаньона создаётся раньше, чем main узнаёт игру: запросы окон ждут первой setupForGame. */
+let markReady: () => void = () => undefined
+const gameReady = new Promise<void>((resolve) => {
+  markReady = resolve
+})
+
+/** Сервис игры, которую сейчас показывают окна. */
+function active(): FarmSessionService {
+  return getFarmService(logDef?.id ?? getRunningGame())
+}
+
+/** То же для запросов окон: после того как игра известна. */
+async function svc(): Promise<FarmSessionService> {
+  await gameReady
+  return active()
+}
 
 /** Событие во все окна: компаньон (панель «Карты») и оверлей (виджет). */
 function broadcast(channel: string, payload?: unknown): void {
@@ -52,6 +72,7 @@ async function startLog(def: GameDef): Promise<void> {
   if (logOff && logGame === def.id) return
   stopLog()
   logGame = def.id
+  const farm = getFarmService(def.id)
   const sub = await subscribeGameLog(def, (lines) => farm.ingestLines(lines))
   if (logGame !== def.id) {
     sub.off() // игру сменили, пока открывали лог
@@ -64,33 +85,59 @@ async function startLog(def: GameDef): Promise<void> {
   await farm.prime(() => (file ? readLogTail(file) : Promise.resolve([])))
 }
 
+const profitModeArg = (v: unknown): FarmProfitMode | undefined => cleanProfitMode((v as FarmStartOptions | null)?.profitMode)
+const idArg = (v: unknown): string | null => (typeof v === 'string' && v.length > 0 && v.length <= MAX_ID_LEN ? v : null)
+
 function register(): void {
-  farm.setFile(path.join(app.getPath('userData'), 'farm.json'))
-  farm.on('changed', (state) => broadcast(IPC.events.farmChanged, state))
+  const dir = app.getPath('userData')
+  for (const game of FARM_GAMES) {
+    const farm = getFarmService(game)
+    farm.setFile(path.join(dir, HISTORY_FILE[game]))
+    if (game === 'poe2') farm.setRulesLoader(loadPoe2FarmRules)
+    // окна показывают только запущенную игру
+    farm.on('changed', (state: FarmState) => {
+      if (active() === farm) broadcast(IPC.events.farmChanged, state)
+    })
+  }
   onGameLogStatus(() => broadcast(IPC.events.farmLog, logStatus()))
   // выход: сессия на паузу, время в карте — до сейчас (синхронно, иначе не успеет записаться)
-  app.on('before-quit', () => farm.suspendSync())
+  app.on('before-quit', () => {
+    for (const game of FARM_GAMES) getFarmService(game).suspendSync()
+  })
 
   ipcMain.handle(IPC.farm.state, async () => {
+    const farm = await svc()
     await farm.load()
     return farm.state()
   })
-  ipcMain.handle(IPC.farm.start, () => farm.start())
-  ipcMain.handle(IPC.farm.pause, () => farm.pause())
-  ipcMain.handle(IPC.farm.resume, () => farm.resume())
-  ipcMain.handle(IPC.farm.stop, () => farm.stop())
-  ipcMain.handle(IPC.farm.setConfig, (_e, patch: unknown) => {
+  // PoE 2: выбор из диалогов начала и конца — { profitMode }; у PoE 1 — без параметров
+  ipcMain.handle(IPC.farm.start, async (_e, opts: unknown) => (await svc()).start(undefined, profitModeArg(opts)))
+  ipcMain.handle(IPC.farm.pause, async () => (await svc()).pause())
+  ipcMain.handle(IPC.farm.resume, async () => (await svc()).resume())
+  ipcMain.handle(IPC.farm.stop, async (_e, opts: unknown) => (await svc()).stop(profitModeArg(opts)))
+  ipcMain.handle(IPC.farm.setConfig, async (_e, patch: unknown) => {
     const p = (patch ?? {}) as FarmConfigPatch
     const clean: FarmConfigPatch = {}
     if (typeof p.overlayWidget === 'boolean') clean.overlayWidget = p.overlayWidget
     if ('widgetPos' in p) clean.widgetPos = cleanWidgetPos(p.widgetPos)
-    return farm.setConfig(clean)
+    return (await svc()).setConfig(clean)
   })
-  ipcMain.handle(IPC.farm.removeRun, (_e, id: unknown) =>
-    typeof id === 'string' ? farm.removeRun(id) : farm.state()
-  )
-  ipcMain.handle(IPC.farm.clear, () => farm.clearHistory())
+  ipcMain.handle(IPC.farm.removeRun, async (_e, id: unknown) => {
+    const farm = await svc()
+    return typeof id === 'string' ? farm.removeRun(id) : farm.state()
+  })
+  ipcMain.handle(IPC.farm.clear, async () => (await svc()).clearHistory())
+  // «+ находка» (PoE 2): вход проверяет трекер (cleanFindInput) — ref, числа, длины
+  ipcMain.handle(IPC.farm.addFind, async (_e, input: unknown) => (await svc()).addFind(input))
+  ipcMain.handle(IPC.farm.removeFind, async (_e, runId: unknown, findId: unknown) => {
+    const farm = await svc()
+    const r = idArg(runId)
+    const f = idArg(findId)
+    if (r && f) await farm.removeFind(r, f)
+    return farm.state()
+  })
   ipcMain.handle(IPC.farm.simulate, async (_e, lines: unknown) => {
+    const farm = await svc()
     await farm.load()
     if (Array.isArray(lines)) {
       const clean = lines
@@ -105,15 +152,29 @@ function register(): void {
 }
 
 async function setupForGame(def: GameDef): Promise<void> {
+  const prev = logDef
   logDef = def
-  await farm.load()
-  if (!FARM_GAMES.includes(def.id)) {
-    // мягкий перезапуск под другую игру: забег закрыт, лог больше не читаем
-    if (logGame) await farm.endRun()
-    stopLog()
-    return
+  try {
+    // мягкий перезапуск под другую игру: забег прошлой игры закрыт, её лог больше не читаем
+    if (prev && prev.id !== def.id) {
+      const old = getFarmService(prev.id)
+      stopLog()
+      await old.load()
+      await old.endRun()
+    }
+    const farm = getFarmService(def.id)
+    await farm.load()
+    markReady()
+    // окна могли спросить состояние до того, как игра стала известна
+    broadcast(IPC.events.farmChanged, farm.state())
+    if (!FARM_GAMES.includes(def.id)) {
+      stopLog()
+      return
+    }
+    await startLog(def)
+  } finally {
+    markReady()
   }
-  await startLog(def)
 }
 
 export const farmDomain: IpcDomain = { register, setupForGame }

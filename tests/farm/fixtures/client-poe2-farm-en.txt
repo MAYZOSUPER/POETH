@@ -1,0 +1,62 @@
+2026/11/01 20:59:50 100000000 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(unknown)]
+2026/11/01 21:00:00 100000001 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:00:00 100000002 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:00:00 100000003 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Felled Hideout]
+2026/11/01 21:00:30 100000004 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Atlas]
+2026/11/01 21:01:00 100000005 2caa22d2 [DEBUG Client 4380] Generating level 79 area "MapBluff" with seed 101
+2026/11/01 21:01:00 100000006 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:01:00 100000007 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Bluff]
+2026/11/01 21:02:00 100000008 2caa22d2 [INFO Client 4380] @From Testbuyer: Hi, I would like to buy your Testhero has been slain. listed for 5 exalted
+2026/11/01 21:03:00 100000009 2caa22d2 [INFO Client 4380] : Testhero has been slain.
+2026/11/01 21:03:05 100000010 2caa22d2 [DEBUG Client 4380] Generating level 79 area "MapBluff" with seed 101
+2026/11/01 21:03:05 100000011 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:03:05 100000012 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Bluff]
+2026/11/01 21:05:00 100000013 2caa22d2 [DEBUG Client 4380] Generating level 79 area "Abyss_Depths2" with seed 555
+2026/11/01 21:05:00 100000014 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:05:00 100000015 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Abyssal Depths]
+2026/11/01 21:07:00 100000016 2caa22d2 [DEBUG Client 4380] Generating level 79 area "MapBluff" with seed 101
+2026/11/01 21:07:00 100000017 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:07:00 100000018 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Bluff]
+2026/11/01 21:08:00 100000019 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:08:00 100000020 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:08:00 100000021 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Felled Hideout]
+2026/11/01 21:08:30 100000022 2caa22d2 [DEBUG Client 4380] Generating level 79 area "MapBluff" with seed 101
+2026/11/01 21:08:30 100000023 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:08:30 100000024 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Bluff]
+2026/11/01 21:10:00 100000025 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:10:00 100000026 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:10:00 100000027 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Felled Hideout]
+2026/11/01 21:10:20 100000028 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Atlas]
+2026/11/01 21:11:00 100000029 2caa22d2 [DEBUG Client 4380] Generating level 80 area "MapPrecursorTowerDesert" with seed 202
+2026/11/01 21:11:00 100000030 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:11:00 100000031 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Precursor Tower]
+2026/11/01 21:15:00 100000032 2caa22d2 [INFO Client 4380] : Testhero has committed suicide.
+2026/11/01 21:15:05 100000033 2caa22d2 [DEBUG Client 4380] Generating level 80 area "MapPrecursorTowerDesert" with seed 202
+2026/11/01 21:15:05 100000034 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:15:05 100000035 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Precursor Tower]
+2026/11/01 21:18:00 100000036 2caa22d2 [DEBUG Client 4380] Generating level 65 area "G_Endgame_Town" with seed 1
+2026/11/01 21:18:00 100000037 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:18:00 100000038 2caa22d2 [INFO Client 4380] [SCENE] Set Source [The Ziggurat Refuge]
+2026/11/01 21:19:00 100000039 2caa22d2 [DEBUG Client 4380] Generating level 75 area "ExpeditionLogBook_Tundra" with seed 303
+2026/11/01 21:19:00 100000040 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:19:00 100000041 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Frigid Bluffs]
+2026/11/01 21:21:00 100000042 2caa22d2 [DEBUG Client 4380] Generating level 75 area "ExpeditionSubArea_Cavern" with seed 304
+2026/11/01 21:21:00 100000043 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:21:00 100000044 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Smuggler's Den]
+2026/11/01 21:23:00 100000045 2caa22d2 [DEBUG Client 4380] Generating level 75 area "ExpeditionLogBook_Tundra" with seed 303
+2026/11/01 21:23:00 100000046 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:23:00 100000047 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Frigid Bluffs]
+2026/11/01 21:25:00 100000048 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:25:00 100000049 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:25:00 100000050 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Felled Hideout]
+2026/11/01 21:26:00 100000051 2caa22d2 [DEBUG Client 4380] Generating level 68 area "MapHideoutFarmlands_Claimable" with seed 404
+2026/11/01 21:26:00 100000052 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:26:00 100000053 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Farmlands Hideout]
+2026/11/01 21:27:00 100000054 2caa22d2 [INFO Client 4380] : Testally has joined the area.
+2026/11/01 21:28:00 100000055 2caa22d2 [INFO Client 4380] : Testally has been slain.
+2026/11/01 21:30:00 100000056 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:30:00 100000057 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:30:00 100000058 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Felled Hideout]
+2026/11/01 21:31:00 100000059 2caa22d2 [DEBUG Client 4380] Generating level 66 area "MapBluff" with seed 505
+2026/11/01 21:31:00 100000060 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:31:00 100000061 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Bluff]

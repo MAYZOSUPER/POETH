@@ -12,26 +12,44 @@
 // входе в зону забега (игрок вернулся к игре). Без сессии забеги тоже пишутся (sessionId: null).
 // Время: из строк лога (секунды, локальное время ПК) и Date.now() кнопок — отрицательные
 // промежутки от округления обрезаются до нуля.
+//
+// PoE 2 (S69) — те же забеги по своим правилам (FarmRules из zonesPoe2.ts): ярус T1–T16, смерть карту не
+// закрывает (воскрешение в том же экземпляре — та же строка входа с тем же seed). Подобласть (Abyssal
+// Depths, пещеры Экспедиции) входит в открытый забег и тогда, когда в неё вернулись через убежище с
+// новым seed (экземпляр истёк), если с выхода прошло не больше 15 мин. Прибыли по тайнику у PoE 2 нет:
+// «+ находка» к забегу (окно цены, ручной ввод) и прибыль сессии от «Богатства» (S70).
 
 import type {
   FarmConfig,
   FarmEvent,
+  FarmFind,
+  FarmFindRarity,
+  FarmFindResult,
   FarmLocation,
   FarmProfit,
+  FarmProfitMark,
+  FarmProfitMode,
   FarmRun,
   FarmSession,
+  FarmSessionProfit,
   FarmSessionSummary,
   FarmState,
   FarmStats
 } from '../types/farm'
-import { classifyArea, isRunArea, mapTier, parseFarmLine, type ZoneEnter } from './zones'
+import { POE1_FARM_RULES, isRunArea, parseFarmLine, type FarmRules, type ZoneEnter } from './zones'
 
 /** Сколько завершённых забегов и сессий хранить. */
 export const FARM_RUNS_LIMIT = 1000
 export const FARM_SESSIONS_LIMIT = 200
+/** Сколько находок у одного забега. */
+export const FARM_FINDS_LIMIT = 200
 /** Сессия короче — «в час» не считаем (шум). */
 const MIN_RATE_MS = 60_000
 const HOUR = 3_600_000
+/** Подобласть с новым seed через убежище — та же карта, если вернулись не позже. */
+const SUB_REJOIN_MS = 15 * 60_000
+const REF_MAX = 200
+const QTY_MAX = 1_000_000
 
 export const DEFAULT_FARM_CONFIG: FarmConfig = { overlayWidget: false, widgetPos: null }
 
@@ -81,8 +99,131 @@ export function emptyFarmData(): FarmTrackerData {
 }
 
 const zoneKey = (z: ZoneEnter): string => `${z.areaId}#${z.seed}`
-/** Копия забега наружу (события, снимок): прибыль — тоже копия. */
-const copyRun = (r: FarmRun): FarmRun => (r.profit ? { ...r, profit: { ...r.profit } } : { ...r })
+/** Копия забега наружу (события, снимок): прибыль и находки — тоже копии. */
+function copyRun(r: FarmRun): FarmRun {
+  const c: FarmRun = { ...r }
+  if (r.profit) c.profit = { ...r.profit }
+  if (r.finds) c.finds = r.finds.map((f) => ({ ...f }))
+  return c
+}
+/** Копия сессии наружу: прибыль и отметка начала — тоже копии. */
+function copySession<T extends FarmSession>(s: T): T {
+  const c = { ...s }
+  if (s.profit) c.profit = { ...s.profit }
+  if (s.profitStart) c.profitStart = { ...s.profitStart }
+  return c
+}
+
+const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v)
+// без управляющих символов: строка уходит в интерфейс и в farm.json
+// eslint-disable-next-line no-control-regex
+const CONTROL = /[\u0000-\u001f\u007f]/
+
+function cleanText(v: unknown): string | null {
+  if (typeof v !== 'string') return null
+  const t = v.trim()
+  return t && t.length <= REF_MAX && !CONTROL.test(t) ? t : null
+}
+
+/**
+ * Находка от окна цены или ручного ввода (PoE 2): ref — непустая строка до 200 знаков, qty — целое
+ * 1…1 000 000 (по умолчанию 1), valueEx — цена всей находки ≥ 0 или null (неизвестна). Иначе null.
+ */
+const RARITIES: readonly FarmFindRarity[] = ['normal', 'magic', 'rare', 'unique', 'currency', 'gem']
+
+export function cleanFindInput(
+  v: unknown
+): { ref: string; name?: string; rarity?: FarmFindRarity; qty: number; valueEx: number | null; source: FarmFind['source']; runId?: string } | null {
+  const x = v as Partial<FarmFind & { runId: unknown }> | null
+  if (!x || typeof x !== 'object') return null
+  const ref = cleanText(x.ref)
+  if (!ref) return null
+  const qty = x.qty === undefined ? 1 : x.qty
+  if (!finite(qty) || !Number.isInteger(qty) || qty < 1 || qty > QTY_MAX) return null
+  const valueEx = x.valueEx === null || x.valueEx === undefined ? null : x.valueEx
+  if (valueEx !== null && (!finite(valueEx) || valueEx < 0)) return null
+  const name = cleanText(x.name)
+  return {
+    ref,
+    ...(name && name !== ref ? { name } : {}),
+    ...(RARITIES.includes(x.rarity as FarmFindRarity) ? { rarity: x.rarity } : {}),
+    qty,
+    valueEx,
+    source: x.source === 'ctrlD' || x.source === 'quick' ? x.source : 'manual',
+    ...(typeof x.runId === 'string' && x.runId ? { runId: x.runId } : {})
+  }
+}
+
+function cleanFind(v: unknown): FarmFind | null {
+  const x = v as Partial<FarmFind> | null
+  const f = cleanFindInput(x)
+  if (!f || typeof x?.id !== 'string' || !finite(x.at)) return null
+  const { runId: _r, ...rest } = f
+  void _r
+  return { id: x.id, ...rest, at: x.at }
+}
+
+/** Режим прибыли PoE 2 из диалога; иначе undefined. */
+export function cleanProfitMode(v: unknown): FarmProfitMode | undefined {
+  return v === 'snapshot' || v === 'manual' || v === 'none' ? v : undefined
+}
+
+/** Отметка начала или конца от «Богатства» (S70): at по умолчанию — `now`; tabs — целое 1…100. */
+export function cleanProfitMark(v: unknown, now = 0): FarmProfitMark | null {
+  const p = v as Partial<FarmProfitMark> | null
+  if (!p || typeof p !== 'object') return null
+  const tabs = p.tabs
+  return {
+    source: p.source === 'snapshot' ? 'snapshot' : 'manual',
+    at: finite(p.at) ? p.at : now,
+    ...(finite(tabs) && Number.isInteger(tabs) && tabs >= 1 && tabs <= 100 ? { tabs } : {})
+  }
+}
+
+/** Прибыль сессии от «Богатства» (S70): ex обязателен; at по умолчанию — `now`. Иначе null. */
+export function cleanSessionProfit(v: unknown, now = 0): FarmSessionProfit | null {
+  const p = v as Partial<FarmSessionProfit> | null
+  if (!p || !finite(p.ex)) return null
+  return {
+    ex: p.ex,
+    ...(finite(p.exPerDiv) && p.exPerDiv > 0 ? { exPerDiv: p.exPerDiv } : {}),
+    ...(cleanProfitMark(p, now) as FarmProfitMark)
+  }
+}
+
+/** Σ цен находок; null — ни одной с ценой. */
+function findsValue(finds: FarmFind[]): number | null {
+  const priced = finds.filter((f) => f.valueEx !== null)
+  return priced.length ? priced.reduce((a, f) => a + (f.valueEx as number), 0) : null
+}
+
+/** Поля PoE 2 в статистике: итог = прибыль сессии от «Богатства» + находки, в час — он же. */
+function exStats(finds: FarmFind[], profit: FarmSessionProfit | undefined, durationMs: number): Partial<FarmStats> {
+  const findsEx = findsValue(finds)
+  const profitEx = profit ? profit.ex : null
+  const totalEx = profitEx === null && findsEx === null ? null : (profitEx ?? 0) + (findsEx ?? 0)
+  return {
+    finds: finds.length,
+    findsEx,
+    profitEx,
+    totalEx,
+    exPerHour: totalEx !== null && durationMs >= MIN_RATE_MS ? totalEx / (durationMs / HOUR) : null
+  }
+}
+
+/** Поля PoE 2 сессии из farm.json (битые — отброшены). */
+function cleanSessionExtras(s: Partial<FarmSession>): Partial<FarmSession> {
+  const out: Partial<FarmSession> = {}
+  const mode = cleanProfitMode(s.profitMode)
+  if (mode) out.profitMode = mode
+  const end = cleanProfitMode(s.profitEnd)
+  if (end) out.profitEnd = end
+  const start = s.profitStart ? cleanProfitMark(s.profitStart) : null
+  if (start) out.profitStart = start
+  const profit = cleanSessionProfit(s.profit)
+  if (profit) out.profit = profit
+  return out
+}
 
 /** Прибыль от S11a: chaos обязателен, runs ≥ 1 (по умолчанию 1); прочее — если корректно. */
 export function cleanProfit(v: unknown): FarmProfit | null {
@@ -107,6 +248,9 @@ function cleanRun(r: unknown): FarmRun | null {
   const x = r as FarmRun
   if (!x || typeof x.id !== 'string' || typeof x.areaId !== 'string' || typeof x.startTs !== 'number') return null
   const profit = cleanProfit(x.profit)
+  const finds = Array.isArray(x.finds)
+    ? x.finds.map(cleanFind).filter((f): f is FarmFind => !!f).slice(0, FARM_FINDS_LIMIT)
+    : []
   return {
     id: x.id,
     areaId: x.areaId,
@@ -121,7 +265,8 @@ function cleanRun(r: unknown): FarmRun | null {
     entries: Number.isFinite(x.entries) ? x.entries : 1,
     deaths: Number.isFinite(x.deaths) ? x.deaths : 0,
     sessionId: typeof x.sessionId === 'string' ? x.sessionId : null,
-    ...(profit ? { profit } : {})
+    ...(profit ? { profit } : {}),
+    ...(finds.length ? { finds } : {})
   }
 }
 
@@ -151,11 +296,19 @@ export function normalizeFarmData(raw: unknown): FarmTrackerData {
     }
     const strategy = cleanStrategy(s.strategy)
     if (strategy) d.session.strategy = strategy
+    Object.assign(d.session, cleanSessionExtras(s))
   }
   if (Array.isArray(x.sessions)) {
     d.sessions = x.sessions
       .filter((v) => v && typeof v.id === 'string' && Number.isFinite(v.endedAt) && v.stats)
       .slice(0, FARM_SESSIONS_LIMIT)
+      .map((v): FarmSessionSummary => {
+        // у PoE 1 полей PoE 2 нет — запись как была
+        if (v.profit === undefined && v.profitMode === undefined && v.profitStart === undefined && v.profitEnd === undefined) return v
+        const { profit: _p, profitMode: _m, profitStart: _s, profitEnd: _e, ...rest } = v
+        void [_p, _m, _s, _e]
+        return { ...rest, ...cleanSessionExtras(v), endedAt: v.endedAt }
+      })
   }
   if (x.config) d.config = { overlayWidget: x.config.overlayWidget === true, widgetPos: cleanWidgetPos(x.config.widgetPos) }
   if (Number.isFinite(x.savedAt)) d.savedAt = x.savedAt
@@ -164,9 +317,16 @@ export function normalizeFarmData(raw: unknown): FarmTrackerData {
 
 export class FarmTracker {
   private d: FarmTrackerData
+  private readonly rules: FarmRules
 
-  constructor(data?: FarmTrackerData) {
+  /** `rules` — правила игры (по умолчанию PoE 1; PoE 2 — poe2FarmRules из zonesPoe2.ts). */
+  constructor(data?: FarmTrackerData, rules: FarmRules = POE1_FARM_RULES) {
     this.d = data ?? emptyFarmData()
+    this.rules = rules
+  }
+
+  get game(): FarmRules['game'] {
+    return this.rules.game
   }
 
   /** Данные для сохранения (копия). */
@@ -197,7 +357,7 @@ export class FarmTracker {
   ingestLines(lines: string[], fallbackTs: number): FarmEvent[] {
     const out: FarmEvent[] = []
     for (const line of lines) {
-      const p = parseFarmLine(line)
+      const p = parseFarmLine(line, this.rules)
       if (!p) continue
       const ts = p.ts ?? fallbackTs
       if (p.event.type === 'zone') out.push(...this.enterZone(p.event.zone, ts))
@@ -211,8 +371,9 @@ export class FarmTracker {
   enterZone(zone: ZoneEnter, ts: number): FarmEvent[] {
     const d = this.d
     const out: FarmEvent[] = []
-    const kind = classifyArea(zone.areaId, zone.level)
+    const kind = this.rules.classify(zone.areaId, zone.level)
     const wasInside = d.inside
+    const from = d.location?.kind
     this.leave(ts)
     d.location = { kind, areaId: zone.areaId, areaName: null, level: zone.level, since: ts }
     if (!isRunArea(kind)) return out
@@ -221,22 +382,30 @@ export class FarmTracker {
     if (d.session?.pausedAt != null) out.push(...this.resumeSession(ts))
 
     const key = zoneKey(zone)
+    // PoE 2: в подобласть вернулись через убежище, а экземпляр новый (истёк) — всё та же карта
+    const subAgain =
+      kind === 'sub' &&
+      !wasInside &&
+      (from === 'hideout' || from === 'town') &&
+      d.lastExit !== null &&
+      ts - d.lastExit <= SUB_REJOIN_MS
     if (d.current && d.currentZones.includes(key)) {
       // портал обратно / перезаход после смерти — тот же экземпляр (возврат из побочной
       // области прямо в карту — не новый вход)
       if (!wasInside) d.current.entries += 1
-    } else if (d.current && wasInside) {
-      // прямо из зоны забега — побочная область, комната лабиринта
+    } else if (d.current && (wasInside || subAgain)) {
+      // прямо из зоны забега — побочная область, комната лабиринта; подобласть PoE 2
       d.currentZones.push(key)
+      if (!wasInside) d.current.entries += 1
     } else {
       if (d.current) out.push(this.finishRun(d.lastExit ?? ts, ts))
       const run: FarmRun = {
         id: `r${ts.toString(36)}${zone.seed.slice(-4)}`,
         areaId: zone.areaId,
         areaName: null,
-        kind,
+        kind: kind === 'map' ? 'map' : 'other',
         areaLevel: zone.level,
-        tier: kind === 'map' ? mapTier(zone.level) : null,
+        tier: kind === 'map' ? this.rules.tier(zone.level) : null,
         seed: zone.seed,
         startTs: ts,
         endTs: null,
@@ -304,14 +473,19 @@ export class FarmTracker {
   // Сессия: Начать / Пауза / Продолжить / Стоп
   // ---------------------------------------------------------------------------
 
-  /** `strategy` — метка стратегии советника (S16), необязательна. */
-  startSession(ts: number, strategy?: string): FarmEvent[] {
+  /**
+   * `strategy` — метка стратегии советника (S16), необязательна; `profitMode` — PoE 2: чем отметить начало
+   * (диалог «Чем отметить начало?»), S70 видит его в событии session:start.
+   */
+  startSession(ts: number, strategy?: string, profitMode?: FarmProfitMode): FarmEvent[] {
     const d = this.d
     if (d.session) return []
     const out: FarmEvent[] = []
     const session: FarmSession = { id: `s${ts.toString(36)}`, startedAt: ts, endedAt: null, pausedAt: null, pausedMs: 0 }
     const tag = cleanStrategy(strategy)
     if (tag) session.strategy = tag
+    const mode = cleanProfitMode(profitMode)
+    if (mode) session.profitMode = mode
     if (d.current && !d.current.sessionId) {
       // начали посреди карты — карта идёт в сессию; в убежище с открытым прошлым забегом — он
       // закрывается до начала сессии (его время и прибыль к сессии не относятся)
@@ -319,7 +493,7 @@ export class FarmTracker {
       else out.push(this.finishRun(d.lastExit ?? ts, ts))
     }
     d.session = session
-    out.push({ type: 'session', state: 'start', session: { ...session }, at: ts })
+    out.push({ type: 'session', state: 'start', session: copySession(session), at: ts })
     return out
   }
 
@@ -332,7 +506,7 @@ export class FarmTracker {
       d.enteredAt = null
     }
     s.pausedAt = Math.max(ts, s.startedAt)
-    return [{ type: 'session', state: 'pause', session: { ...s }, at: ts }]
+    return [{ type: 'session', state: 'pause', session: copySession(s), at: ts }]
   }
 
   resumeSession(ts: number): FarmEvent[] {
@@ -341,14 +515,17 @@ export class FarmTracker {
     s.pausedMs += span(s.pausedAt, ts)
     s.pausedAt = null
     if (this.d.inside && this.d.current) this.d.enteredAt = ts
-    return [{ type: 'session', state: 'resume', session: { ...s }, at: ts }]
+    return [{ type: 'session', state: 'resume', session: copySession(s), at: ts }]
   }
 
-  stopSession(ts: number): FarmEvent[] {
+  /** `profitMode` — PoE 2: как посчитать прибыль (диалог «Как посчитать прибыль?»), S70 видит его в session:stop. */
+  stopSession(ts: number, profitMode?: FarmProfitMode): FarmEvent[] {
     const d = this.d
     const s = d.session
     if (!s) return []
     const out: FarmEvent[] = []
+    const end = cleanProfitMode(profitMode)
+    if (end) s.profitEnd = end
     if (s.pausedAt !== null) {
       s.pausedMs += span(s.pausedAt, ts)
       s.pausedAt = null
@@ -359,8 +536,39 @@ export class FarmTracker {
     d.sessions.unshift(summary)
     if (d.sessions.length > FARM_SESSIONS_LIMIT) d.sessions.length = FARM_SESSIONS_LIMIT
     d.session = null
-    out.push({ type: 'session', state: 'stop', session: { ...s }, at: ts })
+    out.push({ type: 'session', state: 'stop', session: copySession(s), at: ts })
     return out
+  }
+
+  /**
+   * Отметка начала от «Богатства» (S70): снимок N вкладок или ввод валюты — у идущей сессии (или у
+   * завершённой, если пришла поздно). null — убрать. false — сессии нет.
+   */
+  setSessionStart(sessionId: string, mark: FarmProfitMark | null, ts: number): boolean {
+    const d = this.d
+    const target = d.session?.id === sessionId ? d.session : d.sessions.find((s) => s.id === sessionId)
+    if (!target) return false
+    const clean = mark ? cleanProfitMark(mark, ts) : null
+    if (clean) target.profitStart = clean
+    else delete target.profitStart
+    return true
+  }
+
+  /**
+   * Прибыль сессии от «Богатства» (S70) — у идущей или завершённой (итог обычно приходит сразу после
+   * «Стоп»: снимок или ввод в конце). null или некорректная — убрать. false — сессии нет.
+   */
+  setSessionProfit(sessionId: string, profit: FarmSessionProfit | null, ts: number): boolean {
+    const d = this.d
+    const clean = cleanSessionProfit(profit, ts)
+    const live = d.session?.id === sessionId ? d.session : null
+    const sum = live ? null : d.sessions.find((s) => s.id === sessionId)
+    const target = live ?? sum
+    if (!target) return false
+    if (clean) target.profit = clean
+    else delete target.profit
+    if (sum) this.refreshSummary(sum)
+    return true
   }
 
   /** Метка стратегии советника (S16) у идущей сессии; null — снять. false — сессии нет. */
@@ -419,6 +627,65 @@ export class FarmTracker {
     return true
   }
 
+  private runById(runId: string): FarmRun | null {
+    return this.d.current?.id === runId ? this.d.current : (this.d.runs.find((r) => r.id === runId) ?? null)
+  }
+
+  /**
+   * «+ находка» к забегу (PoE 2: окно цены по Ctrl+D или ручной ввод). Без `runId` — открытый забег
+   * (в убежище после карты он ещё открыт), а если его нет — последний забег идущей сессии.
+   */
+  addFind(input: unknown, ts: number): FarmFindResult {
+    const d = this.d
+    const f = cleanFindInput(input)
+    if (!f) return { ok: false, reason: 'invalid' }
+    const sid = d.session?.id
+    const run = f.runId
+      ? this.runById(f.runId)
+      : (d.current ?? (sid ? (d.runs.find((r) => r.sessionId === sid) ?? null) : null))
+    if (!run) return { ok: false, reason: 'noRun' }
+    const finds = run.finds ?? []
+    if (finds.length >= FARM_FINDS_LIMIT) return { ok: false, reason: 'full' }
+    let id = `f${ts.toString(36)}`
+    for (let n = 1; finds.some((x) => x.id === id); n += 1) id = `f${ts.toString(36)}-${n}`
+    const find: FarmFind = {
+      id,
+      ref: f.ref,
+      ...(f.name ? { name: f.name } : {}),
+      ...(f.rarity ? { rarity: f.rarity } : {}),
+      qty: f.qty,
+      valueEx: f.valueEx,
+      at: ts,
+      source: f.source
+    }
+    run.finds = [...finds, find]
+    this.refreshSummaryOf(run)
+    return { ok: true, runId: run.id, find: { ...find } }
+  }
+
+  /** Убрать находку. false — нет такого забега или находки. */
+  removeFind(runId: string, findId: string): boolean {
+    const run = this.runById(runId)
+    const i = run?.finds?.findIndex((f) => f.id === findId) ?? -1
+    if (!run?.finds || i < 0) return false
+    run.finds.splice(i, 1)
+    if (run.finds.length === 0) delete run.finds
+    this.refreshSummaryOf(run)
+    return true
+  }
+
+  /** Находки забега завершённой сессии поменялись — пересчитать её итог. */
+  private refreshSummaryOf(run: FarmRun): void {
+    const sum = run.sessionId ? this.d.sessions.find((s) => s.id === run.sessionId) : undefined
+    if (sum) this.refreshSummary(sum)
+  }
+
+  /** Поля PoE 2 в итоге завершённой сессии (находки её забегов, что остались в истории, и прибыль S70). */
+  private refreshSummary(sum: FarmSessionSummary): void {
+    const finds = this.d.runs.filter((r) => r.sessionId === sum.id).flatMap((r) => r.finds ?? [])
+    sum.stats = { ...sum.stats, ...exStats(finds, sum.profit, sum.stats.durationMs) }
+  }
+
   /** Очистить историю забегов и сессий (открытый забег и идущая сессия остаются). */
   clearHistory(): void {
     this.d.runs = []
@@ -458,7 +725,9 @@ export class FarmTracker {
       deaths: all.reduce((a, r) => a + r.deaths, 0),
       mapsWithDeaths: all.filter((r) => r.kind === 'map' && r.deaths > 0).length,
       profitChaos,
-      profitPerHour: profitChaos !== null && rated ? profitChaos / hours : null
+      profitPerHour: profitChaos !== null && rated ? profitChaos / hours : null,
+      // PoE 2: находки и прибыль сессии (у PoE 1 этих полей нет)
+      ...(this.rules.game === 'poe2' ? exStats(all.flatMap((r) => r.finds ?? []), s.profit, durationMs) : {})
     }
   }
 
@@ -467,15 +736,16 @@ export class FarmTracker {
     const d = this.d
     const current = d.current ? { ...copyRun(d.current), activeMs: this.liveActive(d.current, now) } : null
     return {
+      game: this.rules.game,
       at: now,
       current,
       inside: d.inside,
       ticking: this.ticking,
       location: d.location ? { ...d.location } : null,
-      session: d.session ? { ...d.session } : null,
+      session: d.session ? copySession(d.session) : null,
       stats: d.session ? this.statsFor(d.session, now) : null,
       runs: d.runs.slice(0, runsLimit).map(copyRun),
-      sessions: d.sessions.map((s) => ({ ...s, stats: { ...s.stats } })),
+      sessions: d.sessions.map((s) => ({ ...copySession(s), stats: { ...s.stats } })),
       config: { ...d.config, widgetPos: d.config.widgetPos ? { ...d.config.widgetPos } : null }
     }
   }

@@ -4,11 +4,21 @@ import os from 'os'
 import path from 'path'
 import { GAMES, type GameDef } from '@shared/games'
 import type { FarmEvent } from '@shared/types/farm'
-import { FarmSessionService } from '../../src/main/services/farmSession'
+import {
+  FarmSessionService,
+  addRunFind,
+  getFarmService,
+  getFarmState,
+  onFarmEvent,
+  removeRunFind,
+  setSessionProfit
+} from '../../src/main/services/farmSession'
+import { poe2FarmRules } from '@shared/farm/zonesPoe2'
 import { setGameLogPath, subscribeGameLog } from '../../src/main/services/gameLog'
 
 // Сервис трекера карт в main (S11b): farm.json, перезапуск приложения (пауза при выходе,
 // догонка по хвосту лога), очередь строк во время догонки, строки общего тейлера gameLog.
+// PoE 2 (S69): своя история farm.poe2.json, правила из загрузчика данных, API для «Богатства» S70.
 
 const at = (hms: string): number => {
   const [h, m, s] = hms.split(':').map(Number)
@@ -173,6 +183,76 @@ describe('FarmSessionService на общем тейлере gameLog', () => {
       expect(svc.state().current).toMatchObject({ areaId: 'MapWorldsLair', tier: 10 })
     } finally {
       sub.off()
+    }
+  })
+})
+
+describe('FarmSessionService PoE 2 (S69): своя история, правила из данных, API для S70', () => {
+  const poe2 = (rules = poe2FarmRules(null)): { svc: FarmSessionService; events: FarmEvent[] } => {
+    const svc = new FarmSessionService(path.join(dir, 'farm.poe2.json'), clock, 'poe2')
+    svc.setRulesLoader(async () => rules)
+    services.push(svc)
+    const events: FarmEvent[] = []
+    svc.on('farm', (e: FarmEvent) => events.push(e))
+    return { svc, events }
+  }
+
+  it('правила PoE 2: ярус T1–T16, самоубийство — смерть; история в farm.poe2.json, farm.json не тронут', async () => {
+    const a = poe2()
+    now = at('21:00:00')
+    await a.svc.load()
+    await a.svc.start()
+    a.svc.ingestLines([zone('21:00:10', 'HideoutFelled', 65, 1), zone('21:01:00', 'MapBluff', 79, 101), sys('21:02:00', 'Testhero has committed suicide.')])
+    const st = a.svc.state()
+    expect(st.game).toBe('poe2')
+    expect(st.current).toMatchObject({ areaId: 'MapBluff', tier: 15, deaths: 1 })
+    const find = await a.svc.addFind({ ref: 'Divine Orb', valueEx: 560, source: 'ctrlD' })
+    expect(find.ok).toBe(true)
+    expect(await a.svc.setSessionProfit(st.session?.id as string, { ex: 900, source: 'manual', at: 1 })).toBe(true)
+    await a.svc.flush()
+    await expect(fs.access(file)).rejects.toThrow()
+
+    const b = poe2()
+    now = at('21:10:00')
+    await b.svc.load()
+    const back = b.svc.state()
+    expect(back.current?.finds?.[0]).toMatchObject({ ref: 'Divine Orb', valueEx: 560, source: 'ctrlD' })
+    expect(back.session?.profit).toEqual({ ex: 900, source: 'manual', at: 1 })
+    expect(back.stats).toMatchObject({ findsEx: 560, profitEx: 900 })
+  })
+
+  it('правила из загрузчика: подобласть из данных (Abyss_Depths) — часть забега', async () => {
+    const rules = poe2FarmRules({ version: 1, source: '', kinds: { sub: ['Abyss_Depths1'], map: ['MapBluff'] }, sceneIgnore: [] })
+    const { svc, events } = poe2(rules)
+    now = at('21:00:00')
+    await svc.load()
+    svc.ingestLines([zone('21:01:00', 'MapBluff', 79, 101), zone('21:03:00', 'Abyss_Depths1', 79, 5), zone('21:05:00', 'MapBluff', 79, 101)])
+    expect(kinds(events)).toEqual(['runStart'])
+    expect(svc.state().current).toMatchObject({ areaId: 'MapBluff', entries: 1 })
+  })
+
+  it('API процесса: у PoE 1 и PoE 2 свои сервисы и события; находка и прибыль сессии — в PoE 2', async () => {
+    expect(getFarmService('poe2')).not.toBe(getFarmService('poe1'))
+    expect(getFarmService()).toBe(getFarmService('poe1'))
+    const ev1: FarmEvent[] = []
+    const ev2: FarmEvent[] = []
+    const off1 = onFarmEvent((e) => ev1.push(e))
+    const off2 = onFarmEvent((e) => ev2.push(e), 'poe2')
+    try {
+      const p2 = getFarmService('poe2')
+      await p2.load()
+      p2.ingestLines([zone('21:01:00', 'MapBluff', 79, 101)])
+      expect(kinds(ev2)).toEqual(['runStart'])
+      expect(ev1).toEqual([])
+      const r = await addRunFind({ ref: 'Exalted Orb', qty: 20, valueEx: 20 })
+      expect(r).toMatchObject({ ok: true, find: { ref: 'Exalted Orb', qty: 20 } })
+      expect(getFarmState(10, 'poe2').current?.finds).toHaveLength(1)
+      expect(getFarmState().current?.finds).toBeUndefined()
+      expect(await setSessionProfit('нет', { ex: 1, source: 'manual', at: 0 })).toBe(false)
+      if (r.ok) expect(await removeRunFind(r.runId, r.find.id)).toBe(true)
+    } finally {
+      off1()
+      off2()
     }
   })
 })

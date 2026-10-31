@@ -2,7 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as Reac
 import type { FarmState, FarmWidgetPos } from '@shared/types/farm'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { farmTicking, useFarmStore } from '../../store/useFarmStore'
-import { chaos, clock, currentRunMs, latestDivineRate, rate, runName, sessionMs } from '../../panels/farm/format'
+import { chaos, clock, currentRunMs, latestDivineRate, money, rate, runName, sessionMs } from '../../panels/farm/format'
+import { useExPerDiv } from '../../panels/farm/rate'
 import { Icon } from '../Icon'
 import { scheduleRectsFlush, useInteractive } from '../interactive'
 import { useOverlayT } from '../useOverlayT'
@@ -16,6 +17,8 @@ import './farm-overlay.css'
 // «Сессия фарма» (FarmConfig.overlayWidget). Клики проходят в игру везде, кроме «⋮⋮»
 // (перетащить, позиция запоминается) и двух кнопок: «Пауза»/«Продолжить» и «Скрыть».
 // Пока тянут, весь экран оверлея ловит мышь (иначе курсор уйдёт с ручки и фокус вернётся игре).
+// PoE 2 (S69, макет «Мини-виджет»): у карты метка тира, вместо дохода в час — находки за сессию в div (без
+// курса — в ex): прибыль сессии PoE 2 известна только в конце.
 
 const DEFAULT_TOP_PX = 14
 const HOUR = 3_600_000
@@ -120,6 +123,8 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
 
   const stats = state.stats
   const paused = state.session?.pausedAt !== null
+  const poe2 = state.game === 'poe2'
+  const exPerDiv = useExPerDiv(poe2)
   const run = state.current && state.current.sessionId === state.session?.id ? state.current : null
   const last = state.runs.find((r) => r.sessionId === state.session?.id) ?? null
   const dur = sessionMs(state, now)
@@ -142,7 +147,8 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
     first = (
       <span className="ui-hud__seg" title={t('farm.ov.map')}>
         <Icon name="map" />
-        {simple && <span className="ui-hud__name">{runName(run)}</span>}
+        {simple && <span className="ui-hud__name">{runName(run, state.game)}</span>}
+        {poe2 && run.kind === 'map' && run.tier !== null && <span className="ov-farm__tier">T{run.tier}</span>}
         <b className="ui-hud__time">{clock(currentRunMs(state, now))}</b>
       </span>
     )
@@ -184,6 +190,13 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
         </span>
         <span className="ui-hud__sep" />
         {/* S18: иконка игры; в подсказке — что за валюта (полоса узкая — подпись короткая и в простом режиме) */}
+        {poe2 ? (
+          <span className="ui-hud__seg" title={t('farm.ov.finds.title')}>
+            <CoinIcon tag={exPerDiv ? 'divine' : 'exalted'} lang={lang} />
+            <b>{money(stats?.findsEx ?? 0, exPerDiv, lang, { signed: true }).replace(/ (div|ex)$/, '')}</b>
+            <span className="ui-hud__lbl">{t('farm.ov.finds')}</span>
+          </span>
+        ) : (
         <TipAnchor
           className="ui-hud__seg"
           tip={<CurrencyTipBody tag={divRate ? 'divine' : 'chaos'} lang={lang} extra={<b>{t('farm.ov.income.title')}</b>} />}
@@ -192,6 +205,7 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
           <b>{incomeText}</b>
           <span className="ui-hud__lbl">{`${divRate ? 'div' : 'c'}${t('farm.ov.perHour')}`}</span>
         </TipAnchor>
+        )}
         <span ref={btnsRef} className="ov-farm__btns">
           <button
             type="button"
