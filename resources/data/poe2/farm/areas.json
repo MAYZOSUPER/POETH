@@ -1,6 +1,6 @@
 {
  "version": 1,
- "source": "RePoE PoE 2 world_areas (https://repoe-fork.github.io/poe2/world_areas.json), 2026-10-31; S69",
+ "source": "RePoE PoE 2 world_areas (https://repoe-fork.github.io/poe2/world_areas.json), 2026-10-31; имена сцен EN/RU — WorldAreas патча 0.5.5.5; S69",
  "tier": {
   "base": 64,
   "max": 16
@@ -472,7 +472,10 @@
   "Акт 1",
   "Акт 2",
   "Акт 3",
+  "Акт 4",
+  "Атлас",
   "Выбор персонажа",
+  "Интерлюдия",
   "Экран входа"
  ]
 }

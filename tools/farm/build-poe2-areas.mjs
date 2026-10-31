@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 // S69: виды областей PoE 2 для трекера карт → resources/data/poe2/farm/areas.json.
 //
-//   node tools/farm/build-poe2-areas.mjs [--src <world_areas.json>] [--ru <worldareas.json RU>]
+//   node tools/farm/build-poe2-areas.mjs [--src <world_areas.json>] [--dat <node_modules>] [--patch 0.5.5.5]
+//        [--cache <папка>] [--keep-cache] [--schema <schema.min.json>]
 //
 // Источник id — RePoE PoE 2 world_areas.json (по умолчанию качается с repoe-fork.github.io; сеть Node на ПК
-// разработчика — через NODE_USE_ENV_PROXY=1). `--ru` — необязательная выгрузка WorldAreas на русском
-// (LocalIdentity/poe2-data, data/russian/worldareas.json): из неё берём только русские имена «карт мира»
-// (Акт 1…), чтобы строка `[SCENE] Set Source [Акт 1]` не стала именем карты. Это данные игры, кода оттуда нет.
-// Пересобрать к PoE 2 1.0 (11.12): id и уровни областей поменяются (docs/farm.md, «Данные PoE 2»).
+// разработчика — через NODE_USE_ENV_PROXY=1). Имена «карт мира» и экранов входа (`[SCENE] Set Source [Act 1]`,
+// `[Atlas]`, …) — сцены, а не области: английские и **русские** имена берём из файлов игры — таблица WorldAreas
+// и её перевод Data/Balance/Russian (tools/farm/game-areas.mjs, pathofexile-dat во временной папке, как у «Слухов»
+// S65; путь к её node_modules — `--dat`, по умолчанию %TEMP%\poeth-rumours-dat\node_modules). Таблицы — в
+// %TEMP%\poeth-farm-cache\<патч>, после работы удаляются (`--keep-cache` — оставить; папку из `--cache` не трогаем).
+// Без pathofexile-dat — отказ: русских имён сцен без файлов игры нет (в RePoE их нет, выгрузка poe2-data устарела).
+// Пересобрать к PoE 2 1.0 (11.12): id, уровни и имена областей поменяются (docs/farm.md, «Данные PoE 2»).
 //
 // Правила вида (первое подходящее) — те же, что у запасных шаблонов в src/shared/farm/zonesPoe2.ts:
 //  1. hideout  — Hideout*, PersonalHideout, GuildHideout* (MapHideout*_Claimable — карта на атласе, не убежище);
@@ -21,8 +25,10 @@
 //  7. other    — остальной эндгейм (Симулякр, Delirium_*, ChayulaLeague*, PrecursorVault…).
 
 import { promises as fs } from 'fs'
+import os from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { readGameAreaNames } from './game-areas.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const OUT = path.join(ROOT, 'resources/data/poe2/farm/areas.json')
@@ -69,25 +75,40 @@ function kindOf(a) {
 
 const src = arg('--src')
 const worldAreas = src ? await readJson(src) : await getJson(SRC_URL)
-const ruFile = arg('--ru')
-const ruRows = ruFile ? await readJson(ruFile) : []
-const ruName = new Map(ruRows.map((r) => [r.Id, r.Name]))
+
+// имена сцен EN/RU — из файлов игры
+const datModules = arg('--dat') ?? path.join(os.tmpdir(), 'poeth-rumours-dat', 'node_modules')
+const ownCache = !arg('--cache')
+const cacheBase = arg('--cache') ?? path.join(os.tmpdir(), 'poeth-farm-cache')
+let game
+try {
+  game = await readGameAreaNames({
+    datModules,
+    patch: arg('--patch'),
+    cacheDir: ownCache ? path.join(cacheBase, arg('--patch') ?? 'current') : cacheBase,
+    schema: arg('--schema') ?? null,
+    log: (m) => console.log(m)
+  })
+} finally {
+  if (ownCache && !process.argv.includes('--keep-cache')) await fs.rm(cacheBase, { recursive: true, force: true })
+}
+const isScene = (id) => isWorldMap(id) || id === 'G_login' || id === 'CharacterSelect'
 
 const kinds = Object.fromEntries(KINDS.map((k) => [k, []]))
 const scene = new Set()
 for (const a of Object.values(worldAreas)) {
   if (!a?.id || a.id === 'NULL') continue
   kinds[kindOf(a)].push(a.id)
-  // «карта мира», экраны входа и выбора персонажа — сцены, а не области
-  if (isWorldMap(a.id) || a.id === 'G_login' || a.id === 'CharacterSelect') {
-    for (const name of [a.name, ruName.get(a.id)]) if (name && !name.startsWith('[DNT')) scene.add(name)
-  }
+}
+// «карта мира», экраны входа и выбора персонажа — сцены, а не области (EN из RePoE и игры, RU из игры)
+for (const [id, name] of [...Object.values(worldAreas).map((a) => [a.id, a.name]), ...game.en, ...game.ru]) {
+  if (id && isScene(id) && name && !name.startsWith('[DNT')) scene.add(name)
 }
 for (const k of KINDS) kinds[k].sort()
 
 const out = {
   version: 1,
-  source: `RePoE PoE 2 world_areas (${SRC_URL}), ${new Date().toISOString().slice(0, 10)}; S69`,
+  source: `RePoE PoE 2 world_areas (${SRC_URL}), ${new Date().toISOString().slice(0, 10)}; имена сцен EN/RU — WorldAreas патча ${game.patch}; S69`,
   tier: { base: 64, max: 16 },
   kinds,
   sceneIgnore: [...scene].sort()

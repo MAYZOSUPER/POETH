@@ -100,9 +100,11 @@ PoE 2 на ПК пользователя автопоиском не нашёл�
 **Ярус** путевого камня = уровень − 64: T1 = 65 … T16 = 80 (выше 80 — T16).
 
 **Виды областей — данные** `resources/data/poe2/farm/areas.json` (пакет данных кладёт свой в `userData/data/poe2/farm/`):
-собирает `node tools/farm/build-poe2-areas.mjs [--src world_areas.json] [--ru worldareas.json]` из RePoE PoE 2
-`world_areas` (+ русские имена «карт мира» из `poe2-data`). **К PoE 2 1.0 (11.12) пересобрать** — id и уровни
-поменяются. Новый id, которого ещё нет в данных, — по шаблонам `classifyPoe2Fallback`.
+собирает `node tools/farm/build-poe2-areas.mjs [--src world_areas.json] [--dat <node_modules>] [--patch …]` из RePoE
+PoE 2 `world_areas`; имена «карт мира» и экранов входа EN/RU (`sceneIgnore`: «Act 4» / «Акт 4», «Atlas» / «Атлас»…) — из
+файлов игры: таблица WorldAreas и её перевод `Data/Balance/Russian` через `pathofexile-dat` во временной папке, как у
+«Слухов» S65 (`tools/farm/game-areas.mjs`; установка — в его шапке, `NODE_USE_ENV_PROXY=1` на ПК разработчика).
+**К PoE 2 1.0 (11.12) пересобрать** — id, уровни и имена поменяются. Новый id, которого ещё нет в данных, — по шаблонам `classifyPoe2Fallback`.
 
 | Вид | PoE 2 |
 |---|---|
@@ -121,27 +123,28 @@ PoE 2 на ПК пользователя автопоиском не нашёл�
 «Чем отметить начало?» — снять вкладки (рекомендуем), ввести валюту или только карты и время; «Завершить» — «Как
 посчитать прибыль?» — снять те же вкладки, ввести валюту или без прибыли (без отметки начала — только «без
 прибыли»). Выбор пишется в сессию (`profitMode`, `profitEnd`) и виден S70 в событиях `session:start` / `session:stop`.
-Снимок и ввод делает «Богатство» (S70) и отдаёт трекеру отметку начала и прибыль. **Итог = прибыль + находки**
-(«вкладки +2,9 div · находки +1,9 div» → «+4,8 div»).
+Снимок и ввод делает «Богатство» (S70) и отдаёт трекеру отметку начала и прибыль. **Итог = прибыль**: находки уже
+лежат в тайнике и вошли в разницу снимков или ввода — их показываем «из них находки», а не прибавляем. Без прибыли
+(«только карты и время» или конец ещё не снят) итог — сумма находок.
 
 **API для «Богатства PoE 2» (S70) и окна цены** (`main/services/farmSession.ts`, все — с `game`, по умолчанию у
 старых — PoE 1, у новых — PoE 2):
 ```ts
 onFarmEvent(cb, 'poe2'), getFarmState(limit, 'poe2')   // runStart/runEnd/session; session.profitMode | profitEnd
 setSessionStart(sessionId, { source: 'snapshot' | 'manual', at?, tabs? } | null)        // отметка начала
-setSessionProfit(sessionId, { ex, exPerDiv?, source, at?, tabs? } | null)               // прибыль без находок
+setSessionProfit(sessionId, { ex, exPerDiv?, source, at?, tabs? } | null)               // разница, находки уже в ней
 addRunFind({ ref, name?, rarity?, qty?, valueEx, source?: 'ctrlD' | 'quick' | 'manual', runId? })  // → FarmFindResult
 removeRunFind(runId, findId)
 ```
 - **S70:** на `session:start` с `profitMode` 'snapshot' | 'manual' — снять или принять ввод и вызвать
   `setSessionStart`; на `session:stop` с `profitEnd` 'snapshot' | 'manual' — снять конец, посчитать разницу (в exalted,
-  **без находок**) и вызвать `setSessionProfit` (`source`/`at`/`tabs` — отметка конца). 'none' — ничего не делать.
+  как есть — находки уже в ней) и вызвать `setSessionProfit` (`source`/`at`/`tabs` — отметка конца). 'none' — ничего не делать.
 - **«+ находка»** — `ref` — английское имя или `Metadata/…` (ключ цены), `valueEx` — цена всей находки (за `qty`
   штук) в exalted или `null`, `rarity` — цвет имени. Без `runId` — открытый забег (в убежище после карты он ещё открыт),
   иначе последний забег идущей сессии; `noRun` — игрок ещё не заходил в карту. Из renderer — IPC `farm:addFind` (окно
   цены, кнопка «К забегу»: `window.overlayApi.farm.addFind({ ..., source: 'ctrlD' })`), удаление — `farm:removeFind`.
   Быстрые кнопки панели — `source: 'quick'` (+1 div по курсу, +5 ex, +10 ex). До 200 находок на забег.
-- В статистике PoE 2: `finds`, `findsEx`, `profitEx` (от S70), `totalEx` (= прибыль + находки), `exPerHour`.
+- В статистике PoE 2: `finds`, `findsEx`, `profitEx` (от S70), `totalEx` (прибыль, без неё — находки), `exPerHour`.
 - IPC `farm:start` / `farm:stop` принимают `{ profitMode }` (у PoE 1 — без параметров).
 
 **UI** (`panels/farm/FarmPanelPoe2.tsx`, общие куски — `parts.tsx`; `FarmPanel` сам переключается по `state.game`):
