@@ -1,4 +1,4 @@
-# Трекер карт и сессия фарма (S11b)
+# Трекер карт и сессия фарма (S11b; PoE 2 — S69)
 
 Часть учёта богатства: забеги по `Client.txt` PoE1 через общий тейлер `services/gameLog.ts` (его же читают
 команды чата и менеджер сделок; файл, выбранный во вкладке «Сделки», — свой путь лога и для трекера).
@@ -83,10 +83,67 @@ setRunProfit(runId, FarmProfit | null): Promise<boolean> // прибыль за�
 - Классы `fm-*` / `ov-farm*` — до переноса `w-*` и иконок (play, stop, death, drag) дизайнером в
   `components.css` и спрайт.
 
+## PoE 2 (S69)
+Тот же трекер в режиме PoE 2: свои правила зон (`shared/farm/zonesPoe2.ts`), свой сервис и **своя история**
+`userData/farm.poe2.json` (PoE 1 — `farm.json`, как было). Окна (панель, виджет) видят трекер запущенной игры.
+
+**Строки `Client.txt` PoE 2** — те же, что у PoE 1 (сверено по тестам журнала Exiled Exchange 2, MIT; свой журнал
+PoE 2 на ПК пользователя автопоиском не нашёлся — `S69-handover.md`):
+- вход — `Generating level N area "<id>" with seed S`, одинаково в EN и RU; после смерти игрок воскресает в том же
+  экземпляре — та же строка с тем же seed (не новый вход);
+- `[SCENE] Set Source [<имя>]` — имя области на языке клиента; `(null)` — загрузка, `(unknown)` — меню, `Act N` —
+  карта мира, `Atlas` — открыли устройство карт (не имена областей, список — `sceneIgnore` в данных);
+- смерть — PlayerSlain «{0} has been slain.» / «{0} был повержен.» и PlayerSuicide «{0} has committed suicide.» /
+  «{0} покончил с собой» (без точки) — тексты GGG из BackendErrors (`LocalIdentity/poe2-data`). Смерть карту не
+  закрывает. У PoE 1 самоубийство по-прежнему не считается.
+
+**Ярус** путевого камня = уровень − 64: T1 = 65 … T16 = 80 (выше 80 — T16).
+
+**Виды областей — данные** `resources/data/poe2/farm/areas.json` (пакет данных кладёт свой в `userData/data/poe2/farm/`):
+собирает `node tools/farm/build-poe2-areas.mjs [--src world_areas.json] [--ru worldareas.json]` из RePoE PoE 2
+`world_areas` (+ русские имена «карт мира» из `poe2-data`). **К PoE 2 1.0 (11.12) пересобрать** — id и уровни
+поменяются. Новый id, которого ещё нет в данных, — по шаблонам `classifyPoe2Fallback`.
+
+| Вид | PoE 2 |
+|---|---|
+| убежище | `Hideout*`, `PersonalHideout`, `GuildHideout*` |
+| город/хаб | `is_town` (`G*_town`, `P*_Town`, `G_Endgame_Town`), «карты мира», `Abyss_Hub`, `MapLeaguePortal` (Realmgate), `G3_10_Airlock` |
+| карта | `Map*` уровня ≥ 65: карты атласа, башни `MapPrecursorTower*`, уникальные, Цитадели, **`MapHideout*_Claimable`** (карта, не убежище); острова Экспедиции `ExpeditionLogBook_*` |
+| подобласть | `Abyss_Depths*`, `ExpeditionSubArea_*`, `IncursionTemplePresent` |
+| прочее | пиннаклы (`pinnacle_boss`, `*LeagueBoss`, `Abyss_Boss*`), испытания (`Sanctum_*`, `G3_10`), Симулякр и др. |
+| кампания | остальное из актов и интерлюдий |
+
+**Подобласть** входит в открытый забег, когда вошли в неё прямо из карты (как у PoE 1), а ещё — когда вернулись в
+неё через убежище или город с новым seed (экземпляр истёк) не позже 15 мин после выхода. Без открытого забега —
+забег вида «прочее». Башня и остров — свои забеги (карта атласа из устройства карт).
+
+**API для «Богатства PoE 2» (S70) и окна цены** (`main/services/farmSession.ts`, все — с `game`, по умолчанию у
+старых — PoE 1, у новых — PoE 2):
+```ts
+onFarmEvent(cb, 'poe2'), getFarmState(limit, 'poe2')             // runStart/runEnd/session, состояние PoE 2
+setSessionProfit(sessionId, { ex, exPerDiv?, source: 'snapshot' | 'manual', at? } | null)  // прибыль сессии
+addRunFind({ ref, name?, qty?, valueEx, source?: 'ctrlD' | 'manual', runId? })  // «+ находка» → FarmFindResult
+removeRunFind(runId, findId)
+```
+- **Прибыль сессии** считает S70 (снимок вкладок или ввод валюты в начале и в конце, разница в exalted) и отдаёт
+  трекеру: у идущей сессии или после «Стоп» (итог сессии в истории пересчитывается). Трекер хранит и показывает.
+- **«+ находка»** — `ref` — английское имя или `Metadata/…` (ключ цены), `valueEx` — цена всей находки (за `qty`
+  штук) в exalted или `null`. Без `runId` — открытый забег (в убежище после карты он ещё открыт), иначе последний
+  забег идущей сессии; `noRun` — игрок ещё не заходил в карту. Из renderer — IPC `farm:addFind` (окно цены:
+  `window.overlayApi.farm.addFind({ ..., source: 'ctrlD' })`), удаление — `farm:removeFind`. До 200 находок на забег.
+- В статистике PoE 2: `finds`, `findsEx`, `profitEx`, `exPerHour` (по прибыли сессии, без неё — по находкам).
+- `FarmPanel` для S70: `renderIncome(p)` получает ещё `game: 'poe2'`, `profitEx`, `findsEx`.
+
+**UI (черновик до макета «Сессия фарма PoE 2»)** — та же панель по `state.game`: T1–T16, «Доход в час» в ex (div от
+1 div/ч, курс — `exPerDiv` прибыли сессии), колонка «Находки», блок находок забега с ручным вводом, строка прибыли
+сессии; виджет — доход в ex/div. Во вкладку «Богатство» PoE 2 панель ставит S70 (флаг `GAMES.poe2.features.wealth`
+включает лид).
+
 ## Код
 | Что | Где |
 |---|---|
 | Строки лога, вид зоны, ярус | `src/shared/farm/zones.ts` |
+| PoE 2: правила зон, данные областей | `src/shared/farm/zonesPoe2.ts`, `resources/data/poe2/farm/areas.json`, `tools/farm/build-poe2-areas.mjs`, `src/main/services/farmData.ts` |
 | Забеги, сессия, статистика, сохранение | `src/shared/farm/tracker.ts` |
 | Сервис main, `farm.json`, API для S11a | `src/main/services/farmSession.ts` |
 | IPC `farm:*`, события `event:farm.*` | `src/shared/ipc/farm.ts`, `src/main/ipc/farm.ts`, `src/preload/domains/farm.ts` |
