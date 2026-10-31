@@ -11,8 +11,10 @@
 //   renderer: fetch('poeth://data/poe2/prices/<file>') — после того как лид добавит 'prices' в DATA_SUBDIRS
 //     протокола (src/main/protocol.ts, заморожен; дифф — S67-frozen.diff в заметках лида).
 //
-// Снимок меняется только с пакетом данных (CI → ветка data → обновление без переустановки), так что кэшировать
-// результат можно до перезапуска; файлы — до ~200 КБ на лигу.
+// Снимок меняется только с пакетом данных (CI → ветка data → обновление без переустановки). Выпуск, где поменялись
+// только цены, приходит без тоста «Перезапустите POETH» (shared/updates isQuietDataUpdate) — поэтому перечитывайте
+// снимок при открытии функции (или держите кэш с проверкой `at`/mtime index.json), а не до перезапуска; файлы — до
+// ~200 КБ на лигу.
 
 import { POE2_PRICES_DIR, POE2_PRICES_INDEX, parsePoe2PriceIndex, parsePoe2PriceSnapshot, pickLeague, type Poe2PriceMatch } from './snapshot'
 import { Poe2PriceTable } from './table'
