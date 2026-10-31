@@ -46,11 +46,16 @@ beforeEach(() => {
 })
 
 describe('хоткей copyItemEn', () => {
-  it('только PoE 1', () => {
-    setupCopyItemEn(getGameDef('poe2'))
-    expect(m.hotkeys.has('copyItemEn')).toBe(false)
+  it('PoE 1 и PoE 2 (S61): клавиша та же, текст собирает оверлей данными запущенной игры', async () => {
     setupCopyItemEn(getGameDef('poe1'))
     expect(m.hotkeys.has('copyItemEn')).toBe(true)
+    m.hotkeys.clear()
+    setupCopyItemEn(getGameDef('poe2'))
+    expect(m.hotkeys.has('copyItemEn')).toBe(true)
+    m.capture = { text: 'Класс предмета: Кольца\nРедкость: Редкий', lang: 'ru' }
+    await m.hotkeys.get('copyItemEn')!()
+    expect(m.captures).toBe(1)
+    expect(m.sent).toEqual([[IPC.events.overlayItemEn, { text: m.capture.text, lang: 'ru' }]])
   })
 
   it('одно нажатие — одно копирование; текст уходит только оверлею', async () => {
