@@ -1,6 +1,7 @@
 import { app } from 'electron'
 import { existsSync, statSync } from 'fs'
 import path from 'path'
+import type { GameId } from '@shared/games'
 import type {
   LootFilterError,
   LootFilterFolder,
@@ -11,29 +12,43 @@ import type {
   LootFilterState
 } from '@shared/types/lootFilter'
 import { isLevel, isStyle } from '@shared/lootFilter/levels'
-import { LATEST_RELEASE_URL, isNewerTag, parseRelease } from '@shared/lootFilter/source'
+import { filterSource, isNewerTag, latestReleaseUrl, parseRelease } from '@shared/lootFilter/source'
 import { installedFileName, shouldCheck } from '@shared/lootFilter/rules'
 import { getJson, lootFilterGet, ZIP_MAX_BYTES, ZIP_TIMEOUT_MS } from './fetch'
 import { fileFacts, installFilter, recordFor, withRecord, type Net } from './install'
 import { getLootFilterData, updateLootFilterData, type LootFilterData } from './store'
 
-// Фильтр лута NeverSink (S53, main): папка фильтров PoE 1, состояние экрана, проверка новой версии, установка.
+// Фильтр лута NeverSink (S53, main): папка фильтров игры, состояние экрана, проверка новой версии, установка.
 // Папка: POETH_LOOTFILTER_DIR (подмена для проверок и тестов) → выбранная игроком → Документы/My Games/Path of Exile
 // (app.getPath('documents') — с учётом переноса «Документов», например в OneDrive). POETH пишет туда только
 // свои POETH-NeverSink-<уровень>.filter (и временный файл на время записи); чужие файлы не читает и не трогает.
+// S64: то же для PoE 2 — игра запущенного режима (setLootFilterGame) выбирает репозиторий NeverSink, папку
+// «Документы/My Games/Path of Exile 2» и свой файл состояния. Путь с кириллицей Node пишет как есть (тест на
+// временной папке); видит ли его игра — проверка в игре, а для экрана есть флаг folder.nonAscii.
 
 export const DIR_ENV = 'POETH_LOOTFILTER_DIR'
 
 let busy = false
 let checkError: LootFilterError | null = null
-let enabled = false
+/** игра, для которой включён раздел; null — выключен */
+let game: GameId | null = null
 
-export function setLootFilterEnabled(on: boolean): void {
-  enabled = on
+export function setLootFilterGame(g: GameId | null): void {
+  if (g !== game) checkError = null
+  game = g
 }
 
-export function defaultFolderPath(): string {
-  return path.join(app.getPath('documents'), 'My Games', 'Path of Exile')
+/** Совместимость с S53: включить раздел для PoE 1 / выключить. */
+export function setLootFilterEnabled(on: boolean): void {
+  setLootFilterGame(on ? 'poe1' : null)
+}
+
+export function lootFilterGame(): GameId {
+  return game ?? 'poe1'
+}
+
+export function defaultFolderPath(g: GameId = 'poe1'): string {
+  return path.join(app.getPath('documents'), ...filterSource(g).docsDir)
 }
 
 function isDir(p: string): boolean {
@@ -44,12 +59,18 @@ function isDir(p: string): boolean {
   }
 }
 
-export function folderOf(d: LootFilterData): LootFilterFolder {
+/** В пути есть символы вне ASCII (кириллица в имени пользователя или «Документах»). */
+export function hasNonAscii(p: string): boolean {
+  return /[^ -~]/.test(p)
+}
+
+export function folderOf(d: LootFilterData, g: GameId = lootFilterGame()): LootFilterFolder {
   const env = process.env[DIR_ENV]
   const [p, source]: [string, LootFilterFolder['source']] =
-    env && path.isAbsolute(env) ? [path.resolve(env), 'env'] : d.dir ? [d.dir, 'custom'] : [defaultFolderPath(), 'default']
+    env && path.isAbsolute(env) ? [path.resolve(env), 'env'] : d.dir ? [d.dir, 'custom'] : [defaultFolderPath(g), 'default']
   const found = isDir(p)
-  return { path: p, source, found, looksLikeGame: found && existsSync(path.join(p, 'production_Config.ini')) }
+  const looksLikeGame = found && filterSource(g).configFiles.some((f) => existsSync(path.join(p, f)))
+  return { path: p, source, found, looksLikeGame, nonAscii: hasNonAscii(p) }
 }
 
 async function installedView(d: LootFilterData, folder: LootFilterFolder): Promise<LootFilterInstalled[]> {
@@ -74,10 +95,12 @@ async function installedView(d: LootFilterData, folder: LootFilterFolder): Promi
 }
 
 export async function getLootFilterState(): Promise<LootFilterState> {
-  const d = await getLootFilterData()
-  const folder = folderOf(d)
+  const g = lootFilterGame()
+  const d = await getLootFilterData(g)
+  const folder = folderOf(d, g)
   return {
-    on: enabled,
+    on: game !== null,
+    game: g,
     folder,
     prefs: d.prefs,
     latest: d.latest,
@@ -101,24 +124,26 @@ export interface CheckOutcome {
 
 /**
  * Проверка новой версии без нажатия «Установить»: не чаще раза в сутки и только при открытом экране
- * (screenOpen) или с галочкой «Проверять». Один запрос к API релизов.
+ * (screenOpen) или с галочкой «Проверять». Один запрос к API релизов фильтра текущей игры.
  */
 export async function checkLatest(
   screenOpen: boolean,
   now = Date.now(),
   onStart?: (state: LootFilterState) => void
 ): Promise<CheckOutcome> {
-  const d = await getLootFilterData()
-  if (!enabled || busy || !shouldCheck({ now, lastCheckAt: d.lastCheckAt, screenOpen, autoCheck: d.prefs.autoCheck })) {
+  const g = game
+  if (!g || busy) return { state: await getLootFilterState(), newTag: null }
+  const d = await getLootFilterData(g)
+  if (!shouldCheck({ now, lastCheckAt: d.lastCheckAt, screenOpen, autoCheck: d.prefs.autoCheck })) {
     return { state: await getLootFilterState(), newTag: null }
   }
   busy = true
   try {
     onStart?.(await getLootFilterState())
-    const r = await net.json(LATEST_RELEASE_URL)
+    const r = await net.json(latestReleaseUrl(g))
     const release = r.ok ? parseRelease(r.json) : null
     checkError = r.ok ? (release ? null : 'bad-release') : r.error
-    const next = await updateLootFilterData((x) => ({ ...x, lastCheckAt: now, latest: release ?? x.latest }))
+    const next = await updateLootFilterData((x) => ({ ...x, lastCheckAt: now, latest: release ?? x.latest }), g)
     let newTag: string | null = null
     if (release && next.notifiedTag !== release.tag && next.installed.some((i) => isNewerTag(release.tag, i.tag))) {
       newTag = release.tag
@@ -136,31 +161,35 @@ async function finishBusy(): Promise<LootFilterState> {
 }
 
 export async function markNotified(tag: string): Promise<void> {
-  await updateLootFilterData((x) => ({ ...x, notifiedTag: tag }))
+  await updateLootFilterData((x) => ({ ...x, notifiedTag: tag }), lootFilterGame())
 }
 
 /** «Установить» / «Обновить» — действие игрока: свежий релиз с GitHub всегда. */
 export async function installLootFilter(raw: unknown): Promise<LootFilterInstallResult> {
   const r = (typeof raw === 'object' && raw !== null ? raw : {}) as Record<string, unknown>
-  if (!enabled) return { ok: false, error: 'refused', state: await getLootFilterState() }
-  if (!isLevel(r.level) || !isStyle(r.style)) return { ok: false, error: 'refused', state: await getLootFilterState() }
+  const g = game
+  if (!g) return { ok: false, error: 'refused', state: await getLootFilterState() }
+  if (!isLevel(r.level) || !isStyle(r.style, g)) return { ok: false, error: 'refused', state: await getLootFilterState() }
   if (busy) return { ok: false, error: 'busy', state: await getLootFilterState() }
   const req: LootFilterInstallRequest = { level: r.level, style: r.style, confirm: r.confirm === true }
   busy = true
   try {
-    const d = await getLootFilterData()
-    const folder = folderOf(d)
+    const d = await getLootFilterData(g)
+    const folder = folderOf(d, g)
     if (!folder.found) return { ok: false, error: 'no-folder', state: await finishBusy() }
-    const out = await installFilter({ req, dir: folder.path, records: d.installed, net })
+    const out = await installFilter({ req, dir: folder.path, records: d.installed, net, game: g })
     const now = Date.now()
     if (out.release) checkError = null
-    await updateLootFilterData((x) => ({
-      ...x,
-      prefs: { ...x.prefs, level: req.level, style: req.style },
-      latest: out.release ?? x.latest,
-      lastCheckAt: out.release ? now : x.lastCheckAt,
-      installed: out.ok ? withRecord(x.installed, out.record) : x.installed
-    }))
+    await updateLootFilterData(
+      (x) => ({
+        ...x,
+        prefs: { ...x.prefs, level: req.level, style: req.style },
+        latest: out.release ?? x.latest,
+        lastCheckAt: out.release ? now : x.lastCheckAt,
+        installed: out.ok ? withRecord(x.installed, out.record) : x.installed
+      }),
+      g
+    )
     const state = await finishBusy()
     if (out.ok) return { ok: true, state, file: out.record.file, tag: out.release.tag }
     return { ok: false, state, error: out.error, confirm: out.confirm, file: out.confirm ? installedFileName(req.level) : undefined }
@@ -171,21 +200,25 @@ export async function installLootFilter(raw: unknown): Promise<LootFilterInstall
 }
 
 export async function setLootFilterPrefs(raw: unknown): Promise<LootFilterState> {
+  const g = lootFilterGame()
   const p = (typeof raw === 'object' && raw !== null ? raw : {}) as Partial<Record<keyof LootFilterPrefs, unknown>>
-  await updateLootFilterData((x) => ({
-    ...x,
-    prefs: {
-      level: isLevel(p.level) ? p.level : x.prefs.level,
-      style: isStyle(p.style) ? p.style : x.prefs.style,
-      autoCheck: typeof p.autoCheck === 'boolean' ? p.autoCheck : x.prefs.autoCheck
-    }
-  }))
+  await updateLootFilterData(
+    (x) => ({
+      ...x,
+      prefs: {
+        level: isLevel(p.level) ? p.level : x.prefs.level,
+        style: isStyle(p.style, g) ? p.style : x.prefs.style,
+        autoCheck: typeof p.autoCheck === 'boolean' ? p.autoCheck : x.prefs.autoCheck
+      }
+    }),
+    g
+  )
   return getLootFilterState()
 }
 
 /** Своя папка фильтров (выбрана в диалоге) или null — снова по умолчанию. */
 export async function setLootFilterDir(dir: string | null): Promise<LootFilterState> {
   if (dir !== null && (!path.isAbsolute(dir) || !isDir(dir))) return getLootFilterState()
-  await updateLootFilterData((x) => ({ ...x, dir: dir === null ? null : path.resolve(dir) }))
+  await updateLootFilterData((x) => ({ ...x, dir: dir === null ? null : path.resolve(dir) }), lootFilterGame())
   return getLootFilterState()
 }

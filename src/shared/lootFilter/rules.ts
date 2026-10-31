@@ -1,5 +1,7 @@
+import type { GameId } from '../games'
 import type { LootFilterConfirmReason, LootFilterLevel } from '../types/lootFilter'
 import { levelDef } from './levels'
+import { filterSource } from './source'
 
 // Правила записи фильтра в папку игры и проверки обновлений (S53) — чистые функции.
 //  - Имя файла — всегда своё: POETH-NeverSink-<уровень>.filter. Чужие фильтры игрока (другие имена) мы не
@@ -67,9 +69,10 @@ export const MAX_FILTER_BYTES = 8 * 1024 * 1024
 
 /**
  * Похоже на фильтр NeverSink: текст UTF-8 без NUL, шапка «NeverSink's … Loot Filter», есть правила Show/Hide.
- * Защита от «не того файла» в архиве: в папку игры уходит только такой текст.
+ * Защита от «не того файла» в архиве: в папку игры уходит только такой текст. У PoE 2 шапка ещё и называет
+ * игру («… Loot Filter - for Path of Exile 2»): фильтр PoE 1 в папку PoE 2 не попадёт (S64).
  */
-export function looksLikeNeverSinkFilter(bytes: Uint8Array): boolean {
+export function looksLikeNeverSinkFilter(bytes: Uint8Array, game: GameId = 'poe1'): boolean {
   if (bytes.length < 64 || bytes.length > MAX_FILTER_BYTES) return false
   if (bytes.includes(0)) return false
   let text: string
@@ -78,7 +81,10 @@ export function looksLikeNeverSinkFilter(bytes: Uint8Array): boolean {
   } catch {
     return false
   }
-  if (!/NeverSink'?s\b[^\r\n]{0,40}Loot Filter/i.test(text.slice(0, 2000))) return false
+  const head = text.slice(0, 2000)
+  if (!/NeverSink'?s\b[^\r\n]{0,40}Loot Filter/i.test(head)) return false
+  const mustName = filterSource(game).headerGame
+  if (mustName && !mustName.test(head)) return false
   return /^(Show|Hide|Minimal)\b/m.test(text)
 }
 

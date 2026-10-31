@@ -1,6 +1,8 @@
 // Строки домена «Фильтр лута» (S53): фильтр NeverSink для PoE 1 в настройках — строгость, стиль, установка,
 // «есть новая версия», как включить в игре. Названия уровней NeverSink (Soft, Regular…) не переводим:
 // так их зовут в гайдах и на FilterBlade, рядом — пояснение простыми словами.
+// S64: блок lf.p2.* — подписи, которые у PoE 2 свои (путевые камни вместо карт, папка Path of Exile 2);
+// какие ключи подменяются — P2_KEYS в panels/lootfilter/LootFilterSection.tsx.
 
 import type { DomainDict } from '../types'
 
@@ -92,7 +94,21 @@ export const lootFilter: DomainDict = {
     'lf.filterblade.hint':
       'Правите фильтр в FilterBlade — сохраните его под своим именем: файлы POETH-NeverSink-… POETH обновляет и перед перезаписью изменённого спросит.',
     'lf.privacy':
-      'Запросы — только к api.github.com и codeload.github.com, без ваших данных. POETH пишет в папку игры только свои файлы POETH-NeverSink-…filter, чужие фильтры не трогает.'
+      'Запросы — только к api.github.com и codeload.github.com, без ваших данных. POETH пишет в папку игры только свои файлы POETH-NeverSink-…filter, чужие фильтры не трогает.',
+    'lf.guide.nonAscii':
+      'В пути к папке фильтров есть не латинские буквы ({path}). POETH записал файл, но если игра не показывает его в списке — подпишитесь на фильтр через ладдер ниже: игра скачает его сама.',
+    // PoE 2 (S64)
+    'lf.p2.lead':
+      'Фильтр NeverSink для Path of Exile 2 прячет мусор на земле и подсвечивает ценное. POETH скачает его с официального GitHub и положит в папку PoE 2, а включить его нужно один раз в настройках игры.',
+    'lf.p2.level.2': 'Прячет больше белых и синих вещей. Для первых путевых камней (уровни 1–10).',
+    'lf.p2.level.3': 'Остаётся то, что можно продать или использовать. Для путевых камней 11–16.',
+    'lf.p2.level.5': 'Только дорогое. Для опытных игроков на высоких путевых камнях.',
+    'lf.p2.when.maps': 'Путевые камни',
+    'lf.p2.when.late': 'Высокие камни',
+    'lf.p2.tip':
+      'Не уверены — берите Regular. На путевых камнях переключитесь на Semi-Strict, позже — на Strict. Можно поставить несколько уровней и менять их прямо в игре.',
+    'lf.p2.err.no-folder': 'Не нашли папку фильтров Path of Exile 2. Запустите игру один раз или выберите папку.',
+    'lf.p2.folder.notGame': 'В папке нет poe2_production_Config.ini — точно папка Path of Exile 2?'
   },
   en: {
     'lf.title': 'Loot filter',
@@ -181,6 +197,20 @@ export const lootFilter: DomainDict = {
     'lf.filterblade.hint':
       'If you edit the filter in FilterBlade, save it under your own name: POETH updates the POETH-NeverSink-… files and asks before overwriting a modified one.',
     'lf.privacy':
-      'Requests go only to api.github.com and codeload.github.com, with none of your data. POETH writes only its own POETH-NeverSink-…filter files into the game folder and never touches other filters.'
+      'Requests go only to api.github.com and codeload.github.com, with none of your data. POETH writes only its own POETH-NeverSink-…filter files into the game folder and never touches other filters.',
+    'lf.guide.nonAscii':
+      'The filter folder path has non-Latin letters ({path}). POETH wrote the file, but if the game does not list it, follow the filter on the ladder below and the game downloads it itself.',
+    // PoE 2 (S64)
+    'lf.p2.lead':
+      'The NeverSink filter for Path of Exile 2 hides junk on the ground and highlights valuable drops. POETH downloads it from the official GitHub and puts it into the PoE 2 folder; you turn it on once in the game options.',
+    'lf.p2.level.2': 'Hides more white and blue items. For your first waystones (tiers 1–10).',
+    'lf.p2.level.3': 'Keeps what you can sell or use. For tier 11–16 waystones.',
+    'lf.p2.level.5': 'Expensive items only. For experienced players on high waystones.',
+    'lf.p2.when.maps': 'Waystones',
+    'lf.p2.when.late': 'High waystones',
+    'lf.p2.tip':
+      'Not sure — take Regular. Switch to Semi-Strict on waystones and to Strict later. You can install several levels and switch between them right in the game.',
+    'lf.p2.err.no-folder': 'The Path of Exile 2 filter folder was not found. Start the game once or choose the folder.',
+    'lf.p2.folder.notGame': 'There is no poe2_production_Config.ini in the folder — is it the Path of Exile 2 folder?'
   }
 }

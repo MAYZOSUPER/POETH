@@ -7,7 +7,8 @@ import type {
   LootFilterInstallRequest,
   LootFilterRelease
 } from '@shared/types/lootFilter'
-import { findTreeBlob, parseRelease, treeUrl, zipUrl, LATEST_RELEASE_URL } from '@shared/lootFilter/source'
+import type { GameId } from '@shared/games'
+import { findTreeBlob, latestReleaseUrl, parseRelease, treeUrl, zipUrl } from '@shared/lootFilter/source'
 import { pickFilterEntry } from '@shared/lootFilter/archive'
 import { MAX_FILTER_BYTES, decideWrite, installedFileName, isOurFileName, looksLikeNeverSinkFilter } from '@shared/lootFilter/rules'
 import { listZipEntries, readZipEntry } from './zip'
@@ -18,6 +19,7 @@ import type { InstalledRecord } from './store'
 // Порядок: решить про запись ДО загрузки (чужое/изменённое — сразу вопрос игроку) → релиз → дерево тега →
 // архив → ровно один .filter → сверка с деревом (git-SHA и размер) → «это фильтр NeverSink» → ещё раз решить
 // про запись (файл могли поменять за время загрузки) → временный файл рядом → rename поверх своего файла.
+// S64: игра (input.game) выбирает репозиторий, имя файла в архиве и проверку шапки; без игры — PoE 1, как в S53.
 
 export type Net = {
   json(url: string): Promise<{ ok: true; json: unknown } | { ok: false; error: LootFilterError }>
@@ -122,10 +124,13 @@ export interface InstallInput {
   records: readonly InstalledRecord[]
   net: Net
   now?: () => Date
+  /** фильтр какой игры (по умолчанию PoE 1) */
+  game?: GameId
 }
 
 export async function installFilter(input: InstallInput): Promise<InstallOutcome> {
   const { req, dir, net } = input
+  const game = input.game ?? 'poe1'
   let st
   try {
     st = await fs.stat(dir)
@@ -142,15 +147,15 @@ export async function installFilter(input: InstallInput): Promise<InstallOutcome
   const before = await decide(file, record, confirmed)
   if (!before.ok) return before
 
-  const rel = await net.json(LATEST_RELEASE_URL)
+  const rel = await net.json(latestReleaseUrl(game))
   if (!rel.ok) return rel
   const release = parseRelease(rel.json)
   if (!release) return { ok: false, error: 'bad-release' }
 
-  const tree = await net.json(treeUrl(release.tag))
+  const tree = await net.json(treeUrl(release.tag, game))
   if (!tree.ok) return { ok: false, error: tree.error, release }
 
-  const zip = await net.zip(zipUrl(release.tag))
+  const zip = await net.zip(zipUrl(release.tag, game))
   if (!zip.ok) return { ok: false, error: zip.error, release }
   const buf = zip.body
   if (buf.length < 4 || buf.readUInt32LE(0) !== 0x04034b50) return { ok: false, error: 'bad-archive', release }
@@ -162,7 +167,8 @@ export async function installFilter(input: InstallInput): Promise<InstallOutcome
     const pick = pickFilterEntry(
       entries.map((e) => e.name),
       req.level,
-      req.style
+      req.style,
+      game
     )
     if (!pick.ok) return { ok: false, error: pick.error, release }
     const entry = entries.find((e) => e.name === pick.entry)
@@ -176,7 +182,7 @@ export async function installFilter(input: InstallInput): Promise<InstallOutcome
 
   const blob = findTreeBlob(tree.json, repoPath)
   if (!blob || blob.size !== bytes.length || blob.sha !== gitBlobSha1(bytes)) return { ok: false, error: 'verify-failed', release }
-  if (!looksLikeNeverSinkFilter(bytes)) return { ok: false, error: 'not-filter', release }
+  if (!looksLikeNeverSinkFilter(bytes, game)) return { ok: false, error: 'not-filter', release }
 
   const after = await decide(file, record, confirmed)
   if (!after.ok) return { ...after, release }
