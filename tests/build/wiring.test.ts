@@ -37,6 +37,12 @@ describe('вставка кода PoB — только компаньон (по�
     }
   })
 
+  it('«Цена по профилю» regex PoE 2 (поиск trade2 с сессией) — только компаньон (S62)', () => {
+    expect(COMPANION_CHANNELS.has(IPC.regex.poe2Price)).toBe(true)
+    expect(ipcAllowed('overlay', IPC.regex.poe2Price)).toBe(false)
+    expect(ipcAllowed('trade-sidebar', IPC.regex.poe2Price)).toBe(false)
+  })
+
   it('чтение билда гиду поверх игры можно', () => {
     expect(ipcAllowed('overlay', IPC.build.state)).toBe(true)
   })

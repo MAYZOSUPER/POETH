@@ -91,6 +91,8 @@ export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([
   IPC.build.poe2Import,
   IPC.build.poe2Reload,
   IPC.build.poe2Save,
+  // regex PoE 2: «Цена по профилю» — поиск trade2 с сессией аккаунта по кнопке (S62)
+  IPC.regex.poe2Price,
   ...Object.values(IPC.lootFilter)
 ])
 
