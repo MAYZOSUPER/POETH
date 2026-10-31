@@ -17,7 +17,8 @@ import type { IpcDomain } from './types'
 
 let game: GameDef | null = null
 
-const enabled = (): boolean => !!game && buildOn(game, buildDevFlag(process.env))
+// S66: «Против надетого» — только PoE 1 (флаг «Билда» в PoE 2 включает свой экран, не этот)
+const enabled = (): boolean => !!game && game.id === 'poe1' && buildOn(game, buildDevFlag(process.env))
 
 const EMPTY: EquipState = { on: false, character: null, level: null, items: [], mine: null }
 

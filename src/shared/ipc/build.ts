@@ -3,6 +3,8 @@
 // по ссылке может звать только компаньон (политика S29, COMPANION_CHANNELS в src/main/security/policy.ts).
 // S59: «Стартеры» лиги — список из пакета данных, «Играть по этому гайду» и ссылки автора — по id записи
 // (адресов окно не передаёт: их берёт main из проверенного списка); играть и открывать ссылки — только компаньон.
+// S66: экран «Билд» PoE 2 — вставка PoB2, библиотека билдов PoE 2, «Сохранить в игру» (файл `.build` в папку игрового
+// планировщика — только компаньон, по кнопке, после подтверждения пути; содержимое файла собирает main).
 // Соглашение: каналы '<домен>:<метод>', события 'event:<домен>.<имя>' (уникальность — tests/ipc.test.ts).
 
 import type {
@@ -16,6 +18,7 @@ import type {
   StarterPlayResult,
   StartersState
 } from '../types/build'
+import type { Build2ImportResult, Build2SaveRequest, Build2SaveResult, Build2State } from '../types/build2'
 
 export const buildChannels = {
   build: {
@@ -29,7 +32,13 @@ export const buildChannels = {
     showTree: 'build:showTree',
     starters: 'build:starters',
     playStarter: 'build:playStarter',
-    openStarterLink: 'build:openStarterLink'
+    openStarterLink: 'build:openStarterLink',
+    poe2State: 'build:twoState',
+    poe2Import: 'build:twoImport',
+    poe2Open: 'build:twoOpen',
+    poe2Remove: 'build:twoRemove',
+    poe2Reload: 'build:twoReload',
+    poe2Save: 'build:twoSave'
   }
 } as const
 
@@ -62,6 +71,20 @@ export interface BuildIpcApi {
     playStarter(id: string, mode: StarterPlayMode): Promise<StarterPlayResult>
     /** S59: ссылка записи в системном браузере (адрес — из списка в main); false — ссылки нет */
     openStarterLink(id: string, kind: StarterLinkKind): Promise<boolean>
+    /** S66: билды PoE 2 (только в режиме PoE 2) */
+    poe2State(): Promise<Build2State>
+    /** S66: код PoB2 или ссылка (по ссылке — один запрос по нажатию); удачный билд сохраняется и открывается */
+    poe2Import(text: string): Promise<Build2ImportResult>
+    /** S66: открыть сохранённый билд PoE 2; null — закрыть */
+    poe2Open(id: string | null): Promise<Build2State>
+    poe2Remove(id: string): Promise<Build2State>
+    /** S66: загрузить заново по ссылке-источнику */
+    poe2Reload(id: string): Promise<Build2ImportResult>
+    /**
+     * S66: «Сохранить в игру». Без confirm — только «куда и есть ли такой файл» (показать игроку); с confirm и тем же
+     * fileName — запись; существующий файл заменяется только с overwrite.
+     */
+    poe2Save(req: Build2SaveRequest): Promise<Build2SaveResult>
   }
   onBuildState(cb: (state: BuildState) => void): () => void
   onBuildTaken(cb: (taken: BuildTaken) => void): () => void
