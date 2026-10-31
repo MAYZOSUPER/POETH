@@ -470,6 +470,8 @@ function findToken(group, lang, all, extraFolded) {
   const caseLines = lang === 'ru' ? group.display[lang] : null
   // в RU токен берём только из переведённых строк (английскую строку RU-клиент покажет по-русски)
   const candLines = lang === 'ru' && group.ruOk.some(Boolean) ? lines.filter((_, i) => group.ruOk[i]) : lines
+  // в RU — без букв, заглавных в подсказке (регистр кириллицы в поиске игры не проверен)
+  const caseFine = (cand) => lang !== 'ru' || group.display.ru.some((d) => d.includes(cand))
   const others = all.filter((g) => g !== group).map((g) => ({ g, folded: g.text[lang].map(fold) }))
   const conflicts = (cand) => {
     const f = fold(cand)
@@ -488,12 +490,14 @@ function findToken(group, lang, all, extraFolded) {
   ]
   for (const [lo, hi, o] of tiers) {
     for (const cand of substrings(candLines, lo, hi, o)) {
+      if (!caseFine(cand)) continue
       const c = conflicts(cand)
       if (c && c.length === 0) return { token: toRegex2(cand) }
     }
   }
   let best = null
   for (const cand of substrings(candLines, TOKEN_MIN, FALLBACK_MAX, { caseLines })) {
+    if (!caseFine(cand)) continue
     const c = conflicts(cand)
     if (!c) continue
     if (!best || c.length < best.also.length) best = { token: toRegex2(cand), also: c }

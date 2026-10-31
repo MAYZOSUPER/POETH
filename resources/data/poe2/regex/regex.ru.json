@@ -74,12 +74,15 @@
     "id": "map_contains_abyss_depths_with_no_boss",
     "text": "бездны ведут к глубинам бездны",
     "display": "Бездны ведут к Глубинам Бездны",
-    "token": "т к г",
+    "token": "вед",
     "kind": "desecrated",
     "tags": [],
     "trade": [
      "desecrated.stat_2278777540",
      "explicit.stat_2278777540"
+    ],
+    "alsoMatches": [
+     "map_contains_abyss_boss"
     ]
    },
    {
@@ -1237,7 +1240,7 @@
     "id": "map_extra_monoliths,map_map_item_drop_chance_+%",
     "text": "на карте можно встретить дополнительную сущность\n#% увеличение количества находимых на карте путевых камней",
     "display": "На карте можно встретить дополнительную Сущность\n#% увеличение количества находимых на карте путевых камней",
-    "token": "ю с",
+    "token": "щность",
     "kind": "prefix",
     "tags": [],
     "types": [
@@ -1562,7 +1565,7 @@
     "id": "map_expedition_number_of_magic_and_rare_packs_+%_and_rare_monster_modifiers_chance_%",
     "text": "#% повышение редкости монстров экспедиции на карте",
     "display": "#% повышение редкости монстров Экспедиции на карте",
-    "token": "и монстров э",
+    "token": "шение редкости м",
     "kind": "suffix",
     "tags": [],
     "types": [
@@ -1576,12 +1579,15 @@
     "id": "map_expedition_rare_monsters_+%",
     "text": "#% увеличение количества редких монстров экспедиции на карте",
     "display": "#% увеличение количества редких монстров Экспедиции на карте",
-    "token": "х монстров э",
+    "token": "а редки",
     "kind": "suffix",
     "tags": [],
     "types": [],
     "trade": [
      "explicit.stat_2694800111"
+    ],
+    "alsoMatches": [
+     "map_number_of_rare_packs_+%"
     ]
    },
    {
@@ -1792,7 +1798,7 @@
     "id": "map_breach_monster_quantity_+%",
     "text": "#% увеличение размера групп монстров в разломах на карте",
     "display": "#% увеличение размера групп монстров в Разломах на карте",
-    "token": "в в р",
+    "token": "мах",
     "kind": "suffix",
     "tags": [],
     "types": [
@@ -1800,6 +1806,9 @@
     ],
     "trade": [
      "explicit.stat_1210760818"
+    ],
+    "alsoMatches": [
+     "map_chance_for_breaches_to_contain_boss_+%"
     ]
    },
    {
@@ -1904,7 +1913,7 @@
     "id": "map_affliction_pack_size_+%",
     "text": "#% увеличение размера групп монстров делириума на карте",
     "display": "#% увеличение размера групп монстров Делириума на карте",
-    "token": "в де",
+    "token": "ума на карте",
     "kind": "suffix",
     "tags": [],
     "types": [
@@ -1912,6 +1921,11 @@
     ],
     "trade": [
      "explicit.stat_3465791711"
+    ],
+    "alsoMatches": [
+     "map_affliction_encounter_boss_chance_+%",
+     "map_affliction_encounter_monster_depth_+%",
+     "map_affliction_secondary_wave_acceleration_+%"
     ]
    },
    {
@@ -2261,7 +2275,7 @@
     "id": "map_monolith_chance_+%",
     "text": "на карте с увеличенным на #% шансом можно встретить сущности",
     "display": "На карте с увеличенным на #% шансом можно встретить Сущности",
-    "token": "ь су",
+    "token": "щности",
     "kind": "suffix",
     "tags": [],
     "types": [
@@ -2276,6 +2290,9 @@
     ],
     "trade": [
      "explicit.stat_1825943485"
+    ],
+    "alsoMatches": [
+     "maps_with_powerful_bosses_additional_essence_+"
     ]
    },
    {
