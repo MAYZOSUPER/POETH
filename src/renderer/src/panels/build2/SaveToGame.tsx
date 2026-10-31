@@ -8,12 +8,12 @@ import { saveErrorText } from './errors'
 // «Сохранить билд в игру» (S66; решение пользователя 31.10): файл `.build` в папку игрового планировщика PoE 2.
 // Поток: кнопка → main отвечает, куда запишет и есть ли такой файл (build:twoSave без confirm) → диалог с путём →
 // «Сохранить» / «Заменить» / «Сохранить копией» → запись в main. Содержимое файла собирает main из своего билда,
-// окно передаёт только id, название и язык подсказок. Ниже — «Как выбрать в игре» (2 шага).
+// окно передаёт только id, название и язык подсказок; свободное имя копии («Название (N)», после обрезки длинного
+// имени) подбирает тоже main. Ниже — «Как выбрать в игре» (2 шага).
 
-type Ask = { dir: Build2Dir; fileName: string; exists: boolean; name: string }
+/** name — название в игре из ответа main (у копии — с «(N)»); copy — повторить запрос с copy при записи */
+type Ask = { dir: Build2Dir; fileName: string; exists: boolean; name: string; copy: boolean }
 type SaveFail = Extract<Build2SaveResult, { ok: false }>
-
-const COPIES = 20
 
 export function SaveToGame({ build, gameLang, expert }: { build: Build2Summary; gameLang: GameLang; expert: boolean }) {
   const t = useT()
@@ -26,25 +26,19 @@ export function SaveToGame({ build, gameLang, expert }: { build: Build2Summary; 
   const [error, setError] = useState<SaveFail | null>(null)
   const api = window.overlayApi.build
 
-  /** Спросить main, куда запишем; на «копию» — первое свободное имя «Название (N)». */
+  /** Спросить main, куда запишем; «копия» — main подберёт свободное «Название (N)» (нет — ошибка «no-free-name»). */
   const prepare = async (copy: boolean): Promise<void> => {
     setBusy(true)
     setError(null)
     setDone(null)
     try {
-      for (let i = copy ? 2 : 1; i <= COPIES; i++) {
-        const n = i === 1 ? name : `${name} (${i})`
-        const res = await api.poe2Save({ id: build.id, name: n, lang })
-        if (res.ok) return // без confirm main не пишет — сюда не попадаем
-        if (res.error !== 'confirm') {
-          setError(res)
-          setAsk(null)
-          return
-        }
-        if (!copy || !res.exists) {
-          setAsk({ dir: res.dir, fileName: res.fileName, exists: res.exists, name: n })
-          return
-        }
+      const res = await api.poe2Save({ id: build.id, name, lang, ...(copy ? { copy: true } : {}) })
+      if (res.ok) return // без confirm main не пишет — сюда не попадаем
+      if (res.error === 'confirm') {
+        setAsk({ dir: res.dir, fileName: res.fileName, exists: res.exists, name: res.name, copy })
+      } else {
+        setAsk(null)
+        setError(res)
       }
     } finally {
       setBusy(false)
@@ -55,10 +49,18 @@ export function SaveToGame({ build, gameLang, expert }: { build: Build2Summary; 
     if (!ask) return
     setBusy(true)
     try {
-      const res = await api.poe2Save({ id: build.id, name: ask.name, lang, confirm: true, fileName: ask.fileName, overwrite })
+      const res = await api.poe2Save({
+        id: build.id,
+        name,
+        lang,
+        confirm: true,
+        fileName: ask.fileName,
+        overwrite,
+        ...(ask.copy ? { copy: true } : {})
+      })
       setAsk(null)
       // «changed» / «exists» — имя или папка поменялись между вопросом и записью: игрок нажмёт кнопку ещё раз
-      if (res.ok) setDone({ fileName: res.fileName, name: ask.name })
+      if (res.ok) setDone({ fileName: res.fileName, name: res.name })
       else setError(res)
     } finally {
       setBusy(false)

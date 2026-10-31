@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
 import { POE2_INSTILL_FILE, parseInstillData, type InstillData } from '@shared/poe2/build/instill'
+import { mergeEmotionPrices, type EmotionPrices } from '@shared/poe2/build/instillPrices'
+import { loadPoe2Prices, type LoadedPoe2Prices } from '@shared/poe2/prices'
 
-// «Вложение» (S66): рецепты — poeth://data/poe2/build/instill.json (один раз на окно); цены эмоций — обмен у Ange
-// по фиду GGG (S61, trade.poe2Ange: в запросе к web.poecdn.com — только номер часа). Пока S61 не в main, метода
-// нет — показываем рецепты без цен; после слияния цены появятся без правок здесь. Цены спрашиваем, только когда
-// их есть кому показать, и не чаще раза в 10 минут на окно.
+// «Вложение» (S66): рецепты — poeth://data/poe2/build/instill.json (один раз на окно). Цены эмоций:
+//  - обмен у Ange по фиду GGG (S61, trade.poe2Ange: в запросе к web.poecdn.com — только номер часа) — главный;
+//  - снимок poe.ninja PoE 2 из пакета данных (S67, poeth://data/poe2/prices/…, без сети) — для эмоций, которых у Ange
+//    за сутки не меняли. Слияние — mergeEmotionPrices (src/shared/poe2/build/instillPrices.ts).
+// Цены спрашиваем, только когда их есть кому показать, и не чаще раза в 10 минут на окно.
+
+export type { EmotionPrices }
 
 let dataPromise: Promise<InstillData | null> | null = null
 
@@ -31,44 +36,37 @@ export function useInstillData(): { data: InstillData | null; ready: boolean } {
   return state
 }
 
-export interface EmotionPrices {
-  /** английское имя эмоции → exalted за 1 шт. */
-  byName: Map<string, number>
-  exaltedPerDivine: number | null
-}
+/** Файл данных PoE 2 через poeth:// (надстройка обновлений → встроенные); нет — null. */
+const readData = (rel: string): Promise<string | null> =>
+  fetch(`poeth://data/poe2/${rel}`)
+    .then((r) => (r.ok ? r.text() : null))
+    .catch(() => null)
 
-/** Ответ S61 trade.poe2Ange — только поля, которые нужны здесь. */
-interface AngeAnswer {
-  ok: boolean
-  rate?: { exaltedPerDivine?: number }
-  prices?: Record<string, { exalted?: number } | undefined>
+/** Снимок poe.ninja меняется только с пакетом данных — один раз на лигу и окно. */
+let ninja: { league: string; pending: Promise<LoadedPoe2Prices | null> } | null = null
+
+function loadNinja(league: string): Promise<LoadedPoe2Prices | null> {
+  if (ninja?.league !== league) ninja = { league, pending: loadPoe2Prices(readData, league).catch(() => null) }
+  return ninja.pending
 }
-type AngeFn = (args: { league: string; names: string[] }) => Promise<AngeAnswer>
 
 const PRICES_TTL_MS = 10 * 60_000
 let prices: { at: number; pending: Promise<EmotionPrices | null> } | null = null
 
 async function fetchPrices(data: InstillData): Promise<EmotionPrices | null> {
-  // S61: метод появится со слиянием «цены у Ange»; до того цен нет
-  const ange = (window.overlayApi.trade as unknown as { poe2Ange?: AngeFn }).poe2Ange
-  if (typeof ange !== 'function') return null
   const leagues = await window.overlayApi.leagues.get().catch(() => null)
-  const league = leagues?.effective
-  if (!league) return null
-  const res = await ange({ league, names: data.emotions.map((e) => e.en) }).catch(() => null)
-  if (!res?.ok || !res.prices) return null
-  const byName = new Map<string, number>()
-  for (const e of data.emotions) {
-    const p = res.prices[e.en]?.exalted
-    if (typeof p === 'number' && p > 0) byName.set(e.en, p)
-  }
-  const rate = res.rate?.exaltedPerDivine
-  return { byName, exaltedPerDivine: typeof rate === 'number' && rate > 0 ? rate : null }
+  const league = leagues?.effective ?? 'auto'
+  const [ange, snap] = await Promise.all([
+    window.overlayApi.trade.poe2Ange({ league, names: data.emotions.map((e) => e.en) }).catch(() => null),
+    loadNinja(league)
+  ])
+  return mergeEmotionPrices(data.emotions, ange, snap)
 }
 
 function loadPrices(data: InstillData): Promise<EmotionPrices | null> {
   if (prices && Date.now() - prices.at < PRICES_TTL_MS) return prices.pending
   const pending = fetchPrices(data).then((p) => {
+    // нет цен (нет сети, фида, снимка) — спросить снова при следующем показе
     if (!p && prices?.pending === pending) prices = null
     return p
   })
