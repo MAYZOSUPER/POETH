@@ -273,7 +273,7 @@ export function normalizeFarmData(raw: unknown): FarmTrackerData {
 
 export class FarmTracker {
   private d: FarmTrackerData
-  private rules: FarmRules
+  private readonly rules: FarmRules
 
   /** `rules` — правила игры (по умолчанию PoE 1; PoE 2 — poe2FarmRules из zonesPoe2.ts). */
   constructor(data?: FarmTrackerData, rules: FarmRules = POE1_FARM_RULES) {
@@ -283,11 +283,6 @@ export class FarmTracker {
 
   get game(): FarmRules['game'] {
     return this.rules.game
-  }
-
-  /** Правила той же игры, пересобранные из новых данных (пакет данных PoE 2). */
-  setRules(rules: FarmRules): void {
-    if (rules.game === this.rules.game) this.rules = rules
   }
 
   /** Данные для сохранения (копия). */
