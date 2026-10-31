@@ -250,6 +250,10 @@
 .ui-chip:hover { color: var(--fg); border-color: var(--border-strong); }
 .ui-chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-hi); }
 .ui-chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+/* счётчик внутри чипа: <button class="ui-chip">Акт 1 <span class="ui-chip__n">8/8</span></button>; .is-done — всё пройдено */
+.ui-chip__n { color: var(--fg-faint); font-size: var(--fs-2xs); font-variant-numeric: tabular-nums; }
+.ui-chip[aria-pressed="true"] .ui-chip__n { color: var(--accent); }
+.ui-chip.is-done .ui-chip__n { color: var(--good); }
 
 /* сегменты: взаимоисключающий выбор (PoE 1 / PoE 2, пресеты) */
 .ui-seg {
@@ -473,6 +477,22 @@ button.ui-select[aria-expanded="true"] { border-color: var(--accent); }
 .ui-tier em { font-style: normal; font-weight: 500; }
 .ui-tier--t1 { color: var(--accent-hi); border-color: var(--accent); background: var(--accent-soft); }
 .ui-tier--t3 { color: var(--fg-muted); border-color: var(--border); }
+/* --lg: уровень предмета в шапке (путевой камень «Ур. 15») */
+.ui-tier--lg { height: 22px; padding: 0 var(--sp-4); border-radius: var(--r-sm); font-size: var(--fs-sm); color: var(--accent-hi); border-color: var(--border-strong); background: var(--accent-soft); }
+/* метка игры у заголовка окна: <span class="ui-badge">PoE 2</span> */
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  color: var(--accent-hi);
+  font: 700 10px / 1 var(--font-ui);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
 
 /* % ролла: <span class="ui-roll" style="--v:78%">78%<i></i></span> */
 .ui-roll { display: grid; gap: var(--sp-1); width: 40px; color: var(--fg-muted); font: 500 var(--fs-2xs) / 1 var(--font-ui); text-align: right; }
@@ -588,6 +608,16 @@ button.ui-select[aria-expanded="true"] { border-color: var(--accent); }
 .ui-mod__text { min-width: 0; overflow-wrap: anywhere; }
 .ui-mod__text b { color: var(--accent-hi); font-weight: 600; }
 .ui-mod__from { margin-left: var(--sp-2); color: var(--fg-faint); font-size: var(--fs-xs); white-space: nowrap; }
+/* свойство даёт руна / ядро души (PoE 2): <span class="ui-mod__from ui-mod__from--rune">руна</span> */
+.ui-mod__from--rune {
+  padding: 2px 4px;
+  border: 1px solid color-mix(in srgb, var(--info) 45%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--info);
+  font: 700 9.5px / 1 var(--font-ui);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
 .ui-mod--off .ui-mod__text,
 .ui-mod--off .ui-tier,
 .ui-mod--off .ui-roll { opacity: 0.45; }
@@ -638,6 +668,29 @@ button.ui-select[aria-expanded="true"] { border-color: var(--accent); }
 /* --accent: уровень (сложность, «что нужно билду»), не оценка «хорошо/плохо»; пустая точка — кольцо */
 .ui-pips--accent i { background: none; box-shadow: inset 0 0 0 1px var(--fg-faint); }
 .ui-pips--accent i.on { background: var(--accent); box-shadow: none; }
+
+/* ================= гнёзда и руны (PoE 2) ================= */
+/* <div class="ui-runes"><div class="ui-runes__row"><span class="ui-runes__slot is-rune"><i></i>Руна …</span>…</div></div>
+   .is-rune — руна, .is-core — ядро души и прочее вставляемое, .is-empty — пустое гнездо (пунктир) */
+.ui-runes { display: grid; gap: 6px; padding: 4px var(--sp-6) 8px; }
+.ui-runes__row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ui-runes__slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  height: 26px;
+  padding: 0 9px 0 5px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--sunken);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+.ui-runes__slot i { flex: none; width: 14px; height: 14px; border: 1.5px solid var(--fg-faint); border-radius: 50%; }
+.ui-runes__slot.is-rune i { border-color: var(--info); background: radial-gradient(circle at 40% 35%, color-mix(in srgb, var(--info) 80%, white), color-mix(in srgb, var(--info) 40%, transparent)); }
+.ui-runes__slot.is-core i { border-color: var(--accent); background: radial-gradient(circle at 40% 35%, var(--accent-hi), color-mix(in srgb, var(--accent) 35%, transparent)); }
+.ui-runes__slot.is-empty { border-style: dashed; color: var(--fg-faint); }
 
 /* ================= тост live search ================= */
 .ui-toast {
@@ -1022,6 +1075,9 @@ button.ui-select[aria-expanded="true"] { border-color: var(--accent); }
 .ui-rail__group { display: flex; flex-direction: column; gap: 2px; }
 .ui-rail__head { display: flex; align-items: center; flex: none; height: 22px; margin-top: 6px; padding: 0 8px; font: 600 var(--fs-2xs) / 1 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-faint); white-space: nowrap; overflow: hidden; }
 .ui-rail__group:first-child .ui-rail__head { margin-top: 0; }
+/* название игры над группами развёрнутого рельса (режим PoE 2): <div class="ui-rail__game">Path of Exile 2</div> */
+.ui-rail__game { flex: none; padding: 0 8px 2px; color: var(--accent); font: 600 var(--fs-2xs) / 1.2 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ui-rail:not(.ui-rail--wide):not(.ui-rail--drawer) .ui-rail__game { display: none; }
 .ui-rail__item {
   position: relative;
   display: grid;
