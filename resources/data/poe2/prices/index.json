@@ -1,0 +1,25 @@
+{
+ "v": 1,
+ "source": "poe.ninja",
+ "at": 1793478361507,
+ "leagues": [
+  {
+   "league": "Forbidden Rites",
+   "file": "Forbidden_20Rites.json",
+   "at": 1793478361507,
+   "lines": 1379
+  },
+  {
+   "league": "Runes of Aldur",
+   "file": "Runes_20of_20Aldur.json",
+   "at": 1793478361507,
+   "lines": 1214
+  },
+  {
+   "league": "Standard",
+   "file": "Standard.json",
+   "at": 1793478361507,
+   "lines": 360
+  }
+ ]
+}
