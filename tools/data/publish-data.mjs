@@ -13,12 +13,21 @@
 // скопировать, commit, push). Приложение скачает только файлы, отличающиеся от встроенных.
 // Версия по умолчанию — дата данных из data.meta.json (PoE 1 — APT, PoE 2 — EE2); у PoE 2 к ней
 // добавляется дата снимка цен poe.ninja (prices/index.json): «2026.10.30-p20261031».
+//
+// S67: у каждого файла — `prev`, sha256 его прежних версий из истории git (resources/data/<game>/<путь>, новые
+// первыми, до 100). Приложение не заменяет встроенный файл, которого нет в `prev`: сборка новее пакета. Нужна полная
+// история (в CI — actions/checkout fetch-depth: 0); --no-prev — без `prev` (как до S67).
+//
+// Выпуск только цен (суточный, S67):
+//   node tools/data/publish-data.mjs --game poe2 --src <опубликованный пакет> --base-manifest <его manifest-poe2.json>
+// --src — корень с папкой poe2/ (пакет из ветки data со свежим prices/); minApp — как у опубликованного; всё вне
+// prices/ обязано совпасть с опубликованным пакетом, иначе ошибка: непроверенные данные main так не уйдут.
 
 import { createHash } from 'node:crypto'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { manifestName } from './data-channel.mjs'
+import { assertFullHistory, gitDataHistory, manifestName, nonPriceChanges, prevVersions } from './data-channel.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const argv = process.argv.slice(2)
@@ -31,7 +40,11 @@ const game = arg('game', 'poe1')
 const src = path.resolve(ROOT, arg('src', 'resources/data'), game)
 const out = path.resolve(ROOT, arg('out', 'dist-data'))
 const pkg = JSON.parse(await fs.readFile(path.join(ROOT, 'package.json'), 'utf8'))
-const minApp = arg('min-app', pkg.version)
+const baseManifest = arg('base-manifest', '')
+const base = baseManifest ? JSON.parse(await fs.readFile(path.resolve(ROOT, baseManifest), 'utf8')) : null
+// выпуск только цен — minApp опубликованного пакета (данные те же, что уже у игроков)
+const minApp = arg('min-app', base ? base.minApp : pkg.version)
+const withPrev = !argv.includes('--no-prev')
 
 let version = arg('version', '')
 if (!version) {
@@ -61,6 +74,16 @@ function fail(msg) {
 
 if (game !== 'poe1' && game !== 'poe2') fail(`неизвестная игра ${game}`)
 if (!/^[0-9A-Za-z.+-]{1,40}$/.test(version)) fail(`нужна версия пакета: --version 3.30.0-1 (сейчас «${version}»)`)
+if (base && (base.game !== game || typeof base.files !== 'object')) fail(`--base-manifest: не манифест ${game}`)
+let history = null
+if (withPrev) {
+  try {
+    assertFullHistory(ROOT)
+    history = gitDataHistory(ROOT, game)
+  } catch (e) {
+    fail(e.message)
+  }
+}
 
 async function walk(dir, prefix = '') {
   const out = []
@@ -76,18 +99,30 @@ async function walk(dir, prefix = '') {
 const files = (await walk(src)).sort()
 if (files.length === 0) fail(`нет файлов в ${src}`)
 
-const manifest = { version, game, minApp, files: {} }
+const manifest = { version, game, ...(minApp ? { minApp } : {}), files: {} }
 await fs.rm(out, { recursive: true, force: true })
 for (const rel of files) {
   const parts = rel.split('/')
   if (parts.length > 4 || !parts.every((s) => SEGMENT.test(s))) fail(`недопустимый путь ${rel}`)
   const buf = await fs.readFile(path.join(src, rel))
-  manifest.files[rel] = { sha256: createHash('sha256').update(buf).digest('hex'), size: buf.length }
+  const sha256 = createHash('sha256').update(buf).digest('hex')
+  manifest.files[rel] = { sha256, size: buf.length }
+  if (history) manifest.files[rel].prev = prevVersions(history.get(rel) ?? [], sha256)
   const dest = path.join(out, game, rel)
   await fs.mkdir(path.dirname(dest), { recursive: true })
   await fs.writeFile(dest, buf)
 }
+if (base) {
+  const bad = nonPriceChanges(base.files, manifest.files)
+  if (bad.length) {
+    await fs.rm(out, { recursive: true, force: true })
+    fail(`выпуск только цен меняет не только prices/ (${bad.length}): ${bad.slice(0, 5).join(', ')}`)
+  }
+}
 await fs.writeFile(path.join(out, manifestName(game)), JSON.stringify(manifest, null, 2) + '\n')
 
 const total = Object.values(manifest.files).reduce((s, f) => s + f.size, 0)
-console.log(`пакет данных ${game} ${version} (minApp ${minApp}): ${files.length} файлов, ${(total / 1048576).toFixed(1)} МБ → ${path.relative(ROOT, out)}`)
+console.log(
+  `пакет данных ${game} ${version} (minApp ${minApp ?? '—'}): ${files.length} файлов, ${(total / 1048576).toFixed(1)} МБ → ${path.relative(ROOT, out)}` +
+    `${base ? ' — только цены поверх опубликованного' : ''}${history ? '' : ' — без prev'}`
+)

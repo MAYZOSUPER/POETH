@@ -2,7 +2,7 @@ import { app } from 'electron'
 import path from 'path'
 import type { GameId } from '@shared/games'
 import { DATA_MANIFEST_URL, isAllowedDataUrl } from '@shared/links'
-import { dataManifestUrl, loopbackUrl, validateDataManifest } from '@shared/updates'
+import { dataManifestUrl, isQuietDataUpdate, loopbackUrl, validateDataManifest } from '@shared/updates'
 import { applyDataUpdate } from './dataUpdate'
 import { getSettings } from './settingsStore'
 import { resourcesDir } from './questDataset'
@@ -14,7 +14,8 @@ import { getRunningGame } from '../gameContext'
 // «Проверять обновления») читаем манифест пакета данных запущенной игры (links.DATA_MANIFEST_URL;
 // PoE 2 — manifest-poe2.json рядом, S67), качаем изменившиеся файлы сессией без cookies,
 // проверяем sha256 и атомарно подменяем надстройку userData/data/<game> (ядро — dataUpdate.ts).
-// Применили — тост «Данные обновлены (…)». Ошибки сети и битые пакеты — тихо в лог, данные не трогаются.
+// Применили — тост «Данные обновлены (…)»; поменялись только цены (prices/, S67) — без тоста: их перечитывают и так.
+// Встроенный файл новее пакета (`prev`, S67) — остаётся встроенный. Ошибки сети и битые пакеты — тихо в лог.
 //
 // Проверка без публикации: POETH_DATA_MANIFEST_URL=http://127.0.0.1:<порт>/manifest.json (только loopback;
 // манифест PoE 2 — рядом с ним).
@@ -73,8 +74,12 @@ export async function checkDataUpdate(force = false): Promise<DataCheckResult> {
       fetchFile: (rel) => getBytes(new URL(`${m.game}/${rel}`, url).toString())
     })
     if (res.status === 'applied') {
-      console.log(`[data] ${m.game} ${m.version}: ${res.changed} files, ${res.downloaded} downloaded`)
-      void notifyUser('dataUpdated', { version: m.version })
+      const quiet = isQuietDataUpdate(res.paths)
+      console.log(
+        `[data] ${m.game} ${m.version}: ${res.changed} files, ${res.downloaded} downloaded` +
+          `${res.kept ? `, ${res.kept} kept (bundled newer)` : ''}${quiet ? ', prices only — no toast' : ''}`
+      )
+      if (!quiet) void notifyUser('dataUpdated', { version: m.version })
       return 'applied'
     }
     if (res.status === 'failed') {
