@@ -67,7 +67,7 @@ describe('снимок poe.ninja (S67)', () => {
 
   it('главные награды слухов есть в снимке, кроме базы амулета', async () => {
     const q = await src.quote(rewardRefs, LG)
-    for (const ref of ['ITEM:Perfect Flux', "ITEM:Olroth's Reliquary Key", "GEM:Rakiata's Flow", "ITEM:Medved's Crest of the Circle", "ITEM:Vorana's Crest of the Scythe", "ITEM:Uhtred's Crest of the Chalice"]) {
+    for (const ref of ['ITEM:Perfect Flux', "ITEM:Olroth's Reliquary Key", "GEM:Rakiata's Flow", "GEM:Uhtred's Exodus", "GEM:Vorana's Siege", "GEM:Medved's Felling"]) {
       expect(q[ref], ref).toBeDefined()
       expect(q[ref].value, ref).toBeGreaterThan(0)
       expect(q[ref].source).toBe('ninja')
@@ -97,9 +97,10 @@ describe('вместе: обменник первым, poe.ninja добирае�
     expect(row.price).not.toBeNull()
     expect(['divine', 'exalted']).toContain(row.price!.unit)
 
-    // три босса экспедиции одного тира: решает цена главной награды
-    const p = pickRumour(list, ['end-of-the-circle', 'the-last-to-fall'], {}, book)
-    expect(p.best).not.toBeNull()
+    // острова боссов: у главных наград (именные камни) есть цены, Утред дороже Вораны
+    const p = pickRumour(list, ['the-last-to-fall', 'stardrinker'], {}, book)
+    expect(p.best).toBe('stardrinker')
     expect(p.ranked.every((x) => x.priceEx !== null)).toBe(true)
+    expect(p.ranked[0].priceEx!).toBeGreaterThan(p.ranked[1].priceEx!)
   })
 })
