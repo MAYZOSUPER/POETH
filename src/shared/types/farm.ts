@@ -203,8 +203,8 @@ export type FarmConfigPatch = Partial<FarmConfig>
 
 /** Состояние для renderer и S11a. Время «тикает» от `at`, если `ticking` / сессия идёт. */
 export interface FarmState {
-  /** игра трекера: у PoE 1 и PoE 2 своя история (farm.json / farm.poe2.json) */
-  game: GameId
+  /** игра трекера: у PoE 1 и PoE 2 своя история (farm.json / farm.poe2.json); трекер ставит всегда, нет — PoE 1 */
+  game?: GameId
   /** момент снимка (мс) */
   at: number
   /** открытый забег (activeMs — на момент `at`) */
