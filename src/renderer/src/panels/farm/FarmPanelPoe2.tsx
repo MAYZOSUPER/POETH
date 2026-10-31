@@ -736,10 +736,11 @@ function DoneView({ state, s, exPerDiv, onNew }: { state: FarmState; s: FarmStat
         · {t(s.profit.source === 'snapshot' ? 'farm.p2.flow.tabs' : 'farm.p2.flow.currency')} <b className={s.profit.ex < 0 ? 'fm-bad' : 'fm-good'}>{money(s.profit.ex, rateDiv, lang, { signed: true })}</b>
       </span>
     )
+  // с прибылью от S70 находки уже внутри неё — «из них находки», без неё — сами находки
   if (s.stats.findsEx != null)
     parts.push(
       <span key="f">
-        · {t('farm.p2.flow.finds')} <b className="fm-good">{money(s.stats.findsEx, rateDiv, lang, { signed: true })}</b>
+        · {t(s.profit ? 'farm.p2.flow.findsOf' : 'farm.p2.flow.finds')} <b className="fm-good">{money(s.stats.findsEx, rateDiv, lang, { signed: true })}</b>
       </span>
     )
   return (

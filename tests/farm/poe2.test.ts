@@ -62,7 +62,10 @@ describe('данные областей PoE 2 (resources/data/poe2/farm/areas.js
     expect(kind('G2_4_1', 21)).toBe('campaign')
     expect(kind('P1_3', 55)).toBe('campaign')
     // карта мира и экраны — сцены, а не имена областей (EN и RU)
-    for (const n of ['Atlas', 'Act 1', 'Interlude', 'Акт 1', '(null)', '(unknown)']) expect(RULES.isAreaName(n)).toBe(false)
+    // EN и русские пары — из WorldAreas файлов игры (генератор с --dat)
+    for (const n of ['Atlas', 'Act 1', 'Act 4', 'Interlude', 'Атлас', 'Акт 1', 'Акт 4', 'Интерлюдия', '(null)', '(unknown)']) {
+      expect(RULES.isAreaName(n)).toBe(false)
+    }
     expect(RULES.isAreaName('Bluff')).toBe(true)
   })
 
@@ -284,7 +287,7 @@ describe('«+ находка» и прибыль сессии (API для окн
     expect(tr.snapshot(0).current?.finds).toHaveLength(FARM_FINDS_LIMIT - 1)
   })
 
-  it('прибыль сессии от S70: у идущей и после «Стоп»; итог = прибыль + находки (макет: вкладки + находки)', () => {
+  it('прибыль сессии от S70: у идущей и после «Стоп»; находки уже в разнице — итог = прибыль, без неё — находки', () => {
     const tr = new FarmTracker(undefined, RULES)
     tr.startSession(at('21:00:00'))
     tr.ingestLines([zone('21:01:00', 'MapBluff', 79, 101)], 0)
@@ -294,21 +297,48 @@ describe('«+ находка» и прибыль сессии (API для окн
     expect(tr.setSessionProfit(sid, { ex: 300, exPerDiv: 560, source: 'manual', at: at('21:30:00') }, 0)).toBe(true)
     let st = tr.snapshot(at('21:30:00'))
     expect(st.session?.profit).toEqual({ ex: 300, exPerDiv: 560, source: 'manual', at: at('21:30:00') })
-    expect(st.stats).toMatchObject({ findsEx: 560, profitEx: 300, totalEx: 860 })
-    expect(st.stats?.exPerHour).toBeCloseTo(860 * 2, 6)
+    expect(st.stats).toMatchObject({ findsEx: 560, profitEx: 300, totalEx: 300 })
+    expect(st.stats?.exPerHour).toBeCloseTo(300 * 2, 6)
 
     tr.stopSession(at('21:30:00'), 'snapshot')
     // итог приходит после «Стоп» (снимок в конце) — пересчёт итога сессии
     expect(tr.setSessionProfit(sid, { ex: 1120, source: 'snapshot', tabs: 3, at: 0 } as never, at('21:31:00'))).toBe(true)
     st = tr.snapshot(at('21:31:00'))
     expect(st.sessions[0]).toMatchObject({ profitEnd: 'snapshot', profit: { ex: 1120, source: 'snapshot', tabs: 3, at: 0 } })
-    expect(st.sessions[0].stats).toMatchObject({ profitEx: 1120, findsEx: 560, totalEx: 1680 })
-    expect(st.sessions[0].stats.exPerHour).toBeCloseTo(1680 * 2, 6)
+    expect(st.sessions[0].stats).toMatchObject({ profitEx: 1120, findsEx: 560, totalEx: 1120 })
+    expect(st.sessions[0].stats.exPerHour).toBeCloseTo(1120 * 2, 6)
     // убрать — итог — только находки
     expect(tr.setSessionProfit(sid, null, 0)).toBe(true)
     st = tr.snapshot(at('21:31:00'))
     expect(st.sessions[0].profit).toBeUndefined()
     expect(st.sessions[0].stats).toMatchObject({ profitEx: null, totalEx: 560 })
+  })
+
+  it('находки не считаются дважды: снимок или ввод — итог = разница; «только карты и время» — итог = находки', () => {
+    // снимок: находки (+1 div) уже лежат в тайнике и вошли в разницу снимков (+1630)
+    const snap = new FarmTracker(undefined, RULES)
+    snap.startSession(at('21:00:00'), undefined, 'snapshot')
+    snap.ingestLines([zone('21:01:00', 'MapBluff', 79, 101)], 0)
+    ok(snap.addFind({ ref: 'Divine Orb', valueEx: 564, source: 'quick' }, at('21:05:00')))
+    const sid = snap.snapshot(0).session?.id as string
+    snap.stopSession(at('22:00:00'), 'snapshot')
+    snap.setSessionProfit(sid, { ex: 1630, source: 'snapshot', at: at('22:01:00'), tabs: 3 }, 0)
+    expect(snap.snapshot(0).sessions[0].stats).toMatchObject({ profitEx: 1630, findsEx: 564, totalEx: 1630 })
+    expect(snap.snapshot(0).sessions[0].stats.exPerHour).toBeCloseTo(1630, 6)
+    // ручной ввод — так же
+    const man = new FarmTracker(undefined, RULES)
+    man.startSession(at('21:00:00'), undefined, 'manual')
+    man.ingestLines([zone('21:01:00', 'MapBluff', 79, 101)], 0)
+    ok(man.addFind({ ref: 'Exalted Orb', qty: 10, valueEx: 10, source: 'quick' }, at('21:05:00')))
+    man.setSessionProfit(man.snapshot(0).session?.id as string, { ex: -40, source: 'manual', at: 0 }, 0)
+    expect(man.snapshot(at('22:00:00')).stats).toMatchObject({ profitEx: -40, findsEx: 10, totalEx: -40 })
+    // только карты и время — итог из находок
+    const none = new FarmTracker(undefined, RULES)
+    none.startSession(at('21:00:00'), undefined, 'none')
+    none.ingestLines([zone('21:01:00', 'MapBluff', 79, 101)], 0)
+    ok(none.addFind({ ref: 'Divine Orb', valueEx: 564, source: 'quick' }, at('21:05:00')))
+    none.stopSession(at('22:00:00'), 'none')
+    expect(none.snapshot(0).sessions[0].stats).toMatchObject({ profitEx: null, findsEx: 564, totalEx: 564 })
   })
 
   it('диалоги: «Чем отметить начало» и «Как посчитать прибыль» — в сессии и событиях для S70; отметка начала', () => {

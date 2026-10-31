@@ -377,8 +377,8 @@ export function setSessionStart(sessionId: string, mark: FarmProfitMark | null, 
 }
 
 /**
- * Прибыль сессии PoE 2 от «Богатства» (S70): разница снимков или ввода в начале и в конце, в exalted, без находок
- * (итог = прибыль + находки считает трекер). `{ ex, exPerDiv?, source, at?, tabs? }` — source/at/tabs — отметка
+ * Прибыль сессии PoE 2 от «Богатства» (S70): разница снимков или ввода в начале и в конце, в exalted, как есть — находки
+ * уже внутри неё, трекер их не прибавляет (итог = прибыль). `{ ex, exPerDiv?, source, at?, tabs? }` — source/at/tabs — отметка
  * конца. Обычно — после session:stop с `session.profitEnd` 'snapshot' | 'manual'; можно и у идущей. null — убрать.
  */
 export function setSessionProfit(sessionId: string, profit: FarmSessionProfit | null, game: GameId = 'poe2'): Promise<boolean> {

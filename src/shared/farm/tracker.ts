@@ -197,11 +197,15 @@ function findsValue(finds: FarmFind[]): number | null {
   return priced.length ? priced.reduce((a, f) => a + (f.valueEx as number), 0) : null
 }
 
-/** Поля PoE 2 в статистике: итог = прибыль сессии от «Богатства» + находки, в час — он же. */
+/**
+ * Поля PoE 2 в статистике. Итог — прибыль сессии от «Богатства»: разница снимков или ввода в начале и в конце уже
+ * включает находки (они лежат в тайнике), поэтому находки к ней не прибавляем — показываем «из них находки». Без
+ * прибыли (сессия «только карты и время» или конец ещё не снят) итог — находки. В час — по итогу.
+ */
 function exStats(finds: FarmFind[], profit: FarmSessionProfit | undefined, durationMs: number): Partial<FarmStats> {
   const findsEx = findsValue(finds)
   const profitEx = profit ? profit.ex : null
-  const totalEx = profitEx === null && findsEx === null ? null : (profitEx ?? 0) + (findsEx ?? 0)
+  const totalEx = profitEx ?? findsEx
   return {
     finds: finds.length,
     findsEx,
