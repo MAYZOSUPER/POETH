@@ -12,7 +12,7 @@
 // poe2-regex-ru (генераторы regex, лицензии нет — только сайт во вкладке), PoE 2 Scout. Без игры функции работают
 // как в S43 — по списку PoE 1.
 
-import type { GameId } from './games'
+import { GAME_IDS, type GameId } from './games'
 import type { GameLang } from './types/settings'
 import { isAllowedExternalUrl } from './links'
 import { parseTradeUrl } from './favorites/tradeUrl'
@@ -289,7 +289,7 @@ export const BOOKMARK_LIMIT = 12
 export const BOOKMARK_TITLE_MAX = 40
 const URL_MAX = 2000
 
-export type BookmarkError = 'url' | 'https' | 'host' | 'poe' | 'site' | 'dup' | 'limit'
+export type BookmarkError = 'url' | 'https' | 'host' | 'poe' | 'site' | 'siteOther' | 'dup' | 'limit'
 
 function parse(url: unknown): URL | null {
   if (typeof url !== 'string' || !url || url.length > URL_MAX) return null
@@ -330,13 +330,15 @@ function siteOfHost(host: string, game: GameId = 'poe1'): SiteDef | undefined {
 /**
  * Проверка новой закладки: https, публичный хост, не сайт GGG (он — во вкладке «Трейд»), не сайт реестра
  * (у него уже есть вкладка), не повтор, не больше BOOKMARK_LIMIT. Название — обрезанное, по умолчанию хост.
- * Сайт реестра — по списку игры режима (без игры — PoE 1, как в S43).
+ * S64: с игрой режима (новая закладка игрока) — не сайт реестра этой игры ('site') и не сайт реестра другой игры
+ * ('siteOther': закладки общие для обеих игр, там была бы вторая вкладка того же сайта). Без игры (чтение
+ * sites.json) — только сайты PoE 1, как в S43: старые закладки не пропадают.
  */
 export function validateBookmark(
   input: { title?: unknown; url?: unknown },
   existing: readonly SiteBookmark[],
   newId: () => string,
-  game: GameId = 'poe1'
+  game?: GameId
 ): { ok: true; bookmark: SiteBookmark } | { ok: false; reason: BookmarkError } {
   const raw = typeof input.url === 'string' ? input.url.trim() : ''
   const u = parse(raw) ?? (raw && !/^[a-z][a-z0-9+.-]*:/i.test(raw) ? parse(`https://${raw}`) : null)
@@ -346,9 +348,10 @@ export function validateBookmark(
   const host = u.hostname.toLowerCase()
   if (!isPublicHostname(host)) return { ok: false, reason: 'host' }
   if (isPoeHostname(host)) return { ok: false, reason: 'poe' }
-  if (siteOfHost(host, game) || siteOfHost(host.startsWith('www.') ? host.slice(4) : `www.${host}`, game)) {
-    return { ok: false, reason: 'site' }
-  }
+  const twin = host.startsWith('www.') ? host.slice(4) : `www.${host}`
+  const isSite = (g: GameId): boolean => !!(siteOfHost(host, g) || siteOfHost(twin, g))
+  if (isSite(game ?? 'poe1')) return { ok: false, reason: 'site' }
+  if (game && GAME_IDS.some((g) => g !== game && isSite(g))) return { ok: false, reason: 'siteOther' }
   if (existing.some((b) => bookmarkHosts(b.url).includes(host))) return { ok: false, reason: 'dup' }
   if (existing.length >= BOOKMARK_LIMIT) return { ok: false, reason: 'limit' }
   u.hash = ''

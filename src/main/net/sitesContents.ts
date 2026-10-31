@@ -1,4 +1,5 @@
 import { app, shell, type WebContents, type WebPreferences } from 'electron'
+import type { GameId } from '@shared/games'
 import { siteNavDecision, type SiteBookmark, type SiteNav, type SiteTabId } from '@shared/sites'
 import { getSitesSession } from './session'
 import { WEBRTC_IP_POLICY } from './siteContents'
@@ -41,6 +42,11 @@ export interface SitesHardenOptions {
   tab: SiteTabId
   /** текущие закладки (хосты вкладки закладки) */
   bookmarks: () => readonly SiteBookmark[]
+  /**
+   * игра режима (S64): чей список сайтов смотреть для ссылки «на другой сайт» — у закладок своей игры нет;
+   * нет — игра самой вкладки, у закладок PoE 1 (как в S43)
+   */
+  game?: () => GameId
   /** переход в другую вкладку или «Трейд» (уже после нажатия игрока) */
   onRoute: (nav: Extract<SiteNav, { kind: 'tab' | 'trade' }>, url: string) => void
   /** то же для window.open на свой сайт: открыть в этой же вкладке */
@@ -77,7 +83,7 @@ export function hardenSitesContents(wc: WebContents, opts: SitesHardenOptions): 
 
   const guard = (details: { url: string; isMainFrame: boolean; preventDefault(): void }): void => {
     if (!details.isMainFrame) return
-    const nav = siteNavDecision(opts.tab, details.url, opts.bookmarks())
+    const nav = siteNavDecision(opts.tab, details.url, opts.bookmarks(), opts.game?.())
     if (nav.kind === 'allow') return
     details.preventDefault()
     route(details.url, nav)
@@ -85,7 +91,7 @@ export function hardenSitesContents(wc: WebContents, opts: SitesHardenOptions): 
   wc.on('will-navigate', (details) => guard(details))
   wc.on('will-redirect', (details) => guard(details))
   wc.setWindowOpenHandler(({ url }) => {
-    const nav = siteNavDecision(opts.tab, url, opts.bookmarks())
+    const nav = siteNavDecision(opts.tab, url, opts.bookmarks(), opts.game?.())
     if (nav.kind === 'allow') {
       if (acted()) opts.onOpenHere(url)
       else opts.onBlocked(url, false)
