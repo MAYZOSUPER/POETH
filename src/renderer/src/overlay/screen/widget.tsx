@@ -3,6 +3,7 @@ import type { ScreenIpcApi } from '@shared/ipc/screen'
 import { formatPrice, toCss } from '@shared/screen/labels'
 import type { ScreenLabels, ScreenOverlayState } from '@shared/types/screen'
 import { Icon } from '../Icon'
+import { Kbd } from '../Kbd'
 import { useInteractive } from '../interactive'
 import { translate } from '../../i18n'
 import { screen as SCREEN_DICT } from '../../i18n/dict/screen'
@@ -12,8 +13,8 @@ import './screen.css'
 
 // Цены поверх окон (S68): подписи цены за штуку у каждой ячейки особой вкладки тайника и итог вкладки. Снимок и
 // распознавание — в main по хоткею; здесь только рисунок по готовому состоянию (event:screen.state). Подписи не
-// ловят мышь — она проходит в игру; ловит только кнопка «спрятать» на итоге. Простые подписи на токенах
-// дизайн-системы — оформление рисует дизайнер (фаза 2).
+// ловят мышь — она проходит в игру; ловит только панель итога. Панель — по макету «PoE 2 в POETH v2» (раздел «Цены
+// поверх окон»): окно и игра, «N из M с ценой», откуда цена, что не вошло, легенда (простой режим), клавиша.
 
 /** Мост домена: строка в агрегаторе preload — через лида; до неё виджет молчит. */
 function api(): ScreenIpcApi | null {
@@ -46,28 +47,54 @@ function useScreenState(): ScreenOverlayState {
   return st
 }
 
+/** Клавиша панели и простой режим — из настроек (перечитываем, когда игрок вернулся в игру). */
+function usePanelSettings(): { key: string; simple: boolean } {
+  const [st, setSt] = useState({ key: '', simple: true })
+  useEffect(() => {
+    const read = (): void => {
+      void window.overlayApi.settings.get().then((s) => setSt({ key: s.hotkeys.screenPrices?.accel ?? '', simple: s.ui.simpleMode }))
+    }
+    read()
+    return window.overlayApi.onOverlayFocus(read)
+  }, [])
+  return st
+}
+
+/** Ширина панели (.scr-total в screen.css) — с какой стороны от ячеек она влезает. */
+const PANEL_W = 304
+
+/** Подпись дороже 1 div — золотая рамка (легенда панели). */
+function isRich(unit: number | null, divine: number | null): boolean {
+  return unit !== null && !!divine && unit >= divine
+}
+
 function Total({ labels, ms }: { labels: ScreenLabels; ms?: number }) {
   const say = useSay()
   const lang = useOverlayStore((s) => s.lang)
+  const priceKey = useOverlayStore((s) => s.priceCheckKey)
+  const { key, simple } = usePanelSettings()
   const ref = useRef<HTMLDivElement>(null)
   useInteractive(ref)
   const dpr = window.devicePixelRatio || 1
   const a = toCss(labels.anchor, dpr)
-  // справа от области ячеек, у её верха; не влезает — над ней
+  // справа от области ячеек, у её верха; не влезает — слева от неё; нигде — в правом верхнем углу
   const right = a.x + a.width + 8
-  const style = right + 220 <= window.innerWidth ? { left: right, top: a.y } : { left: a.x, top: Math.max(4, a.y - 64) }
+  const left = a.x - 8 - PANEL_W
+  const style =
+    right + PANEL_W <= window.innerWidth ? { left: right, top: a.y } : left >= 4 ? { left, top: a.y } : { right: 8, top: 8 }
   // итог — только если хоть одно число стопки прочитано (иначе «—», а не «<0,1 c»)
   const priced = labels.counted > 0
+  const coin = isRich(labels.total, labels.divine) ? 'div' : labels.base === 'exalted' ? 'ex' : 'chaos'
+  const doubt = labels.labels.some((l) => l.doubt)
+  const legend = simple && labels.labels.length > 0 && (!!labels.divine || doubt)
   return (
-    <div ref={ref} className="ui-panel scr-total" style={style} role="status" title={say('scr.total.tip')}>
-      <div className="scr-total__row">
-        <span className="scr-total__label">{say('scr.total')}</span>
-        <b className="scr-total__sum">
-          {priced ? `${labels.approx ? '≈ ' : ''}${formatPrice(labels.total, labels.base, labels.divine, lang)}` : '—'}
-        </b>
+    <div ref={ref} className="ui-panel scr-total" style={style} role="status" aria-label={say('scr.title')}>
+      <div className="ui-panel__head">
+        <span className="ui-panel__title">{say('scr.title')}</span>
+        <span className="ui-badge">{labels.game === 'poe2' ? 'PoE 2' : 'PoE 1'}</span>
         <button
           type="button"
-          className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+          className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm scr-total__close"
           aria-label={say('scr.close')}
           title={say('scr.close')}
           onClick={() => void api()?.screen.hide()}
@@ -75,17 +102,69 @@ function Total({ labels, ms }: { labels: ScreenLabels; ms?: number }) {
           <Icon name="close" />
         </button>
       </div>
-      {!labels.labels.length && <div className="scr-total__note">{say('scr.noPrices')}</div>}
-      {labels.approx && <div className="scr-total__note">{say('scr.approx')}</div>}
-      {(labels.unpriced > 0 || labels.uncounted > 0) && (
-        <div className="scr-total__note">
-          {[labels.unpriced ? say('scr.unpriced', { n: labels.unpriced }) : '', labels.uncounted ? say('scr.uncounted', { n: labels.uncounted }) : '']
-            .filter(Boolean)
-            .join(' · ')}
+      <div className="scr-total__b">
+        <div className="scr-total__row" title={say('scr.total.tip')}>
+          <span className="scr-total__label">{say(labels.window === 'grid' ? 'scr.win.grid' : 'scr.win.stash')}</span>
+          <b className="scr-total__sum">
+            {priced ? (
+              <>
+                {labels.approx && '≈ '}
+                <i className={`ui-coin ui-coin--${coin}`} aria-hidden="true" />
+                {formatPrice(labels.total, labels.base, labels.divine, lang)}
+              </>
+            ) : (
+              '—'
+            )}
+          </b>
         </div>
-      )}
-      {labels.game === 'poe2' && labels.window === 'stash' && <RecordWealth />}
-      {ms !== undefined && <div className="scr-total__ms">{say('scr.ms', { ms: Math.round(ms) })}</div>}
+        {labels.labels.length ? (
+          <span className="scr-total__meta">
+            {say('scr.priced', { n: labels.labels.length, m: labels.labels.length + labels.unpriced })} ·{' '}
+            {say(labels.game === 'poe2' ? 'scr.src.poe2' : 'scr.src.poe1')}
+          </span>
+        ) : (
+          <span className="scr-total__meta">{say('scr.noPrices')}</span>
+        )}
+        {labels.uncounted > 0 && (
+          <span className="scr-total__meta">{say(labels.approx ? 'scr.uncounted.approx' : 'scr.uncounted', { n: labels.uncounted })}</span>
+        )}
+        {labels.unpriced > 0 && (
+          <span className="scr-total__meta scr-total__warn">
+            <Icon name="warn" />
+            {say('scr.unpriced', { n: labels.unpriced })}
+            {priceKey && (
+              <>
+                {' '}
+                <Kbd accel={priceKey} />
+              </>
+            )}
+          </span>
+        )}
+        {legend && (
+          <span className="scr-total__meta">
+            {!!labels.divine && (
+              <>
+                <span className="scr-key is-rich">1 div</span>
+                {say('scr.legend.rich')}
+              </>
+            )}
+            {!!labels.divine && doubt && ' · '}
+            {doubt && (
+              <>
+                <span className="scr-key is-doubt">~</span>
+                {say('scr.legend.doubt')}
+              </>
+            )}
+          </span>
+        )}
+        {labels.game === 'poe2' && labels.window === 'stash' && <RecordWealth />}
+        {key && (
+          <span className="scr-total__meta">
+            <Kbd accel={key} /> {say('scr.keys')}
+          </span>
+        )}
+        {!simple && ms !== undefined && <span className="scr-total__ms">{say('scr.ms', { ms: Math.round(ms) })}</span>}
+      </div>
     </div>
   )
 }
@@ -107,7 +186,7 @@ function RecordWealth() {
     setSt(r.ok ? 'done' : 'fail')
   }
   if (st === 'done' || st === 'fail')
-    return <div className={`scr-total__note scr-wealth${st === 'done' ? ' is-done' : ''}`}>{tw(st === 'done' ? 'wealth.p2.rec.done' : 'wealth.p2.rec.fail')}</div>
+    return <span className={`scr-total__meta scr-wealth is-${st}`}>{tw(st === 'done' ? 'wealth.p2.rec.done' : 'wealth.p2.rec.fail')}</span>
   return (
     <button type="button" className="ui-btn ui-btn--primary ui-btn--sm scr-wealth" disabled={st === 'busy'} onClick={() => void record()}>
       <Icon name="coins" />
@@ -128,7 +207,7 @@ function Labels({ labels }: { labels: ScreenLabels }) {
         return (
           <div
             key={i}
-            className={`scr-label${l.doubt ? ' is-doubt' : ''}`}
+            className={`scr-label${isRich(l.unit, labels.divine) ? ' is-rich' : ''}${l.doubt ? ' is-doubt' : ''}`}
             style={{ left: r.x, top: r.y + r.height - fs * 1.35, width: r.width, fontSize: fs }}
           >
             {l.unit !== null ? `${l.doubt ? '~' : ''}${formatPrice(l.unit, labels.base, labels.divine, lang)}` : '?'}
