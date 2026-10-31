@@ -14,7 +14,21 @@ function Step({ n, x, y }: { n: number; x: number; y: number }) {
   )
 }
 
-export function LootFilterGuide({ t, file, onLadder }: { t: T; file: string; onLadder: () => void }) {
+/**
+ * nonAsciiPath — путь папки фильтров, если в нём не латинские буквы (S64): тогда подсказка «если игра не видит
+ * файл — ладдер». Сам POETH такой путь пишет без проблем; видит ли его игра — проверка в игре.
+ */
+export function LootFilterGuide({
+  t,
+  file,
+  nonAsciiPath = null,
+  onLadder
+}: {
+  t: T
+  file: string
+  nonAsciiPath?: string | null
+  onLadder: () => void
+}) {
   return (
     <div className="lf-guide">
       <svg className="lf-svg" viewBox="0 0 560 150" role="img" aria-label={t('lf.svg.alt')}>
@@ -68,6 +82,7 @@ export function LootFilterGuide({ t, file, onLadder }: { t: T; file: string; onL
         <li>{t('lf.guide.3', { file })}</li>
         <li>{t('lf.guide.4')}</li>
       </ol>
+      {nonAsciiPath && <div className="small lf-newer">{t('lf.guide.nonAscii', { path: nonAsciiPath })}</div>}
       <div className="small muted">
         {t('lf.guide.alt')}{' '}
         <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost lf-inline" onClick={onLadder}>

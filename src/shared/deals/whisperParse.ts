@@ -1,4 +1,4 @@
-// Разбор строк Client.txt Path of Exile 1 для менеджера сделок (чистый TS, без electron).
+// Разбор строк Client.txt Path of Exile 1 и 2 для менеджера сделок (чистый TS, без electron).
 //
 // Источники (MIT):
 //  - каналы чата и камни: CLIENT_STRINGS из данных Awakened PoE Trade
@@ -15,7 +15,16 @@
 //
 // Язык текста сделки не равен языку клиента: RU-клиент получает EN-сообщения с www-сайта и
 // наоборот, поэтому шаблоны трейда пробуются все, а язык берётся из совпавшего шаблона.
+//
+// PoE 2 (S63): шаблоны whisper'ов трейда — те же, что у PoE1. Проверено 31.10.2026 по живым лотам trade2
+// (поле listing.whisper): EN «Hi, I would like to buy your … listed for … in … (stash tab "…"; position: left N,
+// top M)», RU «Здравствуйте, хочу купить у вас … за … в лиге … (секция "…"; позиция: N столбец, M ряд)».
+// Язык whisper'а trade2 — язык аккаунта продавца (account.language), а не хоста. Каналы @From/@To/@От кого/
+// @Кому — те же (client_strings EE2 PoE2, MIT). Системные RU-строки PoE2 («Сделка совершена.», «Сделка
+// отклонена.», «Режим "недоступен"…») — из данных игры (LocalIdentity/poe2-data, backenderrors, без
+// лицензии — только как факт); для PoE1 они не сверены и включаются только в режиме PoE2.
 
+import type { GameId } from '../games'
 import type { DealDir, DealGem, DealLang, DealPrice, StashPos } from '../types/deals'
 
 // ---------------------------------------------------------------------------
@@ -286,8 +295,18 @@ const SYSTEM_PATTERNS: SystemPattern[] = [
   { re: /^Режим "отош[её]л" выключен/, lang: 'ru', make: () => ({ kind: 'afk', on: false, lang: 'ru' }) }
 ]
 
-export function parseSystemMessage(body: string): SystemEvent | null {
-  for (const p of SYSTEM_PATTERNS) {
+// PoE 2, RU — backenderrors игры: TradeAccepted, TradeCancelled, DNDModeEnabled/Disabled (EN-строки те же, что выше)
+const SYSTEM_PATTERNS_POE2: SystemPattern[] = [
+  ...SYSTEM_PATTERNS,
+  { re: /^Сделка совершена\.$/, lang: 'ru', make: () => ({ kind: 'tradeAccepted', lang: 'ru' }) },
+  { re: /^Сделка отклонена\.$/, lang: 'ru', make: () => ({ kind: 'tradeCancelled', lang: 'ru' }) },
+  { re: /^Режим "недоступен" включ[её]н/, lang: 'ru', make: () => ({ kind: 'dnd', on: true, lang: 'ru' }) },
+  { re: /^Режим "недоступен" выключен/, lang: 'ru', make: () => ({ kind: 'dnd', on: false, lang: 'ru' }) }
+]
+
+/** Системное сообщение; game — игра журнала (у PoE2 больше проверенных RU-строк). */
+export function parseSystemMessage(body: string, game: GameId = 'poe1'): SystemEvent | null {
+  for (const p of game === 'poe2' ? SYSTEM_PATTERNS_POE2 : SYSTEM_PATTERNS) {
     const m = p.re.exec(body)
     if (m) return p.make((m.groups ?? {}) as Record<string, string>)
   }
@@ -318,8 +337,8 @@ export interface SystemLogEvent {
 
 export type LogEvent = WhisperEvent | SystemLogEvent
 
-/** Строка Client.txt → событие для менеджера сделок (whisper или системное), иначе null. */
-export function parseLogLine(line: string): LogEvent | null {
+/** Строка Client.txt → событие для менеджера сделок (whisper или системное), иначе null. game — чей журнал. */
+export function parseLogLine(line: string, game: GameId = 'poe1'): LogEvent | null {
   const ll = splitLogLine(line)
   if (!ll) return null
   const chat = parseChat(ll.text)
@@ -338,7 +357,7 @@ export function parseLogLine(line: string): LogEvent | null {
     return ev
   }
   if (chat.channel === 'system') {
-    const event = parseSystemMessage(chat.body)
+    const event = parseSystemMessage(chat.body, game)
     return event ? { type: 'system', event, ts: ll.ts } : null
   }
   return null

@@ -73,11 +73,14 @@ function EmptyHistory() {
   const t = useT()
   const lang = useLang()
   const demo = useDealsStore((s) => s.demo)
+  // S63: в PoE 2 почти всё продаётся мгновенным выкупом — без whisper, в журнал не попадает; говорим честно
+  const poe2 = useAppStore((s) => s.settings?.game) === 'poe2'
   return (
     <div className="dl-box ui-empty">
       <Ico name="history" size="lg" />
       <div className="ui-empty__title">{t('deals.empty.title')}</div>
       <p className="dl-empty-text">{t('deals.empty.text')}</p>
+      {poe2 && <p className="dl-empty-text">{t('deals.empty.poe2')}</p>}
       <button type="button" className="ui-btn ui-btn--primary" onClick={() => void demo(lang)}>
         {t('deals.empty.demo')}
       </button>
@@ -253,6 +256,7 @@ function LogRow() {
   const t = useT()
   const log = useDealsStore((s) => s.log)
   const pickLog = useDealsStore((s) => s.pickLog)
+  const poe2 = useAppStore((s) => s.settings?.game) === 'poe2'
   if (!log) return null
   const tag = log.connected
     ? { cls: 'ui-tag--good', text: t(log.custom ? 'deals.log.custom' : 'deals.log.auto') }
@@ -272,7 +276,7 @@ function LogRow() {
           </button>
         )}
       </div>
-      {!log.connected && <span className="ui-field__help">{t('deals.log.help')}</span>}
+      {!log.connected && <span className="ui-field__help">{t(poe2 ? 'deals.log.help.poe2' : 'deals.log.help')}</span>}
     </div>
   )
 }

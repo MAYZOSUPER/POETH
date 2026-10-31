@@ -3,6 +3,7 @@ import { useT } from '../../i18n'
 import { useAppStore } from '../../store/useAppStore'
 import { useBuildStore } from '../../store/useBuildStore'
 import { useLevelingStore } from '../../store/useLevelingStore'
+import { Build2Tab } from '../build2/Build2Tab'
 import { BuildView } from './BuildView'
 import { EmptyView } from './EmptyView'
 import { StartersView } from './StartersView'
@@ -107,13 +108,8 @@ export function BuildTab() {
   useInit(useBuildStore((s) => s.init))
   useInit(useLevelingStore((s) => s.init))
 
-  if (game !== 'poe1') {
-    return (
-      <div className="bd-host">
-        <p className="bd-none">{t('bd.poe1only')}</p>
-      </div>
-    )
-  }
+  // S66: в PoE 2 — свой облегчённый экран (импорт PoB2, «Сохранить в игру», «Вложение»): единственное ветвление по игре
+  if (game !== 'poe1') return <Build2Tab />
 
   return (
     // .bd-host — опора диалога «Этапы…» (не прокручивается), .bd-scroll — прокрутка содержимого

@@ -3,3 +3,79 @@
 .pc[data-game='poe2'] .ui-listing {
   grid-template-columns: minmax(66px, max-content) minmax(0, 1fr) auto;
 }
+
+/* S61: вёрстка по спецификации дизайнера (design-poe2.md, «Окно цены PoE 2 — для S61»), свои классы — pc2-* */
+
+/* шапка: «Прайс-чек» + метка «PoE 2» не сжимаются, лига ужимается — иначе на 384 px переносится заголовок */
+.pc[data-game='poe2'] .ui-panel__title {
+  flex: none;
+}
+.pc2-grow {
+  flex: 1;
+  min-width: 0;
+}
+.pc[data-game='poe2'] .pc-league {
+  max-width: 132px;
+}
+
+/* путевой камень: имя и уровень в одной строке */
+.pc2-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.pc2-name .ov-item__name {
+  min-width: 0;
+}
+.pc2-name .ui-tier--lg {
+  flex: none;
+}
+
+/* гнёзда и руны: длинные RU-имена рун переносятся, а не обрезаются */
+.pc2-runes .ui-runes__slot {
+  height: auto;
+  min-height: 26px;
+  padding-block: 3px;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+/* трудность карты: бледный список без галочек, первые 3 + «ещё N» */
+.pc2-aff {
+  display: grid;
+  gap: 2px;
+  padding: 0 var(--sp-6) var(--sp-3);
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}
+.pc2-aff__more {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.pc2-aff__more:hover,
+.pc2-aff__more:focus-visible {
+  color: var(--accent);
+}
+
+/* честная строка про пересчёт валют под результатом */
+.pc2-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: var(--sp-3) var(--sp-6);
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+  line-height: 1.35;
+}
+.pc2-note .ui-ico {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  margin-top: 1px;
+}

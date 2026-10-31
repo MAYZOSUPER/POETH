@@ -1,0 +1,510 @@
+{
+  "name": "Ткач бурь — Комета",
+  "description": "Из Path of Building через POETH. Этапов по уровням: 1.",
+  "ascendancy": "Sorceress1",
+  "passives": [
+    "energy_shield15",
+    "energy_shield14",
+    "energy_shield21",
+    "energy_shield27",
+    "witch_sorceress_notable2",
+    "energy_shield10_",
+    "energy_shield37",
+    "energy_shield11",
+    {
+      "id": "intelligence17",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "intelligence84",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "intelligence16",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "intelligence86",
+      "weapon_set": 2,
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "intelligence85",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "energy_shield12",
+    "mana_regeneration46",
+    {
+      "id": "intelligence6",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "spell_criticals4",
+      "weapon_set": 1
+    },
+    "spells1",
+    {
+      "id": "area_spells8_",
+      "weapon_set": 2
+    },
+    {
+      "id": "intelligence79",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "chaos1",
+      "weapon_set": 2
+    },
+    "criticals22",
+    "energy_shield7",
+    "energy_shield16",
+    "mana_regeneration45",
+    "mana22",
+    {
+      "id": "attributes21",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "spell_criticals9",
+      "weapon_set": 1
+    },
+    "spells3",
+    {
+      "id": "area_spells9",
+      "weapon_set": 2
+    },
+    {
+      "id": "curses8",
+      "weapon_set": 2
+    },
+    {
+      "id": "intelligence78",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "elemental22",
+    {
+      "id": "chaos2",
+      "weapon_set": 2
+    },
+    "criticals21",
+    "energy_shield13",
+    "energy_shield35",
+    "mana_regeneration50_",
+    "mana21",
+    {
+      "id": "spell_criticals13",
+      "weapon_set": 1
+    },
+    "jewel_slot1972",
+    {
+      "id": "spell_criticals14",
+      "weapon_set": 1
+    },
+    {
+      "id": "spell_criticals10",
+      "weapon_set": 1
+    },
+    "spells12",
+    {
+      "id": "area_spells11",
+      "weapon_set": 2
+    },
+    {
+      "id": "curses9",
+      "weapon_set": 2
+    },
+    "lightning28",
+    {
+      "id": "intelligence77",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "elemental44",
+    "criticals24",
+    "energy_shield34_",
+    "mana24",
+    {
+      "id": "spell_criticals8",
+      "weapon_set": 1
+    },
+    {
+      "id": "intelligence43",
+      "weapon_set": 2,
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "intelligence57",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "spells33",
+    {
+      "id": "area_spells24",
+      "weapon_set": 2
+    },
+    {
+      "id": "curses7",
+      "weapon_set": 2
+    },
+    "lightning44",
+    {
+      "id": "intelligence10",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    "cold37",
+    "criticals30",
+    "mana40",
+    {
+      "id": "spell_criticals11_",
+      "weapon_set": 1
+    },
+    {
+      "id": "intelligence44",
+      "weapon_set": 2,
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "intelligence56",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "curses6",
+      "weapon_set": 2
+    },
+    "lightning48",
+    "criticals12",
+    {
+      "id": "dexterity6",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    "elemental46",
+    {
+      "id": "curses19",
+      "weapon_set": 2
+    },
+    {
+      "id": "intelligence45",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "lightning45",
+    "criticals3",
+    {
+      "id": "attributes28",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    "evasion_and_energy_shield17",
+    "lightning40",
+    {
+      "id": "curses20",
+      "weapon_set": 2
+    },
+    {
+      "id": "cold7",
+      "weapon_set": 1
+    },
+    {
+      "id": "intelligence54",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "intelligence58",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "intelligence7",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "mana_regeneration11",
+    "evasion_and_energy_shield15",
+    {
+      "id": "curses21",
+      "weapon_set": 2
+    },
+    {
+      "id": "cold13",
+      "weapon_set": 1
+    },
+    {
+      "id": "intelligence53_",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "curses15",
+      "weapon_set": 2
+    },
+    {
+      "id": "intelligence59",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "jewel_slot1961",
+    "mana_regeneration8",
+    {
+      "id": "curses10",
+      "weapon_set": 2
+    },
+    {
+      "id": "cold12",
+      "weapon_set": 1
+    },
+    "energy_shield24",
+    {
+      "id": "intelligence52",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "curses16",
+      "weapon_set": 2
+    },
+    {
+      "id": "intelligence60",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "mana_regeneration17",
+    {
+      "id": "cold38",
+      "weapon_set": 1
+    },
+    "energy_shield23",
+    {
+      "id": "intelligence51",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "curses17",
+      "weapon_set": 2
+    },
+    {
+      "id": "attributes1",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "duration12",
+      "weapon_set": 2
+    },
+    "intelligence103",
+    "spell_criticals12_",
+    "energy_shield36",
+    "jewel_slot1969",
+    {
+      "id": "curses18",
+      "weapon_set": 2
+    },
+    "jewel_slot1979",
+    "projectile_spells1",
+    {
+      "id": "duration10",
+      "weapon_set": 2
+    },
+    "energy_shield44",
+    "intelligence101_",
+    "spell_criticals16",
+    {
+      "id": "intelligence69",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "projectile_spells3",
+    {
+      "id": "duration6",
+      "weapon_set": 2
+    },
+    "energy_shield33_",
+    "spell_criticals15",
+    {
+      "id": "triggers1",
+      "weapon_set": 1
+    },
+    {
+      "id": "intelligence68",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "passive_keystone_chaos_inoculation",
+    "projectile_spells9",
+    {
+      "id": "triggers5",
+      "weapon_set": 1
+    },
+    {
+      "id": "triggers4",
+      "weapon_set": 1
+    },
+    "criticals86",
+    {
+      "id": "attributes12",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "triggers3",
+      "weapon_set": 1
+    },
+    {
+      "id": "triggers2",
+      "weapon_set": 1
+    },
+    "criticals83",
+    {
+      "id": "intelligence67",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "triggers9",
+      "weapon_set": 1
+    },
+    {
+      "id": "triggers17",
+      "weapon_set": 1
+    },
+    "criticals84",
+    {
+      "id": "dexterity7",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "triggers16",
+      "weapon_set": 1
+    },
+    {
+      "id": "monkelemental2",
+      "weapon_set": 1
+    },
+    {
+      "id": "monkelemental1",
+      "weapon_set": 1
+    },
+    {
+      "id": "monkelemental4",
+      "weapon_set": 1
+    },
+    {
+      "id": "monkelemental3",
+      "weapon_set": 1
+    },
+    {
+      "id": "monkelemental6",
+      "weapon_set": 1
+    },
+    "AscendancySorceress1Small5",
+    "AscendancySorceress1Small3",
+    "AscendancySorceress1Notable5",
+    "AscendancySorceress1Notable3",
+    "AscendancySorceress1Small6",
+    "AscendancySorceress1Small4",
+    "AscendancySorceress1Notable6",
+    "AscendancySorceress1Notable4"
+  ],
+  "skills": [
+    {
+      "id": "Metadata/Items/Gem/SkillGemHeartOfIce",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemEncumbrance",
+        "Metadata/Items/Gems/SupportGemColdMastery"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemIcestorm",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemPinpointCritical",
+        "Metadata/Items/Gem/SupportGemConsideredCasting",
+        "Metadata/Items/Gems/SupportGemElementalFocus",
+        "Metadata/Items/Gems/SupportGemConcentratedEffect",
+        "Metadata/Items/Gems/SupportGemColdInfusion"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemSigilOfPower",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gems/SupportGemPersistenceTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemFrostbolt",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemVilentasPropulsion",
+        "Metadata/Items/Gem/SupportGemWildshardsThree",
+        "Metadata/Items/Gems/SupportGemPinpointCritical",
+        "Metadata/Items/Gems/SupportGemColdInfusion",
+        "Metadata/Items/Gems/SupportGemConduction"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemManaRemnants",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemInterlude",
+        "Metadata/Items/Gem/SupportGemDissipateTwo",
+        "Metadata/Items/Gems/SupportGemClarityTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemFrostWall",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemSpellCascade",
+        "Metadata/Items/Gems/SupportGemIngenuityTwo",
+        "Metadata/Items/Gems/SupportGemGlaciation",
+        "Metadata/Items/Gems/SupportGemConduction"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemElementalWeakness",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemHeightenedCurse",
+        "Metadata/Items/Gem/SupportGemCursedGround",
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gems/SupportGemPersistenceTwo",
+        "Metadata/Items/Gems/SupportGemColdMastery"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemComet",
+      "additional_text": "<b>{Главное умение билда}",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemPinpointCritical",
+        "Metadata/Items/Gems/SupportGemInspirationTwo",
+        "Metadata/Items/Gems/SupportGemConcentratedEffect",
+        "Metadata/Items/Gem/SupportGemSpellCascade"
+      ]
+    }
+  ],
+  "inventory_slots": [
+    {
+      "inventory_id": "Weapon1",
+      "unique_name": "The Whispering Ice",
+      "additional_text": "<unique>{The Whispering Ice}"
+    },
+    {
+      "inventory_id": "Weapon2",
+      "additional_text": "<yellow>{Редкий: Chiming Staff}"
+    },
+    {
+      "inventory_id": "Helm1",
+      "additional_text": "<yellow>{Редкий: Kamasan Tiara}"
+    },
+    {
+      "inventory_id": "BodyArmour1",
+      "additional_text": "<yellow>{Редкий: Vile Robe}"
+    },
+    {
+      "inventory_id": "Gloves1",
+      "unique_name": "Maligaro's Virtuosity",
+      "additional_text": "<unique>{Maligaro's Virtuosity}"
+    },
+    {
+      "inventory_id": "Boots1",
+      "additional_text": "<yellow>{Редкий: Sandsworn Sandals}"
+    },
+    {
+      "inventory_id": "Amulet1",
+      "additional_text": "<yellow>{Редкий: Bloodstone Amulet}"
+    },
+    {
+      "inventory_id": "Ring1",
+      "additional_text": "<yellow>{Редкий: Ruby Ring}"
+    },
+    {
+      "inventory_id": "Ring2",
+      "additional_text": "<yellow>{Редкий: Ruby Ring}"
+    },
+    {
+      "inventory_id": "Belt1",
+      "unique_name": "Darkness Enthroned",
+      "additional_text": "<unique>{Darkness Enthroned}"
+    }
+  ]
+}

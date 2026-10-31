@@ -3,17 +3,22 @@
 // https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json).
 //
 //   node tools/data/publish-data.mjs --version 3.30.0-1 [--game poe1] [--min-app 0.1.0] [--out dist-data]
+//   node tools/data/publish-data.mjs --game poe2 [--version 2026.12.11-1] --out dist-data-poe2      (S67)
 //
 // Собирает из resources/data/<game> (без скрытых файлов):
 //   <out>/manifest.json            {version, game, minApp, files: {"en/stats.ndjson": {sha256, size}}}
+//                                  (PoE 2 — <out>/manifest-poe2.json, раскладка — data-channel.mjs)
 //   <out>/<game>/<путь>            сами файлы
 // Публикация (лид): содержимое <out> — в корень ветки `data` (git worktree add ../poeth-data data,
 // скопировать, commit, push). Приложение скачает только файлы, отличающиеся от встроенных.
+// Версия по умолчанию — дата данных из data.meta.json (PoE 1 — APT, PoE 2 — EE2); у PoE 2 к ней
+// добавляется дата снимка цен poe.ninja (prices/index.json): «2026.10.30-p20261031».
 
 import { createHash } from 'node:crypto'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { manifestName } from './data-channel.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const argv = process.argv.slice(2)
@@ -36,6 +41,15 @@ if (!version) {
     version = String(meta.date ?? '').replace(/-/g, '.')
   } catch {
     /* нет meta */
+  }
+  // PoE 2 (S67): снимок цен меняется чаще данных EE2 — его дата в версии, чтобы выпуски различались
+  if (version && game === 'poe2') {
+    try {
+      const at = JSON.parse(await fs.readFile(path.join(src, 'prices/index.json'), 'utf8')).at
+      if (Number.isFinite(at)) version += `-p${new Date(at).toISOString().slice(0, 10).replace(/-/g, '')}`
+    } catch {
+      /* снимка нет */
+    }
   }
 }
 
@@ -73,7 +87,7 @@ for (const rel of files) {
   await fs.mkdir(path.dirname(dest), { recursive: true })
   await fs.writeFile(dest, buf)
 }
-await fs.writeFile(path.join(out, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n')
+await fs.writeFile(path.join(out, manifestName(game)), JSON.stringify(manifest, null, 2) + '\n')
 
 const total = Object.values(manifest.files).reduce((s, f) => s + f.size, 0)
 console.log(`пакет данных ${game} ${version} (minApp ${minApp}): ${files.length} файлов, ${(total / 1048576).toFixed(1)} МБ → ${path.relative(ROOT, out)}`)

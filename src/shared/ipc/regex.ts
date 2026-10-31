@@ -7,6 +7,11 @@ import type {
   ItemRegexData,
   MapRegexData,
   PasteSlot,
+  Poe2PriceResult,
+  Poe2ProfileInput,
+  Poe2RegexData,
+  Poe2RegexPrefs,
+  Poe2RegexState,
   RegexEntryInput,
   RegexExportResult,
   RegexImportResult,
@@ -26,7 +31,14 @@ export const regexChannels = {
     setPrefs: 'regex:setPrefs',
     exportLibrary: 'regex:exportLibrary',
     importLibrary: 'regex:importLibrary',
-    copy: 'regex:copy'
+    copy: 'regex:copy',
+    // PoE 2 (S62): данные, настройки страниц и профили, «Цена по профилю»
+    poe2Data: 'regex:poeTwoData',
+    poe2State: 'regex:poeTwoState',
+    poe2SetPrefs: 'regex:poeTwoSetPrefs',
+    poe2SaveProfile: 'regex:poeTwoSaveProfile',
+    poe2DeleteProfile: 'regex:poeTwoDeleteProfile',
+    poe2Price: 'regex:poeTwoPrice'
   }
 } as const
 
@@ -50,5 +62,18 @@ export interface RegexIpcApi {
     importLibrary(): Promise<RegexImportResult>
     /** Скопировать строку в буфер обмена. */
     copy(text: string): Promise<void>
+    /** PoE 2 (S62): путевые камни, плитки, торговец для языка клиента (userData/data, потом bundled). */
+    poe2Data(lang: RegexLang): Promise<Poe2RegexData | null>
+    /** Настройки страниц PoE 2 и профили «что нужно» (regex-poe2.json). */
+    poe2State(): Promise<Poe2RegexState>
+    poe2SetPrefs(patch: Partial<Poe2RegexPrefs>): Promise<Poe2RegexState>
+    /** Добавить (нет id) или изменить профиль. */
+    poe2SaveProfile(input: Poe2ProfileInput): Promise<Poe2RegexState>
+    poe2DeleteProfile(id: string): Promise<Poe2RegexState>
+    /**
+     * «Цена по профилю»: по клику ровно один поиск trade2 (статус available) + одна страница лотов, через шлюз.
+     * body — тело из profileTradeQuery (main проверяет форму и сам ставит статус).
+     */
+    poe2Price(body: unknown): Promise<Poe2PriceResult>
   }
 }

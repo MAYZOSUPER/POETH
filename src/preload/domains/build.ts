@@ -20,7 +20,14 @@ export function buildBridge(): BuildIpcApi {
       showTree: (stage) => ipcRenderer.invoke(b.showTree, stage),
       starters: () => ipcRenderer.invoke(b.starters),
       playStarter: (id, mode) => ipcRenderer.invoke(b.playStarter, id, mode),
-      openStarterLink: (id, kind) => ipcRenderer.invoke(b.openStarterLink, id, kind)
+      openStarterLink: (id, kind) => ipcRenderer.invoke(b.openStarterLink, id, kind),
+      // S66: экран «Билд» PoE 2
+      poe2State: () => ipcRenderer.invoke(b.poe2State),
+      poe2Import: (text) => ipcRenderer.invoke(b.poe2Import, text),
+      poe2Open: (id) => ipcRenderer.invoke(b.poe2Open, id),
+      poe2Remove: (id) => ipcRenderer.invoke(b.poe2Remove, id),
+      poe2Reload: (id) => ipcRenderer.invoke(b.poe2Reload, id),
+      poe2Save: (req) => ipcRenderer.invoke(b.poe2Save, req)
     },
     onBuildState: (cb) => subscribe(IPC.events.buildState, cb),
     onBuildTaken: (cb) => subscribe(IPC.events.buildTaken, cb)

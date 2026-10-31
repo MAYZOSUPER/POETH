@@ -1,20 +1,23 @@
 import { app } from 'electron'
 import path from 'path'
+import type { GameId } from '@shared/games'
 import { DATA_MANIFEST_URL, isAllowedDataUrl } from '@shared/links'
-import { loopbackUrl, validateDataManifest } from '@shared/updates'
+import { dataManifestUrl, loopbackUrl, validateDataManifest } from '@shared/updates'
 import { applyDataUpdate } from './dataUpdate'
 import { getSettings } from './settingsStore'
 import { resourcesDir } from './questDataset'
 import { notifyUser } from './notify'
 import { getAnonSession, getUserAgent } from '../net/session'
+import { getRunningGame } from '../gameContext'
 
 // Обновление данных без переустановки (S10a): при запуске и раз в сутки (если включено
-// «Проверять обновления») читаем манифест пакета данных (links.DATA_MANIFEST_URL), качаем
-// изменившиеся файлы сессией без cookies, проверяем sha256 и атомарно подменяем надстройку
-// userData/data/<game> (ядро — dataUpdate.ts). Применили — тост «Данные обновлены (…)».
-// Ошибки сети и битые пакеты — тихо в лог, данные не трогаются.
+// «Проверять обновления») читаем манифест пакета данных запущенной игры (links.DATA_MANIFEST_URL;
+// PoE 2 — manifest-poe2.json рядом, S67), качаем изменившиеся файлы сессией без cookies,
+// проверяем sha256 и атомарно подменяем надстройку userData/data/<game> (ядро — dataUpdate.ts).
+// Применили — тост «Данные обновлены (…)». Ошибки сети и битые пакеты — тихо в лог, данные не трогаются.
 //
-// Проверка без публикации: POETH_DATA_MANIFEST_URL=http://127.0.0.1:<порт>/manifest.json (только loopback).
+// Проверка без публикации: POETH_DATA_MANIFEST_URL=http://127.0.0.1:<порт>/manifest.json (только loopback;
+// манифест PoE 2 — рядом с ним).
 
 const CHECK_EVERY_MS = 24 * 60 * 60 * 1000
 const TIMEOUT_MS = 30000
@@ -23,8 +26,8 @@ const MAX_BYTES = 64 * 1024 * 1024
 let busy = false
 let timer: NodeJS.Timeout | null = null
 
-function manifestUrl(): string {
-  return loopbackUrl(process.env.POETH_DATA_MANIFEST_URL) ?? DATA_MANIFEST_URL
+function manifestUrl(game: GameId): string {
+  return dataManifestUrl(loopbackUrl(process.env.POETH_DATA_MANIFEST_URL) ?? DATA_MANIFEST_URL, game)
 }
 
 function allowed(url: string): boolean {
@@ -54,11 +57,13 @@ export async function checkDataUpdate(force = false): Promise<DataCheckResult> {
   if (!force && !(await getSettings()).updates.check) return 'skipped'
   busy = true
   try {
-    const url = manifestUrl()
+    // смена игры — только перезапуском, так что при запуске проверяется пакет нужной игры
+    const game = getRunningGame()
+    const url = manifestUrl(game)
     const raw: unknown = JSON.parse((await getBytes(url)).toString('utf8'))
     const v = validateDataManifest(raw, app.getVersion())
-    if (!v.ok) {
-      console.warn(`[data] manifest skipped: ${v.error}`)
+    if (!v.ok || v.manifest.game !== game) {
+      console.warn(`[data] manifest skipped: ${v.ok ? `game ${v.manifest.game}, expected ${game}` : v.error}`)
       return 'skipped'
     }
     const m = v.manifest

@@ -12,39 +12,61 @@
 # ветку `prices` одним коммитом (tools/data/push-prices-branch.mjs). К poe.ninja ходит только этот
 # запуск, а не приложение у каждого игрока (poe.ninja просит десктоп-приложения ходить через свой бэкенд).
 # Вручную: Actions → «Data» → Run workflow с галочкой «Только снимок цен».
+#
+# S67: пакет PoE 2 (resources/data/poe2 → manifest-poe2.json + poe2/… в той же ветке data; пакет PoE 1 не трогается).
+# Перед сборкой CI снимает цены poe.ninja PoE 2 (tools/data/ninja-snapshot-poe2.mjs) в resources/data/poe2/prices —
+# приложение берёт их из пакета данных. Запуск: Run workflow с игрой poe2 или тег data-poe2-<версия>
+# (git tag data-poe2-2026.12.11-1 && git push origin data-poe2-2026.12.11-1). Раз в сутки (04:41 UTC) — только
+# если в репозитории задана переменная POE2_DAILY_DATA = 1 (Settings → Secrets and variables → Actions → Variables).
 name: Data
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Версия пакета данных (например 3.30.0-1); пусто — дата данных APT'
+        description: 'Версия пакета данных (например 3.30.0-1); пусто — дата данных APT (PoE 2 — EE2 + дата цен)'
         required: false
         default: ''
+      game:
+        description: 'Игра пакета: poe1 (данные APT) или poe2 (EE2 + свежий снимок цен poe.ninja PoE 2)'
+        type: choice
+        options: [poe1, poe2]
+        required: false
+        default: poe1
       prices:
         description: 'Только снимок цен poe.ninja (ветка prices), пакет данных не публиковать'
         type: boolean
         required: false
         default: false
   push:
+    # data-<версия> — пакет PoE 1, data-poe2-<версия> — пакет PoE 2
     tags: ['data-*']
   # Снимок цен по расписанию — вместе с флагом ITEMFLIP_RELEASED (src/shared/flip/items/flag.ts): раз в час
   # в публичную ветку `prices`. Вручную — галочка «Только снимок цен».
   schedule:
     - cron: '17 * * * *'
+    # S67: пакет PoE 2 со свежими ценами — раз в сутки, если vars.POE2_DAILY_DATA == '1'
+    - cron: '41 4 * * *'
 
 permissions:
   contents: write
 
 jobs:
   publish:
-    # только из main или по тегу data-* — не из рабочих веток; расписание и «только цены» — не сюда
-    if: github.event_name != 'schedule' && !inputs.prices && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/data-'))
+    # только из main или по тегу data-* — не из рабочих веток; ежечасное расписание и «только цены» — не сюда.
+    # S67: суточное расписание — пакет PoE 2, если включено переменной POE2_DAILY_DATA
+    if: >-
+      (github.event_name != 'schedule' && !inputs.prices && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/data-')))
+      || (github.event_name == 'schedule' && github.event.schedule == '41 4 * * *' && vars.POE2_DAILY_DATA == '1' && github.ref == 'refs/heads/main')
+    # одна очередь на обе игры: пакеты пишутся в одну ветку data
     concurrency:
       group: data-publish
       cancel-in-progress: false
     runs-on: windows-latest
     timeout-minutes: 25
+    env:
+      # игра пакета: суточное расписание и тег data-poe2-* — PoE 2, иначе — выбор при запуске (по умолчанию PoE 1)
+      GAME: ${{ (github.event_name == 'schedule' || startsWith(github.ref_name, 'data-poe2-')) && 'poe2' || inputs.game || 'poe1' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -53,9 +75,27 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Данные целы (sha256 по data.meta.json)
-        run: npm run verify:data
+        shell: bash
+        run: |
+          if [ "$GAME" = poe2 ]; then node tools/data/sync-ee2-data.mjs --verify; else npm run verify:data; fi
       - name: Тесты
         run: npm test
+      - name: Прошлый снимок цен PoE 2 (ETag для условных запросов)
+        if: env.GAME == 'poe2'
+        shell: bash
+        run: |
+          mkdir -p prev-prices-poe2
+          if git fetch --quiet --depth=1 origin data && git cat-file -e FETCH_HEAD:poe2/prices/index.json 2>/dev/null; then
+            git archive FETCH_HEAD poe2/prices | tar -x -C prev-prices-poe2 --strip-components=2
+          else
+            cp -r resources/data/poe2/prices/. prev-prices-poe2/
+          fi
+      - name: Снимок цен poe.ninja PoE 2 (в resources/data/poe2/prices)
+        if: env.GAME == 'poe2'
+        run: node tools/data/ninja-snapshot-poe2.mjs --out resources/data/poe2/prices --prev prev-prices-poe2
+      - name: Снимок цен цел (формат, лиги, группы)
+        if: env.GAME == 'poe2'
+        run: npx vitest run tests/poe2/prices/bundled.test.ts
       - name: Собрать пакет
         shell: bash
         env:
@@ -63,8 +103,8 @@ jobs:
           TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
         run: |
           v="$INPUT_VERSION"
-          if [ -z "$v" ] && [ -n "$TAG" ]; then v="${TAG#data-}"; fi
-          node tools/data/publish-data.mjs ${v:+--version "$v"} --out dist-data
+          if [ -z "$v" ] && [ -n "$TAG" ]; then v="${TAG#data-}"; v="${v#poe2-}"; fi
+          node tools/data/publish-data.mjs --game "$GAME" ${v:+--version "$v"} --out dist-data
       - name: Опубликовать в ветку data
         shell: bash
         env:
@@ -76,9 +116,10 @@ jobs:
       - name: Манифест доступен по публичному адресу
         shell: bash
         run: |
-          want=$(node -p "require('./dist-data/manifest.json').version")
+          name=manifest.json; [ "$GAME" = poe1 ] || name="manifest-$GAME.json"
+          want=$(node -p "require('./dist-data/$name').version")
           for i in $(seq 1 24); do
-            got=$(curl -fsS -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version" 2>/dev/null || true)
+            got=$(curl -fsS -H 'Cache-Control: no-cache' "https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/$name" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version" 2>/dev/null || true)
             echo "попытка $i: $got (ждём $want)"
             [ "$got" = "$want" ] && exit 0
             sleep 15
@@ -86,8 +127,8 @@ jobs:
           echo "CDN raw.githubusercontent.com ещё отдаёт прежний манифест — проверьте позже" && exit 1
 
   prices:
-    # снимок цен уников poe.ninja раз в час (и вручную); только из main
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.prices)
+    # снимок цен уников poe.ninja раз в час (и вручную); только из main; суточное расписание S67 — не сюда
+    if: github.ref == 'refs/heads/main' && ((github.event_name == 'schedule' && github.event.schedule == '17 * * * *') || inputs.prices)
     concurrency:
       group: prices-publish
       cancel-in-progress: false

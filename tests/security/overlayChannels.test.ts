@@ -6,8 +6,8 @@ import { OVERLAY_CHANNELS, ipcAllowed } from '../../src/main/security/policy'
 // сайдбару трейд-окна они не нужны.
 
 describe('OVERLAY_CHANNELS', () => {
-  it('все каналы доменов buildTree и equip — и только они', () => {
-    expect([...OVERLAY_CHANNELS].sort()).toEqual([...Object.values(IPC.buildTree), ...Object.values(IPC.equip)].sort())
+  it('все каналы доменов buildTree, equip и screen — и только они', () => {
+    expect([...OVERLAY_CHANNELS].sort()).toEqual([...Object.values(IPC.buildTree), ...Object.values(IPC.equip), ...Object.values(IPC.screen)].sort())
   })
 
   it('оверлей — да; компаньон, сайдбар и чужие страницы — нет', () => {

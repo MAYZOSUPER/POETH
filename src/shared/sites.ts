@@ -7,6 +7,10 @@
 //    в системный браузер; остальное — никуда.
 //  - Закладки игрока — только https и публичное имя хоста (validateBookmark); вкладка закладки ходит по её хосту.
 // Тексты сайтов не копируем и рекламу не режем: вкладка — это сайт как в браузере.
+// S64: список сайтов — по игре (sitesFor). У PoE 2 свои вкладки: poe.ninja, Maxroll и Mobalytics — разделы PoE 2
+// тех же сайтов (у них свои id: хосты общие, а домашняя страница другая), poe2db, вики PoE 2, poe2.re и
+// poe2-regex-ru (генераторы regex, лицензии нет — только сайт во вкладке), PoE 2 Scout. Без игры функции работают
+// как в S43 — по списку PoE 1.
 
 import type { GameId } from './games'
 import type { GameLang } from './types/settings'
@@ -16,7 +20,23 @@ import { parseTradeUrl } from './favorites/tradeUrl'
 /** Отдельная сессия сайтов: cookies сайтов, согласие на cookies, проверки Cloudflare. Не сессия аккаунта. */
 export const SITES_PARTITION = 'persist:poeth-sites'
 
-export type SiteId = 'ninja' | 'poedb' | 'wiki' | 'maxroll' | 'mobalytics' | 'poelab' | 'craft' | 'scout'
+export type SiteId =
+  | 'ninja'
+  | 'poedb'
+  | 'wiki'
+  | 'maxroll'
+  | 'mobalytics'
+  | 'poelab'
+  | 'craft'
+  | 'scout'
+  // PoE 2 (S64)
+  | 'ninja2'
+  | 'poe2db'
+  | 'wiki2'
+  | 'maxroll2'
+  | 'mobalytics2'
+  | 'poe2re'
+  | 'regexru'
 
 /** Вкладка трейд-окна: «Трейд», сайт реестра, закладка игрока (`bm:<id>`) или страница «Сайты» (закладки, данные). */
 export type SiteTabId = 'trade' | 'manage' | SiteId | `bm:${string}`
@@ -116,7 +136,113 @@ export const SITES: readonly SiteDef[] = [
   }
 ]
 
-const SITE_IDS = new Set<string>(SITES.map((s) => s.id))
+/**
+ * Сайты PoE 2 (S64, проверено 31.10.2026: главные страницы отвечают). Порядок = порядок вкладок. poe2db — на языке
+ * клиента игры, poe2-regex-ru — генератор regex для русского клиента. Только ссылки: тексты и данные этих сайтов
+ * POETH не берёт (у poe2.re и poe2-regex-ru лицензии нет).
+ */
+export const SITES_POE2: readonly SiteDef[] = [
+  {
+    id: 'ninja2',
+    name: 'poe.ninja',
+    mark: 'N',
+    aboutKey: 'sites.about.ninja2',
+    hosts: ['poe.ninja'],
+    enOnly: true,
+    home: () => 'https://poe.ninja/poe2/economy'
+  },
+  {
+    id: 'poe2db',
+    name: 'poe2db',
+    mark: 'DB',
+    aboutKey: 'sites.about.poe2db',
+    hosts: ['poe2db.tw'],
+    enOnly: false,
+    home: (lang) => `https://poe2db.tw/${poedbLang(lang)}/`
+  },
+  {
+    id: 'wiki2',
+    name: 'PoE 2 Wiki',
+    mark: 'W',
+    aboutKey: 'sites.about.wiki2',
+    hosts: ['www.poe2wiki.net', 'poe2wiki.net'],
+    enOnly: true,
+    home: () => 'https://www.poe2wiki.net/'
+  },
+  {
+    id: 'maxroll2',
+    name: 'Maxroll',
+    mark: 'M',
+    aboutKey: 'sites.about.maxroll2',
+    hosts: ['maxroll.gg'],
+    enOnly: true,
+    home: () => 'https://maxroll.gg/poe2'
+  },
+  {
+    id: 'mobalytics2',
+    name: 'Mobalytics',
+    mark: 'MB',
+    aboutKey: 'sites.about.mobalytics2',
+    hosts: ['mobalytics.gg'],
+    enOnly: true,
+    home: () => 'https://mobalytics.gg/poe-2'
+  },
+  {
+    id: 'poe2re',
+    name: 'poe2.re',
+    mark: 'RE',
+    aboutKey: 'sites.about.poe2re',
+    hosts: ['poe2.re', 'www.poe2.re'],
+    enOnly: true,
+    home: () => 'https://poe2.re/'
+  },
+  {
+    id: 'regexru',
+    name: 'poe2-regex-ru',
+    mark: 'RU',
+    aboutKey: 'sites.about.regexru',
+    hosts: ['vudirvp-sketch.github.io'],
+    enOnly: false,
+    home: () => 'https://vudirvp-sketch.github.io/poe2-regex-ru/'
+  },
+  {
+    id: 'scout',
+    name: 'PoE 2 Scout',
+    mark: 'S',
+    aboutKey: 'sites.about.scout',
+    hosts: ['poe2scout.com'],
+    enOnly: true,
+    home: () => 'https://poe2scout.com/'
+  }
+]
+
+/** Все сайты обеих игр (без повторов): для поиска по id — вкладка могла открыться в другом режиме. */
+const ALL_SITES: readonly SiteDef[] = [...SITES, ...SITES_POE2.filter((s) => !SITES.some((x) => x.id === s.id))]
+
+const SITE_IDS = new Set<string>(ALL_SITES.map((s) => s.id))
+
+/** Сайты вкладок этой игры (без игры — PoE 1, как в S43). */
+export function sitesFor(game: GameId = 'poe1'): readonly SiteDef[] {
+  return game === 'poe2' ? SITES_POE2 : SITES
+}
+
+/** Вкладка сайта есть у этой игры. */
+export function isSiteOfGame(id: SiteId, game: GameId): boolean {
+  return sitesFor(game).some((s) => s.id === id)
+}
+
+/** Игра, к которой относится вкладка сайта (общий сайт — PoE 1); у «Трейда», «Сайтов» и закладок — undefined. */
+export function gameOfTab(tab: SiteTabId): GameId | undefined {
+  if (!isSiteId(tab)) return undefined
+  return isSiteOfGame(tab, 'poe1') ? 'poe1' : 'poe2'
+}
+
+/** Сайт этой игры, на чью страницу ведёт адрес (по хосту), — вкладка для ссылки «на другой сайт». */
+export function tabForUrl(url: unknown, game: GameId): SiteId | null {
+  const u = parse(url)
+  if (!u || u.protocol !== 'https:') return null
+  return siteOfHost(u.hostname, game)?.id ?? null
+}
 
 /** Раздел poedb по языку клиента: `/ru/` или `/us/`. */
 export function poedbLang(lang: GameLang): 'ru' | 'us' {
@@ -132,9 +258,12 @@ export function isSitePermissionAllowed(permission: string): boolean {
   return permission === 'clipboard-sanitized-write'
 }
 
-/** Вкладки сайтов есть только у PoE 1 (сайты реестра — про PoE 1). Одно место, чтобы лид мог спрятать функцию. */
+/**
+ * Вкладки сайтов есть у обеих игр (S64: у PoE 2 — свой список SITES_POE2). Одно место, чтобы лид мог спрятать
+ * функцию для игры.
+ */
 export function sitesOn(game: GameId): boolean {
-  return game === 'poe1'
+  return game === 'poe1' || game === 'poe2'
 }
 
 export function isSiteId(v: unknown): v is SiteId {
@@ -142,7 +271,7 @@ export function isSiteId(v: unknown): v is SiteId {
 }
 
 export function siteDef(id: SiteId): SiteDef {
-  return SITES.find((s) => s.id === id) as SiteDef
+  return ALL_SITES.find((s) => s.id === id) as SiteDef
 }
 
 // ---------------------------------------------------------------------------
@@ -192,19 +321,22 @@ export function bookmarkHosts(url: string): string[] {
   return h.startsWith('www.') ? [h, h.slice(4)] : [h, `www.${h}`]
 }
 
-function siteOfHost(host: string): SiteDef | undefined {
+/** Сайт этой игры по хосту (у PoE 1 и PoE 2 хосты poe.ninja, maxroll.gg, mobalytics.gg общие — сайты разные). */
+function siteOfHost(host: string, game: GameId = 'poe1'): SiteDef | undefined {
   const h = host.toLowerCase()
-  return SITES.find((s) => s.hosts.includes(h))
+  return sitesFor(game).find((s) => s.hosts.includes(h))
 }
 
 /**
  * Проверка новой закладки: https, публичный хост, не сайт GGG (он — во вкладке «Трейд»), не сайт реестра
  * (у него уже есть вкладка), не повтор, не больше BOOKMARK_LIMIT. Название — обрезанное, по умолчанию хост.
+ * Сайт реестра — по списку игры режима (без игры — PoE 1, как в S43).
  */
 export function validateBookmark(
   input: { title?: unknown; url?: unknown },
   existing: readonly SiteBookmark[],
-  newId: () => string
+  newId: () => string,
+  game: GameId = 'poe1'
 ): { ok: true; bookmark: SiteBookmark } | { ok: false; reason: BookmarkError } {
   const raw = typeof input.url === 'string' ? input.url.trim() : ''
   const u = parse(raw) ?? (raw && !/^[a-z][a-z0-9+.-]*:/i.test(raw) ? parse(`https://${raw}`) : null)
@@ -214,7 +346,9 @@ export function validateBookmark(
   const host = u.hostname.toLowerCase()
   if (!isPublicHostname(host)) return { ok: false, reason: 'host' }
   if (isPoeHostname(host)) return { ok: false, reason: 'poe' }
-  if (siteOfHost(host) || siteOfHost(host.startsWith('www.') ? host.slice(4) : `www.${host}`)) return { ok: false, reason: 'site' }
+  if (siteOfHost(host, game) || siteOfHost(host.startsWith('www.') ? host.slice(4) : `www.${host}`, game)) {
+    return { ok: false, reason: 'site' }
+  }
   if (existing.some((b) => bookmarkHosts(b.url).includes(host))) return { ok: false, reason: 'dup' }
   if (existing.length >= BOOKMARK_LIMIT) return { ok: false, reason: 'limit' }
   u.hash = ''
@@ -249,9 +383,13 @@ export function isWebTab(tab: SiteTabId): tab is SiteId | `bm:${string}` {
   return isSiteId(tab) || tab.startsWith('bm:')
 }
 
-/** Вкладка существует: «Трейд», «Сайты», сайт реестра или известная закладка. */
-export function isKnownTab(tab: unknown, bookmarks: readonly SiteBookmark[]): tab is SiteTabId {
-  if (tab === 'trade' || tab === 'manage' || isSiteId(tab)) return true
+/**
+ * Вкладка существует: «Трейд», «Сайты», сайт реестра или известная закладка. С игрой — сайт должен быть в её
+ * списке (вкладку сайта другой игры в этом режиме не открываем); без игры — любой сайт реестра.
+ */
+export function isKnownTab(tab: unknown, bookmarks: readonly SiteBookmark[], game?: GameId): tab is SiteTabId {
+  if (tab === 'trade' || tab === 'manage') return true
+  if (isSiteId(tab)) return game === undefined || isSiteOfGame(tab, game)
   return typeof tab === 'string' && tab.startsWith('bm:') && bookmarks.some((b) => `bm:${b.id}` === tab)
 }
 
@@ -286,11 +424,11 @@ export function isTradeSearchUrl(url: unknown): url is string {
   return !!info && TRADE_HOSTS.includes(info.host)
 }
 
-/** Ссылку со страницы сайта main откроет в системном браузере: allowlist @shared/links или сайт реестра. */
-export function isSitesExternalUrl(url: unknown): url is string {
+/** Ссылку со страницы сайта main откроет в системном браузере: allowlist @shared/links или сайт реестра игры. */
+export function isSitesExternalUrl(url: unknown, game: GameId = 'poe1'): url is string {
   if (isAllowedExternalUrl(url)) return true
   const u = parse(url)
-  return !!u && u.protocol === 'https:' && !u.username && !u.password && !!siteOfHost(u.hostname)
+  return !!u && u.protocol === 'https:' && !u.username && !u.password && !!siteOfHost(u.hostname, game)
 }
 
 export type SiteNav =
@@ -309,15 +447,18 @@ export type SiteNav =
  * Куда пустить переход главного фрейма вкладки сайта (will-navigate / will-redirect / window.open).
  * Своё — 'allow'. Всё прочее (другая вкладка, «Трейд», браузер) main делает только сразу после нажатия игрока
  * в этой вкладке: сам сайт по таймеру никуда не уводит.
+ * Игра — чей список сайтов смотреть («другой сайт реестра»): по умолчанию игра самой вкладки, у закладок — PoE 1
+ * (main переадресует во вкладку своей игры: tabForUrl в windows/siteTabs.ts).
  */
-export function siteNavDecision(tab: SiteTabId, url: unknown, bookmarks: readonly SiteBookmark[]): SiteNav {
+export function siteNavDecision(tab: SiteTabId, url: unknown, bookmarks: readonly SiteBookmark[], game?: GameId): SiteNav {
   if (isTabUrl(tab, url, bookmarks)) return { kind: 'allow' }
   const u = parse(url)
   if (!u || u.protocol !== 'https:' || u.username || u.password) return { kind: 'block' }
-  const other = siteOfHost(u.hostname)
+  const g = game ?? gameOfTab(tab) ?? 'poe1'
+  const other = siteOfHost(u.hostname, g)
   if (other) return { kind: 'tab', tab: other.id }
   if (isTradeSearchUrl(url)) return { kind: 'trade' }
-  if (isSitesExternalUrl(url)) return { kind: 'external' }
+  if (isSitesExternalUrl(url, g)) return { kind: 'external' }
   return { kind: 'block' }
 }
 
@@ -360,8 +501,10 @@ export interface SitePageState {
 }
 
 export interface SitesState {
-  /** вкладки сайтов включены (PoE 1) */
+  /** вкладки сайтов включены (PoE 1 и PoE 2) */
   on: boolean
+  /** чей список сайтов на рельсе (S64); нет — PoE 1 */
+  game?: GameId
   active: SiteTabId
   /** последняя вкладка сайта (хоткей «Сайты» открывает её) */
   lastSite: SiteTabId | null

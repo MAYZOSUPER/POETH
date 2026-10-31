@@ -215,8 +215,8 @@ describe('показ', () => {
     expect(visibleSections(r.value, false)).toEqual({ main: r.value.sections, expert: [] })
   })
 
-  it('раздел есть только у PoE 1', () => {
+  it('раздел есть у PoE 1 и (S64) у PoE 2', () => {
     expect(guideOn('poe1')).toBe(true)
-    expect(guideOn('poe2')).toBe(false)
+    expect(guideOn('poe2')).toBe(true)
   })
 })

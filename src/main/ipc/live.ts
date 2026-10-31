@@ -12,7 +12,8 @@ import { devEnv } from '../devEnv'
 import { isAppPageUrl } from '../security'
 import { sendToOverlay } from '../windows/gameOverlay'
 
-// Домен «live search» (main, S6): менеджер live-поисков PoE1, хоткей whisperLastHit.
+// Домен «live search» (main, S6 — PoE1, S63 — PoE2): менеджер live-поисков запущенной игры, хоткей whisperLastHit.
+// Игра с live — GameDef.features.live (PoE2 — флаг лида, S63); без флага соединения закрыты.
 // Звать каналы могут только наши страницы (file:// или dev-сервер); события уходят в
 // компаньон и оверлей, но не в окна сайта GGG.
 
@@ -34,7 +35,8 @@ const manager = new LiveManager({
 
 /**
  * Адаптер live для избранного трейд-окна — по контракту FavLiveAdapter S5 (src/main/ipc/fav.ts).
- * Регистрируется в setupForGame: только PoE1, в PoE2 молния в избранном неактивна.
+ * Регистрируется в setupForGame у игры с live (PoE1; PoE2 — с флагом features.live): молния включает
+ * поиски избранного запущенной игры, у игры без live молния неактивна.
  */
 export function getFavLiveAdapter(): {
   setLive: LiveManager['setFavoriteLive']
@@ -70,7 +72,7 @@ function register(): void {
 }
 
 async function setupForGame(def: GameDef): Promise<void> {
-  if (def.id !== 'poe1') {
+  if (!def.features.live) {
     registerFavLiveAdapter(null)
     manager.stop()
     return
@@ -84,7 +86,7 @@ async function setupForGame(def: GameDef): Promise<void> {
     const key = whisperLastNotice(r)
     if (key) sendToOverlay(IPC.events.overlayNotice, { key, kind: 'warn' } satisfies OverlayNotice)
   })
-  await manager.start()
+  await manager.start(def.id)
   // после start: до него setLive отвечает 'unsupported' и включённые поиски избранного не поднялись бы
   registerFavLiveAdapter(getFavLiveAdapter())
 }

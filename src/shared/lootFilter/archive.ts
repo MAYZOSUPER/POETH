@@ -1,5 +1,7 @@
+import type { GameId } from '../games'
 import type { LootFilterLevel, LootFilterStyle } from '../types/lootFilter'
 import { levelDef, styleDef } from './levels'
+import { filterSource } from './source'
 
 // Выбор файла из архива релиза NeverSink (S53) — чистые правила, без распаковки.
 // Архив GitHub: всё лежит в одной папке `NeverSinkDev-NeverSink-Filter-<sha>/`. Берём ровно один `.filter`
@@ -47,13 +49,14 @@ const esc = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
  * Путь файла внутри репозитория (без корневой папки архива) для уровня и стиля:
  *  default → `NeverSink's filter - 1-REGULAR.filter`
  *  стиль   → `(STYLE) ABYSS/NeverSink's filter - 1-REGULAR (abyss) .filter` (пробел перед `.filter` — как в релизе)
- * Совпадение по регулярке, регистр стиля не важен.
+ * Совпадение по регулярке, регистр стиля не важен. У PoE 2 начало имени — `NeverSink's filter 2` (S64).
  */
-export function filterPathPattern(level: LootFilterLevel, style: LootFilterStyle): RegExp {
+export function filterPathPattern(level: LootFilterLevel, style: LootFilterStyle, game: GameId = 'poe1'): RegExp {
   const code = esc(levelDef(level).code)
-  const dir = styleDef(style).dir
-  if (!dir) return new RegExp(`^NeverSink's filter - ${code}\\.filter$`)
-  return new RegExp(`^\\(STYLE\\) ${esc(dir)}/NeverSink's filter - ${code} \\([^/()]+\\) ?\\.filter$`, 'i')
+  const base = esc(filterSource(game).fileBase)
+  const dir = styleDef(style, game).dir
+  if (!dir) return new RegExp(`^${base} - ${code}\\.filter$`)
+  return new RegExp(`^\\(STYLE\\) ${esc(dir)}/${base} - ${code} \\([^/()]+\\) ?\\.filter$`, 'i')
 }
 
 export type PickResult =
@@ -64,11 +67,16 @@ export type PickResult =
  * Запись архива с нужным фильтром: имена проверены (checkArchiveNames), совпадение ровно одно, это файл
  * (не папка) с расширением .filter. Ничего, кроме этого файла, из архива не берём.
  */
-export function pickFilterEntry(names: readonly string[], level: LootFilterLevel, style: LootFilterStyle): PickResult {
+export function pickFilterEntry(
+  names: readonly string[],
+  level: LootFilterLevel,
+  style: LootFilterStyle,
+  game: GameId = 'poe1'
+): PickResult {
   const check = checkArchiveNames(names)
   if (!check.ok || !check.root) return { ok: false, error: 'bad-archive' }
   const prefix = `${check.root}/`
-  const re = filterPathPattern(level, style)
+  const re = filterPathPattern(level, style, game)
   const hits = names.filter((n) => !n.endsWith('/') && n.toLowerCase().endsWith('.filter') && re.test(n.slice(prefix.length)))
   if (hits.length > 1) return { ok: false, error: 'bad-archive' }
   if (hits.length === 0) return { ok: false, error: 'not-in-archive' }

@@ -57,14 +57,14 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 | `.ui-check` | `<button role="checkbox" aria-checked>` + `<svg class="ui-ico"><use href="#i-check"/></svg>` |
 | `.ui-tri` + `__box` | три состояния: `data-state="want|avoid|any"`, иконки check / cross / dash |
 | `.ui-switch` (`--live`) + `__track` | `<button role="switch" aria-checked>` |
-| `.ui-chip` | фильтр-переключатель, `aria-pressed` |
+| `.ui-chip` (+ `__n` — счётчик внутри, `.is-done` — зелёный) | фильтр-переключатель, `aria-pressed` |
 | `.ui-seg` | взаимоисключающий выбор: кнопки внутри с `aria-pressed` |
 | `.ui-input` (`--num`, `--lg`, `--mono`), `.ui-select`, `.ui-field` + `__label`, `__help`, `__error` | `aria-invalid="true"` для ошибки |
 | `button.ui-select` + `.ui-select__value`, `.ui-select__list` (`role="listbox"`) > `.ui-select__opt` (`aria-selected`, `.is-active`) + `__label`, `__hint` | выпадающий список `components/Select.tsx` вместо нативного `<select>` (тот рисует Windows — белый): тёмный, выбранный — золотая галочка, подсказка под пунктом; ↓ ↑ Home End Enter Esc |
 | `.ui-tabs` (`--main` для вкладок компаньона), `.ui-tab`, `.ui-count` (`--live`) | `role="tab" aria-selected`, `aria-disabled` |
 | `.ui-q`, `.ui-tip`, `.ui-hint`, `.ui-banner` (`--bad`, `--info`) | подсказки, объяснения новичку, баннеры лимита/ошибки |
-| `.ui-tier` (`--t1`, `--t3`), `.ui-roll` (`style="--v:78%"`), `.ui-tag` (`--merchant`, `--person`, `--good`, `--warn`, `--bad`), `.ui-coin` (`--div`, `--ex`, `--chaos`, `--gold`), `.ui-dot` (`--afk`, `--off`, `--bad`), `.ui-kbd` | мелкие метки |
-| `.ui-mod` (`--expert`, `--off`, `--pseudo`), `__text`, `__from`, `.ui-mod-head`, `.ui-listing` + `__price`, `__meta`, `__who`, `__fee`, `.ui-summary` + `__price`, `__conf`, `.ui-pips` | строки прайс-чека |
+| `.ui-tier` (`--t1`, `--t3`, `--lg` — уровень предмета в шапке), `.ui-badge` (метка игры «PoE 2» у заголовка), `.ui-roll` (`style="--v:78%"`), `.ui-tag` (`--merchant`, `--person`, `--good`, `--warn`, `--bad`), `.ui-coin` (`--div`, `--ex`, `--chaos`, `--gold`), `.ui-dot` (`--afk`, `--off`, `--bad`), `.ui-kbd` | мелкие метки |
+| `.ui-mod` (`--expert`, `--off`, `--pseudo`), `__text`, `__from` (`--rune`: свойство от руны, PoE 2), `.ui-mod-head`, `.ui-listing` + `__price`, `__meta`, `__who`, `__fee`, `.ui-summary` + `__price`, `__conf`, `.ui-pips` | строки прайс-чека |
 | `.ui-toast` (`--paused`, `--done`) + `__pulse`, `__body`, `__meta`, `__kind`, `__item`, `__price`, `__actions`, `__note` | тост live search |
 | `.ui-deal--out`, `.ui-deal--warn`, `.ui-deal__kind`, `__time`, `__body`, `__who`, `__item`, `__where`, `__actions` | карточка сделки (внутри `.ui-panel`) |
 | `.ui-stash-hit` | подсветка ячейки тайника, `position: absolute` |
@@ -85,12 +85,13 @@ https://claude.ai/artifact/MXRL1ZdMzJtoLeeHkgXRTW — на странице ра
 | `.ui-bars` + `__row` (`--delta`, `--off`), `__name`, `__track` > `i`, `__value`, `__delta` (`--up`, `--down`), `__note` | разбивка по частям тонкими полосами |
 | `.ui-hud` (`--pause`) + `__grip`, `__seg`, `__time`, `__name`, `__lbl`, `__state`, `__sep` | полоса-виджет 34 px поверх игры (внутри `.ui-panel`) |
 | `.ui-divider`, `.ui-empty` + `__title`, `.ui-skeleton`, `.ui-scroll` | орнамент, пустые состояния, загрузка, прокрутка |
+| `.ui-runes` > `__row` > `__slot` (`.is-rune`, `.is-core`, `.is-empty`) > `<i>` + имя | гнёзда и руны предмета PoE 2: руна — синий кружок, ядро души — золотой, пустое — пунктир |
 | `.ui-pips--accent` | точки-уровень цветом акцента (сложность, «что нужно билду»), пустая точка — кольцо; рядом всегда слово |
 | `.ui-mech` (`--sm`) + иконка механики | плитка механики 40 px (26 px) в карточке стратегии |
 | `.ui-steps` > `li` > `button` (`aria-current="step"`, `data-state="done"` / `"error"`) + `__n`, `__t` | шаги мастера: номер, «готово» — галочка, «ошибка» — «!» и красный; переход кликом на любой шаг |
 | `.ui-dialog-scrim` > `.ui-dialog` (`role="dialog"`, `aria-modal`) + `__head`, `__title`, `__body`, `__foot` | диалог поверх окна компаньона с затемнением `--scrim` |
 | `.ui-code` (`--line`) + `__text` (`tabindex="0"`) и кнопка | код или ссылка моноширинным (3 строки или одна с многоточием) с копированием |
-| `.ui-rail` (`--wide`, `--drawer`) + `__list`, `__group`, `__head`, `__item` (`.is-current`, `.is-flash`), `__label`, `__toggle`, `__tip`; `.ui-rail-scrim` | рельс навигации компаньона слева, см. «Навигация компаньона» |
+| `.ui-rail` (`--wide`, `--drawer`) + `__list`, `__group`, `__head`, `__item` (`.is-current`, `.is-flash`), `__label`, `__toggle`, `__tip`, `__game` (название игры над группами развёрнутого рельса в режиме PoE 2); `.ui-rail-scrim` | рельс навигации компаньона слева, см. «Навигация компаньона» |
 
 Иконки: `resources/brand/icons/<имя>.svg` или спрайт `icons-sprite.svg` (`<use href="#i-<имя>"/>`), класс `.ui-ico`
 (`--sm` 13 px, `--lg` 18 px). Список: check, cross, dash, close, min, max, restore, search, star, bolt, external, chat, invite,

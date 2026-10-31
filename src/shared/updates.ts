@@ -203,6 +203,16 @@ export function isSafeDataPath(p: string): boolean {
   return parts.every((s) => SEGMENT.test(s) && s !== '..' && !s.endsWith('.'))
 }
 
+/**
+ * Адрес манифеста пакета данных игры (S67). В ветке `data` у каждой игры свой манифест рядом с
+ * links.DATA_MANIFEST_URL: PoE 1 — сам `manifest.json` (его читают все выпущенные версии), PoE 2 —
+ * `manifest-poe2.json`. Файлы пакета — `<game>/<путь>` относительно манифеста (как раньше).
+ * Раскладку ветки собирают tools/data/publish-data.mjs и push-data-branch.mjs (data-channel.mjs).
+ */
+export function dataManifestUrl(base: string, game: GameId): string {
+  return game === 'poe1' ? base : new URL(`manifest-${game}.json`, base).toString()
+}
+
 export type ManifestCheck = { ok: true; manifest: DataManifest } | { ok: false; error: string }
 
 /** Проверить манифест из сети (всё, что пришло извне, — недоверенное). */

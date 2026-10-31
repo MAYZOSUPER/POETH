@@ -42,19 +42,22 @@ function statusError(status: number): PobFetchError {
 
 let inFlight = false
 
-/** Загрузить сырой код по адресу из parsePobInput (rawUrl). */
-export function fetchPobCode(rawUrl: string): Promise<PobFetchResult> {
-  if (!isPobFetchUrl(rawUrl)) return Promise.resolve({ ok: false, error: 'bad-url' })
+/**
+ * Загрузить сырой код по адресу из parsePobInput (rawUrl). S66: `allowed` — allowlist адресов (у PoE 2 —
+ * isPob2FetchUrl: те же хосты + poe2db); редиректы проверяются им же.
+ */
+export function fetchPobCode(rawUrl: string, allowed: (url: string) => boolean = isPobFetchUrl): Promise<PobFetchResult> {
+  if (!allowed(rawUrl)) return Promise.resolve({ ok: false, error: 'bad-url' })
   if (inFlight) return Promise.resolve({ ok: false, error: 'busy' })
   inFlight = true
-  return request(rawUrl)
+  return request(rawUrl, allowed)
     .catch((): PobFetchResult => ({ ok: false, error: 'network' })) // net.request бросил синхронно
     .finally(() => {
       inFlight = false
     })
 }
 
-function request(rawUrl: string): Promise<PobFetchResult> {
+function request(rawUrl: string, allowed: (url: string) => boolean): Promise<PobFetchResult> {
   return new Promise<PobFetchResult>((resolve) => {
     let finalUrl = rawUrl
     let redirects = 0
@@ -91,7 +94,7 @@ function request(rawUrl: string): Promise<PobFetchResult> {
     req.setHeader('Accept', 'text/plain')
 
     req.on('redirect', (_status, _method, redirectUrl) => {
-      if (++redirects > MAX_REDIRECTS || !isPobFetchUrl(redirectUrl)) {
+      if (++redirects > MAX_REDIRECTS || !allowed(redirectUrl)) {
         fail('redirect')
         return
       }

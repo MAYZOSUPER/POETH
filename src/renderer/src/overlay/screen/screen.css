@@ -1,0 +1,67 @@
+/* Цены поверх окон (S68): подписи у ячеек особой вкладки тайника и итог вкладки. Простые подписи на токенах
+   дизайн-системы — оформление рисует дизайнер (фаза 2). Мышь проходит в игру везде, кроме итога. */
+
+.scr-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.scr-label {
+  position: absolute;
+  overflow: hidden;
+  padding: 0 2px;
+  color: var(--gold-bright);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: clip;
+  background: rgb(0 0 0 / 0.72);
+  border-radius: 0 0 var(--r-sm) var(--r-sm);
+}
+.scr-label.is-doubt {
+  color: var(--fg-muted);
+}
+
+.scr-total {
+  position: absolute;
+  min-width: 180px;
+  max-width: 260px;
+  padding: var(--sp-3) var(--sp-4);
+  pointer-events: auto;
+}
+.scr-total__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.scr-total__label {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.scr-total__sum {
+  flex: 1;
+  color: var(--gold-bright);
+  font-size: var(--fs-lg);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.scr-total__note,
+.scr-total__ms {
+  margin-top: var(--sp-1);
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.scr-total__ms {
+  color: var(--fg-faint);
+}
+
+.scr-toast {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+}

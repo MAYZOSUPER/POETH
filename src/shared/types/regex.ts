@@ -356,3 +356,274 @@ export type RegexImportResult =
 
 /** Настройки regex (раздел Settings.regex). Пока пусто: предпочтения живут в библиотеке. */
 export interface RegexSettings {}
+
+// ---------------------------------------------------------------------------
+// PoE 2 (S62): путевые камни, плитки (в игре «Tablet» / «Плитка»), торговец. Данные строит
+// tools/regex/poe2/build-poe2-regex-data.mjs → resources/data/poe2/regex/regex.{en,ru}.json (IPC regex:poeTwoData).
+// ---------------------------------------------------------------------------
+
+export type Poe2RegexPage = 'waystone' | 'tablet' | 'vendor' | 'library'
+
+/** Свойства путевого камня с порогом «≥ N %» («Pack Size: +20%», «Waystone Drop Chance: +90%»). */
+export type WaystoneLabelKey =
+  | 'packSize'
+  | 'magicMonsters'
+  | 'rareMonsters'
+  | 'dropChance'
+  | 'itemRarity'
+  | 'monsterRarity'
+  | 'effectiveness'
+
+/** Тип плитки (база): Breach, Expedition, Delirium, Ritual, Irradiated, Overseer, Abyss, Temple. */
+export type TabletType = 'breach' | 'expedition' | 'delirium' | 'ritual' | 'irradiated' | 'overseer' | 'abyss' | 'temple'
+
+export type Poe2Rarity = 'normal' | 'magic' | 'rare' | 'unique'
+
+/** Причина пометки «опасный мод» путевого камня (ключ строки regex.poe2.scary.<ключ>). */
+export type Poe2ScaryReason =
+  | 'maxRes'
+  | 'recovery'
+  | 'flasks'
+  | 'cooldown'
+  | 'penetration'
+  | 'curse'
+  | 'steal'
+  | 'noDamage'
+  | 'buffs'
+
+/** prefix/suffix — обычные; desecrated — осквернение костями Бездны; instilled — вложение эмоций Делириума. */
+export type Poe2ModKind = 'prefix' | 'suffix' | 'desecrated' | 'instilled'
+
+export interface Poe2ModData {
+  /** Видимые stat id через запятую (+ ~n) — одинаковый в EN и RU. */
+  id: string
+  /** Строки мода: нижний регистр, числа → #, через \n. */
+  text: string
+  display: string
+  /** Кратчайший уникальный фрагмент (число — \d[\d.()-]*: в расширенном тексте у числа диапазон «28(26-30)»). */
+  token: string
+  kind: Poe2ModKind
+  /** 'noRu' — в данных нет русского текста: в RU-клиенте мод не найти (UI не даёт выбрать). */
+  tags: string[]
+  scary?: Poe2ScaryReason
+  /** Плитки: на каких типах выпадает. */
+  types?: TabletType[]
+  /** trade id статов для запроса trade2 («Цена по профилю»). */
+  trade?: string[]
+  /** Уникальной подстроки нет: токен заденет и эти моды. */
+  alsoMatches?: string[]
+  /** …и столько строк подсказки (в RU EE2 бывает один перевод на два стата). */
+  alsoExtra?: number
+}
+
+export interface Poe2WaystoneData {
+  mods: Poe2ModData[]
+  /** Строки подсказки, которые не моды раздела (проверка ложных срабатываний). */
+  extra: string[]
+  /** Метка свойства («ck size:») для терма «<метка>.*<atLeast>%». */
+  labels: Record<WaystoneLabelKey, string>
+  /** Фрагмент перед номером тира в названии базы: «Waystone (Tier 15)» → «e \(tier ». */
+  tier: string
+  rarity: Record<Poe2Rarity, string>
+  flags: { corrupted: string; unidentified: string }
+}
+
+export interface Poe2TabletData {
+  mods: Poe2ModData[]
+  extra: string[]
+  /** Тип → фрагмент названия базы («Ritual Tablet» / «Плитка Ритуала»). */
+  types: Record<TabletType, string>
+  /** Название базы на языке клиента (данные игры) — подпись типа. */
+  names: Record<TabletType, string>
+  /** «10 uses remaining» / «Осталось зарядов - 10»: фрагменты до и после числа. */
+  uses: { pre: string; post: string }
+  rarity: Record<Poe2Rarity, string>
+}
+
+/** Свойство «Торговца» PoE 2 (ключ — как на странице: защита, сопротивления, уровни умений, урон, скорость, характеристики). */
+export type Poe2VendorKey =
+  | 'life'
+  | 'mana'
+  | 'energyShield'
+  | 'spirit'
+  | 'resFire'
+  | 'resCold'
+  | 'resLightning'
+  | 'resChaos'
+  | 'resAll'
+  | 'gemAll'
+  | 'gemSpell'
+  | 'gemFire'
+  | 'gemCold'
+  | 'gemLightning'
+  | 'gemChaos'
+  | 'gemPhys'
+  | 'gemMinion'
+  | 'gemMelee'
+  | 'gemProjectile'
+  | 'spellDamage'
+  | 'physDamage'
+  | 'addPhys'
+  | 'addFire'
+  | 'addCold'
+  | 'addLightning'
+  | 'addChaos'
+  | 'addAttackPhys'
+  | 'addAttackFire'
+  | 'addAttackCold'
+  | 'addAttackLightning'
+  | 'moveSpeed'
+  | 'attackSpeed'
+  | 'castSpeed'
+  | 'critChance'
+  | 'str'
+  | 'dex'
+  | 'int'
+  | 'allAttributes'
+  | 'rarity'
+
+/** Класс снаряжения PoE 2 («Item Class: Boots»). */
+export type Poe2ItemClass =
+  | 'boots'
+  | 'gloves'
+  | 'helmet'
+  | 'bodyArmour'
+  | 'shield'
+  | 'buckler'
+  | 'focus'
+  | 'quiver'
+  | 'ring'
+  | 'amulet'
+  | 'belt'
+  | 'wand'
+  | 'staff'
+  | 'sceptre'
+  | 'quarterstaff'
+  | 'bow'
+  | 'crossbow'
+  | 'spear'
+  | 'mace1h'
+  | 'mace2h'
+  | 'flail'
+  | 'lifeFlask'
+  | 'manaFlask'
+  | 'charm'
+
+export interface Poe2VendorProp {
+  /** Свои строки (числа → #) — для подсказки. */
+  text: string[]
+  /** Порог «≥ N»: <pre><atLeast(N)>(диапазон)?(<posts>). */
+  pre?: string
+  posts?: string[]
+  /** Без порога — готовый фрагмент. */
+  token?: string
+  /** Русского текста в данных нет (в RU-клиенте не найти). */
+  noRu?: boolean
+  /** Порог неизбежно заденет столько чужих строк. */
+  alsoLines?: number
+}
+
+export interface Poe2VendorData {
+  props: Record<Poe2VendorKey, Poe2VendorProp>
+  classes: Record<Poe2ItemClass, string>
+  /** Название класса на языке клиента (строка «Item Class: …») — подпись в списке. */
+  classNames: Record<Poe2ItemClass, string>
+  rarity: Record<Poe2Rarity, string>
+  /** Метка строки «Sockets: S S» (дальше — буквы гнёзд). */
+  sockets: string
+  /** Метка строки «Quality: +20%». */
+  quality: string
+}
+
+export interface Poe2RegexData {
+  meta: { source: string; date: string; patch: string; lang: RegexLang; ee2: string }
+  waystone: Poe2WaystoneData
+  tablet: Poe2TabletData & { /** EN-названия баз — для запроса trade2 (сайт ищет по-английски) */ tradeType: Record<TabletType, string> }
+  vendor: Poe2VendorData
+}
+
+/** Запрос «Путевые камни». */
+export interface WaystoneQuery {
+  /** Тир от / до (0 — неважно). */
+  tierMin: number
+  tierMax: number
+  rarity: Poe2Rarity[]
+  corrupted: TriState
+  /** only — только неопознанные, exclude — только опознанные. */
+  unidentified: TriState
+  want: string[]
+  avoid: string[]
+  wantMode: 'any' | 'all'
+  thresholds: Partial<Record<WaystoneLabelKey, number>>
+}
+
+/** Запрос «Плитки». */
+export interface TabletQuery {
+  /** Любой из типов (пусто — любой). */
+  types: TabletType[]
+  /** Использований осталось ≥ N (0 — неважно). */
+  usesMin: number
+  rarity: Poe2Rarity[]
+  want: string[]
+  avoid: string[]
+  wantMode: 'any' | 'all'
+}
+
+/** Запрос «Торговец» PoE 2. */
+export interface Poe2VendorQuery {
+  /** Свойство → порог «≥ N» (без порога — 1). */
+  mods: Partial<Record<Poe2VendorKey, number>>
+  itemClass: Poe2ItemClass | ''
+  rarity: Poe2Rarity[]
+  /** Гнёзд под руны ≥ N (0 — неважно). */
+  sockets: number
+  /** Качество ≥ N % (0 — неважно). */
+  quality: number
+  mode: 'any' | 'all'
+}
+
+export type Poe2ProfileKind = 'waystone' | 'tablet'
+
+/** Профиль «что нужно» (как в poe2pricer): набор → строка для тайника и «Цена по профилю» на trade2. */
+export interface Poe2Profile {
+  id: string
+  name: string
+  kind: Poe2ProfileKind
+  waystone?: WaystoneQuery
+  tablet?: TabletQuery
+}
+
+export interface Poe2ProfileInput {
+  /** нет id — новый профиль */
+  id?: string
+  name: string
+  kind: Poe2ProfileKind
+  waystone?: WaystoneQuery
+  tablet?: TabletQuery
+}
+
+export interface Poe2RegexPrefs {
+  page: Poe2RegexPage
+  waystone: WaystoneQuery
+  tablet: TabletQuery
+  vendor: Poe2VendorQuery
+}
+
+/** Файл %APPDATA%/POETH/regex-poe2.json: настройки страниц PoE 2 и профили (строки — в общей библиотеке, game 'poe2'). */
+export interface Poe2RegexState {
+  version: 1
+  prefs: Poe2RegexPrefs
+  profiles: Poe2Profile[]
+}
+
+/** Лот для «Цены по профилю». */
+export interface Poe2PriceListing {
+  amount: number
+  currency: string
+  /** Выкуп (Merchant's Tab, плата золотом) — у trade2 это `listing.fee`. */
+  instant: boolean
+}
+
+export type Poe2PriceResult =
+  | { ok: true; total: number; listings: Poe2PriceListing[]; siteUrl: string; league: string }
+  | { ok: false; error: { code: string; message?: string } }

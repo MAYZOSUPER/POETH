@@ -6,7 +6,7 @@ import { onHotkeyAction } from '../hotkeys'
 import { getOverlayWindow, sendToOverlay } from '../windows/gameOverlay'
 import { captureItemText } from '../input/gameInput'
 
-// «Скопировать предмет по-английски» (S51, PoE 1; часть домена overlay — зовут его register/setupForGame): хоткей
+// «Скопировать предмет по-английски» (S51, PoE 1; S61 — и PoE 2; часть домена overlay — зовут его register/setupForGame): хоткей
 // copyItemEn (область «игра в фокусе», по умолчанию без клавиши). Одно нажатие — одно Ctrl+C, как у Ctrl+D
 // (captureItemText: снимок буфера, копирование, возврат буфера).
 // Английский текст собирает оверлей (там загружены данные PoE1: @shared/build/itemEnCopy) и отдаёт сюда — main
@@ -31,9 +31,12 @@ export function registerCopyItemEn(): void {
   })
 }
 
-/** Хоткей — только PoE 1 (у PoE 2 своя пересборка не написана). */
+/**
+ * Хоткей — PoE 1 и PoE 2 (S61): клавиша та же, поведение по игре — копирует captureItemText (у PoE 2 — Ctrl+Alt+C),
+ * английский текст оверлей собирает данными запущенной игры (overlay/itemEn).
+ */
 export function setupCopyItemEn(def: GameDef): void {
-  if (def.id !== 'poe1') return
+  if (def.id !== 'poe1' && def.id !== 'poe2') return
   onHotkeyAction('copyItemEn', async () => {
     const item = await captureItemText()
     if (!item) {

@@ -23,6 +23,7 @@ export const deals: DomainDict = {
     'deals.log.pick': 'Выбрать файл…',
     'deals.log.reset': 'Искать сам',
     'deals.log.help': 'Обычно: «Path of Exile/logs/Client.txt» в папке игры (Steam или клиент GGG).',
+    'deals.log.help.poe2': 'Обычно: «Path of Exile 2/logs/Client.txt» в папке игры (Steam или клиент GGG).',
 
     // карточки поверх игры
     'deals.card.in.wants': 'хочет купить',
@@ -93,6 +94,8 @@ export const deals: DomainDict = {
     'deals.empty.title': 'Сделок пока нет',
     'deals.empty.text':
       'Когда покупатель напишет вам с сайта трейда, сделка появится здесь, а поверх игры — карточка с кнопками.',
+    'deals.empty.poe2':
+      'В PoE 2 почти всё продаётся мгновенным выкупом: такие покупки и продажи идут без сообщений в чате и в журнал игры не попадают — здесь их не будет. Менеджер ловит только личный обмен: когда покупатель пишет вам в чат или вы пишете продавцу.',
     'deals.empty.filtered': 'Ничего не найдено. Измените фильтр или строку поиска.',
     'deals.empty.demo': 'Показать пример',
     'deals.demo.clear': 'Убрать примеры',
@@ -182,6 +185,8 @@ export const deals: DomainDict = {
     'deals.stash.calib.set': 'Задана для окна {w}×{h}: сетка {gw}×{gh} px от ({x}, {y}).',
     'deals.stash.calib.help':
       'Если подсветка промахивается: в игре откройте тайник, сделайте скриншот и измерьте углы сетки — левый-верхний угол первой ячейки и правый-нижний угол последней. Или нажмите «Калибровать поверх игры» и кликните по углам прямо в игре.',
+    'deals.stash.poe2':
+      'Расчёт сетки тайника взят из PoE 1 и в PoE 2 ещё не сверен. Для точной подсветки нажмите <b>«Калибровать поверх игры»</b> и кликните по двум углам сетки.',
     'deals.stash.calib.tl': 'Левый-верхний угол (X, Y)',
     'deals.stash.calib.br': 'Правый-нижний угол (X, Y)',
     'deals.stash.calib.save': 'Сохранить калибровку',
@@ -242,6 +247,7 @@ export const deals: DomainDict = {
     'deals.log.pick': 'Choose file…',
     'deals.log.reset': 'Find automatically',
     'deals.log.help': 'Usually "Path of Exile/logs/Client.txt" in the game folder (Steam or the GGG client).',
+    'deals.log.help.poe2': 'Usually "Path of Exile 2/logs/Client.txt" in the game folder (Steam or the GGG client).',
 
     'deals.card.in.wants': 'wants to buy',
     'deals.card.in.invited': '· in party, hand over the item',
@@ -310,6 +316,8 @@ export const deals: DomainDict = {
     'deals.empty.title': 'No trades yet',
     'deals.empty.text':
       'When a buyer whispers you from the trade site, the trade shows up here and as a card with buttons over the game.',
+    'deals.empty.poe2':
+      'In PoE 2 almost everything sells by instant buyout: those purchases and sales send no chat messages and never reach the game log — they will not show up here. The manager catches only in-person trades: when a buyer whispers you or you whisper a seller.',
     'deals.empty.filtered': 'Nothing found. Change the filter or the search text.',
     'deals.empty.demo': 'Show an example',
     'deals.demo.clear': 'Remove examples',
@@ -395,6 +403,8 @@ export const deals: DomainDict = {
     'deals.stash.calib.set': 'Set for a {w}×{h} window: grid {gw}×{gh} px at ({x}, {y}).',
     'deals.stash.calib.help':
       'If the highlight misses: open the stash in game, take a screenshot and measure the grid corners — the top-left corner of the first cell and the bottom-right corner of the last one. Or press Calibrate over the game and click the corners right in the game.',
+    'deals.stash.poe2':
+      'The automatic stash layout is taken from PoE 1 and is not checked in PoE 2 yet. For an exact highlight, press <b>Calibrate over the game</b> and click the two grid corners.',
     'deals.stash.calib.tl': 'Top-left corner (X, Y)',
     'deals.stash.calib.br': 'Bottom-right corner (X, Y)',
     'deals.stash.calib.save': 'Save calibration',

@@ -1,9 +1,13 @@
 import { shell, WebContentsView, type BaseWindow, type Rectangle } from 'electron'
 import {
   isKnownTab,
+  isSiteId,
+  isSiteOfGame,
   isTabUrl,
   isWebTab,
   SITE_VIEW_IDLE_MS,
+  sitesFor,
+  tabForUrl,
   tabHome,
   viewsToClose,
   type SiteBookmark,
@@ -11,6 +15,7 @@ import {
   type SitesState,
   type SiteTabId
 } from '@shared/sites'
+import type { GameId } from '@shared/games'
 import type { GameLang } from '@shared/types'
 import { hardenSitesContents, sitesWebPreferences } from '../net/sitesContents'
 import { clearSitesData } from '../net/session'
@@ -45,6 +50,8 @@ interface Live {
 
 let host: SiteTabsHost | null = null
 let enabled = false
+/** чей список сайтов на рельсе (S64: у PoE 2 свой) */
+let game: GameId = 'poe1'
 let active: SiteTabId = 'trade'
 let bounds: Rectangle = { x: 0, y: 0, width: 0, height: 0 }
 const views = new Map<SiteTabId, Live>()
@@ -61,9 +68,19 @@ export function setSiteTabsHost(h: SiteTabsHost): void {
   host = h
 }
 
-/** Вкладки сайтов включены (PoE 1). Выключили — закрыть вью и вернуться на «Трейд». */
-export function setSitesEnabled(on: boolean): void {
+/**
+ * Вкладки сайтов включены (PoE 1 и PoE 2, S64: список — по игре). Выключили — закрыть вью и вернуться на «Трейд».
+ * Сменилась игра — вью сайтов другой игры закрыть (их нет на рельсе), активный сайт чужой игры — на «Трейд».
+ */
+export function setSitesEnabled(on: boolean, g: GameId = 'poe1'): void {
   enabled = on
+  if (g !== game) {
+    game = g
+    closeAll()
+    lastUrl.clear()
+    pendingUrl.clear()
+    if (isSiteId(active) && !isSiteOfGame(active, g)) active = 'trade'
+  }
   if (!on) {
     closeAll()
     active = 'trade'
@@ -112,6 +129,7 @@ export function getSitesState(): SitesState {
   const web = isWebTab(active)
   return {
     on: enabled,
+    game,
     active,
     lastSite: d.lastSite,
     bookmarks: d.bookmarks,
@@ -268,7 +286,7 @@ export function setSiteTabsShown(shown: boolean): void {
 export async function selectTab(tab: SiteTabId, url?: string): Promise<boolean> {
   const d = await getSitesData()
   if (!enabled && tab !== 'trade') return false
-  if (!isKnownTab(tab, d.bookmarks)) return false
+  if (!isKnownTab(tab, d.bookmarks, game)) return false
   if (url !== undefined && !isTabUrl(tab, url, d.bookmarks)) url = undefined
   const prev = active
   if (prev !== tab) {
@@ -306,8 +324,15 @@ export async function selectTab(tab: SiteTabId, url?: string): Promise<boolean> 
   return true
 }
 
-/** Открыть сайт (ссылка с другого сайта, глубокая ссылка из окна цены или «Билда»). */
+/**
+ * Открыть сайт (ссылка с другого сайта, глубокая ссылка из окна цены или «Билда»). Сайт другой игры (например,
+ * ссылка на poe.ninja из закладки в режиме PoE 2) — во вкладку того же сайта своей игры, если она есть.
+ */
 export function openTab(tab: SiteTabId, url?: string): Promise<boolean> {
+  if (isSiteId(tab) && !isSiteOfGame(tab, game)) {
+    const own = url ? tabForUrl(url, game) : null
+    if (own) return selectTab(own, url)
+  }
   return selectTab(tab, url)
 }
 
@@ -368,10 +393,10 @@ export async function removeBookmark(id: string): Promise<void> {
   publish()
 }
 
-/** Вкладка, которую открывает хоткей «Сайты»: последняя вкладка сайта или первая из реестра. */
+/** Вкладка, которую открывает хоткей «Сайты»: последняя вкладка сайта этой игры или первая из её реестра. */
 export async function lastSiteTab(): Promise<SiteTabId> {
   const d = await getSitesData()
-  return d.lastSite && isKnownTab(d.lastSite, d.bookmarks) ? d.lastSite : 'ninja'
+  return d.lastSite && isKnownTab(d.lastSite, d.bookmarks, game) ? d.lastSite : sitesFor(game)[0].id
 }
 
 export function isSiteTabFocused(): boolean {
