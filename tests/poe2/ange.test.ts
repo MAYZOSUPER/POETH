@@ -9,6 +9,7 @@ import {
   CHAOS_ID,
   DIVINE_ID,
   EXALTED_ID,
+  feedFresh,
   feedIdsByName,
   LOW_VOLUME,
   poe2Rate
@@ -142,5 +143,17 @@ describe('имена id фида PoE 2 (RePoE PoE 2 + EE2)', () => {
 
   it('все id из часов фикстуры — с именем', () => {
     for (const h of hours) for (const m of h.markets) for (const id of [m[1], m[2]]) expect(ids.names[id], id).toBeTruthy()
+  })
+})
+
+describe('свежесть фида (без сети кэш не выдаётся за свежую цену)', () => {
+  it('последний час не старше 3 ч от текущего — свежо; старше или пусто — нет', () => {
+    const at = (h: number) => (h + 3600) * 1000 + 60_000 // через минуту после конца часа h
+    expect(feedFresh(hours, at(last))).toBe(true)
+    // текущий час — last + 3 ч: последний час фида на 3 ч раньше — ещё свежо; на 4 ч — уже нет
+    expect(feedFresh(hours, at(last + 2 * 3600))).toBe(true)
+    expect(feedFresh(hours, at(last + 3 * 3600))).toBe(false)
+    expect(feedFresh(hours, at(last + 48 * 3600))).toBe(false)
+    expect(feedFresh([], Date.now())).toBe(false)
   })
 })

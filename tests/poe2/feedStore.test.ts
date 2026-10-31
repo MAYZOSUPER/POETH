@@ -69,3 +69,29 @@ describe('фид обмена PoE 2', () => {
     expect(urls).toHaveLength(6)
   })
 })
+
+describe('фид PoE 2: хранится меньше недели (keepHours)', () => {
+  it('часы старше keepHours удаляются с диска при загрузке и не держатся в памяти', async () => {
+    const disk = new Map<number, FullHour>()
+    for (const age of [1, 5, 20, 30, 100]) disk.set(CUR - age * 3600, { hour: CUR - age * 3600, markets: [['Forbidden Rites', 'a', 'b', 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]] })
+    const removed: number[] = []
+    const store = new FeedStore({
+      url: FEED_URL_POE2,
+      firstHours: 3,
+      keepHours: 24,
+      getJson: async () => ({ status: 404, json: null }),
+      readHour: async (h) => disk.get(h) ?? null,
+      writeHour: async (h) => void disk.set(h.hour, h),
+      listHours: async () => [...disk.keys()],
+      removeHour: async (h) => {
+        removed.push(h)
+        disk.delete(h)
+      },
+      now: () => NOW,
+      sleep: async () => undefined
+    })
+    await store.refresh('Forbidden Rites', 12)
+    expect(removed.sort()).toEqual([CUR - 100 * 3600, CUR - 30 * 3600].sort())
+    expect(store.hours('Forbidden Rites').map((h) => (CUR - h.hour) / 3600)).toEqual([20, 5, 1])
+  })
+})

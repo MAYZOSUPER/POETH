@@ -319,7 +319,7 @@ const NAME_RE = /^[\p{L}\p{N}][\p{L}\p{N} '’,.:\-()]{0,119}$/u
  */
 export function poe2ItemEnText(item: ParsedItem, src: Poe2Data | null, en: Poe2Data | null): PobItemEn | null {
   if (item.lang === 'en') {
-    const text = item.rawText.replace(/\r\n?/g, '\n').trim()
+    const text = plainEnText(item.rawText, en)
     return text && text.length <= POB_ITEM_TEXT_MAX ? { text, untranslated: [] } : null
   }
   if (!src || !en || src.lang !== item.lang || en.lang !== 'en') return null
@@ -377,13 +377,41 @@ export function poe2ItemEnText(item: ParsedItem, src: Poe2Data | null, en: Poe2D
 }
 
 /**
+ * EN-клиент: тот же текст, но как обычный Ctrl+C игры — без строк `{ … }` и роллов `(10-20)` расширенного Ctrl+Alt+C
+ * (их PoB 2 и Discord не ждут). Вид мода из строки `{ … }` → пометка обычного Ctrl+C: `(implicit)`, `(fractured)`…
+ * (по строкам клиента EN-данных; данных нет — строки `{ … }` просто убираются). Остальное — как есть.
+ */
+export function plainEnText(raw: string, en: Poe2Data | null): string {
+  const out: string[] = []
+  for (const sec of sections(raw)) {
+    const lines: string[] = []
+    let type: ModifierType | undefined
+    for (const line of sec) {
+      if (isHeader(line)) {
+        type = en ? headerType(line, en) : undefined
+        continue
+      }
+      let text = stripRolls(line)
+      const tag = type ? HEADER_TAG[type] : undefined
+      if (tag && !isReminder(text) && !TAGS.some(([t]) => text.endsWith(t))) text += tag
+      lines.push(text)
+    }
+    if (lines.length) out.push(lines.join('\n'))
+  }
+  return out.join(`\n${SEP}\n`)
+}
+
+/**
  * Текст предмета на языке клиента → английский текст для буфера (как itemEnCopy S51, тот же результат и уведомления).
- * `src` — данные PoE 2 языка предмета, `en` — английские (для EN-клиента не нужны).
+ * `src` — данные PoE 2 языка предмета, `en` — английские (EN-клиенту — для пометок вида мода; можно null).
+ * EN-клиент: обычный Ctrl+C без изменений — «как есть»; расширенный — без `{ … }` и роллов (plainEnText).
  */
 export function poe2ItemEnCopy(raw: string, lang: ItemLang, src: Poe2Data | null, en: Poe2Data | null): ItemEnCopy {
   if (lang === 'en') {
     if (!raw.trim() || raw.length > POB_ITEM_TEXT_MAX) return { ok: false, reason: 'build' }
-    return { ok: true, mode: 'as-is', text: raw, untranslated: [] }
+    const text = plainEnText(raw, en)
+    const same = text === sections(raw).map((s) => s.join('\n')).join(`\n${SEP}\n`)
+    return same ? { ok: true, mode: 'as-is', text: raw, untranslated: [] } : { ok: true, mode: 'translated', text, untranslated: [] }
   }
   if (!src || !en || src.lang !== lang || en.lang !== 'en') return { ok: false, reason: 'data' }
   const parsed = parseClipboard(raw, src)

@@ -13,7 +13,7 @@
 
 import type { FullHour, FullMarket } from '../../flip/feed'
 import type { PairHour } from '../../flip/stats'
-import { CHAOS_ID, DIVINE_ID } from '../../wealth/exchange'
+import { CHAOS_ID, DIVINE_ID, hourStart } from '../../wealth/exchange'
 
 export { CHAOS_ID, DIVINE_ID }
 /** Exalted Orb в фиде PoE 2 (id без 'Metadata/Items/') */
@@ -79,6 +79,18 @@ export function lastFeedHour(hours: readonly FullHour[]): number | undefined {
   let max: number | undefined
   for (const h of hours) if (max === undefined || h.hour > max) max = h.hour
   return max
+}
+
+/**
+ * Часы фида старше этого (от начала текущего часа) — данные устарели: без сети кэш держится до суток, и окно уверенно
+ * показало бы позавчерашнюю цену. Тогда курса и цены у Ange нет (окно идёт на сайт, как без фида).
+ */
+export const STALE_FEED_HOURS = 3
+
+/** Свежие ли часы: последний час фида не старше STALE_FEED_HOURS от начала текущего часа. */
+export function feedFresh(hours: readonly FullHour[], now = Date.now()): boolean {
+  const last = lastFeedHour(hours)
+  return last !== undefined && last >= hourStart(now) - STALE_FEED_HOURS * 3600
 }
 
 /** VWAP «базы за 1 шт. X» за самое короткое окно RATE_WINDOWS_H со сделками; 0 — сделок нет. */

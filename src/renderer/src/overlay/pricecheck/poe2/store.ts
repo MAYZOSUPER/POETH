@@ -99,6 +99,8 @@ interface Pc2State {
   rate: Poe2CurrencyRate | null
   /** S61: exalted за 1 шт. прочих валют лотов (regal, annul…) по цене у Ange, лиги `league` */
   more: ExaltedRates
+  /** когда пришёл `rate` (Date.now()); старше RATE_TTL_MS — при следующем Ctrl+D перезапросить */
+  rateAt: number
   /** S61: сколько свойств отмечено по умолчанию в каждом пресете (для «поиск слишком широкий») */
   defaultsOn: Record<string, number>
 
@@ -191,6 +193,7 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
   rev: 0,
   rate: null,
   more: {},
+  rateAt: 0,
   defaultsOn: {},
 
   open: async (captured) => {
@@ -230,8 +233,13 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
       defaultsOn: Object.fromEntries(pc.presets.map((p) => [p.id, checkedMods2(p).on])),
       ...(ratesLeague === league ? {} : { rate: null, more: resetRates(league) })
     })
-    // курс лиги — фоном (первый раз main качает свежие часы фида PoE 2)
+    // курс лиги — фоном (первый раз main качает свежие часы фида PoE 2); старше 10 минут — перезапросить, и курсы
+    // прочих валют лотов (more) — тоже заново, иначе «1 div ≈ 300 ex» в плашке и 450 в блоке «у Ange»
     if (get().rate?.league !== league) loadRate(league, get, set)
+    else if (Date.now() - get().rateAt > RATE_TTL_MS) {
+      set({ more: resetRates(league) })
+      loadRate(league, get, set)
+    }
 
     // моды, которых нет в данных EE2 (новый патч) → статы trade2; фильтры добавляются выключенными
     if (item.unknownModifiers.length) {
@@ -271,35 +279,67 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
 
     const req = buildRequest(item, data, preset)
     const api = window.overlayApi.trade
+    const mySearch = ++searchSeq
+    const current = (): boolean => my === session && mySearch === searchSeq
     let res
     if (req.api === 'bulk') {
-      // S61: что меняют у Ange — цена по фиду обмена, к сайту не идём (объявления — по кнопке)
-      const ange = await angeOf(req.league, item.info.refName)
-      if (my !== session) return
-      if (ange) {
+      // S61: что меняют у Ange — цена по фиду обмена, к сайту не идём (объявления — по кнопке). Фид медленный (CDN
+      // завис: до 45 с на час) — ждём не дольше ANGE_WAIT_MS, дальше обмен на сайте, а цену у Ange подставим, когда придёт.
+      const angeP = angeOf(req.league, item.info.refName, set)
+      const first = await Promise.race([angeP, new Promise<'wait'>((r) => setTimeout(() => r('wait'), ANGE_WAIT_MS))])
+      if (!current()) return
+      const angeResult = (ange: AngePrice, site: Pc2SiteOffers, siteUrl?: string): Pc2Result => ({
+        kind: 'ange',
+        ange,
+        stack: item.stackSize?.value ?? 1,
+        league: req.league,
+        body: req.body,
+        siteUrl: siteUrl ?? exchangeQueryUrl(req.league, req.body),
+        site,
+        verdict: angeVerdict(ange)
+      })
+      if (first && first !== 'wait') {
         const prev = get().result
         const reloadSite = prev?.kind === 'ange' && prev.site.phase !== 'idle'
-        set({
-          phase: 'result',
-          result: {
-            kind: 'ange',
-            ange,
-            stack: item.stackSize?.value ?? 1,
-            league: req.league,
-            body: req.body,
-            siteUrl: exchangeQueryUrl(req.league, req.body),
-            site: { phase: 'idle' },
-            verdict: angeVerdict(ange)
-          }
-        })
+        set({ phase: 'result', result: angeResult(first, { phase: 'idle' }) })
         if (reloadSite) void get().loadSiteOffers()
         return
       }
+      let late: AngePrice | null = null
+      let exchangePending = true
+      if (first === 'wait') {
+        void angeP.then((ange) => {
+          if (!ange || !current()) return
+          late = ange
+          // объявления сайта уже пришли — они становятся «Объявлениями на сайте» под ценой у Ange
+          const cur = get().result
+          const site: Pc2SiteOffers =
+            cur?.kind === 'bulk'
+              ? { phase: 'ok', total: cur.total, offers: cur.offers, cached: cur.cached }
+              : exchangePending
+                ? { phase: 'loading' }
+                : { phase: 'idle' }
+          set({ phase: 'result', result: angeResult(ange, site, cur?.kind === 'bulk' ? cur.siteUrl : undefined) })
+        })
+      }
       res = await api.poe2Exchange({ league: req.league, body: req.body })
+      exchangePending = false
+      if (!current()) return
+      const angeNow: AngePrice | null = late
+      if (angeNow) {
+        // цена у Ange пришла раньше объявлений — объявления под ней
+        const site: Pc2SiteOffers = res.ok
+          ? { phase: 'ok', total: res.total, offers: orderBulkOffers(res.offers, ratesOf(get())), cached: res.cached }
+          : res.error.code === 'rate-limited'
+            ? { phase: 'limit', retryAt: Date.now() + Math.max(1000, res.error.retryAfterMs ?? 10_000) }
+            : { phase: 'error', error: res.error }
+        set({ phase: 'result', result: angeResult(angeNow, site, res.ok ? res.siteUrl : undefined) })
+        return
+      }
     } else {
       res = await api.poe2Search({ league: req.league, body: req.body })
     }
-    if (my !== session) return
+    if (!current()) return
 
     if (!res.ok) {
       const err = res.error
@@ -414,6 +454,12 @@ interface TradeBase {
 
 /** Ждём курсы валют лотов не дольше — потом показываем без них и пересчитываем, когда придут. */
 const RATES_WAIT_MS = 1500
+/** Ждём цену у Ange не дольше — потом обмен на сайте, цену у Ange подставим, когда придёт (фид может висеть до 45 с). */
+const ANGE_WAIT_MS = 2500
+/** Курс лиги старше этого — перезапросить при следующем Ctrl+D (main держит курс столько же). */
+const RATE_TTL_MS = 10 * 60_000
+/** номер поиска: поздний ответ про цену у Ange не трогает результат нового поиска */
+let searchSeq = 0
 /** валюты с курсом из фида (не спрашиваем у Ange) */
 const RATE_TAGS = new Set(['exalted', 'divine', 'chaos'])
 
@@ -427,10 +473,15 @@ function resetRates(league: string): ExaltedRates {
   return {}
 }
 
-/** Цена предмета у Ange; нет в фиде, нет сети или курса — null (тогда обмен на сайте, как раньше). */
-async function angeOf(league: string, refName: string): Promise<AngePrice | null> {
+/**
+ * Цена предмета у Ange; нет в фиде, нет сети или курса — null (тогда обмен на сайте, как раньше). Курс в ответе —
+ * тот же кэш main: им же обновляем плашку, чтобы «1 div ≈ N ex» и блок «у Ange» не расходились.
+ */
+async function angeOf(league: string, refName: string, set: (p: Partial<Pc2State>) => void): Promise<AngePrice | null> {
   const res = await window.overlayApi.trade.poe2Ange({ league, names: [refName] }).catch(() => null)
-  return res?.ok ? (res.prices[refName] ?? null) : null
+  if (!res?.ok) return null
+  if (usePoe2PriceCheckStore.getState().league === league) set({ rate: { league, ...res.rate }, rateAt: Date.now() })
+  return res.prices[refName] ?? null
 }
 
 /** Страница обмена trade2 с этим запросом (…/trade2/exchange/poe2/<лига>?q={"exchange":…}). */
@@ -491,7 +542,7 @@ async function ensureRates(
     }
   }
   // курс пришёл вместе с ценами — не ждать отдельного ответа
-  if (!get().rate) set({ rate: { league, ...res.rate } })
+  if (!get().rate) set({ rate: { league, ...res.rate }, rateAt: Date.now() })
   if (added) set({ more: next })
   return added
 }
@@ -538,7 +589,7 @@ function loadRate(league: string, get: () => Pc2State, set: (p: Partial<Pc2State
     .then((rate) => {
       if (get().league !== league || !rate) return
       const { result, item } = get()
-      set({ rate })
+      set({ rate, rateAt: Date.now() })
       const rates = ratesOf(get())
       if (!result || !item) return
       if (result.kind === 'trade') set({ result: analyzeTrade(result, item, rates) })
