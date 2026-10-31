@@ -43,6 +43,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--sp-3);
+  white-space: nowrap;
 }
 .live-poe2max__note {
   color: var(--fg-faint);

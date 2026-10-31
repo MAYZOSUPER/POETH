@@ -51,7 +51,7 @@ export const live: DomainDict = {
       'Live search следит за поиском на сайте и сообщает о новых предметах сразу. «Написать» вставляет сообщение продавцу в чат игры — Enter нажимаете вы.',
     'live.hint.poe2':
       'Live search следит за поиском trade2 и сообщает о новых предметах сразу. В PoE 2 почти всё продаётся мгновенным выкупом: «Открыть в трейд-окне» покажет лот на сайте, купить — кнопкой на странице, комиссия в золоте. Для личного обмена «Написать» вставляет сообщение в чат — Enter нажимаете вы.',
-    'live.poe2max': 'Поисков PoE 2 одновременно',
+    'live.poe2max': 'Предел поисков PoE 2',
     'live.poe2max.help':
       'Сколько соединений trade2 разрешено, сайт не сообщает. 5 — с запасом; больше — на свой риск: сайт может временно не пускать.',
     'live.recent': 'Последние находки',
@@ -149,7 +149,7 @@ export const live: DomainDict = {
       'Live search watches a site search and tells you about new items right away. “Whisper” pastes the message into game chat — you press Enter.',
     'live.hint.poe2':
       'Live search watches a trade2 search and tells you about new items right away. In PoE 2 almost everything sells by instant buyout: “Open in trade window” shows the listing on the site, you buy it with the button on the page, the fee is paid in gold. For in-person trades “Whisper” pastes the message into chat — you press Enter.',
-    'live.poe2max': 'PoE 2 searches at once',
+    'live.poe2max': 'PoE 2 search limit',
     'live.poe2max.help':
       'The site does not say how many trade2 connections it allows. 5 leaves headroom; more is at your own risk — the site may refuse you for a while.',
     'live.recent': 'Recent hits',

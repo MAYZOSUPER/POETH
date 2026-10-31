@@ -95,7 +95,7 @@ export const deals: DomainDict = {
     'deals.empty.text':
       'Когда покупатель напишет вам с сайта трейда, сделка появится здесь, а поверх игры — карточка с кнопками.',
     'deals.empty.poe2':
-      'В PoE 2 почти всё продаётся мгновенным выкупом: такие покупки и продажи идут без сообщений в чате и в журнал игры не попадают — здесь их не будет. Менеджер ловит только личный обмен по whisper (лоты, выставленные «для личного обмена», и сообщения покупателей).',
+      'В PoE 2 почти всё продаётся мгновенным выкупом: такие покупки и продажи идут без сообщений в чате и в журнал игры не попадают — здесь их не будет. Менеджер ловит только личный обмен: когда покупатель пишет вам в чат или вы пишете продавцу.',
     'deals.empty.filtered': 'Ничего не найдено. Измените фильтр или строку поиска.',
     'deals.empty.demo': 'Показать пример',
     'deals.demo.clear': 'Убрать примеры',
@@ -317,7 +317,7 @@ export const deals: DomainDict = {
     'deals.empty.text':
       'When a buyer whispers you from the trade site, the trade shows up here and as a card with buttons over the game.',
     'deals.empty.poe2':
-      'In PoE 2 almost everything sells by instant buyout: those purchases and sales send no chat messages and never reach the game log — they will not show up here. The manager catches only in-person trades by whisper (listings set for in-person trade and buyer messages).',
+      'In PoE 2 almost everything sells by instant buyout: those purchases and sales send no chat messages and never reach the game log — they will not show up here. The manager catches only in-person trades: when a buyer whispers you or you whisper a seller.',
     'deals.empty.filtered': 'Nothing found. Change the filter or the search text.',
     'deals.empty.demo': 'Show an example',
     'deals.demo.clear': 'Remove examples',
