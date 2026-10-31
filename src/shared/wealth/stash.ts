@@ -5,6 +5,8 @@
 // → { numTabs, tabs?: [{ n, i, id, type, colour:{r,g,b} }], items: [...] }
 // Запрашиваем у www — имена и свойства предметов на английском (для сопоставления цен).
 
+import type { PriceSourceId } from '../types/wealth'
+
 export interface RawStashTab {
   n?: unknown
   i?: unknown
@@ -70,6 +72,21 @@ export interface StashItem {
   gemLevel?: number
   gemQuality?: number
   mapTier?: number
+  /**
+   * PoE 2 (S70): цена уже известна (ценный предмет из окна цены) — индекс цен не нужен, своя строка снимка по key.
+   * У предметов тайника PoE 1 поля нет.
+   */
+  fixed?: FixedPrice
+}
+
+/** Цена и ключ строки предмета, оценённого заранее (S70). */
+export interface FixedPrice {
+  /** ключ строки снимка (у одного и того же предмета — тот же во всех снимках) */
+  key: string
+  /** за штуку, в базовой валюте снимка */
+  unit: number
+  source: PriceSourceId
+  low?: boolean
 }
 
 export interface ParsedStash {
