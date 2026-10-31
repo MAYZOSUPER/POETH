@@ -1,6 +1,7 @@
 import type { GameDef } from '@shared/games'
 import { screenEvents } from '@shared/ipc/screen'
 import { buildLabels } from '@shared/screen/labels'
+import { screenTabItems, type ScreenTabItems, type ScreenTabOptions } from '@shared/screen/wealth'
 import type { ScreenFail, ScreenOverlayState, ScreenRead } from '@shared/types/screen'
 import { sendToOverlay } from '../windows/gameOverlay'
 import { captureScreen, saveScreenFixture, type ScreenShot } from './capture'
@@ -88,6 +89,15 @@ export async function readStashFromScreen(def: GameDef): Promise<ScreenRead | Sc
   const shot = captureScreen()
   if (!shot) return 'no-game'
   return recognize(def, shot, false).catch(() => 'error' as const)
+}
+
+/**
+ * То же в форме «Богатства»: TabItems (StashItem с английскими именами и числом) + ячейки снимка — для снимка,
+ * разницы и прибыли за карту без API тайника (PoE 2). Только по действию игрока, как readStashFromScreen.
+ */
+export async function readStashTabItems(def: GameDef, o?: ScreenTabOptions): Promise<ScreenTabItems | ScreenFail> {
+  const r = await readStashFromScreen(def)
+  return typeof r === 'string' ? r : screenTabItems(r, o)
 }
 
 /** Хоткей «цены поверх окон»: подписи на экране — спрятать, иначе снимок → распознавание → подписи. */
