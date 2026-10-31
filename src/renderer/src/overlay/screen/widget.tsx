@@ -84,7 +84,7 @@ function Total({ labels, ms }: { labels: ScreenLabels; ms?: number }) {
             .join(' · ')}
         </div>
       )}
-      {labels.game === 'poe2' && <RecordWealth />}
+      {labels.game === 'poe2' && labels.window === 'stash' && <RecordWealth />}
       {ms !== undefined && <div className="scr-total__ms">{say('scr.ms', { ms: Math.round(ms) })}</div>}
     </div>
   )

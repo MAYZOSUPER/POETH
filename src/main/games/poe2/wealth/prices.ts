@@ -126,7 +126,8 @@ export class Poe2PriceService {
       else {
         const n = table?.byName(item)
         // снимок другой лиги (нет снимка лиги игрока) — цена примерная
-        if (n?.exalted) out = n.low || snap?.match !== 'exact' ? { unit: n.exalted, source: 'ninja', low: true } : { unit: n.exalted, source: 'ninja' }
+        if (n?.exalted)
+          out = n.low || snap?.match !== 'exact' ? { unit: n.exalted, source: 'ninja', low: true } : { unit: n.exalted, source: 'ninja' }
       }
       cache.set(item, out)
       return out

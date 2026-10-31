@@ -71,7 +71,7 @@ function ResRow({ tab, line, lang, rate }: { tab: Poe2ScreenCardTab; line: Poe2S
         )}
         {check && (
           <small>
-            {line.alt?.length
+            {line.alt?.length && !line.picked
               ? t('wealth.p2.screen.altHint')
               : line.qty === null
                 ? t('wealth.p2.screen.noQty')

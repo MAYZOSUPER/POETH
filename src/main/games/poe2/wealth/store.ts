@@ -29,21 +29,22 @@ export function sanitizeLeagues(raw: unknown): Record<string, Poe2Sources> {
   return out
 }
 
-/** Связка сессии фарма со снимками (прибыль забегов — как у PoE 1: от границы до следующего снимка). */
+/**
+ * Связка сессии фарма трекера карт PoE 2 (S69) со снимками богатства: прибыль сессии — одним числом
+ * (setSessionProfit), отсчёт — снимок при «Начать», конец — первый ввод или снимок вкладок после «Стоп».
+ */
 export interface Poe2SessionLink {
   /** лига сессии */
   league: string | null
   session: Poe2WealthSession | null
-  /** снимок-граница: от него считается прибыль следующих забегов */
-  boundary: { id: string; at: number } | null
-  /** закончившиеся после границы забеги сессии */
-  pending: string[]
-  /** последняя посчитанная группа забегов: её можно пересчитать, пока игрок обновляет богатство после «Стоп» */
-  lastGroup: { runId: string; runs: number; fromId: string } | null
+  /** id сессии трекера карт */
+  farmId: string | null
+  /** забег сессии уже начинался — отсчёт больше не сдвигается */
+  runStarted: boolean
 }
 
 export function emptyLink(): Poe2SessionLink {
-  return { league: null, session: null, boundary: null, pending: [], lastGroup: null }
+  return { league: null, session: null, farmId: null, runStarted: false }
 }
 
 const ID_RE = /^[A-Za-z0-9_-]{1,64}$/
@@ -67,10 +68,8 @@ export function sanitizeLink(raw: unknown): Poe2SessionLink {
     if (s.awaitingEnd === true) session.awaitingEnd = true
     out.session = session
   }
-  if (r.boundary && okId(r.boundary.id) && okNum(r.boundary.at)) out.boundary = { id: r.boundary.id, at: r.boundary.at }
-  if (Array.isArray(r.pending)) out.pending = r.pending.filter(okId).slice(-500)
-  const g = r.lastGroup
-  if (g && okId(g.runId) && okId(g.fromId) && okNum(g.runs) && g.runs >= 1) out.lastGroup = { runId: g.runId, runs: Math.round(g.runs), fromId: g.fromId }
+  if (okId(r.farmId)) out.farmId = r.farmId
+  if (r.runStarted === true) out.runStarted = true
   return out
 }
 

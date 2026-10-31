@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import type { ScreenCell, ScreenRead } from '@shared/types/screen'
 import type { Poe2Sources, Poe2WealthState, WealthSnapshot, WealthSummary } from '@shared/types/wealth'
 import { dedupeHistory, emptyLink, sanitizeLink, type Poe2SessionLink } from '../../src/main/games/poe2/wealth/store'
-import { COALESCE_MS, dayDelta, END_GRACE_MS, Poe2WealthManager, START_GRACE_MS } from '../../src/main/games/poe2/wealth/manager'
+import { COALESCE_MS, dayDelta, Poe2WealthManager } from '../../src/main/games/poe2/wealth/manager'
 import type { Poe2PriceView } from '../../src/main/games/poe2/wealth/prices'
-import type { FarmEventLike, FarmRunProfit } from '../../src/main/games/poe1/wealth/manager'
+import type { FarmEvent, FarmProfitMark, FarmProfitMode, FarmSession, FarmSessionProfit } from '@shared/types/farm'
 
 // «Богатство PoE 2» (S70), main: запись снимков по вводу (пауза, правка одного снимка), ценные предметы, снимок
 // вкладки по клавише (карточка → «Принять»), прибыль сессии фарма по снимкам начала и конца.
@@ -78,12 +78,20 @@ function setup() {
   let league: string | null = 'Forbidden Rites'
   const store = new MemStore()
   const states: Poe2WealthState[] = []
-  const profits: Array<[string, FarmRunProfit | null]> = []
-  let farmCb: ((e: FarmEventLike) => void) | null = null
+  const starts: Array<[string, FarmProfitMark | null]> = []
+  const profits: Array<[string, FarmSessionProfit | null]> = []
+  let farmCb: ((e: FarmEvent) => void) | null = null
   const m = new Poe2WealthManager({
     store,
     prices: { view: () => VIEW, refresh: async () => VIEW },
-    currency: async () => ({ main: [{ name: 'Divine Orb', tag: 'divine' }, { name: 'Exalted Orb', tag: 'exalted' }, { name: 'Chaos Orb', tag: 'chaos' }], common: [{ name: 'Regal Orb', tag: 'regal' }] }),
+    currency: async () => ({
+      main: [
+        { name: 'Divine Orb', tag: 'divine' },
+        { name: 'Exalted Orb', tag: 'exalted' },
+        { name: 'Chaos Orb', tag: 'chaos' }
+      ],
+      common: [{ name: 'Regal Orb', tag: 'regal' }]
+    }),
     league: async () => league,
     emit: (s) => states.push(s),
     now: () => t,
@@ -94,9 +102,10 @@ function setup() {
       farmCb = cb
       return () => (farmCb = null)
     },
-    setRunProfit: (id, p) => profits.push([id, p])
+    setSessionStart: (id, mark) => starts.push([id, mark]),
+    setSessionProfit: (id, p) => profits.push([id, p])
   })
-  const farm = async (e: FarmEventLike) => {
+  const farm = async (e: FarmEvent) => {
     farmCb?.(e)
     await m.idle()
   }
@@ -105,6 +114,7 @@ function setup() {
     store,
     states,
     profits,
+    starts,
     farm,
     tick: (ms: number) => (t += ms),
     now: () => t,
@@ -127,11 +137,18 @@ describe('ручной ввод и золото', () => {
     tick(COALESCE_MS - 1000)
     await m.setManual('Divine Orb', 3)
     await m.idle()
-    expect(dedupeHistory(store.history).map((s) => [s.id, s.chaos])).toEqual([[first.id, 3 * 600 + 700]])
+    // правка того же снимка: в памяти — новая версия, в history.ndjson строка не дописывается на каждую правку
+    expect(m.state().latest).toMatchObject({ id: first.id, chaos: 3 * 600 + 700 })
+    expect(store.history).toHaveLength(1)
     tick(COALESCE_MS + 1000)
     await m.setManual('Divine Orb', 4)
     await m.idle()
-    expect(dedupeHistory(store.history)).toHaveLength(2)
+    // снимок «закрыт» следующим — последняя версия дописана перед новым
+    expect(dedupeHistory(store.history).map((s) => [s.id, s.chaos])).toEqual([
+      [first.id, 3 * 600 + 700],
+      [expect.any(String), 4 * 600 + 700]
+    ])
+    expect(store.history).toHaveLength(3)
     const st = m.state()
     expect(st.history).toHaveLength(2)
     expect(st.total.ex).toBe(4 * 600 + 700)
@@ -210,6 +227,13 @@ describe('снимок вкладки из панели Alt+F', () => {
     expect(dedupeHistory(store.history)).toHaveLength(1)
   })
 
+  it('«Записать в богатство» — только вкладка тайника: награды Ритуала и торговец (grid) — нет', async () => {
+    const { m } = setup()
+    await m.start()
+    expect(m.screenRecord({ ...read([cell('Divine Orb', 1, 14)]), window: 'grid' })).toBe(false)
+    expect(m.state().screen).toBeNull()
+  })
+
   it('«Переснять» убирает вкладку из сеанса, отмена — весь сеанс', async () => {
     const { m } = setup()
     await m.start()
@@ -227,67 +251,78 @@ describe('снимок вкладки из панели Alt+F', () => {
   })
 })
 
-describe('прибыль сессии фарма', () => {
-  it('начало (с поправкой в первые минуты), забеги группой, конец после «Стоп» и его поправка', async () => {
-    const { m, store, profits, farm, tick } = setup()
+/** События трекера карт PoE 2 (S69) — нужные поля. */
+const sess = (id: string, profitMode: FarmProfitMode, profitEnd?: FarmProfitMode): FarmSession => ({
+  id,
+  startedAt: 0,
+  endedAt: null,
+  pausedAt: null,
+  pausedMs: 0,
+  profitMode,
+  ...(profitEnd ? { profitEnd } : {})
+})
+const run = (id: string, sessionId: string | null) => ({ id, sessionId }) as unknown as FarmEvent extends { run: infer R } ? R : never
+
+describe('прибыль сессии фарма (трекер карт S69)', () => {
+  it('отсчёт: снимок при «Начать», до первого забега его сдвигает ввод; конец — первый ввод после «Стоп», без пересчёта', async () => {
+    const { m, store, profits, starts, farm, tick } = setup()
     await m.start()
     await m.setManual('Divine Orb', 1)
     await m.idle()
-    await farm({ type: 'session', state: 'start', at: 0 })
-    const pin = store.link.session!
-    expect(pin.startEx).toBe(600)
-    // игрок отметил богатство в начале: ввёл точное число
+    await farm({ type: 'session', state: 'start', session: sess('S1', 'manual'), at: 0 })
+    expect(store.link.session!.startEx).toBe(600)
+    expect(starts.at(-1)).toEqual(['S1', { source: 'manual', at: expect.any(Number) }])
+    // игрок ввёл точное число — новый отсчёт
     tick(60_000)
     await m.setManual('Divine Orb', 10)
     await m.idle()
     expect(store.link.session!.startEx).toBe(6000)
-    expect(store.link.session!.startId).not.toBe(pin.startId)
-
-    tick(START_GRACE_MS)
-    await farm({ type: 'runStart', run: { id: 'r1', sessionId: 's' }, at: 0 })
-    await farm({ type: 'runEnd', run: { id: 'r1', sessionId: 's' }, at: 0 })
-    await farm({ type: 'runStart', run: { id: 'r2', sessionId: 's' }, at: 0 })
-    await farm({ type: 'runEnd', run: { id: 'r2', sessionId: 's' }, at: 0 })
-    // забег вне сессии не считается
-    await farm({ type: 'runEnd', run: { id: 'x', sessionId: null }, at: 0 })
-    await farm({ type: 'session', state: 'stop', at: 0 })
-    expect(m.state().session).toMatchObject({ awaitingEnd: true })
-    expect(profits).toEqual([])
-
-    // после «Стоп» игрок снял вкладку: +2 div и 50 ex
-    tick(5 * 60_000)
+    expect(starts).toHaveLength(2)
+    // ценный предмет отсчёт не двигает
     await m.addValuable({ name: 'Astramentis', kind: 'unique', unit: 300, source: 'trade' })
-    expect(profits).toEqual([['r2', { chaos: 300, runs: 2, divineRate: 600 }]])
-    tick(60_000)
+    expect(store.link.session!.startEx).toBe(6000)
+    // первый забег — дальше отсчёт не сдвигается
+    await farm({ type: 'runStart', run: run('r1', 'S1'), at: 0 } as FarmEvent)
+    tick(COALESCE_MS + 1)
+    await m.setManual('Divine Orb', 11)
+    await m.idle()
+    expect(store.link.session!.startEx).toBe(6000)
+    expect(profits).toEqual([])
+    // «Завершить» → «Ввести валюту»: первый ввод после «Стоп» — конец и прибыль
+    await farm({ type: 'session', state: 'stop', session: sess('S1', 'manual', 'manual'), at: 0 })
+    expect(m.state().session).toMatchObject({ awaitingEnd: true })
+    tick(COALESCE_MS + 1)
     await m.setManual('Divine Orb', 12)
     await m.idle()
-    expect(profits.at(-1)).toEqual(['r2', { chaos: 300 + 1200, runs: 2, divineRate: 600 }])
-    const s = m.state().session!
-    expect(s.profitEx).toBe(1500)
-    expect(s.awaitingEnd).toBeUndefined()
-
-    // через 2 часа после «Стоп» правки богатства в сессию уже не идут
-    tick(END_GRACE_MS + COALESCE_MS)
+    // 12 div − 10 div; Астраментис добавлен после отсчёта — тоже прибыль
+    expect(profits).toEqual([['S1', { source: 'manual', at: expect.any(Number), ex: 1200 + 300, exPerDiv: 600 }]])
+    // дальше не пересчитывается
+    tick(COALESCE_MS + 1)
     await m.setManual('Divine Orb', 20)
     await m.idle()
-    expect(profits).toHaveLength(2)
+    expect(profits).toHaveLength(1)
     expect(m.state().session!.profitEx).toBe(1500)
   })
 
-  it('правка посреди карты — граница не сдвигается, прибыль достаётся закончившемуся позже забегу', async () => {
-    const { m, profits, farm, tick } = setup()
+  it('конец по снимку вкладок; «без прибыли» — ничего не считаем', async () => {
+    const { m, profits, starts, farm, tick } = setup()
     await m.start()
-    await farm({ type: 'session', state: 'start', at: 0 })
-    tick(START_GRACE_MS + 1)
-    await farm({ type: 'runStart', run: { id: 'r1', sessionId: 's' }, at: 0 })
-    await m.setManual('Chaos Orb', 5)
+    await farm({ type: 'session', state: 'start', session: sess('S2', 'none'), at: 0 })
+    expect(starts).toEqual([])
+    await farm({ type: 'session', state: 'stop', session: sess('S2', 'none', 'none'), at: 0 })
+    await m.setManual('Divine Orb', 3)
     await m.idle()
     expect(profits).toEqual([])
-    await farm({ type: 'runEnd', run: { id: 'r1', sessionId: 's' }, at: 0 })
+    // снимок: начало — вкладка, конец — та же вкладка, переснятая
+    await farm({ type: 'session', state: 'start', session: sess('S3', 'snapshot'), at: 0 })
+    m.screenRecord(read([cell('Exalted Orb', 100, 24)]))
+    await m.screenAccept()
+    expect(starts.at(-1)).toEqual(['S3', { source: 'snapshot', at: expect.any(Number), tabs: 1 }])
+    await farm({ type: 'session', state: 'stop', session: sess('S3', 'snapshot', 'snapshot'), at: 0 })
     tick(COALESCE_MS + 1)
-    await m.setManual('Chaos Orb', 7)
-    await m.idle()
-    expect(profits).toEqual([['r1', { chaos: 490, runs: 1, divineRate: 600 }]])
+    m.screenRecord(read([cell('Exalted Orb', 150, 24)]))
+    await m.screenAccept()
+    expect(profits).toEqual([['S3', { source: 'snapshot', at: expect.any(Number), tabs: 1, ex: 50, exPerDiv: 600 }]])
   })
 })
 
@@ -301,12 +336,20 @@ describe('хранилище', () => {
   })
 
   it('связка сессии: мусор отбрасывается', () => {
-    expect(sanitizeLink({ league: 'L', session: { startedAt: 1, startId: 'bad id!', startEx: 1 }, pending: ['r1', 5], lastGroup: { runId: 'r1', runs: 0, fromId: 'a' } })).toEqual({
+    expect(
+      sanitizeLink({
+        league: 'L',
+        session: { startedAt: 1, startId: 'bad id!', startEx: 1 },
+        farmId: '../x',
+        runStarted: 'yes',
+        pending: ['r1']
+      })
+    ).toEqual({
       league: 'L',
       session: null,
-      boundary: null,
-      pending: ['r1'],
-      lastGroup: null
+      farmId: null,
+      runStarted: false
     })
+    expect(sanitizeLink({ farmId: 'smv1', runStarted: true }).farmId).toBe('smv1')
   })
 })

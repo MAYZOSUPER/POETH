@@ -1,8 +1,7 @@
 import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
 import type { CapturedItem, GameInputResult, LiveAddError, UiLang } from '@shared/types'
 import { ItemCategory, ItemRarity, type ParsedItem } from '@shared/poe2/parser'
-import type { Poe2ValuableInput } from '@shared/types'
-import { valuableInput, WealthButtons } from './WealthButtons'
+import { WealthButtons } from './WealthButtons'
 import { FilterTag, type FilterPreset, type ItemFilters, type ListingType, type StatFilter } from '@shared/poe2/pricecheck'
 import { ModifierType } from '@shared/poe2/parser/modifiers'
 import type { Poe1ExchangeOffer, Poe1Listing } from '@shared/poe1/pricecheck/results'
@@ -1471,7 +1470,7 @@ export function Poe2PriceWindow({ captured, onClose }: { captured: CapturedItem;
         <Results t={t} lang={lang} />
         <SearchAgainBar t={t} />
       </div>
-      <PriceActions result={result} title={searchTitle(captured, item)} league={league} t={t} wealth={item ? valuableInput(item, captured, result) : null} />
+      <PriceActions result={result} title={searchTitle(captured, item)} league={league} t={t} item={item} captured={captured} />
     </section>
   )
 }
@@ -1490,14 +1489,16 @@ function PriceActions({
   title,
   league,
   t,
-  wealth
+  item,
+  captured
 }: {
   result: Pc2Result | undefined
   title: string
   league: string
   t: T
-  /** S70: ценный предмет для «В богатство» / «К забегу» (null — цены в ex нет) */
-  wealth: Poe2ValuableInput | null
+  /** S70: предмет и текст копии — для «В богатство» / «К забегу» */
+  item: ParsedItem | null
+  captured: CapturedItem
 }) {
   const [saved, setSaved] = useState<ActionState>('idle')
   const [live, setLive] = useState<ActionState>('idle')
@@ -1595,7 +1596,7 @@ function PriceActions({
         <Icon name={live === 'done' ? 'check' : 'bolt'} />
         {liveText}
       </button>
-      <WealthButtons input={wealth} t={t} />
+      <WealthButtons item={item} captured={captured} result={result} t={t} />
     </footer>
     </>
   )

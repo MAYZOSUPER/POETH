@@ -125,7 +125,6 @@ export function cleanValuableInput(raw: unknown): Poe2ValuableInput | null {
   if (base && base !== name) out.base = base
   if (KINDS.includes(r.kind as Poe2ValuableKind)) out.kind = r.kind as Poe2ValuableKind
   if (r.low === true) out.low = true
-  if (r.toRun === true) out.toRun = true
   return out
 }
 
@@ -134,10 +133,7 @@ function cleanValuable(raw: unknown): Poe2Valuable | null {
   const input = cleanValuableInput(r)
   const at = time(r?.at)
   if (!input || !at || typeof r?.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(r.id)) return null
-  const { toRun: _toRun, ...rest } = input
-  const v: Poe2Valuable = { id: r.id, at, ...rest, qty: input.qty ?? 1 }
-  if (typeof r.runId === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(r.runId)) v.runId = r.runId
-  return v
+  return { id: r.id, at, ...input, qty: input.qty ?? 1 }
 }
 
 function cleanScreenTab(raw: unknown): Poe2ScreenTab | null {
@@ -194,6 +190,8 @@ export function setManual(s: Poe2Sources, name: string, qty: unknown, at: number
   const manualTimes = { ...s.manualTimes }
   const q = cleanQty(qty)
   if ((manual[n] ?? 0) === q) return s
+  // новая строка сверх предела — не растим файл источников
+  if (q > 0 && manual[n] === undefined && Object.keys(manual).length >= MAX_LINES) return s
   if (q > 0) {
     manual[n] = q
     manualTimes[n] = at
@@ -210,10 +208,8 @@ export function setGold(s: Poe2Sources, qty: unknown, at: number): Poe2Sources {
 }
 
 /** Добавить ценный предмет (новые — сверху); больше MAX_VALUABLES — самые старые уходят. */
-export function addValuable(s: Poe2Sources, input: Poe2ValuableInput, id: string, at: number, runId?: string | null): Poe2Sources {
-  const { toRun: _toRun, ...rest } = input
-  const v: Poe2Valuable = { id, at, ...rest, qty: input.qty ?? 1 }
-  if (runId) v.runId = runId
+export function addValuable(s: Poe2Sources, input: Poe2ValuableInput, id: string, at: number): Poe2Sources {
+  const v: Poe2Valuable = { id, at, ...input, qty: input.qty ?? 1 }
   return { ...s, valuables: [v, ...s.valuables].slice(0, MAX_VALUABLES) }
 }
 
@@ -344,9 +340,14 @@ export function buildPoe2Snapshot(input: BuildPoe2SnapshotInput): WealthSnapshot
 
 // ------------------------------------------------------------------ снимок вкладки: карточка
 
-/** Строку надо проверить: число не прочитано или не уверено, или предмет из нескольких с одним рисунком. */
+/**
+ * Строку надо проверить: число не прочитано или неуверенно и игрок его не поправил / не подтвердил, или предмет из
+ * нескольких с одним рисунком ещё не выбран. Выбор предмета число не подтверждает, и наоборот.
+ */
 export function needsCheck(l: Poe2ScreenLine): boolean {
-  return !l.edited && (l.qty === null || !l.sure || !!l.alt?.length)
+  const qtyOk = l.qty !== null && (l.sure || !!l.edited)
+  const nameOk = !l.alt?.length || !!l.picked
+  return !qtyOk || !nameOk
 }
 
 function priceLine(l: Poe2ScreenLine, priceOf: Poe2PriceOf): Poe2ScreenLine {
@@ -390,7 +391,9 @@ export function screenCardTab(read: ScreenRead, priceOf: Poe2PriceOf): Poe2Scree
   })
   const value = (l: Poe2ScreenLine): number => (l.unit ?? 0) * (l.qty ?? 1)
   lines.sort((a, b) => value(b) - value(a) || a.name.localeCompare(b.name))
-  return { id: screenTabId(read), layout: read.tab, at: read.at, lines: lines.slice(0, MAX_LINES), unknown }
+  // без раскладки (обычная вкладка) ключ у всех один — каждый снимок такой вкладки свой, а не замена прошлого
+  const id = read.tab === null ? `${screenTabId(read)}:${read.at.toString(36)}` : screenTabId(read)
+  return { id, layout: read.tab, at: read.at, lines: lines.slice(0, MAX_LINES), unknown }
 }
 
 /** Правка строки игроком: число (0 — убрать строку из итога) или выбор предмета из alt. */
@@ -399,13 +402,20 @@ export function editCardLine(tab: Poe2ScreenCardTab, key: string, edit: Poe2Scre
     ...tab,
     lines: tab.lines.map((l) => {
       if (l.key !== key) return l
-      // правка или «верно» (то же число) — игрок проверил строку; sure остаётся «как прочитано»
-      let next: Poe2ScreenLine = { ...l, edited: true }
-      if (edit.qty !== undefined) next.qty = cleanQty(edit.qty)
-      if (edit.name !== undefined && edit.name !== l.name && (l.alt ?? []).includes(edit.name)) {
-        next.alt = [l.name, ...(l.alt ?? []).filter((n) => n !== edit.name)]
-        next.name = edit.name
-        next = priceLine(next, priceOf)
+      // число: правка или «верно» (то же число) — проверено; sure остаётся «как прочитано»
+      let next: Poe2ScreenLine = { ...l }
+      if (edit.qty !== undefined) {
+        next.qty = cleanQty(edit.qty)
+        next.edited = true
+      }
+      // предмет: выбор из alt или подтверждение текущего — число этим не проверяется
+      if (edit.name !== undefined && (edit.name === l.name || (l.alt ?? []).includes(edit.name))) {
+        next.picked = true
+        if (edit.name !== l.name) {
+          next.alt = [l.name, ...(l.alt ?? []).filter((n) => n !== edit.name)]
+          next.name = edit.name
+          next = priceLine(next, priceOf)
+        }
       }
       return next
     })
@@ -477,7 +487,13 @@ export function acceptSession(s: Poe2Sources, session: Poe2ScreenSession, at: nu
       if (!l.qty || needsCheck(l)) continue
       byName.set(l.name, (byName.get(l.name) ?? 0) + l.qty)
     }
-    if (byName.size) accepted.push({ id: t.id, layout: t.layout, at, items: [...byName].map(([name, qty]) => ({ name, qty: Math.min(MAX_QTY, qty), sure: true })) })
+    if (byName.size)
+      accepted.push({
+        id: t.id,
+        layout: t.layout,
+        at,
+        items: [...byName].map(([name, qty]) => ({ name, qty: Math.min(MAX_QTY, qty), sure: true }))
+      })
   }
   const ids = new Set(accepted.map((t) => t.id))
   const screen = [...s.screen.filter((t) => !ids.has(t.id)), ...accepted].slice(-MAX_SCREEN_TABS)

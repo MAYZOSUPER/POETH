@@ -248,9 +248,9 @@ export const wealth: DomainDict = {
     'wealth.p2.pc.add.help': 'Записать предмет в «Богатство» с ценой этого окна',
     'wealth.p2.pc.noPrice': 'Нет цены в ex — записать нечего',
     'wealth.p2.pc.run': 'К забегу',
-    'wealth.p2.pc.run.help': 'Находка текущей карты: в «Богатство» и к забегу сессии',
+    'wealth.p2.pc.run.help': 'Находка текущей карты — в сессию фарма (у забега «+ находка»)',
     'wealth.p2.pc.done': 'Записано в богатство',
-    'wealth.p2.pc.doneRun': 'Записано в богатство и к забегу',
+    'wealth.p2.pc.doneRun': 'Записано к забегу',
     'wealth.p2.pc.fail': 'Не записалось — попробуйте ещё раз',
     'wealth.p2.screen.noQty': 'число не прочитано — введите',
     'wealth.p2.screen.checkQty': 'проверьте: {n}?',
@@ -295,7 +295,9 @@ export const wealth: DomainDict = {
     'wealth.p2.way.manual.d': 'Сколько у вас div, ex и chaos — полминуты. Подойдёт, если не хочется открывать вкладки.',
     'wealth.p2.way.item': 'Добавить предмет',
     'wealth.p2.way.item.d': 'Наведите на ценный предмет в игре, нажмите {key} и в окне цены — «В богатство».',
-    'wealth.p2.way.item.d.nokey': 'Наведите на ценный предмет в игре, откройте окно цены и нажмите «В богатство».'
+    'wealth.p2.way.item.d.nokey': 'Наведите на ценный предмет в игре, откройте окно цены и нажмите «В богатство».',
+    'wealth.p2.pc.stack': 'Валюту и стопки «Богатство» считает по быстрому вводу и снимку вкладки — так предмет не посчитается дважды.',
+    'wealth.p2.pc.noRun': 'Забега ещё нет — зайдите в карту, потом «К забегу».'
   },
   en: {
     'app.wealth': 'Wealth',
@@ -534,9 +536,9 @@ export const wealth: DomainDict = {
     'wealth.p2.pc.add.help': 'Add the item to Wealth at this window’s price',
     'wealth.p2.pc.noPrice': 'No price in ex — nothing to add',
     'wealth.p2.pc.run': 'To this run',
-    'wealth.p2.pc.run.help': 'A find of the current map: to Wealth and to the session run',
+    'wealth.p2.pc.run.help': 'A find of the current map — goes to the farming session (the run’s “+ find”)',
     'wealth.p2.pc.done': 'Added to wealth',
-    'wealth.p2.pc.doneRun': 'Added to wealth and to the run',
+    'wealth.p2.pc.doneRun': 'Added to the run',
     'wealth.p2.pc.fail': 'Not added — try again',
     'wealth.p2.screen.noQty': 'number not read — type it',
     'wealth.p2.screen.checkQty': 'check: {n}?',
@@ -581,6 +583,8 @@ export const wealth: DomainDict = {
     'wealth.p2.way.manual.d': 'How many div, ex and chaos you have — half a minute. Good if you don’t want to open tabs.',
     'wealth.p2.way.item': 'Add an item',
     'wealth.p2.way.item.d': 'Hover a valuable item in the game, press {key} and click “Add to wealth” in the price window.',
-    'wealth.p2.way.item.d.nokey': 'Hover a valuable item in the game, open the price window and click “Add to wealth”.'
+    'wealth.p2.way.item.d.nokey': 'Hover a valuable item in the game, open the price window and click “Add to wealth”.',
+    'wealth.p2.pc.stack': 'Wealth counts currency and stacks from quick input and tab snapshots — so nothing is counted twice.',
+    'wealth.p2.pc.noRun': 'No run yet — enter a map, then “To this run”.'
   }
 }

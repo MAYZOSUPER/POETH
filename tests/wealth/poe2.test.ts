@@ -92,7 +92,11 @@ describe('список валюты для ручного ввода', () => {
     expect(list.main.map((r) => r.name)).toEqual(['Divine Orb', 'Exalted Orb', 'Chaos Orb'])
     expect(list.common.length).toBeGreaterThanOrEqual(5)
     expect(list.common.length).toBeLessThanOrEqual(8)
-    const feed = new Set(Object.values(JSON.parse(readFileSync(path.join(ROOT, 'resources/data/poe2/exchange/exchange-ids.json'), 'utf8')).names as Record<string, string>))
+    const feed = new Set(
+      Object.values(
+        JSON.parse(readFileSync(path.join(ROOT, 'resources/data/poe2/exchange/exchange-ids.json'), 'utf8')).names as Record<string, string>
+      )
+    )
     const ru = readFileSync(path.join(ROOT, 'resources/data/poe2/ru/items.ndjson'), 'utf8')
     for (const r of [...list.main, ...list.common]) {
       expect(feed.has(r.name)).toBe(true)
@@ -104,7 +108,11 @@ describe('список валюты для ручного ввода', () => {
   it('битый файл — null, дубли и мусор отброшены', () => {
     expect(parsePoe2CurrencyList(null)).toBeNull()
     expect(parsePoe2CurrencyList({ version: 2, main: [{ name: 'Divine Orb' }] })).toBeNull()
-    const l = parsePoe2CurrencyList({ version: 1, main: [{ name: 'Divine Orb', tag: 'BAD TAG' }, { name: 'Divine Orb' }], common: [{ name: 'Divine Orb' }, { name: 1 }, { name: 'Vaal Orb', tag: 'vaal' }] })!
+    const l = parsePoe2CurrencyList({
+      version: 1,
+      main: [{ name: 'Divine Orb', tag: 'BAD TAG' }, { name: 'Divine Orb' }],
+      common: [{ name: 'Divine Orb' }, { name: 1 }, { name: 'Vaal Orb', tag: 'vaal' }]
+    })!
     expect(l.main).toEqual([{ name: 'Divine Orb' }])
     expect(l.common).toEqual([{ name: 'Vaal Orb', tag: 'vaal' }])
   })
@@ -125,7 +133,9 @@ describe('источники', () => {
     expect(cleanValuableInput({ name: 'Mageblood', unit: 0 })).toBeNull()
     expect(cleanValuableInput({ name: '', unit: 5 })).toBeNull()
     expect(cleanValuableInput({ name: 'x'.repeat(500), unit: 5 })).toBeNull()
-    expect(cleanValuableInput({ name: 'Headhunter', base: 'Leather Belt', kind: 'unique', unit: 12000.123, source: 'trade', qty: 0, evil: 1 })).toEqual({
+    expect(
+      cleanValuableInput({ name: 'Headhunter', base: 'Leather Belt', kind: 'unique', unit: 12000.123, source: 'trade', qty: 0, evil: 1 })
+    ).toEqual({
       name: 'Headhunter',
       base: 'Leather Belt',
       kind: 'unique',
@@ -144,12 +154,25 @@ describe('источники', () => {
         { id: 'v1', name: 'dup', unit: 1, at: T0 },
         { id: '../x', name: 'bad', unit: 1, at: T0 }
       ],
-      screen: [{ id: 'screen:poe2:stash:orbs', layout: 'orbs', at: T0, items: [{ name: 'Divine Orb', qty: 3, sure: true }, { name: 'X', qty: 0 }] }, { id: 'evil', at: T0 }]
+      screen: [
+        {
+          id: 'screen:poe2:stash:orbs',
+          layout: 'orbs',
+          at: T0,
+          items: [
+            { name: 'Divine Orb', qty: 3, sure: true },
+            { name: 'X', qty: 0 }
+          ]
+        },
+        { id: 'evil', at: T0 }
+      ]
     })
     expect(s.manual).toEqual({ 'Divine Orb': 2 })
     expect(s.gold).toBe(0)
     expect(s.valuables.map((v) => v.id)).toEqual(['v1'])
-    expect(s.screen).toEqual([{ id: 'screen:poe2:stash:orbs', layout: 'orbs', at: T0, items: [{ name: 'Divine Orb', qty: 3, sure: true }] }])
+    expect(s.screen).toEqual([
+      { id: 'screen:poe2:stash:orbs', layout: 'orbs', at: T0, items: [{ name: 'Divine Orb', qty: 3, sure: true }] }
+    ])
     expect(sanitizeSources('garbage')).toEqual(emptySources())
   })
 })
@@ -157,7 +180,13 @@ describe('источники', () => {
 describe('снимок вкладки: карточка и сеанс', () => {
   it('карточка: неузнанные — счётчиком, «проверьте» у неуверенных и уровней без раскладки', () => {
     const tab = screenCardTab(
-      read([cell('Divine Orb', 2, { slot: 14 }), cell('Exalted Orb', 40, { countSure: false, slot: 24 }), cell(null, 3), cell('Chaos Orb', null, { slot: 1 }), cell('Regal Orb', 5, { present: false })]),
+      read([
+        cell('Divine Orb', 2, { slot: 14 }),
+        cell('Exalted Orb', 40, { countSure: false, slot: 24 }),
+        cell(null, 3),
+        cell('Chaos Orb', null, { slot: 1 }),
+        cell('Regal Orb', 5, { present: false })
+      ]),
       priceOf
     )
     expect(tab.id).toBe('screen:poe2:stash:orbs')
@@ -238,7 +267,12 @@ describe('один снимок из трёх источников', () => {
     // chaos ввели после вкладки — из вкладки chaos не берётся
     s = setManual(s, 'Chaos Orb', 10, T0 + 1)
     s = setGold(s, 50_000, T0)
-    s = addValuable(s, cleanValuableInput({ name: 'Headhunter', base: 'Leather Belt', kind: 'unique', unit: 9000, source: 'trade' })!, 'v1', T0)
+    s = addValuable(
+      s,
+      cleanValuableInput({ name: 'Headhunter', base: 'Leather Belt', kind: 'unique', unit: 9000, source: 'trade' })!,
+      'v1',
+      T0
+    )
 
     const a = snap(s, 'a')
     expect(a.summary.base).toBe('exalted')
@@ -279,12 +313,24 @@ describe('один снимок из трёх источников', () => {
 
   it('разница двух снимков → прибыль сессии без дрейфа цен', () => {
     let s = setManual(emptySources(), 'Divine Orb', 2, T0)
-    s = acceptSession(s, addToSession(null, screenCardTab(read([cell('Exalted Orb', 100, { slot: 24 }), cell('Regal Orb', 10, { slot: 16 })]), priceOf), T0), T0)
+    s = acceptSession(
+      s,
+      addToSession(null, screenCardTab(read([cell('Exalted Orb', 100, { slot: 24 }), cell('Regal Orb', 10, { slot: 16 })]), priceOf), T0),
+      T0
+    )
     const start = snap(s, 'a')
     // за сессию: +1 div вручную, ценный предмет, вкладка переснята (ex +50, regal −4), уник продан не был
     let e = setManual(s, 'Divine Orb', 3, T0 + 1)
     e = addValuable(e, { name: 'Astramentis', kind: 'unique', unit: 300, source: 'trade', qty: 1 }, 'v2', T0 + 1)
-    e = acceptSession(e, addToSession(null, screenCardTab(read([cell('Exalted Orb', 150, { slot: 24 }), cell('Regal Orb', 6, { slot: 16 })]), priceOf), T0 + 1), T0 + 1)
+    e = acceptSession(
+      e,
+      addToSession(
+        null,
+        screenCardTab(read([cell('Exalted Orb', 150, { slot: 24 }), cell('Regal Orb', 6, { slot: 16 })]), priceOf),
+        T0 + 1
+      ),
+      T0 + 1
+    )
     const end = snap(e, 'b', T0 + 3_600_000)
     expect(qtyProfit(start, end)).toEqual({ chaos: 600 + 300 + 50 - 4 * 2.5, low: false })
     const d = diffSnapshots(start, end)
@@ -312,3 +358,40 @@ describe('один снимок из трёх источников', () => {
 })
 
 const round = (n: number): number => Math.round(n * 100) / 100
+
+describe('ревью S70', () => {
+  it('выбор предмета из одинаковых по рисунку не подтверждает неуверенное число, и наоборот', () => {
+    let tab = screenCardTab(read([cell('Greater Exalted Orb', 3, { alt: ['Exalted Orb'], countSure: false })], null), priceOf)
+    tab = editCardLine(tab, 'i0', { name: 'Exalted Orb' }, priceOf)
+    expect(tab.lines[0]).toMatchObject({ name: 'Exalted Orb', picked: true })
+    expect(needsCheck(tab.lines[0])).toBe(true)
+    tab = editCardLine(tab, 'i0', { qty: 3 }, priceOf)
+    expect(needsCheck(tab.lines[0])).toBe(false)
+    // «верно» у строки с уверенным числом, но не выбранным предметом — подтверждает выбор
+    let sure = screenCardTab(read([cell('Greater Exalted Orb', 3, { alt: ['Exalted Orb'] })], null), priceOf)
+    expect(needsCheck(sure.lines[0])).toBe(true)
+    sure = editCardLine(sure, 'i0', { qty: 3, name: 'Greater Exalted Orb' }, priceOf)
+    expect(needsCheck(sure.lines[0])).toBe(false)
+  })
+
+  it('обычные вкладки (без раскладки) — каждая своя, вторая не заменяет первую', () => {
+    const a = screenCardTab({ ...read([cell('Divine Orb', 2, { slot: 1 })], null), at: T0 }, priceOf)
+    const b = screenCardTab({ ...read([cell('Regal Orb', 5, { slot: 1 })], null), at: T0 + 1 }, priceOf)
+    expect(a.id).not.toBe(b.id)
+    let s = acceptSession(emptySources(), { startedAt: T0, tabs: [a] }, T0)
+    s = acceptSession(s, { startedAt: T0, tabs: [b] }, T0 + 1)
+    expect(s.screen).toHaveLength(2)
+    // с раскладкой — та же вкладка заменяет прежнюю
+    const o1 = screenCardTab(read([cell('Divine Orb', 2, { slot: 14 })]), priceOf)
+    const o2 = screenCardTab({ ...read([cell('Divine Orb', 3, { slot: 14 })]), at: T0 + 5 }, priceOf)
+    expect(o1.id).toBe(o2.id)
+  })
+
+  it('ручной ввод не растёт сверх предела строк', () => {
+    let s = emptySources()
+    for (let i = 0; i < 450; i++) s = setManual(s, `Orb ${i}`, 1, T0)
+    expect(Object.keys(s.manual)).toHaveLength(400)
+    // существующую строку править можно
+    expect(setManual(s, 'Orb 1', 5, T0).manual['Orb 1']).toBe(5)
+  })
+})

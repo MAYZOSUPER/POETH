@@ -50,6 +50,7 @@ export function buildLabels(read: ScreenRead, priceOf: PriceOf, o: LabelOptions)
   }
   return {
     game: read.game,
+    window: read.window,
     base: o.base,
     divine: o.divine,
     labels,

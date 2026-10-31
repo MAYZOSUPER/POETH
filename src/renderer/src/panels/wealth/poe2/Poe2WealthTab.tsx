@@ -16,7 +16,6 @@ import { usePoe2Item } from './names'
 import { ItemIcon } from './ItemIcon'
 import { QtyInput } from './QtyInput'
 import { layoutName, ScreenCards, useScreenKey } from './ScreenBox'
-import { Poe2IncomeTile } from './Poe2IncomeTile'
 import { money, signedMoney, tabsCount } from './money'
 import './poe2.css'
 
@@ -28,7 +27,6 @@ import './poe2.css'
 
 type T = ReturnType<typeof useT>
 
-const START_GRACE_MS = 15 * 60_000
 const DAY_MS = 24 * 3_600_000
 
 function useNow(): number {
@@ -277,7 +275,6 @@ function Sources({ s, t, lang, now, expert }: { s: Poe2WealthState; t: T; lang: 
                       {v.qty > 1 ? `${v.qty} × ` : ''}
                       {view.name}
                     </span>
-                    {v.runId && <span className="ui-tag">{t('wealth.p2.val.run')}</span>}
                     <span className="grow" />
                     <span>
                       {money(v.unit * v.qty, rate, lang).main}
@@ -501,45 +498,6 @@ function Empty({ s, t, lang, now, expert }: { s: Poe2WealthState; t: T; lang: Ui
   )
 }
 
-function SessionBox({ s, t, lang, now }: { s: Poe2WealthState; t: T; lang: UiLang; now: number }) {
-  const ss = s.session
-  const rate = s.exPerDivine
-  if (!ss) return null
-  return (
-    <div className="ui-box">
-      <div className="ui-box__head">
-        <span className="ui-label">
-          <WIco name="chart" size="sm" />
-          {t('wealth.p2.session')}
-        </span>
-      </div>
-      <div className="ui-box__body">
-        <span>{t('wealth.p2.session.start', { v: money(ss.startEx, rate, lang).main, t: when(t, ss.startedAt, now, lang) })}</span>
-        {ss.stoppedAt === undefined && now - ss.startedAt < START_GRACE_MS && (
-          <div className="ui-banner ui-banner--info" role="status">
-            <WIco name="info" />
-            <span>{t('wealth.p2.session.startGrace', { t: timeOf(ss.startedAt + START_GRACE_MS, lang, false) })}</span>
-            <span />
-          </div>
-        )}
-        {ss.awaitingEnd && (
-          <div className="ui-banner" role="status">
-            <WIco name="warn" />
-            <span>{t('wealth.p2.session.awaiting')}</span>
-            <span />
-          </div>
-        )}
-        {ss.profitEx !== undefined && (
-          <div className="ui-figure">
-            <span className={`ui-figure__value ${ss.profitEx >= 0 ? 'w2-good' : 'w2-bad'}`}>{signedMoney(ss.profitEx, rate, lang)}</span>
-            {ss.low && <span className="ui-figure__note">{t('wealth.p2.session.low')}</span>}
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
 export function Poe2WealthTab() {
   const t = useT()
   const lang = useAppStore((st) => st.settings?.uiLang ?? 'ru') as UiLang
@@ -606,8 +564,7 @@ export function Poe2WealthTab() {
           </div>
         ) : (
           <div className="w-pad">
-            <SessionBox s={s} t={t} lang={lang} now={now} />
-            <FarmPanel renderIncome={(p) => <Poe2IncomeTile {...p} />} />
+            <FarmPanel />
           </div>
         )}
       </div>

@@ -10,10 +10,11 @@
 //  - ввод подряд («+1», «+10», поле) — через EDIT_DEBOUNCE_MS тишины; несколько правок в пределах COALESCE_MS
 //    правят один и тот же снимок (график не превращается в гребёнку);
 //  - «Принять» снимок вкладок, ценный предмет, начало и конец сессии — сразу.
-// Прибыль сессии фарма (трекер карт, FarmPanel): «Начать» → снимок-отсчёт (в первые START_GRACE_MS его заменяет
-// новый ввод или снимок вкладок — игрок «отмечает» богатство в начале); закончившиеся забеги получают прибыль
-// от границы до следующего снимка (qtyProfit — без дрейфа цен, как у PoE 1); после «Стоп» ещё END_GRACE_MS
-// снимок (ввод) считается концом сессии — последняя группа пересчитывается.
+// Прибыль сессии фарма — для трекера карт PoE 2 (S69, docs/farm.md): игрок выбирает в диалогах «Начать» / «Завершить»
+// снять вкладки, ввести валюту или «без прибыли» (profitMode / profitEnd в событиях session). «Начать» → снимок-отсчёт
+// и setSessionStart; до первого забега отсчёт сдвигает ввод валюты или принятая вкладка (ценные предметы — нет).
+// Конец — первый ввод или снимок вкладок после «Стоп»: прибыль по штукам (qtyProfit, без дрейфа цен, без находок)
+// → setSessionProfit; дальше не пересчитывается. Находки забегов («К забегу») — у трекера, в богатство не идут.
 
 import type {
   Poe2ScreenEdit,
@@ -49,15 +50,13 @@ import {
   STALE_MS,
   type Poe2CurrencyList
 } from '@shared/wealth/poe2'
-import type { FarmEventLike, FarmLink, FarmRunProfit } from '../../poe1/wealth/manager'
+import type { FarmEvent, FarmProfitMark, FarmProfitMode, FarmSessionProfit } from '@shared/types/farm'
 import { newSnapshotId } from '../../poe1/wealth/store'
 import type { Poe2PriceView } from './prices'
 import { emptyLink, type Poe2SessionLink, type Poe2WealthStore } from './store'
 
 export const EDIT_DEBOUNCE_MS = 4_000
 export const COALESCE_MS = 10 * 60_000
-export const START_GRACE_MS = 15 * 60_000
-export const END_GRACE_MS = 2 * 3_600_000
 /** цены перечитываются по запросу вкладки не чаще (FeedStore и сам не ходит чаще 10 минут) */
 const PRICES_TTL_MS = 10 * 60_000
 const KEEP_DETAILED = 20
@@ -65,15 +64,21 @@ const KEEP_DETAILED = 20
 export interface Poe2WealthDeps {
   store: Pick<
     Poe2WealthStore,
-    'loadSources' | 'saveSources' | 'loadLink' | 'saveLink' | 'loadHistoryCompact' | 'appendHistory' | 'saveDetail' | 'loadDetail' | 'pruneDetails'
+    | 'loadSources'
+    | 'saveSources'
+    | 'loadLink'
+    | 'saveLink'
+    | 'loadHistoryCompact'
+    | 'appendHistory'
+    | 'saveDetail'
+    | 'loadDetail'
+    | 'pruneDetails'
   >
   prices: { view(league: string): Poe2PriceView; refresh(league: string): Promise<Poe2PriceView> }
   /** список валюты для ручного ввода (данные) */
   currency: () => Promise<Poe2CurrencyList | null>
   /** действующая лига PoE 2 */
   league: () => Promise<string | null>
-  /** открытый забег идущей сессии фарма (трекер карт) — для «К забегу» */
-  currentRunId?: () => string | null
   emit: (s: Poe2WealthState) => void
   now?: () => number
   log?: (msg: string) => void
@@ -82,6 +87,16 @@ export interface Poe2WealthDeps {
 }
 
 export type Poe2AddResult = { ok: true; id: string } | { ok: false }
+
+/** Трекер карт PoE 2 (S69): события забегов и сессии, отметка начала и прибыль сессии. */
+export interface Poe2FarmLink {
+  onFarmEvent(cb: (e: FarmEvent) => void): () => void
+  setSessionStart(sessionId: string, mark: FarmProfitMark | null): unknown
+  setSessionProfit(sessionId: string, profit: FarmSessionProfit | null): unknown
+}
+
+/** Откуда запись снимка: ввод, принятая вкладка, ценный предмет, прочее (удаление вкладки), начало сессии. */
+type RecordSource = 'manual' | 'screen' | 'valuable' | 'other' | 'pin'
 
 const DAY_MS = 24 * 3_600_000
 
@@ -95,7 +110,11 @@ export function dayDelta(points: readonly WealthPoint[]): { delta?: { ex: number
 }
 
 const FALLBACK_LIST: Poe2CurrencyList = {
-  main: [{ name: 'Divine Orb', tag: 'divine' }, { name: 'Exalted Orb', tag: 'exalted' }, { name: 'Chaos Orb', tag: 'chaos' }],
+  main: [
+    { name: 'Divine Orb', tag: 'divine' },
+    { name: 'Exalted Orb', tag: 'exalted' },
+    { name: 'Chaos Orb', tag: 'chaos' }
+  ],
   common: []
 }
 
@@ -118,7 +137,9 @@ export class Poe2WealthManager {
   private queue: Promise<unknown> = Promise.resolve()
   private seq = 0
   // ---- трекер карт
-  private farm: FarmLink | null = null
+  private farm: Poe2FarmLink | null = null
+  /** правки снимка по вводу подряд, ещё не дописанные в history.ndjson (пишется последняя версия) */
+  private unflushed: WealthSummary | null = null
   private farmUnsub: (() => void) | null = null
   private readonly now: () => number
 
@@ -143,6 +164,7 @@ export class Poe2WealthManager {
   }
 
   stop(): void {
+    void this.serial(() => this.flushHistory())
     this.supported = false
     if (this.editTimer) clearTimeout(this.editTimer)
     this.editTimer = null
@@ -241,9 +263,8 @@ export class Poe2WealthManager {
       if (!input || !this.supported || !this.league) return { ok: false as const }
       const at = this.now()
       const id = `v${at.toString(36)}${(++this.seq).toString(36)}`
-      const runId = input.toRun ? (this.deps.currentRunId?.() ?? null) : null
-      await this.setSources(addValuable(this.sources(), input, id, at, runId))
-      await this.record('hard')
+      await this.setSources(addValuable(this.sources(), input, id, at))
+      await this.record('hard', 'valuable')
       return { ok: true as const, id }
     })
   }
@@ -254,7 +275,7 @@ export class Poe2WealthManager {
         const next = removeValuable(this.sources(), id)
         if (next !== this.sources()) {
           await this.setSources(next)
-          await this.record('hard')
+          await this.record('hard', 'valuable')
         }
       }
       return this.state()
@@ -267,7 +288,7 @@ export class Poe2WealthManager {
         const next = removeScreenTab(this.sources(), id)
         if (next !== this.sources()) {
           await this.setSources(next)
-          await this.record('hard')
+          await this.record('hard', 'other')
         }
       }
       return this.state()
@@ -281,7 +302,8 @@ export class Poe2WealthManager {
    * Снимок экрана остаётся в памяти S68 — сюда приходят только имена, числа и ячейки. false — читать нечего.
    */
   screenRecord(read: ScreenRead | null): boolean {
-    if (!this.supported || !read || read.game !== 'poe2' || !read.cells.length) return false
+    // только вкладка тайника: награды Ритуала и торговец Экспедиции ('grid') — не богатство
+    if (!this.supported || !read || read.game !== 'poe2' || read.window !== 'stash' || !read.cells.length) return false
     const league = this.league
     const priceOf = league ? this.deps.prices.view(league).priceOf : () => null
     this.screen = addToSession(this.screen, screenCardTab(read, priceOf), this.now())
@@ -323,7 +345,7 @@ export class Poe2WealthManager {
       const id = typeof tabId === 'string' ? tabId : undefined
       await this.setSources(acceptSession(this.sources(), s, this.now(), id))
       this.screen = id === undefined ? null : dropFromSession(s, id)
-      await this.record('soft')
+      await this.record('soft', 'screen')
       return this.state()
     })
   }
@@ -334,7 +356,7 @@ export class Poe2WealthManager {
     if (this.editTimer) clearTimeout(this.editTimer)
     this.editTimer = setTimeout(() => {
       this.editTimer = null
-      void this.serial(() => this.record('soft'))
+      void this.serial(() => this.record('soft', 'manual'))
     }, this.deps.debounceMs ?? EDIT_DEBOUNCE_MS)
   }
 
@@ -343,14 +365,12 @@ export class Poe2WealthManager {
     if (!this.editTimer) return
     clearTimeout(this.editTimer)
     this.editTimer = null
-    await this.record('soft')
+    await this.record('soft', 'manual')
   }
 
   private pinned(): string[] {
     const out: string[] = []
     if (this.link.session) out.push(this.link.session.startId)
-    if (this.link.boundary) out.push(this.link.boundary.id)
-    if (this.link.lastGroup) out.push(this.link.lastGroup.fromId)
     return out
   }
 
@@ -378,17 +398,19 @@ export class Poe2WealthManager {
   }
 
   /**
-   * Записать снимок богатства. 'soft' — ввод подряд; 'hard' — принятый снимок вкладок, ценный предмет; 'pin' —
-   * начало сессии (никогда не правится). Снимок по вводу, сделанный меньше COALESCE_MS назад, правится на месте.
+   * Записать снимок богатства. 'soft' — ввод подряд и принятые вкладки; 'hard' — ценный предмет, удалённая вкладка;
+   * 'pin' — начало сессии (никогда не правится). Снимок 'soft', сделанный меньше COALESCE_MS назад, правится на месте:
+   * деталь переписывается, а в history.ndjson последняя версия дописывается, только когда снимок «закрыт» (следующая
+   * запись с новым id, выход) — файл не растёт на каждую правку.
    */
-  private async record(kind: 'soft' | 'hard' | 'pin'): Promise<WealthSnapshot | null> {
+  private async record(kind: 'soft' | 'hard' | 'pin', src: RecordSource): Promise<WealthSnapshot | null> {
     const league = this.league
     if (!league || !this.supported) return null
     await this.refreshPrices()
     const view = this.deps.prices.view(league)
     const at = this.now()
     const last = this.leagueSummaries().at(-1)
-    const reuse = kind !== 'pin' && !!last && this.soft.has(last.id) && at - last.at < COALESCE_MS && !this.pinned().includes(last.id)
+    const reuse = kind === 'soft' && !!last && this.soft.has(last.id) && at - last.at < COALESCE_MS && !this.pinned().includes(last.id)
     const id = reuse && last ? last.id : newSnapshotId(at)
     const snap = buildPoe2Snapshot({
       id,
@@ -400,20 +422,31 @@ export class Poe2WealthManager {
       manual: true
     })
     await this.deps.store.saveDetail(snap)
-    await this.deps.store.appendHistory(snap.summary)
-    this.summaries = [...this.summaries.filter((s) => s.id !== id), snap.summary].sort((a, b) => a.at - b.at)
+    if (reuse) this.unflushed = snap.summary
+    else {
+      await this.flushHistory()
+      await this.deps.store.appendHistory(snap.summary)
+    }
+    this.summaries = [...this.summaries.filter((x) => x.id !== id), snap.summary].sort((a, b) => a.at - b.at)
     if (kind === 'soft') this.soft.add(id)
     else this.soft.delete(id)
-    await this.afterRecord(snap)
+    await this.afterRecord(snap, src)
     await this.deps.store.pruneDetails(KEEP_DETAILED, this.pinned())
     this.emit()
     return snap
   }
 
+  /** Дописать в history.ndjson последнюю версию снимка, правленного вводом подряд. */
+  private async flushHistory(): Promise<void> {
+    const u = this.unflushed
+    this.unflushed = null
+    if (u) await this.deps.store.appendHistory(u)
+  }
+
   // ------------------------------------------------------------------ сессия фарма (трекер карт)
 
-  /** Подключить трекер карт (null — отключить). */
-  attachFarm(link: FarmLink | null): void {
+  /** Подключить трекер карт PoE 2 (null — отключить). */
+  attachFarm(link: Poe2FarmLink | null): void {
     this.farmUnsub?.()
     this.farmUnsub = null
     this.farm = link
@@ -424,25 +457,35 @@ export class Poe2WealthManager {
     await this.deps.store.saveLink(this.link)
   }
 
-  private async onFarmEvent(e: FarmEventLike): Promise<void> {
+  /** Отметка для трекера: снимок вкладок (их число) или ввод валюты, время — этой записи. */
+  private mark(src: 'snapshot' | 'manual', at: number): FarmProfitMark {
+    const tabs = this.sources().screen.length
+    return src === 'snapshot' && tabs ? { source: src, at, tabs } : { source: src, at }
+  }
+
+  private async onFarmEvent(e: FarmEvent): Promise<void> {
     if (!this.supported) return
-    if (e.type === 'runEnd') {
-      if (e.run.sessionId !== null && this.link.session && this.link.session.stoppedAt === undefined && !this.link.pending.includes(e.run.id)) {
-        this.link = { ...this.link, pending: [...this.link.pending, e.run.id] }
+    if (e.type === 'runStart') {
+      const L = this.link
+      if (L.session && L.session.stoppedAt === undefined && !L.runStarted && e.run.sessionId === L.farmId) {
+        this.link = { ...L, runStarted: true }
         await this.saveLink()
       }
       return
     }
     if (e.type !== 'session') return
+    const mode: FarmProfitMode = e.session.profitMode ?? 'none'
     if (e.state === 'start') {
       await this.flushNow()
-      this.link = { league: this.league, session: null, boundary: null, pending: [], lastGroup: null }
-      const snap = await this.record('pin')
-      if (snap) {
-        this.link = {
-          ...this.link,
-          session: { startedAt: snap.summary.at, startId: snap.summary.id, startEx: snap.summary.chaos },
-          boundary: { id: snap.summary.id, at: snap.summary.at }
+      this.link = { league: this.league, session: null, farmId: e.session.id, runStarted: false }
+      if (mode !== 'none') {
+        const snap = await this.record('pin', 'pin')
+        if (snap) {
+          this.link = { ...this.link, session: { startedAt: snap.summary.at, startId: snap.summary.id, startEx: snap.summary.chaos } }
+          // отсчёт — что уже введено и снято (до первого забега его сдвинет новый ввод или снимок вкладок)
+          const s = this.sources()
+          const lastAt = mode === 'snapshot' ? Math.max(0, ...s.screen.map((t) => t.at)) : (s.manualAt ?? 0)
+          void this.farm?.setSessionStart(e.session.id, this.mark(mode, lastAt || snap.summary.at))
         }
       }
       await this.saveLink()
@@ -451,68 +494,48 @@ export class Poe2WealthManager {
     }
     if (e.state === 'stop') {
       await this.flushNow()
-      const s = this.link.session
-      if (s && s.stoppedAt === undefined) {
-        this.link = { ...this.link, session: { ...s, stoppedAt: this.now(), awaitingEnd: true } }
+      const L = this.link
+      if (L.session && L.session.stoppedAt === undefined && L.farmId === e.session.id) {
+        const end = e.session.profitEnd ?? 'none'
+        const session = { ...L.session, stoppedAt: this.now() }
+        // «Без прибыли» — конец не ждём
+        if (end !== 'none') session.awaitingEnd = true
+        this.link = { ...L, session }
         await this.saveLink()
       }
       this.emit()
     }
   }
 
-  /** После снимка: начало сессии (в первые минуты), прибыль закончившихся забегов, итог сессии. */
-  private async afterRecord(snap: WealthSnapshot): Promise<void> {
+  /**
+   * После снимка: до первого забега ввод или принятая вкладка — новый отсчёт; после «Стоп» первый ввод или снимок
+   * вкладок — конец сессии и прибыль (один раз).
+   */
+  private async afterRecord(snap: WealthSnapshot, src: RecordSource): Promise<void> {
     const L = this.link
     const s = L.session
-    if (!s || L.league !== snap.summary.league || snap.summary.id === s.startId) return
+    if (!s || !L.farmId || L.league !== snap.summary.league || (src !== 'manual' && src !== 'screen')) return
     const at = snap.summary.at
-    const active = s.stoppedAt === undefined
-    if (!active && at - (s.stoppedAt ?? 0) > END_GRACE_MS) return
-    // игрок «отметил» богатство в начале: ещё ни одного забега — этот снимок и есть отсчёт
-    if (active && !L.pending.length && !L.lastGroup && at - s.startedAt <= START_GRACE_MS) {
-      this.link = {
-        ...L,
-        session: { startedAt: s.startedAt, startId: snap.summary.id, startEx: snap.summary.chaos },
-        boundary: { id: snap.summary.id, at }
-      }
+    const kind = src === 'screen' ? 'snapshot' : 'manual'
+    if (s.stoppedAt === undefined) {
+      if (L.runStarted) return
+      this.link = { ...L, session: { startedAt: s.startedAt, startId: snap.summary.id, startEx: snap.summary.chaos } }
       await this.saveLink()
+      void this.farm?.setSessionStart(L.farmId, this.mark(kind, at))
       return
     }
-    const rate = snap.summary.divineRate
-    const setProfit = (runId: string, runs: number, p: { chaos: number; low: boolean }): void => {
-      const profit: FarmRunProfit = { chaos: p.chaos, runs }
-      if (rate > 0) profit.divineRate = rate
-      if (p.low) profit.low = true
-      this.farm?.setRunProfit(runId, profit)
-    }
-    let next: Poe2SessionLink = { ...L }
-    if (L.pending.length && L.boundary) {
-      const base = await this.deps.store.loadDetail(L.boundary.id)
-      const runId = L.pending[L.pending.length - 1]
-      if (base) {
-        setProfit(runId, L.pending.length, qtyProfit(base, snap))
-        next.lastGroup = { runId, runs: L.pending.length, fromId: L.boundary.id }
-      }
-      next.boundary = { id: snap.summary.id, at }
-      next.pending = []
-    } else if (!active && L.lastGroup) {
-      // после «Стоп» игрок поправил богатство ещё раз — конец сессии сдвигается, последняя группа пересчитывается
-      const base = await this.deps.store.loadDetail(L.lastGroup.fromId)
-      if (base) setProfit(L.lastGroup.runId, L.lastGroup.runs, qtyProfit(base, snap))
-      next.boundary = { id: snap.summary.id, at }
-    }
+    if (!s.awaitingEnd) return
     const start = await this.deps.store.loadDetail(s.startId)
-    const session = { ...s, endId: snap.summary.id, endEx: snap.summary.chaos }
-    if (start) {
-      const p = qtyProfit(start, snap)
-      session.profitEx = p.chaos
-      if (p.low) session.low = true
-      else delete session.low
-    }
-    if (!active) delete session.awaitingEnd
-    next = { ...next, session }
-    this.link = next
+    if (!start) return
+    const p = qtyProfit(start, snap)
+    const session = { ...s, endId: snap.summary.id, endEx: snap.summary.chaos, profitEx: p.chaos }
+    delete session.awaitingEnd
+    if (p.low) session.low = true
+    this.link = { ...L, session }
     await this.saveLink()
+    const profit: FarmSessionProfit = { ...this.mark(kind, at), ex: p.chaos }
+    if (snap.summary.divineRate > 0) profit.exPerDiv = snap.summary.divineRate
+    void this.farm?.setSessionProfit(L.farmId, profit)
   }
 
   // ------------------------------------------------------------------ состояние и детали

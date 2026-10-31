@@ -15,7 +15,7 @@ import { PriceService } from '../games/poe1/wealth/priceService'
 import { WealthManager } from '../games/poe1/wealth/manager'
 import { WealthStore } from '../games/poe1/wealth/store'
 import { getDivineTrack, getFeedStore } from '../games/poe1/exchange/feedService'
-import { getFarmState, onFarmEvent, setRunProfit } from '../services/farmSession'
+import { onFarmEvent, setRunProfit, setSessionProfit, setSessionStart } from '../services/farmSession'
 import type { IpcDomain } from './types'
 import { devEnv } from '../devEnv'
 import { isAppPageUrl } from '../security'
@@ -182,7 +182,8 @@ const SCREEN_RECORD_MAX_AGE_MS = 2 * 60_000
 
 /**
  * «Записать в богатство» в панели Alt+F (оверлей): последний результат распознавания S68 → карточка в компаньоне,
- * окно компаньона показывается. Снимок экрана не нужен — S68 отдаёт имена, числа и ячейки.
+ * окно компаньона показывается без фокуса (игра остаётся в фокусе). Снимок экрана не нужен — S68 отдаёт имена,
+ * числа и ячейки.
  */
 function poe2ScreenRecord(): { ok: boolean } {
   const read = getLastScreenRead()
@@ -190,8 +191,7 @@ function poe2ScreenRecord(): { ok: boolean } {
   if (!getPoe2().screenRecord(read)) return { ok: false }
   const win = getCompanionWindow()
   if (win && !win.isDestroyed()) {
-    if (!win.isVisible()) win.show()
-    win.focus()
+    if (!win.isVisible()) win.showInactive()
   }
   return { ok: true }
 }
@@ -210,10 +210,6 @@ function getPoe2(): Poe2WealthManager {
       }
     },
     league: () => getEffectiveLeague().catch(() => null),
-    currentRunId: () => {
-      const st = getFarmState(0)
-      return st.session && st.current?.sessionId === st.session.id ? st.current.id : null
-    },
     // карточка снимка вкладки и итог — только окну компаньона
     emit: (s) => sendToCompanion(IPC.events.wealthPoe2, s),
     log
@@ -260,8 +256,12 @@ async function setupPoe2(): Promise<void> {
   unsubs.push(onLeaguesChanged(() => void p.onLeagueChanged()))
   unsubs.push(onSettingsChange(() => void p.onLeagueChanged()))
   await p.start()
-  // прибыль сессии фарма: трекер карт PoE 2 (S69) — те же onFarmEvent / setRunProfit, что у PoE 1
-  p.attachFarm({ onFarmEvent, setRunProfit })
+  // прибыль сессии фарма: трекер карт PoE 2 (S69) — отметка начала и прибыль сессии одним числом
+  p.attachFarm({
+    onFarmEvent: (cb) => onFarmEvent(cb, 'poe2'),
+    setSessionStart: (id, mark) => setSessionStart(id, mark, 'poe2'),
+    setSessionProfit: (id, profit) => setSessionProfit(id, profit, 'poe2')
+  })
 }
 
 async function setupForGame(def: GameDef): Promise<void> {

@@ -5,5 +5,7 @@ import { iconSrc } from '../../../components/Currency'
 export function ItemIcon({ icon }: { icon?: string }) {
   const [broken, setBroken] = useState(false)
   if (!icon || broken) return <i className="ui-coin" aria-hidden="true" />
-  return <img className="ui-coin ui-coin--img" src={iconSrc(icon)} alt="" aria-hidden="true" draggable={false} onError={() => setBroken(true)} />
+  return (
+    <img className="ui-coin ui-coin--img" src={iconSrc(icon)} alt="" aria-hidden="true" draggable={false} onError={() => setBroken(true)} />
+  )
 }
