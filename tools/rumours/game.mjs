@@ -11,16 +11,29 @@
 //  - перевод — те же таблицы в Data/Balance/Russian.
 //
 // Сеть: один TCP-запрос к патч-серверу GGG за номером патча (если не задан --patch), файлы с patch-poe2.poecdn.com,
-// схема таблиц с GitHub (poe-tool-dev/dat-schema). User-Agent POETH, данных пользователя нет. Всё скачанное —
-// в отдельную временную папку, не в репозиторий.
+// схема таблиц с GitHub (poe-tool-dev/dat-schema, закреплена — SCHEMA_PIN). User-Agent POETH/<версия из package.json>,
+// данных пользователя нет. Всё скачанное — в отдельную временную папку, не в репозиторий.
 
 import net from 'node:net'
-import { promises as fs } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { promises as fs, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-export const UA = 'POETH/0.1.0 (+https://github.com/MAYZOSUPER/POETH)'
-export const SCHEMA_URL = 'https://github.com/poe-tool-dev/dat-schema/releases/download/latest/schema.min.json'
+const PKG = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'))
+export const UA = `POETH/${PKG.version} (+https://github.com/MAYZOSUPER/POETH)`
+
+/**
+ * Схема таблиц dat-schema. Собранный JSON у проекта есть только в «плавающем» релизе `latest`, версионных релизов нет,
+ * поэтому закрепляем содержимое: сборка коммита 6034b071846e (29.10.2026, «Fix 28 tables the game client reads
+ * differently»), sha256 ниже. Другой файл по адресу — отказ с подсказкой; свежую схему проверить и передать
+ * `--schema <файл>`, затем закрепить здесь её коммит и sha256.
+ */
+export const SCHEMA_PIN = {
+  url: 'https://github.com/poe-tool-dev/dat-schema/releases/download/latest/schema.min.json',
+  commit: '6034b071846e',
+  sha256: '8666b1df2479aaeb2456994dda2e2da0a24d36788dfd6d63cf163fb7d19cb444'
+}
 export const PATCH_SERVER = { host: 'patch.pathofexile2.com', port: 13060 }
 
 /** Номер текущего патча PoE 2 у патч-сервера GGG: ответ содержит адрес CDN `https://patch-poe2.poecdn.com/<патч>/`. */
@@ -55,13 +68,30 @@ async function importDat(datModules) {
   return { B, D }
 }
 
-async function loadSchema(schemaSrc) {
-  if (/^https:\/\//.test(schemaSrc)) {
-    const r = await fetch(schemaSrc, { headers: { 'User-Agent': UA } })
-    if (!r.ok) throw new Error(`схема таблиц: HTTP ${r.status}`)
-    return r.json()
+/** Скачанная схема — та, что закреплена (SCHEMA_PIN.sha256); иначе ошибка с подсказкой. */
+export function checkPinnedSchema(bytes) {
+  const got = createHash('sha256').update(bytes).digest('hex')
+  if (got !== SCHEMA_PIN.sha256) {
+    throw new Error(
+      `схема таблиц на GitHub обновилась (sha256 ${got.slice(0, 12)}…, закреплена ${SCHEMA_PIN.sha256.slice(0, 12)}… — коммит ${SCHEMA_PIN.commit}).\n` +
+        '  Проверьте новую схему и передайте её файлом: --schema <schema.min.json>; затем закрепите коммит и sha256 в SCHEMA_PIN (tools/rumours/game.mjs).'
+    )
   }
-  return JSON.parse(await fs.readFile(schemaSrc, 'utf8'))
+}
+
+/** schemaFile — файл схемы (--schema); null — закреплённая схема с GitHub. */
+async function loadSchema(schemaFile, log) {
+  if (schemaFile) {
+    const bytes = await fs.readFile(schemaFile)
+    log(`схема таблиц из файла, sha256 ${createHash('sha256').update(bytes).digest('hex')}`)
+    return JSON.parse(bytes.toString('utf8'))
+  }
+  const r = await fetch(SCHEMA_PIN.url, { headers: { 'User-Agent': UA } })
+  if (!r.ok) throw new Error(`схема таблиц: HTTP ${r.status}`)
+  const bytes = Buffer.from(await r.arrayBuffer())
+  checkPinnedSchema(bytes)
+  log(`схема таблиц — закреплённая (коммит ${SCHEMA_PIN.commit})`)
+  return JSON.parse(bytes.toString('utf8'))
 }
 
 /** Колонки таблицы по схеме (validFor & 2 — PoE 2); безымянные получают имя `_<номер>`. */
@@ -107,11 +137,11 @@ function headersOf(schema, name, dat, D) {
  * @param {string} o.datModules  папка node_modules с pathofexile-dat
  * @param {string} o.patch       версия патча на CDN (`0.5.5.5`)
  * @param {string} o.cacheDir    временная папка для скачанных бандлов
- * @param {string} [o.schema]    файл или адрес схемы таблиц
+ * @param {string|null} [o.schema] файл схемы таблиц; null — закреплённая с GitHub (SCHEMA_PIN)
  * @param {string[]} [o.itemNames] английские имена наград, для которых нужны путь метаданных и RU-имя
  * @param {(msg: string) => void} [o.log]
  */
-export async function readGameRumours({ datModules, patch, cacheDir, schema = SCHEMA_URL, itemNames = [], log = () => {} }) {
+export async function readGameRumours({ datModules, patch, cacheDir, schema = null, itemNames = [], log = () => {} }) {
   const { B, D } = await importDat(datModules)
   await fs.mkdir(cacheDir, { recursive: true })
   let downloaded = 0
@@ -133,7 +163,7 @@ export async function readGameRumours({ datModules, patch, cacheDir, schema = SC
     }
   }
   const files = await B.FileLoader.create(loader)
-  const sch = await loadSchema(schema)
+  const sch = await loadSchema(schema, log)
 
   /** Таблица целиком; lang — папка перевода (`Russian`) или null. null на выходе — перевода нет. */
   async function table(name, lang = null) {
