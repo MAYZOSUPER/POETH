@@ -28,6 +28,8 @@ export interface Poe2TreeNode {
   id: string
   /** имя EN — только у нотаблов, кейстоунов, гнёзд и выборов восхождения; у прочих '' */
   name: string
+  /** имя RU из данных игры (EE2); '' — перевода нет */
+  ru: string
   flags: number
   /** id восхождения (`Huntress1`); null — основное дерево */
   ascendancy: string | null
@@ -107,7 +109,8 @@ export function parsePoe2Tree(raw: unknown): Poe2TreeData | null {
     if (!Array.isArray(n) || !isInt(n[0]) || !isStr(n[1]) || !ID_RE.test(n[1]) || !isStr(n[2]) || !isInt(n[3])) continue
     const asc = isStr(n[4]) && ID_RE.test(n[4]) ? n[4] : null
     const near = Array.isArray(n[5]) ? (n[5] as unknown[]).filter(isInt) : []
-    nodes.set(n[0], { hash: n[0], id: n[1], name: n[2].slice(0, 100), flags: n[3], ascendancy: asc, near: [...near] })
+    const ru = isStr(n[6]) ? n[6].slice(0, 100) : ''
+    nodes.set(n[0], { hash: n[0], id: n[1], name: n[2].slice(0, 100), ru, flags: n[3], ascendancy: asc, near: [...near] })
   }
   // соседи — в обе стороны (в файле ребро хранится у ноды с меньшим hash)
   for (const n of [...nodes.values()]) {

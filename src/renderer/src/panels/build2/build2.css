@@ -74,3 +74,4 @@
 }
 .b2-low { cursor: help; }
 .b2-foot { display: flex; align-items: center; gap: var(--sp-2); }
+.b2-en { margin-left: 4px; padding: 0 3px; border: 1px solid var(--border-strong); border-radius: var(--r-sm); font-size: var(--fs-2xs); color: var(--fg-faint); text-decoration: none; cursor: help; }
