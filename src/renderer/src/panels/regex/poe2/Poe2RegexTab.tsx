@@ -124,7 +124,7 @@ export function Poe2RegexTab() {
       </div>
       <div className="rx-body ui-scroll">
         {simple && page !== 'library' && (
-          <div className="ui-banner rx-banner rx-p2-banner">
+          <div className="ui-banner ui-banner--info rx-banner rx-p2-banner">
             <Ico name="info" />
             <span>{t('regex.poe2.beta')}</span>
             <span />

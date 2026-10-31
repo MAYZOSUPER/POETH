@@ -45,7 +45,7 @@ function SearchRow({ s, now, masterOn, max, game }: { s: LiveSearchView; now: nu
       <span className="live-t">
         <b title={`${s.title} · ${s.league}`}>
           {s.title}
-          <span className="live-league"> · {s.league}</span>
+          {!s.title.endsWith(s.league) && <span className="live-league"> · {s.league}</span>}
           {fav && (
             <span className="ui-tag live-fav" title={t('live.row.favHint')}>
               {t('live.row.fav')}
@@ -339,7 +339,10 @@ export function LiveTab() {
             </tbody>
           </table>
         ) : (
-          <div className="live-recent-empty">{t('live.recent.empty')}</div>
+          <div className="ui-empty live-recent-empty">
+            <LiveIco name="bolt" size="lg" />
+            <span>{t('live.recent.empty')}</span>
+          </div>
         )}
       </div>
     </div>
