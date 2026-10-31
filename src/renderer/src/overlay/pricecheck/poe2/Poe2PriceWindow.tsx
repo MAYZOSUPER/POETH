@@ -2,12 +2,12 @@ import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
 import type { CapturedItem, GameInputResult, UiLang } from '@shared/types'
 import { ItemCategory, ItemRarity, type ParsedItem } from '@shared/poe2/parser'
 import type { FilterPreset, ItemFilters, ListingType, StatFilter } from '@shared/poe2/pricecheck'
-import type { Poe1ExchangeOffer, Poe1Listing, Poe1Price } from '@shared/poe1/pricecheck/results'
+import type { Poe1ExchangeOffer, Poe1Listing } from '@shared/poe1/pricecheck/results'
 import type { StatSource } from '@shared/poe1/parser/modifiers'
 import type { VerdictKind } from '@shared/poe1/pricecheck/verdict'
 import type { MarketPrice2, Verdict2 } from '@shared/poe2/pricecheck/verdict'
 import { angeConfidence } from '@shared/poe2/pricecheck/ange'
-import { convertPrice2, roundExalted } from '@shared/poe2/pricecheck/currency'
+import { roundExalted } from '@shared/poe2/pricecheck/currency'
 import { angeView, rateFractions2, type AngeRowView } from '@shared/poe2/pricecheck/priceBlock'
 import { hourRange } from '@shared/poe1/pricecheck/faustus'
 import { modText, modTextParts, type ModText } from '@shared/poe1/pricecheck/filters/mod-text'
@@ -20,10 +20,13 @@ import { useOverlayT } from '../../useOverlayT'
 import { tKey } from '../../../i18n/hotkey'
 import { PopupPositionButton } from '../../PopupPosition'
 import { Select } from '../../../components/Select'
-import { CoinIcon, Currency, CurrencyTipBody, TipAnchor, useCurrencyNames } from '../../../components/Currency'
-import type { RuCase } from '@shared/currency'
+import { CoinIcon, CurrencyTipBody, TipAnchor, useCurrencyNames } from '../../../components/Currency'
 import { ageKey, currencyLabel, fmtNum, tierWordKey, waitClock } from '../format'
-import { activePreset2Of, ratesOf, usePoe2PriceCheckStore as useStore, type Pc2Result } from './store'
+import { activePreset2Of, usePoe2PriceCheckStore as useStore, type Pc2Result } from './store'
+import { Price, usePriceText, type PriceText } from './PriceText'
+import { SellAnge, SellBulk2, SellTrade2 } from './SellBox2'
+import { ModeSwitch } from '../SellBox'
+import { usePcMode } from '../sellMode'
 import './poe2.css'
 
 // Окно цены PoE2 (S47) — то же окно поверх игры, что у PoE1 (../PriceWindow.tsx), те же классы ui-*/pc-* и строки
@@ -66,31 +69,6 @@ function useNow(active: boolean): number {
   return now
 }
 
-function fmtDiv(v: number, lang: UiLang): string {
-  const s = v < 10 ? v.toFixed(2) : String(v)
-  return lang === 'ru' ? s.replace('.', ',') : s
-}
-
-/** S61: «345 ex ≈ 0.50 div» / «1 div ≈ 690 ex» / «2 c ≈ 143 ex» — подсказка к цене по курсу у Ange. */
-function conversionTitle(price: Poe1Price, lang: UiLang, t: T): string | undefined {
-  const rates = ratesOf(useStore.getState())
-  const other = convertPrice2(price, rates)
-  if (!other) return undefined
-  return price.currency === 'exalted'
-    ? t('pc2.s61.conv.toDiv', { e: fmtNum(price.amount, lang), d: fmtDiv(other.amount, lang) })
-    : t('pc2.s61.conv.toEx', { p: `${fmtNum(price.amount, lang)} ${currencyLabel(price.currency)}`, e: fmtNum(other.amount, lang) })
-}
-
-function Price({ price, lang, full = false, approx = false }: { price: Poe1Price; lang: UiLang; full?: boolean; approx?: boolean }) {
-  const t = useOverlayT()
-  // перерисовать, когда придёт курс
-  useStore((s) => s.rate)
-  useStore((s) => s.more)
-  const conv = conversionTitle(price, lang, t)
-  const text = `${approx ? '~' : ''}${fmtNum(price.amount, lang)}`
-  return <Currency tag={price.currency} text={text} full={full} lang={lang} className="pc-price" extra={conv && <b>{conv}</b>} />
-}
-
 /** S61: плашка курса «1 div ≈ N ex» в шапке; при наведении — дроби 0.1…1 div, курс chaos и откуда данные. */
 function RateBadge2({ lang, t }: { lang: UiLang; t: T }) {
   const rate = useStore((s) => s.rate)
@@ -125,16 +103,6 @@ function RateBadge2({ lang, t }: { lang: UiLang; t: T }) {
       {t('pc2.s61.rate', { n })}
     </TipAnchor>
   )
-}
-
-type PriceText = (p: Poe1Price, c?: RuCase) => string
-function usePriceText(lang: UiLang): PriceText {
-  const simple = useStore((s) => s.simple)
-  const names = useCurrencyNames(lang)
-  return (p, c = 'nom') => {
-    const n = fmtNum(p.amount, lang)
-    return `${n} ${simple ? names.after(p.currency, n, c) : currencyLabel(p.currency)}`
-  }
 }
 
 function SearchAgainBar({ t }: { t: T }) {
@@ -821,11 +789,17 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<Pc2Result, {
   const outliers = new Set([...result.honest.instant.outliers, ...result.honest.person.outliers])
   const rows = result.listings.filter((l) => !outliers.has(l.id))
   const shown = all ? rows : rows.slice(0, SHOW_LISTINGS)
+  const selling = usePcMode((s) => s.mode) === 'sell'
   return (
     <>
-      <VerdictPlate v={result.verdict} bulk={false} simple={simple} lang={lang} t={t} />
-      <MarketSummary result={result} simple={simple} lang={lang} t={t} />
-      {simple && <WhyHint result={result} lang={lang} t={t} />}
+      {/* S61: «Продаю» — тот же поиск, другой вывод: цена для мерчант-вкладки вместо вердикта и цены на рынке (как S50) */}
+      {selling ? (
+        <SellTrade2 result={result} simple={simple} lang={lang} t={t} />
+      ) : (
+        <VerdictPlate v={result.verdict} bulk={false} simple={simple} lang={lang} t={t} />
+      )}
+      {!selling && <MarketSummary result={result} simple={simple} lang={lang} t={t} />}
+      {simple && !selling && <WhyHint result={result} lang={lang} t={t} />}
       <div className="pc-blk">
         <div className="ui-label">
           {t('pc1.listings')}
@@ -854,9 +828,14 @@ function BulkResult({ result, simple, lang, t }: { result: Extract<Pc2Result, { 
   const each = best ? best.exchangeAmount / best.itemAmount : 0
   const priceText = usePriceText(lang)
   const names = useCurrencyNames(lang)
+  const selling = usePcMode((s) => s.mode) === 'sell'
   return (
     <>
-      <VerdictPlate v={result.verdict} bulk simple={simple} lang={lang} t={t} />
+      {selling ? (
+        <SellBulk2 result={result} simple={simple} lang={lang} t={t} />
+      ) : (
+        <VerdictPlate v={result.verdict} bulk simple={simple} lang={lang} t={t} />
+      )}
       <div className="ui-summary">
         <span className="ui-summary__price">
           {best && (
@@ -955,10 +934,13 @@ function AngeResult({ result, simple, lang, t }: { result: Extract<Pc2Result, { 
   const view = angeView(a, result.stack)
   const conf = angeConfidence(a)
   const num = (n: number): string => n.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US')
+  const selling = usePcMode((s) => s.mode) === 'sell'
   return (
     <>
       {view.kind === 'exalted' ? (
         <ExaltedPlate rate={a.exaltedPerDivine} lang={lang} t={t} />
+      ) : selling ? (
+        <SellAnge result={result} simple={simple} lang={lang} t={t} />
       ) : (
         <VerdictPlate v={result.verdict} bulk exchange simple={simple} lang={lang} t={t} />
       )}
@@ -1270,6 +1252,8 @@ export function Poe2PriceWindow({ captured, onClose }: { captured: CapturedItem;
       </header>
       <div className="pc-body ui-scroll">
         <ItemHead item={item} captured={captured} t={t} />
+        {/* S61: «Покупаю / Продаю» — выбор общий с PoE 1 (S50) */}
+        <ModeSwitch t={t} />
         {expert && presets.length > 1 && (
           <div className="pc-chips pc-chips--top">
             <span className="ui-label">{t('pc1.preset')}</span>
