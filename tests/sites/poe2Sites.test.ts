@@ -116,11 +116,25 @@ describe('вкладки по игре', () => {
     expect(tabForUrl('http://poe.ninja/', 'poe2')).toBeNull()
   })
 
-  it('закладка: сайт реестра своей игры — «уже есть вкладка»; без игры — по PoE 1', () => {
+  it('закладка: сайт реестра своей игры — «уже есть вкладка», другой игры — «есть у другой игры» (закладки общие)', () => {
     const id = (): string => 'x1'
     expect(validateBookmark({ url: 'https://poe2db.tw/ru/' }, [], id, 'poe2')).toEqual({ ok: false, reason: 'site' })
     expect(validateBookmark({ url: 'https://poe2.re/' }, [], id, 'poe2')).toEqual({ ok: false, reason: 'site' })
+    expect(validateBookmark({ url: 'https://www.poelab.com/' }, [], id, 'poe2')).toEqual({ ok: false, reason: 'siteOther' })
+    expect(validateBookmark({ url: 'https://poedb.tw/us/' }, [], id, 'poe2')).toEqual({ ok: false, reason: 'siteOther' })
+    expect(validateBookmark({ url: 'https://poe2db.tw/ru/' }, [], id, 'poe1')).toEqual({ ok: false, reason: 'siteOther' })
+    expect(validateBookmark({ url: 'https://poe.ninja/' }, [], id, 'poe1')).toEqual({ ok: false, reason: 'site' })
+    expect(validateBookmark({ url: 'https://www.poe-vault.com/' }, [], id, 'poe2').ok).toBe(true)
+  })
+
+  it('чтение sites.json (без игры) — как в S43: старые закладки на сайты PoE 2 не пропадают', () => {
+    const id = (): string => 'x1'
     expect(validateBookmark({ url: 'https://poe2db.tw/ru/' }, [], id).ok).toBe(true)
-    expect(validateBookmark({ url: 'https://www.poelab.com/' }, [], id, 'poe2').ok).toBe(true)
+    expect(validateBookmark({ url: 'https://poedb.tw/us/' }, [], id)).toEqual({ ok: false, reason: 'site' })
+  })
+
+  it('у причины «есть у другой игры» есть текст RU и EN', () => {
+    expect(fav.ru['sites.bm.err.siteOther']).toBeTypeOf('string')
+    expect(fav.en['sites.bm.err.siteOther']).toBeTypeOf('string')
   })
 })

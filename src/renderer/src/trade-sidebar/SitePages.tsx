@@ -46,6 +46,7 @@ const ERR_KEYS: Record<BookmarkError, string> = {
   host: 'sites.bm.err.host',
   poe: 'sites.bm.err.poe',
   site: 'sites.bm.err.site',
+  siteOther: 'sites.bm.err.siteOther',
   dup: 'sites.bm.err.dup',
   limit: 'sites.bm.err.limit'
 }
