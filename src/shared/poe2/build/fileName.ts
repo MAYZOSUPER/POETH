@@ -24,7 +24,16 @@ function translit(s: string): string {
   return out
 }
 
-const RESERVED = /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])$/i
+/**
+ * Зарезервированные имена Windows — и с расширением: «CON.build», «nul.x.build», «COM1 .build» тоже не создать.
+ * Проверяем часть имени до первой точки (пробелы перед точкой Windows отбрасывает).
+ */
+const RESERVED = /^(?:con|prn|aux|nul|com[0-9]|lpt[0-9])\s*(?:\.|$)/i
+
+/** Имя файла (с расширением или без) — зарезервированное имя устройства Windows. */
+export function isReservedName(name: string): boolean {
+  return RESERVED.test(name)
+}
 
 /** Название билда → имя файла `<имя>.build` (только безопасные символы). */
 export function buildFileName(name: string): string {
@@ -35,18 +44,39 @@ export function buildFileName(name: string): string {
     .replace(/\.{2,}/g, '.')
     .trim()
     .replace(/^[.\s-]+|[.\s]+$/g, '')
-  if (s.length > FILE_NAME_MAX) s = s.slice(0, FILE_NAME_MAX).replace(/[.\s]+$/g, '')
-  if (!s || RESERVED.test(s)) s = s ? `${s}_build` : 'PoE2 build'
-  return `${s}${BUILD_EXT}`
+  if (!s) s = 'PoE2 build'
+  else if (isReservedName(s)) s = `PoE2 ${s}`
+  return `${fit(s, FILE_NAME_MAX)}${BUILD_EXT}`
 }
 
-/** Имя свободно? Нет — «Имя (2).build», «Имя (3).build»… (для «Сохранить копией»). */
-export function nextFreeName(fileName: string, taken: (name: string) => boolean): string {
-  if (!taken(fileName)) return fileName
+/** Обрезать основу имени до max, без точек и пробелов в конце. */
+function fit(stem: string, max: number): string {
+  return stem.length > max ? stem.slice(0, max).replace(/[.\s]+$/g, '') : stem
+}
+
+/** Сколько копий пробовать: «Имя (2)» … «Имя (99)». */
+export const COPIES_MAX = 99
+
+/**
+ * «Сохранить копией» (S66): первое свободное имя — само имя (n = 1), иначе «Имя (2).build», «Имя (3).build»…
+ * Суффикс всегда помещается: основа обрезается так, чтобы «Имя (N)» было не длиннее FILE_NAME_MAX (транслит
+ * удлиняет кириллицу, и длинное название упирается в предел). `taken` — имя занято (на Windows — без учёта регистра).
+ * null — свободного нет среди COPIES_MAX.
+ */
+export function nextFreeName(fileName: string, taken: (name: string) => boolean): { fileName: string; n: number } | null {
+  if (!taken(fileName)) return { fileName, n: 1 }
   const base = fileName.endsWith(BUILD_EXT) ? fileName.slice(0, -BUILD_EXT.length) : fileName
-  for (let i = 2; i < 100; i++) {
-    const n = `${base} (${i})${BUILD_EXT}`
-    if (!taken(n)) return n
+  for (let n = 2; n <= COPIES_MAX; n++) {
+    const suffix = ` (${n})`
+    const name = `${fit(base, FILE_NAME_MAX - suffix.length)}${suffix}${BUILD_EXT}`
+    if (!taken(name)) return { fileName: name, n }
   }
-  return `${base} (${Date.now()})${BUILD_EXT}`
+  return null
+}
+
+/** Название копии в игре: «Название (N)», не длиннее max (суффикс не обрезается). */
+export function copyBuildName(name: string, n: number, max = 80): string {
+  if (n <= 1) return name
+  const suffix = ` (${n})`
+  return `${name.slice(0, Math.max(1, max - suffix.length)).trimEnd()}${suffix}`
 }
