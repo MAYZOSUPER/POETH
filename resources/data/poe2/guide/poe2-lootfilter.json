@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "id": "poe2-lootfilter",
+  "rev": 1,
+  "updated": "2026-10-31",
+  "patch": ["0.5"],
+  "title": { "ru": "Фильтр лута в PoE 2", "en": "Loot filters in PoE 2" },
+  "summary": {
+    "ru": "Зачем нужен фильтр лута, как поставить фильтр NeverSink для PoE 2 через POETH, какую строгость выбрать и как обновлять.",
+    "en": "Why you need a loot filter, how to install the NeverSink filter for PoE 2 with POETH, which strictness to pick and how to update it."
+  },
+  "sections": [
+    {
+      "id": "why",
+      "title": { "ru": "Зачем", "en": "Why" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "Без фильтра на землю падает много мусора, и ценное легко пропустить. **Фильтр лута** — текстовый файл в папке игры: он прячет ненужное и выделяет ценное цветом, звуком и значком на миникарте. Игру он не меняет — только то, как показывается добыча.",
+            "en": "Without a filter, lots of junk drops on the ground and valuable items are easy to miss. A **loot filter** is a text file in the game folder: it hides what you don't need and highlights valuables with colour, sound and a minimap icon. It doesn't change the game — only how loot is shown."
+          }
+        }
+      ]
+    },
+    {
+      "id": "install",
+      "title": { "ru": "Как поставить через POETH", "en": "How to install it with POETH" },
+      "blocks": [
+        {
+          "kind": "list",
+          "ordered": true,
+          "items": [
+            {
+              "ru": "**Откройте Настройки POETH → «Фильтр лута»** (в режиме PoE 2).",
+              "en": "**Open POETH Settings → Loot filter** (in PoE 2 mode)."
+            },
+            {
+              "ru": "**Выберите строгость.** Не уверены — берите Regular: мусор скрыт, полезное видно.",
+              "en": "**Pick the strictness.** Not sure — take Regular: junk is hidden, useful items stay visible."
+            },
+            {
+              "ru": "**Нажмите «Установить».** POETH скачает официальный фильтр NeverSink для PoE 2 с GitHub и положит его в `Документы\\My Games\\Path of Exile 2` под именем POETH-NeverSink-1-REGULAR.",
+              "en": "**Press Install.** POETH downloads the official NeverSink filter for PoE 2 from GitHub and puts it into `Documents\\My Games\\Path of Exile 2` as POETH-NeverSink-1-REGULAR."
+            },
+            {
+              "ru": "**В игре:** Esc → «Настройки», найдите список «Фильтр предметов» и выберите POETH-NeverSink-1-REGULAR.",
+              "en": "**In the game:** Esc → Options, find the Item Filter list and pick POETH-NeverSink-1-REGULAR."
+            }
+          ]
+        },
+        {
+          "kind": "app",
+          "to": "settings",
+          "label": { "ru": "Настройки → Фильтр лута", "en": "Settings → Loot filter" }
+        }
+      ]
+    },
+    {
+      "id": "levels",
+      "title": { "ru": "Какую строгость брать", "en": "Which strictness to pick" },
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            { "ru": "**Кампания и первые дни** — Regular.", "en": "**The campaign and the first days** — Regular." },
+            { "ru": "**Первые путевые камни** (уровни 1–10) — Semi-Strict.", "en": "**Your first waystones** (tiers 1–10) — Semi-Strict." },
+            { "ru": "**Путевые камни 11–16** — Strict.", "en": "**Tier 11–16 waystones** — Strict." },
+            {
+              "ru": "**Строже** — когда фармите быстро и знаете, что ищете. Можно поставить несколько уровней и переключать их прямо в игре.",
+              "en": "**Stricter** — when you farm fast and know what you're looking for. You can install several levels and switch between them in the game."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "update",
+      "title": { "ru": "Обновления", "en": "Updates" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "NeverSink обновляет фильтр под новую экономику, особенно перед лигами. POETH покажет «Обновить до …», а после обновления в игре нажмите кнопку перезагрузки рядом со списком фильтров — перезапускать игру не нужно.",
+            "en": "NeverSink updates the filter for the new economy, especially before leagues. POETH shows \"Update to …\", and after updating press the reload button next to the filter list in the game — no need to restart."
+          }
+        },
+        {
+          "kind": "note",
+          "tone": "tip",
+          "text": {
+            "ru": "Если вы правили файл фильтра сами, POETH не перезапишет его молча — сначала спросит.",
+            "en": "If you edited the filter file yourself, POETH won't overwrite it silently — it asks first."
+          }
+        }
+      ]
+    },
+    {
+      "id": "not-listed",
+      "title": { "ru": "Если игра не видит файл", "en": "If the game doesn't see the file" },
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            {
+              "ru": "**Запустите игру хотя бы раз** — папку `Path of Exile 2` в «Документах» создаёт она.",
+              "en": "**Start the game at least once** — it creates the `Path of Exile 2` folder in Documents."
+            },
+            {
+              "ru": "**«Документы» в OneDrive?** POETH находит их сам; в экспертном режиме виден точный путь и кнопка «Открыть папку».",
+              "en": "**Documents in OneDrive?** POETH finds them itself; expert mode shows the exact path and an Open folder button."
+            },
+            {
+              "ru": "**В пути русские буквы и фильтра нет в списке?** Подпишитесь на фильтр NeverSink на сайте игры (ладдер фильтров) — игра скачает его сама. Ссылка — в разделе «Фильтр лута», «Как включить в игре».",
+              "en": "**Non-Latin letters in the path and the filter isn't listed?** Follow the NeverSink filter on the game website (item filter ladder) and the game downloads it itself. The link is in Loot filter → How to turn it on in the game."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "custom",
+      "title": { "ru": "Для опытных: своя настройка", "en": "For experienced players: your own tweaks" },
+      "expert": true,
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "Тоньше фильтр настраивают на FilterBlade — сайте NeverSink. Сохраните свой вариант **под своим именем**: файлы POETH-NeverSink-… POETH обновляет сам. Фильтр — NeverSink, лицензия MIT; POETH его не меняет и не встраивает, а скачивает официальный релиз по вашей кнопке.",
+            "en": "Finer tuning is done on FilterBlade, NeverSink's website. Save your version **under your own name**: POETH updates the POETH-NeverSink-… files itself. The filter is by NeverSink under the MIT license; POETH doesn't change or bundle it but downloads the official release when you press the button."
+          }
+        }
+      ]
+    }
+  ]
+}

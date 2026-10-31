@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BOOKMARK_LIMIT, BOOKMARK_TITLE_MAX, SITES, type BookmarkError } from '@shared/sites'
+import { BOOKMARK_LIMIT, BOOKMARK_TITLE_MAX, sitesFor, type BookmarkError } from '@shared/sites'
 import { useT } from '../i18n'
 import { Ico } from '../panels/regex/Ico'
 import { tabName } from './SiteBar'
@@ -131,7 +131,7 @@ export function SitesManage() {
 
         <h3 className="ui-label">{t('sites.page.builtin')}</h3>
         <div className="ts-site-list">
-          {SITES.map((s) => (
+          {sitesFor(sites.game).map((s) => (
             <button key={s.id} type="button" className="ts-site-row" onClick={() => void api().sites.select(s.id)}>
               <span className="ts-rail__mark" data-site={s.id}>
                 {s.mark}

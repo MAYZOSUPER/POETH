@@ -15,9 +15,12 @@ import {
   type GuideSection
 } from './article'
 
-/** У каких игр есть «Справочник» (статьи пока только про PoE 1). Одно место, чтобы лид мог спрятать раздел. */
+/**
+ * У каких игр есть «Справочник»: PoE 1 (S55) и PoE 2 (S64, статьи — resources/data/poe2/guide). Одно место,
+ * чтобы лид мог спрятать раздел.
+ */
 export function guideOn(game: GameId): boolean {
-  return game === 'poe1'
+  return game === 'poe1' || game === 'poe2'
 }
 
 /** Прочитать файл папки guide: текст или null (нет файла, ошибка чтения). */

@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "id": "poe2-waystones",
+  "rev": 1,
+  "updated": "2026-10-31",
+  "patch": ["0.5"],
+  "title": { "ru": "Путевые камни и плитки — что это", "en": "Waystones and tablets: what they are" },
+  "summary": {
+    "ru": "Эндгейм PoE 2 простыми словами: путевой камень открывает область атласа, плитка добавляет механику лиги рядом с башней. Уровни, опознание, риск.",
+    "en": "The PoE 2 endgame in plain words: a waystone opens an Atlas area, a tablet adds a league mechanic around a tower. Tiers, identification, risk."
+  },
+  "sections": [
+    {
+      "id": "waystones",
+      "title": { "ru": "Путевые камни", "en": "Waystones" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "**Путевой камень** — «карта» эндгейма: его кладут в устройство карт, и он открывает область на атласе. У камня есть уровень от 1 до 16 (в клиенте — «Путевой камень (Ур. 5)»): чем он выше, тем сильнее монстры и лучше добыча. Камень 1-го уровня открывает область 65-го уровня, 16-го — 80-го.",
+            "en": "A **waystone** is the endgame \"map\": you put it into the map device and it opens an area on the Atlas. A waystone has a tier from 1 to 16 (\"Waystone (Tier 5)\" in the client): the higher it is, the stronger the monsters and the better the loot. A tier 1 waystone opens an area level 65, tier 16 — area level 80."
+          }
+        },
+        {
+          "kind": "list",
+          "items": [
+            {
+              "ru": "**Опознайте камень перед запуском** и прочитайте его свойства: они делают область опаснее, но дают больше добычи.",
+              "en": "**Identify a waystone before you run it** and read its modifiers: they make the area more dangerous but give more loot."
+            },
+            {
+              "ru": "**Поднимайтесь по уровням постепенно.** Камни выше чаще падают в областях высокого уровня.",
+              "en": "**Climb the tiers step by step.** Higher waystones drop more often in high-level areas."
+            },
+            {
+              "ru": "**Берегите жизнь:** смерть в области, открытой через устройство карт, отнимает 10 % опыта текущего уровня (уровень не теряется).",
+              "en": "**Stay alive:** dying in an area opened through the map device costs 10% of your current level's experience (you can't lose a level)."
+            },
+            {
+              "ru": "**Слишком лёгкие камни режут опыт.** Если вы заметно выше области, компас POETH подскажет: «Эта зона даёт ~N % опыта — берите путевые камни выше».",
+              "en": "**Waystones that are too easy cut your XP.** If you are well above the area, the POETH compass says: \"This zone gives ~N% XP — run higher waystones\"."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tablets",
+      "title": { "ru": "Плитки", "en": "Tablets" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "**Плитка** (в английском клиенте — Tablet) добавляет механику лиги в области атласа вокруг башни: её вставляют в башню на атласе (Precursor Tower). Плитка работает ограниченное число раз — сколько, написано на ней.",
+            "en": "A **tablet** adds a league mechanic to the Atlas areas around a tower: you socket it into a tower on the Atlas (a Precursor Tower). A tablet works a limited number of times — the count is written on it."
+          }
+        },
+        {
+          "kind": "list",
+          "items": [
+            { "ru": "**Плитка Разлома** (Breach Tablet) — разломы в областях.", "en": "**Breach Tablet** — Breaches in the areas." },
+            { "ru": "**Плитка Делириума** (Delirium Tablet) — туман Делириума.", "en": "**Delirium Tablet** — the Delirium mist." },
+            { "ru": "**Плитка Ритуала** (Ritual Tablet) — алтари Ритуала.", "en": "**Ritual Tablet** — Ritual altars." },
+            { "ru": "**Плитка Экспедиции** (Expedition Tablet) — раскопки Экспедиции.", "en": "**Expedition Tablet** — Expedition excavations." },
+            { "ru": "**Плитка Бездны** (Abyss Tablet) — Бездна в областях.", "en": "**Abyss Tablet** — the Abyss in the areas." },
+            {
+              "ru": "Ещё есть **Плитка Смотрителя**, **Заражённая плитка** и **Плитка Храма** — что они дают, читайте на самой плитке.",
+              "en": "There are also the **Overseer**, **Irradiated** and **Temple** tablets — read the tablet itself to see what it does."
+            }
+          ]
+        },
+        {
+          "kind": "note",
+          "tone": "tip",
+          "text": {
+            "ru": "Новичку хватит одной-двух механик: выберите то, что нравится, и ставьте плитки этого вида рядом с башней, где фармите.",
+            "en": "As a new player, one or two mechanics are enough: pick what you enjoy and socket tablets of that kind into the tower where you farm."
+          }
+        }
+      ]
+    },
+    {
+      "id": "price",
+      "title": { "ru": "Сколько стоят", "en": "What they are worth" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "Камни высоких уровней и плитки с хорошими свойствами продаются. Перед продажей наведите на предмет и нажмите `Ctrl+D` — POETH покажет цены похожих лотов.",
+            "en": "High-tier waystones and tablets with good modifiers sell. Before selling, hover over the item and press `Ctrl+D` — POETH shows prices of similar listings."
+          }
+        },
+        {
+          "kind": "app",
+          "to": "priceCheck",
+          "label": { "ru": "Прайс-чек (Ctrl+D)", "en": "Price check (Ctrl+D)" }
+        },
+        {
+          "kind": "app",
+          "to": "regex",
+          "label": { "ru": "Regex: найти нужные камни в тайнике", "en": "Regex: find the right waystones in your stash" }
+        },
+        {
+          "kind": "link",
+          "site": "poe2db",
+          "label": { "ru": "poe2db: свойства камней и плиток", "en": "poe2db: waystone and tablet modifiers" },
+          "text": { "ru": "Откроется во вкладке трейд-окна.", "en": "Opens in a trade window tab." }
+        }
+      ]
+    },
+    {
+      "id": "later",
+      "title": { "ru": "К выходу 1.0", "en": "Towards 1.0" },
+      "blocks": [
+        {
+          "kind": "pending",
+          "text": {
+            "ru": "Статья написана по версии 0.5. В 1.0 атлас может измениться — после патчноутов раздел обновится.",
+            "en": "This article is based on version 0.5. The Atlas may change in 1.0 — the section will be updated after the patch notes."
+          }
+        }
+      ]
+    }
+  ]
+}

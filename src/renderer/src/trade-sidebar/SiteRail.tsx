@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { SITES, bookmarkTab, type SiteTabId } from '@shared/sites'
+import { bookmarkTab, sitesFor, type SiteTabId } from '@shared/sites'
 import { useT } from '../i18n'
 import { Ico } from '../panels/regex/Ico'
 import { RailDrawer, RailToggle } from '../components/RailParts'
@@ -81,6 +81,8 @@ export function SiteRail() {
   const t = useT()
   const bookmarks = useFavStore((s) => s.sites?.bookmarks ?? [])
   const active = useFavStore((s) => s.sites?.active ?? 'trade')
+  // S64: у PoE 2 свой список сайтов
+  const sites = sitesFor(useFavStore((s) => s.sites?.game ?? 'poe1'))
   const wide = useFavStore((s) => !!s.site?.rail.wide)
   const room = useFavStore((s) => !!s.site?.rail.room)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -100,7 +102,7 @@ export function SiteRail() {
   }, [drawer])
   useDrawerOverSite(drawer)
 
-  const tabs: SiteTabId[] = ['trade', ...SITES.map((s) => s.id), ...bookmarks.map((b) => bookmarkTab(b.id)), 'manage']
+  const tabs: SiteTabId[] = ['trade', ...sites.map((s) => s.id), ...bookmarks.map((b) => bookmarkTab(b.id)), 'manage']
   const focusTab = tabs.includes(active) ? active : 'trade'
 
   const choose = (tab: SiteTabId): void => {
@@ -142,7 +144,7 @@ export function SiteRail() {
           <div className="ui-rail__head" aria-hidden="true">
             <span>{t('sites.group.sites')}</span>
           </div>
-          {SITES.map((s) => (
+          {sites.map((s) => (
             <RailTab key={s.id} tab={s.id} name={s.name} title={`${s.name} — ${t(s.aboutKey)}`} {...item}>
               <span className="ts-rail__mark" data-site={s.id}>
                 {s.mark}

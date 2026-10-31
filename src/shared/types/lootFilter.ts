@@ -1,10 +1,16 @@
-// Типы домена «Фильтр лута» (S53): фильтр NeverSink для PoE 1 в один клик — уровень строгости, стиль,
-// установка в папку фильтров игры под своим именем, «есть новая версия».
+// Типы домена «Фильтр лута» (S53): фильтр NeverSink в один клик — уровень строгости, стиль,
+// установка в папку фильтров игры под своим именем, «есть новая версия». S64: и для PoE 2 — свой репозиторий
+// NeverSink, свои стили и папка «Документы/My Games/Path of Exile 2»; выбор и манифест у каждой игры свои.
+
+import type { GameId } from '../games'
 
 /** Уровень строгости NeverSink: 0 — Soft (видно почти всё) … 6 — Uber Plus Strict (только самое ценное). */
 export type LootFilterLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
-/** Стиль (цвета и звуки) — папка `(STYLE) <ИМЯ>` в релизе; 'default' — файлы в корне. CustomSounds не берём (нужны mp3). */
+/**
+ * Стиль (цвета и звуки) — папка `(STYLE) <ИМЯ>` в релизе; 'default' — файлы в корне. CustomSounds не берём (нужны mp3).
+ * У PoE 1 и PoE 2 наборы разные (levels.ts: STYLES / STYLES_POE2); cobalt и vaal есть в обоих.
+ */
 export type LootFilterStyle =
   | 'default'
   | 'abyss'
@@ -22,6 +28,11 @@ export type LootFilterStyle =
   | 'vaal'
   | 'velvet'
   | 'wow'
+  // PoE 2 (S64)
+  | 'aura'
+  | 'darkmode'
+  | 'mythic'
+  | 'zen'
 
 /** Релиз NeverSink на GitHub (из releases/latest; только проверенные поля). */
 export interface LootFilterRelease {
@@ -53,14 +64,16 @@ export interface LootFilterInstalled {
 export type LootFilterFolderSource = 'default' | 'custom' | 'env'
 
 export interface LootFilterFolder {
-  /** папка фильтров PoE 1 (Документы/My Games/Path of Exile) */
+  /** папка фильтров игры (Документы/My Games/Path of Exile или …/Path of Exile 2) */
   path: string
   /** откуда путь: по умолчанию, выбран игроком, подменён переменной POETH_LOOTFILTER_DIR (проверки) */
   source: LootFilterFolderSource
   /** папка существует */
   found: boolean
-  /** в папке есть production_Config.ini — похоже на папку игры */
+  /** в папке есть файл настроек игры (production_Config.ini, у PoE 2 — poe2_production_Config.ini) */
   looksLikeGame: boolean
+  /** в пути есть не латинские буквы (например, «Документы» или имя пользователя кириллицей) — подсказка в «Как включить» */
+  nonAscii: boolean
 }
 
 export interface LootFilterPrefs {
@@ -87,8 +100,10 @@ export type LootFilterError =
   | 'busy'
 
 export interface LootFilterState {
-  /** функция доступна (PoE 1) */
+  /** функция доступна (PoE 1 и PoE 2) */
   on: boolean
+  /** для какой игры состояние: репозиторий, стили, папка (S64) */
+  game: GameId
   folder: LootFilterFolder
   prefs: LootFilterPrefs
   latest: LootFilterRelease | null
@@ -115,5 +130,8 @@ export type LootFilterInstallResult =
   | { ok: true; state: LootFilterState; file: string; tag: string }
   | { ok: false; state: LootFilterState; error: LootFilterError; confirm?: LootFilterConfirmReason; file?: string }
 
-/** Ссылки, которые main открывает в браузере по точному адресу (renderer не может открыть github.com сам). */
-export type LootFilterLink = 'repo' | 'license' | 'release' | 'filterblade'
+/**
+ * Ссылки, которые main открывает в браузере по точному адресу (renderer не может открыть github.com сам).
+ * 'ladder' — ладдер фильтров на сайте игры (у PoE 2 — pathofexile2.com, его нет в allowlist renderer).
+ */
+export type LootFilterLink = 'repo' | 'license' | 'release' | 'filterblade' | 'ladder'

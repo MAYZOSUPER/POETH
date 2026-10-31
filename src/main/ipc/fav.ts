@@ -182,7 +182,8 @@ export async function openTradeWindow(target: TradeWindowTarget = {}): Promise<v
 export async function openSites(target: SitesTarget = {}): Promise<void> {
   if (!tabs.sitesEnabled()) return
   const d = await getSitesData()
-  const tab = target.tab !== undefined && isKnownTab(target.tab, d.bookmarks) ? target.tab : await tabs.lastSiteTab()
+  const game = getRunningGame()
+  const tab = target.tab !== undefined && isKnownTab(target.tab, d.bookmarks, game) ? target.tab : await tabs.lastSiteTab()
   const title = await windowTitle()
   tw.setTradeWindowTitle(title)
   await tw.showTradeWindow({ title, defaultUrl, tab, siteUrl: typeof target.url === 'string' ? target.url : undefined })
@@ -475,7 +476,7 @@ function register(): void {
   handle(IPC.sites.ackNote, () => tabs.ackSitesNote())
   handle(IPC.sites.addBookmark, async (raw) => {
     const input = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {}
-    const v = validateBookmark({ title: input.title, url: input.url }, (await getSitesData()).bookmarks, newBookmarkId)
+    const v = validateBookmark({ title: input.title, url: input.url }, (await getSitesData()).bookmarks, newBookmarkId, getRunningGame())
     if (!v.ok) return v
     await tabs.addBookmark(v.bookmark)
     const tab: SiteTabId = `bm:${v.bookmark.id}`
@@ -489,8 +490,8 @@ function register(): void {
 function setupForGame(def: GameDef): void {
   // трейд-окно есть у обеих игр (PoE2 — сайт trade2); Ctrl+Shift+T, область always
   onHotkeyAction('toggleTradeWindow', () => toggle())
-  // вкладки сайтов (S43) — у PoE 1; хоткей «Сайты» — последняя вкладка сайта
-  tabs.setSitesEnabled(sitesOn(def.id))
+  // вкладки сайтов (S43; S64 — и у PoE 2, свой список); хоткей «Сайты» — последняя вкладка сайта
+  tabs.setSitesEnabled(sitesOn(def.id), def.id)
   if (sitesOn(def.id)) onHotkeyAction('toggleSites', () => void tabs.lastSiteTab().then((tab) => toggle(tab)))
 }
 

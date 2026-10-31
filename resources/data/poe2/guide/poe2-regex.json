@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "id": "poe2-regex",
+  "rev": 1,
+  "updated": "2026-10-31",
+  "patch": ["0.5"],
+  "title": { "ru": "Как пользоваться regex в тайнике", "en": "How to use regex in your stash" },
+  "summary": {
+    "ru": "Строка поиска, которая подсвечивает нужные вещи в тайнике и у торговца: где её взять, куда вставить и почему для русского клиента нужна русская строка.",
+    "en": "A search string that highlights the items you need in your stash and at vendors: where to get it, where to paste it and why the Russian client needs a Russian string."
+  },
+  "sections": [
+    {
+      "id": "what",
+      "title": { "ru": "Что это", "en": "What it is" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "В тайнике и в окне торговца есть строка поиска. Если вставить туда особую строку — **regex** — игра подсветит все подходящие предметы: например, путевые камни с нужными свойствами или кольца с сопротивлениями. Остальное можно не разглядывать.",
+            "en": "Your stash and the vendor window have a search box. Paste a special string — a **regex** — and the game highlights every matching item: for example, waystones with the modifiers you want or rings with resistances. You don't have to inspect the rest."
+          }
+        }
+      ]
+    },
+    {
+      "id": "how",
+      "title": { "ru": "Как пользоваться", "en": "How to use it" },
+      "blocks": [
+        {
+          "kind": "list",
+          "ordered": true,
+          "items": [
+            {
+              "ru": "**Сделайте строку в генераторе:** отметьте, что ищете (свойства камня, моды предмета), и скопируйте результат.",
+              "en": "**Make the string in a generator:** tick what you are looking for (waystone modifiers, item mods) and copy the result."
+            },
+            {
+              "ru": "**Откройте тайник или торговца**, нажмите `Ctrl+F` — курсор встанет в строку поиска.",
+              "en": "**Open your stash or a vendor** and press `Ctrl+F` — the cursor jumps to the search box."
+            },
+            {
+              "ru": "**Вставьте строку** (`Ctrl+V`) — подходящие предметы подсветятся.",
+              "en": "**Paste the string** (`Ctrl+V`) — matching items light up."
+            },
+            {
+              "ru": "**Сохраните строки, которые нужны часто,** чтобы не собирать их каждый раз заново.",
+              "en": "**Save the strings you use often** so you don't rebuild them every time."
+            }
+          ]
+        },
+        {
+          "kind": "app",
+          "to": "regex",
+          "label": { "ru": "Regex в POETH", "en": "Regex in POETH" },
+          "text": { "ru": "Генератор строк прямо в приложении.", "en": "A string generator right in the app." }
+        }
+      ]
+    },
+    {
+      "id": "russian",
+      "title": { "ru": "Русский клиент", "en": "The Russian client" },
+      "blocks": [
+        {
+          "kind": "note",
+          "tone": "warn",
+          "text": {
+            "ru": "Поиск сравнивает строку с текстом предмета **на языке клиента**. В русском клиенте английская строка ничего не найдёт — нужна строка на русском.",
+            "en": "The search matches the string against the item text **in the client's language**. In the Russian client an English string finds nothing — you need a Russian one."
+          }
+        },
+        {
+          "kind": "link",
+          "site": "regexru",
+          "label": { "ru": "poe2-regex-ru — строки для русского клиента", "en": "poe2-regex-ru — strings for the Russian client" },
+          "text": { "ru": "Откроется во вкладке трейд-окна.", "en": "Opens in a trade window tab." }
+        },
+        {
+          "kind": "link",
+          "site": "poe2re",
+          "label": { "ru": "poe2.re — генератор строк", "en": "poe2.re — a string generator" },
+          "text": { "ru": "Путевые камни, плитки, торговец. Откроется во вкладке трейд-окна.", "en": "Waystones, tablets, vendor. Opens in a trade window tab." }
+        }
+      ]
+    },
+    {
+      "id": "limits",
+      "title": { "ru": "Для опытных: ограничения", "en": "For experienced players: limits" },
+      "expert": true,
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            {
+              "ru": "**Длина строки ограничена:** в PoE 2 — до 250 символов (в PoE 1 — 50). Генераторы сами укладываются в лимит.",
+              "en": "**The string length is limited:** up to 250 characters in PoE 2 (50 in PoE 1). Generators keep within the limit themselves."
+            },
+            {
+              "ru": "**Синтаксис берите из генератора.** В PoE 1 работают `|` («или»), `!` («не») и кавычки для фраз с пробелами; что из этого так же работает в PoE 2, мы ещё проверяем.",
+              "en": "**Take the syntax from a generator.** In PoE 1, `|` (\"or\"), `!` (\"not\") and quotes for phrases with spaces work; we are still checking which of these work the same in PoE 2."
+            },
+            {
+              "ru": "**После патча строки могут устареть:** если текст свойства в игре поменялся, пересоберите строку.",
+              "en": "**Strings can break after a patch:** if a modifier's text changed in the game, rebuild the string."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+/* S64: подсказка опыта в компасе PoE 2 (ZoneXpHint) — как строка опыта гида S52 (.lv-xp), только токены. */
+.zxh {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid color-mix(in srgb, var(--info) 40%, transparent);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--info) 6%, transparent);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  color: var(--fg);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.zxh > .ui-ico {
+  margin-top: 1px;
+  color: var(--info);
+}
+.zxh--high {
+  border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+  background: color-mix(in srgb, var(--warn) 7%, transparent);
+}
+.zxh--high > .ui-ico {
+  color: var(--warn);
+}
+.zxh__extra {
+  color: var(--fg-muted);
+}
