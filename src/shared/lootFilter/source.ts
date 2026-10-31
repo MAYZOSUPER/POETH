@@ -53,10 +53,11 @@ export const FILTER_SOURCES: Record<GameId, FilterSource> = {
     configFiles: ['poe2_production_Config.ini', 'production_Config.ini'],
     headerGame: /Path of Exile 2/i,
     filterblade: 'https://www.filterblade.xyz/?game=Poe2',
-    // ладдер фильтров PoE 2 — на сайте pathofexile2.com (RU — раздел /ru/); что там фильтр NeverSink — проверка в игре (S64)
+    // ладдер фильтров PoE 2 — тот же раздел сайта PoE 1, тип игры PoE2 (проверено 1.11.2026 без входа: в списке
+    // NeverSink-…-PoE2; на pathofexile2.com такой страницы нет — «Resource not found»)
     ladder: {
-      en: 'https://pathofexile2.com/item-filter/ladder/follower',
-      ru: 'https://pathofexile2.com/ru/item-filter/ladder/follower'
+      en: 'https://www.pathofexile.com/item-filter/ladder/follower/type/PoE2',
+      ru: 'https://ru.pathofexile.com/item-filter/ladder/follower/type/PoE2'
     }
   }
 }
@@ -120,8 +121,16 @@ export function isLootFilterUrl(url: unknown): url is string {
   return sources.some((s) => u.pathname.startsWith(zipPath(s)))
 }
 
+/** Как выбрать RU-версию ладдера: PoE 1 — по хосту сайта игры (S53), PoE 2 — по языку клиента или интерфейса. */
+export interface LadderLang {
+  /** хост сайта PoE 1 из настроек (www / ru.pathofexile.com) */
+  siteHost?: string
+  /** язык клиента игры (а если не узнали — интерфейса): для PoE 2 */
+  lang?: 'ru' | 'en' | string
+}
+
 /** Точный адрес ссылки экрана (main открывает его в браузере); у 'release' — страница тега, без тега — список релизов. */
-export function linkUrl(link: LootFilterLink, tag?: string | null, game: GameId = 'poe1', siteHost?: string): string | null {
+export function linkUrl(link: LootFilterLink, tag?: string | null, game: GameId = 'poe1', ladder: LadderLang = {}): string | null {
   const s = filterSource(game)
   const repo = `https://github.com/${s.owner}/${s.repo}`
   switch (link) {
@@ -134,16 +143,20 @@ export function linkUrl(link: LootFilterLink, tag?: string | null, game: GameId 
     case 'filterblade':
       return s.filterblade
     case 'ladder':
-      return ladderUrl(siteHost, game)
+      return ladderUrl(ladder.siteHost, game, ladder.lang)
     default:
       return null
   }
 }
 
-/** Ладдер фильтров GGG: подписка на фильтр NeverSink без файлов (игра качает сама). RU — по хосту сайта игры. */
-export function ladderUrl(siteHost: string | undefined, game: GameId = 'poe1'): string {
+/**
+ * Ладдер фильтров GGG: подписка на фильтр NeverSink без файлов (игра качает сама). RU у PoE 1 — по хосту сайта игры
+ * (как в S53); у PoE 2 — по языку клиента/интерфейса (`lang`), хост сайта — настройка PoE 1.
+ */
+export function ladderUrl(siteHost: string | undefined, game: GameId = 'poe1', lang?: string): string {
   const l = filterSource(game).ladder
-  return siteHost === 'ru.pathofexile.com' ? l.ru : l.en
+  const ru = game === 'poe2' ? lang === 'ru' : siteHost === 'ru.pathofexile.com'
+  return ru ? l.ru : l.en
 }
 
 /** Ответ releases/latest → релиз; черновики, pre-release и подозрительный тег — null. */

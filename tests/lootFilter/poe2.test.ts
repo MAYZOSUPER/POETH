@@ -102,15 +102,26 @@ describe('источник PoE 2', () => {
     expect(src.linkUrl('license', null, 'poe2')).toBe('https://github.com/NeverSinkDev/NeverSink-Filter-for-PoE2/blob/main/LICENSE')
     expect(src.linkUrl('release', '0.10.4a', 'poe2')).toBe('https://github.com/NeverSinkDev/NeverSink-Filter-for-PoE2/releases/tag/0.10.4a')
     expect(src.linkUrl('filterblade', null, 'poe2')).toBe('https://www.filterblade.xyz/?game=Poe2')
-    expect(src.linkUrl('ladder', null, 'poe2', 'www.pathofexile.com')).toBe('https://pathofexile2.com/item-filter/ladder/follower')
-    expect(src.linkUrl('ladder', null, 'poe2', 'ru.pathofexile.com')).toBe('https://pathofexile2.com/ru/item-filter/ladder/follower')
   })
 
-  it('PoE 1 — ссылки как в S53 (ладдер теперь открывает main, адрес тот же)', () => {
+  it('ладдер PoE 2 — раздел «тип PoE2» сайта GGG (проверено 1.11), RU — по языку клиента, не по хосту сайта PoE 1', () => {
+    const en = 'https://www.pathofexile.com/item-filter/ladder/follower/type/PoE2'
+    const ru = 'https://ru.pathofexile.com/item-filter/ladder/follower/type/PoE2'
+    expect(src.linkUrl('ladder', null, 'poe2', { lang: 'ru' })).toBe(ru)
+    expect(src.linkUrl('ladder', null, 'poe2', { lang: 'en' })).toBe(en)
+    // хост сайта PoE 1 на ладдер PoE 2 не влияет
+    expect(src.linkUrl('ladder', null, 'poe2', { siteHost: 'ru.pathofexile.com', lang: 'en' })).toBe(en)
+    expect(src.linkUrl('ladder', null, 'poe2', { siteHost: 'www.pathofexile.com', lang: 'ru' })).toBe(ru)
+    expect(src.linkUrl('ladder', null, 'poe2')).toBe(en)
+  })
+
+  it('PoE 1 — ссылки как в S53 (ладдер теперь открывает main, адрес и выбор RU по хосту — те же)', () => {
     expect(src.linkUrl('license')).toBe('https://github.com/NeverSinkDev/NeverSink-Filter/blob/master/LICENSE')
     expect(src.linkUrl('filterblade')).toBe('https://www.filterblade.xyz/?game=Poe1')
-    expect(src.linkUrl('ladder', null, 'poe1', 'ru.pathofexile.com')).toBe(src.ladderUrl('ru.pathofexile.com'))
-    expect(src.linkUrl('ladder', null, 'poe1', 'www.pathofexile.com')).toBe('https://www.pathofexile.com/item-filter/ladder/follower')
+    expect(src.linkUrl('ladder', null, 'poe1', { siteHost: 'ru.pathofexile.com', lang: 'en' })).toBe(src.ladderUrl('ru.pathofexile.com'))
+    expect(src.linkUrl('ladder', null, 'poe1', { siteHost: 'www.pathofexile.com', lang: 'ru' })).toBe(
+      'https://www.pathofexile.com/item-filter/ladder/follower'
+    )
   })
 })
 

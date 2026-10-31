@@ -132,6 +132,6 @@ export type LootFilterInstallResult =
 
 /**
  * Ссылки, которые main открывает в браузере по точному адресу (renderer не может открыть github.com сам).
- * 'ladder' — ладдер фильтров на сайте игры (у PoE 2 — pathofexile2.com, его нет в allowlist renderer).
+ * 'ladder' — ладдер фильтров на сайте GGG (у PoE 2 — раздел «тип PoE2»; RU выбирает main по языку клиента).
  */
 export type LootFilterLink = 'repo' | 'license' | 'release' | 'filterblade' | 'ladder'
