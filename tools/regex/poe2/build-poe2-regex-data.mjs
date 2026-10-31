@@ -52,7 +52,19 @@ const SOURCES = {
   tabletStats: 'stat_translations/tablet_stat_descriptions.min.json'
 }
 
-const TOKEN_MIN = 2
+/**
+ * Таблицы игры (факт-справка, как названия классов фикстур S47): слова имён редких предметов и русские имена
+ * аффиксов — LocalIdentity/poe2-data @ 6a49dbd (выгрузка 0.1.x). В тайнике у каждого редкого предмета имя из двух
+ * слов («Gloom Path» / «Мрачный путь»); токен не должен совпадать с ним (ни внутри слова, ни на стыке слов).
+ */
+const P2D_SHA = '6a49dbd72e745d338958525c4c570b4891719c72'
+const P2D_URL = `https://raw.githubusercontent.com/LocalIdentity/poe2-data/${P2D_SHA}/data/`
+const P2D_SOURCES = { words: 'words.json', wordsRu: 'russian/words.json', modsRu: 'russian/mods.json' }
+/** Списки слов имён редких предметов: 1 — первое слово (прилагательное), 2 — второе. */
+const RARE_WORDLISTS = new Set([1, 2])
+
+/** Короче 3 символов токены задевают слишком многое (имена предметов, которых нет в данных). */
+const TOKEN_MIN = 3
 const TOKEN_MAX = 12
 const FALLBACK_MAX = 28
 const FORBIDDEN = /["!\n]/
@@ -79,7 +91,21 @@ const TAG_RU_EXTRA = { damage: 'Урон', elemental: 'Стихии', resistance
  * Строка-заголовок мода в расширенном тексте: `{ Prefix Modifier "Painful" (Tier: 1) — Damage, Physical }`.
  * Имя аффикса есть только английское (RePoE); в RU-клиенте имена русские — их нет в данных (пункт проверки в игре).
  */
-export function headerLine(mod, lang, strings) {
+export function headerLine(mod, lang, strings, names = null) {
+  return headerLines(mod, lang, strings, names)[0]
+}
+
+/**
+ * Заголовки мода на языке клиента: в RU — по каждой форме русского имени аффикса (poe2-data, «Коллекционный /
+ * Коллекционная…»), если оно есть, иначе с английским именем.
+ */
+export function headerLines(mod, lang, strings, names = null, id = null) {
+  const ru = lang === 'ru' && names && id ? names.affixRu.get(id) : null
+  const forms = ru?.length ? ru : [mod.name ?? '']
+  return forms.map((n) => headerWith(mod, lang, strings, n))
+}
+
+function headerWith(mod, lang, strings, affix) {
   const kinds = {
     prefix: 'PREFIX_MODIFIER',
     suffix: 'SUFFIX_MODIFIER',
@@ -93,8 +119,72 @@ export function headerLine(mod, lang, strings) {
     .filter((t) => SHOWN_TAGS.includes(t))
     .map((t) => (lang === 'ru' ? strings[TAG_RU_KEYS[t]] ?? TAG_RU_EXTRA[t] : t.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())))
     .filter(Boolean)
-  const name = mod.name ? ` "${mod.name}"` : ''
+  const name = affix ? ` "${affix}"` : ''
   return normLine(`{ ${kind}${name} (${tier}: 1)${tags.length ? ` — ${tags.join(', ')}` : ''} }`)
+}
+
+// ---------------------------------------------------------------------------
+// Имена редких предметов и русские имена аффиксов (poe2-data)
+// ---------------------------------------------------------------------------
+
+/** Формы слова: «<if:MS>{Мрачный}<elif:FS>{Мрачная}…» → все варианты в фигурных скобках; иначе — само слово. */
+export function wordForms(text) {
+  const t = String(text ?? '')
+  const forms = t.includes('{') ? [...t.matchAll(/\{([^}]*)\}/g)].map((m) => m[1]) : [t]
+  return [...new Set(forms.map((f) => f.trim()).filter(Boolean))]
+}
+
+/**
+ * Индекс слов имён: подстрока без пробела задевает имя, если есть внутри слова; с пробелом — если начало (до
+ * первого пробела) — конец какого-то слова, а хвост (после последнего пробела) — начало какого-то слова (стык
+ * «Gloom Path» → «m p»). Проверка со свёрткой ё→е и в нижнем регистре.
+ */
+export function nameIndex(words) {
+  const list = [...new Set(words.map((w) => fold(w.toLowerCase())))].sort()
+  const joined = '\n' + list.join('\n') + '\n'
+  const ends = new Set()
+  const starts = new Set()
+  for (const w of list) {
+    for (let i = 0; i < w.length; i++) {
+      ends.add(w.slice(i))
+      starts.add(w.slice(0, i + 1))
+    }
+  }
+  const hitsRaw = (raw) => {
+    const f = fold(raw.toLowerCase())
+    if (!f.includes(' ')) return joined.includes(f)
+    if (list.some((w) => w.includes(f))) return true
+    const parts = f.split(' ')
+    return ends.has(parts[0]) && starts.has(parts[parts.length - 1])
+  }
+  /** То же для фрагмента регулярки метки (с «.» вместо заглавной). */
+  const hitsRegex = (re) => {
+    const parts = re.split(' ')
+    if (parts.length === 1) return list.some((w) => new RegExp(re).test(w))
+    const a = new RegExp(`${parts[0]}$`)
+    const b = new RegExp(`^${parts[parts.length - 1]}`)
+    return list.some((w) => new RegExp(re).test(w)) || (list.some((w) => a.test(w)) && list.some((w) => b.test(w)))
+  }
+  return { list, hitsRaw, hitsRegex }
+}
+
+/** Слова имён редких предметов (списки 1 и 2) на языке клиента и русские имена аффиксов по id мода. */
+export function loadNames() {
+  const read = (key) => JSON.parse(fs.readFileSync(path.join(SRC_DIR, 'p2d_' + cacheName(P2D_SOURCES[key])), 'utf8'))
+  const en = read('words')
+  const ru = read('wordsRu')
+  const words = { en: [], ru: [] }
+  en.forEach((w, i) => {
+    if (!RARE_WORDLISTS.has(w.Wordlist)) return
+    words.en.push(...wordForms(w.Text))
+    words.ru.push(...wordForms(ru[i]?.Text2 ?? w.Text))
+  })
+  const affixRu = new Map()
+  for (const m of read('modsRu')) {
+    const forms = wordForms(m.Name)
+    if (m.Id && forms.length) affixRu.set(m.Id, forms)
+  }
+  return { words, affixRu, index: { en: nameIndex(words.en), ru: nameIndex(words.ru) } }
 }
 
 /** Теги путевых камней (ярусы): мод с весом > 0 по ним — мод путевого камня. */
@@ -208,6 +298,18 @@ export async function ensureSources(refresh) {
     if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`)
     fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()))
     info[rel] = { url, lastModified: res.headers.get('last-modified') }
+    console.log('ok')
+  }
+  // poe2-data — закреплённый коммит: перекачивать незачем (новый — сменить P2D_SHA)
+  for (const rel of Object.values(P2D_SOURCES)) {
+    const file = path.join(SRC_DIR, 'p2d_' + cacheName(rel))
+    if (fs.existsSync(file)) continue
+    const url = P2D_URL + rel
+    process.stdout.write(`скачиваю ${url} … `)
+    const res = await fetch(url, { headers: { 'User-Agent': userAgent() } })
+    if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`)
+    fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()))
+    info[`poe2-data/${rel}`] = { url, sha: P2D_SHA }
     console.log('ok')
   }
   fs.writeFileSync(infoFile, JSON.stringify(info, null, 2) + '\n')
@@ -486,17 +588,18 @@ function collectGroups(mods, pick, trs, ee2) {
 
 const isSuperset = (sup, sub) => sub.every((l) => sup.includes(l))
 
-function findToken(group, lang, all, extraFolded) {
+function findToken(group, lang, all, extraFolded, names = null) {
   const lines = group.text[lang]
   const caseLines = lang === 'ru' ? group.display[lang] : null
   // в RU токен берём только из переведённых строк (английскую строку RU-клиент покажет по-русски)
   const candLines = lang === 'ru' && group.ruOk.some(Boolean) ? lines.filter((_, i) => group.ruOk[i]) : lines
   // в RU — без букв, заглавных в подсказке (регистр кириллицы в поиске игры не проверен)
   const caseFine = (cand) => lang !== 'ru' || group.display.ru.some((d) => d.includes(cand))
-  const others = all.filter((g) => g !== group).map((g) => ({ g, folded: g.text[lang].map(fold) }))
+  const others = all.filter((g) => g !== group).map((g) => ({ g, folded: [...g.text[lang], ...(g.head?.[lang] ?? [])].map(fold) }))
   const conflicts = (cand) => {
     const f = fold(cand)
-    if (extraFolded.includes(f)) return null
+    // строка подсказки или имя редкого предмета («Gloom Path»): задевать нельзя никогда
+    if (extraFolded.includes(f) || names?.hitsRaw(cand)) return null
     const hit = []
     for (const o of others) {
       if (o.folded.some((l) => l.includes(f)) && !isSuperset(o.g.text[lang], lines)) hit.push(o.g.id)
@@ -530,7 +633,7 @@ function findToken(group, lang, all, extraFolded) {
   const extraLines = extraFolded.split('\n')
   for (const cand of substrings(candLines, TOKEN_MIN, FALLBACK_MAX, { caseLines })) {
     const f = fold(cand)
-    const n = extraLines.filter((l) => l.includes(f)).length
+    const n = extraLines.filter((l) => l.includes(f)).length + (names?.hitsRaw(cand) ? 1 : 0)
     const hit = others.filter((o) => o.folded.some((l) => l.includes(f)) && !isSuperset(o.g.text[lang], lines)).map((o) => o.g.id)
     if (!best || n < best.extra || (n === best.extra && hit.length < best.also.length)) best = { token: toRegex2(cand), also: hit, extra: n }
   }
@@ -543,7 +646,7 @@ function findToken(group, lang, all, extraFolded) {
  * строках и ни в одной чужой. В RU заглавная буква подсказки → «.» (регистр кириллицы в поиске не проверен).
  * colon — только кандидаты с «:» (привязка к строке свойства, а не к слову в тексте мода).
  */
-export function findLabel(name, own, displays, others, { lang, colon = false, part = null, min = TOKEN_MIN } = {}) {
+export function findLabel(name, own, displays, others, { lang, colon = false, part = null, min = TOKEN_MIN, names = null } = {}) {
   const othersFolded = others.map(fold)
   const src = part ?? own[0]
   const srcDisplay = part ? displays[0].slice(own[0].indexOf(part), own[0].indexOf(part) + part.length) : displays[0]
@@ -573,6 +676,8 @@ export function findLabel(name, own, displays, others, { lang, colon = false, pa
   for (const c of cands) {
     if (!own.every((l) => c.re.test(fold(l)))) continue
     if (othersFolded.some((l) => c.re.test(l))) continue
+    // метка без «:» (тип плитки, флаг) не должна совпадать с именем редкого предмета
+    if (!c.out.includes(':') && names?.hitsRegex(c.re.source)) continue
     return c.out
   }
   throw new Error(`${lang}: нет уникальной метки для ${name} («${own.join(' / ')}»)`)
@@ -684,6 +789,8 @@ function tooltipLines(lang, ctx) {
   for (const [, type] of TABLET_TYPES) add(ctx.tabletNames[lang][type])
   // имена аффиксов (строки «{ Prefix Modifier "Painful" … }») — только EN в данных
   for (const l of ctx.headerLines[lang]) add(l)
+  // слова имён редких предметов («Gloom», «Path» / «мрачный», «путь»)
+  for (const w of ctx.rare.words[lang]) add(w)
   // уникальные плитки: имена и их моды
   for (const n of ctx.uniqueTabletNames[lang]) add(n)
   for (const l of ctx.uniqueTabletLines[lang]) add(l)
@@ -693,12 +800,12 @@ function tooltipLines(lang, ctx) {
   return [...lines].sort()
 }
 
-function buildSection(lang, groups, extra, { scary = false } = {}) {
+function buildSection(lang, groups, extra, { scary = false, names = null } = {}) {
   const extraFolded = fold(extra.join('\n'))
   const mods = []
   const warn = []
   for (const g of groups) {
-    const t = findToken(g, lang, groups, extraFolded)
+    const t = findToken(g, lang, groups, extraFolded, names)
     const m = {
       id: g.id,
       text: g.text[lang].join('\n'),
@@ -708,6 +815,9 @@ function buildSection(lang, groups, extra, { scary = false } = {}) {
       tags: []
     }
     if (g.types) m.types = g.types
+    // заголовки мода в расширенном тексте («{ prefix modifier "painful" (tier: #) }»): видны поиску, поэтому
+    // чужой токен не должен их задевать, а свой может
+    if (g.head?.[lang]?.length) m.head = g.head[lang].join('\n')
     if (scary) {
       const en = g.text.en.join(' ')
       const reason = SCARY.find(([, re]) => re.test(en))?.[0]
@@ -731,8 +841,10 @@ function buildWaystone(lang, ctx) {
   const tabletModLines = ctx.tabletGroups.flatMap((g) => g.text[lang])
   // строка, совпадающая со строкой мода раздела (тот же мод у уникальной плитки), — это «тот же мод», не чужая
   const ownLines = new Set(groups.flatMap((g) => g.text[lang]))
-  const extra = [...new Set([...tooltipLines(lang, ctx), ...tabletModLines])].filter((l) => !ownLines.has(l)).sort()
-  const { mods, warn } = buildSection(lang, groups, extra, { scary: true })
+  const extra = [...new Set([...tooltipLines(lang, ctx), ...tabletModLines, ...ctx.tabletGroups.flatMap((g) => g.head[lang])])]
+    .filter((l) => !ownLines.has(l))
+    .sort()
+  const { mods, warn } = buildSection(lang, groups, extra, { scary: true, names: ctx.rare.index[lang] })
   const own = new Set(groups.flatMap((g) => g.text[lang]))
   const all = [...new Set([...own, ...extra])]
   const labels = {}
@@ -754,8 +866,8 @@ function buildWaystone(lang, ctx) {
   const unid = lang === 'ru' ? 'неопознано' : 'unidentified'
   const flags = {
     // «Twice Corrupted» — тоже осквернён: строка флага может его задевать
-    corrupted: findLabel('corrupted', [corrupted], [normLine(cs(s, 'CORRUPTED'), false)], all.filter((l) => l !== corrupted && l !== twice), { lang, min: 4 }),
-    unidentified: findLabel('unidentified', [unid], [lang === 'ru' ? 'Неопознано' : 'Unidentified'], all.filter((l) => !l.startsWith(unid)), { lang, min: 4 })
+    corrupted: findLabel('corrupted', [corrupted], [normLine(cs(s, 'CORRUPTED'), false)], all.filter((l) => l !== corrupted && l !== twice), { lang, min: 4, names: ctx.rare.index[lang] }),
+    unidentified: findLabel('unidentified', [unid], [lang === 'ru' ? 'Неопознано' : 'Unidentified'], all.filter((l) => !l.startsWith(unid)), { lang, min: 4, names: ctx.rare.index[lang] })
   }
   const tierName = ctx.names[lang].get('Waystone (Tier 1)') ?? 'Waystone (Tier 1)'
   const tierLine = normLine(tierName)
@@ -768,8 +880,10 @@ function buildTablet(lang, ctx) {
   const groups = ctx.tabletGroups
   const waystoneModLines = ctx.waystoneGroups.flatMap((g) => g.text[lang])
   const ownLines = new Set(groups.flatMap((g) => g.text[lang]))
-  const extra = [...new Set([...tooltipLines(lang, ctx), ...waystoneModLines])].filter((l) => !ownLines.has(l)).sort()
-  const { mods, warn } = buildSection(lang, groups, extra)
+  const extra = [...new Set([...tooltipLines(lang, ctx), ...waystoneModLines, ...ctx.waystoneGroups.flatMap((g) => g.head[lang])])]
+    .filter((l) => !ownLines.has(l))
+    .sort()
+  const { mods, warn } = buildSection(lang, groups, extra, { names: ctx.rare.index[lang] })
   const own = new Set(groups.flatMap((g) => g.text[lang]))
   const all = [...new Set([...own, ...extra])]
   // тип плитки — по названию базы (у волшебных оно внутри имени, у уникальных — отдельной строкой)
@@ -777,7 +891,7 @@ function buildTablet(lang, ctx) {
   for (const [, type] of TABLET_TYPES) {
     const name = ctx.tabletNames[lang][type]
     const line = normLine(name)
-    types[type] = findLabel(type, [line], [normLine(name, false)], all.filter((l) => l !== line), { lang, min: 5 })
+    types[type] = findLabel(type, [line], [normLine(name, false)], all.filter((l) => l !== line), { lang, min: 5, names: ctx.rare.index[lang] })
   }
   // «# uses remaining» / «Осталось зарядов - #»: фрагмент вокруг числа
   const usesLine = ctx.tabletUsesLine[lang]
@@ -795,6 +909,7 @@ function buildTablet(lang, ctx) {
       if (a.length + b.length < 4) continue
       const f = fold(a) + '#' + fold(b)
       if (others.some((o) => fold(o).includes(f))) continue
+      if (ctx.rare.index[lang].hitsRaw(a) && ctx.rare.index[lang].hitsRaw(b)) continue
       uses = { pre: toRegex(a), post: toRegex(b) }
       break
     }
@@ -842,11 +957,13 @@ export async function loadContext(refresh = false) {
   const ee2 = loadEe2()
   const names = { en: baseNames('en'), ru: baseNames('ru') }
   const strings = { en: readClientStrings('en'), ru: readClientStrings('ru') }
-  return { info, mods, bases, trMain, trTablet, ee2, names, strings }
+  // слова имён редких предметов и русские имена аффиксов (poe2-data)
+  const rare = loadNames()
+  return { info, mods, bases, trMain, trTablet, ee2, names, strings, rare }
 }
 
 export function buildEndgame(base) {
-  const { mods, bases, trMain, trTablet, ee2, names, strings } = base
+  const { mods, bases, trMain, trTablet, ee2, names, strings, rare } = base
   const tab = tabletContext(mods, bases, [trTablet, trMain], ee2, names)
   const waystoneGroups = collectGroups(mods, (_id, m) => waystoneKind(m), [trMain], ee2)
   const tabletGroups = collectGroups(
@@ -863,12 +980,17 @@ export function buildEndgame(base) {
     }
     g.types = TABLET_TYPES.map(([, t]) => t).filter((t) => types.has(t))
   }
-  // заголовки модов расширенного текста: `{ Prefix Modifier "Painful" (Tier: 1) — … }` (и у уникальных плиток)
-  const headerLines = { en: [], ru: [] }
-  for (const [, mod] of Object.entries(mods).sort(([a], [b]) => (a < b ? -1 : 1))) {
-    const own = waystoneKind(mod) || (mod.domain === 'tablet' && mod.generation_type !== 'unique' ? 'tablet' : null)
-    if (!own && !(mod.domain === 'tablet' && mod.generation_type === 'unique')) continue
-    for (const lang of LANGS) headerLines[lang].push(headerLine(mod, lang, strings[lang]))
+  // заголовки модов расширенного текста `{ Prefix Modifier "Painful" (Tier: 1) — … }`: у модов разделов — свои (head),
+  // в строки подсказки — заголовки уникальных плиток
+  for (const g of [...waystoneGroups, ...tabletGroups]) {
+    g.head = { en: [], ru: [] }
+    for (const id of g.members) for (const lang of LANGS) g.head[lang].push(...headerLines(mods[id], lang, strings[lang], rare, id))
+    for (const lang of LANGS) g.head[lang] = [...new Set(g.head[lang])].sort()
+  }
+  const headers = { en: [], ru: [] }
+  for (const [modId, mod] of Object.entries(mods).sort(([a], [b]) => (a < b ? -1 : 1))) {
+    if (!(mod.domain === 'tablet' && mod.generation_type === 'unique')) continue
+    for (const lang of LANGS) headers[lang].push(...headerLines(mod, lang, strings[lang], rare, modId))
   }
   const uniqueTabletNames = { en: [], ru: [] }
   const ruUniques = readNdjson(path.join(EE2_DIR, 'ru/items.ndjson')).filter((r) => r.namespace === 'UNIQUE')
@@ -882,9 +1004,10 @@ export function buildEndgame(base) {
   const ctx = {
     strings,
     names,
+    rare,
     waystoneGroups,
     tabletGroups,
-    headerLines,
+    headerLines: headers,
     uniqueTabletNames,
     uniqueTabletLines: { en: uniqueTabletLines(mods, [trTablet, trMain], ee2, 'en'), ru: uniqueTabletLines(mods, [trTablet, trMain], ee2, 'ru') },
     tabletUsesLine: { en: usesEn, ru: tab.tabletImplicits.ru[usesIdx] },
@@ -907,7 +1030,7 @@ async function main() {
   const ctx = buildEndgame(base)
   const ee2Meta = JSON.parse(fs.readFileSync(path.join(EE2_DIR, 'data.meta.json'), 'utf8'))
   const meta = {
-    source: 'RePoE fork PoE 2 (repoe-fork.github.io/poe2): mods, base_items, stat_translations; Exiled Exchange 2: stats, client_strings, items',
+    source: 'RePoE fork PoE 2 (repoe-fork.github.io/poe2): mods, base_items, stat_translations; Exiled Exchange 2: stats, client_strings, items; LocalIdentity/poe2-data ' + P2D_SHA.slice(0, 7) + ': words, russian/mods',
     date: sourcesDate(base.info),
     patch,
     ee2: ee2Meta.ee2Sha.slice(0, 7)
@@ -916,7 +1039,14 @@ async function main() {
     const w = buildWaystone(lang, ctx)
     const t = buildTablet(lang, ctx)
     const v = buildVendor(lang, base)
-    const data = { meta: { ...meta, lang }, waystone: w.section, tablet: t.section, vendor: v.section }
+    // слова имён редких предметов — движку: общие подстроки «любой из» / «не хочу» их не задевают
+    const rareWords = base.rare.index[lang].list
+    const data = {
+      meta: { ...meta, lang },
+      waystone: { ...w.section, rareWords },
+      tablet: { ...t.section, rareWords },
+      vendor: v.section
+    }
     const file = path.join(OUT_DIR, `regex.${lang}.json`)
     writeJson(file, data)
     writeJson(path.join(OUT_CORPUS, `corpus.${lang}.json`), v.corpus)

@@ -4,7 +4,8 @@
 //  - час — https://web.poecdn.com/api/currency-exchange/<hourId>, без авторизации; прошлые часы неизменны —
 //    на диске навсегда (до KEEP_HOURS), текущий час недоступен (404) и не ошибка;
 //  - S61: PoE 2 — тот же формат по адресу …/currency-exchange/poe2/<hourId> (`deps.url`); сразу — меньше часов
-//    (`deps.firstHours`: час PoE 2 ~2 МБ, окно цены не должно ждать сутки), остальное — тем же фоном;
+//    (`deps.firstHours`: час PoE 2 ~2 МБ, окно цены не должно ждать сутки), остальное — тем же фоном; хранит меньше
+//    (`deps.keepHours`: окну цены PoE 2 нужно 12 ч — на диске и в памяти не копим неделю);
 //  - при старте: недостающие свежие 24 ч сразу, остальное до `want` часов — в фоне, по запросу раз в 2 с;
 //  - дальше раз в час, в начале часа + jitter (CDN публикует час с задержкой);
 //  - в памяти — только рынки нужных лиг (весь час — на диске).
@@ -29,6 +30,8 @@ export interface FeedDeps {
   url?: string
   /** сколько свежих часов скачивать сразу (остальные до `want` — в фоне); по умолчанию FIRST_HOURS */
   firstHours?: number
+  /** сколько часов держать на диске и в памяти; по умолчанию KEEP_HOURS (неделя для коридора курса PoE 1) */
+  keepHours?: number
   /** GET без cookies аккаунта; бросает при сетевой ошибке */
   getJson: (url: string) => Promise<{ status: number; json: unknown }>
   readHour: (hour: number) => Promise<FullHour | null>
@@ -59,11 +62,13 @@ export class FeedStore {
   private readonly now: () => number
   private readonly url: string
   private readonly first: number
+  private readonly keepH: number
 
   constructor(private readonly deps: FeedDeps) {
     this.now = deps.now ?? Date.now
     this.url = deps.url ?? FEED_URL
-    this.first = Math.min(KEEP_HOURS, Math.max(1, deps.firstHours ?? FIRST_HOURS))
+    this.keepH = Math.min(KEEP_HOURS, Math.max(1, deps.keepHours ?? KEEP_HOURS))
+    this.first = Math.min(this.keepH, Math.max(1, deps.firstHours ?? FIRST_HOURS))
   }
 
   onUpdate(cb: () => void): () => void {
@@ -92,7 +97,7 @@ export class FeedStore {
   }
 
   /** Часы лиги в памяти, от старых к новым (не больше `limit` последних). */
-  hours(league: string, limit = KEEP_HOURS): FullHour[] {
+  hours(league: string, limit = this.keepH): FullHour[] {
     const list = [...this.mem.values()].sort((a, b) => a.hour - b.hour).map((h) => leagueHour(h, league))
     return list.slice(-limit)
   }
@@ -125,7 +130,7 @@ export class FeedStore {
 
   private async loadDisk(): Promise<void> {
     this.onDisk = new Set(await this.deps.listHours())
-    const oldest = hourStart(this.now()) - (KEEP_HOURS + 1) * 3600
+    const oldest = hourStart(this.now()) - (this.keepH + 1) * 3600
     for (const hour of [...this.onDisk]) {
       if (hour < oldest) {
         await this.deps.removeHour(hour)
@@ -157,7 +162,7 @@ export class FeedStore {
   refresh(league: string, want = FIRST_HOURS): Promise<boolean> {
     const hit = this.inflight.get(league)
     if (hit) return hit
-    const w = Math.min(KEEP_HOURS, Math.max(1, want))
+    const w = Math.min(this.keepH, Math.max(1, want))
     const run = (): Promise<boolean> => this.doRefresh(league, w)
     // другая лига в полёте — после неё (иначе её рынки не попали бы в память)
     const p = this.chain.then(run, run).finally(() => this.inflight.delete(league))
@@ -200,7 +205,7 @@ export class FeedStore {
   }
 
   private prune(current: number): void {
-    const oldest = current - (KEEP_HOURS + 1) * 3600
+    const oldest = current - (this.keepH + 1) * 3600
     for (const hour of [...this.mem.keys()]) {
       if (hour < oldest) {
         this.mem.delete(hour)

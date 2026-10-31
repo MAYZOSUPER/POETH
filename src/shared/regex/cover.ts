@@ -14,10 +14,23 @@ const SUB_MAX = 14
 const FORBIDDEN = /["!#\n]/
 
 /** Что нужно покрытию от мода и данных: карты PoE 1 и путевые камни / плитки PoE 2 (S62). */
-export type CoverMod = Pick<MapModData, 'id' | 'text' | 'token' | 'alsoMatches'>
+export type CoverMod = Pick<MapModData, 'id' | 'text' | 'token' | 'alsoMatches'> & {
+  /** PoE 2: строки с исходным регистром (для cyrillicCase) */
+  display?: string
+  /** PoE 2: заголовки мода в расширенном тексте («{ prefix modifier "…" }») — чужой подстроке задевать нельзя */
+  head?: string
+}
 export interface CoverData {
   mods: CoverMod[]
   extra: string[]
+  /**
+   * PoE 2 (S62): общая подстрока не должна задевать кириллические буквы, заглавные в подсказке (регистр кириллицы
+   * в поиске игры не проверен) — свои моды считаются покрытыми, только если подстрока есть в их display дословно
+   * (латиница — без учёта регистра). Карты PoE 1 опцию не включают.
+   */
+  cyrillicCase?: boolean
+  /** PoE 2: подстрока (свёрнутая ё→е) задевает имя редкого предмета — нельзя */
+  blocked?: (foldedSub: string) => boolean
 }
 
 export interface ModIndex {
@@ -35,6 +48,9 @@ export interface ModIndex {
   extraMemo: Map<string, boolean>
   /** скомпилированные токены модов */
   tokenRe: RegExp[]
+  /** cyrillicCase: строки display с латиницей в нижнем регистре; иначе null */
+  displays: string[][] | null
+  blocked: ((foldedSub: string) => boolean) | null
 }
 
 function addTo(map: Map<string, number[]>, key: string, idx: number): void {
@@ -72,6 +88,10 @@ export function getModIndex(data: CoverData): ModIndex {
         addTo(folded, foldYo(s), idx)
       }
     }
+    // заголовки мода — только для конфликтов (покрывать мод подстрока должна по его тексту)
+    for (const l of mods[idx].head?.split('\n') ?? []) {
+      for (const s of tokenSubstrings(l)) addTo(folded, foldYo(s), idx)
+    }
   })
   const supersets = lines.map((li, i) => {
     const out = new Set<number>()
@@ -89,7 +109,11 @@ export function getModIndex(data: CoverData): ModIndex {
     supersets,
     extraJoined: foldYo(data.extra.join('\n')),
     extraMemo: new Map(),
-    tokenRe: mods.map((m) => new RegExp(m.token, 'i'))
+    tokenRe: mods.map((m) => new RegExp(m.token, 'i')),
+    displays: data.cyrillicCase
+      ? mods.map((m) => (m.display ?? m.text).split('\n').map((l) => l.replace(/[A-Z]/g, (c) => c.toLowerCase())))
+      : null,
+    blocked: data.blocked ?? null
   }
   cache.set(data, index)
   return index
@@ -150,12 +174,14 @@ export function coverMods(index: ModIndex, set: number[]): CoverResult {
       for (const s of tokenSubstrings(l)) {
         if (seen.has(s)) continue
         seen.add(s)
-        const covered = (index.raw.get(s) ?? []).filter((j) => inSet.has(j))
+        let covered = (index.raw.get(s) ?? []).filter((j) => inSet.has(j))
+        // cyrillicCase: мод покрыт, только если подстрока есть в его подсказке без заглавных кириллических букв
+        if (index.displays) covered = covered.filter((j) => index.displays![j].some((d) => d.includes(s)))
         if (covered.length < 2) continue
         const f = foldYo(s)
         const conflicts = (index.folded.get(f) ?? []).filter((j) => !inSet.has(j))
         const ok = conflicts.every((j) => covered.some((c) => index.supersets[c].has(j)))
-        if (!ok || hitsExtra(index, f)) continue
+        if (!ok || hitsExtra(index, f) || index.blocked?.(f)) continue
         cands.push({ re: escapeRegex(s), covered, side: [] })
       }
     }

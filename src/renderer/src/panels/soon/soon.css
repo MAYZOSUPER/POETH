@@ -1,0 +1,13 @@
+/* «Скоро в PoE 2» (макет «PoE 2 в POETH v2», раздел 4): группы по статусу, строка — значок, название, метка, пояснение. */
+.sn-page { display: grid; gap: 12px; max-width: 760px; padding: 14px 16px 18px; align-content: start; }
+.sn-page h2 { margin: 0; font: 700 21px / 1.15 var(--font-display); letter-spacing: 0.03em; color: var(--accent-hi); }
+.sn-page > p { margin: 0; color: var(--fg-muted); font-size: var(--fs-sm); }
+.sn-grp + .sn-grp { border-top: 1px solid var(--border); }
+.sn-grp__h { margin: 0; padding: 6px 12px; background: color-mix(in srgb, var(--accent) 4%, transparent); font: 600 var(--fs-2xs) / 1.2 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-faint); }
+.sn-row { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 2px 10px; align-items: start; padding: 8px 12px; border-top: 1px solid var(--border); }
+.sn-row > .ui-ico { width: 16px; height: 16px; margin-top: 1px; color: var(--fg-faint); }
+.sn-row b { font-weight: 600; }
+.sn-row > .ui-tag { grid-column: 3; grid-row: 1; }
+.sn-row__d { grid-column: 2 / -1; font-size: var(--fs-xs); color: var(--fg-muted); }
+.sn-switch { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sn-switch > span { font-size: var(--fs-xs); color: var(--fg-muted); }

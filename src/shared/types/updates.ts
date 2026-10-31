@@ -38,7 +38,18 @@ export interface DataManifest {
   /** минимальная версия приложения, которая понимает эти данные (иначе пакет пропускаем) */
   minApp?: string
   /** путь относительно папки игры («en/stats.ndjson», «regex/maps.ru.json») → контроль */
-  files: Record<string, { sha256: string; size: number }>
+  files: Record<string, DataManifestFile>
+}
+
+export interface DataManifestFile {
+  sha256: string
+  size: number
+  /**
+   * S67: sha256 прежних версий файла из истории main (publish-data.mjs). Есть `prev`, а встроенного файла в нём нет —
+   * встроенный новее пакета (сборка вышла позже выпуска данных): файл не заменяется. Нет `prev` — пакет старого
+   * формата, файл заменяется, как раньше.
+   */
+  prev?: string[]
 }
 
 /** Settings.startup — запуск «как APT / Sidekick». */

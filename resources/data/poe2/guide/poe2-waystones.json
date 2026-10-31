@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "id": "poe2-waystones",
-  "rev": 1,
-  "updated": "2026-10-31",
+  "rev": 2,
+  "updated": "2026-11-01",
   "patch": ["0.5"],
   "title": { "ru": "Путевые камни и плитки — что это", "en": "Waystones and tablets: what they are" },
   "summary": {
@@ -13,6 +13,7 @@
     {
       "id": "waystones",
       "title": { "ru": "Путевые камни", "en": "Waystones" },
+      "rev": 2,
       "blocks": [
         {
           "kind": "text",
@@ -37,8 +38,8 @@
               "en": "**Stay alive:** dying in an area opened through the map device costs 10% of your current level's experience (you can't lose a level)."
             },
             {
-              "ru": "**Слишком лёгкие камни режут опыт.** Если вы заметно выше области, компас POETH подскажет: «Эта зона даёт ~N % опыта — берите путевые камни выше».",
-              "en": "**Waystones that are too easy cut your XP.** If you are well above the area, the POETH compass says: \"This zone gives ~N% XP — run higher waystones\"."
+              "ru": "**Слишком лёгкие камни режут опыт.** Если вы заметно выше уровня области, опыта за монстров меньше — берите путевые камни выше. POETH подскажет, если зона даёт мало опыта.",
+              "en": "**Waystones that are too easy cut your XP.** If you are well above the area level, monsters give less experience — run higher waystones. POETH tells you when a zone gives little XP."
             }
           ]
         }

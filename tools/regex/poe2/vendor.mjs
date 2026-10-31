@@ -9,7 +9,7 @@ import { cost, postCandidates, preCandidates } from '../build-vendor-data.mjs'
 import {
   ITEM_CLASS_RU,
   findLabel,
-  headerLine,
+  headerLines,
   looksEnglish,
   readClientStrings,
   renderMod,
@@ -149,7 +149,7 @@ function collectCorpus(lang, base, strings) {
   const add = (l) => {
     for (const x of l.split('\n')) if (x.trim()) lines.add(normLine(x))
   }
-  for (const [, mod] of Object.entries(mods).sort(([a], [b]) => (a < b ? -1 : 1))) {
+  for (const [modId, mod] of Object.entries(mods).sort(([a], [b]) => (a < b ? -1 : 1))) {
     if (!CORPUS_DOMAINS.has(mod.domain)) continue
     const r = renderMod(mod, [trMain], ee2)
     r[lang].forEach((l, i) => {
@@ -157,7 +157,7 @@ function collectCorpus(lang, base, strings) {
       if (lang === 'en' || r.ruOk[i]) lines.add(l)
     })
     // заголовок мода в расширенном тексте: имя аффикса и теги («— Damage, Physical, Attack»)
-    if (r.en.length) lines.add(headerLine(mod, lang, strings))
+    if (r.en.length) for (const h of headerLines(mod, lang, strings, base.rare, modId)) lines.add(h)
   }
   // свойства подсказки снаряжения (client_strings EE2)
   for (const k of ['PHYSICAL_DAMAGE', 'ELEMENTAL_DAMAGE', 'LIGHTNING_DAMAGE', 'COLD_DAMAGE', 'FIRE_DAMAGE', 'CRIT_CHANCE', 'ATTACK_SPEED', 'ARMOUR', 'EVASION', 'ENERGY_SHIELD', 'RUNIC_WARD', 'BLOCK_CHANCE', 'QUALITY', 'STACK_SIZE', 'SOCKETS', 'GEM_LEVEL', 'CHARM_SLOTS', 'BASE_SPIRIT', 'RELOAD_SPEED', 'REQUIRES', 'ITEM_LEVEL', 'RARITY', 'ITEM_CLASS', 'CORRUPTED', 'MIRRORED', 'UNMODIFIABLE', 'SANCTIFIED', 'FRACTURED_ITEM']) {
@@ -176,6 +176,8 @@ function collectCorpus(lang, base, strings) {
     if (b.release_state !== 'released' || !b.name) continue
     add(lang === 'ru' ? names.ru.get(b.name) ?? b.name : b.name)
   }
+  // слова имён редких предметов: у торговца и в тайнике у каждого редкого предмета имя из двух слов
+  for (const w of base.rare.words[lang]) add(w)
   lines.delete('')
   return [...lines].sort()
 }
@@ -257,8 +259,10 @@ function pairCandidates(line) {
   return out.sort((x, y) => x.cost - y.cost || (x.out < y.out ? -1 : x.out > y.out ? 1 : 0))
 }
 
-function findToken(key, lang, own, displays, others) {
-  const clean = (c) => !others.some((o) => c.test.test(o))
+function findToken(key, lang, own, displays, others, names) {
+  const clean = (c) =>
+    !others.some((o) => c.test.test(o)) &&
+    !(c.parts.length === 1 ? names.hitsRaw(c.parts[0]) : c.parts.every((p) => names.hitsRaw(p)))
   const covers = (c) =>
     own.filter((t, i) => c.test.test(fold(t)) && (lang !== 'ru' || c.parts.every((p) => displays[i].includes(p))))
   for (const raw of substrings([own[0]], 2, TOKEN_MAX, { allowNum: true })) {
@@ -329,7 +333,7 @@ export function buildVendor(lang, base) {
         warn.push(`${lang}/${key}: порог заденет ${t.also} строк`)
       }
     } else {
-      p.token = findToken(key, lang, uniq, uniq.map((l) => displays[lines.indexOf(l)]), others).token
+      p.token = findToken(key, lang, uniq, uniq.map((l) => displays[lines.indexOf(l)]), others, base.rare.index[lang]).token
     }
     props[key] = p
     ownByKey[key] = uniq
@@ -342,13 +346,13 @@ export function buildVendor(lang, base) {
     classNames[key] = name
     const raw = (strings.ITEM_CLASS ?? 'Item Class: ') + name
     const line = normLine(raw)
-    classes[key] = pickLabel(key, line, normLine(raw, false), all.filter((l) => l !== line), lang)
+    classes[key] = pickLabel(key, line, normLine(raw, false), all.filter((l) => l !== line), lang, base.rare.index[lang])
   }
   const rarity = {}
   for (const [key, sKey] of RARITIES) {
     const raw = (strings.RARITY ?? 'Rarity: ') + strings[sKey]
     const line = normLine(raw)
-    rarity[key] = pickLabel(key, line, normLine(raw, false), all.filter((l) => l !== line), lang)
+    rarity[key] = pickLabel(key, line, normLine(raw, false), all.filter((l) => l !== line), lang, base.rare.index[lang])
   }
   const label = (sKey, sample) => {
     const raw = strings[sKey] + sample
@@ -375,11 +379,11 @@ export function buildVendor(lang, base) {
  */
 const hasWildcard = (re) => /(^|[^\\])\./.test(re)
 
-function pickLabel(name, line, display, others, lang) {
+function pickLabel(name, line, display, others, lang, names = null) {
   const withColon = findLabel(name, [line], [display], others, { lang, colon: true, min: 4 })
   if (lang !== 'ru' || !hasWildcard(withColon)) return withColon
   try {
-    const plain = findLabel(name, [line], [display], others, { lang, min: 5 })
+    const plain = findLabel(name, [line], [display], others, { lang, min: 5, names })
     return hasWildcard(plain) ? withColon : plain
   } catch {
     return withColon

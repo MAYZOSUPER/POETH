@@ -15,7 +15,7 @@ export interface TabDef {
   icon: TabIcon
 }
 
-type TabIcon = 'ask' | 'bolt' | 'trade' | 'swap' | 'map' | 'coins' | 'search' | 'compass' | 'passive' | 'book' | 'expedition'
+type TabIcon = 'ask' | 'bolt' | 'trade' | 'swap' | 'map' | 'coins' | 'search' | 'compass' | 'passive' | 'book' | 'expedition' | 'history'
 
 export type SectionId = 'trade' | 'farm' | 'level' | 'help'
 
@@ -36,7 +36,9 @@ const TABS: Record<AppTab, TabDef> = {
   campaign: { id: 'campaign', key: 'app.campaign', icon: 'compass' },
   build: { id: 'build', key: 'app.build', icon: 'passive' },
   guide: { id: 'guide', key: 'app.guide', icon: 'book' },
-  rumours: { id: 'rumours', key: 'app.rumours', icon: 'expedition' }
+  rumours: { id: 'rumours', key: 'app.rumours', icon: 'expedition' },
+  // «Скоро в PoE 2» (вариант В макета PoE 2 v1): чего из PoE 1 ещё нет в режиме PoE 2 и когда будет
+  soon: { id: 'soon', key: 'app.soon', icon: 'history' }
 }
 
 /** Разделы и порядок вкладок — одни в обеих играх, чтобы рука помнила; чего нет в игре, просто не показывается. */
@@ -45,7 +47,7 @@ const SECTIONS: { id: SectionId; key: string; tabs: AppTab[] }[] = [
   { id: 'farm', key: 'nav.sec.farm', tabs: ['advisor', 'wealth', 'regex', 'rumours'] },
   { id: 'level', key: 'nav.sec.level', tabs: ['campaign', 'build'] },
   // S55: «Справочник» — своим разделом внизу рельса: новичку проще найти, чем среди инструментов «Фарма»
-  { id: 'help', key: 'nav.sec.help', tabs: ['guide'] }
+  { id: 'help', key: 'nav.sec.help', tabs: ['guide', 'soon'] }
 ]
 
 /** Флаг разработки POETH_ADVISOR=1 из preload (вкладка «Что фармить» скрыта в релизе, S16). */
@@ -64,6 +66,7 @@ function inGame(game: GameId, id: AppTab, dev: boolean): boolean {
   if (id === 'build') return buildOn(GAMES[game], buildDev())
   if (id === 'guide') return guideOn(game)
   if (id === 'rumours') return rumoursOn(game)
+  if (id === 'soon') return game === 'poe2'
   return f[id]
 }
 

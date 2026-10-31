@@ -2,7 +2,8 @@
 # Собирает манифест из resources/data/poe1 (tools/data/publish-data.mjs) и публикует его с файлами
 # в orphan-ветку `data` (tools/data/push-data-branch.mjs). Приложение читает
 # https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json (links.DATA_MANIFEST_URL).
-# Токен — встроенный GITHUB_TOKEN этого запуска (contents: write), секретов и личных данных нет.
+# Токен — встроенный GITHUB_TOKEN этого запуска (contents: write), секретов и личных данных нет. Checkout — без
+# сохранённого токена (persist-credentials: false): токен записи получает только шаг отправки в ветку (S67).
 #
 # Запуск: Actions → «Data» → Run workflow (версия пакета, пусто — дата данных APT из data.meta.json)
 # или тег: git tag data-3.30.0-1 && git push origin data-3.30.0-1 (версия = тег без «data-»).
@@ -14,10 +15,13 @@
 # Вручную: Actions → «Data» → Run workflow с галочкой «Только снимок цен».
 #
 # S67: пакет PoE 2 (resources/data/poe2 → manifest-poe2.json + poe2/… в той же ветке data; пакет PoE 1 не трогается).
-# Перед сборкой CI снимает цены poe.ninja PoE 2 (tools/data/ninja-snapshot-poe2.mjs) в resources/data/poe2/prices —
-# приложение берёт их из пакета данных. Запуск: Run workflow с игрой poe2 или тег data-poe2-<версия>
-# (git tag data-poe2-2026.12.11-1 && git push origin data-poe2-2026.12.11-1). Раз в сутки (04:41 UTC) — только
-# если в репозитории задана переменная POE2_DAILY_DATA = 1 (Settings → Secrets and variables → Actions → Variables).
+# Полный выпуск (Run workflow с игрой poe2 или тег data-poe2-<версия>: git tag data-poe2-2026.12.11-1 && git push
+# origin data-poe2-2026.12.11-1) — данные main + свежий снимок цен poe.ninja PoE 2 (tools/data/ninja-snapshot-poe2.mjs).
+# Суточный выпуск цен (job poe2-prices, 04:41 UTC, только при переменной репозитория POE2_DAILY_DATA = 1 — Settings →
+# Secrets and variables → Actions → Variables): последний опубликованный пакет PoE 2, в нём заменяется только prices/;
+# остальные файлы и minApp — как у опубликованного, данные main ночью игрокам не уходят. Приложение не показывает
+# тост «Перезапустите», если поменялись только цены. У файлов пакета — `prev` (прежние версии из истории main):
+# поэтому checkout с полной историей (fetch-depth: 0).
 name: Data
 
 on:
@@ -45,7 +49,7 @@ on:
   # в публичную ветку `prices`. Вручную — галочка «Только снимок цен».
   schedule:
     - cron: '17 * * * *'
-    # S67: пакет PoE 2 со свежими ценами — раз в сутки, если vars.POE2_DAILY_DATA == '1'
+    # S67: цены PoE 2 в пакете данных — раз в сутки, если vars.POE2_DAILY_DATA == '1' (job poe2-prices)
     - cron: '41 4 * * *'
 
 permissions:
@@ -53,22 +57,23 @@ permissions:
 
 jobs:
   publish:
-    # только из main или по тегу data-* — не из рабочих веток; ежечасное расписание и «только цены» — не сюда.
-    # S67: суточное расписание — пакет PoE 2, если включено переменной POE2_DAILY_DATA
-    if: >-
-      (github.event_name != 'schedule' && !inputs.prices && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/data-')))
-      || (github.event_name == 'schedule' && github.event.schedule == '41 4 * * *' && vars.POE2_DAILY_DATA == '1' && github.ref == 'refs/heads/main')
-    # одна очередь на обе игры: пакеты пишутся в одну ветку data
+    # только из main или по тегу data-* — не из рабочих веток; расписание и «только цены» — не сюда
+    if: github.event_name != 'schedule' && !inputs.prices && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/data-'))
+    # одна очередь на обе игры и суточный выпуск цен: пакеты пишутся в одну ветку data
     concurrency:
       group: data-publish
       cancel-in-progress: false
     runs-on: windows-latest
     timeout-minutes: 25
     env:
-      # игра пакета: суточное расписание и тег data-poe2-* — PoE 2, иначе — выбор при запуске (по умолчанию PoE 1)
-      GAME: ${{ (github.event_name == 'schedule' || startsWith(github.ref_name, 'data-poe2-')) && 'poe2' || inputs.game || 'poe1' }}
+      # игра пакета: тег data-poe2-* — PoE 2, иначе — выбор при запуске (по умолчанию PoE 1)
+      GAME: ${{ startsWith(github.ref_name, 'data-poe2-') && 'poe2' || inputs.game || 'poe1' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # `prev` в манифесте — версии файлов данных из истории main
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -93,9 +98,9 @@ jobs:
       - name: Снимок цен poe.ninja PoE 2 (в resources/data/poe2/prices)
         if: env.GAME == 'poe2'
         run: node tools/data/ninja-snapshot-poe2.mjs --out resources/data/poe2/prices --prev prev-prices-poe2
-      - name: Снимок цен цел (формат, лиги, группы)
+      - name: Снимок цен — формат (покрытие — предупреждения)
         if: env.GAME == 'poe2'
-        run: npx vitest run tests/poe2/prices/bundled.test.ts
+        run: npx vitest run tests/poe2/prices/bundled.test.ts --silent=false
       - name: Собрать пакет
         shell: bash
         env:
@@ -112,7 +117,13 @@ jobs:
           GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
           GIT_COMMITTER_NAME: github-actions[bot]
           GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
-        run: node tools/data/push-data-branch.mjs --dir dist-data
+          # токен записи — только этому шагу и только процессам git этого шага (в .git/config не пишется)
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          auth=$(printf 'x-access-token:%s' "$TOKEN" | base64 | tr -d '\n')
+          echo "::add-mask::$auth"
+          export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.https://github.com/.extraheader GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth"
+          node tools/data/push-data-branch.mjs --dir dist-data
       - name: Манифест доступен по публичному адресу
         shell: bash
         run: |
@@ -120,6 +131,73 @@ jobs:
           want=$(node -p "require('./dist-data/$name').version")
           for i in $(seq 1 24); do
             got=$(curl -fsS -H 'Cache-Control: no-cache' "https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/$name" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version" 2>/dev/null || true)
+            echo "попытка $i: $got (ждём $want)"
+            [ "$got" = "$want" ] && exit 0
+            sleep 15
+          done
+          echo "CDN raw.githubusercontent.com ещё отдаёт прежний манифест — проверьте позже" && exit 1
+
+  poe2-prices:
+    # S67: суточный выпуск цен PoE 2 — только prices/ поверх последнего опубликованного пакета PoE 2; остальные файлы и
+    # minApp — как у него (publish-data --base-manifest проверяет и падает, если что-то вне prices/ отличается)
+    if: github.ref == 'refs/heads/main' && github.event_name == 'schedule' && github.event.schedule == '41 4 * * *' && vars.POE2_DAILY_DATA == '1'
+    concurrency:
+      group: data-publish
+      cancel-in-progress: false
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Опубликованный пакет PoE 2 (ветка data)
+        id: published
+        shell: bash
+        run: |
+          if git fetch --quiet --depth=1 origin data && git cat-file -e FETCH_HEAD:manifest-poe2.json 2>/dev/null; then
+            mkdir -p published && git archive FETCH_HEAD manifest-poe2.json poe2 | tar -x -C published
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Пакета PoE 2 в ветке data ещё нет — суточный выпуск цен пропущен (сначала полный: Run workflow, игра poe2)"
+          fi
+      - name: Снимок цен poe.ninja PoE 2 (в опубликованный пакет)
+        if: steps.published.outputs.ok == '1'
+        run: node tools/data/ninja-snapshot-poe2.mjs --out published/poe2/prices --prev published/poe2/prices
+      - name: Снимок цен — формат (покрытие — предупреждения)
+        if: steps.published.outputs.ok == '1'
+        env:
+          POETH_POE2_DATA_DIR: published/poe2
+        run: npx vitest run tests/poe2/prices/bundled.test.ts --silent=false
+      - name: Собрать пакет (новые только prices/)
+        if: steps.published.outputs.ok == '1'
+        run: node tools/data/publish-data.mjs --game poe2 --src published --base-manifest published/manifest-poe2.json --out dist-data
+      - name: Опубликовать в ветку data
+        if: steps.published.outputs.ok == '1'
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          auth=$(printf 'x-access-token:%s' "$TOKEN" | base64 | tr -d '\n')
+          echo "::add-mask::$auth"
+          export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.https://github.com/.extraheader GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth"
+          node tools/data/push-data-branch.mjs --dir dist-data
+      - name: Манифест доступен по публичному адресу
+        if: steps.published.outputs.ok == '1'
+        shell: bash
+        run: |
+          want=$(node -p "require('./dist-data/manifest-poe2.json').version")
+          for i in $(seq 1 24); do
+            got=$(curl -fsS -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest-poe2.json | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version" 2>/dev/null || true)
             echo "попытка $i: $got (ждём $want)"
             [ "$got" = "$want" ] && exit 0
             sleep 15
@@ -136,6 +214,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -153,4 +233,9 @@ jobs:
           GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
           GIT_COMMITTER_NAME: github-actions[bot]
           GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
-        run: node tools/data/push-prices-branch.mjs --dir dist-prices
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          auth=$(printf 'x-access-token:%s' "$TOKEN" | base64 | tr -d '\n')
+          echo "::add-mask::$auth"
+          export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.https://github.com/.extraheader GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth"
+          node tools/data/push-prices-branch.mjs --dir dist-prices

@@ -172,6 +172,8 @@ function createView(tab: SiteTabId): Live | null {
   hardenSitesContents(view.webContents, {
     tab,
     bookmarks,
+    // S64: ссылка из закладки на сайт реестра — во вкладку сайта игры режима (у PoE 2 — poe2db, вики PoE 2…)
+    game: () => game,
     onRoute: (nav, url) => {
       if (nav.kind === 'trade') host?.openTrade(url)
       else void openTab(nav.tab, url)

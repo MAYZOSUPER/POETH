@@ -12,12 +12,15 @@ import { FEED_URL, FEED_URL_POE2, FeedStore, KEEP_HOURS } from './feedStore'
 // Часы — userData/exchange/feed/<hourId>.json (только рынки с активностью), web.poecdn.com — без cookies
 // pathofexile.com. Курс divine:chaos — один на всё приложение: getDivineTrack.
 // S61: у PoE 2 свой экземпляр — фид realm poe2 (курс ex ↔ div, «цена у Ange»), часы — userData/exchange/feed-poe2;
-// качается только по запросу окна цены или вкладки (часового таймера нет), сразу — POE2_FIRST_HOURS свежих часов.
+// качается только по запросу окна цены или вкладки (часового таймера нет), сразу — POE2_FIRST_HOURS свежих часов,
+// хранится POE2_KEEP_HOURS (окну цены нужно 12 ч, неделя на тесном диске не нужна).
 
 const stores: Partial<Record<GameId, FeedStore>> = {}
 
 /** PoE 2: сразу столько свежих часов (час ~2 МБ), остальные — фоном */
 const POE2_FIRST_HOURS = 3
+/** PoE 2: столько часов держать на диске и в памяти */
+const POE2_KEEP_HOURS = 24
 
 function dir(game: GameId): string {
   return path.join(app.getPath('userData'), 'exchange', game === 'poe2' ? 'feed-poe2' : 'feed')
@@ -30,7 +33,7 @@ export function getFeedStore(game: GameId = 'poe1'): FeedStore {
   if (hit) return hit
   const store = new FeedStore({
     url: game === 'poe2' ? FEED_URL_POE2 : FEED_URL,
-    ...(game === 'poe2' ? { firstHours: POE2_FIRST_HOURS } : {}),
+    ...(game === 'poe2' ? { firstHours: POE2_FIRST_HOURS, keepHours: POE2_KEEP_HOURS } : {}),
     getJson: async (url) => {
       const res = await httpRequest({ url, timeoutMs: 45_000 })
       let json: unknown = null

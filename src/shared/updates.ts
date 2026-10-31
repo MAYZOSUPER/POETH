@@ -194,6 +194,8 @@ const SEGMENT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/
 const SHA256 = /^[0-9a-f]{64}$/
 const MAX_FILES = 500
 const MAX_FILE_SIZE = 64 * 1024 * 1024
+/** S67: версий файла в `prev` — не больше (publish-data.mjs пишет до 100) */
+const MAX_PREV = 200
 
 /** Безопасный относительный путь: «en/stats.ndjson» — без «..», корня, обратных слэшей. */
 export function isSafeDataPath(p: string): boolean {
@@ -211,6 +213,15 @@ export function isSafeDataPath(p: string): boolean {
  */
 export function dataManifestUrl(base: string, game: GameId): string {
   return game === 'poe1' ? base : new URL(`manifest-${game}.json`, base).toString()
+}
+
+/**
+ * Обновление данных без тоста «Перезапустите POETH» (S67): изменились только снимки цен (`prices/…` — их читают
+ * при каждом обращении, перезапуск не нужен) или вообще ничего из того, что видит игрок. `paths` — файлы, у которых
+ * после применения другое содержимое, чем было (dataUpdate.ts applyDataUpdate).
+ */
+export function isQuietDataUpdate(paths: readonly string[]): boolean {
+  return paths.every((p) => p.startsWith('prices/'))
 }
 
 export type ManifestCheck = { ok: true; manifest: DataManifest } | { ok: false; error: string }
@@ -239,6 +250,12 @@ export function validateDataManifest(raw: unknown, appVersion: string): Manifest
       return { ok: false, error: `bad size ${path}` }
     }
     files[path] = { sha256: e.sha256, size: e.size }
+    if (e.prev !== undefined) {
+      if (!Array.isArray(e.prev) || e.prev.length > MAX_PREV || !e.prev.every((s) => typeof s === 'string' && SHA256.test(s))) {
+        return { ok: false, error: `bad prev ${path}` }
+      }
+      files[path].prev = e.prev as string[]
+    }
   }
   const manifest: DataManifest = { version: r.version, game: r.game, files }
   if (typeof r.minApp === 'string') manifest.minApp = r.minApp

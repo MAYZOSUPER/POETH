@@ -79,3 +79,13 @@
   height: 13px;
   margin-top: 1px;
 }
+
+/* заметка после «Следить (live)» — над подвалом окна, с кнопкой «Войти» справа */
+.pc2-live-note {
+  align-items: center;
+  border-top: 1px solid var(--border);
+}
+.pc2-live-note .ui-btn {
+  flex: none;
+  margin-left: auto;
+}

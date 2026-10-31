@@ -47,6 +47,8 @@ export interface Build2SaveRequest {
   fileName?: string
   /** файл уже есть: true — заменить, false/нет — не трогать */
   overwrite?: boolean
+  /** «Сохранить копией»: main сам подберёт свободное «Название (N)» после обрезки имени */
+  copy?: boolean
 }
 
 export type Build2SaveError =
@@ -55,11 +57,12 @@ export type Build2SaveError =
   | 'no-game-dir' // папки игры нет (игра не запускалась на этом компьютере)
   | 'exists' // файл уже есть, а замену не подтвердили
   | 'changed' // имя файла изменилось после подтверждения — спросить снова
+  | 'no-free-name' // «Сохранить копией»: свободного имени нет (99 копий)
   | 'io' // не удалось записать
 
 export type Build2SaveResult =
   /** записано */
-  | { ok: true; path: string; fileName: string; replaced: boolean }
-  /** первый вызов: куда запишем — показать игроку и спросить */
-  | { ok: false; error: 'confirm'; dir: Build2Dir; fileName: string; exists: boolean }
+  | { ok: true; path: string; fileName: string; name: string; replaced: boolean }
+  /** первый вызов: куда запишем — показать игроку и спросить; name — название в игре (у копии — с «(N)») */
+  | { ok: false; error: 'confirm'; dir: Build2Dir; fileName: string; name: string; exists: boolean }
   | { ok: false; error: Build2SaveError; dir?: Build2Dir; fileName?: string }

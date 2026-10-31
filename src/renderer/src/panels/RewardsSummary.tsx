@@ -2,11 +2,12 @@ import { useState } from 'react'
 import type { MouseEvent } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import { useT, useName } from '../i18n'
+import { ShellIcon } from '../components/ShellIcon'
 
 // Running totals of permanent campaign rewards: collected vs total available.
 // Only sums reward kinds with consistent units (points, spirit, resistances).
-// Hovering a row reveals every quest that grants it, marking done (✓) vs
-// remaining (○) so you can find what's left without scanning the whole list.
+// Hovering a row reveals every quest that grants it, marking done vs remaining
+// so you can find what's left without scanning the whole list.
 
 type Contributor = {
   id: string
@@ -17,13 +18,14 @@ type Contributor = {
   done: boolean
 }
 
+/** «Награды кампании» (.ui-box + .ui-meter): очки пассивных умений, набора оружия, дух и три сопротивления. */
 export function RewardsSummary() {
   const dataset = useAppStore((s) => s.dataset)
   const progress = useAppStore((s) => s.progress)
+  const simple = useAppStore((s) => s.settings?.ui.simpleMode ?? true)
   const t = useT()
   const localName = useName()
-  const [open, setOpen] = useState(false)
-  const [pop, setPop] = useState<{ key: string; x: number; y: number; right: boolean } | null>(null)
+  const [pop, setPop] = useState<{ key: string; x: number; y: number } | null>(null)
   if (!dataset) return null
 
   const completed = progress?.completedQuestIds ?? {}
@@ -65,66 +67,89 @@ export function RewardsSummary() {
   const rows = [
     { key: 'passive', label: t('rw.passive'), got: c.passive, tot: c.passiveT, fmt: 'plain' },
     { key: 'weapon', label: t('rw.weapon'), got: c.weapon, tot: c.weaponT, fmt: 'plain' },
-    { key: 'spirit', label: t('rw.spirit'), got: c.spirit, tot: c.spiritT, fmt: 'plus' },
-    { key: 'cold', label: t('rw.cold'), got: c.cold, tot: c.coldT, fmt: 'pct' },
-    { key: 'fire', label: t('rw.fire'), got: c.fire, tot: c.fireT, fmt: 'pct' },
-    { key: 'light', label: t('rw.light'), got: c.light, tot: c.lightT, fmt: 'pct' }
+    { key: 'spirit', label: t('rw.spirit'), got: c.spirit, tot: c.spiritT, fmt: 'plus' }
+  ].filter((r) => r.tot > 0)
+  const res = [
+    { key: 'cold', label: t('rw.cold'), got: c.cold, tot: c.coldT },
+    { key: 'fire', label: t('rw.fire'), got: c.fire, tot: c.fireT },
+    { key: 'light', label: t('rw.light'), got: c.light, tot: c.lightT }
   ].filter((r) => r.tot > 0)
 
   const fmt = (r: { got: number; tot: number; fmt: string }): string =>
-    r.fmt === 'pct' ? `${r.got}/${r.tot}%` : r.fmt === 'plus' ? `+${r.got}/+${r.tot}` : `${r.got}/${r.tot}`
+    r.fmt === 'plus' ? `+${r.got} / +${r.tot}` : `${r.got} / ${r.tot}`
+  const pct = (got: number, tot: number): string => `${tot ? Math.round((100 * got) / tot) : 0}%`
 
   const actLabel = (n: number, kind: string): string =>
-    kind === 'interlude' ? t('int.short', { n: n - 4 }) : t('act.short', { n })
+    kind === 'interlude' ? t('int.title', { n: n - 4 }) : t('act.short', { n })
 
   function showPop(key: string, e: MouseEvent<HTMLDivElement>): void {
     const rect = e.currentTarget.getBoundingClientRect()
     const right = rect.right + 8 + 250 <= window.innerWidth
     const x = right ? rect.right + 8 : Math.max(8, rect.left - 258)
     const y = Math.min(rect.top, window.innerHeight - 348)
-    setPop({ key, x, y: Math.max(8, y), right })
+    setPop({ key, x, y: Math.max(8, y) })
   }
 
   const popList = pop ? contrib[pop.key] ?? [] : []
   const popRemaining = popList.filter((x) => !x.done).length
+  const hover = (key: string) => ({
+    onMouseEnter: (e: MouseEvent<HTMLDivElement>) => showPop(key, e),
+    onMouseLeave: () => setPop(null)
+  })
 
   return (
-    <section className="panel rewards">
-      <div className="panel-head clickable" onClick={() => setOpen((o) => !o)}>
-        <span>{t('rw.head', { a: c.passive, b: c.passiveT })}</span>
-        <span className="muted">{open ? '▾' : '▸'}</span>
+    <section className="ui-box">
+      <div className="ui-box__head">
+        <span className="ui-label">
+          <ShellIcon name="passive" />
+          {t('rw.title')}
+        </span>
+        <span className="ui-label__grow" />
+        {simple && (
+          <span className="ui-q" title={t('rw.help')}>
+            ?
+          </span>
+        )}
       </div>
-      {open && (
-        <div className="rw-grid">
-          {rows.map((r) => (
-            <div
-              key={r.key}
-              className="rw-row"
-              onMouseEnter={(e) => showPop(r.key, e)}
-              onMouseLeave={() => setPop(null)}
-            >
-              <span className="rw-label">{r.label}</span>
-              <span className="rw-bar">
-                <span
-                  className="rw-fill"
-                  style={{ width: `${r.tot ? Math.round((100 * r.got) / r.tot) : 0}%` }}
-                />
-              </span>
-              <span className="rw-val">{fmt(r)}</span>
+      <div className="ui-box__body cp-meters">
+        {rows.map((r) => (
+          <div key={r.key} className="ui-meter cp-meter" {...hover(r.key)}>
+            <div className="ui-meter__row">
+              <span>{r.label}</span>
+              <b>{fmt(r)}</b>
             </div>
-          ))}
-        </div>
-      )}
+            <div className="ui-meter__bar" style={{ ['--v' as string]: pct(r.got, r.tot) }} />
+          </div>
+        ))}
+        {res.length > 0 && (
+          <div className="cp-res">
+            {res.map((r) => (
+              <div key={r.key} className={`ui-meter cp-meter cp-res__${r.key}`} {...hover(r.key)}>
+                <div className="ui-meter__row">
+                  <span>
+                    <i />
+                    {r.label}
+                  </span>
+                  <b>
+                    {r.got}/{r.tot}%
+                  </b>
+                </div>
+                <div className="ui-meter__bar" style={{ ['--v' as string]: pct(r.got, r.tot) }} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       {pop && popList.length > 0 && (
-        <div className="rw-pop" style={{ left: pop.x, top: pop.y }}>
-          <div className="rw-pop-head">{t('rw.remaining', { n: popRemaining, m: popList.length })}</div>
+        <div className="cp-pop" style={{ left: pop.x, top: pop.y }} role="tooltip">
+          <div className="cp-pop__head">{t('rw.remaining', { n: popRemaining, m: popList.length })}</div>
           <ul>
             {popList.map((x, i) => (
-              <li key={`${x.id}-${i}`} className={x.done ? 'done' : ''}>
-                <span className="rw-pop-mark">{x.done ? '✓' : '○'}</span>
-                <span className="rw-pop-val">+{x.value}</span>
-                <span className="rw-pop-name">{localName(x.name)}</span>
-                <span className="rw-pop-act">{actLabel(x.actNumber, x.kind)}</span>
+              <li key={`${x.id}-${i}`} className={x.done ? 'is-done' : ''}>
+                <ShellIcon name={x.done ? 'check' : 'dash'} />
+                <b>+{x.value}</b>
+                <span>{localName(x.name)}</span>
+                <span>{actLabel(x.actNumber, x.kind)}</span>
               </li>
             ))}
           </ul>

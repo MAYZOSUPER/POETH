@@ -2,6 +2,7 @@ import { app } from 'electron'
 import path from 'path'
 import { randomUUID } from 'crypto'
 import type { GameId } from '@shared/games'
+import { SLUG_MAX } from '@shared/favorites/slug'
 import type { LiveOptions } from '@shared/types'
 import { readJson, writeJsonAtomic } from '../../../services/atomicJson'
 
@@ -80,7 +81,7 @@ function normalize(raw: unknown): LiveFile {
       game: s.game === 'poe2' ? 'poe2' : 'poe1',
       title: cleanTitle(s.title, s.slug),
       league: s.league.slice(0, 80),
-      slug: s.slug.slice(0, 512),
+      slug: s.slug.slice(0, SLUG_MAX),
       enabled: bool(s.enabled, false),
       sound: bool(s.sound, true),
       notify: bool(s.notify, true),

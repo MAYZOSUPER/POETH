@@ -1,5 +1,5 @@
 import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
-import type { CapturedItem, GameInputResult, UiLang } from '@shared/types'
+import type { CapturedItem, GameInputResult, LiveAddError, UiLang } from '@shared/types'
 import { ItemCategory, ItemRarity, type ParsedItem } from '@shared/poe2/parser'
 import { FilterTag, type FilterPreset, type ItemFilters, type ListingType, type StatFilter } from '@shared/poe2/pricecheck'
 import { ModifierType } from '@shared/poe2/parser/modifiers'
@@ -1475,10 +1475,30 @@ export function Poe2PriceWindow({ captured, onClose }: { captured: CapturedItem;
 }
 
 /** Кнопки окна цены PoE2: трейд-окно на trade2 и избранное (S5). Live search у PoE2 пока нет. */
+/** Ошибки live.add → подпись кнопки (тексты PoE 1, S6). */
+const LIVE_ERROR_KEYS: Record<LiveAddError, string> = {
+  duplicate: 'pc1.live.duplicate',
+  exchange: 'pc1.live.exchange',
+  poe2: 'pc1.live.fail',
+  'bad-url': 'pc1.live.fail'
+}
+
 function PriceActions({ result, title, league, t }: { result: Pc2Result | undefined; title: string; league: string; t: T }) {
   const [saved, setSaved] = useState<ActionState>('idle')
+  const [live, setLive] = useState<ActionState>('idle')
+  const [liveError, setLiveError] = useState<LiveAddError | null>(null)
+  /** S61: после «Следить» — добавлен выключенным (предел PoE 2) или ждёт входа на сайт */
+  const [liveNote, setLiveNote] = useState<{ key: string; params?: Record<string, number>; login?: boolean } | null>(null)
   const siteUrl = result?.siteUrl
-  useEffect(() => setSaved('idle'), [siteUrl])
+  // новый поиск — новые кнопки
+  useEffect(() => {
+    setSaved('idle')
+    setLive('idle')
+    setLiveError(null)
+    setLiveNote(null)
+  }, [siteUrl])
+  // обмен и цена у Ange live search не умеют (у сайта нет live для обмена)
+  const bulk = result?.kind === 'bulk' || result?.kind === 'ange'
   // id поиска — последний сегмент адреса trade2 (/trade2/search/poe2/<лига>/<id>); у цены Ange id есть только после
   // загрузки объявлений сайта (до того — страница обмена с ?q=)
   const noId = result?.kind === 'ange' && result.site.phase !== 'ok'
@@ -1491,8 +1511,42 @@ function PriceActions({ result, title, league, t }: { result: Pc2Result | undefi
     const fav = await window.overlayApi.fav.add({ title, game: 'poe2', type, slug, league }).catch(() => null)
     setSaved(fav ? 'done' : 'fail')
   }
+  // S61 + S63: «Live по этому запросу» — тот же вызов, что у окна PoE 1 (лига — из ссылки trade2); находки придут тостами
+  const watch = async (): Promise<void> => {
+    if (!siteUrl || bulk || live === 'busy' || live === 'done') return
+    setLive('busy')
+    const r = await window.overlayApi.live.add(siteUrl, title).catch(() => null)
+    if (!r?.ok) {
+      setLiveError(r ? r.error : null)
+      setLive('fail')
+      return
+    }
+    setLive('done')
+    if (!r.search.enabled) {
+      const max = await window.overlayApi.live
+        .state()
+        .then((s) => s.max)
+        .catch(() => 0)
+      setLiveNote({ key: 'live.add.off', params: { max } })
+    } else if (r.search.state === 'auth') setLiveNote({ key: 'pc2.s61.live.auth', login: true })
+  }
+  const liveText =
+    live === 'done' ? t('pc1.live.done') : live === 'fail' ? t(liveError ? LIVE_ERROR_KEYS[liveError] : 'pc1.live.fail') : t('pc1.live')
 
   return (
+    <>
+      {liveNote && (
+        <div className="pc2-note pc2-live-note" role="status">
+          <Icon name="info" />
+          <span>{t(liveNote.key, liveNote.params)}</span>
+          {liveNote.login && (
+            <button type="button" className="ui-btn ui-btn--sm" onClick={() => void window.overlayApi.auth.login()}>
+              <Icon name="external" />
+              {t('pc2.tab.login')}
+            </button>
+          )}
+        </div>
+      )}
     <footer className="ui-panel__foot">
       <button
         type="button"
@@ -1515,6 +1569,18 @@ function PriceActions({ result, title, league, t }: { result: Pc2Result | undefi
         <Icon name={saved === 'done' ? 'check' : 'star'} />
         {saved === 'done' ? t('pc1.save.done') : saved === 'fail' ? t('pc1.save.fail') : t('pc1.save')}
       </button>
+      <button
+        type="button"
+        className="ui-btn ui-btn--live"
+        title={bulk ? t('pc1.live.exchange') : t('pc1.live.help')}
+        disabled={!siteUrl || bulk || live === 'busy'}
+        aria-pressed={live === 'done'}
+        onClick={() => void watch()}
+      >
+        <Icon name={live === 'done' ? 'check' : 'bolt'} />
+        {liveText}
+      </button>
     </footer>
+    </>
   )
 }

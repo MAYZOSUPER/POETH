@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "id": "poe2-start",
-  "rev": 1,
-  "updated": "2026-10-31",
+  "rev": 2,
+  "updated": "2026-11-01",
   "patch": ["0.5", "1.0"],
   "title": { "ru": "Старт 1.0: первые часы", "en": "1.0 launch: the first hours" },
   "summary": {
@@ -87,13 +87,14 @@
     {
       "id": "campaign",
       "title": { "ru": "Кампания без лишнего", "en": "The campaign without detours" },
+      "rev": 2,
       "blocks": [
         {
           "kind": "list",
           "items": [
             {
-              "ru": "**Не задерживайтесь в лёгких зонах.** Если вы заметно выше зоны, опыт режется — компас POETH подскажет «Эта зона даёт ~N % опыта».",
-              "en": "**Don't linger in easy zones.** If you are well above a zone, your XP is cut — the POETH compass tells you \"This zone gives ~N% XP\"."
+              "ru": "**Не задерживайтесь в лёгких зонах.** Если вы заметно выше уровня зоны, опыт режется. POETH подскажет, если зона даёт мало опыта.",
+              "en": "**Don't linger in easy zones.** If you are well above a zone's level, your XP is cut. POETH tells you when a zone gives little XP."
             },
             {
               "ru": "**Не пропускайте испытания восхождения.** Trial of the Sekhemas (2 акт, нужна «Бария Джинна») и Trial of Chaos (3 акт, нужен «Начертанный Ультиматум») дают очки восхождения.",
