@@ -2,9 +2,14 @@ import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
 import type { CapturedItem, GameInputResult, UiLang } from '@shared/types'
 import { ItemCategory, ItemRarity, type ParsedItem } from '@shared/poe2/parser'
 import type { FilterPreset, ItemFilters, ListingType, StatFilter } from '@shared/poe2/pricecheck'
-import type { MarketPrice, Poe1Listing, Poe1Price } from '@shared/poe1/pricecheck/results'
+import type { Poe1ExchangeOffer, Poe1Listing, Poe1Price } from '@shared/poe1/pricecheck/results'
 import type { StatSource } from '@shared/poe1/parser/modifiers'
-import type { Verdict, VerdictKind } from '@shared/poe1/pricecheck/verdict'
+import type { VerdictKind } from '@shared/poe1/pricecheck/verdict'
+import type { MarketPrice2, Verdict2 } from '@shared/poe2/pricecheck/verdict'
+import { angeConfidence } from '@shared/poe2/pricecheck/ange'
+import { convertPrice2, roundExalted } from '@shared/poe2/pricecheck/currency'
+import { angeView, rateFractions2, type AngeRowView } from '@shared/poe2/pricecheck/priceBlock'
+import { hourRange } from '@shared/poe1/pricecheck/faustus'
 import { modText, modTextParts, type ModText } from '@shared/poe1/pricecheck/filters/mod-text'
 import { createClickGuard, lotActions, whisperCommand } from '@shared/poe1/pricecheck/lotActions'
 import { fallbackKey } from '@shared/poe1/pricecheck/fallback'
@@ -18,13 +23,15 @@ import { Select } from '../../../components/Select'
 import { CoinIcon, Currency, CurrencyTipBody, TipAnchor, useCurrencyNames } from '../../../components/Currency'
 import type { RuCase } from '@shared/currency'
 import { ageKey, currencyLabel, fmtNum, tierWordKey, waitClock } from '../format'
-import { activePreset2Of, usePoe2PriceCheckStore as useStore, type Pc2Result } from './store'
+import { activePreset2Of, ratesOf, usePoe2PriceCheckStore as useStore, type Pc2Result } from './store'
 import './poe2.css'
 
 // Окно цены PoE2 (S47) — то же окно поверх игры, что у PoE1 (../PriceWindow.tsx), те же классы ui-*/pc-* и строки
 // pc1.*, где они одинаковы для обеих игр; своё — у PoE2: фильтры предмета (гнёзда рун, тир путевого камня, уровень
-// области), цены без пересчёта валют (база PoE2 — exalted, курса пока нет), поиск на trade2. Сеть — через main
-// (тот же шлюз с лимитами). Live search и сужение «Открыть лот» до продавца у PoE2 пока нет: открывается весь поиск.
+// области), база цен — exalted, поиск на trade2. Сеть — через main (тот же шлюз с лимитами). Live search и сужение
+// «Открыть лот» до продавца у PoE2 пока нет: открывается весь поиск.
+// S61: курс exalted ↔ divine ↔ chaos по фиду обмена GGG (плашка «1 div ≈ N ex» в шапке, пересчёт в подсказке у цены),
+// валюта — «≈ N ex за штуку · у Ange» (блок AngeResult, объявления сайта — по кнопке).
 
 type T = (key: string, params?: Record<string, string | number>) => string
 
@@ -59,9 +66,65 @@ function useNow(active: boolean): number {
   return now
 }
 
+function fmtDiv(v: number, lang: UiLang): string {
+  const s = v < 10 ? v.toFixed(2) : String(v)
+  return lang === 'ru' ? s.replace('.', ',') : s
+}
+
+/** S61: «345 ex ≈ 0.50 div» / «1 div ≈ 690 ex» / «2 c ≈ 143 ex» — подсказка к цене по курсу у Ange. */
+function conversionTitle(price: Poe1Price, lang: UiLang, t: T): string | undefined {
+  const rates = ratesOf(useStore.getState())
+  const other = convertPrice2(price, rates)
+  if (!other) return undefined
+  return price.currency === 'exalted'
+    ? t('pc2.s61.conv.toDiv', { e: fmtNum(price.amount, lang), d: fmtDiv(other.amount, lang) })
+    : t('pc2.s61.conv.toEx', { p: `${fmtNum(price.amount, lang)} ${currencyLabel(price.currency)}`, e: fmtNum(other.amount, lang) })
+}
+
 function Price({ price, lang, full = false, approx = false }: { price: Poe1Price; lang: UiLang; full?: boolean; approx?: boolean }) {
+  const t = useOverlayT()
+  // перерисовать, когда придёт курс
+  useStore((s) => s.rate)
+  useStore((s) => s.more)
+  const conv = conversionTitle(price, lang, t)
   const text = `${approx ? '~' : ''}${fmtNum(price.amount, lang)}`
-  return <Currency tag={price.currency} text={text} full={full} lang={lang} className="pc-price" />
+  return <Currency tag={price.currency} text={text} full={full} lang={lang} className="pc-price" extra={conv && <b>{conv}</b>} />
+}
+
+/** S61: плашка курса «1 div ≈ N ex» в шапке; при наведении — дроби 0.1…1 div, курс chaos и откуда данные. */
+function RateBadge2({ lang, t }: { lang: UiLang; t: T }) {
+  const rate = useStore((s) => s.rate)
+  const names = useCurrencyNames(lang)
+  if (!rate) return null
+  const n = fmtNum(roundExalted(rate.exaltedPerDivine), lang)
+  const chaos = rate.exaltedPerChaos ? fmtNum(roundExalted(rate.exaltedPerChaos), lang) : null
+  return (
+    <TipAnchor
+      className="pc-rate"
+      focusable
+      tip={
+        <>
+          <span className="ui-cur-tip__head">
+            <CoinIcon tag="divine" lang={lang} />
+            <b>{t('pc2.s61.rate.head', { div: names.after('divine', 1), n, ex: names.after('exalted', n) })}</b>
+          </span>
+          {chaos && <span>{t('pc2.s61.rate.chaos', { chaos: names.after('chaos', 1), n: chaos, ex: names.after('exalted', chaos) })}</span>}
+          <span>{t('pc2.s61.rate.why')}</span>
+          <span className="pc-rate__rows">
+            {rateFractions2(rate.exaltedPerDivine).map((r) => (
+              <span key={r.div}>
+                {fmtNum(r.div, lang)} div ≈ {fmtNum(r.exalted, lang)} ex
+              </span>
+            ))}
+          </span>
+          <span className="pc-rate__src">{t('pc2.s61.rate.src', { league: rate.league })}</span>
+        </>
+      }
+    >
+      <CoinIcon tag="divine" lang={lang} />
+      {t('pc2.s61.rate', { n })}
+    </TipAnchor>
+  )
 }
 
 type PriceText = (p: Poe1Price, c?: RuCase) => string
@@ -464,15 +527,26 @@ const VERDICT_TONE: Record<VerdictKind, string> = {
   list: 'good'
 }
 
-function verdictText(v: Verdict, ctx: { bulk: boolean; one: string }, priceText: PriceText, t: T): { title: string; sub?: string; help?: string } {
+function verdictText(
+  v: Verdict2,
+  ctx: { bulk: boolean; one: string; exchange?: boolean },
+  priceText: PriceText,
+  t: T
+): { title: string; sub?: string; help?: string } {
   const price = v.price ? priceText(v.price) : ''
+  // S61: цена у Ange — «продайте у Ange», объём — штук за час
+  if (ctx.exchange && v.kind === 'list') {
+    return { title: t('pc2.s61.v.sell', { price: v.price ? priceText(v.price, 'acc') : '' }), help: t('pc2.s61.v.sell.help') }
+  }
   switch (v.kind) {
     case 'none':
       return { title: t('pc1.v.none'), sub: t(ctx.bulk ? 'pc1.v.none.later' : 'pc1.v.none.sub') }
     case 'few':
       return {
         title: t('pc1.v.few'),
-        sub: ctx.bulk
+        sub: ctx.exchange
+          ? t('pc1.s24.v.few', { n: v.count, price })
+          : ctx.bulk
           ? t('pc1.v.few.bulk', { n: v.count, price })
           : v.price
             ? t('pc1.v.few.sub', { n: v.count, price })
@@ -532,12 +606,27 @@ function NoteButton({ note, simple, t }: { note: string; simple: boolean; t: T }
   )
 }
 
-function VerdictPlate({ v, bulk, simple, lang, t }: { v: Verdict; bulk: boolean; simple: boolean; lang: UiLang; t: T }) {
+function VerdictPlate({
+  v,
+  bulk,
+  exchange,
+  simple,
+  lang,
+  t
+}: {
+  v: Verdict2
+  bulk: boolean
+  /** S61: цена у Ange */
+  exchange?: boolean
+  simple: boolean
+  lang: UiLang
+  t: T
+}) {
   const priceText = usePriceText(lang)
   const names = useCurrencyNames(lang)
   // «меньше 1 Сферы возвышения» / «1 ex» — база цен PoE2
   const one = simple ? `1 ${names.after('exalted', 1, 'gen')}` : '1 ex'
-  const { title, sub, help } = verdictText(v, { bulk, one }, priceText, t)
+  const { title, sub, help } = verdictText(v, { bulk, one, exchange }, priceText, t)
   const tip = simple ? help : [sub, help].filter(Boolean).join(' ')
   return (
     <div className={`pc-verdict pc-verdict--${VERDICT_TONE[v.kind]}`} role="status" data-kind={v.kind}>
@@ -567,7 +656,7 @@ function VerdictPlate({ v, bulk, simple, lang, t }: { v: Verdict; bulk: boolean;
 
 function MarketSummary({ result, simple, lang, t }: { result: Extract<Pc2Result, { kind: 'trade' }>; simple: boolean; lang: UiLang; t: T }) {
   const priceText = usePriceText(lang)
-  const m: MarketPrice | undefined = result.market
+  const m: MarketPrice2 | undefined = result.market
   const conf = result.honest.confidence
   return (
     <div className="ui-summary pc-summary">
@@ -575,7 +664,7 @@ function MarketSummary({ result, simple, lang, t }: { result: Extract<Pc2Result,
         <div className="pc-market">
           <span className="pc-market__label">
             {t(simple ? 'pc1.s24.market' : 'pc1.s24.market.short')}
-            <span className="ui-q" title={t('pc2.market.help')}>
+            <span className="ui-q" title={t(m.exalted != null ? 'pc2.s61.market.help' : 'pc2.market.help')}>
               ?
             </span>
           </span>
@@ -604,14 +693,19 @@ function MarketSummary({ result, simple, lang, t }: { result: Extract<Pc2Result,
   )
 }
 
-function WhyHint({ result, t }: { result: Extract<Pc2Result, { kind: 'trade' }>; t: T }) {
+function WhyHint({ result, lang, t }: { result: Extract<Pc2Result, { kind: 'trade' }>; lang: UiLang; t: T }) {
   const range = useStore((s) => s.searchStatRange)
+  const rate = useStore((s) => s.rate)
   const outliers = result.honest.instant.outliers.length + result.honest.person.outliers.length
+  const v = result.verdict
+  // S61: курс известен — цены пересчитаны; честная цена «вторая из ≥ 4 лотов выкупа» — словами
+  const currency = rate ? t('pc2.s61.why.currency', { n: fmtNum(roundExalted(rate.exaltedPerDivine), lang) }) : t('pc2.why.currency')
   return (
     <div className="ui-hint">
       <Icon name="help" />
       <span>
-        <b>{t('pc1.why.title')}</b> {t('pc1.why.search', { range, n: result.total })} {t('pc2.why.currency')}
+        <b>{t('pc1.why.title')}</b> {t('pc1.why.search', { range, n: result.total })} {currency}
+        {v.fair === 'second' && v.fairLots ? <> {t('pc2.s61.why.fair', { n: v.fairLots })}</> : null}
         {outliers > 0 && <> {t('pc1.why.outliers', { n: outliers })}</>}
       </span>
     </div>
@@ -731,7 +825,7 @@ function TradeResult({ result, simple, lang, t }: { result: Extract<Pc2Result, {
     <>
       <VerdictPlate v={result.verdict} bulk={false} simple={simple} lang={lang} t={t} />
       <MarketSummary result={result} simple={simple} lang={lang} t={t} />
-      {simple && <WhyHint result={result} t={t} />}
+      {simple && <WhyHint result={result} lang={lang} t={t} />}
       <div className="pc-blk">
         <div className="ui-label">
           {t('pc1.listings')}
@@ -782,24 +876,196 @@ function BulkResult({ result, simple, lang, t }: { result: Extract<Pc2Result, { 
         </span>
       </div>
       <div className="pc-blk">
-        <div className="pc-listings ui-scroll">
-          {result.offers.slice(0, 10).map((o) => (
-            <div className="ui-listing" key={o.id}>
-              <span className="ui-listing__price">
-                <Currency tag={o.currency} text={fmtNum(o.exchangeAmount, lang)} lang={lang} />
-              </span>
-              <span className="ui-listing__meta">
-                <span className="ui-listing__who">{o.characterName || o.accountName}</span>
-                <span>
-                  {t('pc1.bulk.rate', { n: o.itemAmount })} · {t('pc1.bulk.stock', { n: o.stock })}
-                </span>
-              </span>
-              <span />
-            </div>
-          ))}
-        </div>
+        <OffersList offers={result.offers} lang={lang} t={t} />
       </div>
     </>
+  )
+}
+
+/** Предложения обмена trade2: валюта предложения как есть (пересчёт по курсу — в подсказке у цены). */
+function OffersList({ offers, lang, t }: { offers: readonly Poe1ExchangeOffer[]; lang: UiLang; t: T }) {
+  return (
+    <div className="pc-listings ui-scroll">
+      {offers.slice(0, 10).map((o) => (
+        <div className="ui-listing" key={o.id}>
+          <span className="ui-listing__price">
+            <Price price={{ amount: o.exchangeAmount, currency: o.currency }} lang={lang} />
+          </span>
+          <span className="ui-listing__meta">
+            <span className="ui-listing__who">{o.characterName || o.accountName}</span>
+            <span>
+              {t('pc1.bulk.rate', { n: o.itemAmount })} · {t('pc1.bulk.stock', { n: o.stock })}
+            </span>
+          </span>
+          <span />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- S61: цена у Ange
+
+/** Рынок «за exalted / chaos / divine»: цена 1 шт. (или «1 div за N шт.»), диапазон сделок часа и объём. */
+function AngeRow({ row, simple, lang, t }: { row: AngeRowView; simple: boolean; lang: UiLang; t: T }) {
+  const names = useCurrencyNames(lang)
+  const num = (n: number): string => n.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US')
+  return (
+    <div className="pc-fs-row">
+      <span className="pc-fs-row__base">{t('pc1.s24.fs.for', { cur: simple ? names.after(row.base, 2, 'acc') : currencyLabel(row.base) })}</span>
+      <span className="pc-fs-row__price">
+        {row.each ? (
+          <Price price={row.each} lang={lang} approx />
+        ) : (
+          t('pc2.s61.ange.perBase', { cur: currencyLabel(row.base), n: num(row.perBase ?? 0) })
+        )}
+      </span>
+      <span className="pc-fs-row__note">
+        {row.lo != null && row.hi != null && (
+          <>{t('pc1.s24.fs.deals', { lo: fmtNum(row.lo, lang), hi: `${fmtNum(row.hi, lang)} ${currencyLabel(row.base)}` })} · </>
+        )}
+        {t('pc1.s24.fs.volume', { n: num(row.volume) })}
+      </span>
+    </div>
+  )
+}
+
+/** Сфера возвышения — сама база цен PoE 2: показываем курс у Ange, а не «цену exalted в exalted». */
+function ExaltedPlate({ rate, lang, t }: { rate: number; lang: UiLang; t: T }) {
+  const names = useCurrencyNames(lang)
+  const n = fmtNum(roundExalted(rate), lang)
+  return (
+    <div className="pc-verdict pc-verdict--info" role="status">
+      <Icon name="coins" />
+      <span className="pc-verdict__text">
+        <b className="pc-verdict__title">{t('pc2.s61.v.ex')}</b>
+        <span className="pc-verdict__sub">{t('pc2.s61.v.ex.sub', { div: `1 ${names.after('divine', 1)}`, ex: `${n} ${names.after('exalted', n)}` })}</span>
+      </span>
+      <span />
+    </div>
+  )
+}
+
+/**
+ * S61: валюта и всё, что меняют у Ange: «≈ N ex за штуку · у Ange» по фиду обмена GGG за последний час (без запроса
+ * к сайту), у стопки — сумма; рынки «за exalted / chaos / divine» — строками. Объявления сайта — свёрнуты, по кнопке.
+ */
+function AngeResult({ result, simple, lang, t }: { result: Extract<Pc2Result, { kind: 'ange' }>; simple: boolean; lang: UiLang; t: T }) {
+  const a = result.ange
+  const view = angeView(a, result.stack)
+  const conf = angeConfidence(a)
+  const num = (n: number): string => n.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US')
+  return (
+    <>
+      {view.kind === 'exalted' ? (
+        <ExaltedPlate rate={a.exaltedPerDivine} lang={lang} t={t} />
+      ) : (
+        <VerdictPlate v={result.verdict} bulk exchange simple={simple} lang={lang} t={t} />
+      )}
+      {view.kind !== 'exalted' && (
+        <div className="ui-summary pc-summary">
+          <div className="pc-market">
+            <span className="pc-market__label">
+              {t(view.kind === 'rate' ? 'pc2.s61.ange.titleRate' : 'pc2.s61.ange.title')}
+              <span className="ui-q" title={t('pc2.s61.ange.help')}>
+                ?
+              </span>
+            </span>
+            <span className="pc-market__price">
+              ≈ <Price price={view.each} lang={lang} full={simple} /> <span className="pc-market__each">{t('pc2.s61.ange.each')}</span>
+            </span>
+            {view.perExalted && <span className="pc-market__note">{t('pc2.s61.ange.perEx', { n: num(view.perExalted) })}</span>}
+            {view.stack && (
+              <span className="pc-market__stack">
+                {t('pc1.s24.fs.stack', { n: result.stack })} <Price price={view.stack} lang={lang} full={simple} approx />
+              </span>
+            )}
+            <span className="pc-market__note">
+              {t(view.kind === 'rate' ? 'pc2.s61.ange.srcRate' : 'pc2.s61.ange.src', { hours: hourRange(a.hour) })}
+            </span>
+          </div>
+          <div className="pc-fs">
+            {view.rows.map((row) => (
+              <AngeRow key={row.base} row={row} simple={simple} lang={lang} t={t} />
+            ))}
+          </div>
+          <span className="ui-summary__conf">
+            <span className="ui-pips">
+              {[1, 2, 3, 4].map((i) => (
+                <i key={i} className={i <= conf ? 'on' : undefined} />
+              ))}
+            </span>
+            {t(`pc1.conf.${conf}`)} · {t('pc1.s24.fs.traded', { n: num(view.volume) })}
+          </span>
+        </div>
+      )}
+      {a.age > 0 && (
+        <div className="ui-hint pc-defaults">
+          <Icon name="info" />
+          <span>{t('pc1.s24.fs.old', { n: a.age })}</span>
+        </div>
+      )}
+      <SiteOffers result={result} lang={lang} t={t} />
+    </>
+  )
+}
+
+/** «Объявления на сайте (часто устаревшие)»: свёрнуты; первый раз раскрыли — один запрос обмена trade2. */
+function SiteOffers({ result, lang, t }: { result: Extract<Pc2Result, { kind: 'ange' }>; lang: UiLang; t: T }) {
+  const load = useStore((s) => s.loadSiteOffers)
+  const site = result.site
+  const [open, setOpen] = useState(site.phase !== 'idle')
+  const now = useNow(open && site.phase === 'limit')
+  // новый предмет — объявления не загружены: свёрнуто (сами не грузим — только по кнопке)
+  useEffect(() => {
+    if (site.phase === 'idle') setOpen(false)
+  }, [site.phase])
+  const toggle = (): void => {
+    setOpen((o) => !o)
+    if (!open && site.phase === 'idle') void load()
+  }
+  return (
+    <div className="pc-blk pc-site">
+      <div className="pc-site__head">
+        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" aria-expanded={open} onClick={toggle}>
+          <Icon name={open ? 'chev-d' : 'chev-r'} />
+          {t('pc1.s24.site')}
+        </button>
+        <span className="ui-q" title={t('pc2.s61.site.help')}>
+          ?
+        </span>
+      </div>
+      {open && site.phase === 'loading' && <span className="pc-site__note">{t('pc1.s24.site.loading')}</span>}
+      {open && site.phase === 'ok' && (
+        <>
+          <span className="pc-site__note">
+            {site.offers.length ? t('pc1.s24.site.count', { n: site.total }) : t('pc1.s24.site.empty')}
+            {site.cached && <span className="ui-tag">{t('pc1.cached')}</span>}
+          </span>
+          {site.offers.length > 0 && <OffersList offers={site.offers} lang={lang} t={t} />}
+        </>
+      )}
+      {open && site.phase === 'limit' && (
+        <span className="pc-site__note">
+          {t('pc1.s24.site.limit', { time: waitClock((site.retryAt - now) / 1000) })}{' '}
+          {now >= site.retryAt && (
+            <button type="button" className="ui-btn ui-btn--sm" onClick={() => void load()}>
+              <Icon name="refresh" />
+              {t('pc1.s24.site.retry')}
+            </button>
+          )}
+        </span>
+      )}
+      {open && site.phase === 'error' && (
+        <span className="pc-site__note">
+          {t('pc1.s24.site.error')} {site.error && t(...netErrorText(site.error))}{' '}
+          <button type="button" className="ui-btn ui-btn--sm" onClick={() => void load()}>
+            <Icon name="refresh" />
+            {t('pc1.s24.site.retry')}
+          </button>
+        </span>
+      )}
+    </div>
   )
 }
 
@@ -919,6 +1185,8 @@ function Results({ t, lang }: { t: T; lang: UiLang }) {
   if (phase === 'result' && result) {
     return result.kind === 'trade' ? (
       <TradeResult result={result} simple={simple} lang={lang} t={t} />
+    ) : result.kind === 'ange' ? (
+      <AngeResult result={result} simple={simple} lang={lang} t={t} />
     ) : (
       <BulkResult result={result} simple={simple} lang={lang} t={t} />
     )
@@ -968,6 +1236,7 @@ export function Poe2PriceWindow({ captured, onClose }: { captured: CapturedItem;
     <section className={`ui-panel pc${expert ? ' is-expert' : ''}`} data-game="poe2">
       <header className="ui-panel__head" data-drag-handle>
         <span className="ui-panel__title">{t('pc2.title')}</span>
+        <RateBadge2 lang={lang} t={t} />
         {leagues.length > 0 && (
           <Select
             className="pc-league"
@@ -1032,9 +1301,11 @@ function PriceActions({ result, title, league, t }: { result: Pc2Result | undefi
   const [saved, setSaved] = useState<ActionState>('idle')
   const siteUrl = result?.siteUrl
   useEffect(() => setSaved('idle'), [siteUrl])
-  // id поиска — последний сегмент адреса trade2 (/trade2/search/poe2/<лига>/<id>)
-  const slug = siteUrl ? decodeURIComponent(siteUrl.split('/').pop() ?? '') : ''
-  const type = result?.kind === 'bulk' ? 'exchange' : 'search'
+  // id поиска — последний сегмент адреса trade2 (/trade2/search/poe2/<лига>/<id>); у цены Ange id есть только после
+  // загрузки объявлений сайта (до того — страница обмена с ?q=)
+  const noId = result?.kind === 'ange' && result.site.phase !== 'ok'
+  const slug = siteUrl && !noId ? decodeURIComponent(siteUrl.split('/').pop() ?? '') : ''
+  const type = result?.kind === 'bulk' || result?.kind === 'ange' ? 'exchange' : 'search'
 
   const save = async (): Promise<void> => {
     if (!slug || saved === 'busy' || saved === 'done') return
