@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import { useT, useName } from '../i18n'
+import { ShellIcon } from '../components/ShellIcon'
 
+/** «Схема зоны» (.ui-box): картинка раскладки, варианты миниатюрами, Esc и крестик закрывают. */
 export function LayoutViewerPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const selectedZoneAreaId = useAppStore((s) => s.selectedZoneAreaId)
@@ -35,41 +37,69 @@ export function LayoutViewerPanel() {
     }
   }, [layoutKey])
 
+  useEffect(() => {
+    if (!selectedZoneAreaId) return
+    const key = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') selectZone(null)
+    }
+    document.addEventListener('keydown', key)
+    return () => document.removeEventListener('keydown', key)
+  }, [selectedZoneAreaId, selectZone])
+
   if (!selectedZoneAreaId || !layoutKey) return null
+  const name = localName(zone?.name ?? '')
 
   return (
-    <section className="panel layout">
-      <div className="panel-head">
-        <span>{t('lv.title', { name: localName(zone?.name ?? '') })}</span>
-        <button className="icon" title={t('lv.close')} onClick={() => selectZone(null)}>
-          ✕
+    <section className="ui-box" role="region" aria-label={t('lv.title', { name })}>
+      <div className="ui-box__head">
+        <span className="ui-label">
+          <ShellIcon name="map" />
+          {t('lv.title', { name })}
+        </span>
+        <span className="ui-label__grow" />
+        <button
+          type="button"
+          className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+          title={t('lv.close')}
+          aria-label={t('lv.close')}
+          onClick={() => selectZone(null)}
+        >
+          <ShellIcon name="close" />
         </button>
       </div>
-      {urls.length === 0 ? (
-        <div className="muted small">{loading ? t('lv.loading') : t('lv.unavailable')}</div>
-      ) : (
-        <>
-          <div className="layout-main">
-            <img src={urls[active]} alt={zone?.name} />
-          </div>
-          {urls.length > 1 && (
-            <div className="thumbs">
-              {urls.map((u, i) => (
-                <img
-                  key={i}
-                  src={u}
-                  className={i === active ? 'active' : ''}
-                  onClick={() => setActive(i)}
-                  alt={t('lv.variant', { n: i + 1 })}
-                />
-              ))}
+      <div className="ui-box__body">
+        {urls.length === 0 ? (
+          loading ? (
+            <span className="ui-skeleton" style={{ height: 160 }} aria-label={t('lv.loading')} />
+          ) : (
+            <p className="cp-asc__hint">{t('lv.unavailable')}</p>
+          )
+        ) : (
+          <>
+            <div className="cp-map">
+              <img src={urls[active]} alt={name} />
             </div>
-          )}
-          <div className="muted small">
-            {t('lv.rotateNote')} © Lailloken / Exile-UI (MIT)
-          </div>
-        </>
-      )}
+            {urls.length > 1 && (
+              <div className="cp-thumbs" role="group" aria-label={t('lv.variants')}>
+                {urls.map((u, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    aria-pressed={i === active}
+                    aria-label={t('lv.variant', { n: i + 1 })}
+                    onClick={() => setActive(i)}
+                  >
+                    <img src={u} alt="" />
+                  </button>
+                ))}
+              </div>
+            )}
+            <span className="cp-credit">
+              {t('lv.rotateNote')} © Lailloken / Exile-UI (MIT)
+            </span>
+          </>
+        )}
+      </div>
     </section>
   )
 }

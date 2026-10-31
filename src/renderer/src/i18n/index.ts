@@ -2,6 +2,7 @@ import { useAppStore } from '../store/useAppStore'
 import type { Reward, UiLang } from '@shared/types'
 import type { Dict } from './types'
 import { DOMAIN_DICTS } from './dicts'
+import { useGameLang } from '../gameLang'
 
 // Interface language. Game zone/boss/quest names always stay English (they must
 // match the English game client), so they are NOT translated here — only our own
@@ -49,9 +50,18 @@ export function norm(s: string): string {
     .trim()
 }
 
-/** Returns a localizer for game zone/boss names based on the nameLang setting. */
+/**
+ * Язык названий компаса PoE 2 (зоны, боссы, квесты, восхождения): язык клиента игры (настройка «Язык клиента игры»,
+ * S26/S31), пока он не узнан — язык интерфейса, не EN (решение лида 31.10). Старое поле Settings.nameLang больше
+ * не читается.
+ */
+export function useNameLang(): UiLang {
+  return useGameLang(useLang())
+}
+
+/** Returns a localizer for game zone/boss names (language — useNameLang). */
 export function useName(): (en: string) => string {
-  const nameLang = useAppStore((s) => s.settings?.nameLang ?? 'en')
+  const nameLang = useNameLang()
   const namesRu = useAppStore((s) => s.dataset?.namesRu)
   return (en: string) => {
     if (nameLang === 'ru' && en) {
@@ -91,14 +101,21 @@ export function formatReward(r: Reward, lang: UiLang): string {
     }
     case 'life':
       return r.value.includes('%') ? `+${n}% к макс. жизни` : `+${n} к макс. жизни`
-    case 'uncut_gem':
-      return 'Необраб. камень'
+    // термины — как в RU-клиенте (poe2/ru/items.ndjson, stats.ndjson)
+    case 'uncut_gem': {
+      const v = r.value.toLowerCase()
+      return v.includes('support')
+        ? 'Неогранённый камень поддержки'
+        : v.includes('spirit')
+          ? 'Неогранённый камень духа'
+          : 'Неогранённый камень умения'
+    }
     case 'support_gem':
       return 'Камень поддержки'
     case 'skill_gem':
       return 'Камень умения'
     case 'charm_slot':
-      return 'Чарм'
+      return `+${n ?? 1} ячейка для оберегов`
     default:
       return r.value
   }

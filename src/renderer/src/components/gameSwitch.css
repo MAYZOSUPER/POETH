@@ -1,0 +1,7 @@
+/* Переключатель PoE 1 / PoE 2 в шапке (макет «PoE 2 в POETH v1», раздел 3): ui-seg + панель подтверждения. */
+.gs { position: relative; -webkit-app-region: no-drag; }
+.gs .ui-seg > button { height: 24px; padding: 0 var(--sp-4); white-space: nowrap; }
+.gs-pop { position: absolute; top: calc(100% + 8px); left: 0; z-index: 50; width: 300px; padding: 0; }
+.gs-pop__b { display: grid; gap: 8px; padding: 10px 12px 12px; font-size: var(--fs-sm); }
+.gs-pop__b p { margin: 0; color: var(--fg-muted); white-space: normal; }
+.gs-pop__acts { display: flex; justify-content: flex-end; gap: 6px; }

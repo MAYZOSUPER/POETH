@@ -235,6 +235,12 @@ export function NavRail() {
 
   const list = (inDrawer: boolean) => (
     <div className="ui-rail__list" onKeyDown={onKeys} onScroll={() => setTip(null)}>
+      {/* режим PoE 2 — названием игры над группами (свёрнутый рельс его прячет; игра видна и в шапке) */}
+      {game === 'poe2' && (
+        <div className="ui-rail__game" aria-hidden="true">
+          Path of Exile 2
+        </div>
+      )}
       {sections.map((s) => (
         <div key={s.id} className="ui-rail__group" role="group" aria-label={t(s.key)}>
           <div className="ui-rail__head" aria-hidden="true">

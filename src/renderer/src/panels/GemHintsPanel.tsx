@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import { useLang, useT } from '../i18n'
+import { ShellIcon } from '../components/ShellIcon'
 
+/** Камни умений акта для класса персонажа — сворачиваемый ui-box над чек-листом. */
 export function GemHintsPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const selectedActId = useAppStore((s) => s.selectedActId)
@@ -40,32 +42,43 @@ export function GemHintsPanel() {
   const gemName = (id: string): string => gems.gems[id]?.name ?? id
 
   return (
-    <section className="panel gems">
-      <div className="panel-head clickable" onClick={() => setOpen((o) => !o)}>
-        <span>{cls ? `${t('gem.head')} (${cls})` : t('gem.headEarly')}</span>
-        <span className="muted">{open ? '▾' : '▸'}</span>
+    <section className="ui-box">
+      <div className="ui-box__head">
+        <span className="ui-label">
+          <ShellIcon name="gem" />
+          {cls ? `${t('gem.head')} · ${cls}` : t('gem.headEarly')}
+        </span>
+        <span className="ui-label__grow" />
+        <button
+          type="button"
+          className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+          aria-expanded={open}
+          aria-label={open ? t('gem.hide') : t('gem.show')}
+          title={open ? t('gem.hide') : t('gem.show')}
+          onClick={() => setOpen((o) => !o)}
+        >
+          <ShellIcon name={open ? 'chev-d' : 'chev-r'} />
+        </button>
       </div>
       {open && (
-        <>
-          {carriedOver && <div className="gem-carry small muted">{t('gem.carryover')}</div>}
-          <ul className="gem-recs">
-            {recs.map((r, i) => {
-              const note = lang === 'ru' ? (r.noteRu ?? r.note) : r.note
-              return (
-                <li key={i}>
-                  <div className="gem-class">{r.class}</div>
-                  <div className="gem-line">
-                    <b>{t('gem.skills')}</b> {r.primaryGemIds.map(gemName).join(', ')}
-                  </div>
-                  <div className="gem-line">
-                    <b>{t('gem.supports')}</b> {r.supportGemIds.map(gemName).join(', ')}
-                  </div>
-                  {note && <div className="gem-note small muted">{note}</div>}
-                </li>
-              )
-            })}
-          </ul>
-        </>
+        <div className="cp-gems">
+          {carriedOver && <p className="cp-empty">{t('gem.carryover')}</p>}
+          {recs.map((r, i) => {
+            const note = lang === 'ru' ? (r.noteRu ?? r.note) : r.note
+            return (
+              <div key={i} className="cp-gem">
+                {!cls && r.class && <span className="ui-tag">{r.class}</span>}
+                <span>
+                  <b>{t('gem.skills')}</b> {r.primaryGemIds.map(gemName).join(', ')}
+                </span>
+                <span>
+                  <b>{t('gem.supports')}</b> {r.supportGemIds.map(gemName).join(', ')}
+                </span>
+                {note && <span className="cp-q__note">{note}</span>}
+              </div>
+            )
+          })}
+        </div>
       )}
     </section>
   )

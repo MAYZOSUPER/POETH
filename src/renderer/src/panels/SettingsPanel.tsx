@@ -190,24 +190,8 @@ export function SettingsPanel() {
           <option value="en">English</option>
         </select>
       </div>
-      {game === 'poe1' && <GameLangSetting />}
-
-      {hasCampaign && (
-        <>
-          <div className="setting">
-            <label>{t('set.nameLang')}</label>
-            <select
-              className="lang-select"
-              value={settings?.nameLang ?? 'en'}
-              onChange={(e) => void patchSettings({ nameLang: e.target.value as UiLang })}
-            >
-              <option value="en">English</option>
-              <option value="ru">Русский</option>
-            </select>
-          </div>
-          <div className="hint small muted">{t('set.nameLang.note')}</div>
-        </>
-      )}
+      {/* PoE 2: язык клиента — он же язык названий компаса (зоны, боссы, квесты), см. useNameLang */}
+      {(game === 'poe1' || hasCampaign) && <GameLangSetting />}
 
       <div className="setting">
         <label>{t('set.opacity')}</label>

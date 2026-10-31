@@ -1,8 +1,11 @@
 import type { Act, Reward, RewardKind } from '@shared/types'
 import { useAppStore, getRoute, stepIndexOfZone } from '../store/useAppStore'
-import { useT, useLang, useName, layoutLabel, formatReward } from '../i18n'
+import { useT, useLang, useName, layoutLabel } from '../i18n'
 import { tKey } from '../i18n/hotkey'
 import { QuestRow } from '../components/QuestRow'
+import { RewardBadge } from '../components/RewardBadge'
+import { ShellIcon } from '../components/ShellIcon'
+import { ZoneXpHint } from './ZoneXpHint'
 
 const PERMANENT = new Set<RewardKind>([
   'passive_point',
@@ -24,6 +27,7 @@ function rewardTeaser(act: Act, zoneAreaId: string): Reward | null {
   return null
 }
 
+/** «Что дальше»: одна зона маршрута карточкой (.cp-zone) — куда идти, что взять, квесты, следующая зона. */
 export function WhatsNextPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const currentStepIndex = useAppStore((s) => s.currentStepIndex)
@@ -34,6 +38,7 @@ export function WhatsNextPanel() {
   const goToStep = useAppStore((s) => s.goToStep)
   const selectZone = useAppStore((s) => s.selectZone)
   const toggleQuest = useAppStore((s) => s.toggleQuest)
+  const simple = useAppStore((s) => s.settings?.ui.simpleMode ?? true)
   const t = useT()
   const lang = useLang()
   const localName = useName()
@@ -59,7 +64,7 @@ export function WhatsNextPanel() {
   const hintKey = step.zoneName.toLowerCase()
   const hint =
     (lang === 'ru' ? dataset.hintsRu?.[hintKey] : undefined) ?? dataset.hints?.[hintKey]
-  const hasHint = !!hint && !!(hint.objective || hint.exit || hint.cues?.length || hint.tips?.length)
+  const hasSteps = !!hint && !!(hint.objective || hint.exit || hint.cues?.length)
 
   const youAreHere = detectedZoneAreaId === step.areaId
   const detectedStep = detectedZoneAreaId ? stepIndexOfZone(detectedZoneAreaId) : -1
@@ -77,96 +82,131 @@ export function WhatsNextPanel() {
   const next = idx + 1 < route.length ? route[idx + 1] : null
   const nextAct = next ? dataset.acts.find((a) => a.id === next.actId) : null
   const nextTeaser = next && nextAct ? rewardTeaser(nextAct, next.areaId) : null
+  const actLabel = (a: Act): string =>
+    a.kind === 'interlude' ? t('int.title', { n: a.actNumber - 4 }) : t('act.short', { n: a.actNumber })
 
   return (
-    <section className="panel whatsnext">
-      <div className="panel-head">
-        <span>{t('wn.head', { i: idx + 1, n: route.length })}</span>
-        <span className="wn-nav">
-          <button className="icon" title={tKey(t, 'wn.prev', prevKey)} onClick={stepPrev}>
-            ◀
-          </button>
-          <button className="icon" title={tKey(t, 'wn.next', nextKey)} onClick={stepNext}>
-            ▶
-          </button>
+    <section className="ui-box cp-zone" aria-label={t('vt.whatsnext')}>
+      <div className="ui-box__head">
+        <span className="cp-eyebrow">
+          {actLabel(act)} · {t('wn.head', { i: idx + 1, n: route.length })}
         </span>
+        <span className="ui-label__grow" />
+        <button
+          type="button"
+          className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+          title={tKey(t, 'wn.prev', prevKey)}
+          aria-label={t('wn.prev.nokey')}
+          onClick={stepPrev}
+        >
+          <span style={{ display: 'inline-flex', transform: 'scaleX(-1)' }}>
+            <ShellIcon name="chev-r" />
+          </span>
+        </button>
+        <button
+          type="button"
+          className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+          title={tKey(t, 'wn.next', nextKey)}
+          aria-label={t('wn.next.nokey')}
+          onClick={stepNext}
+        >
+          <ShellIcon name="chev-r" />
+        </button>
       </div>
 
-      <div className="wn-current">
-        <div className="wn-act">{act.actName}</div>
-        <div className="wn-zone-row">
-          <span className="wn-zone">
-            {localName(step.zoneName)}
-            {step.isTown ? ' 🏠' : ''}
-          </span>
+      <div className="ui-box__body">
+        <div className="cp-zname">
+          <h3>{localName(step.zoneName)}</h3>
+          {step.isTown && (
+            <span title={t('wn.town')}>
+              <ShellIcon name="home" />
+            </span>
+          )}
+          {hint?.layoutType && <span className="ui-tag">{layoutLabel(lang, hint.layoutType)}</span>}
+          {youAreHere && (
+            <span className="cp-here">
+              <span className="ui-dot" />
+              {t('wn.here')}
+            </span>
+          )}
+          <span className="ui-label__grow" style={{ flex: 1 }} />
           {hasLayout && (
-            <button className="map-btn" onClick={() => selectZone(step.areaId)}>
+            <button type="button" className="ui-btn ui-btn--sm" onClick={() => selectZone(step.areaId)}>
+              <ShellIcon name="map" />
               {t('q.map')}
             </button>
           )}
         </div>
 
-        {youAreHere && <div className="wn-here">{t('wn.here')}</div>}
         {offTrack && (
-          <button className="wn-backtrack" onClick={() => goToStep(detectedStep)}>
-            {t('wn.backtrack')}
-          </button>
+          <div>
+            <button type="button" className="ui-btn ui-btn--sm" onClick={() => goToStep(detectedStep)}>
+              <ShellIcon name="compass" />
+              {t('wn.backtrack')}
+            </button>
+          </div>
         )}
 
-        {hasHint && hint && (
-          <div className="wn-nav-hint">
-            {hint.layoutType && <span className="wn-layout">{layoutLabel(lang, hint.layoutType)}</span>}
-            {hint.objective && <div className="wn-hint">🎯 {hint.objective}</div>}
-            {hint.exit && <div className="wn-hint">➡️ {hint.exit}</div>}
-            {hint.cues?.map((c, i) => (
-              <div key={i} className="wn-cue">
-                {c.icon ? `${c.icon} ` : ''}
-                {c.cue}
-                {c.leadsTo ? ` → ${c.leadsTo}` : ''}
+        {/* S64: «эта зона даёт ~N % опыта» — о зоне из журнала, поэтому только когда карточка показывает её */}
+        {youAreHere && <ZoneXpHint />}
+
+        {hasSteps && hint && (
+          <div className="cp-steps">
+            {hint.objective && (
+              <div className="cp-step">
+                <ShellIcon name="map" />
+                <span>{hint.objective}</span>
               </div>
-            ))}
-            {hint.tips?.map((tip, i) => (
-              <div key={i} className="wn-tip">
-                • {tip}
+            )}
+            {hint.exit && (
+              <div className="cp-step">
+                <ShellIcon name="step" />
+                <span>{hint.exit}</span>
+              </div>
+            )}
+            {hint.cues?.map((c, i) => (
+              <div key={i} className="cp-step">
+                <ShellIcon name="compass" />
+                <span>
+                  {c.cue}
+                  {c.leadsTo ? ` → ${c.leadsTo}` : ''}
+                </span>
               </div>
             ))}
           </div>
         )}
-
-        {mandatory.length === 0 && optional.length === 0 ? (
-          <div className="wn-empty small muted">{t('wn.passthrough')}</div>
-        ) : (
-          <>
-            {mandatory.length > 0 && (
-              <div className="wn-group">
-                <div className="wn-group-head req">{t('wn.mandatory')}</div>
-                <ul className="quest-list">{mandatory.map(renderRow)}</ul>
-              </div>
-            )}
-            {optional.length > 0 && (
-              <div className="wn-group">
-                <div className="wn-group-head opt">{t('wn.optional')}</div>
-                <ul className="quest-list">{optional.map(renderRow)}</ul>
-              </div>
-            )}
-          </>
+        {simple && hint?.tips && hint.tips.length > 0 && (
+          <ul className="cp-tips">
+            {hint.tips.map((tip, i) => (
+              <li key={i}>{tip}</li>
+            ))}
+          </ul>
         )}
       </div>
 
+      {mandatory.length === 0 && optional.length === 0 ? (
+        <p className="cp-empty">{t('wn.passthrough')}</p>
+      ) : (
+        <div className="cp-rows">
+          {mandatory.map(renderRow)}
+          {optional.map(renderRow)}
+        </div>
+      )}
+
       {next && nextAct && (
-        <div className="wn-next" onClick={stepNext}>
-          <div className="wn-next-label">{t('wn.nextLabel')}</div>
-          <div className="wn-next-zone">
-            {nextAct.kind === 'interlude'
-              ? t('int.short', { n: nextAct.actNumber - 4 })
-              : t('act.short', { n: nextAct.actNumber })}{' '}
-            · {localName(next.zoneName)}
-            {next.isTown ? ' 🏠' : ''}
-          </div>
-          {nextTeaser && (
-            <div className="wn-next-reward small muted">🎁 {formatReward(nextTeaser, lang)}</div>
-          )}
-          <span className="wn-next-go">{t('wn.go')}</span>
+        <div className="ui-box__foot cp-next">
+          <span>
+            {t('wn.nextLabel')}{' '}
+            <b>
+              {nextAct.id !== act.id ? `${actLabel(nextAct)} · ` : ''}
+              {localName(next.zoneName)}
+            </b>
+            {nextTeaser && <RewardBadge reward={nextTeaser} />}
+          </span>
+          <button type="button" className="ui-btn ui-btn--sm" onClick={stepNext}>
+            {t('wn.go')}
+            <ShellIcon name="chev-r" />
+          </button>
         </div>
       )}
     </section>
