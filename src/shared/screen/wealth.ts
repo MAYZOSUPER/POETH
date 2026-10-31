@@ -19,7 +19,10 @@ export interface ScreenTabOptions {
   name?: string
   /** число стопки не прочитано: 'skip' — предмет не берём (по умолчанию), 'one' — считаем одну штуку */
   uncounted?: 'skip' | 'one'
-  /** брать только уверенно прочитанные числа (по умолчанию — все прочитанные) */
+  /**
+   * брать только уверенно прочитанные числа (по умолчанию — да: неуверенное число бывает ошибочным в разы и исказило бы
+   * снимок; false — брать и их, approx покажет)
+   */
   sureOnly?: boolean
 }
 
@@ -65,7 +68,7 @@ export function screenTabItems(read: ScreenRead, o: ScreenTabOptions = {}): Scre
       continue
     }
     let qty = c.count
-    if (qty !== null && o.sureOnly && !c.countSure) qty = null
+    if (qty !== null && o.sureOnly !== false && !c.countSure) qty = null
     if (qty === null || !(qty > 0)) {
       if (o.uncounted === 'one') qty = 1
       else {
