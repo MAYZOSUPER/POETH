@@ -83,8 +83,24 @@ export interface ScreenLabels {
   unpriced: number
   /** ячеек с предметом, у которых число не прочитано (в итог не вошли) */
   uncounted: number
+  /** в итоге есть числа, прочитанные неуверенно, — итог приблизительный */
+  approx: boolean
   /** куда ставить итог: правый верх области ячеек */
   anchor: ScreenRect
   client: { width: number; height: number }
   at: number
+}
+
+/** Почему подписей нет. */
+export type ScreenFail = 'no-game' | 'not-found' | 'no-icons' | 'error' | 'unsupported'
+
+/** Что показывает оверлей: идёт чтение, подписи, или почему не вышло. */
+export interface ScreenOverlayState {
+  status: 'idle' | 'busy' | 'shown' | 'fail'
+  fail?: ScreenFail
+  /** готовятся эталоны иконок (первый раз): сколько из скольких */
+  icons?: { done: number; total: number }
+  labels?: ScreenLabels | null
+  /** время снимка и распознавания, мс */
+  ms?: ScreenTiming
 }
