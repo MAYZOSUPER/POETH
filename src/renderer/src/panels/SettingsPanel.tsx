@@ -347,8 +347,8 @@ export function SettingsPanel() {
       </div>
 
       {game === 'poe1' && <ChatCommandsPanel />}
-      {/* S53: фильтр лута NeverSink (раздел рисует себя только в PoE 1) */}
-      {game === 'poe1' && <LootFilterSection />}
+      {/* S53/S64: фильтр лута NeverSink (раздел рисует себя, когда main включил его для игры: PoE 1 и PoE 2) */}
+      <LootFilterSection />
 
       {hasCampaign && (
         <>
