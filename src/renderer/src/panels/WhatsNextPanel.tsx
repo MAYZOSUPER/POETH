@@ -5,6 +5,7 @@ import { tKey } from '../i18n/hotkey'
 import { QuestRow } from '../components/QuestRow'
 import { RewardBadge } from '../components/RewardBadge'
 import { ShellIcon } from '../components/ShellIcon'
+import { ZoneXpHint } from './ZoneXpHint'
 
 const PERMANENT = new Set<RewardKind>([
   'passive_point',
@@ -146,8 +147,8 @@ export function WhatsNextPanel() {
           </div>
         )}
 
-        {/* S64: строка «штраф опыта в зоне» — отдельный компонент сюда, между названием зоны и шагами
-            (обёртка .cp-xp в panels/campaign/campaign.css) */}
+        {/* S64: «эта зона даёт ~N % опыта» — о зоне из журнала, поэтому только когда карточка показывает её */}
+        {youAreHere && <ZoneXpHint />}
 
         {hasSteps && hint && (
           <div className="cp-steps">

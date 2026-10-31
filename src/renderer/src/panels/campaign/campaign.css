@@ -51,8 +51,6 @@
 .cp-zname .ui-ico { color: var(--fg-faint); }
 .cp-here { display: inline-flex; align-items: center; gap: 5px; font-size: var(--fs-xs); font-weight: 600; color: var(--good); white-space: nowrap; }
 .cp-here .ui-dot { margin: 0; }
-/* S64: строка «штраф опыта в зоне» — между названием зоны и шагами (место оставлено в WhatsNextPanel) */
-.cp-xp { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 6px 10px; border-radius: var(--r-sm); background: var(--sunken); font-size: var(--fs-sm); }
 .cp-steps { display: grid; gap: 6px; }
 .cp-step { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; align-items: start; font-size: var(--fs-md); line-height: 1.4; }
 .cp-step > .ui-ico { width: 15px; height: 15px; margin-top: 2px; color: var(--accent); }
