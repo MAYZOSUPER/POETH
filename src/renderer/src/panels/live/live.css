@@ -33,6 +33,21 @@
   color: var(--fg-faint);
   font-size: var(--fs-sm);
 }
+/* S63: предел live-поисков PoE 2 (подпись + выбор, пояснение под ними в экспертном режиме) */
+.live-poe2max {
+  display: inline-grid;
+  gap: var(--sp-2);
+  max-width: 320px;
+}
+.live-poe2max__row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.live-poe2max__note {
+  color: var(--fg-faint);
+  font-size: var(--fs-sm);
+}
 .live-banner {
   border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
   border-radius: var(--r-panel);

@@ -19,8 +19,11 @@ export const live: DomainDict = {
     'live.add.title': 'Название (необязательно)',
     'live.add.btn': 'Следить',
     'live.add.help': 'Откройте поиск на pathofexile.com/trade и скопируйте адрес страницы. Лига берётся из ссылки, без неё — текущая.',
+    'live.add.help.poe2': 'Откройте поиск на pathofexile.com/trade2 и скопируйте адрес страницы. Лига берётся из ссылки, без неё — текущая.',
     'live.add.err.bad-url': 'Это не ссылка на поиск трейда PoE 1. Нужна страница вида …/trade/search/<лига>/<код>.',
-    'live.add.err.poe2': 'Это поиск PoE 2, а live search в POETH работает только с PoE 1.',
+    'live.add.err.bad-url.poe2':
+      'Это не ссылка на поиск трейда PoE 2. Нужна страница вида …/trade2/search/poe2/<лига>/<код>. Поиски PoE 1 работают в режиме PoE 1.',
+    'live.add.err.poe2': 'Это поиск PoE 2. Переключите игру на PoE 2 в шапке — там live search для него работает.',
     'live.add.err.exchange': 'У массового обмена (exchange) на сайте нет live search — нужен обычный поиск.',
     'live.add.err.duplicate': 'Этот поиск уже в списке.',
     'live.add.off': 'Поиск добавлен выключенным: включено максимум поисков ({max}).',
@@ -46,6 +49,11 @@ export const live: DomainDict = {
     'live.row.quiet': 'без уведомлений',
     'live.hint':
       'Live search следит за поиском на сайте и сообщает о новых предметах сразу. «Написать» вставляет сообщение продавцу в чат игры — Enter нажимаете вы.',
+    'live.hint.poe2':
+      'Live search следит за поиском trade2 и сообщает о новых предметах сразу. В PoE 2 почти всё продаётся мгновенным выкупом: «Открыть в трейд-окне» покажет лот на сайте, купить — кнопкой на странице, комиссия в золоте. Для личного обмена «Написать» вставляет сообщение в чат — Enter нажимаете вы.',
+    'live.poe2max': 'Поисков PoE 2 одновременно',
+    'live.poe2max.help':
+      'Сколько соединений trade2 разрешено, сайт не сообщает. 5 — с запасом; больше — на свой риск: сайт может временно не пускать.',
     'live.recent': 'Последние находки',
     'live.recent.empty': 'Находок пока нет.',
     'live.col.item': 'Предмет',
@@ -61,6 +69,8 @@ export const live: DomainDict = {
     'live.act.copied': 'Сообщение скопировано',
     'live.act.open': 'Открыть лот',
     'live.act.open.title': 'Лот торговца: покупка на сайте, комиссия в золоте',
+    'live.act.openTrade': 'Открыть в трейд-окне',
+    'live.act.openTrade.title': 'Мгновенный выкуп: лот откроется на сайте, купить — кнопкой на странице. Комиссия — в золоте',
     'live.act.err.no-game': 'Игра не найдена — откройте окно игры.',
     'live.act.err.no-input': 'Ввод в игру недоступен — скопируйте сообщение.',
     'live.act.err.busy': 'Ввод занят — попробуйте ещё раз.',
@@ -107,8 +117,11 @@ export const live: DomainDict = {
     'live.add.title': 'Name (optional)',
     'live.add.btn': 'Watch',
     'live.add.help': 'Open a search on pathofexile.com/trade and copy the page address. The league comes from the link, otherwise the current one.',
+    'live.add.help.poe2': 'Open a search on pathofexile.com/trade2 and copy the page address. The league comes from the link, otherwise the current one.',
     'live.add.err.bad-url': 'This is not a PoE 1 trade search link. Use a page like …/trade/search/<league>/<code>.',
-    'live.add.err.poe2': 'This is a PoE 2 search, and live search in POETH works only with PoE 1.',
+    'live.add.err.bad-url.poe2':
+      'This is not a PoE 2 trade search link. Use a page like …/trade2/search/poe2/<league>/<code>. PoE 1 searches work in PoE 1 mode.',
+    'live.add.err.poe2': 'This is a PoE 2 search. Switch the game to PoE 2 in the header — live search works for it there.',
     'live.add.err.exchange': 'Bulk exchange has no live search on the site — use a regular search.',
     'live.add.err.duplicate': 'This search is already in the list.',
     'live.add.off': 'Added switched off: the maximum number of searches ({max}) is already on.',
@@ -134,6 +147,11 @@ export const live: DomainDict = {
     'live.row.quiet': 'no notifications',
     'live.hint':
       'Live search watches a site search and tells you about new items right away. “Whisper” pastes the message into game chat — you press Enter.',
+    'live.hint.poe2':
+      'Live search watches a trade2 search and tells you about new items right away. In PoE 2 almost everything sells by instant buyout: “Open in trade window” shows the listing on the site, you buy it with the button on the page, the fee is paid in gold. For in-person trades “Whisper” pastes the message into chat — you press Enter.',
+    'live.poe2max': 'PoE 2 searches at once',
+    'live.poe2max.help':
+      'The site does not say how many trade2 connections it allows. 5 leaves headroom; more is at your own risk — the site may refuse you for a while.',
     'live.recent': 'Recent hits',
     'live.recent.empty': 'No hits yet.',
     'live.col.item': 'Item',
@@ -148,6 +166,8 @@ export const live: DomainDict = {
     'live.act.copied': 'Message copied',
     'live.act.open': 'Open listing',
     'live.act.open.title': 'Merchant listing: buy on the site, fee is paid in gold',
+    'live.act.openTrade': 'Open in trade window',
+    'live.act.openTrade.title': 'Instant buyout: the listing opens on the site, you buy it with the button on the page. The fee is paid in gold',
     'live.act.err.no-game': 'Game window not found — open the game.',
     'live.act.err.no-input': 'Game input is unavailable — copy the message instead.',
     'live.act.err.busy': 'Input is busy — try again.',
