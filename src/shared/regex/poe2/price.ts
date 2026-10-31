@@ -36,6 +36,13 @@ interface FetchItem {
   listing?: { fee?: number; price?: { amount?: number; currency?: string } }
 }
 
+/** id лота trade2 — hex (64 символа); другое в путь fetch не попадает. */
+const LOT_ID = /^[0-9a-f]{1,64}$/
+/** id поиска trade2 («Lvd0vEf5») — только буквы и цифры. */
+const SEARCH_ID = /^[A-Za-z0-9]{1,64}$/
+
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v)
+
 export async function profilePrice(
   body: unknown,
   league: string,
@@ -61,10 +68,14 @@ export async function profilePrice(
     }
   })
   if (!search.ok) return search
-  const { id, result, total } = search.data
-  if (typeof id !== 'string' || !Array.isArray(result)) return { ok: false, error: { code: 'bad-response' } }
+  // ответ сайта — не доверяем форме: объект, id поиска и список id лотов
+  if (!isObj(search.data)) return { ok: false, error: { code: 'bad-response' } }
+  const { id, result, total } = search.data as Partial<SearchResponse>
+  if (typeof id !== 'string' || !SEARCH_ID.test(id) || !Array.isArray(result)) {
+    return { ok: false, error: { code: 'bad-response' } }
+  }
   const listings: Poe2PriceListing[] = []
-  const ids = result.slice(0, PRICE_FETCH).filter((x) => typeof x === 'string')
+  const ids = result.filter((x): x is string => typeof x === 'string' && LOT_ID.test(x)).slice(0, PRICE_FETCH)
   if (ids.length) {
     const fetched = await request<{ result: Array<FetchItem | null> }>({
       kind: 'fetch',
@@ -77,19 +88,22 @@ export async function profilePrice(
       }
     })
     if (!fetched.ok) return fetched
-    for (const r of fetched.data.result ?? []) {
-      const p = r?.listing?.price
-      if (!p || typeof p.amount !== 'number' || typeof p.currency !== 'string') continue
+    const items = isObj(fetched.data) && Array.isArray(fetched.data.result) ? fetched.data.result : null
+    if (!items) return { ok: false, error: { code: 'bad-response' } }
+    for (const r of items as Array<FetchItem | null>) {
+      if (!isObj(r)) continue
+      const p = isObj(r.listing) && isObj(r.listing.price) ? r.listing.price : null
+      if (!p || typeof p.amount !== 'number' || !Number.isFinite(p.amount) || typeof p.currency !== 'string') continue
       listings.push({
         amount: p.amount,
         currency: p.currency,
-        instant: typeof r?.listing?.fee === 'number'
+        instant: isObj(r.listing) && typeof r.listing.fee === 'number'
       })
     }
   }
   return {
     ok: true,
-    total: Number(total) || 0,
+    total: typeof total === 'number' && Number.isFinite(total) ? total : 0,
     listings,
     siteUrl: siteUrl(id),
     league

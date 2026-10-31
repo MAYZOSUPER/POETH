@@ -550,7 +550,8 @@ describe('профили и состояние PoE 2', () => {
       waystone: { ...emptyWaystoneQuery(), tierMin: 15 }
     })
     const calls: Poe2PriceRequest[] = []
-    const ids = Array.from({ length: 40 }, (_, i) => `r${i}`)
+    // id лотов trade2 — 64 hex-символа
+    const ids = Array.from({ length: 40 }, (_, i) => i.toString(16).padStart(64, 'a'))
     const res = await profilePrice(
       { ...body, query: { ...body.query, status: { option: 'available' } } },
       'Runes of Aldur',
