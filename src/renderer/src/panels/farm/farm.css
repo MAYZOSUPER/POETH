@@ -126,8 +126,9 @@
   position: relative; /* подложка диалога (.ui-dialog-scrim) — от раздела */
   min-height: 420px;
 }
-.fm-dialog {
-  width: 460px;
+/* .ui-dialog.fm-dialog: components.css подключается позже вкладок, одним классом его ширину не перебить */
+.ui-dialog.fm-dialog {
+  width: min(460px, 100%);
 }
 .fm-good {
   color: var(--good);

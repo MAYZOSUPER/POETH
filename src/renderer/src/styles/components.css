@@ -1035,7 +1035,8 @@ button.ui-select[aria-expanded="true"] { border-color: var(--accent); }
 /* ================= диалог поверх окна («Поделиться», «Импорт») ================= */
 /* .ui-dialog-scrim — затемнение внутри окна компаньона (position: absolute от ближайшего position: relative). */
 .ui-dialog-scrim { position: absolute; inset: 0; z-index: 5; display: grid; justify-items: center; align-content: start; padding: 36px 16px; background: var(--scrim); overflow: auto; }
-.ui-dialog { width: 620px; max-width: 100%; border: 1px solid var(--border-strong); border-radius: var(--r-panel); background: var(--surface-solid); box-shadow: var(--halo); }
+/* min(…, 100%): подложка — сетка, и max-width в процентах не сжимает её колонку — диалог уходил за край узкого окна */
+.ui-dialog { width: min(620px, 100%); max-width: 100%; border: 1px solid var(--border-strong); border-radius: var(--r-panel); background: var(--surface-solid); box-shadow: var(--halo); }
 .ui-dialog__head { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-5) var(--sp-4) var(--sp-5) var(--sp-7); border-bottom: 1px solid var(--border); }
 .ui-dialog__title { flex: 1; min-width: 0; margin: 0; font: 700 19px / 1.15 var(--font-display); letter-spacing: 0.03em; color: var(--accent-hi); }
 .ui-dialog__body { display: grid; gap: var(--sp-7); padding: var(--sp-7); }

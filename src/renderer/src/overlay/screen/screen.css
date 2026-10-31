@@ -1,5 +1,5 @@
-/* Цены поверх окон (S68): подписи у ячеек особой вкладки тайника и итог вкладки. Простые подписи на токенах
-   дизайн-системы — оформление рисует дизайнер (фаза 2). Мышь проходит в игру везде, кроме итога. */
+/* Цены поверх окон (S68): подписи у ячеек особой вкладки тайника и панель итога. Мышь проходит в игру везде, кроме
+   панели. Вид — по макету «PoE 2 в POETH v2», раздел «Цены поверх окон». */
 
 .scr-root {
   position: fixed;
@@ -7,11 +7,12 @@
   pointer-events: none;
 }
 
+/* подпись — полоса по низу ячейки; обычная светлая, дороже 1 div — золотом с рамкой, неточная — серая с «~» */
 .scr-label {
   position: absolute;
   overflow: hidden;
   padding: 0 2px;
-  color: var(--gold-bright);
+  color: var(--fg);
   font-family: var(--font-ui);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -22,41 +23,98 @@
   background: rgb(0 0 0 / 0.72);
   border-radius: 0 0 var(--r-sm) var(--r-sm);
 }
+.scr-label.is-rich {
+  color: var(--accent-hi);
+  font-weight: 700;
+  background: rgb(20 14 4 / 0.86);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
 .scr-label.is-doubt {
   color: var(--fg-muted);
 }
 
+/* панель итога */
 .scr-total {
   position: absolute;
-  min-width: 180px;
-  max-width: 260px;
-  padding: var(--sp-3) var(--sp-4);
+  width: 304px;
   pointer-events: auto;
+}
+.scr-total .ui-panel__title {
+  flex: 0 1 auto;
+}
+.scr-total__close {
+  margin-left: auto;
+}
+.scr-total__b {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-6) var(--sp-6);
 }
 .scr-total__row {
   display: flex;
-  align-items: center;
-  gap: var(--sp-3);
+  align-items: baseline;
+  gap: var(--sp-4);
 }
 .scr-total__label {
-  color: var(--fg-muted);
-  font-size: var(--fs-sm);
+  min-width: 0;
+  font-weight: 600;
 }
 .scr-total__sum {
-  flex: 1;
-  color: var(--gold-bright);
-  font-size: var(--fs-lg);
+  margin-left: auto;
+  color: var(--accent-hi);
+  font-size: var(--fs-price);
   font-variant-numeric: tabular-nums;
-  text-align: right;
+  white-space: nowrap;
 }
-.scr-total__note,
-.scr-total__ms {
-  margin-top: var(--sp-1);
+.scr-total__sum .ui-coin {
+  width: 14px;
+  height: 14px;
+  margin-right: var(--sp-2);
+  vertical-align: -1px;
+}
+/* строки — текстом: клавиша и образец подписи идут вслед за словами и переносятся вместе с ними */
+.scr-total__meta {
   color: var(--fg-muted);
   font-size: var(--fs-xs);
+  line-height: 1.6;
+}
+.scr-total__meta .ui-kbd {
+  vertical-align: middle;
+}
+.scr-total__meta .ui-kbd kbd {
+  min-width: 18px;
+  height: 18px;
+}
+.scr-total__warn {
+  color: var(--warn);
+}
+.scr-total__warn > .ui-ico {
+  width: 14px;
+  height: 14px;
+  margin-right: var(--sp-2);
+  vertical-align: -3px;
 }
 .scr-total__ms {
   color: var(--fg-faint);
+  font-size: var(--fs-2xs);
+}
+
+/* образец подписи в легенде */
+.scr-key {
+  display: inline-block;
+  min-width: 18px;
+  margin-right: var(--sp-2);
+  padding: 1px 4px;
+  color: var(--fg-muted);
+  font: 700 var(--fs-2xs) / 1.2 var(--font-ui);
+  text-align: center;
+  background: rgb(0 0 0 / 0.72);
+  border-radius: var(--r-sm);
+}
+.scr-key.is-rich {
+  color: var(--accent-hi);
+  background: rgb(20 14 4 / 0.86);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 .scr-toast {
@@ -66,6 +124,7 @@
   transform: translateX(-50%);
 }
 
-/* «Богатство PoE 2» (S70): «Записать в богатство» под итогом вкладки PoE 2 */
-.scr-wealth { justify-self: start; margin-top: var(--sp-3); }
-.scr-total__note.scr-wealth.is-done { color: var(--good); }
+/* «Богатство PoE 2» (S70): «Записать в богатство» — только у вкладки тайника PoE 2 */
+.scr-wealth { justify-self: start; margin-top: var(--sp-1); }
+.scr-wealth.is-done { color: var(--good); }
+.scr-wealth.is-fail { color: var(--warn); }

@@ -69,7 +69,8 @@
 .w2-gold small { grid-column: 1 / -1; font-size: var(--fs-xs); color: var(--fg-faint); }
 
 /* карточка «Снимок вкладки» в компаньоне */
-.w2-cards { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+/* каждая карточка своей высоты: короткая рядом с длинной не растягивается, кнопки — сразу под суммой */
+.w2-cards { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); align-items: start; }
 .w2-card { background: var(--inset); }
 .w2-card .ui-panel__title { flex: none; }
 .w2-card__b { display: grid; gap: 8px; padding: 8px 12px 12px; font-size: var(--fs-sm); }
