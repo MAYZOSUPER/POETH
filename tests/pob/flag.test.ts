@@ -3,9 +3,9 @@ import { GAMES } from '@shared/games'
 import { buildDevFlag, buildOn } from '@shared/build/flag'
 
 describe('вкладка «Билд»: флаг', () => {
-  it('раскрыта в PoE 1, в PoE 2 — пока нет (экран PoE 2 — S66, включает лид флагом features.build)', () => {
+  it('раскрыта в обеих играх (в PoE 2 — свой экран, S66)', () => {
     expect(buildOn(GAMES.poe1, false)).toBe(true)
-    expect(buildOn(GAMES.poe2, false)).toBe(false)
+    expect(buildOn(GAMES.poe2, false)).toBe(true)
   })
 
   it('POETH_BUILD=1 включает в обеих играх (S66: в PoE 2 — свой экран)', () => {

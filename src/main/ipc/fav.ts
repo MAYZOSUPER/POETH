@@ -132,17 +132,23 @@ async function currentLeague(game: GameId): Promise<string> {
   return league && league !== 'auto' ? league : 'Standard'
 }
 
-async function siteHost(): Promise<'www.pathofexile.com' | 'ru.pathofexile.com'> {
-  return (await getSettings()).siteHost
+/**
+ * Хост сайта трейда для игры. PoE 2 — всегда www, как API (net/gateway.ts, ipc/trade.ts): запросы PoE 2 строятся на
+ * английских именах, а ru.pathofexile.com их не принимает («Unknown item base type»), и id поиска trade2 — это сам
+ * сжатый запрос: избранное и лоты с www на ru-хосте сломались бы. Вход не теряется — POESESSID общий для
+ * .pathofexile.com (S67). Русский сайт для PoE 2 — когда запросы PoE 2 научатся русским именам (как PoE 1).
+ */
+async function siteHost(game: GameId): Promise<'www.pathofexile.com' | 'ru.pathofexile.com'> {
+  return game === 'poe2' ? 'www.pathofexile.com' : (await getSettings()).siteHost
 }
 
 async function defaultUrl(): Promise<string> {
   const game = getRunningGame()
-  return buildTradeUrl(await siteHost(), game, 'search', await currentLeague(game))
+  return buildTradeUrl(await siteHost(game), game, 'search', await currentLeague(game))
 }
 
 async function searchUrl(s: FavSearch): Promise<string> {
-  return buildTradeUrl(await siteHost(), s.game, s.type, s.league ?? (await currentLeague(s.game)), s.slug)
+  return buildTradeUrl(await siteHost(s.game), s.game, s.type, s.league ?? (await currentLeague(s.game)), s.slug)
 }
 
 async function windowTitle(): Promise<string> {
@@ -156,10 +162,10 @@ async function resolveTarget(target: TradeWindowTarget): Promise<string | undefi
   // лот (или запрос) сайт выполнит сам: …/search/<лига>/<состояние>, состояние — сжатый запрос, как у сайта.
   // Не вышло (нет продавца, запрос слишком длинный) — адрес из url: у «Открыть лот» это исходный поиск.
   const state = searchStateId(targetQuery(target), (json) => gzipSync(json))
-  if (state) return buildTradeUrl(await siteHost(), game, 'search', league, state)
+  if (state) return buildTradeUrl(await siteHost(game), game, 'search', league, state)
   if (typeof target.url === 'string' && target.url) return target.url
   if (isTradeSlug(target.slug)) {
-    return buildTradeUrl(await siteHost(), game, type, league, target.slug)
+    return buildTradeUrl(await siteHost(game), game, type, league, target.slug)
   }
   return undefined
 }
@@ -191,7 +197,7 @@ export async function openSites(target: SitesTarget = {}): Promise<void> {
 
 /** Вход в аккаунт: трейд-окно на официальной странице /login. */
 export async function openTradeLogin(): Promise<void> {
-  await openTradeWindow({ url: siteLoginUrl(await siteHost()) })
+  await openTradeWindow({ url: siteLoginUrl(await siteHost(getRunningGame())) })
 }
 
 /** «В избранное» (прайс-чек S4 и т.п.): в папку или «без папки». */

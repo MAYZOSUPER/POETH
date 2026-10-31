@@ -19,11 +19,15 @@ describe('вставка кода PoB — только компаньон (по�
   it('importPob и reload: компаньон да, оверлей и сайдбар нет', () => {
     // S53: в наборе ещё каналы фильтра лута (tests/lootFilter/store.test.ts) — здесь проверяем только свои
     // S59: «Играть по этому гайду» (сеть по кнопке) и ссылки автора стартера (системный браузер)
+    // S66: «Билд» PoE 2 — вставка PoB2, загрузка по ссылке и «Сохранить в игру» (запись в папку игры)
     expect([...COMPANION_CHANNELS].filter((c) => c.startsWith('build:'))).toEqual([
       IPC.build.importPob,
       IPC.build.reload,
       IPC.build.playStarter,
-      IPC.build.openStarterLink
+      IPC.build.openStarterLink,
+      IPC.build.poe2Import,
+      IPC.build.poe2Reload,
+      IPC.build.poe2Save
     ])
     for (const ch of COMPANION_CHANNELS) {
       expect(ipcAllowed('index', ch)).toBe(true)
@@ -66,10 +70,10 @@ describe('пункт рельса «Билд»', () => {
     delete (globalThis as { overlayApi?: unknown }).overlayApi
   })
 
-  it('раскрыт (GameFeatures.build): в «Прокачке» после «Кампании»; в PoE 2 — только с POETH_BUILD=1 (S66)', () => {
+  it('раскрыт (GameFeatures.build): в «Прокачке» после «Кампании», в обеих играх (S66)', () => {
     const level = (game: 'poe1' | 'poe2') => sectionsFor(game, false).find((s) => s.id === 'level')?.tabs.map((t) => t.id)
     expect(level('poe1')).toEqual(['campaign', 'build'])
-    expect(level('poe2')).toEqual(['campaign'])
+    expect(level('poe2')).toEqual(['campaign', 'build'])
     ;(globalThis as { overlayApi?: unknown }).overlayApi = { build: { devFlag: true } }
     expect(level('poe1')).toEqual(['campaign', 'build'])
     // S66: экран «Билд» PoE 2 (импорт PoB2, «Сохранить в игру», «Вложение») — в разработке по тому же флагу

@@ -49,7 +49,9 @@ export const EXTERNAL_HOSTS: readonly string[] = [
   'pathofexile.com',
   'boosty.to',
   // свой сайт на GitHub Pages: «Подробно в гайде» во вкладке «Прайс-чек» (S37, guide/#price)
-  'mayzosuper.github.io'
+  'mayzosuper.github.io',
+  // «Мнение сообщества» о слухах журнала PoE 2 (S65): только ссылка, оценки не копируем
+  'poe.gnejs.app'
 ]
 
 /** Можно ли открыть ссылку во внешнем браузере: https + хост из allowlist. */

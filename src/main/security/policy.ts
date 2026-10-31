@@ -69,19 +69,28 @@ export const GAME_INPUT_CHANNELS: ReadonlySet<string> = new Set([
 /** Секреты аккаунта: вставка POESESSID в partition (S47: своего ключа у PoE2 больше нет — вход общий). */
 export const SECRET_CHANNELS: ReadonlySet<string> = new Set([IPC.auth.pasteSession])
 
-/** Каналы, нужные только игровому оверлею: наложение дерева билда (S38), «Против надетого» окна цены (S41). */
-export const OVERLAY_CHANNELS: ReadonlySet<string> = new Set([...Object.values(IPC.buildTree), ...Object.values(IPC.equip)])
+/** Каналы, нужные только игровому оверлею: наложение дерева билда (S38), «Против надетого» окна цены (S41), цены поверх окон (S68). */
+export const OVERLAY_CHANNELS: ReadonlySet<string> = new Set([
+  ...Object.values(IPC.buildTree),
+  ...Object.values(IPC.equip),
+  // цены поверх окон (S68): состояние подписей и «спрятать» — только игровой оверлей
+  ...Object.values(IPC.screen)
+])
 
 /**
  * Только компаньон: вставка кода PoB и загрузка билда по ссылке (недоверенный ввод, сеть по действию игрока; S39);
  * «Играть по этому гайду» и ссылки автора стартера — сеть по кнопке и системный браузер (S59);
- * фильтр лута — сеть GitHub и запись в папку игры по кнопке (S53).
+ * фильтр лута — сеть GitHub и запись в папку игры по кнопке (S53);
+ * «Билд» PoE 2: вставка кода PoB2, загрузка по ссылке и «Сохранить в игру» — запись .build в папку игры (S66).
  */
 export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([
   IPC.build.importPob,
   IPC.build.reload,
   IPC.build.playStarter,
   IPC.build.openStarterLink,
+  IPC.build.poe2Import,
+  IPC.build.poe2Reload,
+  IPC.build.poe2Save,
   ...Object.values(IPC.lootFilter)
 ])
 
