@@ -1,0 +1,56 @@
+{
+ "version": 1,
+ "generatedAt": "2026-10-31",
+ "source": {
+  "prices": "poe.ninja PoE 2 (Forbidden Rites)",
+  "rule": "Currency, штук продано = volume / value; дороже 2 ex; есть в фиде обмена; первые 8"
+ },
+ "main": [
+  {
+   "name": "Divine Orb",
+   "tag": "divine"
+  },
+  {
+   "name": "Exalted Orb",
+   "tag": "exalted"
+  },
+  {
+   "name": "Chaos Orb",
+   "tag": "chaos"
+  }
+ ],
+ "common": [
+  {
+   "name": "Vaal Orb",
+   "tag": "vaal"
+  },
+  {
+   "name": "Orb of Alchemy",
+   "tag": "alch"
+  },
+  {
+   "name": "Orb of Annulment",
+   "tag": "annul"
+  },
+  {
+   "name": "Armourer's Scrap",
+   "tag": "scrap"
+  },
+  {
+   "name": "Greater Chaos Orb",
+   "tag": "greater-chaos-orb"
+  },
+  {
+   "name": "Regal Orb",
+   "tag": "regal"
+  },
+  {
+   "name": "Perfect Orb of Augmentation",
+   "tag": "perfect-orb-of-augmentation"
+  },
+  {
+   "name": "Gemcutter's Prism",
+   "tag": "gcp"
+  }
+ ]
+}

@@ -1,7 +1,8 @@
+import type { GameId } from '@shared/games'
 import type { FarmRun, FarmState } from '@shared/types/farm'
 
-// Форматирование трекера карт (S11b) — общее для панели компаньона и виджета оверлея.
-// Время в снимке посчитано на момент state.at и «тикает» дальше на стороне окна.
+// Форматирование трекера карт (S11b; PoE 2 — S69) — общее для панели компаньона и виджета оверлея.
+// Время в снимке посчитано на момент state.at и «тикает» дальше на стороне окна. PoE 2 считает в exalted.
 
 /** Время текущего забега на момент `now`. */
 export function currentRunMs(state: FarmState, now: number): number {
@@ -101,10 +102,60 @@ export function latestDivineRate(runs: FarmRun[]): number | null {
   return null
 }
 
-/** «Карта» для строки: имя на языке клиента, иначе id без префикса MapWorlds. */
-export function runName(run: Pick<FarmRun, 'areaName' | 'areaId'>): string {
+/**
+ * «Карта» для строки: имя на языке клиента, иначе id без префикса — PoE 1 MapWorlds, PoE 2 Map
+ * (MapBluff → Bluff, MapHideoutFarmlands_Claimable → Hideout Farmlands).
+ */
+export function runName(run: Pick<FarmRun, 'areaName' | 'areaId'>, game: GameId = 'poe1'): string {
   if (run.areaName) return run.areaName
+  if (game === 'poe2') {
+    const id = run.areaId.replace(/^Map_?/, '').replace(/_Claimable$/, '')
+    return id.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').trim() || run.areaId
+  }
   return run.areaId.replace(/^MapWorlds/, '').replace(/([a-z])([A-Z])/g, '$1 $2')
+}
+
+// ---------------------------------------------------------------- PoE 2: exalted, находки
+
+/** Σ цен находок забега в exalted; null — ни одной с ценой. */
+export function runFindsEx(run: Pick<FarmRun, 'finds'>): number | null {
+  const priced = (run.finds ?? []).filter((f) => f.valueEx !== null)
+  return priced.length ? priced.reduce((a, f) => a + (f.valueEx as number), 0) : null
+}
+
+/** Exalted: меньше 10 — с одним знаком, дальше целые; signed — «+» у прибыли. */
+export function exAmount(v: number, lang: 'ru' | 'en', signed = false): string {
+  const digits = Math.abs(v) < 10 ? 1 : 0
+  const s = v.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: digits })
+  return signed && v > 0 ? `+${s}` : s
+}
+
+/**
+ * Сумма PoE 2 по макету: в div с одним знаком («+4,8 div»), а без курса — в exalted. `smallInEx` — мелочь
+ * меньше 100 ex остаётся в ex («+5 ex» у находки).
+ */
+export function money(
+  ex: number,
+  exPerDiv: number | null,
+  lang: 'ru' | 'en',
+  opts: { signed?: boolean; smallInEx?: boolean } = {}
+): string {
+  const sign = opts.signed && ex > 0 ? '+' : ''
+  if (exPerDiv && exPerDiv > 0 && !(opts.smallInEx && Math.abs(ex) < 100)) {
+    const d = ex / exPerDiv
+    const digits = d === 0 || Math.abs(d) >= 0.1 ? 1 : 2
+    return `${sign}${d.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: digits })} div`
+  }
+  return `${sign}${exAmount(ex, lang)} ex`
+}
+
+/** Ярусы карт забегов: «T15–16», «T15» или '' (карт с ярусом нет). */
+export function tierRange(runs: Pick<FarmRun, 'kind' | 'tier'>[]): string {
+  const tiers = runs.filter((r) => r.kind === 'map' && r.tier !== null).map((r) => r.tier as number)
+  if (!tiers.length) return ''
+  const lo = Math.min(...tiers)
+  const hi = Math.max(...tiers)
+  return lo === hi ? `T${lo}` : `T${lo}–${hi}`
 }
 
 /** «28.10 21:40» / «10/28 21:40». */

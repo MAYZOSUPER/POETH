@@ -1,6 +1,8 @@
 // Подписи цен по результату распознавания (S68, чистый модуль). Результат распознавания (ScreenRead) живёт
 // отдельно: подписи — лишь один его потребитель (второй — «Богатство PoE 2»). Цена — за штуку в базовой валюте
-// игры (PoE 1 — chaos, PoE 2 — exalted), итог вкладки — сумма «цена × число» по ячейкам, где число прочитано.
+// игры (PoE 1 — chaos, PoE 2 — exalted), итог вкладки — сумма «цена × число» по ячейкам, где число прочитано
+// уверенно. Неуверенное число в итог не идёт: ошибка распознавания бывает в разы (958 → 3583 у divine на сером
+// эталоне стенда) и раздула бы итог; такие ячейки сосчитаны в uncounted, approx — «итог мог быть больше».
 
 import type { ScreenLabel, ScreenLabels, ScreenRead, ScreenRect } from '../types/screen'
 
@@ -35,16 +37,20 @@ export function buildLabels(read: ScreenRead, priceOf: PriceOf, o: LabelOptions)
       unpriced++
       continue
     }
-    const stack = c.count !== null ? p.unit * c.count : null
+    // только уверенно прочитанное число: неуверенное идёт в «число не прочитано», итог — с оговоркой
+    const stack = c.count !== null && c.countSure ? p.unit * c.count : null
     if (stack !== null) {
       total += stack
       counted++
-      if (!c.countSure) approx = true
-    } else uncounted++
+    } else {
+      uncounted++
+      if (c.count !== null) approx = true
+    }
     labels.push({ rect: c.rect, unit: p.unit, stack, count: c.count, item: c.item, doubt: !!p.low || c.match < 0.55 })
   }
   return {
     game: read.game,
+    window: read.window,
     base: o.base,
     divine: o.divine,
     labels,
@@ -77,15 +83,17 @@ export function anchorOf(read: ScreenRead): ScreenRect {
 
 const SHORT: Record<'chaos' | 'exalted' | 'divine', string> = { chaos: 'c', exalted: 'ex', divine: 'div' }
 
+/** Число по языку: RU — «4 148,5» (неразрывный пробел, запятая), EN — «4,148.5»; лишних нулей дроби нет. */
+export function formatNumber(x: number, digits: number, lang: 'ru' | 'en'): string {
+  return new Intl.NumberFormat(lang === 'ru' ? 'ru-RU' : 'en-US', { minimumFractionDigits: 0, maximumFractionDigits: digits }).format(x)
+}
+
 /**
- * Короткая цена для подписи: от 1 divine — в divine с одним знаком, иначе в базовой валюте (до 10 — с одним знаком,
- * меньше 0,1 — «<0,1»). Разделитель дроби — по языку (RU — запятая).
+ * Короткая цена для подписи: от 1 divine — в divine (до 100 — с одним знаком), иначе в базовой валюте (до 10 — с одним
+ * знаком, меньше 0,1 — «<0,1»). Разделители тысяч и дроби — по языку.
  */
 export function formatPrice(v: number, base: 'chaos' | 'exalted', divine: number | null, lang: 'ru' | 'en'): string {
-  const num = (x: number, digits: number): string => {
-    const s = x.toFixed(digits).replace(/\.0+$/, '')
-    return lang === 'ru' ? s.replace('.', ',') : s
-  }
+  const num = (x: number, digits: number): string => formatNumber(x, digits, lang)
   if (divine && divine > 0 && v >= divine) return `${num(v / divine, v / divine >= 100 ? 0 : 1)} ${SHORT.divine}`
   if (v < 0.1) return `<${num(0.1, 1)} ${SHORT[base]}`
   return `${num(v, v >= 10 ? 0 : 1)} ${SHORT[base]}`

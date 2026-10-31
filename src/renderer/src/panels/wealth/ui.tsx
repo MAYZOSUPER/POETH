@@ -31,6 +31,9 @@ export type WIcoName =
   | 'table'
   | 'play'
   | 'stop'
+  // S70: «Богатство PoE 2» по макету
+  | 'edit'
+  | 'chev-d'
 
 
 export function ensureSprite(): void {

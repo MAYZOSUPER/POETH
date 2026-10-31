@@ -1,4 +1,4 @@
-import type { Build2ImportResult, Build2SaveResult } from '@shared/types/build2'
+import type { Build2Dir, Build2ImportResult, Build2SaveResult } from '@shared/types/build2'
 
 // Тексты ошибок экрана «Билд» PoE 2 (S66): ответ main → ключ словаря build2.* (загрузка по ссылке — общие
 // строки bd.err.fetch.* вкладки PoE 1).
@@ -28,8 +28,17 @@ export function importErrorText(e: ImportFail, t: T): string {
   }
 }
 
+/**
+ * Папка планировщика для показа: «Документы\My Games\Path of Exile 2\BuildPlanner» на языке интерфейса — без
+ * C:\Users\<имя> (полный путь знает только main). Подмена папки в разработке — «…\<папка>».
+ */
+export function dirText(dir: Build2Dir | undefined, t: T): string {
+  if (!dir) return ''
+  return [dir.documents ? t('build2.dlg.docs') : '…', ...dir.parts].join('\\')
+}
+
 export function saveErrorText(e: SaveFail, t: T): string {
-  if (e.error === 'no-game-dir') return t('build2.err.save.no-game-dir', { path: e.dir?.path ?? '' })
+  if (e.error === 'no-game-dir') return t('build2.err.save.no-game-dir', { path: dirText(e.dir, t) })
   if (e.error === 'confirm') return ''
   return t(`build2.err.save.${e.error}`)
 }

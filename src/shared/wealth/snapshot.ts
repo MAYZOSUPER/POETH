@@ -8,8 +8,8 @@ import type {
   WealthSummary,
   WealthTabTotal
 } from '../types/wealth'
-import type { StashItem } from './stash'
-import { matchPrice, type PriceIndex } from './prices'
+import type { FixedPrice, StashItem } from './stash'
+import { itemName, itemNs, matchPrice, type PriceIndex, type PriceMatch } from './prices'
 
 export interface TabItems {
   id: string
@@ -37,6 +37,15 @@ export interface BuildSnapshotInput {
   index: PriceIndex
   divineRate: number
   manual?: boolean
+  /** PoE 2 (S70): цены и суммы — в exalted */
+  base?: 'exalted'
+}
+
+/** Цена предмета, оценённого заранее (StashItem.fixed, S70), в форме сопоставления. */
+function fixedMatch(it: StashItem, fixed: FixedPrice): PriceMatch {
+  const m: PriceMatch = { ns: itemNs(it), name: itemName(it), unit: fixed.unit, source: fixed.source }
+  if (fixed.low) m.low = true
+  return m
 }
 
 /** Предметы выбранных вкладок + цены → снимок (строки сложены по ключу, итоги по вкладкам). */
@@ -47,8 +56,8 @@ export function buildSnapshot(input: BuildSnapshotInput): WealthSnapshot {
   for (const tab of input.tabs) {
     const total: WealthTabTotal = { id: tab.id, name: tab.name, chaos: 0, items: 0, unpriced: 0 }
     for (const it of tab.items) {
-      const m = matchPrice(it, input.index)
-      const key = lineKey(m.ns, m.name, it)
+      const m = it.fixed ? fixedMatch(it, it.fixed) : matchPrice(it, input.index)
+      const key = it.fixed ? it.fixed.key : lineKey(m.ns, m.name, it)
       let line = lines.get(key)
       if (!line) {
         line = { key, name: m.name, ns: m.ns, qty: 0, total: 0 }
@@ -95,6 +104,7 @@ export function buildSnapshot(input: BuildSnapshotInput): WealthSnapshot {
     unpriced: list.filter((l) => l.unit === undefined).length
   }
   if (input.manual) summary.manual = true
+  if (input.base) summary.base = input.base
   return { summary, lines: list }
 }
 

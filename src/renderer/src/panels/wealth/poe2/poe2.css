@@ -1,0 +1,104 @@
+/* «Богатство PoE 2» (S70) по утверждённому макету «Богатство и сессия фарма PoE 2»: классы w2-* дизайнера,
+   раскладка вкладки — w-* из wealth.css, компоненты — ui-*. Только токены. */
+
+.w2-why { margin: 0; border-radius: var(--r-panel); }
+.w2-good { color: var(--good); }
+.w2-bad { color: var(--bad); }
+.w2-warn { color: var(--warn); }
+.w-grid.w2-grid { grid-template-columns: minmax(0, 1fr); }
+@container body (min-width: 760px) {
+  .w-grid.w2-grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
+  .w2-grid > .ui-box:last-child { grid-column: 1 / -1; }
+}
+
+/* источники итога */
+.w2-srcs { display: grid; }
+.w2-src { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 2px 10px; align-items: center; padding: 9px 12px; border-top: 1px solid var(--border); }
+.w2-src:first-child { border-top: 0; }
+.w2-src__ico { display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--r-sm); background: var(--accent-soft); color: var(--accent-hi); }
+.w2-src__t { display: grid; gap: 1px; min-width: 0; }
+.w2-src__t b { font-weight: 600; }
+.w2-src__t span { font-size: var(--fs-xs); color: var(--fg-muted); }
+.w2-src__v { display: grid; justify-items: end; gap: 2px; font-variant-numeric: tabular-nums; }
+.w2-src__v b { color: var(--accent-hi); white-space: nowrap; }
+.w2-src__v small { font-size: var(--fs-xs); color: var(--fg-faint); white-space: nowrap; }
+.w2-src__acts { grid-column: 2 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 4px; }
+.w2-src__hint { flex-basis: 100%; font-size: var(--fs-xs); color: var(--fg-muted); }
+.w2-src.is-stale .w2-src__ico { background: var(--sunken); color: var(--fg-faint); }
+.w2-src.is-stale .w2-src__v b { color: var(--fg-muted); }
+.w2-sub { display: grid; gap: 2px; grid-column: 2 / -1; margin-top: 4px; }
+.w2-sub > div { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: var(--fs-xs); color: var(--fg-muted); }
+.w2-sub > div b { color: var(--fg); font-weight: 600; }
+.w2-sub > div .grow { flex: 1; }
+.w2-sub .is-stale, .w2-sub .is-stale b { color: var(--fg-faint); }
+.w2-x { padding: 0 4px; border: 0; background: none; color: var(--fg-faint); font: inherit; cursor: pointer; }
+.w2-x:hover { color: var(--bad); }
+
+/* быстрый ввод: строка валюты со степпером «− · поле · +1 · +10» */
+.w2-man { display: grid; container: w2man / inline-size; }
+/* узкий блок (рядом с источниками на 820 px): степпер — второй строкой, имя не сжимается */
+@container w2man (max-width: 460px) {
+  .w2-mrow { grid-template-columns: minmax(0, 1fr) auto; }
+  .w2-mrow .w2-step { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
+}
+.w2-mrow { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px 12px; align-items: center; padding: 7px 12px; border-top: 1px solid var(--border); }
+.w2-mrow:first-child { border-top: 0; }
+.w2-mrow__n { display: inline-flex; align-items: center; gap: 6px; min-width: 0; font-weight: 600; }
+.w2-mrow__n span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w2-mrow__n small { font-weight: 400; color: var(--fg-faint); font-size: var(--fs-xs); white-space: nowrap; }
+.w2-mrow__v { min-width: 70px; text-align: right; font-variant-numeric: tabular-nums; color: var(--fg-muted); font-size: var(--fs-sm); white-space: nowrap; }
+.w2-mrow.is-covered .w2-mrow__n, .w2-mrow.is-covered .w2-mrow__v { color: var(--fg-faint); }
+.w2-mrow__cov { grid-column: 1 / -1; font-size: var(--fs-xs); color: var(--fg-faint); }
+@container body (max-width: 520px) {
+  .w2-mrow { grid-template-columns: minmax(0, 1fr) auto; }
+  .w2-mrow .w2-step { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
+}
+.w2-step { display: inline-flex; align-items: center; border: 1px solid var(--border-strong); border-radius: var(--r-btn); overflow: hidden; }
+.w2-step button { height: 26px; min-width: 30px; padding: 0 7px; border: 0; background: transparent; color: var(--fg-muted); font: 600 var(--fs-xs) / 1 var(--font-ui); cursor: pointer; font-variant-numeric: tabular-nums; }
+.w2-step button:hover { background: var(--hover); color: var(--fg); }
+.w2-step button:disabled { opacity: 0.45; cursor: default; }
+.w2-step button + button, .w2-step input + button, .w2-step button + input { border-left: 1px solid var(--border-strong); }
+.w2-step input { width: 64px; height: 26px; padding: 0 6px; border: 0; border-radius: 0; background: var(--sunken); color: var(--fg); font: 600 var(--fs-sm) / 1 var(--font-ui); text-align: right; font-variant-numeric: tabular-nums; }
+.w2-step input:focus { outline: none; box-shadow: inset var(--focus-ring); }
+.w2-step .w2-qty--wide { width: 110px; }
+.w2-add { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.w2-addbox { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.w2-addbox .ui-input { flex: 1 1 200px; width: auto; }
+.w2-gold { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; padding: 9px 12px; border-top: 1px solid var(--border); background: color-mix(in srgb, var(--accent) 3%, transparent); }
+.w2-gold__n { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.w2-gold small { grid-column: 1 / -1; font-size: var(--fs-xs); color: var(--fg-faint); }
+
+/* карточка «Снимок вкладки» в компаньоне */
+.w2-cards { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+.w2-card { background: var(--inset); }
+.w2-card .ui-panel__title { flex: none; }
+.w2-card__b { display: grid; gap: 8px; padding: 8px 12px 12px; font-size: var(--fs-sm); }
+.w2-card__meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: var(--fs-xs); color: var(--fg-muted); }
+.w2-card__meta b { color: var(--fg); }
+.w2-res { display: grid; border: 1px solid var(--border); border-radius: var(--r-sm); }
+.w2-res__row { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 6px 8px; border-top: 1px solid var(--border); }
+.w2-res__row:first-child { border-top: 0; }
+.w2-res__row .ui-coin { justify-self: center; }
+.w2-res__n { min-width: 0; overflow-wrap: anywhere; line-height: 1.25; }
+.w2-res__q { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.w2-res__v { min-width: 52px; text-align: right; color: var(--fg-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.w2-res__row.is-check { background: color-mix(in srgb, var(--warn) 7%, transparent); }
+.w2-res__row.is-check .w2-res__q input { width: 52px; height: 24px; padding: 0 4px; border: 1px solid color-mix(in srgb, var(--warn) 55%, transparent); border-radius: var(--r-sm); background: var(--sunken); color: var(--fg); font: 700 var(--fs-sm) / 1 var(--font-ui); text-align: right; }
+.w2-res__row.is-check .w2-res__n small { display: block; color: var(--warn); font-size: var(--fs-2xs); }
+.w2-res__more { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 6px 8px; border-top: 1px solid var(--border); font-size: var(--fs-xs); color: var(--fg-faint); }
+.w2-alt { width: auto; max-width: 220px; }
+.w2-card__sum { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; font-weight: 700; }
+.w2-card__sum b { color: var(--accent-hi); font-size: 18px; }
+.w2-card__sum span { font-weight: 400; font-size: var(--fs-xs); color: var(--fg-muted); }
+.w2-card__acts { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+
+/* пустое «Богатство»: три способа */
+.w2-empty { padding-top: 20px; }
+.w2-empty > span:last-child { max-width: 52ch; }
+.w2-opts { display: grid; gap: 8px; }
+.w2-way { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 2px 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--inset); }
+.w2-way > .ui-ico { width: 18px; height: 18px; margin-top: 1px; color: var(--accent); }
+.w2-way b { font-weight: 600; }
+.w2-way .ui-tag { margin-left: 6px; vertical-align: 1px; }
+.w2-way .ui-kbd { margin-left: 4px; }
+.w2-opt__d { grid-column: 2; font-size: var(--fs-xs); color: var(--fg-muted); }

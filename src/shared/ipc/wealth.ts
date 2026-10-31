@@ -3,6 +3,9 @@
 // (каналы 'wealth:<метод>', события 'event:wealth.<имя>'; уникальность — tests/ipc.test.ts).
 
 import type {
+  Poe2ScreenEdit,
+  Poe2ValuableInput,
+  Poe2WealthState,
   WealthAccountResult,
   WealthDiff,
   WealthOptions,
@@ -22,12 +25,26 @@ export const wealthChannels = {
     startFarm: 'wealth:startFarm',
     stopFarm: 'wealth:stopFarm',
     detail: 'wealth:detail',
-    diff: 'wealth:diff'
+    diff: 'wealth:diff',
+    // S70: «Богатство PoE 2» — ручной ввод, ценные предметы (окно цены), снимок вкладки с экрана
+    poe2State: 'wealth:twoState',
+    poe2SetManual: 'wealth:twoSetManual',
+    poe2SetGold: 'wealth:twoSetGold',
+    poe2AddItem: 'wealth:twoAddItem',
+    poe2RemoveItem: 'wealth:twoRemoveItem',
+    poe2RemoveTab: 'wealth:twoRemoveTab',
+    poe2ScreenEdit: 'wealth:twoScreenEdit',
+    poe2ScreenDrop: 'wealth:twoScreenDrop',
+    poe2ScreenAccept: 'wealth:twoScreenAccept',
+    poe2ScreenRecord: 'wealth:twoScreenRecord',
+    poe2Diff: 'wealth:twoDiff'
   }
 } as const
 
 export const wealthEvents = {
-  wealthState: 'event:wealth.state'
+  wealthState: 'event:wealth.state',
+  /** S70: состояние «Богатства PoE 2» — только окну компаньона */
+  wealthPoe2: 'event:wealth.two'
 } as const
 
 export interface WealthIpcApi {
@@ -50,6 +67,32 @@ export interface WealthIpcApi {
     detail(id?: string): Promise<WealthSnapshot | null>
     /** «что прибавилось»: по умолчанию прошлый снимок → последний; fromId 'session' — от начала сессии */
     diff(fromId?: string, toId?: string): Promise<WealthDiff | null>
+
+    // ---- «Богатство PoE 2» (S70): API тайника у PoE 2 нет — источники вводит игрок
+    poe2State(): Promise<Poe2WealthState>
+    /** ручной ввод валюты: штук (0 — убрать строку); снимок — после паузы во вводе */
+    poe2SetManual(name: string, qty: number): Promise<Poe2WealthState>
+    /** золото — только вручную, в итог в exalted не входит */
+    poe2SetGold(qty: number): Promise<Poe2WealthState>
+    /** ценный предмет из окна цены PoE 2 (Ctrl+D → «Добавить в богатство»): цена — та, что показало окно */
+    poe2AddItem(item: Poe2ValuableInput): Promise<{ ok: true; id: string } | { ok: false }>
+    poe2RemoveItem(id: string): Promise<Poe2WealthState>
+    /** убрать принятую вкладку снимка */
+    poe2RemoveTab(id: string): Promise<Poe2WealthState>
+    /** карточка снимка вкладки: правка числа строки или выбор предмета из одинаковых по рисунку */
+    poe2ScreenEdit(tabId: string, key: string, edit: Poe2ScreenEdit): Promise<Poe2WealthState>
+    /** «Переснять» вкладку (tabId) или отменить весь сеанс снимка (без аргумента) */
+    poe2ScreenDrop(tabId?: string): Promise<Poe2WealthState>
+    /** «Принять» вкладку (tabId) или все вкладки сеанса → источник «Снимок вкладок» → снимок богатства */
+    poe2ScreenAccept(tabId?: string): Promise<Poe2WealthState>
+    /**
+     * Оверлей, панель Alt+F (S68): «Записать в богатство» — последний результат распознавания → карточка в компаньоне
+     * (окно компаньона показывается). ok: false — читать нечего (подписи устарели или вкладка не PoE 2).
+     */
+    poe2ScreenRecord(): Promise<{ ok: boolean }>
+    /** «что изменилось»: по умолчанию прошлый снимок → последний; fromId 'session' — от начала сессии */
+    poe2Diff(fromId?: string, toId?: string): Promise<WealthDiff | null>
   }
   onWealthState(cb: (s: WealthState) => void): () => void
+  onWealthPoe2(cb: (s: Poe2WealthState) => void): () => void
 }

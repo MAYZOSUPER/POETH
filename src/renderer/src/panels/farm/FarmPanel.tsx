@@ -1,8 +1,10 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import type { FarmRun, FarmState } from '@shared/types/farm'
 import { useLang, useT } from '../../i18n'
 import { farmTicking, useFarmStore } from '../../store/useFarmStore'
-import { Ico, Rich, Switch, useSimple } from '../deals/common'
+import { Ico, Rich, useSimple } from '../deals/common'
+import { FarmPanelPoe2 } from './FarmPanelPoe2'
+import { AllRuns, Deaths, WidgetSwitch, tierText, useNow } from './parts'
 import {
   chaos,
   clock,
@@ -23,6 +25,7 @@ import './farm.css'
 // и забеги сессии с текущей картой сверху. Ниже — все забеги и включение виджета поверх игры.
 // Самодостаточна (свой стор и словарь dict/farm.ts); ставит S11a во вкладку «Богатство».
 // Доход — по прибыли забегов от учёта богатства S11a (группой, если снимок между картами не успел).
+// PoE 2 (S69) — своя раскладка по макету «Сессия фарма PoE 2»: FarmPanelPoe2.tsx (общие куски — parts.tsx).
 
 /** Что нужно плитке дохода S11a (panels/wealth/IncomeTile): прибыль сессии и время без пауз. */
 export interface FarmIncomeInput {
@@ -42,46 +45,6 @@ export interface FarmPanelProps {
 }
 
 const HOUR = 3_600_000
-
-function useNow(active: boolean): number {
-  const [now, setNow] = useState(() => Date.now())
-  useEffect(() => {
-    setNow(Date.now())
-    if (!active) return
-    const t = window.setInterval(() => setNow(Date.now()), 1000)
-    return () => window.clearInterval(t)
-  }, [active])
-  return now
-}
-
-function tierText(run: Pick<FarmRun, 'kind' | 'tier' | 'areaLevel'>, t: ReturnType<typeof useT>): string {
-  if (run.kind === 'map' && run.tier !== null) return `T${run.tier}`
-  return run.kind === 'other' ? t('farm.kind.other') : t('farm.level', { level: run.areaLevel })
-}
-
-/** «Виджет поверх игры» — в шапке раздела (по макету); «Скрыть» на виджете выключает его же. */
-function WidgetSwitch({ state }: { state: FarmState }) {
-  const t = useT()
-  const setConfig = useFarmStore((s) => s.setConfig)
-  return (
-    <span title={t('farm.widget.hint')}>
-      <Switch on={state.config.overlayWidget} onChange={(v) => void setConfig({ overlayWidget: v })}>
-        {t('farm.widget.toggle')}
-      </Switch>
-    </span>
-  )
-}
-
-function Deaths({ n }: { n: number }) {
-  return n > 0 ? (
-    <span className="ui-tally ui-tally--bad">
-      <Ico name="death" />
-      {n}
-    </span>
-  ) : (
-    <span className="ui-tally ui-tally--zero">0</span>
-  )
-}
 
 // ---------------------------------------------------------------- без сессии
 
@@ -373,88 +336,6 @@ function RunningView({ state, now, props }: { state: FarmState; now: number; pro
   )
 }
 
-// ---------------------------------------------------------------- все забеги
-
-function AllRuns({ runs }: { runs: FarmRun[] }) {
-  const t = useT()
-  const lang = useLang()
-  const removeRun = useFarmStore((s) => s.removeRun)
-  const clear = useFarmStore((s) => s.clear)
-  const [open, setOpen] = useState(false)
-  if (runs.length === 0) return null
-  const onClear = (): void => {
-    if (window.confirm(t('farm.runs.clearConfirm'))) void clear()
-  }
-  // по макету — кнопка под таблицей, как «Все изменения» у тайника
-  const toggle = (
-    <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm fm-all__btn" aria-expanded={open} onClick={() => setOpen(!open)}>
-      {t('farm.runs.all', { n: runs.length })}
-      <Ico name={open ? 'chev-d' : 'chev-r'} />
-    </button>
-  )
-  if (!open) return toggle
-  return (
-    <div className="fm-all">
-      {toggle}
-      <div className="fm-all__bar">
-        <span className="fm-p fm-faint">{t('farm.how')}</span>
-        <span className="fm-grow" />
-        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" onClick={onClear}>
-          <Ico name="trash" />
-          {t('farm.runs.clear')}
-        </button>
-      </div>
-      <div className="ui-box fm-tablewrap">
-        <table className="ui-table">
-          <thead>
-            <tr>
-              <th>{t('farm.col.when')}</th>
-              <th>{t('farm.col.map')}</th>
-              <th className="is-num">{t('farm.col.time')}</th>
-              <th className="is-num" title={t('farm.col.entries.title')}>
-                {t('farm.col.entries')}
-              </th>
-              <th className="is-num">{t('farm.col.profit')}</th>
-              <th className="is-num">{t('farm.col.deaths')}</th>
-              <th aria-label={t('farm.runs.remove')} />
-            </tr>
-          </thead>
-          <tbody>
-            {runs.map((r) => (
-              <tr key={r.id}>
-                <td className="fm-nowrap fm-faint">{when(r.startTs, lang)}</td>
-                <td>
-                  {runName(r)}
-                  <span className="ui-table__aside">{tierText(r, t)}</span>
-                </td>
-                <td className="is-num">{clock(r.activeMs)}</td>
-                <td className="is-num">{r.entries}</td>
-                <td className={`is-num ${!r.profit ? 'is-faint' : r.profit.chaos < 0 ? 'is-bad' : 'is-good'}`}>
-                  {r.profit ? t('farm.chaos', { n: chaos(r.profit.chaos, lang, true) }) : '—'}
-                </td>
-                <td className="is-num">
-                  <Deaths n={r.deaths} />
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
-                    title={t('farm.runs.remove')}
-                    aria-label={t('farm.runs.remove')}
-                    onClick={() => void removeRun(r.id)}
-                  >
-                    <Ico name="trash" size="sm" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
-}
-
 // ---------------------------------------------------------------- панель
 
 export function FarmPanel(props: FarmPanelProps = {}) {
@@ -476,6 +357,7 @@ export function FarmPanel(props: FarmPanelProps = {}) {
   }, [init])
 
   if (!ready || !state) return <div className="ui-empty">{t('farm.loading')}</div>
+  if (state.game === 'poe2') return <FarmPanelPoe2 state={state} log={log} now={now} />
 
   return (
     <div className="fm">

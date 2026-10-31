@@ -38,7 +38,8 @@ describe('GameDef', () => {
     expect(GAMES.poe2.features.leveling).toBe(false)
     expect(poe2.features.campaign).toBe(true)
     expect(poe2.features.priceCheck).toBe(true)
-    expect(poe2.features.wealth).toBe(false)
+    // S70: «Богатство PoE 2» — без API тайника (снимок вкладки, ручной ввод, ценные предметы)
+    expect(poe2.features.wealth).toBe(true)
     expect(poe2.features.flip).toBe(false)
     expect(poe2.features.advisor).toBe(false)
     // S66: «Билд» PoE 2 — импорт PoB2, «Сохранить в игру», «Вложение»

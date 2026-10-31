@@ -68,7 +68,7 @@ export const GAMES: Record<GameId, GameDef> = {
     logSubdirs: ['Path of Exile 2/logs', 'PathOfExile2/logs'],
     dataDir: 'poe2',
     // S62 regex, S63 live и сделки, S66 «Билд» (импорт PoB2, «Сохранить в игру», «Вложение») — включены 01.11
-    features: { campaign: true, priceCheck: true, live: true, regex: true, deals: true, wealth: false, flip: false, leveling: false, advisor: false, build: true }
+    features: { campaign: true, priceCheck: true, live: true, regex: true, deals: true, wealth: true, flip: false, leveling: false, advisor: false, build: true }
   }
 }
 

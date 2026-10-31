@@ -273,7 +273,7 @@ function RowItem({ r, best, t, uiLang, simple, pricesLoaded }: { r: RumourRowVie
         <span className="rm-game rm-row__text">{r.text}</span>
         <Category c={r.category} t={t} />
         <span className="rm-grow" />
-        <span className="rm-tier" title={t('rumours.tier')}>
+        <span className="rm-tier" title={`${t('rumours.tier')}. ${t('rumours.tier.hint')}`}>
           <Pips n={tier} />
           <span className="rm-muted">
             {tier === null ? t('rumours.tier.none') : r.ownTier !== null ? t('rumours.tier.own', { tier: t(`rumours.tier.${r.ownTier}`) }) : t(`rumours.tier.${tier}`)}

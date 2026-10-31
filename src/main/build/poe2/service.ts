@@ -235,7 +235,7 @@ export async function save2(raw: unknown): Promise<Build2SaveResult> {
   if (req.copy) {
     // «Сохранить копией»: свободное «Имя (N).build» — после обрезки имени, суффикс всегда помещается
     const free = await freeFileName(dir, fileName)
-    if (!free) return { ok: false, error: 'no-free-name', dir, fileName }
+    if (!free) return { ok: false, error: 'no-free-name', dir: dir.view, fileName }
     fileName = free.fileName
     name = copyBuildName(name, free.n)
   }

@@ -16,8 +16,6 @@ export interface SoonItem {
 export const SOON_GROUPS: readonly SoonStatus[] = ['work', 'plan', 'after', 'never']
 
 export const SOON_POE2: readonly SoonItem[] = [
-  // в работе: S69 «Богатство PoE 2» (снимок вкладки и ручной ввод — у GGG нет API тайника PoE 2)
-  { id: 'wealth', icon: 'coins', status: 'work' },
   // после 1.0 (11.12)
   { id: 'flip', icon: 'swap', status: 'after' },
   { id: 'advisor', icon: 'map', status: 'after' },

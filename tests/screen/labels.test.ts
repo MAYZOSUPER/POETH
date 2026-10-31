@@ -44,12 +44,31 @@ describe('подписи', () => {
     expect(l.approx).toBe(false)
   })
 
-  it('неуверенное число → итог примерный; без числа — подпись есть, в итог не входит', () => {
-    const l = buildLabels(read([cell(0, 'Chaos Orb', true, 10, false), cell(80, 'Divine Orb', true, null)]), priceOf, { base: 'chaos', divine: 150 })
-    expect(l.total).toBe(10)
+  it('неуверенное число и не прочитанное — в итог не входят, подпись цены есть; approx — итог может быть больше', () => {
+    const l = buildLabels(read([cell(0, 'Chaos Orb', true, 10, false), cell(80, 'Divine Orb', true, null), cell(160, 'Chaos Orb', true, 4)]), priceOf, {
+      base: 'chaos',
+      divine: 150
+    })
+    expect(l.total).toBe(4)
+    expect(l.counted).toBe(1)
+    expect(l.uncounted).toBe(2)
     expect(l.approx).toBe(true)
-    expect(l.uncounted).toBe(1)
+    expect(l.labels).toHaveLength(3)
     expect(l.labels.find((x) => x.item === 'Divine Orb')?.stack).toBeNull()
+    expect(l.labels[0].stack).toBeNull()
+  })
+
+  it('стенд «≈ 4148 div»: неуверенно прочитанные 3583 divine вместо 958 итог не раздувают', () => {
+    // цена за штуку × число, курс 400 ex за div: верное — 958 div; ошибочное неуверенное число — мимо итога
+    const exPrices: Record<string, number> = { 'Divine Orb': 400, 'Exalted Orb': 1 }
+    const l = buildLabels(
+      { ...read([cell(0, 'Divine Orb', true, 3583, false), cell(80, 'Divine Orb', true, 958), cell(160, 'Exalted Orb', true, 1992)]), game: 'poe2' },
+      (n) => (exPrices[n] ? { unit: exPrices[n] } : null),
+      { base: 'exalted', divine: 400 }
+    )
+    expect(l.total).toBe(958 * 400 + 1992)
+    expect(formatPrice(l.total, l.base, l.divine, 'ru')).toBe('963 div')
+    expect(l.approx).toBe(true)
   })
 
   it('ни одного числа — итога нет (counted 0), подписи цен есть', () => {
@@ -77,6 +96,14 @@ describe('подписи', () => {
 })
 
 describe('формат цены', () => {
+  it('разделитель тысяч по языку: RU — неразрывный пробел, EN — запятая', () => {
+    expect(formatPrice(1_659_037, 'exalted', 400, 'ru')).toBe('4 148 div')
+    expect(formatPrice(1_659_037, 'exalted', 400, 'en')).toBe('4,148 div')
+    expect(formatPrice(12_345, 'chaos', null, 'ru')).toBe('12 345 c')
+    expect(formatPrice(12_345, 'chaos', null, 'en')).toBe('12,345 c')
+    expect(formatPrice(1499.6, 'chaos', 150, 'en')).toBe('10 div')
+  })
+
   it('RU — запятая, от 1 divine — в divine', () => {
     expect(formatPrice(3.45, 'chaos', 150, 'ru')).toBe('3,5 c')
     expect(formatPrice(12.4, 'chaos', 150, 'ru')).toBe('12 c')

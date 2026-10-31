@@ -12,7 +12,10 @@
 //    настоящему Client.txt. В CLIENT_STRINGS APT системных событий области нет — только
 //    CHAT_SYSTEM `^: (?<body>.+)$`, по нему и отделяем системные сообщения.
 // `<имя> has been slain` — смерть ИГРОКА (своя или участника группы в той же зоне), не босса.
+// Правила игры (вид зоны, ярус, строки смерти, имя сцены) — FarmRules: PoE 1 здесь (POE1_FARM_RULES),
+// PoE 2 — zonesPoe2.ts (данные областей отдельно от кода). Без правил — PoE 1, как было.
 
+import type { GameId } from '../games'
 import type { FarmAreaKind } from '../types/farm'
 import { splitLogLine } from '../deals/whisperParse'
 
@@ -40,18 +43,31 @@ const SCENE = /^\[SCENE\] Set Source \[(.+)\]$/
 const ENTERED = [/^: You have entered (.+)\.$/, /^: Вы вошли в область (.+)\.$/]
 const SLAIN = [/^: (.+) has been slain\.$/, /^: (.+) был[аои]? поверж(?:ен|ена|ено|ены)\.$/]
 
+/** Чем игры отличаются для трекера: вид зоны, ярус карты, строки смерти, имя сцены. */
+export interface FarmRules {
+  game: GameId
+  /** вид зоны по id и уровню области */
+  classify(areaId: string, level: number): FarmAreaKind
+  /** ярус карты по уровню области; null — уровень не карты атласа */
+  tier(level: number): number | null
+  /** смерть игрока: системное сообщение `: <текст>` */
+  slain: readonly RegExp[]
+  /** `[SCENE] Set Source [<имя>]` — имя области (а не загрузка, меню, карта мира) */
+  isAreaName(name: string): boolean
+}
+
 /** Текст строки лога (после префикса) → событие трекера. */
-export function parseFarmText(text: string): FarmLineEvent | null {
+export function parseFarmText(text: string, rules: FarmRules = POE1_FARM_RULES): FarmLineEvent | null {
   const g = GENERATING.exec(text)
   if (g) return { type: 'zone', zone: { areaId: g[2], level: +g[1], seed: g[3] ?? '' } }
   const sc = SCENE.exec(text)
-  if (sc) return sc[1] === '(null)' ? null : { type: 'areaName', name: sc[1] }
+  if (sc) return rules.isAreaName(sc[1]) ? { type: 'areaName', name: sc[1] } : null
   if (!text.startsWith(': ')) return null
   for (const re of ENTERED) {
     const m = re.exec(text)
     if (m) return { type: 'areaName', name: m[1] }
   }
-  for (const re of SLAIN) {
+  for (const re of rules.slain) {
     const m = re.exec(text)
     if (m) return { type: 'death', player: m[1] }
   }
@@ -59,10 +75,10 @@ export function parseFarmText(text: string): FarmLineEvent | null {
 }
 
 /** Строка Client.txt целиком → событие с временем. */
-export function parseFarmLine(line: string): FarmLogLine | null {
+export function parseFarmLine(line: string, rules: FarmRules = POE1_FARM_RULES): FarmLogLine | null {
   const ll = splitLogLine(line)
   if (!ll) return null
-  const event = parseFarmText(ll.text)
+  const event = parseFarmText(ll.text, rules)
   return event ? { ts: ll.ts, event } : null
 }
 
@@ -77,9 +93,9 @@ const HUBS = new Set(['HeistHub', 'Labyrinth_Airlock', 'DeepwaterHub'])
  * Вид зоны по id и уровню области. Шаблоны (настоящий Client.txt PoE1 3.2x):
  * Hideout* — хайдауты; *_town — города актов и эпилога; 1_1_1, 2_7_5_map — кампания
  * (N_…); MapWorlds* — карты атласа; Synthesis_MapGuardian* — «память» (карта с устройства);
- * N_Labyrinth_* — лабиринт (не кампания).
+ * N_Labyrinth_* — лабиринт (не кампания). Подобластей (`sub`) у PoE 1 нет.
  */
-export function classifyArea(areaId: string, level: number): FarmAreaKind {
+export function classifyArea(areaId: string, level: number): Exclude<FarmAreaKind, 'sub'> {
   if (/^Hideout/.test(areaId)) return 'hideout'
   if (/_town$/.test(areaId) || HUBS.has(areaId)) return 'town'
   if (/^\d+_Labyrinth_/.test(areaId)) return 'other'
@@ -90,13 +106,22 @@ export function classifyArea(areaId: string, level: number): FarmAreaKind {
   return 'other'
 }
 
-/** Зона, в которой идёт забег. */
-export function isRunArea(kind: FarmAreaKind): kind is 'map' | 'other' {
-  return kind === 'map' || kind === 'other'
+/** Зона, в которой идёт забег (подобласть бывает только в PoE 2). */
+export function isRunArea(kind: FarmAreaKind): kind is 'map' | 'other' | 'sub' {
+  return kind === 'map' || kind === 'other' || kind === 'sub'
 }
 
 /** Ярус карты по уровню области: 68 → 1 … 83 → 16, 84 → 17; ниже 68 — null. */
 export function mapTier(level: number): number | null {
   if (!Number.isFinite(level) || level < 68) return null
   return Math.min(17, level - 67)
+}
+
+/** Правила PoE 1 (S11b) — по умолчанию у трекера и разбора строк. */
+export const POE1_FARM_RULES: FarmRules = {
+  game: 'poe1',
+  classify: classifyArea,
+  tier: mapTier,
+  slain: SLAIN,
+  isAreaName: (name) => name !== '(null)'
 }
