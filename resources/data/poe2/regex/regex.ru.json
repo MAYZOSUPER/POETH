@@ -1091,10 +1091,10 @@
   },
   "tier": ".р\\. ",
   "rarity": {
-   "normal": ": .б",
-   "magic": ": .о",
-   "rare": ": .е",
-   "unique": ": .н"
+   "normal": ": .бы",
+   "magic": ": .ол",
+   "rare": ": .ед",
+   "unique": ": .ни"
   },
   "flags": {
    "corrupted": "нено",
@@ -2945,14 +2945,14 @@
    "— неизменяемое значение"
   ],
   "types": {
-   "breach": "ка .а",
-   "expedition": "а .кс",
+   "breach": "а .азл",
+   "expedition": "а .ксп",
    "delirium": "ка .ел",
-   "ritual": "а .ит",
+   "ritual": "а .иту",
    "irradiated": "ая пл",
    "overseer": "ителя",
-   "abyss": "а .ез",
-   "temple": ".рама"
+   "abyss": "а .езд",
+   "temple": "а .рам"
   },
   "names": {
    "abyss": "Плитка Бездны",
@@ -2969,10 +2969,10 @@
    "post": ""
   },
   "rarity": {
-   "normal": ": .б",
-   "magic": ": .о",
-   "rare": ": .е",
-   "unique": ": .н"
+   "normal": ": .бы",
+   "magic": ": .ол",
+   "rare": ": .ед",
+   "unique": ": .ни"
   },
   "tradeType": {
    "abyss": "Abyss Tablet",
@@ -3330,11 +3330,11 @@
    "staff": ": .ос",
    "sceptre": "петры",
    "quarterstaff": "е посо",
-   "bow": ": .у",
-   "crossbow": ": .ам",
+   "bow": ": .ук",
+   "crossbow": "острелы",
    "spear": ": .оп",
    "mace1h": "оручны",
-   "mace2h": ": .в",
+   "mace2h": ": .ву",
    "flail": "истени",
    "lifeFlask": "ны жи",
    "manaFlask": ": .лаконы м",

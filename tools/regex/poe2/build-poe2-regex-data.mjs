@@ -534,11 +534,15 @@ export function findLabel(name, own, displays, others, { lang, colon = false, pa
       if (colon && !raw.includes(':')) continue
       let out = ''
       let test = ''
+      let ups = 0
       for (let k = i; k < i + len; k++) {
         const up = lang === 'ru' && srcDisplay[k] !== srcDisplay[k].toLowerCase()
+        if (up) ups++
         out += up ? '.' : toRegex(src[k])
         test += up ? '.' : escapeRegex(fold(src[k]))
       }
+      // «.» вместо заглавной не считается: min — число настоящих символов
+      if (len - ups < min) continue
       cands.push({ out, re: new RegExp(test) })
     }
   }
@@ -722,7 +726,7 @@ function buildWaystone(lang, ctx) {
   const rarity = {}
   for (const [key, sKey] of [['normal', 'RARITY_NORMAL'], ['magic', 'RARITY_MAGIC'], ['rare', 'RARITY_RARE'], ['unique', 'RARITY_UNIQUE']]) {
     const line = cs(s, 'RARITY') + cs(s, sKey)
-    rarity[key] = findLabel(key, [normLine(line)], [normLine(line, false)], all.filter((l) => l !== normLine(line)), { lang, colon: true })
+    rarity[key] = findLabel(key, [normLine(line)], [normLine(line, false)], all.filter((l) => l !== normLine(line)), { lang, colon: true, min: 4 })
   }
   const corrupted = normLine(cs(s, 'CORRUPTED'))
   const twice = normLine(cs(s, 'DOUBLE_CORRUPTED'))
@@ -778,7 +782,7 @@ function buildTablet(lang, ctx) {
   const rarity = {}
   for (const [key, sKey] of [['normal', 'RARITY_NORMAL'], ['magic', 'RARITY_MAGIC'], ['rare', 'RARITY_RARE'], ['unique', 'RARITY_UNIQUE']]) {
     const line = cs(s, 'RARITY') + cs(s, sKey)
-    rarity[key] = findLabel(key, [normLine(line)], [normLine(line, false)], all.filter((l) => l !== normLine(line)), { lang, colon: true })
+    rarity[key] = findLabel(key, [normLine(line)], [normLine(line, false)], all.filter((l) => l !== normLine(line)), { lang, colon: true, min: 4 })
   }
   return { section: { mods, extra, types, names: ctx.tabletNames[lang], uses, rarity, tradeType: ctx.tabletNames.en }, warn }
 }

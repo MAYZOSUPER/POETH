@@ -1079,10 +1079,10 @@
   },
   "tier": "e \\(tier ",
   "rarity": {
-   "normal": ": n",
-   "magic": ": m",
-   "rare": ": r",
-   "unique": ": u"
+   "normal": ": no",
+   "magic": ": ma",
+   "rare": ": ra",
+   "unique": ": un"
   },
   "flags": {
    "corrupted": "pted",
@@ -2940,10 +2940,10 @@
    "post": " uses"
   },
   "rarity": {
-   "normal": ": n",
-   "magic": ": m",
-   "rare": ": r",
-   "unique": ": u"
+   "normal": ": no",
+   "magic": ": ma",
+   "rare": ": ra",
+   "unique": ": un"
   },
   "tradeType": {
    "abyss": "Abyss Tablet",
