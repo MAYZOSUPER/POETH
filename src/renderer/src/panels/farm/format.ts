@@ -1,7 +1,8 @@
-import type { FarmRun, FarmState } from '@shared/types/farm'
+import type { GameId } from '@shared/games'
+import type { FarmRun, FarmState, FarmStats } from '@shared/types/farm'
 
-// Форматирование трекера карт (S11b) — общее для панели компаньона и виджета оверлея.
-// Время в снимке посчитано на момент state.at и «тикает» дальше на стороне окна.
+// Форматирование трекера карт (S11b; PoE 2 — S69) — общее для панели компаньона и виджета оверлея.
+// Время в снимке посчитано на момент state.at и «тикает» дальше на стороне окна. PoE 2 считает в exalted.
 
 /** Время текущего забега на момент `now`. */
 export function currentRunMs(state: FarmState, now: number): number {
@@ -101,10 +102,52 @@ export function latestDivineRate(runs: FarmRun[]): number | null {
   return null
 }
 
-/** «Карта» для строки: имя на языке клиента, иначе id без префикса MapWorlds. */
-export function runName(run: Pick<FarmRun, 'areaName' | 'areaId'>): string {
+/**
+ * «Карта» для строки: имя на языке клиента, иначе id без префикса — PoE 1 MapWorlds, PoE 2 Map
+ * (MapBluff → Bluff, MapHideoutFarmlands_Claimable → Hideout Farmlands).
+ */
+export function runName(run: Pick<FarmRun, 'areaName' | 'areaId'>, game: GameId = 'poe1'): string {
   if (run.areaName) return run.areaName
+  if (game === 'poe2') {
+    const id = run.areaId.replace(/^Map_?/, '').replace(/_Claimable$/, '')
+    return id.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').trim() || run.areaId
+  }
   return run.areaId.replace(/^MapWorlds/, '').replace(/([a-z])([A-Z])/g, '$1 $2')
+}
+
+// ---------------------------------------------------------------- PoE 2: exalted, находки
+
+/** Σ цен находок забега в exalted; null — ни одной с ценой. */
+export function runFindsEx(run: Pick<FarmRun, 'finds'>): number | null {
+  const priced = (run.finds ?? []).filter((f) => f.valueEx !== null)
+  return priced.length ? priced.reduce((a, f) => a + (f.valueEx as number), 0) : null
+}
+
+/** Exalted: меньше 10 — с одним знаком, дальше целые; signed — «+» у прибыли. */
+export function exAmount(v: number, lang: 'ru' | 'en', signed = false): string {
+  const digits = Math.abs(v) < 10 ? 1 : 0
+  const s = v.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: digits })
+  return signed && v > 0 ? `+${s}` : s
+}
+
+/** Чем считать доход PoE 2: прибыль сессии от «Богатства» (S70), без неё — находки. */
+export function exBase(stats: Pick<FarmStats, 'profitEx' | 'findsEx'> | null | undefined): number | null {
+  return stats?.profitEx ?? stats?.findsEx ?? null
+}
+
+/**
+ * Доход в час PoE 2 по макету PoE 1: от 1 div в час — главная цифра в div (под ней ≈ ex), меньше —
+ * наоборот. Без курса ex → div — только ex.
+ */
+export function incomeEx(perHourEx: number, exPerDiv: number | null, lang: 'ru' | 'en'): { main: string; sub: string } {
+  const perHour = lang === 'ru' ? 'в час' : 'per hour'
+  if (!exPerDiv || !(exPerDiv > 0)) return { main: `${exAmount(perHourEx, lang)} ex`, sub: perHour }
+  const div = perHourEx / exPerDiv
+  const loc = lang === 'ru' ? 'ru-RU' : 'en-US'
+  const divText = (d: number, digits: number): string => d.toLocaleString(loc, { maximumFractionDigits: digits })
+  return Math.abs(div) >= 1
+    ? { main: `${divText(div, 1)} div`, sub: `≈ ${exAmount(perHourEx, lang)} ex ${perHour}` }
+    : { main: `${exAmount(perHourEx, lang)} ex`, sub: `≈ ${divText(div, 2)} div` }
 }
 
 /** «28.10 21:40» / «10/28 21:40». */

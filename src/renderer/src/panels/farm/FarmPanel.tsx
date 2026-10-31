@@ -1,5 +1,6 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import type { FarmRun, FarmState } from '@shared/types/farm'
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import type { GameId } from '@shared/games'
+import type { FarmFindResult, FarmRun, FarmState } from '@shared/types/farm'
 import { useLang, useT } from '../../i18n'
 import { farmTicking, useFarmStore } from '../../store/useFarmStore'
 import { Ico, Rich, Switch, useSimple } from '../deals/common'
@@ -7,10 +8,14 @@ import {
   chaos,
   clock,
   currentRunMs,
+  exAmount,
+  exBase,
   income,
+  incomeEx,
   latestDivineRate,
   profitCells,
   rate,
+  runFindsEx,
   runName,
   sessionMs,
   when,
@@ -23,8 +28,14 @@ import './farm.css'
 // и забеги сессии с текущей картой сверху. Ниже — все забеги и включение виджета поверх игры.
 // Самодостаточна (свой стор и словарь dict/farm.ts); ставит S11a во вкладку «Богатство».
 // Доход — по прибыли забегов от учёта богатства S11a (группой, если снимок между картами не успел).
+// PoE 2 (S69, черновик до макета «Сессия фарма PoE 2»): та же панель для трекера запущенной игры;
+// ярус T1–T16, доход в exalted — по прибыли сессии от «Богатства» (S70), без неё — по находкам
+// («+ находка» к забегу). Во вкладку «Богатство» PoE 2 панель ставит S70.
 
-/** Что нужно плитке дохода S11a (panels/wealth/IncomeTile): прибыль сессии и время без пауз. */
+/**
+ * Что нужно плитке дохода S11a (panels/wealth/IncomeTile): прибыль сессии и время без пауз. PoE 2 (S70) —
+ * game 'poe2' и profitEx / findsEx в exalted (profitChaos — null).
+ */
 export interface FarmIncomeInput {
   /** сумма прибылей забегов сессии; null — ещё ни одной */
   profitChaos: number | null
@@ -32,6 +43,11 @@ export interface FarmIncomeInput {
   activeMs: number
   /** есть завершённые забеги без прибыли — «считаем…» */
   pending: boolean
+  game?: GameId
+  /** PoE 2: прибыль сессии от «Богатства»; null — не посчитана */
+  profitEx?: number | null
+  /** PoE 2: Σ цен находок сессии; null — нет находок с ценой */
+  findsEx?: number | null
 }
 
 export interface FarmPanelProps {
@@ -54,9 +70,26 @@ function useNow(active: boolean): number {
   return now
 }
 
+/** Ярус: PoE 1 — T1–T17 по уровню области, PoE 2 — T1–T16 путевого камня (считает трекер). */
 function tierText(run: Pick<FarmRun, 'kind' | 'tier' | 'areaLevel'>, t: ReturnType<typeof useT>): string {
   if (run.kind === 'map' && run.tier !== null) return `T${run.tier}`
   return run.kind === 'other' ? t('farm.kind.other') : t('farm.level', { level: run.areaLevel })
+}
+
+const gameOf = (state: FarmState): GameId => state.game ?? 'poe1'
+const isPoe2 = (state: FarmState): boolean => state.game === 'poe2'
+
+/** Ячейка «Прибыль» PoE 2: сумма находок забега в ex. */
+function FindsCell({ run, lang, open }: { run: FarmRun; lang: 'ru' | 'en'; open: boolean }) {
+  const t = useT()
+  const v = runFindsEx(run)
+  const n = run.finds?.length ?? 0
+  if (v === null) return <td className="is-num is-faint">{n > 0 ? t('farm.poe2.finds.noPrice', { n }) : open ? t('farm.run.running') : '—'}</td>
+  return (
+    <td className="is-num is-good" title={t('farm.poe2.finds.title', { n })}>
+      {t('farm.ex', { n: exAmount(v, lang, true) })}
+    </td>
+  )
 }
 
 /** «Виджет поверх игры» — в шапке раздела (по макету); «Скрыть» на виджете выключает его же. */
@@ -91,6 +124,8 @@ function IdleView({ state }: { state: FarmState }) {
   const simple = useSimple()
   const busy = useFarmStore((s) => s.busy)
   const start = useFarmStore((s) => s.start)
+  const game = gameOf(state)
+  const poe2 = isPoe2(state)
   return (
     <>
       <div className="fm-sess-top">
@@ -105,10 +140,10 @@ function IdleView({ state }: { state: FarmState }) {
           <Ico name="play" />
           {t('farm.session.start')}
         </button>
-        {simple && <span className="fm-empty__hint">{t('farm.idle.hint')}</span>}
+        {simple && <span className="fm-empty__hint">{t(poe2 ? 'farm.poe2.idle.hint' : 'farm.idle.hint')}</span>}
         {state.current && (
           <span className="fm-empty__hint">
-            {t('farm.idle.inMap', { map: runName(state.current), time: clock(state.current.activeMs) })}
+            {t('farm.idle.inMap', { map: runName(state.current, game), time: clock(state.current.activeMs) })}
           </span>
         )}
       </div>
@@ -131,21 +166,42 @@ function IdleView({ state }: { state: FarmState }) {
               </tr>
             </thead>
             <tbody>
-              {state.sessions.map((s) => (
-                <tr key={s.id}>
-                  <td className="fm-nowrap">{when(s.startedAt, lang)}</td>
-                  <td className="fm-nowrap">{clock(s.stats.durationMs)}</td>
-                  <td className="is-num">{s.stats.maps}</td>
-                  <td className="is-num">
-                    {s.stats.profitPerHour !== null
-                      ? income(s.stats.profitPerHour, latestDivineRate(state.runs.filter((r) => r.sessionId === s.id)), lang).main
-                      : '—'}
-                  </td>
-                  <td className={`is-num ${s.stats.profitChaos === null ? 'is-faint' : s.stats.profitChaos < 0 ? 'is-bad' : 'is-good'}`}>
-                    {s.stats.profitChaos !== null ? t('farm.chaos', { n: chaos(s.stats.profitChaos, lang, true) }) : '—'}
-                  </td>
-                </tr>
-              ))}
+              {state.sessions.map((s) => {
+                if (poe2) {
+                  // PoE 2: прибыль сессии от «Богатства», без неё — находки (в exalted)
+                  const total = exBase(s.stats)
+                  const perHour = s.stats.exPerHour ?? null
+                  return (
+                    <tr key={s.id}>
+                      <td className="fm-nowrap">{when(s.startedAt, lang)}</td>
+                      <td className="fm-nowrap">{clock(s.stats.durationMs)}</td>
+                      <td className="is-num">{s.stats.maps}</td>
+                      <td className="is-num">{perHour !== null ? incomeEx(perHour, s.profit?.exPerDiv ?? null, lang).main : '—'}</td>
+                      <td
+                        className={`is-num ${total === null ? 'is-faint' : total < 0 ? 'is-bad' : 'is-good'}`}
+                        title={total !== null && s.stats.profitEx == null ? t('farm.poe2.byFinds') : undefined}
+                      >
+                        {total !== null ? t('farm.ex', { n: exAmount(total, lang, true) }) : '—'}
+                      </td>
+                    </tr>
+                  )
+                }
+                return (
+                  <tr key={s.id}>
+                    <td className="fm-nowrap">{when(s.startedAt, lang)}</td>
+                    <td className="fm-nowrap">{clock(s.stats.durationMs)}</td>
+                    <td className="is-num">{s.stats.maps}</td>
+                    <td className="is-num">
+                      {s.stats.profitPerHour !== null
+                        ? income(s.stats.profitPerHour, latestDivineRate(state.runs.filter((r) => r.sessionId === s.id)), lang).main
+                        : '—'}
+                    </td>
+                    <td className={`is-num ${s.stats.profitChaos === null ? 'is-faint' : s.stats.profitChaos < 0 ? 'is-bad' : 'is-good'}`}>
+                      {s.stats.profitChaos !== null ? t('farm.chaos', { n: chaos(s.stats.profitChaos, lang, true) }) : '—'}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -166,13 +222,32 @@ function Kpis({ state, now, props }: { state: FarmState; now: number; props: Far
   const na = '—'
   const sid = state.session?.id
   const sessionRuns = state.runs.filter((r) => r.sessionId === sid)
-  const pending = [...profitCells(sessionRuns).values()].some((c) => c.kind === 'pending')
+  const poe2 = isPoe2(state)
+  // у PoE 2 прибыли по тайнику нет — «считаем…» не бывает
+  const pending = !poe2 && [...profitCells(sessionRuns).values()].some((c) => c.kind === 'pending')
   const perHour = rated && stats.profitChaos !== null ? stats.profitChaos / (dur / HOUR) : null
   const inc = perHour !== null ? income(perHour, latestDivineRate(sessionRuns), lang) : null
+  const baseEx = exBase(stats)
+  const incEx = poe2 && rated && baseEx !== null ? incomeEx(baseEx / (dur / HOUR), state.session?.profit?.exPerDiv ?? null, lang) : null
   return (
     <div className="ui-stats ui-stats--lead">
       {props.renderIncome ? (
-        props.renderIncome({ profitChaos: stats.profitChaos, activeMs: dur, pending })
+        props.renderIncome({
+          profitChaos: stats.profitChaos,
+          activeMs: dur,
+          pending,
+          ...(poe2 ? { game: 'poe2' as const, profitEx: stats.profitEx ?? null, findsEx: stats.findsEx ?? null } : {})
+        })
+      ) : poe2 ? (
+        <div className="ui-stat ui-stat--hero" title={t('farm.poe2.income.q')}>
+          <span className="ui-label">{t('farm.stat.income')}</span>
+          <b className="ui-stat__value">{incEx ? incEx.main : na}</b>
+          <span className="ui-stat__sub">
+            {incEx
+              ? `${incEx.sub} · ${t(stats.profitEx != null ? 'farm.poe2.bySession' : 'farm.poe2.byFinds')}`
+              : t('farm.poe2.income.wait')}
+          </span>
+        </div>
       ) : props.needLogin ? (
         <div className="ui-stat ui-stat--hero ui-stat--empty">
           <span className="ui-label">{t('farm.stat.income')}</span>
@@ -220,8 +295,12 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
   const sid = state.session?.id
   const done = state.runs.filter((r) => r.sessionId === sid)
   const current = state.current && state.current.sessionId === sid ? state.current : null
+  const game = gameOf(state)
+  const poe2 = isPoe2(state)
   const total = done.reduce((a, r) => a + (r.profit?.chaos ?? 0), 0)
   const anyProfit = done.some((r) => r.profit) || !!current?.profit
+  // PoE 2: итог — находки забегов сессии в ex
+  const findsTotal = poe2 ? state.stats?.findsEx ?? null : null
   const expert = !simple
   const cells = profitCells(done)
   const low = (c: { low: boolean }) => (c.low ? t('farm.profit.low') : undefined)
@@ -246,8 +325,12 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
       </td>
     )
   }
-  /** c в мин: своя прибыль или доля группы ÷ время этой карты */
+  /** c в мин: своя прибыль или доля группы ÷ время этой карты; PoE 2 — ex находок в мин */
   const perMin = (r: FarmRun, c: ProfitCell | undefined) => {
+    if (poe2) {
+      const v = runFindsEx(r)
+      return v === null || r.activeMs < 60_000 ? '—' : rate(v / (r.activeMs / 60_000), lang)
+    }
     if (!c || c.kind === 'pending' || r.activeMs < 60_000) return '—'
     const v = c.kind === 'own' ? c.chaos : c.share
     return rate(v / (r.activeMs / 60_000), lang)
@@ -259,9 +342,14 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
         <Ico name="history" size="sm" />
         {t('farm.runs.session')}
         <span className="ui-label__grow" />
-        {anyProfit && !props.needLogin && (
+        {!poe2 && anyProfit && !props.needLogin && (
           <span className="fm-total">
             {t('farm.runs.total')} <b className={total < 0 ? 'fm-loss' : ''}>{t('farm.chaos', { n: chaos(total, lang, true) })}</b>
+          </span>
+        )}
+        {findsTotal !== null && (
+          <span className="fm-total" title={t('farm.poe2.byFinds')}>
+            {t('farm.runs.total')} <b>{t('farm.ex', { n: exAmount(findsTotal, lang, true) })}</b>
           </span>
         )}
       </div>
@@ -275,8 +363,8 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
                 <th className="fm-n">#</th>
                 <th>{t('farm.col.map')}</th>
                 <th className="is-num">{t('farm.col.time')}</th>
-                <th className="is-num">{t('farm.col.profit')}</th>
-                {expert && <th className="is-num">{t('farm.col.perMin')}</th>}
+                <th className="is-num">{t(poe2 ? 'farm.poe2.col.finds' : 'farm.col.profit')}</th>
+                {expert && <th className="is-num">{t(poe2 ? 'farm.poe2.col.perMin' : 'farm.col.perMin')}</th>}
                 <th className="is-num">{t('farm.col.deaths')}</th>
               </tr>
             </thead>
@@ -285,11 +373,15 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
                 <tr className="is-now">
                   <td className="fm-n">{done.length + 1}</td>
                   <td>
-                    {runName(current)}
+                    {runName(current, game)}
                     <span className="ui-table__aside">{tierText(current, t)}</span>
                   </td>
                   <td className="is-num fm-now-time">{clock(currentRunMs(state, now))}</td>
-                  {profitCell(current.profit ? { kind: 'own', chaos: current.profit.chaos, low: !!current.profit.low } : undefined, true)}
+                  {poe2 ? (
+                    <FindsCell run={current} lang={lang} open />
+                  ) : (
+                    profitCell(current.profit ? { kind: 'own', chaos: current.profit.chaos, low: !!current.profit.low } : undefined, true)
+                  )}
                   {expert && <td className="is-num">—</td>}
                   <td className="is-num">
                     <Deaths n={current.deaths} />
@@ -300,11 +392,11 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
                 <tr key={r.id}>
                   <td className="fm-n">{done.length - i}</td>
                   <td>
-                    {runName(r)}
+                    {runName(r, game)}
                     <span className="ui-table__aside">{tierText(r, t)}</span>
                   </td>
                   <td className="is-num">{clock(r.activeMs)}</td>
-                  {profitCell(cells.get(r.id), false)}
+                  {poe2 ? <FindsCell run={r} lang={lang} open={false} /> : profitCell(cells.get(r.id), false)}
                   {expert && <td className="is-num">{perMin(r, cells.get(r.id))}</td>}
                   <td className="is-num">
                     <Deaths n={r.deaths} />
@@ -319,9 +411,149 @@ function SessionRuns({ state, now, props }: { state: FarmState; now: number; pro
   )
 }
 
+/** PoE 2: прибыль сессии от «Богатства» (S70) — снимок или ввод в начале и в конце. */
+function SessionProfitLine({ state }: { state: FarmState }) {
+  const t = useT()
+  const lang = useLang()
+  const p = state.session?.profit
+  if (!p) return <p className="fm-p fm-faint">{t('farm.poe2.sessionProfit.none')}</p>
+  return (
+    <p className="fm-p">
+      {t('farm.poe2.sessionProfit', {
+        n: exAmount(p.ex, lang, true),
+        how: t(p.source === 'snapshot' ? 'farm.poe2.sessionProfit.snapshot' : 'farm.poe2.sessionProfit.manual'),
+        time: when(p.at, lang)
+      })}
+    </p>
+  )
+}
+
+const num = (s: string): number => Number(s.replace(',', '.').trim())
+
+/**
+ * PoE 2: находки забега — того, к которому добавит «+ находка» (открытый; в убежище после карты он ещё
+ * открыт; иначе последний забег сессии). Ручной ввод — черновик до макета; окно цены зовёт тот же
+ * farm:addFind с source 'ctrlD'.
+ */
+function FindsBox({ state }: { state: FarmState }) {
+  const t = useT()
+  const lang = useLang()
+  const addFind = useFarmStore((s) => s.addFind)
+  const removeFind = useFarmStore((s) => s.removeFind)
+  const [open, setOpen] = useState(false)
+  const [what, setWhat] = useState('')
+  const [qty, setQty] = useState('1')
+  const [value, setValue] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const sid = state.session?.id
+  const run = state.current ?? state.runs.find((r) => r.sessionId === sid) ?? null
+  const finds = run?.finds ?? []
+
+  const submit = async (e: FormEvent): Promise<void> => {
+    e.preventDefault()
+    const r: FarmFindResult = await addFind({
+      ref: what,
+      qty: qty.trim() ? num(qty) : 1,
+      valueEx: value.trim() ? num(value) : null,
+      source: 'manual'
+    })
+    if (r.ok) {
+      setWhat('')
+      setQty('1')
+      setValue('')
+      setError(null)
+      setOpen(false)
+    } else {
+      setError(t(`farm.poe2.find.err.${r.reason}`))
+    }
+  }
+
+  return (
+    <>
+      <div className="ui-label">
+        <Ico name="coins" size="sm" />
+        {run ? t('farm.poe2.finds.of', { map: runName(run, 'poe2') }) : t('farm.poe2.finds')}
+        <span className="ui-label__grow" />
+        <button type="button" className="ui-btn ui-btn--sm" disabled={!run} aria-expanded={open} onClick={() => setOpen(!open)}>
+          {t('farm.poe2.find.add')}
+        </button>
+      </div>
+      {open && run && (
+        <form className="fm-find-form" onSubmit={(e) => void submit(e)}>
+          <label className="ui-field fm-find-form__what">
+            <span className="ui-field__label">{t('farm.poe2.find.what')}</span>
+            <input
+              className="ui-input"
+              value={what}
+              maxLength={200}
+              required
+              placeholder={t('farm.poe2.find.what.ph')}
+              onChange={(e) => setWhat(e.target.value)}
+            />
+          </label>
+          <label className="ui-field fm-find-form__num">
+            <span className="ui-field__label">{t('farm.poe2.find.qty')}</span>
+            <input className="ui-input ui-input--num" inputMode="numeric" value={qty} onChange={(e) => setQty(e.target.value)} />
+          </label>
+          <label className="ui-field fm-find-form__num">
+            <span className="ui-field__label">{t('farm.poe2.find.value')}</span>
+            <input
+              className="ui-input ui-input--num"
+              inputMode="decimal"
+              value={value}
+              placeholder="—"
+              onChange={(e) => setValue(e.target.value)}
+            />
+          </label>
+          <button type="submit" className="ui-btn ui-btn--primary ui-btn--sm">
+            {t('farm.poe2.find.save')}
+          </button>
+          {error && <span className="ui-field__error fm-find-form__err">{error}</span>}
+        </form>
+      )}
+      {!run ? (
+        <p className="fm-p">{t('farm.poe2.finds.noRun')}</p>
+      ) : finds.length === 0 ? (
+        <p className="fm-p">{t('farm.poe2.finds.empty')}</p>
+      ) : (
+        <div className="ui-box fm-tablewrap">
+          <table className="ui-table">
+            <tbody>
+              {[...finds].reverse().map((f) => (
+                <tr key={f.id}>
+                  <td>
+                    {f.name ?? f.ref}
+                    {f.qty > 1 && <span className="ui-table__aside">×{f.qty}</span>}
+                  </td>
+                  <td className="fm-faint fm-nowrap">{t(f.source === 'ctrlD' ? 'farm.poe2.find.src.ctrlD' : 'farm.poe2.find.src.manual')}</td>
+                  <td className={`is-num ${f.valueEx === null ? 'is-faint' : 'is-good'}`}>
+                    {f.valueEx === null ? '—' : t('farm.ex', { n: exAmount(f.valueEx, lang, true) })}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+                      title={t('farm.poe2.find.remove')}
+                      aria-label={t('farm.poe2.find.remove')}
+                      onClick={() => void removeFind(run.id, f.id)}
+                    >
+                      <Ico name="trash" size="sm" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </>
+  )
+}
+
 function RunningView({ state, now, props }: { state: FarmState; now: number; props: FarmPanelProps }) {
   const t = useT()
   const simple = useSimple()
+  const poe2 = isPoe2(state)
   const busy = useFarmStore((s) => s.busy)
   const pause = useFarmStore((s) => s.pause)
   const resume = useFarmStore((s) => s.resume)
@@ -360,24 +592,27 @@ function RunningView({ state, now, props }: { state: FarmState; now: number; pro
         </button>
       </div>
       <Kpis state={state} now={now} props={props} />
+      {poe2 && <SessionProfitLine state={state} />}
       {simple && (
         <div className="ui-hint fm-hint">
           <Ico name="info" />
           <span>
-            <Rich text={t('farm.hint.running')} />
+            <Rich text={t(poe2 ? 'farm.poe2.hint.running' : 'farm.hint.running')} />
           </span>
         </div>
       )}
       <SessionRuns state={state} now={now} props={props} />
+      {poe2 && <FindsBox state={state} />}
     </>
   )
 }
 
 // ---------------------------------------------------------------- все забеги
 
-function AllRuns({ runs }: { runs: FarmRun[] }) {
+function AllRuns({ runs, game }: { runs: FarmRun[]; game: GameId }) {
   const t = useT()
   const lang = useLang()
+  const poe2 = game === 'poe2'
   const removeRun = useFarmStore((s) => s.removeRun)
   const clear = useFarmStore((s) => s.clear)
   const [open, setOpen] = useState(false)
@@ -414,7 +649,7 @@ function AllRuns({ runs }: { runs: FarmRun[] }) {
               <th className="is-num" title={t('farm.col.entries.title')}>
                 {t('farm.col.entries')}
               </th>
-              <th className="is-num">{t('farm.col.profit')}</th>
+              <th className="is-num">{t(poe2 ? 'farm.poe2.col.finds' : 'farm.col.profit')}</th>
               <th className="is-num">{t('farm.col.deaths')}</th>
               <th aria-label={t('farm.runs.remove')} />
             </tr>
@@ -424,14 +659,18 @@ function AllRuns({ runs }: { runs: FarmRun[] }) {
               <tr key={r.id}>
                 <td className="fm-nowrap fm-faint">{when(r.startTs, lang)}</td>
                 <td>
-                  {runName(r)}
+                  {runName(r, game)}
                   <span className="ui-table__aside">{tierText(r, t)}</span>
                 </td>
                 <td className="is-num">{clock(r.activeMs)}</td>
                 <td className="is-num">{r.entries}</td>
-                <td className={`is-num ${!r.profit ? 'is-faint' : r.profit.chaos < 0 ? 'is-bad' : 'is-good'}`}>
-                  {r.profit ? t('farm.chaos', { n: chaos(r.profit.chaos, lang, true) }) : '—'}
-                </td>
+                {poe2 ? (
+                  <FindsCell run={r} lang={lang} open={false} />
+                ) : (
+                  <td className={`is-num ${!r.profit ? 'is-faint' : r.profit.chaos < 0 ? 'is-bad' : 'is-good'}`}>
+                    {r.profit ? t('farm.chaos', { n: chaos(r.profit.chaos, lang, true) }) : '—'}
+                  </td>
+                )}
                 <td className="is-num">
                   <Deaths n={r.deaths} />
                 </td>
@@ -494,7 +733,7 @@ export function FarmPanel(props: FarmPanelProps = {}) {
 
       {state.session ? <RunningView state={state} now={now} props={props} /> : <IdleView state={state} />}
 
-      <AllRuns runs={state.runs} />
+      <AllRuns runs={state.runs} game={gameOf(state)} />
     </div>
   )
 }

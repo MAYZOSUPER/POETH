@@ -1,8 +1,8 @@
 import { create } from 'zustand'
-import type { FarmConfigPatch, FarmLogStatus, FarmState } from '@shared/types/farm'
+import type { FarmConfigPatch, FarmFindInput, FarmFindResult, FarmLogStatus, FarmState } from '@shared/types/farm'
 
-// Трекер карт и сессия фарма (S11b) в окне — компаньон (панель «Карты») и оверлей (виджет).
-// Состояние — из main (farm:state + событие farmChanged); кнопки сессии — в main.
+// Трекер карт и сессия фарма (S11b; PoE 2 — S69) в окне — компаньон (панель «Карты») и оверлей (виджет).
+// Состояние — из main (farm:state + событие farmChanged) для запущенной игры; кнопки сессии — в main.
 
 interface FarmStore {
   ready: boolean
@@ -19,6 +19,9 @@ interface FarmStore {
   setConfig: (patch: FarmConfigPatch) => Promise<void>
   removeRun: (id: string) => Promise<void>
   clear: () => Promise<void>
+  /** PoE 2: «+ находка» к забегу; состояние придёт событием farmChanged */
+  addFind: (input: FarmFindInput) => Promise<FarmFindResult>
+  removeFind: (runId: string, findId: string) => Promise<void>
 }
 
 const api = () => window.overlayApi
@@ -72,7 +75,9 @@ export const useFarmStore = create<FarmStore>((set, get) => {
     stop: () => run(() => api().farm.stop()),
     setConfig: (patch) => run(() => api().farm.setConfig(patch)),
     removeRun: (id) => run(() => api().farm.removeRun(id)),
-    clear: () => run(() => api().farm.clear())
+    clear: () => run(() => api().farm.clear()),
+    addFind: (input) => api().farm.addFind(input),
+    removeFind: (runId, findId) => run(() => api().farm.removeFind(runId, findId))
   }
 })
 

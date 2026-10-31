@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as Reac
 import type { FarmState, FarmWidgetPos } from '@shared/types/farm'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { farmTicking, useFarmStore } from '../../store/useFarmStore'
-import { chaos, clock, currentRunMs, latestDivineRate, rate, runName, sessionMs } from '../../panels/farm/format'
+import { chaos, clock, currentRunMs, exAmount, exBase, latestDivineRate, rate, runName, sessionMs } from '../../panels/farm/format'
 import { Icon } from '../Icon'
 import { scheduleRectsFlush, useInteractive } from '../interactive'
 import { useOverlayT } from '../useOverlayT'
@@ -15,6 +15,7 @@ import './farm-overlay.css'
 // доход в час (от учёта богатства S11a). Только во время сессии и если включён в разделе
 // «Сессия фарма» (FarmConfig.overlayWidget). Клики проходят в игру везде, кроме «⋮⋮»
 // (перетащить, позиция запоминается) и двух кнопок: «Пауза»/«Продолжить» и «Скрыть».
+// PoE 2 (S69): доход — в exalted (div от 1 div в час) по прибыли сессии от «Богатства» или находкам.
 // Пока тянут, весь экран оверлея ловит мышь (иначе курсор уйдёт с ручки и фокус вернётся игре).
 
 const DEFAULT_TOP_PX = 14
@@ -127,7 +128,20 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
   // как на плитке: от 1 div в час — div/ч (курс из прибылей S11a), меньше или без курса — c/ч
   const rateDiv = latestDivineRate(state.runs.filter((r) => r.sessionId === state.session?.id))
   const divRate = rateDiv && perHour !== null && Math.abs(perHour / rateDiv) >= 1 ? rateDiv : null
-  const incomeText = perHour === null ? '—' : divRate ? rate(perHour / divRate, lang) : chaos(perHour, lang)
+  let incomeText = perHour === null ? '—' : divRate ? rate(perHour / divRate, lang) : chaos(perHour, lang)
+  let coin = divRate ? 'divine' : 'chaos'
+  let unit = divRate ? 'div' : 'c'
+  const game = state.game ?? 'poe1'
+  if (game === 'poe2') {
+    // PoE 2: exalted; курс ex → div — из прибыли сессии (S70)
+    const base = exBase(stats)
+    const perHourEx = base !== null && dur >= 60_000 ? base / (dur / HOUR) : null
+    const exPerDiv = state.session?.profit?.exPerDiv ?? null
+    const inDiv = !!exPerDiv && perHourEx !== null && Math.abs(perHourEx / exPerDiv) >= 1
+    incomeText = perHourEx === null ? '—' : inDiv && exPerDiv ? rate(perHourEx / exPerDiv, lang) : exAmount(perHourEx, lang)
+    coin = inDiv ? 'divine' : 'exalted'
+    unit = inDiv ? 'div' : 'ex'
+  }
 
   let first
   if (paused) {
@@ -142,7 +156,7 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
     first = (
       <span className="ui-hud__seg" title={t('farm.ov.map')}>
         <Icon name="map" />
-        {simple && <span className="ui-hud__name">{runName(run)}</span>}
+        {simple && <span className="ui-hud__name">{runName(run, game)}</span>}
         <b className="ui-hud__time">{clock(currentRunMs(state, now))}</b>
       </span>
     )
@@ -186,11 +200,11 @@ function FarmBar({ state, now }: { state: FarmState; now: number }) {
         {/* S18: иконка игры; в подсказке — что за валюта (полоса узкая — подпись короткая и в простом режиме) */}
         <TipAnchor
           className="ui-hud__seg"
-          tip={<CurrencyTipBody tag={divRate ? 'divine' : 'chaos'} lang={lang} extra={<b>{t('farm.ov.income.title')}</b>} />}
+          tip={<CurrencyTipBody tag={coin} lang={lang} extra={<b>{t('farm.ov.income.title')}</b>} />}
         >
-          <CoinIcon tag={divRate ? 'divine' : 'chaos'} lang={lang} />
+          <CoinIcon tag={coin} lang={lang} />
           <b>{incomeText}</b>
-          <span className="ui-hud__lbl">{`${divRate ? 'div' : 'c'}${t('farm.ov.perHour')}`}</span>
+          <span className="ui-hud__lbl">{`${unit}${t('farm.ov.perHour')}`}</span>
         </TipAnchor>
         <span ref={btnsRef} className="ov-farm__btns">
           <button

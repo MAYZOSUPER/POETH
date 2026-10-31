@@ -120,3 +120,22 @@
   align-items: center;
   gap: var(--sp-3) var(--sp-5);
 }
+
+/* ---- PoE 2 (S69, черновик до макета «Сессия фарма PoE 2»): «+ находка» вручную ---- */
+.fm-find-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 84px 110px auto;
+  align-items: end;
+  gap: var(--sp-3) var(--sp-4);
+}
+.fm-find-form__err {
+  grid-column: 1 / -1;
+}
+@container body (max-width: 620px) {
+  .fm-find-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fm-find-form__what {
+    grid-column: 1 / -1;
+  }
+}
