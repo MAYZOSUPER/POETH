@@ -13,7 +13,11 @@ export type ModState = 'want' | 'avoid' | 'any'
 type Filter = 'all' | 'scary' | 'selected' | 'desecrated' | 'instilled'
 
 const TRI_ICON = { want: 'check', avoid: 'cross', any: 'dash' } as const
-const NEXT: Record<ModState, ModState> = { any: 'want', want: 'avoid', avoid: 'any' }
+const NEXT: Record<ModState, ModState> = {
+  any: 'want',
+  want: 'avoid',
+  avoid: 'any'
+}
 
 function sortMods(mods: Poe2ModData[]): Poe2ModData[] {
   const rank = (m: Poe2ModData): number => (m.kind === 'desecrated' ? 1 : m.kind === 'instilled' ? 2 : 0)
@@ -164,7 +168,12 @@ function ModTri({
       <span className="rx-tri__tags">
         {simple && <em className="rx-tri__word">{t(`regex.state.${state}`)}</em>}
         {mod.scary && (
-          <span className="ui-tag ui-tag--bad" title={t('regex.scary.title', { reason: t(`regex.poe2.scary.${mod.scary}`) })}>
+          <span
+            className="ui-tag ui-tag--bad"
+            title={t('regex.scary.title', {
+              reason: t(`regex.poe2.scary.${mod.scary}`)
+            })}
+          >
             <Ico name="warn" size="sm" />
           </span>
         )}
@@ -186,7 +195,9 @@ function ModTri({
         {(alsoNames?.length || mod.alsoExtra) && (
           <span
             className="ui-tag ui-tag--warn"
-            title={alsoNames?.length ? t('regex.alsoMatches', { list: alsoNames.join('; ') }) : t('regex.poe2.alsoExtra')}
+            title={
+              alsoNames?.length ? t('regex.alsoMatches', { list: alsoNames.join('; ') }) : t('regex.poe2.alsoExtra')
+            }
           >
             ≈
           </span>

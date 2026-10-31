@@ -2,7 +2,13 @@
 // пороги свойств («Pack Size: +20%» → "pack size:.*([2-9].|\d..)%"), тир по названию базы
 // («Waystone (Tier 15)» → "e \(tier 1[3-6]\)"), редкость, осквернён, опознан.
 
-import type { OverflowItem, Poe2WaystoneData, RegexBuildResult, WaystoneLabelKey, WaystoneQuery } from '../../types/regex'
+import type {
+  OverflowItem,
+  Poe2WaystoneData,
+  RegexBuildResult,
+  WaystoneLabelKey,
+  WaystoneQuery
+} from '../../types/regex'
 import { atLeast } from '../atLeast'
 import { REGEX_LIMIT, joinTerms, suggestRemovals, type Term } from '../format'
 import { flagTerm, modTerms, numberRange, rarityTerm } from './common'
@@ -61,7 +67,11 @@ export function buildWaystoneRegex(data: Poe2WaystoneData, q: WaystoneQuery): Re
     if (n <= 0) continue
     const body = waystoneThreshold(data, key, n)
     terms.push({ negate: false, body })
-    items.push({ kind: 'option', key: `threshold.${key}`, saves: body.length + 3 })
+    items.push({
+      kind: 'option',
+      key: `threshold.${key}`,
+      saves: body.length + 3
+    })
   }
 
   const tier = tierTerm(data, q.tierMin, q.tierMax)
@@ -72,14 +82,23 @@ export function buildWaystoneRegex(data: Poe2WaystoneData, q: WaystoneQuery): Re
   const rarity = rarityTerm(data.rarity, q.rarity)
   if (rarity) {
     terms.push(rarity)
-    items.push({ kind: 'option', key: 'rarity', saves: rarity.body.length + 3 })
+    items.push({
+      kind: 'option',
+      key: 'rarity',
+      saves: rarity.body.length + 3
+    })
   }
   for (const t of [flagTerm(data.flags.corrupted, q.corrupted), flagTerm(data.flags.unidentified, q.unidentified)]) {
     if (t) terms.push(t)
   }
 
   const text = joinTerms(terms)
-  const result: RegexBuildResult = { text, length: text.length, ok: text.length <= REGEX_LIMIT, sideMatches: m.side }
+  const result: RegexBuildResult = {
+    text,
+    length: text.length,
+    ok: text.length <= REGEX_LIMIT,
+    sideMatches: m.side
+  }
   if (!result.ok) {
     const by = text.length - REGEX_LIMIT
     result.overflow = { by, suggest: suggestRemovals(items, by) }

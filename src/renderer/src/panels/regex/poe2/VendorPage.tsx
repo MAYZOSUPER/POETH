@@ -30,6 +30,8 @@ export function Poe2VendorPage({ data }: { data: Poe2RegexData }) {
   const v = data.vendor
   const result = useMemo(() => buildPoe2VendorRegex(v, q), [v, q])
   const className = (c: Poe2ItemClass): string => v.classNames[c]
+  /** «≥ N %» только у процентных свойств (сопротивления, скорость); у жизни, уровней умений — просто «≥ N» */
+  const isPercent = (k: Poe2VendorKey): boolean => (v.props[k].posts ?? []).some((p) => p.startsWith('%'))
   const setMod = (k: Poe2VendorKey, n: number): void => {
     const mods = { ...q.mods }
     if (n > 0) mods[k] = n
@@ -42,7 +44,10 @@ export function Poe2VendorPage({ data }: { data: Poe2RegexData }) {
     return t(`regex.poe2.opt.${s.key}`)
   }
   const overflowText = result.overflow
-    ? t('regex.overflow', { n: result.overflow.by, list: result.overflow.suggest.map(optionName).join('; ') })
+    ? t('regex.overflow', {
+        n: result.overflow.by,
+        list: result.overflow.suggest.map(optionName).join('; ')
+      })
     : undefined
   const classOptions = [
     { value: '' as const, label: t('regex.vendor.class.any') },
@@ -50,7 +55,9 @@ export function Poe2VendorPage({ data }: { data: Poe2RegexData }) {
   ]
   const groups = POE2_VENDOR_GROUPS.filter((g) => !simple || SIMPLE_GROUPS.has(g.id))
   const hidden = simple
-    ? POE2_VENDOR_GROUPS.filter((g) => !SIMPLE_GROUPS.has(g.id)).flatMap((g) => g.keys.filter((k) => (q.mods[k] ?? 0) > 0))
+    ? POE2_VENDOR_GROUPS.filter((g) => !SIMPLE_GROUPS.has(g.id)).flatMap((g) =>
+        g.keys.filter((k) => (q.mods[k] ?? 0) > 0)
+      )
     : []
 
   return (
@@ -68,50 +75,72 @@ export function Poe2VendorPage({ data }: { data: Poe2RegexData }) {
             />
           </div>
           <RarityChips value={q.rarity} onChange={(rarity) => setQuery({ rarity })} />
-          {groups.map((g) => (
-            <div className="rx-v-group" key={g.id}>
-              <span className="ui-label">{t(`regex.poe2.group.${g.id}`)}</span>
-              <div className="rx-v-nums">
-                {g.keys
-                  .filter((k) => poe2HasThreshold(v, k))
-                  .map((k) => (
+          {groups.map((g) => {
+            // простой режим: уровни умений — чипами (≥ +1), числа — в экспертном
+            const asNum = (k: Poe2VendorKey): boolean => poe2HasThreshold(v, k) && !(simple && g.id === 'gems')
+            return (
+              <div className="rx-v-group" key={g.id}>
+                <span className="ui-label">{t(`regex.poe2.group.${g.id}`)}</span>
+                <div className="rx-v-nums">
+                  {g.keys.filter(asNum).map((k) => (
                     <span key={k} title={v.props[k].text.join('\n')}>
                       <NumberRow
                         id={`rx-p2v-${k}`}
-                        label={t('regex.maps.atLeast', { label: t(`regex.poe2.prop.${k}`) })}
+                        label={t(isPercent(k) ? 'regex.maps.atLeast' : 'regex.poe2.atLeastN', {
+                          label: t(`regex.poe2.prop.${k}`)
+                        })}
                         value={q.mods[k] ?? 0}
                         max={999}
                         onChange={(n) => setMod(k, n)}
                       />
                     </span>
                   ))}
+                </div>
+                <span className="ui-chips">
+                  {g.keys
+                    .filter((k) => !asNum(k))
+                    .map((k) => (
+                      <button
+                        key={k}
+                        type="button"
+                        className="ui-chip"
+                        aria-pressed={(q.mods[k] ?? 0) > 0}
+                        title={v.props[k].text.join('\n')}
+                        onClick={() => setMod(k, (q.mods[k] ?? 0) > 0 ? 0 : 1)}
+                      >
+                        {t(`regex.poe2.prop.${k}`)}
+                      </button>
+                    ))}
+                </span>
               </div>
-              <span className="ui-chips">
-                {g.keys
-                  .filter((k) => !poe2HasThreshold(v, k))
-                  .map((k) => (
-                    <button
-                      key={k}
-                      type="button"
-                      className="ui-chip"
-                      aria-pressed={(q.mods[k] ?? 0) > 0}
-                      title={v.props[k].text.join('\n')}
-                      onClick={() => setMod(k, (q.mods[k] ?? 0) > 0 ? 0 : 1)}
-                    >
-                      {t(`regex.poe2.prop.${k}`)}
-                    </button>
-                  ))}
-              </span>
-            </div>
-          ))}
+            )
+          })}
           {hidden.length > 0 && (
-            <div className="ui-field__help">{t('regex.poe2.vendor.hidden', { list: hidden.map((k) => t(`regex.poe2.prop.${k}`)).join(', ') })}</div>
+            <div className="ui-field__help">
+              {t('regex.poe2.vendor.hidden', {
+                list: hidden.map((k) => t(`regex.poe2.prop.${k}`)).join(', ')
+              })}
+            </div>
           )}
           {simple && <Hint>{t('regex.poe2.vendor.hint')}</Hint>}
         </Box>
         <Box title={t('regex.poe2.vendor.sockets')} tip={t('regex.poe2.vendor.socketsTip')}>
-          <NumberRow id="rx-p2-sockets" label={t('regex.poe2.vendor.socketsAtLeast')} value={q.sockets} max={POE2_SOCKETS_MAX} onChange={(n) => setQuery({ sockets: n })} />
-          {!simple && <NumberRow id="rx-p2-quality" label={t('regex.vendor.qualityAtLeast')} value={q.quality} max={30} onChange={(n) => setQuery({ quality: n })} />}
+          <NumberRow
+            id="rx-p2-sockets"
+            label={t('regex.poe2.vendor.socketsAtLeast')}
+            value={q.sockets}
+            max={POE2_SOCKETS_MAX}
+            onChange={(n) => setQuery({ sockets: n })}
+          />
+          {!simple && (
+            <NumberRow
+              id="rx-p2-quality"
+              label={t('regex.vendor.qualityAtLeast')}
+              value={q.quality}
+              max={30}
+              onChange={(n) => setQuery({ quality: n })}
+            />
+          )}
           <div className="rx-row">
             <span>{t('regex.vendor.mode')}</span>
             <Seg
@@ -129,7 +158,9 @@ export function Poe2VendorPage({ data }: { data: Poe2RegexData }) {
       <div className="rx-stack rx-sticky">
         <ResultBox
           result={result}
-          defaultName={t('regex.poe2.vendor.genName', { summary: summarize(t, q, className) })}
+          defaultName={t('regex.poe2.vendor.genName', {
+            summary: summarize(t, q, className)
+          })}
           onReset={() => setPrefs({ vendor: emptyPoe2VendorQuery() })}
           overflowText={overflowText}
           hint={t('regex.poe2.vendor.howto')}

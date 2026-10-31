@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import type { Poe2PriceResult, Poe2Profile, Poe2ProfileKind, Poe2RegexData, TabletQuery, WaystoneQuery } from '@shared/types'
+import type {
+  Poe2PriceResult,
+  Poe2Profile,
+  Poe2ProfileKind,
+  Poe2RegexData,
+  TabletQuery,
+  WaystoneQuery
+} from '@shared/types'
 import { PROFILE_NAME_MAX, profileRegex, profileTradeQuery } from '@shared/regex/poe2'
 import { useT } from '../../../i18n'
 import { Box, CopyButton, Hint, useSimple } from '../common'
@@ -31,7 +38,11 @@ export function ProfilesBox({
   const save = async (): Promise<void> => {
     const name = (naming ?? '').trim()
     if (!name) return
-    await saveProfile(kind === 'waystone' ? { name, kind, waystone: current as WaystoneQuery } : { name, kind, tablet: current as TabletQuery })
+    await saveProfile(
+      kind === 'waystone'
+        ? { name, kind, waystone: current as WaystoneQuery }
+        : { name, kind, tablet: current as TabletQuery }
+    )
     setNaming(null)
   }
 
@@ -59,7 +70,12 @@ export function ProfilesBox({
               if (e.key === 'Escape') setNaming(null)
             }}
           />
-          <button type="button" className="ui-btn ui-btn--sm ui-btn--primary" disabled={!naming.trim()} onClick={() => void save()}>
+          <button
+            type="button"
+            className="ui-btn ui-btn--sm ui-btn--primary"
+            disabled={!naming.trim()}
+            onClick={() => void save()}
+          >
             {t('regex.saveDo')}
           </button>
           <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" onClick={() => setNaming(null)}>
@@ -69,7 +85,13 @@ export function ProfilesBox({
       )}
       {profiles.length === 0 && <div className="ui-field__help">{t('regex.poe2.profiles.empty')}</div>}
       {profiles.map((p) => (
-        <ProfileRow key={p.id} profile={p} data={data} onApply={() => onApply(p)} onDelete={() => void deleteProfile(p.id)} />
+        <ProfileRow
+          key={p.id}
+          profile={p}
+          data={data}
+          onApply={() => onApply(p)}
+          onDelete={() => void deleteProfile(p.id)}
+        />
       ))}
       {simple && <Hint>{t('regex.poe2.profiles.hint')}</Hint>}
     </Box>
@@ -102,7 +124,12 @@ function ProfileRow({
       </span>
       <span className="rx-btns">
         <CopyButton text={r.ok ? r.text : ''} small />
-        <button type="button" className="ui-btn ui-btn--sm" onClick={onApply} title={t('regex.poe2.profiles.applyTitle')}>
+        <button
+          type="button"
+          className="ui-btn ui-btn--sm"
+          onClick={onApply}
+          title={t('regex.poe2.profiles.applyTitle')}
+        >
           {t('regex.poe2.profiles.apply')}
         </button>
         <button
@@ -115,7 +142,12 @@ function ProfileRow({
           <Ico name="coins" />
           {price?.pending ? t('regex.poe2.price.pending') : t('regex.poe2.price.do')}
         </button>
-        <button type="button" className="ui-btn ui-btn--sm ui-btn--ghost" onClick={onDelete} title={t('regex.poe2.profiles.delete')}>
+        <button
+          type="button"
+          className="ui-btn ui-btn--sm ui-btn--ghost"
+          onClick={onDelete}
+          title={t('regex.poe2.profiles.delete')}
+        >
           <Ico name="cross" />
         </button>
       </span>
@@ -129,7 +161,11 @@ function PriceLine({ result, skipped }: { result: Poe2PriceResult; skipped: numb
   if (!result.ok) {
     const key = `regex.poe2.price.error.${result.error.code}`
     const text = t(key)
-    return <span className="ui-field__error">{text === key ? t('regex.poe2.price.error', { code: result.error.code }) : text}</span>
+    return (
+      <span className="ui-field__error">
+        {text === key ? t('regex.poe2.price.error', { code: result.error.code }) : text}
+      </span>
+    )
   }
   const prices = result.listings.map((l) => `${fmt(l.amount)} ${l.currency}`)
   return (
@@ -137,7 +173,10 @@ function PriceLine({ result, skipped }: { result: Poe2PriceResult; skipped: numb
       <span>
         {result.total === 0
           ? t('regex.poe2.price.none')
-          : t('regex.poe2.price.found', { n: result.total, list: prices.slice(0, 5).join(' · ') || '—' })}
+          : t('regex.poe2.price.found', {
+              n: result.total,
+              list: prices.slice(0, 5).join(' · ') || '—'
+            })}
       </span>
       {result.listings.length >= 2 && (
         <span className="rx-lib-desc">{t('regex.poe2.price.second', { price: prices[1] })}</span>
@@ -146,7 +185,12 @@ function PriceLine({ result, skipped }: { result: Poe2PriceResult; skipped: numb
       <button
         type="button"
         className="ui-btn ui-btn--sm ui-btn--ghost"
-        onClick={() => void window.overlayApi.tradeWindow.open({ game: 'poe2', url: result.siteUrl })}
+        onClick={() =>
+          void window.overlayApi.tradeWindow.open({
+            game: 'poe2',
+            url: result.siteUrl
+          })
+        }
       >
         <Ico name="external" />
         {t('regex.poe2.price.open')}

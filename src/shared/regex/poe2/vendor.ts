@@ -58,12 +58,29 @@ export const POE2_VENDOR_KEYS: readonly Poe2VendorKey[] = [
 ]
 
 /** Группы свойств на странице. */
-export const POE2_VENDOR_GROUPS: readonly { id: string; keys: readonly Poe2VendorKey[] }[] = [
+export const POE2_VENDOR_GROUPS: readonly {
+  id: string
+  keys: readonly Poe2VendorKey[]
+}[] = [
   { id: 'defence', keys: ['life', 'mana', 'energyShield', 'spirit'] },
-  { id: 'res', keys: ['resFire', 'resCold', 'resLightning', 'resChaos', 'resAll'] },
+  {
+    id: 'res',
+    keys: ['resFire', 'resCold', 'resLightning', 'resChaos', 'resAll']
+  },
   {
     id: 'gems',
-    keys: ['gemAll', 'gemSpell', 'gemFire', 'gemCold', 'gemLightning', 'gemChaos', 'gemPhys', 'gemMinion', 'gemMelee', 'gemProjectile']
+    keys: [
+      'gemAll',
+      'gemSpell',
+      'gemFire',
+      'gemCold',
+      'gemLightning',
+      'gemChaos',
+      'gemPhys',
+      'gemMinion',
+      'gemMelee',
+      'gemProjectile'
+    ]
   },
   {
     id: 'damage',
@@ -81,7 +98,10 @@ export const POE2_VENDOR_GROUPS: readonly { id: string; keys: readonly Poe2Vendo
       'addAttackLightning'
     ]
   },
-  { id: 'speed', keys: ['moveSpeed', 'attackSpeed', 'castSpeed', 'critChance'] },
+  {
+    id: 'speed',
+    keys: ['moveSpeed', 'attackSpeed', 'castSpeed', 'critChance']
+  },
   { id: 'attr', keys: ['str', 'dex', 'int', 'allAttributes', 'rarity'] }
 ]
 
@@ -116,7 +136,14 @@ export const POE2_ITEM_CLASSES: readonly Poe2ItemClass[] = [
 export const POE2_SOCKETS_MAX = 6
 
 export function emptyPoe2VendorQuery(): Poe2VendorQuery {
-  return { mods: {}, itemClass: '', rarity: [], sockets: 0, quality: 0, mode: 'any' }
+  return {
+    mods: {},
+    itemClass: '',
+    rarity: [],
+    sockets: 0,
+    quality: 0,
+    mode: 'any'
+  }
 }
 
 /** У свойства есть порог «≥ N» (строка с одним числом). */
@@ -181,7 +208,10 @@ export function buildPoe2VendorRegex(data: Poe2VendorData, q: Poe2VendorQuery): 
   const terms: Term[] = []
   const items: OverflowItem[] = []
   const keys = selectedPoe2Props(data, q)
-  const parts = keys.map((k) => ({ k, body: poe2VendorPattern(data, k, q.mods[k] ?? 0) }))
+  const parts = keys.map((k) => ({
+    k,
+    body: poe2VendorPattern(data, k, q.mods[k] ?? 0)
+  }))
   if (q.mode === 'all') {
     for (const p of parts) terms.push({ negate: false, body: p.body })
   } else if (parts.length) {
@@ -197,7 +227,11 @@ export function buildPoe2VendorRegex(data: Poe2VendorData, q: Poe2VendorQuery): 
   const rarity = rarityTerm(data.rarity, q.rarity)
   if (rarity) {
     terms.push(rarity)
-    items.push({ kind: 'option', key: 'rarity', saves: rarity.body.length + 3 })
+    items.push({
+      kind: 'option',
+      key: 'rarity',
+      saves: rarity.body.length + 3
+    })
   }
   if (q.sockets > 0) {
     const body = socketsPattern(data, q.sockets)
@@ -211,7 +245,12 @@ export function buildPoe2VendorRegex(data: Poe2VendorData, q: Poe2VendorQuery): 
   }
 
   const text = joinTerms(terms)
-  const result: RegexBuildResult = { text, length: text.length, ok: text.length <= REGEX_LIMIT, sideMatches: [] }
+  const result: RegexBuildResult = {
+    text,
+    length: text.length,
+    ok: text.length <= REGEX_LIMIT,
+    sideMatches: []
+  }
   if (!result.ok) {
     const by = text.length - REGEX_LIMIT
     result.overflow = { by, suggest: suggestRemovals(items, by) }

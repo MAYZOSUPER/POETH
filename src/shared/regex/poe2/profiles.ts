@@ -33,7 +33,10 @@ const num = (v: unknown, max: number): number =>
   typeof v === 'number' && Number.isFinite(v) ? Math.min(max, Math.max(0, Math.round(v))) : 0
 const ids = (v: unknown): string[] =>
   Array.isArray(v)
-    ? [...new Set(v.filter((x): x is string => typeof x === 'string' && x.length > 0 && x.length <= ID_LEN))].slice(0, IDS_MAX)
+    ? [...new Set(v.filter((x): x is string => typeof x === 'string' && x.length > 0 && x.length <= ID_LEN))].slice(
+        0,
+        IDS_MAX
+      )
     : []
 const pick = <T extends string>(list: readonly T[], v: unknown): T[] =>
   Array.isArray(v) ? list.filter((x) => (v as unknown[]).includes(x)) : []
@@ -90,7 +93,12 @@ export function normalizePoe2VendorQuery(raw: unknown): Poe2VendorQuery {
 const PAGES: readonly Poe2RegexPage[] = ['waystone', 'tablet', 'vendor', 'library']
 
 export function defaultPoe2Prefs(): Poe2RegexPrefs {
-  return { page: 'waystone', waystone: emptyWaystoneQuery(), tablet: emptyTabletQuery(), vendor: emptyPoe2VendorQuery() }
+  return {
+    page: 'waystone',
+    waystone: emptyWaystoneQuery(),
+    tablet: emptyTabletQuery(),
+    vendor: emptyPoe2VendorQuery()
+  }
 }
 
 export function emptyPoe2State(): Poe2RegexState {
@@ -113,8 +121,20 @@ export function sanitizeProfile(raw: unknown, fallbackId: () => string): Poe2Pro
   const name = typeof raw.name === 'string' ? raw.name.trim().slice(0, PROFILE_NAME_MAX) : ''
   if (!name) return null
   const id = typeof raw.id === 'string' && raw.id && raw.id.length <= 64 ? raw.id : fallbackId()
-  if (raw.kind === 'waystone') return { id, name, kind: 'waystone', waystone: normalizeWaystoneQuery(raw.waystone) }
-  if (raw.kind === 'tablet') return { id, name, kind: 'tablet', tablet: normalizeTabletQuery(raw.tablet) }
+  if (raw.kind === 'waystone')
+    return {
+      id,
+      name,
+      kind: 'waystone',
+      waystone: normalizeWaystoneQuery(raw.waystone)
+    }
+  if (raw.kind === 'tablet')
+    return {
+      id,
+      name,
+      kind: 'tablet',
+      tablet: normalizeTabletQuery(raw.tablet)
+    }
   return null
 }
 
@@ -143,7 +163,11 @@ export function upsertProfile(state: Poe2RegexState, input: Poe2ProfileInput, ne
   const existing = input.id ? state.profiles.find((p) => p.id === input.id) : undefined
   const profile = sanitizeProfile({ ...input, id: existing?.id ?? newId() }, newId)
   if (!profile) return state
-  if (existing) return { ...state, profiles: state.profiles.map((p) => (p.id === profile.id ? profile : p)) }
+  if (existing)
+    return {
+      ...state,
+      profiles: state.profiles.map((p) => (p.id === profile.id ? profile : p))
+    }
   if (state.profiles.length >= PROFILES_MAX) return state
   return { ...state, profiles: [...state.profiles, profile] }
 }
@@ -224,7 +248,7 @@ function rarityFilter(rarity: string[]): Record<string, unknown> | null {
 export function profileTradeQuery(data: Poe2RegexData, p: Poe2Profile): ProfileTradeQuery {
   const skipped: string[] = []
   const section = p.kind === 'tablet' ? data.tablet : data.waystone
-  const q = p.kind === 'tablet' ? p.tablet ?? emptyTabletQuery() : p.waystone ?? emptyWaystoneQuery()
+  const q = p.kind === 'tablet' ? (p.tablet ?? emptyTabletQuery()) : (p.waystone ?? emptyWaystoneQuery())
   const byId = new Map(section.mods.map((m) => [m.id, m]))
   const stats: StatGroup[] = []
   const tradeIds = (list: string[]): string[] => {
@@ -242,24 +266,39 @@ export function profileTradeQuery(data: Poe2RegexData, p: Poe2Profile): ProfileT
   if (want.length) {
     stats.push(
       q.wantMode === 'any'
-        ? { type: 'count', value: { min: 1 }, filters: want.map((id) => ({ id })) }
+        ? {
+            type: 'count',
+            value: { min: 1 },
+            filters: want.map((id) => ({ id }))
+          }
         : { type: 'and', filters: want.map((id) => ({ id })) }
     )
   }
   if (avoid.length) stats.push({ type: 'not', filters: avoid.map((id) => ({ id })) })
 
-  const typeFilters: Record<string, unknown> = { category: { option: p.kind === 'tablet' ? 'map.tablet' : 'map.waystone' } }
+  const typeFilters: Record<string, unknown> = {
+    category: { option: p.kind === 'tablet' ? 'map.tablet' : 'map.waystone' }
+  }
   const rarity = rarityFilter(q.rarity)
   if (rarity) Object.assign(typeFilters, rarity)
   else if (q.rarity.length > 0 && q.rarity.length < POE2_RARITIES.length) skipped.push('rarity')
-  const filters: Poe2TradeBody['query']['filters'] = { type_filters: { filters: typeFilters } }
-  const body: Poe2TradeBody = { query: { status: { option: 'available' }, stats, filters }, sort: { price: 'asc' } }
+  const filters: Poe2TradeBody['query']['filters'] = {
+    type_filters: { filters: typeFilters }
+  }
+  const body: Poe2TradeBody = {
+    query: { status: { option: 'available' }, stats, filters },
+    sort: { price: 'asc' }
+  }
 
   if (p.kind === 'tablet') {
     const t = p.tablet ?? emptyTabletQuery()
     if (t.types.length === 1) body.query.type = data.tablet.tradeType[t.types[0]]
     else if (t.types.length > 1) skipped.push('types')
-    if (t.usesMin > 0) stats.push({ type: 'and', filters: [{ id: USES_STAT, value: { min: t.usesMin } }] })
+    if (t.usesMin > 0)
+      stats.push({
+        type: 'and',
+        filters: [{ id: USES_STAT, value: { min: t.usesMin } }]
+      })
   } else {
     const w = p.waystone ?? emptyWaystoneQuery()
     const map: Record<string, unknown> = {}
@@ -279,7 +318,10 @@ export function profileTradeQuery(data: Poe2RegexData, p: Poe2Profile): ProfileT
     if (Object.keys(map).length) filters.map_filters = { filters: map }
     const misc: Record<string, unknown> = {}
     if (w.corrupted !== 'any') misc.corrupted = { option: w.corrupted === 'only' ? 'true' : 'false' }
-    if (w.unidentified !== 'any') misc.identified = { option: w.unidentified === 'only' ? 'false' : 'true' }
+    if (w.unidentified !== 'any')
+      misc.identified = {
+        option: w.unidentified === 'only' ? 'false' : 'true'
+      }
     if (Object.keys(misc).length) filters.misc_filters = { filters: misc }
   }
   return { body, skipped }
@@ -291,6 +333,9 @@ export function isPoe2TradeBody(v: unknown): v is Poe2TradeBody {
   const q = v.query
   if (!isObj(q.status) || q.status.option !== 'available') return false
   if (!Array.isArray(q.stats) || !isObj(q.filters)) return false
-  const cat = isObj(q.filters.type_filters) && isObj(q.filters.type_filters.filters) ? q.filters.type_filters.filters.category : null
+  const cat =
+    isObj(q.filters.type_filters) && isObj(q.filters.type_filters.filters)
+      ? q.filters.type_filters.filters.category
+      : null
   return isObj(cat) && (cat.option === 'map.waystone' || cat.option === 'map.tablet')
 }

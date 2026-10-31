@@ -72,15 +72,28 @@ export function Poe2RegexTab() {
 
   const autoLang = resolveGameLang({ choice: 'auto', detected: gameLang.detected }, uiLang).lang
   const langOptions: { value: GameLangSettings['choice']; label: string }[] = [
-    { value: 'auto', label: t('regex.gameLang.auto', { lang: t(`regex.lang.${autoLang}`) }) },
-    ...(['ru', 'en'] as RegexLang[]).map((l) => ({ value: l, label: t(`regex.lang.${l}`) }))
+    {
+      value: 'auto',
+      label: t('regex.gameLang.auto', { lang: t(`regex.lang.${autoLang}`) })
+    },
+    ...(['ru', 'en'] as RegexLang[]).map((l) => ({
+      value: l,
+      label: t(`regex.lang.${l}`)
+    }))
   ]
 
   return (
     <div className="rx">
       <div className="ui-tabs rx-tabs" role="tablist">
         {PAGES.map((p) => (
-          <button key={p.id} type="button" className="ui-tab" role="tab" aria-selected={page === p.id} onClick={() => setPrefs({ page: p.id })}>
+          <button
+            key={p.id}
+            type="button"
+            className="ui-tab"
+            role="tab"
+            aria-selected={page === p.id}
+            onClick={() => setPrefs({ page: p.id })}
+          >
             <Ico name={p.icon} />
             {t(`regex.poe2.page.${p.id}`)}
             {p.id === 'library' && libCount > 0 && <span className="ui-count">{libCount}</span>}
@@ -89,7 +102,11 @@ export function Poe2RegexTab() {
         <span className="rx-grow" />
         <label className="rx-lang" title={t('regex.gameLang.title')}>
           <span>{t('regex.gameLang')}</span>
-          <select className="ui-select" value={gameLang.choice} onChange={(e) => void setGameLangChoice(e.target.value as GameLangSettings['choice'])}>
+          <select
+            className="ui-select"
+            value={gameLang.choice}
+            onChange={(e) => void setGameLangChoice(e.target.value as GameLangSettings['choice'])}
+          >
             {langOptions.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
@@ -97,7 +114,11 @@ export function Poe2RegexTab() {
             ))}
           </select>
         </label>
-        <Switch on={!simple} title={t('regex.expert.title')} onChange={(expert) => void patchSettings({ ui: { simpleMode: !expert } })}>
+        <Switch
+          on={!simple}
+          title={t('regex.expert.title')}
+          onChange={(expert) => void patchSettings({ ui: { simpleMode: !expert } })}
+        >
           {t('regex.expert')}
         </Switch>
       </div>

@@ -25,9 +25,14 @@ export function TabletPage({ data, other }: { data: Poe2RegexData; other: Poe2Re
   const optionName = (s: OverflowItem): string =>
     s.kind === 'mod' ? nameOf(s.id) : s.kind === 'option' ? t(`regex.poe2.opt.${s.key}`) : ''
   const overflowText = result.overflow
-    ? t('regex.overflow', { n: result.overflow.by, list: result.overflow.suggest.map(optionName).join('; ') })
+    ? t('regex.overflow', {
+        n: result.overflow.by,
+        list: result.overflow.suggest.map(optionName).join('; ')
+      })
     : undefined
-  const sideText = result.sideMatches.length ? t('regex.side', { list: result.sideMatches.map(nameOf).join('; ') }) : undefined
+  const sideText = result.sideMatches.length
+    ? t('regex.side', { list: result.sideMatches.map(nameOf).join('; ') })
+    : undefined
 
   return (
     <div className="rx-two">
@@ -41,7 +46,11 @@ export function TabletPage({ data, other }: { data: Poe2RegexData; other: Poe2Re
                 className="ui-chip"
                 aria-pressed={q.types.includes(type)}
                 title={tb.types[type]}
-                onClick={() => setQuery({ types: q.types.includes(type) ? q.types.filter((x) => x !== type) : [...q.types, type] })}
+                onClick={() =>
+                  setQuery({
+                    types: q.types.includes(type) ? q.types.filter((x) => x !== type) : [...q.types, type]
+                  })
+                }
               >
                 {tb.names[type]}
               </button>
@@ -58,14 +67,24 @@ export function TabletPage({ data, other }: { data: Poe2RegexData; other: Poe2Re
         />
         {!simple && (
           <div className="ui-field__help">
-            {t('regex.poe2.dataInfo', { patch: data.meta.patch, date: data.meta.date, n: tb.mods.length })}
+            {t('regex.poe2.dataInfo', {
+              patch: data.meta.patch,
+              date: data.meta.date,
+              n: tb.mods.length
+            })}
           </div>
         )}
       </div>
 
       <div className="rx-stack rx-sticky">
         <Box title={t('regex.poe2.tablet.item')}>
-          <NumberRow id="rx-p2-uses" label={t('regex.poe2.tablet.uses')} value={q.usesMin} max={TABLET_USES_MAX} onChange={(n) => setQuery({ usesMin: n })} />
+          <NumberRow
+            id="rx-p2-uses"
+            label={t('regex.poe2.tablet.uses')}
+            value={q.usesMin}
+            max={TABLET_USES_MAX}
+            onChange={(n) => setQuery({ usesMin: n })}
+          />
           <RarityChips value={q.rarity} onChange={(rarity) => setQuery({ rarity })} />
           <div className="rx-row">
             <span>{t('regex.maps.wantMode')}</span>
@@ -74,8 +93,16 @@ export function TabletPage({ data, other }: { data: Poe2RegexData; other: Poe2Re
               label={t('regex.maps.wantMode')}
               onChange={(v) => setQuery({ wantMode: v })}
               options={[
-                { value: 'all', label: t('regex.maps.wantAll'), title: t('regex.maps.wantAllTip') },
-                { value: 'any', label: t('regex.maps.wantAny'), title: t('regex.maps.wantAnyTip') }
+                {
+                  value: 'all',
+                  label: t('regex.maps.wantAll'),
+                  title: t('regex.maps.wantAllTip')
+                },
+                {
+                  value: 'any',
+                  label: t('regex.maps.wantAny'),
+                  title: t('regex.maps.wantAnyTip')
+                }
               ]}
             />
           </div>
@@ -83,16 +110,27 @@ export function TabletPage({ data, other }: { data: Poe2RegexData; other: Poe2Re
         <ResultBox
           result={result}
           defaultName={t('regex.poe2.tablet.genName', {
-            summary: [...q.types.map((x) => tb.names[x]), q.usesMin ? `≥ ${q.usesMin}` : '', q.want.length ? `✓${q.want.length}` : '', q.avoid.length ? `✕${q.avoid.length}` : '']
-              .filter(Boolean)
-              .join(', ') || '—'
+            summary:
+              [
+                ...q.types.map((x) => tb.names[x]),
+                q.usesMin ? `≥ ${q.usesMin}` : '',
+                q.want.length ? `✓${q.want.length}` : '',
+                q.avoid.length ? `✕${q.avoid.length}` : ''
+              ]
+                .filter(Boolean)
+                .join(', ') || '—'
           })}
           onReset={() => setPrefs({ tablet: emptyTabletQuery() })}
           overflowText={overflowText}
           sideText={sideText}
           hint={t('regex.poe2.howto')}
         />
-        <ProfilesBox kind="tablet" data={data} current={q} onApply={(p) => p.tablet && setPrefs({ tablet: p.tablet })} />
+        <ProfilesBox
+          kind="tablet"
+          data={data}
+          current={q}
+          onApply={(p) => p.tablet && setPrefs({ tablet: p.tablet })}
+        />
       </div>
     </div>
   )

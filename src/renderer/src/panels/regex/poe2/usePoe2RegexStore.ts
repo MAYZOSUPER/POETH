@@ -89,13 +89,23 @@ export const usePoe2RegexStore = create<Poe2RegexStore>((set, get) => ({
 
   price: async (profileId, body) => {
     if (get().prices[profileId]?.pending) return
-    set((s) => ({ prices: { ...s.prices, [profileId]: { ...s.prices[profileId], pending: true } } }))
+    set((s) => ({
+      prices: {
+        ...s.prices,
+        [profileId]: { ...s.prices[profileId], pending: true }
+      }
+    }))
     let result: Poe2PriceResult
     try {
       result = await api().poe2Price(body)
     } catch {
       result = { ok: false, error: { code: 'network' } }
     }
-    set((s) => ({ prices: { ...s.prices, [profileId]: { pending: false, result, at: Date.now() } } }))
+    set((s) => ({
+      prices: {
+        ...s.prices,
+        [profileId]: { pending: false, result, at: Date.now() }
+      }
+    }))
   }
 }))

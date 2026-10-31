@@ -73,7 +73,11 @@ export function modTerms(
     }
   }
   for (const i of [...avoidIdx, ...wantIdx]) {
-    items.push({ kind: 'mod', id: data.mods[i].id, saves: data.mods[i].token.length + 1 })
+    items.push({
+      kind: 'mod',
+      id: data.mods[i].id,
+      saves: data.mods[i].token.length + 1
+    })
   }
   return {
     terms,
@@ -110,9 +114,10 @@ export function numberRange(a: number, b: number): string {
     parts.push((tens > 0 ? String(tens) : '') + digits(from, to))
   }
   // одинаковые хвосты десятков: 10–39 → [1-3]\d
-  const merged = parts.length > 2 && lo % 10 === 0 && hi % 10 === 9 && lo >= 10
-    ? [`${digits(Math.floor(lo / 10), Math.floor(hi / 10))}\\d`]
-    : parts
+  const merged =
+    parts.length > 2 && lo % 10 === 0 && hi % 10 === 9 && lo >= 10
+      ? [`${digits(Math.floor(lo / 10), Math.floor(hi / 10))}\\d`]
+      : parts
   return merged.length === 1 ? merged[0] : `(${merged.join('|')})`
 }
 

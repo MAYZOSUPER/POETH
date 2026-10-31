@@ -76,7 +76,9 @@ describe.each(LANGS)('данные PoE 2 %s', (lang: RegexLang) => {
             expect(match(modLines(o, 25).join('\n')), `${m.id} (${m.token}) задел ${o.id}`).toBe(false)
           }
           const extraHits = data[section].extra.filter((l) => match(fillLine(l)))
-          expect(extraHits.length, `${m.id} (${m.token}): ${extraHits.slice(0, 3).join(' | ')}`).toBeLessThanOrEqual(m.alsoExtra ?? 0)
+          expect(extraHits.length, `${m.id} (${m.token}): ${extraHits.slice(0, 3).join(' | ')}`).toBeLessThanOrEqual(
+            m.alsoExtra ?? 0
+          )
         }
       })
     })
@@ -106,20 +108,37 @@ describe.each(LANGS)('данные PoE 2 %s', (lang: RegexLang) => {
 
   it.each(modes(lang))('тир по названию базы — %o', (mode) => {
     const base = lang === 'ru' ? (t: number) => `Путевой камень (Ур. ${t})` : (t: number) => `Waystone (Tier ${t})`
-    for (const [a, b] of [[15, 16], [13, 16], [1, 5], [5, 12], [10, 10], [1, 9], [9, 16]]) {
+    for (const [a, b] of [
+      [15, 16],
+      [13, 16],
+      [1, 5],
+      [5, 12],
+      [10, 10],
+      [1, 9],
+      [9, 16]
+    ]) {
       const t = tierTerm(data.waystone, a, b)!
       const match = compileSearch(term(t), mode)
       for (let tier = 1; tier <= 16; tier++) expect(match(base(tier)), `${t} на ${tier}`).toBe(tier >= a && tier <= b)
       // строки «(Tier: 1)» заголовков модов и «Unidentified (Tier 3)» не задевает
       const baseLine = base(1).toLowerCase().replace('1', '#')
-      for (const l of data.waystone.extra.filter((x) => x !== baseLine)) expect(match(fillLine(l, 3, false)), `${t}: ${l}`).toBe(false)
+      for (const l of data.waystone.extra.filter((x) => x !== baseLine))
+        expect(match(fillLine(l, 3, false)), `${t}: ${l}`).toBe(false)
     }
     expect(tierTerm(data.waystone, 0, 0)).toBeNull()
     expect(tierTerm(data.waystone, 1, 16)).toBeNull()
   })
 
   it.each(modes(lang))('редкость, осквернён, неопознан — %o', (mode) => {
-    const name = lang === 'ru' ? { normal: 'Обычный', magic: 'Волшебный', rare: 'Редкий', unique: 'Уникальный' } : { normal: 'Normal', magic: 'Magic', rare: 'Rare', unique: 'Unique' }
+    const name =
+      lang === 'ru'
+        ? {
+            normal: 'Обычный',
+            magic: 'Волшебный',
+            rare: 'Редкий',
+            unique: 'Уникальный'
+          }
+        : { normal: 'Normal', magic: 'Magic', rare: 'Rare', unique: 'Unique' }
     const label = lang === 'ru' ? 'Редкость: ' : 'Rarity: '
     for (const r of POE2_RARITIES) {
       for (const sec of [data.waystone, data.tablet]) {
@@ -145,7 +164,8 @@ describe.each(LANGS)('данные PoE 2 %s', (lang: RegexLang) => {
       const own = extra.filter((l) => match(l))
       expect(own.length, t).toBeGreaterThan(0)
       // свой тип находится; моды плиток и путевых камней не задевает
-      for (const m of [...data.tablet.mods, ...data.waystone.mods]) expect(match(modLines(m).join('\n')), `${t}: ${m.id}`).toBe(false)
+      for (const m of [...data.tablet.mods, ...data.waystone.mods])
+        expect(match(modLines(m).join('\n')), `${t}: ${m.id}`).toBe(false)
     }
     const usesLine = lang === 'ru' ? (v: number) => `Осталось зарядов - ${v}` : (v: number) => `${v} uses remaining`
     for (const n of [1, 2, 5, 9, 10, 12, 20]) {

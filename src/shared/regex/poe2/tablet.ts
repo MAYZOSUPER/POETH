@@ -20,7 +20,14 @@ export const TABLET_TYPES: readonly TabletType[] = [
 export const TABLET_USES_MAX = 30
 
 export function emptyTabletQuery(): TabletQuery {
-  return { types: [], usesMin: 0, rarity: [], want: [], avoid: [], wantMode: 'all' }
+  return {
+    types: [],
+    usesMin: 0,
+    rarity: [],
+    want: [],
+    avoid: [],
+    wantMode: 'all'
+  }
 }
 
 /** «≥ N использований»: «10 uses remaining» / «Осталось зарядов - 10» (число без диапазона). */
@@ -55,11 +62,20 @@ export function buildTabletRegex(data: Poe2TabletData, q: TabletQuery): RegexBui
   const rarity = rarityTerm(data.rarity, q.rarity)
   if (rarity) {
     terms.push(rarity)
-    items.push({ kind: 'option', key: 'rarity', saves: rarity.body.length + 3 })
+    items.push({
+      kind: 'option',
+      key: 'rarity',
+      saves: rarity.body.length + 3
+    })
   }
 
   const text = joinTerms(terms)
-  const result: RegexBuildResult = { text, length: text.length, ok: text.length <= REGEX_LIMIT, sideMatches: m.side }
+  const result: RegexBuildResult = {
+    text,
+    length: text.length,
+    ok: text.length <= REGEX_LIMIT,
+    sideMatches: m.side
+  }
   if (!result.ok) {
     const by = text.length - REGEX_LIMIT
     result.overflow = { by, suggest: suggestRemovals(items, by) }

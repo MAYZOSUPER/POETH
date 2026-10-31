@@ -18,7 +18,9 @@ const cache = new Map<RegexLang, Poe2RegexData>()
 export function loadPoe2Data(lang: RegexLang): Poe2RegexData {
   let d = cache.get(lang)
   if (!d) {
-    d = JSON.parse(readFileSync(resolve(__dirname, `../../../resources/data/poe2/regex/regex.${lang}.json`), 'utf8')) as Poe2RegexData
+    d = JSON.parse(
+      readFileSync(resolve(__dirname, `../../../resources/data/poe2/regex/regex.${lang}.json`), 'utf8')
+    ) as Poe2RegexData
     cache.set(lang, d)
   }
   return d
@@ -59,8 +61,20 @@ export function isSuperset(s: Poe2ModData, m: Poe2ModData): boolean {
 }
 
 const WAYSTONE_HEAD: Record<RegexLang, (tier: number, rarity: string) => string[]> = {
-  en: (tier, rarity) => ['Item Class: Waystones', `Rarity: ${rarity}`, 'Grim Route', `Waystone (Tier ${tier})`, '--------'],
-  ru: (tier, rarity) => ['Класс предмета: Путевые камни', `Редкость: ${rarity}`, 'Grim Route', `Путевой камень (Ур. ${tier})`, '--------']
+  en: (tier, rarity) => [
+    'Item Class: Waystones',
+    `Rarity: ${rarity}`,
+    'Grim Route',
+    `Waystone (Tier ${tier})`,
+    '--------'
+  ],
+  ru: (tier, rarity) => [
+    'Класс предмета: Путевые камни',
+    `Редкость: ${rarity}`,
+    'Grim Route',
+    `Путевой камень (Ур. ${tier})`,
+    '--------'
+  ]
 }
 
 export const WAYSTONE_PROPS: Record<RegexLang, Record<string, string>> = {
@@ -86,7 +100,12 @@ export const WAYSTONE_PROPS: Record<RegexLang, Record<string, string>> = {
 
 const RARITY_NAME: Record<RegexLang, Record<string, string>> = {
   en: { normal: 'Normal', magic: 'Magic', rare: 'Rare', unique: 'Unique' },
-  ru: { normal: 'Обычный', magic: 'Волшебный', rare: 'Редкий', unique: 'Уникальный' }
+  ru: {
+    normal: 'Обычный',
+    magic: 'Волшебный',
+    rare: 'Редкий',
+    unique: 'Уникальный'
+  }
 }
 
 export interface WaystoneSpec {
@@ -106,7 +125,14 @@ export function waystoneTooltip(lang: RegexLang, s: WaystoneSpec): string {
   lines.push('--------', `${lang === 'ru' ? 'Уровень предмета' : 'Item Level'}: 80`, '--------')
   if (s.unidentified) lines.push(lang === 'ru' ? 'Неопознано' : 'Unidentified')
   for (const m of s.mods ?? []) {
-    const kind = lang === 'ru' ? (m.kind === 'suffix' ? 'Суффикс' : 'Префикс') : m.kind === 'suffix' ? 'Suffix Modifier' : 'Prefix Modifier'
+    const kind =
+      lang === 'ru'
+        ? m.kind === 'suffix'
+          ? 'Суффикс'
+          : 'Префикс'
+        : m.kind === 'suffix'
+          ? 'Suffix Modifier'
+          : 'Prefix Modifier'
     lines.push(lang === 'ru' ? `{ ${kind} "Painful" (Уровень: 1) }` : `{ ${kind} "Painful" (Tier: 1) }`)
     lines.push(...modLines(m, s.value ?? 25))
   }
@@ -124,7 +150,9 @@ export interface TabletSpec {
 
 /** Строка имплисита плитки из данных («adds ritual altars to a map» / «добавляет … на карту»). */
 export function implicitLine(lang: RegexLang, data: Poe2RegexData): string {
-  const hit = data.tablet.extra.find((l) => (lang === 'ru' ? /^добавляет .* на карту$/.test(l) : /^adds .* to a map$/.test(l)))
+  const hit = data.tablet.extra.find((l) =>
+    lang === 'ru' ? /^добавляет .* на карту$/.test(l) : /^adds .* to a map$/.test(l)
+  )
   if (!hit) throw new Error('нет строки имплисита плитки')
   return hit
 }
@@ -145,7 +173,9 @@ export function tabletTooltip(lang: RegexLang, data: Poe2RegexData, s: TabletSpe
     '--------'
   ]
   for (const m of s.mods ?? []) {
-    lines.push(lang === 'ru' ? '{ Префикс "Collector\'s" (Уровень: 1) }' : '{ Prefix Modifier "Collector\'s" (Tier: 1) }')
+    lines.push(
+      lang === 'ru' ? '{ Префикс "Collector\'s" (Уровень: 1) }' : '{ Prefix Modifier "Collector\'s" (Tier: 1) }'
+    )
     lines.push(...modLines(m, 25))
   }
   lines.push('--------', 'Can be used in a personal Map Device to add modifiers to a Map.')

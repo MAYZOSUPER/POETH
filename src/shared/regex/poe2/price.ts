@@ -12,7 +12,13 @@ export const PRICE_FETCH = 10
 export interface Poe2PriceRequest {
   kind: 'search' | 'fetch'
   priority: 'interactive'
-  req: { method: 'GET' | 'POST'; endpoint: 'search' | 'fetch'; rest: string; body?: unknown; game: 'poe2' }
+  req: {
+    method: 'GET' | 'POST'
+    endpoint: 'search' | 'fetch'
+    rest: string
+    body?: unknown
+    game: 'poe2'
+  }
 }
 
 export type Poe2PriceTransport = <T>(
@@ -39,11 +45,20 @@ export async function profilePrice(
   if (!isPoe2TradeBody(body)) return { ok: false, error: { code: 'bad-request', message: 'body' } }
   if (!league || league.length > 100) return { ok: false, error: { code: 'bad-request', message: 'league' } }
   // статус — только «выкуп + онлайн» (available), что бы ни пришло от renderer
-  const safe = { ...body, query: { ...body.query, status: { option: 'available' as const } } }
+  const safe = {
+    ...body,
+    query: { ...body.query, status: { option: 'available' as const } }
+  }
   const search = await request<SearchResponse>({
     kind: 'search',
     priority: 'interactive',
-    req: { method: 'POST', endpoint: 'search', rest: encodeURIComponent(league), body: safe, game: 'poe2' }
+    req: {
+      method: 'POST',
+      endpoint: 'search',
+      rest: encodeURIComponent(league),
+      body: safe,
+      game: 'poe2'
+    }
   })
   if (!search.ok) return search
   const { id, result, total } = search.data
@@ -54,14 +69,29 @@ export async function profilePrice(
     const fetched = await request<{ result: Array<FetchItem | null> }>({
       kind: 'fetch',
       priority: 'interactive',
-      req: { method: 'GET', endpoint: 'fetch', rest: `${ids.join(',')}?query=${encodeURIComponent(id)}`, game: 'poe2' }
+      req: {
+        method: 'GET',
+        endpoint: 'fetch',
+        rest: `${ids.join(',')}?query=${encodeURIComponent(id)}`,
+        game: 'poe2'
+      }
     })
     if (!fetched.ok) return fetched
     for (const r of fetched.data.result ?? []) {
       const p = r?.listing?.price
       if (!p || typeof p.amount !== 'number' || typeof p.currency !== 'string') continue
-      listings.push({ amount: p.amount, currency: p.currency, instant: typeof r?.listing?.fee === 'number' })
+      listings.push({
+        amount: p.amount,
+        currency: p.currency,
+        instant: typeof r?.listing?.fee === 'number'
+      })
     }
   }
-  return { ok: true, total: Number(total) || 0, listings, siteUrl: siteUrl(id), league }
+  return {
+    ok: true,
+    total: Number(total) || 0,
+    listings,
+    siteUrl: siteUrl(id),
+    league
+  }
 }
