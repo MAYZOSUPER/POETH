@@ -6,15 +6,22 @@
 // «надмножеств» — модов, где есть все строки выбранного) и строки подсказки карты, и жадно
 // покрываем набор: выгода = число новых покрытых модов / длина подстроки.
 
-import type { MapModData, MapRegexData } from '../types/regex'
+import type { MapModData } from '../types/regex'
 import { escapeRegex, foldYo } from './format'
 
 const SUB_MIN = 2
 const SUB_MAX = 14
 const FORBIDDEN = /["!#\n]/
 
+/** Что нужно покрытию от мода и данных: карты PoE 1 и путевые камни / плитки PoE 2 (S62). */
+export type CoverMod = Pick<MapModData, 'id' | 'text' | 'token' | 'alsoMatches'>
+export interface CoverData {
+  mods: CoverMod[]
+  extra: string[]
+}
+
 export interface ModIndex {
-  mods: MapModData[]
+  mods: CoverMod[]
   lines: string[][]
   byId: Map<string, number>
   /** подстрока → индексы модов, где она есть дословно */
@@ -48,10 +55,10 @@ export function* tokenSubstrings(line: string, lo = SUB_MIN, hi = SUB_MAX): Gene
   }
 }
 
-const cache = new WeakMap<MapRegexData, ModIndex>()
+const cache = new WeakMap<CoverData, ModIndex>()
 
 /** Индекс подстрок по данным карт (строится один раз на объект данных). */
-export function getModIndex(data: MapRegexData): ModIndex {
+export function getModIndex(data: CoverData): ModIndex {
   const hit = cache.get(data)
   if (hit) return hit
   const mods = data.mods
