@@ -419,7 +419,8 @@ async function gameLang(): Promise<GameLang> {
 
 export async function setupTreeOverlay(game: GameDef): Promise<void> {
   def = game
-  enabled = buildOn(game, buildDevFlag(process.env))
+  // S66: дерево поверх игры — только PoE 1 (в PoE 2 у «Билда» свой экран, данные дерева другого формата)
+  enabled = game.id === 'poe1' && buildOn(game, buildDevFlag(process.env))
   offTaken?.()
   offTaken = null
   taken = null

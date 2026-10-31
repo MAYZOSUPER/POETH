@@ -34,7 +34,7 @@ export interface GameLangSettings {
 }
 
 /** top-level tab of the companion window */
-export type AppTab = 'campaign' | 'priceCheck' | 'live' | 'regex' | 'deals' | 'wealth' | 'flip' | 'advisor' | 'build' | 'guide'
+export type AppTab = 'campaign' | 'priceCheck' | 'live' | 'regex' | 'deals' | 'wealth' | 'flip' | 'advisor' | 'build' | 'guide' | 'rumours'
 
 /**
  * Область хоткея: 'game' — работает только пока окно игры в фокусе (гейтинг — S1),
@@ -70,6 +70,10 @@ export type HotkeyAction =
   | 'bookRead'
   // «Билд» (S38): дерево этапа поверх игрового дерева пассивок — показать / спрятать
   | 'buildTree'
+  // «Цены поверх окон» (S68): снимок окна игры по нажатию → подписи цен у ячеек особой вкладки тайника / спрятать
+  | 'screenPrices'
+  // «Слухи журнала» PoE 2 (S65): над журналом — разобрать слухи (одно Ctrl+C), иначе показать / спрятать короткий вид
+  | 'rumours'
   // always
   | 'toggleCompanion'
   | 'toggleLock'

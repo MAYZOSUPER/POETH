@@ -118,6 +118,30 @@ describe('migrateSettings v1 → v2', () => {
   })
 })
 
+describe('новое действие хоткея при обновлении (S68)', () => {
+  const saved = (hotkeys: Record<string, unknown>, chatCommands?: unknown) =>
+    migrateSettings({ schemaVersion: 2, hotkeys, ...(chatCommands ? { chatCommands } : {}) })
+
+  it('сочетание свободно — назначается по умолчанию', () => {
+    expect(saved({ priceCheck: { accel: 'Control+D', scope: 'game' } }).hotkeys.screenPrices).toEqual({ accel: 'Alt+F', scope: 'game' })
+  })
+
+  it('занято другим действием игрока — без клавиши', () => {
+    expect(saved({ priceCheck: { accel: 'Alt+F', scope: 'game' } }).hotkeys.screenPrices.accel).toBe('')
+  })
+
+  it('занято командой чата — без клавиши; выключенная команда не мешает', () => {
+    const cmd = (enabled: boolean) => [{ id: 'custom-1', text: '/hideout', hotkey: 'Alt+F', send: true, enabled }]
+    expect(saved({ priceCheck: { accel: 'Control+D', scope: 'game' } }, cmd(true)).hotkeys.screenPrices.accel).toBe('')
+    expect(saved({ priceCheck: { accel: 'Control+D', scope: 'game' } }, cmd(false)).hotkeys.screenPrices.accel).toBe('Alt+F')
+  })
+
+  it('сохранённое значение (в т. ч. пустое) не трогается', () => {
+    expect(saved({ screenPrices: { accel: '', scope: 'game' }, priceCheck: { accel: 'Control+D', scope: 'game' } }).hotkeys.screenPrices.accel).toBe('')
+    expect(saved({ screenPrices: { accel: 'Alt+F', scope: 'game' }, priceCheck: { accel: 'Alt+F', scope: 'game' } }).hotkeys.screenPrices.accel).toBe('Alt+F')
+  })
+})
+
 describe('normalize (v2)', () => {
   it('неверные значения заменяются дефолтами, диапазоны зажимаются', () => {
     const s = migrateSettings({

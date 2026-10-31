@@ -33,13 +33,16 @@ import {
 import { HitBatcher, ToastThrottle } from './live/batch'
 import { toLiveHit } from './live/hits'
 import { parseLiveInput } from './live/tradeUrl'
-import { cleanTitle, DEFAULT_OPTIONS, loadLiveFile, newSearchId, saveLiveFile, type StoredSearch } from './live/store'
+import { clampPoe2Max, cleanTitle, DEFAULT_OPTIONS, loadLiveFile, newSearchId, POE2_MAX_DEFAULT, saveLiveFile, type StoredSearch } from './live/store'
+import { poe2LotQuery } from './live/poe2Lot'
 import { favLiveState, type FavLiveStateS6 } from './live/favState'
 import { notificationIcon } from '../../appIcon'
 import { windowsToastsAllowed } from '../../services/notify'
 import { createWindowTransport, createWsTransport, preferredTransport, type LiveConnection, type LiveTransport } from './wsTransport'
 
-// Менеджер live search PoE1 (S6). Только main: соединения, cookies, fetch.
+// Менеджер live search (S6 — PoE1, S63 — PoE2). Только main: соединения, cookies, fetch.
+//  - работают поиски запущенной игры (StoredSearch.game); адреса — games.ts (PoE2: /api/trade2/live/poe2/…,
+//    fetch /api/trade2/fetch), хост PoE2 — www (как у шлюза S3), предел PoE2 — options.poe2Max;
 //  - подключения разных поисков не чаще раза в 2.5 с (общая очередь); после 429 на рукопожатии
 //    очередь держится до конца паузы — сайт ограничивает подключения, а не поиск;
 //  - {"new":[ids]} → батч 300 мс + дедуп → fetch через шлюз S3 (live-fetch, background, резерв 25 %);
@@ -111,8 +114,11 @@ export class LiveManager {
   private lastConnectAt = 0
   private holdUntil = 0
   private loggedIn = false
+  /** запущенная игра: работают и видны только её поиски */
+  private game: GameId = 'poe1'
   private host: SiteHost = 'www.pathofexile.com'
-  private max = 10
+  /** settings.live.maxSearches — предел PoE1 */
+  private poe1Max = 10
   private lang: UiLang = 'ru'
   private soundOn = true
   private volume = 0.6
@@ -127,7 +133,18 @@ export class LiveManager {
   }
 
   private makeTransport(kind: 'ws' | 'window'): LiveTransport {
-    return kind === 'window' ? createWindowTransport(() => this.host) : createWsTransport()
+    // транспорт B открывает страницу трейда своей игры (/trade или /trade2) на той же сессии
+    return kind === 'window' ? createWindowTransport(() => `https://${this.host}/${GAMES[this.game].tradeSeg}`) : createWsTransport()
+  }
+
+  /** Поиски запущенной игры (остальные лежат в live.json и не подключаются). */
+  private mine(): Entry[] {
+    return [...this.entries.values()].filter((e) => e.def.game === this.game)
+  }
+
+  /** Предел одновременных поисков запущенной игры. */
+  private get max(): number {
+    return this.game === 'poe2' ? (this.options.poe2Max ?? POE2_MAX_DEFAULT) : this.poe1Max
   }
 
   // ---------------------------------------------------------------- жизненный цикл
@@ -144,27 +161,35 @@ export class LiveManager {
 
   private async refreshSettings(): Promise<void> {
     const s = await getSettings()
-    this.host = s.siteHost
-    this.max = s.live.maxSearches
+    // PoE2: www, как у шлюза S3 (gateway.ts hostFor) — trade2 на ru-хосте ждёт русские имена в запросах
+    this.host = this.game === 'poe2' ? 'www.pathofexile.com' : s.siteHost
+    this.poe1Max = s.live.maxSearches
     this.lang = s.uiLang
     this.soundOn = s.sound.enabled
     this.volume = s.sound.volume
   }
 
-  /** Режим PoE1: поднять включённые поиски. */
-  async start(): Promise<void> {
+  /** Игра с live search: поднять её включённые поиски. Другая игра — сначала закрыть соединения прежней. */
+  async start(game: GameId = 'poe1'): Promise<void> {
     await this.load()
+    if (this.running && this.game !== game) this.stop()
+    if (this.game !== game) {
+      // находки и «whisper последней» — только своей игры
+      this.recent = []
+      this.lastWhisper = null
+    }
+    this.game = game
     await this.refreshSettings()
     if (this.running) return
     this.running = true
     this.loggedIn = getAuthStatus().loggedIn
     this.offAuth = onAuthStatus((s) => this.onAuth(s))
-    if (this.options.enabled) for (const e of this.entries.values()) if (e.def.enabled) this.apply(e, { type: 'enable', loggedIn: this.loggedIn })
+    if (this.options.enabled) for (const e of this.mine()) if (e.def.enabled) this.apply(e, { type: 'enable', loggedIn: this.loggedIn })
     this.pump()
     this.scheduleEmit()
   }
 
-  /** Режим PoE2 или выход: закрыть все соединения (флаги поисков сохраняются). */
+  /** Игра без live search или выход: закрыть все соединения (флаги поисков сохраняются). */
   stop(): void {
     if (!this.running) return
     this.running = false
@@ -181,7 +206,7 @@ export class LiveManager {
     if (s.checking && !s.loggedIn) return
     if (s.loggedIn === this.loggedIn) return
     this.loggedIn = s.loggedIn
-    for (const e of this.entries.values()) this.apply(e, { type: s.loggedIn ? 'login' : 'logout' })
+    for (const e of this.mine()) this.apply(e, { type: s.loggedIn ? 'login' : 'logout' })
     this.pump()
     this.scheduleEmit()
   }
@@ -220,18 +245,19 @@ export class LiveManager {
     this.timer = null
     if (!this.running) return
     const now = Date.now()
-    for (const e of this.entries.values()) {
+    const mine = this.mine()
+    for (const e of mine) {
       const at = wakeAt(e.conn)
       if (at !== null && at <= now) this.apply(e, { type: 'tick', now })
     }
     const slot = Math.max(this.lastConnectAt + CONNECT_SPACING_MS, this.holdUntil)
-    const queued = [...this.entries.values()].filter((e) => wantsConnect(e.conn))
+    const queued = mine.filter((e) => wantsConnect(e.conn))
     if (queued.length && now >= slot) {
       this.connect(queued[0])
       queued.shift()
     }
     let next = Infinity
-    for (const e of this.entries.values()) {
+    for (const e of mine) {
       const at = wakeAt(e.conn)
       if (at !== null) next = Math.min(next, at)
     }
@@ -244,7 +270,7 @@ export class LiveManager {
     this.apply(e, { type: 'start' })
     const token = ++e.token
     const id = e.def.id
-    const url = liveUrl(GAMES.poe1, this.host, e.def.league, e.def.slug)
+    const url = liveUrl(GAMES[e.def.game], this.host, e.def.league, e.def.slug)
     netLog('debug', 'live: connect', e.def.league, e.def.slug, `(${this.transport.name})`)
     e.socket = this.transport.connect(url, {
       onOpen: () => this.dispatch(id, token, { type: 'open', now: Date.now() }),
@@ -294,7 +320,7 @@ export class LiveManager {
         method: 'GET',
         endpoint: 'fetch',
         rest: `${ids.join(',')}?query=${encodeURIComponent(e.def.slug)}`,
-        game: 'poe1',
+        game: e.def.game,
         host: this.host
       }
     })
@@ -307,9 +333,9 @@ export class LiveManager {
       return
     }
     const now = Date.now()
-    const url = siteUrl(GAMES.poe1, this.host, e.def.league, e.def.slug)
+    const url = siteUrl(GAMES[e.def.game], this.host, e.def.league, e.def.slug)
     for (const raw of res.data.result ?? []) {
-      const hit = toLiveHit(raw, { searchId, searchTitle: e.def.title, league: e.def.league, siteUrl: url, now })
+      const hit = toLiveHit(raw, { searchId, searchTitle: e.def.title, league: e.def.league, siteUrl: url, now, game: e.def.game })
       if (hit) this.onHit(e, hit)
     }
   }
@@ -344,8 +370,9 @@ export class LiveManager {
 
   async snapshot(): Promise<LiveSnapshot> {
     await this.load()
-    const searches: LiveSearchView[] = [...this.entries.values()].map((e) => this.view(e))
+    const searches: LiveSearchView[] = this.mine().map((e) => this.view(e))
     return {
+      game: this.game,
       options: { ...this.options },
       searches,
       active: this.activeCount(),
@@ -367,7 +394,7 @@ export class LiveManager {
       notify: e.def.notify,
       state: c.kind,
       hits: e.hits,
-      siteUrl: siteUrl(GAMES.poe1, this.host, e.def.league, e.def.slug),
+      siteUrl: siteUrl(GAMES[e.def.game], this.host, e.def.league, e.def.slug),
       source: e.def.source
     }
     if (c.kind === 'backoff') {
@@ -394,21 +421,23 @@ export class LiveManager {
 
   /** Сколько поисков занимают место в лимите: включённые и не «битые» (404). */
   private activeCount(): number {
-    return [...this.entries.values()].filter((e) => e.def.enabled && (e.conn.kind === 'idle' || isActive(e.conn))).length
+    return this.mine().filter((e) => e.def.enabled && (e.conn.kind === 'idle' || isActive(e.conn))).length
   }
 
   /** Добавить поиск по ссылке/коду. Включается, если есть место в лимите. */
   async add(input: unknown, title?: unknown): Promise<LiveAddResult> {
     await this.load()
     await this.refreshSettings()
-    const parsed = parseLiveInput(typeof input === 'string' ? input : '')
+    // ссылка — на поиск запущенной игры (PoE2: /trade2/search/poe2/…); лига без ссылки — текущая лига этой игры
+    const parsed = parseLiveInput(typeof input === 'string' ? input : '', this.game)
     if (!parsed.ok) return parsed
     const league = parsed.league ?? (await getEffectiveLeague())
-    if ([...this.entries.values()].some((e) => e.def.slug === parsed.slug && e.def.league === league)) {
+    if (this.mine().some((e) => e.def.slug === parsed.slug && e.def.league === league)) {
       return { ok: false, error: 'duplicate' }
     }
     const def: StoredSearch = {
       id: newSearchId(),
+      game: this.game,
       title: cleanTitle(title, parsed.slug),
       league,
       slug: parsed.slug,
@@ -427,10 +456,16 @@ export class LiveManager {
     return { ok: true, search: this.view(entry) }
   }
 
+  /** Поиск запущенной игры по id (поиски другой игры вкладка Live не видит). */
+  private own(id: unknown): Entry | undefined {
+    const e = typeof id === 'string' ? this.entries.get(id) : undefined
+    return e && e.def.game === this.game ? e : undefined
+  }
+
   /** Убрать поиск из вкладки Live (поиски избранного убирает только трейд-окно). */
   async remove(id: unknown): Promise<void> {
     await this.load()
-    const e = typeof id === 'string' ? this.entries.get(id) : undefined
+    const e = this.own(id)
     if (!e || e.def.source === 'favorite') return
     this.drop(e)
   }
@@ -447,7 +482,7 @@ export class LiveManager {
   async setEnabled(id: unknown, on: unknown): Promise<LiveToggleResult> {
     await this.load()
     await this.refreshSettings()
-    const e = typeof id === 'string' ? this.entries.get(id) : undefined
+    const e = this.own(id)
     if (!e || e.def.source === 'favorite') return 'not-found'
     const want = on === true
     if (want && !e.def.enabled && this.activeCount() >= this.max) return 'limit'
@@ -462,7 +497,7 @@ export class LiveManager {
 
   async update(id: unknown, patch: { title?: unknown; sound?: unknown }): Promise<void> {
     await this.load()
-    const e = typeof id === 'string' ? this.entries.get(id) : undefined
+    const e = this.own(id)
     if (!e) return
     if (patch.title !== undefined) e.def.title = cleanTitle(patch.title, e.def.title)
     if (typeof patch.sound === 'boolean') e.def.sound = patch.sound
@@ -475,9 +510,11 @@ export class LiveManager {
     const p = (patch ?? {}) as Partial<LiveOptions>
     const wasEnabled = this.options.enabled
     for (const k of ['enabled', 'sound', 'notifyWindows'] as const) if (typeof p[k] === 'boolean') this.options[k] = p[k]
+    // предел PoE2 действует на новые включения; уже включённые поиски не выключаем
+    if (p.poe2Max !== undefined) this.options.poe2Max = clampPoe2Max(p.poe2Max)
     this.save()
     if (this.running && wasEnabled !== this.options.enabled) {
-      for (const e of this.entries.values()) {
+      for (const e of this.mine()) {
         if (this.options.enabled && e.def.enabled) this.apply(e, { type: 'enable', loggedIn: this.loggedIn })
         if (!this.options.enabled) this.apply(e, { type: 'disable' })
       }
@@ -514,10 +551,19 @@ export class LiveManager {
   /**
    * «Открыть лот» в трейд-окне S5: сайт сам покажет этот лот продавца (запрос ?q= по аккаунту,
    * имени, базе и ilvl). Без базы предмета — страница поиска в том же трейд-окне.
+   * PoE2 (лот выкупа и любой другой): запрос trade2 по продавцу, базе, редкости и ilvl (live/poe2Lot.ts);
+   * «Buy» на странице сайта жмёт игрок — сами не покупаем.
    */
   openHit(key: unknown): boolean {
     const hit = this.findHit(key)
     if (!hit) return false
+    if (hit.game === 'poe2') {
+      const query = poe2LotQuery(hit)
+      if (!query && !(hit.siteUrl && isAllowedExternalUrl(hit.siteUrl))) return false
+      const target = query ? { query, league: hit.league, game: 'poe2' as const } : { url: hit.siteUrl, game: 'poe2' as const }
+      void openTradeWindow(target).catch((err) => netLog('warn', 'live: openHit', err))
+      return true
+    }
     // разметка сайта вида <<set:MS>> в имени и базе запросу сайта не нужна
     const plain = (s: string | undefined): string => (s ?? '').replace(/<<[^>]*>>/g, '').trim()
     const typeLine = plain(hit.baseType) || plain(hit.typeLine)
@@ -546,7 +592,8 @@ export class LiveManager {
       if (existing) this.drop(existing)
       return { ok: true }
     }
-    if (t.type !== 'search' || t.game !== 'poe1' || !this.running) return { ok: false, reason: 'unsupported' }
+    // поиск избранного другой игры (или обмен) live не подключает; адаптер есть только у игры с live
+    if (t.type !== 'search' || t.game !== this.game || !this.running) return { ok: false, reason: 'unsupported' }
     if (!SLUG.test(t.slug) || !t.league || t.league.includes('/')) return { ok: false, reason: 'error' }
     if (existing) {
       const moved = existing.def.slug !== t.slug || existing.def.league !== t.league
@@ -567,6 +614,7 @@ export class LiveManager {
     if (this.activeCount() >= this.max) return { ok: false, reason: 'limit' }
     const def: StoredSearch = {
       id: newSearchId(),
+      game: this.game,
       title: cleanTitle(t.title, t.slug),
       league: t.league,
       slug: t.slug,
@@ -598,7 +646,7 @@ export class LiveManager {
   /** Состояния молний по favId (нет записи = 'off'), занято и лимит — для сайдбара трейд-окна. */
   favoriteSnapshot(): FavoriteLiveSnapshot {
     const states: Record<string, FavLiveStateS6> = {}
-    for (const e of this.entries.values()) {
+    for (const e of this.mine()) {
       if (e.def.source !== 'favorite' || !e.def.favId) continue
       states[e.def.favId] = this.running ? favLiveState(e.conn.kind, this.options.enabled) : 'off'
     }

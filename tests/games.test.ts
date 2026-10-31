@@ -41,7 +41,8 @@ describe('GameDef', () => {
     expect(poe2.features.wealth).toBe(false)
     expect(poe2.features.flip).toBe(false)
     expect(poe2.features.advisor).toBe(false)
-    expect(poe2.features.build).toBe(false)
+    // S66: «Билд» PoE 2 — импорт PoB2, «Сохранить в игру», «Вложение»
+    expect(poe2.features.build).toBe(true)
   })
 
   it('isGameId', () => {

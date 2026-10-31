@@ -1,0 +1,74 @@
+/* Экран «Билд» PoE 2 (S66): черновик на ui-* до макета дизайнера («Сохранить билд в игру», «Вложение»).
+   Токены — tokens.css; опора и прокрутка — .bd-host / .bd-scroll из build.css (вкладка «Билд»). */
+
+.b2 { display: grid; gap: var(--sp-5); align-content: start; }
+.b2-box { display: grid; gap: var(--sp-4); padding: var(--sp-5) var(--sp-6); }
+.b2-h { display: flex; align-items: center; gap: var(--sp-3); margin: 0; font-size: var(--fs-lg); font-weight: 600; color: var(--fg); }
+.b2-h .ui-ico { color: var(--accent); }
+.b2-lead { margin: 0; font-size: var(--fs-sm); color: var(--fg-muted); line-height: 1.45; }
+.b2-muted { font-size: var(--fs-xs); color: var(--fg-faint); }
+.b2-banner, .b2-hint { margin: 0; }
+
+/* вставка */
+.b2-paste { display: flex; gap: var(--sp-3); }
+.b2-paste .ui-input { flex: 1; min-width: 0; }
+
+/* шапка билда */
+.b2-head { grid-template-columns: 1fr auto; align-items: center; }
+.b2-head__name { display: grid; gap: 2px; min-width: 0; }
+.b2-head__name b { font-size: var(--fs-md); overflow-wrap: anywhere; }
+.b2-head__acts { display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: flex-end; }
+
+/* недавние */
+.b2-recent { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-1); }
+.b2-recent li { display: flex; align-items: center; gap: var(--sp-2); }
+.b2-recent__open { flex: 1; justify-content: flex-start; min-width: 0; }
+
+/* этапы */
+.b2-stages { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+.b2-stage { display: grid; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--sunken); }
+.b2-stage__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); }
+.b2-stage__gems { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.b2-gem { gap: var(--sp-2); }
+.b2-gem .ui-ico { color: var(--gem); }
+.b2-gem.is-main { border-color: var(--accent); }
+.b2-stage__key span { color: var(--fg-muted); }
+
+/* сохранение */
+.b2-save { display: flex; flex-wrap: wrap; align-items: end; gap: var(--sp-4); }
+.b2-save .ui-field { margin: 0; }
+.b2-save__name { flex: 1 1 240px; min-width: 0; }
+.b2-save__btn { white-space: nowrap; }
+.b2-how { display: grid; gap: var(--sp-2); padding-top: var(--sp-4); border-top: 1px solid var(--border); }
+.b2-steps { margin: 0; padding-left: 1.4em; display: grid; gap: var(--sp-1); font-size: var(--fs-sm); color: var(--fg); }
+
+/* диалог «Записать в папку игры?» */
+.b2-dlg { max-width: min(560px, calc(100vw - 32px)); }
+.b2-dlg__body { display: grid; gap: var(--sp-4); }
+.b2-path { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: var(--sp-2) var(--sp-4); }
+.b2-code { overflow-wrap: anywhere; white-space: normal; font-size: var(--fs-sm); }
+.b2-dlg__local { display: flex; align-items: center; gap: var(--sp-2); margin: 0; }
+
+/* вложение */
+.b2-in-author { display: grid; gap: var(--sp-2); }
+.b2-in-list { display: grid; gap: var(--sp-3); }
+.b2-in-row { display: grid; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-sm); }
+.b2-in-row__name { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-1) var(--sp-3); }
+.b2-in-row__name .ui-btn { margin-left: auto; }
+.b2-recipe { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); font-size: var(--fs-sm); }
+.b2-em { display: inline-flex; align-items: center; gap: var(--sp-2); white-space: nowrap; }
+.b2-em__n { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: var(--fs-2xs); font-weight: 700; }
+.b2-cost { white-space: nowrap; }
+.b2-stats { display: grid; gap: 1px; font-size: var(--fs-xs); color: var(--fg-muted); }
+.b2-slots { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+.b2-slot { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 28px; padding: 3px var(--sp-4); border: 1px dashed var(--border-strong); border-radius: var(--r-sm); font-size: var(--fs-xs); color: var(--fg-faint); }
+.b2-slot.is-full { border-style: solid; border-color: var(--accent); background: var(--accent-soft); color: var(--fg); font: inherit; font-size: var(--fs-sm); cursor: pointer; }
+.b2-slot.is-full .ui-ico { width: 11px; height: 11px; color: var(--fg-faint); }
+.b2-pal { gap: var(--sp-2); }
+.b2-foot { margin: 0; }
+
+@media (max-width: 600px) {
+  .b2-head { grid-template-columns: 1fr; }
+  .b2-head__acts { justify-content: flex-start; }
+  .b2-paste { flex-direction: column; }
+}

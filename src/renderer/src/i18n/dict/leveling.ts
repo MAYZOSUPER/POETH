@@ -134,7 +134,14 @@ export const leveling: DomainDict = {
     'lev.cls.Ranger': 'Охотница',
     'lev.cls.Duelist': 'Дуэлянт',
     'lev.cls.Shadow': 'Бандит',
-    'lev.cls.Templar': 'Жрец'
+    'lev.cls.Templar': 'Жрец',
+    // S64: подсказка опыта в компасе PoE 2 (panels/ZoneXpHint.tsx); причины «ниже / выше» — общие lev.xp.*
+    'lev.p2xp.gives': 'Эта зона даёт ~{n} % опыта',
+    'lev.p2xp.low.map': 'берите путевые камни выше',
+    'lev.p2xp.head': 'Зона {z} · вы {p}',
+    'lev.p2xp.unconfirmed': 'полоса без штрафа в PoE 2 не подтверждена',
+    'lev.p2xp.hint':
+      'Опыт режется, если зона ниже или выше вас больше чем на несколько уровней (для PoE 2 считаем как в PoE 1: 3 + 1 за каждые 16 ваших уровней). Чем дальше, тем меньше опыта.'
   },
   en: {
     'lev.loading': 'Loading the route…',
@@ -265,6 +272,13 @@ export const leveling: DomainDict = {
     'lev.cls.Ranger': 'Ranger',
     'lev.cls.Duelist': 'Duelist',
     'lev.cls.Shadow': 'Shadow',
-    'lev.cls.Templar': 'Templar'
+    'lev.cls.Templar': 'Templar',
+    // S64: XP hint in the PoE 2 compass
+    'lev.p2xp.gives': 'This zone gives ~{n}% XP',
+    'lev.p2xp.low.map': 'run higher waystones',
+    'lev.p2xp.head': 'Zone {z} · you {p}',
+    'lev.p2xp.unconfirmed': 'the PoE 2 no-penalty band is not confirmed',
+    'lev.p2xp.hint':
+      'XP is cut when the zone is below or above you by more than a few levels (for PoE 2 we assume the PoE 1 rule: 3 + 1 per 16 of your levels). The bigger the gap, the less XP.'
   }
 }

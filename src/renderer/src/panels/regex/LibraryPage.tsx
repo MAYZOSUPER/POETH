@@ -14,7 +14,16 @@ const SLOTS: PasteSlot[] = [1, 2, 3, 4, 5]
 
 type Editing = { id?: string; name: string; text: string }
 
-export function LibraryPage() {
+/** Готовая строка для новичков: PoE 1 — REGEX_PRESETS, PoE 2 (S62) — передаёт вкладка PoE 2. */
+export interface LibraryPreset {
+  id: string
+  starter?: boolean
+  name: string
+  desc: string
+  text: string
+}
+
+export function LibraryPage({ presets: given }: { presets?: LibraryPreset[] } = {}) {
   const t = useT()
   const simple = useSimple()
   const lang = useGameLang()
@@ -31,19 +40,24 @@ export function LibraryPage() {
   const [added, setAdded] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    void ensureMapData(lang)
-  }, [lang, ensureMapData])
+    if (!given) void ensureMapData(lang)
+  }, [lang, ensureMapData, given])
 
   const entries = (library?.entries ?? []).filter((e) => e.game === game)
   const bySlot = new Map(entries.filter((e) => e.slot).map((e) => [e.slot as PasteSlot, e]))
   const loose = entries.filter((e) => !e.slot)
   const data = mapData[lang] ?? null
-  const presets = useMemo(
+  const presets = useMemo<LibraryPreset[]>(
     () =>
-      REGEX_PRESETS.map((p) => ({ preset: p, text: presetText(p, lang, data) })).filter(
-        (x): x is { preset: (typeof REGEX_PRESETS)[number]; text: string } => !!x.text
-      ),
-    [lang, data]
+      given ??
+      REGEX_PRESETS.map((p) => ({
+        id: p.id,
+        starter: p.starter,
+        name: t(`regex.preset.${p.id}.name`),
+        desc: t(`regex.preset.${p.id}.desc`),
+        text: presetText(p, lang, data) ?? ''
+      })).filter((x) => !!x.text),
+    [given, lang, data, t]
   )
 
   const keysOf = (slot: PasteSlot): string[] | null => {
@@ -160,7 +174,7 @@ export function LibraryPage() {
           ) : (
             <div key={slot} className="rx-lib-row">
               <SlotKeys slot={slot} keys={keysOf(slot)} />
-              <span className="rx-lib-t is-empty">{t(loose.length ? 'regex.lib.freeSlotPick' : 'regex.lib.freeSlot')}</span>
+              <span className="rx-lib-t is-empty">{t(loose.length ? 'regex.lib.freeSlotPick' : given ? 'regex.poe2.lib.freeSlot' : 'regex.lib.freeSlot')}</span>
               <span />
             </div>
           )
@@ -182,24 +196,24 @@ export function LibraryPage() {
       <span className="ui-label">{t('regex.lib.presets')}</span>
       {simple && <div className="ui-field__help">{t('regex.lib.presetsHint', { lang: t(`regex.lang.${lang}`) })}</div>}
       <section className="rx-box">
-        {presets.map(({ preset, text }) => (
+        {presets.map((preset) => (
           <div className="rx-lib-row rx-lib-row--preset" key={preset.id}>
             <span className="rx-lib-t">
               <b>
-                {t(`regex.preset.${preset.id}.name`)}
+                {preset.name}
                 {preset.starter && simple && <span className="ui-tag ui-tag--good">{t('regex.lib.starter')}</span>}
               </b>
-              <span className="rx-lib-desc">{t(`regex.preset.${preset.id}.desc`)}</span>
-              <code title={text}>{text}</code>
+              <span className="rx-lib-desc">{preset.desc}</span>
+              <code title={preset.text}>{preset.text}</code>
             </span>
             <span className="rx-btns">
-              <CopyButton text={text} small />
+              <CopyButton text={preset.text} small />
               <button
                 type="button"
                 className="ui-btn ui-btn--sm ui-btn--ghost"
                 disabled={added.has(preset.id)}
                 onClick={() => {
-                  void saveEntry({ name: t(`regex.preset.${preset.id}.name`), text, game, presetId: preset.id })
+                  void saveEntry({ name: preset.name, text: preset.text, game, presetId: preset.id })
                   setAdded(new Set(added).add(preset.id))
                 }}
               >

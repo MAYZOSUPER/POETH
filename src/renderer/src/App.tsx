@@ -24,6 +24,7 @@ import { FlipTab } from './panels/FlipTab'
 import { AdvisorTab } from './panels/AdvisorTab'
 import { BuildTab } from './panels/build/BuildTab'
 import { GuideTab } from './panels/guide/GuideTab'
+import { RumoursTab } from './panels/rumours/RumoursTab'
 import { ViewToggle } from './components/ViewToggle'
 import { Wizard } from './panels/onboarding/Wizard'
 import { AboutPanel } from './panels/onboarding/AboutPanel'
@@ -96,6 +97,8 @@ function TabBody() {
       return <BuildTab />
     case 'guide':
       return <GuideTab />
+    case 'rumours':
+      return <RumoursTab />
     default:
       return null
   }

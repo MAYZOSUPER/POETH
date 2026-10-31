@@ -3,6 +3,7 @@ import type { AppTab } from '@shared/types'
 import { advisorOn } from '@shared/advisor/flag'
 import { buildOn } from '@shared/build/flag'
 import { guideOn } from '@shared/guide/library'
+import { rumoursOn } from '@shared/rumours/view'
 import { normalizeRailPref, type RailPref } from '@shared/rail'
 
 // Вкладки компаньона, их разделы на рельсе слева (S20, макет навигации — вариант Б)
@@ -14,7 +15,7 @@ export interface TabDef {
   icon: TabIcon
 }
 
-type TabIcon = 'ask' | 'bolt' | 'trade' | 'swap' | 'map' | 'coins' | 'search' | 'compass' | 'passive' | 'book'
+type TabIcon = 'ask' | 'bolt' | 'trade' | 'swap' | 'map' | 'coins' | 'search' | 'compass' | 'passive' | 'book' | 'expedition'
 
 export type SectionId = 'trade' | 'farm' | 'level' | 'help'
 
@@ -34,13 +35,14 @@ const TABS: Record<AppTab, TabDef> = {
   regex: { id: 'regex', key: 'app.regex', icon: 'search' },
   campaign: { id: 'campaign', key: 'app.campaign', icon: 'compass' },
   build: { id: 'build', key: 'app.build', icon: 'passive' },
-  guide: { id: 'guide', key: 'app.guide', icon: 'book' }
+  guide: { id: 'guide', key: 'app.guide', icon: 'book' },
+  rumours: { id: 'rumours', key: 'app.rumours', icon: 'expedition' }
 }
 
 /** Разделы и порядок вкладок — одни в обеих играх, чтобы рука помнила; чего нет в игре, просто не показывается. */
 const SECTIONS: { id: SectionId; key: string; tabs: AppTab[] }[] = [
   { id: 'trade', key: 'nav.sec.trade', tabs: ['priceCheck', 'live', 'deals', 'flip'] },
-  { id: 'farm', key: 'nav.sec.farm', tabs: ['advisor', 'wealth', 'regex'] },
+  { id: 'farm', key: 'nav.sec.farm', tabs: ['advisor', 'wealth', 'regex', 'rumours'] },
   { id: 'level', key: 'nav.sec.level', tabs: ['campaign', 'build'] },
   // S55: «Справочник» — своим разделом внизу рельса: новичку проще найти, чем среди инструментов «Фарма»
   { id: 'help', key: 'nav.sec.help', tabs: ['guide'] }
@@ -61,6 +63,7 @@ function inGame(game: GameId, id: AppTab, dev: boolean): boolean {
   if (id === 'advisor') return advisorOn(GAMES[game], dev)
   if (id === 'build') return buildOn(GAMES[game], buildDev())
   if (id === 'guide') return guideOn(game)
+  if (id === 'rumours') return rumoursOn(game)
   return f[id]
 }
 

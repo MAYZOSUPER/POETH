@@ -22,9 +22,9 @@ const BOTH: GameId[] = ['poe1', 'poe2']
 /** Подпись действия и в каких играх оно показывается в настройках (on — функция включена: скрытые флагом — нет). */
 const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameId[]; on?: (game: GameId) => boolean }> = {
   priceCheck: { labelKey: 'set.hk.priceCheck', games: BOTH },
-  copyItemEn: { labelKey: 'set.hk.copyItemEn', games: ['poe1'] },
+  copyItemEn: { labelKey: 'set.hk.copyItemEn', games: BOTH },
   overlayToggle: { labelKey: 'set.hk.overlayToggle', games: ['poe1'] },
-  whisperLastHit: { labelKey: 'set.hk.whisperLastHit', games: ['poe1'] },
+  whisperLastHit: { labelKey: 'set.hk.whisperLastHit', games: BOTH, on: (g) => GAMES[g].features.live },
   pasteSearch1: { labelKey: 'set.hk.pasteSearch', n: 1, games: ['poe1'] },
   pasteSearch2: { labelKey: 'set.hk.pasteSearch', n: 2, games: ['poe1'] },
   pasteSearch3: { labelKey: 'set.hk.pasteSearch', n: 3, games: ['poe1'] },
@@ -32,12 +32,14 @@ const HK_META: Record<HotkeyAction, { labelKey: string; n?: number; games: GameI
   pasteSearch5: { labelKey: 'set.hk.pasteSearch', n: 5, games: ['poe1'] },
   toggleCompanion: { labelKey: 'set.hk.toggle', games: BOTH },
   toggleLock: { labelKey: 'set.hk.lock', games: BOTH },
-  dealInvite: { labelKey: 'set.hk.dealInvite', games: ['poe1'] },
-  dealTrade: { labelKey: 'set.hk.dealTrade', games: ['poe1'] },
-  dealDismiss: { labelKey: 'set.hk.dealDismiss', games: ['poe1'] },
+  dealInvite: { labelKey: 'set.hk.dealInvite', games: BOTH, on: (g) => GAMES[g].features.deals },
+  dealTrade: { labelKey: 'set.hk.dealTrade', games: BOTH, on: (g) => GAMES[g].features.deals },
+  dealDismiss: { labelKey: 'set.hk.dealDismiss', games: BOTH, on: (g) => GAMES[g].features.deals },
   levelingToggle: { labelKey: 'set.hk.levelingToggle', games: ['poe1'] },
   bookRead: { labelKey: 'set.hk.bookRead', games: ['poe1'] },
   buildTree: { labelKey: 'set.hk.buildTree', games: ['poe1'], on: (g) => buildOn(GAMES[g], window.overlayApi.buildTree.devFlag) },
+  screenPrices: { labelKey: 'set.hk.screenPrices', games: BOTH },
+  rumours: { labelKey: 'set.hk.rumours', games: ['poe2'] },
   toggleTradeWindow: { labelKey: 'set.hk.tradeWindow', games: ['poe1'] },
   toggleSites: { labelKey: 'set.hk.sites', games: ['poe1'] },
   prevStep: { labelKey: 'set.hk.prev', games: ['poe2'] },
@@ -331,8 +333,8 @@ export function SettingsPanel() {
       </div>
 
       {game === 'poe1' && <ChatCommandsPanel />}
-      {/* S53: фильтр лута NeverSink (раздел рисует себя только в PoE 1) */}
-      {game === 'poe1' && <LootFilterSection />}
+      {/* S53/S64: фильтр лута NeverSink (раздел рисует себя, когда main включил его для игры: PoE 1 и PoE 2) */}
+      <LootFilterSection />
 
       {hasCampaign && (
         <>

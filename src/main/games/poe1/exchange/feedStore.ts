@@ -3,6 +3,8 @@
 //
 //  - час — https://web.poecdn.com/api/currency-exchange/<hourId>, без авторизации; прошлые часы неизменны —
 //    на диске навсегда (до KEEP_HOURS), текущий час недоступен (404) и не ошибка;
+//  - S61: PoE 2 — тот же формат по адресу …/currency-exchange/poe2/<hourId> (`deps.url`); сразу — меньше часов
+//    (`deps.firstHours`: час PoE 2 ~2 МБ, окно цены не должно ждать сутки), остальное — тем же фоном;
 //  - при старте: недостающие свежие 24 ч сразу, остальное до `want` часов — в фоне, по запросу раз в 2 с;
 //  - дальше раз в час, в начале часа + jitter (CDN публикует час с задержкой);
 //  - в памяти — только рынки нужных лиг (весь час — на диске).
@@ -11,6 +13,8 @@ import { leagueHour, parseFeedHour, type FullHour } from '@shared/flip/feed'
 import { hourStart } from '@shared/wealth/exchange'
 
 export const FEED_URL = 'https://web.poecdn.com/api/currency-exchange'
+/** S61: фид обмена PoE 2 (realm poe2) — тот же формат часа */
+export const FEED_URL_POE2 = `${FEED_URL}/poe2`
 /** сколько часов держать (неделя для коридора курса) */
 export const KEEP_HOURS = 168
 /** свежие часы — сразу при старте */
@@ -21,6 +25,10 @@ const HOURLY_JITTER_MS = 4 * 60_000
 const MIN_REFRESH_MS = 10 * 60_000
 
 export interface FeedDeps {
+  /** адрес фида без часа; по умолчанию FEED_URL (PoE 1) */
+  url?: string
+  /** сколько свежих часов скачивать сразу (остальные до `want` — в фоне); по умолчанию FIRST_HOURS */
+  firstHours?: number
   /** GET без cookies аккаунта; бросает при сетевой ошибке */
   getJson: (url: string) => Promise<{ status: number; json: unknown }>
   readHour: (hour: number) => Promise<FullHour | null>
@@ -49,9 +57,13 @@ export class FeedStore {
   private listeners = new Set<() => void>()
   private problem = false
   private readonly now: () => number
+  private readonly url: string
+  private readonly first: number
 
   constructor(private readonly deps: FeedDeps) {
     this.now = deps.now ?? Date.now
+    this.url = deps.url ?? FEED_URL
+    this.first = Math.min(KEEP_HOURS, Math.max(1, deps.firstHours ?? FIRST_HOURS))
   }
 
   onUpdate(cb: () => void): () => void {
@@ -128,7 +140,7 @@ export class FeedStore {
   /** Скачать час; true — есть (или уже был), false — ещё не опубликован. Бросает при сети. */
   private async fetchHour(hour: number): Promise<boolean> {
     if (this.mem.has(hour)) return true
-    const res = await this.deps.getJson(`${FEED_URL}/${hour}`)
+    const res = await this.deps.getJson(`${this.url}/${hour}`)
     if (res.status === 404) return false
     const full = res.status === 200 ? parseFeedHour(hour, res.json) : null
     if (!full) throw new Error(`HTTP ${res.status}`)
@@ -139,7 +151,7 @@ export class FeedStore {
   }
 
   /**
-   * Свежие часы лиги: недостающие из последних FIRST_HOURS — сразу, остальные до `want` — в фоне.
+   * Свежие часы лиги: недостающие из последних `firstHours` (FIRST_HOURS) — сразу, остальные до `want` — в фоне.
    * Не чаще раза в 10 минут (прошлые часы неизменны). false — ошибка сети (данные из кэша).
    */
   refresh(league: string, want = FIRST_HOURS): Promise<boolean> {
@@ -163,7 +175,7 @@ export class FeedStore {
     const current = hourStart(now)
     let ok = true
     let added = false
-    for (let i = 1; i <= Math.min(want, FIRST_HOURS); i++) {
+    for (let i = 1; i <= Math.min(want, this.first); i++) {
       const hour = current - i * 3600
       if (this.mem.has(hour)) continue
       try {
@@ -177,7 +189,7 @@ export class FeedStore {
     if (!ok) this.deps.log?.('[feed] фид обмена недоступен — данные из кэша')
     // остальное — в фоне
     this.missing.clear()
-    for (let i = FIRST_HOURS + 1; i <= want; i++) {
+    for (let i = this.first + 1; i <= want; i++) {
       const hour = current - i * 3600
       if (!this.mem.has(hour)) this.missing.add(hour)
     }

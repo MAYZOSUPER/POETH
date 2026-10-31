@@ -132,6 +132,34 @@ whose full history is kept in this repository.
   file and pinned commit (`cca30662bf`). Its data (`renderer/public/data/{en,ru}/{stats,items}.ndjson`,
   `client_strings.js`) is synced by `tools/data/sync-ee2-data.mjs` into `resources/data/poe2/{en,ru}`
   (pin and SHA-256 of every file in `resources/data/poe2/data.meta.json`).
+- **[RePoE fork for PoE 2](https://repoe-fork.github.io/poe2/)** — open game data (**MIT**; the data itself is
+  © Grinding Gear Games): `base_items` give names for the ids of GGG's currency-exchange feed (S61), mods and stat
+  translations feed the regex generator `tools/regex/poe2` (S62), gems and instill recipes feed `tools/build-data/poe2`
+  (S66). Only tables are used.
+- **Passive skill tree (PoE 2)** — [grindinggear/poe2-skilltree-export](https://github.com/grindinggear/poe2-skilltree-export)
+  (GGG's official data export) → `resources/data/poe2/build/tree.json` (node ids and names for the in-game `.build` file).
+  The list of PoB2 paste sites follows Path of Building Community (PoE 2) (**MIT**), facts only.
+- **[NeverSink's Indepth Loot Filter for Path of Exile 2](https://github.com/NeverSinkDev/NeverSink-Filter-for-PoE2)** —
+  NeverSink, **MIT License**. Not bundled: in PoE 2 mode the “Loot filter” section downloads the official release from
+  GitHub on request and writes one unmodified `.filter` file as `POETH-NeverSink-<level>.filter` into
+  `Documents\My Games\Path of Exile 2`.
+- **[poe2pricer](https://github.com/saxe78/poe2pricer)** — saxe78, **MIT License** (Copyright (c) 2026 saxe78).
+  Its PoE 2 special stash tab layouts (`data/ui/stash-tabs.json`, slot centres measured from the game's
+  StashTabLayout tables, pinned commit `0987c2347b`) are converted by `tools/screen/import-poe2pricer-layouts.mjs`
+  into `resources/data/poe2/screen/stash-layouts.json`; two of its tab reference pictures are test fixtures in
+  `tests/fixtures/screen/poe2/` (not shipped). No poe2pricer code is used; the approach (a special tab's slot position
+  identifies the item, icons confirm it) follows its description. Test fixtures `tests/fixtures/screen/*/thumbs.bin` are
+  24×24 thumbnails of GGG item icons (© Grinding Gear Games), test data only, not shipped.
+- **Logbook rumours (PoE 2)** — rumour lines, islands and names are game data © Grinding Gear Games, extracted from the
+  game files by `tools/rumours/extract.mjs` with [pathofexile-dat](https://github.com/SnosMe/poe-dat-viewer) (SnosMe,
+  **MIT**; a build-time tool, not shipped). Rewards, tiers and notes are our own; community ratings are only linked.
+- **Prices (PoE 2)** — a snapshot of [poe.ninja](https://poe.ninja) PoE 2 economy data (names, prices in divine, listing
+  counts / traded volume) taken by the project's CI (`tools/data/ninja-snapshot-poe2.mjs`) and shipped in the data
+  package; POETH itself does not call poe.ninja. No icons, mod texts or flavour text are redistributed.
+- **Russian item class names (PoE 2)** — facts from the PoE 2 client tables
+  ([LocalIdentity/poe2-data](https://github.com/LocalIdentity/poe2-data), pinned commit `6a49dbd`, names only) are used in
+  the app to turn a Russian item into English text (`src/shared/build/poe2ItemClassEn.ts`, S61) and to build the
+  Russian test fixtures below.
 - **Test fixtures (PoE 2)** — English item texts from Exiled Exchange 2's tests
   (`renderer/specs/Parser/items.ts`, MIT) and, where noted in `tests/fixtures/poe2/README.md`,
   [Sidekick](https://github.com/Sidekick-Poe/Sidekick) tests (MIT). Russian fixtures are generated from

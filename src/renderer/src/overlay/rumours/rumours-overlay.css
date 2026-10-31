@@ -1,0 +1,74 @@
+/* «Слухи журнала» поверх игры (S65): короткий вид в стопке справа сверху. Только токены и ui-*. */
+
+.ov-rm {
+  display: grid;
+  gap: var(--sp-3);
+  width: min(380px, 92vw);
+  padding: var(--sp-5) var(--sp-6);
+  font: var(--fs-sm) / var(--lh) var(--font-ui);
+}
+.ov-rm__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--accent-hi);
+}
+.ov-rm__head .ui-ico,
+.ov-rm__head svg {
+  width: 16px;
+  height: 16px;
+}
+.ov-rm__muted {
+  color: var(--fg-muted);
+}
+.ov-rm__warn {
+  color: var(--warn);
+}
+.ov-rm__best {
+  display: grid;
+  gap: var(--sp-1);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--accent-soft);
+  color: var(--fg);
+}
+.ov-rm__best b {
+  color: var(--accent-hi);
+}
+.ov-rm__rows {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ov-rm__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-3);
+}
+.ov-rm__row.is-best .ov-rm__text {
+  color: var(--accent-hi);
+}
+.ov-rm__row.is-skip {
+  opacity: 0.55;
+}
+.ov-rm__text {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+}
+.ov-rm__price {
+  margin-left: auto;
+  color: var(--accent-hi);
+  font-variant-numeric: tabular-nums;
+}
+.ov-rm__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-4);
+  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+}

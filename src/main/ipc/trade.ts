@@ -22,6 +22,7 @@ import {
 } from '@shared/poe1/pricecheck/results'
 import { parseTradeDataStats, TradeStatsFallback, type TradeStatEntry } from '@shared/poe1/pricecheck/fallback'
 import { faustusPriceByName, feedIdsByName, lastFeedHour, type FaustusPrice } from '@shared/poe1/pricecheck/faustus'
+import { angePriceByName, poe2Rate, type AngePrice, type Poe2AngeResult, type Poe2CurrencyRate } from '@shared/poe2/pricecheck/ange'
 import type { ExchangeIdNames } from '@shared/wealth/sources'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
 import { getSettings } from '../services/settingsStore'
@@ -283,14 +284,19 @@ function currencyRate(league: unknown): Promise<CurrencyRate | null> {
 
 // ---------------------------------------------------------------- S24: цена у Фаустуса
 
-let feedNames: Promise<Map<string, string[]> | null> | null = null
+const feedNames: Partial<Record<GameId, Promise<Map<string, string[]> | null>>> = {}
+/** где лежит сопоставление id фида с именами: PoE 1 — wealth (S11a), PoE 2 — exchange (S61) */
+const FEED_NAMES_FILE: Record<GameId, string[]> = {
+  poe1: ['poe1', 'wealth', 'exchange-ids.json'],
+  poe2: ['poe2', 'exchange', 'exchange-ids.json']
+}
 
 /** id фида ↔ английское имя: обновлённые данные (userData/data) главнее встроенных; один раз за запуск. */
-function loadFeedNames(): Promise<Map<string, string[]> | null> {
-  feedNames ??= (async () => {
+function loadFeedNames(game: GameId = 'poe1'): Promise<Map<string, string[]> | null> {
+  feedNames[game] ??= (async () => {
     for (const base of [path.join(app.getPath('userData'), 'data'), path.join(resourcesDir(), 'data')]) {
       try {
-        const raw = JSON.parse(await fs.readFile(path.join(base, 'poe1', 'wealth', 'exchange-ids.json'), 'utf8')) as ExchangeIdNames
+        const raw = JSON.parse(await fs.readFile(path.join(base, ...FEED_NAMES_FILE[game]), 'utf8')) as ExchangeIdNames
         if (raw && raw.version === 1 && raw.names && typeof raw.names === 'object') return feedIdsByName(raw.names)
       } catch {
         // следующий кандидат
@@ -298,7 +304,7 @@ function loadFeedNames(): Promise<Map<string, string[]> | null> {
     }
     return null
   })()
-  return feedNames
+  return feedNames[game]!
 }
 
 /**
@@ -330,6 +336,72 @@ async function poe1Faustus(args: unknown): Promise<Poe1FaustusResult> {
   }
 }
 
+// ---------------------------------------------------------------- S61: PoE 2 — курс ex ↔ div и цена у Ange
+
+/**
+ * Сколько часов фида PoE 2 держать для окна цены: сразу — 3 свежих (feedService), остальные — фоном. Курс — VWAP за
+ * 6 ч, цена предмета — последний час со сделками; редкий предмет, которого за эти часы не меняли, идёт на сайт.
+ */
+const POE2_FEED_HOURS = 12
+const poe2Rates = new Map<string, { at: number; rate: Poe2CurrencyRate | null; pending?: Promise<Poe2CurrencyRate | null> }>()
+
+function validLeague(league: unknown): league is string {
+  return typeof league === 'string' && !!league && league.length <= 100
+}
+
+/** Часы фида PoE 2 лиги: по запросу (окно цены, вкладка), не чаще раза в 10 минут — FeedStore. */
+async function poe2Hours(league: string) {
+  const feed = getFeedStore('poe2')
+  await feed.refresh(league, POE2_FEED_HOURS)
+  return feed.hours(league, POE2_FEED_HOURS)
+}
+
+/** Курс exalted за divine (и chaos) лиги PoE 2; в памяти — 10 минут, без данных — повтор через минуту. */
+function poe2CurrencyRate(league: unknown): Promise<Poe2CurrencyRate | null> {
+  if (!validLeague(league)) return Promise.resolve(null)
+  const hit = poe2Rates.get(league)
+  if (hit?.pending) return hit.pending
+  if (hit && Date.now() - hit.at < RATE_TTL_MS) return Promise.resolve(hit.rate)
+  const pending = poe2Hours(league)
+    .then((hours) => {
+      const r = poe2Rate(hours, league)
+      return r ? { league, ...r } : null
+    })
+    .catch((e) => {
+      console.warn('[trade] курс PoE 2:', e instanceof Error ? e.message : e)
+      return null
+    })
+    .then((rate) => {
+      poe2Rates.set(league, { at: rate ? Date.now() : Date.now() - RATE_TTL_MS + 60_000, rate })
+      return rate
+    })
+  poe2Rates.set(league, { at: hit?.at ?? 0, rate: hit?.rate ?? null, pending })
+  return pending
+}
+
+/** Цена у Ange по почасовому фиду обмена GGG PoE 2 — тот же кэш часов, что у курса; сайт трейда не трогаем. */
+async function poe2Ange(args: unknown): Promise<Poe2AngeResult> {
+  if (typeof args !== 'object' || args === null) return { ok: false }
+  const { league, names } = args as Record<string, unknown>
+  if (!validLeague(league) || !Array.isArray(names)) return { ok: false }
+  const wanted = names.filter((n): n is string => typeof n === 'string' && n.length > 0 && n.length < 200).slice(0, 40)
+  try {
+    const [byName, rate] = await Promise.all([loadFeedNames('poe2'), poe2CurrencyRate(league)])
+    if (!byName || !rate) return { ok: false }
+    const hours = getFeedStore('poe2').hours(league, POE2_FEED_HOURS)
+    const prices: Record<string, AngePrice> = {}
+    for (const name of wanted) {
+      const p = angePriceByName(hours, league, byName, name, rate)
+      if (p) prices[name] = p
+    }
+    const { league: _league, ...plain } = rate
+    return { ok: true, rate: plain, prices }
+  } catch (e) {
+    console.warn('[trade] цена у Ange:', e instanceof Error ? e.message : e)
+    return { ok: false }
+  }
+}
+
 // ---------------------------------------------------------------- регистрация
 
 function register(): void {
@@ -343,6 +415,9 @@ function register(): void {
   // одно действие игрока — текст whisper в буфер; отправляет игрок сам
   ipcMain.handle(IPC.trade.currencyRate, (_e, league: unknown) => currencyRate(league))
   ipcMain.handle(IPC.trade.poe1Faustus, (_e, args: unknown) => poe1Faustus(args))
+  // S61: PoE2 — курс и цена у Ange по фиду обмена GGG (только по запросу окна или вкладки)
+  ipcMain.handle(IPC.trade.poe2Rate, (_e, league: unknown) => poe2CurrencyRate(league))
+  ipcMain.handle(IPC.trade.poe2Ange, (_e, args: unknown) => poe2Ange(args))
   ipcMain.handle(IPC.trade.copyText, (_e, text: unknown) => {
     if (typeof text !== 'string' || !text || text.length > 2000) return false
     clipboard.writeText(text)

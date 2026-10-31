@@ -1,9 +1,12 @@
 import { clipboard, dialog, ipcMain } from 'electron'
 import { promises as fs } from 'fs'
 import { IPC } from '@shared/ipc'
-import type { GameId } from '@shared/games'
+import { GAMES, siteUrl, type GameId } from '@shared/games'
 import type {
   PasteSlot,
+  Poe2PriceResult,
+  Poe2ProfileInput,
+  Poe2RegexPrefs,
   RegexEntryInput,
   RegexExportResult,
   RegexImportResult,
@@ -11,10 +14,13 @@ import type {
   RegexPrefs
 } from '@shared/types'
 import { exportPayload } from '@shared/regex/library'
+import { profilePrice, type Poe2PriceTransport } from '@shared/regex/poe2/price'
 import * as store from '../services/regexLibraryStore'
 import { readImportJson } from '../services/importFile'
 import { getCompanionWindow } from '../windows/companionWindow'
 import { uiDialogTitle } from '../services/dialogText'
+import { getEffectiveLeague, tradeRequest } from '../net'
+import { getRunningGame } from '../gameContext'
 import type { IpcDomain } from './types'
 
 // Домен «regex-строки» (main): данные карт и предметов для движка, библиотека строк, буфер обмена.
@@ -74,6 +80,36 @@ async function importLibrary(): Promise<RegexImportResult> {
   return { status: 'imported', added: res.added, library: res.library }
 }
 
+/** Профиль от renderer: имя, вид и запрос (нормализует @shared/regex/poe2/profiles). */
+function toProfileInput(raw: unknown): Poe2ProfileInput | null {
+  if (typeof raw !== 'object' || raw === null) return null
+  const r = raw as Record<string, unknown>
+  if (typeof r.name !== 'string' || (r.kind !== 'waystone' && r.kind !== 'tablet')) return null
+  const input: Poe2ProfileInput = { name: r.name, kind: r.kind }
+  if (typeof r.id === 'string') input.id = r.id
+  if (r.kind === 'waystone') input.waystone = r.waystone as Poe2ProfileInput['waystone']
+  else input.tablet = r.tablet as Poe2ProfileInput['tablet']
+  return input
+}
+
+/** Тело запроса trade2 разумного размера (как у окна цены: 64 КБ). */
+const MAX_PRICE_BODY = 64 * 1024
+
+/**
+ * «Цена по профилю» (S62): только в режиме PoE 2 и только по клику — ровно один поиск trade2 + одна страница лотов
+ * через шлюз S3 (лимиты, кэш 5 мин). Статус — available (выкуп + онлайн); хост — www (запросы на английских именах).
+ */
+async function poe2Price(body: unknown): Promise<Poe2PriceResult> {
+  if (getRunningGame() !== 'poe2') return { ok: false, error: { code: 'bad-request', message: 'game' } }
+  if (JSON.stringify(body ?? null).length > MAX_PRICE_BODY) return { ok: false, error: { code: 'bad-request', message: 'body' } }
+  const league = await getEffectiveLeague()
+  const request: Poe2PriceTransport = async (r) => {
+    const res = await tradeRequest(r)
+    return res.ok ? { ok: true, data: res.data as never } : { ok: false, error: res.error }
+  }
+  return profilePrice(body, league, request, (id) => siteUrl(GAMES.poe2, 'www.pathofexile.com', league, id))
+}
+
 function register(): void {
   ipcMain.handle(IPC.regex.mapData, (_e, lang: unknown) => (isLang(lang) ? store.loadMapData(lang) : null))
   ipcMain.handle(IPC.regex.itemData, (_e, lang: unknown) => (isLang(lang) ? store.loadItemData(lang) : null))
@@ -98,6 +134,22 @@ function register(): void {
   ipcMain.handle(IPC.regex.copy, (_e, text: unknown) => {
     if (typeof text === 'string') clipboard.writeText(text)
   })
+  // PoE 2 (S62)
+  ipcMain.handle(IPC.regex.poe2Data, (_e, lang: unknown) => (isLang(lang) ? store.loadPoe2Data(lang) : null))
+  ipcMain.handle(IPC.regex.poe2State, () => store.getPoe2State())
+  ipcMain.handle(IPC.regex.poe2SetPrefs, (_e, patch: unknown) =>
+    typeof patch === 'object' && patch !== null
+      ? store.setPoe2Prefs(patch as Partial<Poe2RegexPrefs>)
+      : store.getPoe2State()
+  )
+  ipcMain.handle(IPC.regex.poe2SaveProfile, (_e, raw: unknown) => {
+    const input = toProfileInput(raw)
+    return input ? store.savePoe2Profile(input) : store.getPoe2State()
+  })
+  ipcMain.handle(IPC.regex.poe2DeleteProfile, (_e, id: unknown) =>
+    typeof id === 'string' ? store.deletePoe2Profile(id) : store.getPoe2State()
+  )
+  ipcMain.handle(IPC.regex.poe2Price, (_e, body: unknown) => poe2Price(body))
 }
 
 export const regexDomain: IpcDomain = { register }

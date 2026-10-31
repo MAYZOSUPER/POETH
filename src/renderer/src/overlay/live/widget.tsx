@@ -8,7 +8,7 @@ import { ago, countdown, priceAmount, rarityColor } from '../../panels/live/form
 import { useHitName } from '../../panels/live/names'
 import { CoinIcon, Currency, CurrencyTipBody, TipAnchor } from '../../components/Currency'
 import { useOverlayStore } from '../../store/useOverlayStore'
-import { itemFacts, type ItemFact } from './itemFacts'
+import { itemFacts, poe2HitFacts, type ItemFact } from './itemFacts'
 import { playLiveChime } from './chime'
 import { TOAST_LIFE_MS, VISIBLE_TOASTS, useLiveToasts, type LiveToast } from './useLiveToasts'
 import './live.css'
@@ -16,7 +16,8 @@ import './live.css'
 // Тосты live search (S6) — слой toasts оверлея, стопка справа сверху (макет «Тосты live
 // search»): свежий сверху, видно 3, остальное — «Ещё N». Жизнь тоста 12 с, при наведении
 // таймер стоит. «Написать» вставляет whisper в чат и НЕ отправляет — Enter жмёт игрок.
-// Лот торговца — «Открыть лот» в трейд-окне S5 (сайт сам покажет этот лот).
+// Лот торговца — «Открыть лот» в трейд-окне S5 (сайт сам покажет этот лот). PoE 2 (S63): лот выкупа —
+// «Открыть в трейд-окне», «Buy» на сайте жмёт игрок; факты — из полей лота (текста предмета trade2 не даёт).
 
 const MAX_MODS = 3
 
@@ -39,12 +40,17 @@ function Toast({ toast }: { toast: LiveToast }) {
   const now = useNow(true, 15_000)
 
   useEffect(() => {
+    // PoE 2: текста предмета нет — факты из полей лота
+    if (hit.game === 'poe2') {
+      setFacts(poe2HitFacts(hit))
+      return
+    }
     let alive = true
     void itemFacts(hit.text).then((f) => alive && setFacts(f))
     return () => {
       alive = false
     }
-  }, [hit.text])
+  }, [hit])
 
   // 12 с жизни; наведение — пауза
   useEffect(() => {
@@ -144,9 +150,15 @@ function Toast({ toast }: { toast: LiveToast }) {
               </div>
               <div className="ui-toast__actions">
                 {hit.merchant ? (
-                  <button type="button" className="ui-btn ui-btn--sm ui-btn--primary" title={t('live.act.open.title')} onClick={open}>
+                  // PoE 2: лот выкупа покупается на странице сайта — «Buy» жмёт игрок
+                  <button
+                    type="button"
+                    className="ui-btn ui-btn--sm ui-btn--primary"
+                    title={t(hit.game === 'poe2' ? 'live.act.openTrade.title' : 'live.act.open.title')}
+                    onClick={open}
+                  >
                     <Icon name="external" />
-                    {t('live.act.open')}
+                    {t(hit.game === 'poe2' ? 'live.act.openTrade' : 'live.act.open')}
                   </button>
                 ) : (
                   <>

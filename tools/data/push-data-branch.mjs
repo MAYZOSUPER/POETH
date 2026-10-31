@@ -10,6 +10,8 @@
 // выпуск — новый коммит поверх прежнего (история = откат: перевыпустить старый коммит). Ничего
 // кроме содержимого --dir в ветку не попадает. Работа идёт во временном git worktree — рабочая
 // копия кода не трогается. Автор коммита — из git config (в CI — github-actions[bot] через env).
+// S67: у каждой игры свой манифест (manifest.json — PoE 1, manifest-poe2.json — PoE 2, data-channel.mjs);
+// выпуск заменяет пакет игры из --dir, пакет другой игры в ветке остаётся как был.
 
 import { execFileSync } from 'node:child_process'
 import { promises as fs } from 'node:fs'
@@ -17,6 +19,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { entriesToReplace, manifestName, ownerOf } from './data-channel.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const argv = process.argv.slice(2)
@@ -38,25 +41,44 @@ function fail(msg) {
 const git = (args, cwd = ROOT, opts = {}) =>
   execFileSync('git', ['-c', 'core.autocrlf=false', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opts }).trim()
 
-const manifest = JSON.parse(await fs.readFile(path.join(dir, 'manifest.json'), 'utf8').catch(() => fail(`нет ${dir}/manifest.json — сначала publish-data.mjs`)))
-if (!manifest.version || !manifest.game || !manifest.files) fail('manifest.json без version/game/files')
-for (const [rel, f] of Object.entries(manifest.files)) {
-  const st = await fs.stat(path.join(dir, manifest.game, rel)).catch(() => null)
-  if (!st || st.size !== f.size) fail(`файл пакета ${manifest.game}/${rel} отсутствует или другого размера`)
+// пакеты в --dir: манифест каждой игры (manifest.json — PoE 1, manifest-poe2.json — PoE 2) и её папка
+const manifests = []
+for (const name of (await fs.readdir(dir).catch(() => [])).filter((n) => n.endsWith('.json') && ownerOf(n))) {
+  const m = JSON.parse(await fs.readFile(path.join(dir, name), 'utf8'))
+  if (!m.version || !m.game || !m.files) fail(`${name} без version/game/files`)
+  if (manifestName(m.game) !== name) fail(`${name}: игра ${m.game} — её манифест называется ${manifestName(m.game)}`)
+  for (const [rel, f] of Object.entries(m.files)) {
+    const st = await fs.stat(path.join(dir, m.game, rel)).catch(() => null)
+    if (!st || st.size !== f.size) fail(`файл пакета ${m.game}/${rel} отсутствует или другого размера`)
+  }
+  manifests.push(m)
 }
+if (!manifests.length) fail(`нет ${dir}/manifest.json (PoE 2 — manifest-poe2.json) — сначала publish-data.mjs`)
+const games = manifests.map((m) => m.game)
+const label = manifests.map((m) => `${m.game} ${m.version}`).join(', ')
 
-const README = `# POETH — пакет данных (ветка \`data\`)
+/** README ветки: какие пакеты в ней сейчас (после выпуска — этот и пакеты других игр). */
+async function readme(root) {
+  const lines = []
+  for (const name of (await fs.readdir(root)).filter((n) => ownerOf(n) && n.endsWith('.json')).sort()) {
+    const m = JSON.parse(await fs.readFile(path.join(root, name), 'utf8'))
+    lines.push(`- **${m.game} ${m.version}** — \`${name}\`, файлы в \`${m.game}/\``)
+  }
+  return `# POETH — пакет данных (ветка \`data\`)
 
 Эта ветка — **только данные** для обновления POETH без переустановки: приложение читает
-\`manifest.json\` (версия, игра, sha256 и размер каждого файла), скачивает изменившиеся файлы
+манифест своей игры (версия, игра, sha256 и размер каждого файла), скачивает изменившиеся файлы
 из \`<game>/…\`, проверяет sha256 и атомарно подменяет свои данные.
 
 Не редактировать вручную: ветку собирает \`.github/workflows/data.yml\`
 (\`tools/data/publish-data.mjs\` + \`tools/data/push-data-branch.mjs\`) из \`resources/data\` ветки main.
-Источники и лицензии данных — \`NOTICE.md\` в ветке main (Awakened PoE Trade — MIT, RePoE fork).
+Источники и лицензии данных — \`NOTICE.md\` в ветке main (Awakened PoE Trade и Exiled Exchange 2 — MIT,
+RePoE fork; цены PoE 2 — снимок poe.ninja).
 
-Текущий пакет: **${manifest.game} ${manifest.version}**.
+Текущие пакеты:
+${lines.join('\n')}
 `
+}
 
 let remoteHas = false
 try {
@@ -76,27 +98,33 @@ try {
     git(['worktree', 'add', '--detach', work, 'HEAD'])
     git(['checkout', '--quiet', '--orphan', orphan], work)
   }
-  // прежнее содержимое — целиком долой (удалённые из пакета файлы не должны остаться)
-  git(['rm', '-r', '--quiet', '--force', '--ignore-unmatch', '.'], work)
-  for (const e of await fs.readdir(work)) if (e !== '.git') await fs.rm(path.join(work, e), { recursive: true, force: true })
+  // прежнее содержимое пакета — целиком долой (удалённые из пакета файлы не должны остаться);
+  // пакеты других игр остаются (S67)
+  for (const e of entriesToReplace(await fs.readdir(work), games)) {
+    git(['rm', '-r', '--quiet', '--force', '--ignore-unmatch', '--', e], work)
+    await fs.rm(path.join(work, e), { recursive: true, force: true })
+  }
 
   await fs.cp(dir, work, { recursive: true })
-  await fs.writeFile(path.join(work, 'README.md'), README)
+  await fs.writeFile(path.join(work, 'README.md'), await readme(work))
   await fs.writeFile(path.join(work, '.gitattributes'), '* -text\n')
   git(['add', '--all'], work)
 
   const changed = git(['status', '--porcelain'], work)
   if (!changed) {
-    console.log(`ветка ${branch} уже содержит ${manifest.game} ${manifest.version} — публиковать нечего`)
+    console.log(`ветка ${branch} уже содержит ${label} — публиковать нечего`)
   } else {
-    git(['commit', '--quiet', '-m', `data: ${manifest.game} ${manifest.version}`], work)
+    git(['commit', '--quiet', '-m', `data: ${label}`], work)
     const sha = git(['rev-parse', 'HEAD'], work)
+    const kept = (await fs.readdir(work)).filter((e) => ownerOf(e) && !games.includes(ownerOf(e)) && e.endsWith('.json'))
+    if (kept.length) console.log(`в ветке остаются: ${kept.join(', ')}`)
     if (dryRun) {
       console.log(`--dry-run: коммит ${sha.slice(0, 7)} собран, не отправлен`)
     } else {
       git(['push', '--quiet', remote, `HEAD:refs/heads/${branch}`], work)
       pushed = true
-      console.log(`опубликовано: ${remote}/${branch} ${sha.slice(0, 7)} — ${manifest.game} ${manifest.version}, ${Object.keys(manifest.files).length} файлов`)
+      const n = manifests.reduce((s, m) => s + Object.keys(m.files).length, 0)
+      console.log(`опубликовано: ${remote}/${branch} ${sha.slice(0, 7)} — ${label}, ${n} файлов`)
     }
   }
 } catch (e) {
@@ -115,4 +143,6 @@ try {
     /* не создавалась */
   }
 }
-if (pushed) console.log(`манифест: https://raw.githubusercontent.com/MAYZOSUPER/POETH/${branch}/manifest.json (CDN raw — до ~5 мин)`)
+if (pushed) {
+  for (const g of games) console.log(`манифест: https://raw.githubusercontent.com/MAYZOSUPER/POETH/${branch}/${manifestName(g)} (CDN raw — до ~5 мин)`)
+}

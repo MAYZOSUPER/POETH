@@ -1,0 +1,3349 @@
+{
+ "meta": {
+  "source": "RePoE fork PoE 2 (repoe-fork.github.io/poe2): mods, base_items, stat_translations; Exiled Exchange 2: stats, client_strings, items",
+  "date": "2026-10-31",
+  "patch": "0.5.5",
+  "ee2": "cca3066",
+  "lang": "en"
+ },
+ "waystone": {
+  "mods": [
+   {
+    "id": "map_abyss_%_chance_path_spawns_at_least_magic_monsters,map_abyss_%_chance_chasm_spawns_at_least_magic_monsters",
+    "text": "abyss cracks have #% chance to spawn all monsters as at least magic\nabyss pits have #% chance to spawn all monsters as at least magic",
+    "display": "Abyss Cracks have #% chance to spawn all Monsters as at least Magic\nAbyss Pits have #% chance to spawn all Monsters as at least Magic",
+    "token": "t l",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1388221282",
+     "desecrated.stat_4157613372",
+     "explicit.stat_1388221282",
+     "explicit.stat_4157613372"
+    ]
+   },
+   {
+    "id": "map_abyss_no_reward_chance_+%",
+    "text": "abyss pits in area always have rewards",
+    "display": "Abyss Pits in Area always have Rewards",
+    "token": "lw",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_4256531808",
+     "explicit.stat_4256531808"
+    ]
+   },
+   {
+    "id": "map_abyss_monster_experience_+%",
+    "text": "abyssal monsters grant #% increased experience",
+    "display": "Abyssal Monsters grant #% increased Experience",
+    "token": "rs gr",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_2975078312",
+     "explicit.stat_2975078312"
+    ]
+   },
+   {
+    "id": "map_abyss_monsters_enhanced_per_chasm_closed",
+    "text": "abyssal monsters have increased difficulty and reward for each closed pit",
+    "display": "Abyssal Monsters have increased Difficulty and Reward for each closed Pit",
+    "token": "s have i",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_360553763",
+     "explicit.stat_360553763"
+    ]
+   },
+   {
+    "id": "map_contains_abyss_boss",
+    "text": "abysses lead to an abyssal boss",
+    "display": "Abysses lead to an Abyssal Boss",
+    "token": "sal b",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_2399592398",
+     "explicit.stat_2399592398"
+    ]
+   },
+   {
+    "id": "map_contains_abyss_depths_with_no_boss",
+    "text": "abysses lead to an abyssal depths",
+    "display": "Abysses lead to an Abyssal Depths",
+    "token": "s lead to an abyssal d",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_2278777540",
+     "explicit.stat_2278777540"
+    ]
+   },
+   {
+    "id": "map_abyss_monster_spawn_amount_+%",
+    "text": "abysses spawn #% increased monsters",
+    "display": "Abysses spawn #% increased Monsters",
+    "token": "es s",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_944630113",
+     "explicit.stat_944630113"
+    ]
+   },
+   {
+    "id": "map_abyss_overrun_extra_pits",
+    "text": "area contains # additional abysses",
+    "display": "Area contains # additional Abysses",
+    "token": "a contains \\d[\\d.()-]* a",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_3490187949",
+     "explicit.stat_1070816711",
+     "explicit.stat_3490187949"
+    ]
+   },
+   {
+    "id": "map_abyss_overrun_extra_pits,map_abyss_overrun_no_monsters,map_abyss_num_additional_rare_monsters",
+    "text": "area contains # additional abysses\narea is overrun by the abyssal\n# additional rare monsters are spawned from abysses",
+    "display": "Area contains # additional Abysses\nArea is overrun by the Abyssal\n# additional Rare Monsters are spawned from Abysses",
+    "token": "a i",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_243380454",
+     "desecrated.stat_2741291867",
+     "desecrated.stat_3490187949",
+     "explicit.stat_1070816711",
+     "explicit.stat_243380454",
+     "explicit.stat_2741291867",
+     "explicit.stat_3490187949"
+    ]
+   },
+   {
+    "id": "map_monster_additional_abyssal_monolithic_slug_packs",
+    "text": "area contains an additional incubator queen",
+    "display": "Area contains an additional Incubator Queen",
+    "token": "ba",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1827854662",
+     "explicit.stat_1827854662"
+    ]
+   },
+   {
+    "id": "map_ground_mana_siphoning",
+    "text": "area has patches of mana siphoning ground",
+    "display": "Area has patches of Mana Siphoning Ground",
+    "token": "ana",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_3190283174",
+     "explicit.stat_3190283174"
+    ]
+   },
+   {
+    "id": "map_monster_add_x_grasping_vines_on_hit",
+    "text": "monsters inflict # grasping vine on hit",
+    "display": "Monsters inflict # Grasping Vine on Hit",
+    "token": "vin",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1751584857",
+     "explicit.stat_1751584857"
+    ]
+   },
+   {
+    "id": "map_natural_rare_monsters_have_soul_eater,map_player_soul_eater_souls_stolen_on_rare_kill",
+    "text": "natural rare monsters in area eat the souls of slain monsters in their presence\nplayers steal the eaten souls of slain rare monsters in area",
+    "display": "Natural Rare Monsters in Area Eat the Souls of slain Monsters in their Presence\nPlayers steal the Eaten Souls of Slain Rare Monsters in Area",
+    "token": "lai",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1266185101",
+     "desecrated.stat_1365079333",
+     "explicit.stat_1266185101",
+     "explicit.stat_1365079333"
+    ]
+   },
+   {
+    "id": "map_natural_rare_monsters_have_x_additional_abyssal_modifiers",
+    "text": "natural rare monsters in area have # extra abyssal modifier",
+    "display": "Natural Rare Monsters in Area have # extra Abyssal Modifier",
+    "token": "a ab",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1168851547",
+     "explicit.stat_1168851547"
+    ]
+   },
+   {
+    "id": "map_uber_map_player_damage_cycle",
+    "text": "players and their minions deal no damage for # out of every # seconds",
+    "display": "Players and their Minions deal no damage for # out of every # seconds",
+    "token": "nio",
+    "kind": "desecrated",
+    "tags": [],
+    "scary": "noDamage",
+    "trade": [
+     "desecrated.stat_2408625104",
+     "explicit.stat_2408625104"
+    ]
+   },
+   {
+    "id": "map_player_death_mark_on_rare_unique_kill_ms",
+    "text": "players are marked for death for # seconds\nafter killing a rare or unique monster",
+    "display": "Players are Marked for Death for # seconds\nafter killing a Rare or Unique monster",
+    "token": "a r",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_436406826",
+     "explicit.stat_436406826"
+    ]
+   },
+   {
+    "id": "map_player_speed_+%_final_per_recent_skill_use",
+    "text": "players have #% less movement and skill speed for each time they've used a skill recently",
+    "display": "Players have #% less Movement and Skill Speed for each time they've used a Skill Recently",
+    "token": "'v",
+    "kind": "desecrated",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_4274247770",
+     "explicit.stat_4274247770"
+    ]
+   },
+   {
+    "id": "map_endgame_fog_depth",
+    "text": "players in area are #% delirious",
+    "display": "Players in Area are #% Delirious",
+    "token": "% d",
+    "kind": "instilled",
+    "tags": []
+   },
+   {
+    "id": "map_endgame_fog_depth,map_delirium_splinter_stack_size_+%",
+    "text": "players in area are #% delirious\n#% increased stack size of simulacrum splinters found in area",
+    "display": "Players in Area are #% Delirious\n#% increased Stack size of Simulacrum Splinters found in Area",
+    "token": "rs found in a",
+    "kind": "instilled",
+    "tags": [],
+    "trade": [
+     "explicit.stat_3836551197"
+    ]
+   },
+   {
+    "id": "map_endgame_fog_depth,map_tower_augment_quantity_+%",
+    "text": "players in area are #% delirious\n#% increased tablets found in area",
+    "display": "Players in Area are #% Delirious\n#% increased Tablets found in Area",
+    "token": "lets",
+    "kind": "instilled",
+    "tags": []
+   },
+   {
+    "id": "map_endgame_fog_depth,map_rare_monster_additional_modifier_chance_%_with_rollover",
+    "text": "players in area are #% delirious\nrare monsters have a #% surpassing chance to have an additional modifier",
+    "display": "Players in Area are #% Delirious\nRare Monsters have a #% Surpassing chance to have an additional Modifier",
+    "token": "s have a",
+    "kind": "instilled",
+    "tags": [],
+    "trade": [
+     "explicit.stat_3732878551"
+    ]
+   },
+   {
+    "id": "map_endgame_fog_depth,map_unique_monster_num_additional_modifiers",
+    "text": "players in area are #% delirious\nunique monsters have # additional rare modifier",
+    "display": "Players in Area are #% Delirious\nUnique Monsters have # additional Rare Modifier",
+    "token": "re mod",
+    "kind": "instilled",
+    "tags": [],
+    "trade": [
+     "explicit.stat_3371085671"
+    ]
+   },
+   {
+    "id": "map_monsters_damage_+%",
+    "text": "#% increased monster damage",
+    "display": "#% increased Monster Damage",
+    "token": "d monster d",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1890519597",
+     "explicit.stat_1890519597"
+    ]
+   },
+   {
+    "id": "map_monsters_life_+%",
+    "text": "#% more monster life",
+    "display": "#% more Monster Life",
+    "token": "er l",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_95249895",
+     "explicit.stat_95249895"
+    ]
+   },
+   {
+    "id": "map_monsters_penetrate_elemental_resistances_%",
+    "text": "monster damage penetrates #% elemental resistances",
+    "display": "Monster Damage Penetrates #% Elemental Resistances",
+    "token": "% e",
+    "kind": "prefix",
+    "tags": [],
+    "scary": "penetration",
+    "trade": [
+     "desecrated.stat_1898978455",
+     "explicit.stat_1898978455"
+    ]
+   },
+   {
+    "id": "map_monsters_armour_break_physical_damage_%_dealt_as_armour_break",
+    "text": "monsters break armour equal to #% of physical damage dealt",
+    "display": "Monsters Break Armour equal to #% of Physical Damage dealt",
+    "token": "k a",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1879340377",
+     "explicit.stat_1879340377"
+    ]
+   },
+   {
+    "id": "map_monsters_%_all_damage_to_gain_as_chaos",
+    "text": "monsters deal #% of damage as extra chaos",
+    "display": "Monsters deal #% of Damage as Extra Chaos",
+    "token": "ao",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_2200661314",
+     "explicit.stat_2200661314"
+    ]
+   },
+   {
+    "id": "map_monsters_%_all_damage_to_gain_as_cold",
+    "text": "monsters deal #% of damage as extra cold",
+    "display": "Monsters deal #% of Damage as Extra Cold",
+    "token": "a col",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_211727",
+     "explicit.stat_211727"
+    ]
+   },
+   {
+    "id": "map_monsters_%_all_damage_to_gain_as_fire",
+    "text": "monsters deal #% of damage as extra fire",
+    "display": "Monsters deal #% of Damage as Extra Fire",
+    "token": "a f",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_92381065",
+     "explicit.stat_92381065"
+    ]
+   },
+   {
+    "id": "map_monsters_%_all_damage_to_gain_as_lightning",
+    "text": "monsters deal #% of damage as extra lightning",
+    "display": "Monsters deal #% of Damage as Extra Lightning",
+    "token": "a li",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_512071314",
+     "explicit.stat_512071314"
+    ]
+   },
+   {
+    "id": "map_monsters_chance_to_inflict_bleeding_%",
+    "text": "monsters have #% chance to inflict bleeding on hit",
+    "display": "Monsters have #% chance to inflict Bleeding on Hit",
+    "token": "g o",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_2506820610",
+     "explicit.stat_2506820610"
+    ]
+   },
+   {
+    "id": "map_monsters_chance_to_poison_on_hit_%",
+    "text": "monsters have #% chance to poison on hit",
+    "display": "Monsters have #% chance to Poison on Hit",
+    "token": "oi",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_95221307",
+     "explicit.stat_95221307"
+    ]
+   },
+   {
+    "id": "map_monsters_accuracy_rating_+%",
+    "text": "monsters have #% increased accuracy rating",
+    "display": "Monsters have #% increased Accuracy Rating",
+    "token": "acy",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1588049749",
+     "explicit.stat_1588049749"
+    ]
+   },
+   {
+    "id": "map_monster_attack_cast_and_movement_speed_+%",
+    "text": "monsters have #% increased attack, cast and movement speed",
+    "display": "Monsters have #% increased Attack, Cast and Movement Speed",
+    "token": "k,",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_3909654181",
+     "explicit.stat_3909654181"
+    ]
+   },
+   {
+    "id": "map_monsters_critical_strike_chance_+%,map_monsters_critical_strike_multiplier_+",
+    "text": "monsters have #% increased critical hit chance\nmonsters have +#% critical damage bonus",
+    "display": "Monsters have #% increased Critical Hit Chance\nMonsters have +#% Critical Damage Bonus",
+    "token": "bon",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_2753083623",
+     "desecrated.stat_57326096",
+     "explicit.stat_2753083623",
+     "explicit.stat_57326096"
+    ]
+   },
+   {
+    "id": "map_monsters_hit_damage_stun_multiplier_+%",
+    "text": "monsters have #% increased stun buildup",
+    "display": "Monsters have #% increased Stun Buildup",
+    "token": "bui",
+    "kind": "prefix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_115425161",
+     "explicit.stat_115425161"
+    ]
+   },
+   {
+    "id": "map_monsters_curse_effect_on_self_+%_final",
+    "text": "#% less effect of curses on monsters",
+    "display": "#% less effect of Curses on Monsters",
+    "token": "rses",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_3796523155",
+     "explicit.stat_3796523155"
+    ]
+   },
+   {
+    "id": "map_monsters_additional_elemental_resistance",
+    "text": "+#% monster elemental resistances",
+    "display": "+#% Monster Elemental Resistances",
+    "token": "r el",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1054098949",
+     "explicit.stat_1054098949"
+    ]
+   },
+   {
+    "id": "map_additional_player_maximum_resistances_%",
+    "text": "-#% maximum player resistances",
+    "display": "-#% maximum Player Resistances",
+    "token": "m p",
+    "kind": "suffix",
+    "tags": [],
+    "scary": "maxRes",
+    "trade": [
+     "desecrated.stat_3376488707",
+     "explicit.stat_3376488707"
+    ]
+   },
+   {
+    "id": "map_ground_ice_base_magnitude",
+    "text": "area has patches of chilled ground",
+    "display": "Area has patches of Chilled Ground",
+    "token": "hil",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_349586058",
+     "explicit.stat_349586058"
+    ]
+   },
+   {
+    "id": "map_base_ground_fire_damage_to_deal_per_10_seconds",
+    "text": "area has patches of ignited ground",
+    "display": "Area has patches of Ignited Ground",
+    "token": "gn",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_133340941",
+     "explicit.stat_133340941"
+    ]
+   },
+   {
+    "id": "map_ground_lightning",
+    "text": "area has patches of shocked ground",
+    "display": "Area has patches of Shocked Ground",
+    "token": "cked",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_3477720557",
+     "explicit.stat_3477720557"
+    ]
+   },
+   {
+    "id": "map_monsters_elemental_ailment_chance_+%",
+    "text": "monster have #% increased elemental ailment application",
+    "display": "Monster have #% increased Elemental Ailment Application",
+    "token": "r h",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_3877264671",
+     "explicit.stat_3877264671"
+    ]
+   },
+   {
+    "id": "map_monsters_additional_strength_ratio_%_for_armour",
+    "text": "monsters are armoured",
+    "display": "Monsters are Armoured",
+    "token": "oure",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_2539290279",
+     "explicit.stat_2539290279"
+    ]
+   },
+   {
+    "id": "map_monsters_additional_dexterity_ratio_%_for_evasion",
+    "text": "monsters are evasive",
+    "display": "Monsters are Evasive",
+    "token": "asiv",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_2570249991",
+     "explicit.stat_2570249991"
+    ]
+   },
+   {
+    "id": "map_monsters_maximum_life_%_to_add_to_maximum_energy_shield",
+    "text": "monsters gain #% of maximum life as extra maximum energy shield",
+    "display": "Monsters gain #% of maximum Life as Extra maximum Energy Shield",
+    "token": "m li",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_2887760183",
+     "explicit.stat_2887760183"
+    ]
+   },
+   {
+    "id": "map_monsters_stun_threshold_+%,map_monsters_ailment_threshold_+%",
+    "text": "monsters have #% increased stun threshold\nmonsters have #% increased ailment threshold",
+    "display": "Monsters have #% increased Stun Threshold\nMonsters have #% increased Ailment Threshold",
+    "token": "esho",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_1994551050",
+     "desecrated.stat_4101943684",
+     "explicit.stat_1994551050",
+     "explicit.stat_4101943684"
+    ]
+   },
+   {
+    "id": "map_monsters_base_self_critical_strike_multiplier_-%",
+    "text": "monsters take #% reduced extra damage from critical hits",
+    "display": "Monsters take #% reduced Extra Damage from Critical Hits",
+    "token": "a d",
+    "kind": "suffix",
+    "tags": [],
+    "trade": [
+     "desecrated.stat_337935900",
+     "explicit.stat_337935900"
+    ]
+   },
+   {
+    "id": "map_elemental_weakness_curse_zones",
+    "text": "players are periodically cursed with elemental weakness",
+    "display": "Players are periodically Cursed with Elemental Weakness",
+    "token": "akn",
+    "kind": "suffix",
+    "tags": [],
+    "scary": "curse",
+    "trade": [
+     "desecrated.stat_554690751",
+     "explicit.stat_554690751"
+    ]
+   },
+   {
+    "id": "map_enfeeble_curse_zones",
+    "text": "players are periodically cursed with enfeeble",
+    "display": "Players are periodically Cursed with Enfeeble",
+    "token": "eble",
+    "kind": "suffix",
+    "tags": [],
+    "scary": "curse",
+    "trade": [
+     "desecrated.stat_2029171424",
+     "explicit.stat_2029171424"
+    ]
+   },
+   {
+    "id": "map_temporal_chains_curse_zones",
+    "text": "players are periodically cursed with temporal chains",
+    "display": "Players are periodically Cursed with Temporal Chains",
+    "token": "hai",
+    "kind": "suffix",
+    "tags": [],
+    "scary": "curse",
+    "trade": [
+     "desecrated.stat_1629357380",
+     "explicit.stat_1629357380"
+    ]
+   },
+   {
+    "id": "map_player_charges_gained_+%",
+    "text": "players gain #% reduced flask charges",
+    "display": "Players gain #% reduced Flask Charges",
+    "token": "arg",
+    "kind": "suffix",
+    "tags": [],
+    "scary": "flasks",
+    "trade": [
+     "desecrated.stat_2549889921",
+     "explicit.stat_2549889921"
+    ]
+   },
+   {
+    "id": "map_player_cooldown_speed_+%_final",
+    "text": "players have #% less cooldown recovery rate",
+    "display": "Players have #% less Cooldown Recovery Rate",
+    "token": "coo",
+    "kind": "suffix",
+    "tags": [],
+    "scary": "cooldown",
+    "trade": [
+     "desecrated.stat_941368244",
+     "explicit.stat_941368244"
+    ]
+   },
+   {
+    "id": "map_player_life_and_es_recovery_speed_+%_final",
+    "text": "players have #% less recovery rate of life and energy shield",
+    "display": "Players have #% less Recovery Rate of Life and Energy Shield",
+    "token": "f l",
+    "kind": "suffix",
+    "tags": [],
+    "scary": "recovery",
+    "trade": [
+     "desecrated.stat_4181072906",
+     "explicit.stat_4181072906"
+    ]
+   }
+  ],
+  "extra": [
+   "# additional rare monsters are spawned from abysses in map",
+   "# extra pack of monsters around vaal beacons in map",
+   "# use remaining",
+   "# uses remaining",
+   "#% chance for an extra packs of monsters around vaal beacons in map",
+   "#% chance to add a vaal beacon unique monster to the map",
+   "#% chance to gain an additional crystal from vaal beacons in map",
+   "#% increased chance for abyssal monsters in map to have abyssal modifiers",
+   "#% increased chance for desecrated currency from abysses in map",
+   "#% increased chance vaal beacon chests are rare in map",
+   "#% increased chance vaal beacons summon additional monsters in map",
+   "#% increased effect of expedition remnants in map",
+   "#% increased effectiveness of rare breach monsters in map",
+   "#% increased expedition explosive area of effect in map",
+   "#% increased expedition explosive placement range in map",
+   "#% increased expedition monster rarity in map",
+   "#% increased experience gain in map",
+   "#% increased gold found in map",
+   "#% increased number of rare expedition monsters in map",
+   "#% increased pack size for monsters around vaal beacons in map",
+   "#% increased pack size in map",
+   "#% increased quantity of breach splinters dropped by breach monsters in map",
+   "#% increased quantity of expedition artifacts dropped by monsters in map",
+   "#% increased quantity of expedition logbooks dropped by runic monsters in map",
+   "#% increased quantity of hiveblood found in map",
+   "#% increased quantity of items dropped by map bosses",
+   "#% increased quantity of items found in map",
+   "#% increased quantity of waystones dropped by map bosses",
+   "#% increased quantity of waystones found in map",
+   "#% increased quantity of wombgifts found in map",
+   "#% increased rarity of items dropped by map bosses",
+   "#% increased rarity of items found in map",
+   "#% increased stack size of simulacrum splinters found in map",
+   "#% reduced pack size in map",
+   "abyss pits in map are twice as likely to have rewards",
+   "abyss tablet",
+   "abyssal monsters have #% increased effectiveness for each closed pit, up to #%",
+   "abyssal monsters in map have increased difficulty and reward for each closed pit",
+   "abysses in map have #% increased chance to lead to an abyssal depths",
+   "abysses in map spawn #% increased monsters",
+   "adds a kalguuran expedition to a map",
+   "adds a mirror of delirium to a map",
+   "adds abysses to a map",
+   "adds an otherworldy breach to a map",
+   "adds irradiated to a map",
+   "adds ritual altars to a map",
+   "adds vaal beacons to a map",
+   "area level: #",
+   "armour: #",
+   "armour: #%",
+   "armour: +#%",
+   "attacks per second: #",
+   "attacks per second: #%",
+   "attacks per second: +#%",
+   "block chance: #",
+   "block chance: #%",
+   "block chance: +#%",
+   "breach hives in map have # additional waves of hiveborn monsters",
+   "breach tablet",
+   "breaches in map have #% increased pack size",
+   "breaches in map open and close #% faster",
+   "breaches in map spawn # additional rare monsters",
+   "breaches in map spawn #% increased magic monsters",
+   "can be used in a map device, allowing you to enter a map. waystones can only be used once.",
+   "can be used in a personal map device to add modifiers to a map.",
+   "can only be applied to precursor tower maps",
+   "can reroll favours at ritual altars in your maps twice as many times",
+   "charm slots: #",
+   "charm slots: #%",
+   "charm slots: +#%",
+   "clear skies",
+   "cold damage: #",
+   "cold damage: #%",
+   "cold damage: +#%",
+   "completing the tower makes all nearby maps accessible",
+   "corrupted",
+   "critical hit chance: #",
+   "critical hit chance: #%",
+   "critical hit chance: +#%",
+   "cruel hegemony",
+   "deferring favours at ritual altars in map costs #% reduced tribute",
+   "delirium encounters in map are #% more likely to spawn unique bosses",
+   "delirium fog in map applies #% increased deliriousness to players",
+   "delirium fog in map dissipates #% slower",
+   "delirium fog in map lasts # additional seconds before dissipating",
+   "delirium fog in map spawns #% increased fracturing mirrors",
+   "delirium fog in map spawns #% increased mirror shards",
+   "delirium fog in your maps never dissipates",
+   "delirium monsters in map have #% increased pack size",
+   "delirium tablet",
+   "elemental damage: #",
+   "elemental damage: #%",
+   "elemental damage: +#%",
+   "empowers the map boss of a map",
+   "energy shield: #",
+   "energy shield: #%",
+   "energy shield: +#%",
+   "evasion rating: #",
+   "evasion rating: #%",
+   "evasion rating: +#%",
+   "expedition monsters in your maps spawn with half of their life missing",
+   "expedition tablet",
+   "expeditions contain # additional bosses encased in ice in map",
+   "expeditions contain # additional verisium sentries in map",
+   "expeditions contain # buried strongboxes in map",
+   "expeditions contain # vaal relics in map",
+   "expeditions have +#% surpassing chance to contain an additional verisium remnant",
+   "expeditions have +#% surpassing chance to duplicate runic monsters in map",
+   "expeditions in map have +# remnants",
+   "favours at ritual altars in area costs #% increased tribute",
+   "favours deferred at ritual altars in map reappear #% sooner",
+   "favours rerolled at ritual altars in map have #% chance to cost no tribute",
+   "fire damage: #",
+   "fire damage: #%",
+   "fire damage: +#%",
+   "forgotten by time",
+   "freedom of faith",
+   "if map was not previously irradiated, completing map adds irradiation instead",
+   "irradiated tablet",
+   "item class: tablet",
+   "item class: waystones",
+   "item level: #",
+   "item rarity: +#%",
+   "item rarity: +#% (augmented)",
+   "level: #",
+   "level: #%",
+   "level: +#%",
+   "lightning damage: #",
+   "lightning damage: #%",
+   "lightning damage: +#%",
+   "magic monsters: +#%",
+   "magic monsters: +#% (augmented)",
+   "map bosses are hunted by azmeri spirits",
+   "map bosses grant #% increased experience",
+   "map bosses have # additional modifier",
+   "map contains # additional abysses",
+   "map contains # additional azmeri spirit",
+   "map contains # additional azmeri spirits",
+   "map contains # additional essences",
+   "map contains # additional rare chests",
+   "map contains # additional shrines",
+   "map contains # additional strongboxes",
+   "map contains #% increased number of runic monster markers",
+   "map contains an additional abyss",
+   "map contains an additional essence",
+   "map contains an additional shrine",
+   "map contains an additional strongbox",
+   "map contains an additional summoning circle",
+   "map has # additional random modifiers",
+   "map has #% chance to contain an additional breach",
+   "map has #% chance to contain four additional abysses",
+   "map has #% chance to contain three additional breaches",
+   "map has #% increased chance to contain a summoning circle",
+   "map has #% increased chance to contain azmeri spirits",
+   "map has #% increased chance to contain essences",
+   "map has #% increased chance to contain rogue exiles",
+   "map has #% increased chance to contain shrines",
+   "map has #% increased chance to contain strongboxes",
+   "map has #% increased magic monsters",
+   "map has #% increased monster rarity",
+   "map has #% increased number of rare monsters",
+   "map is inhabited by # additional rogue exile",
+   "map is overrun by the abyssal",
+   "map tier: #",
+   "map tier: #%",
+   "map tier: +#%",
+   "mastered domain",
+   "mirrored",
+   "monster effectiveness: +#%",
+   "monster effectiveness: +#% (augmented)",
+   "monster pack size: +#%",
+   "monster pack size: +#% (augmented)",
+   "monster rarity: +#%",
+   "monster rarity: +#% (augmented)",
+   "monsters from verisium remnants drop #% increased verisium",
+   "monsters have #% increased effectiveness",
+   "monsters sacrificed at ritual altars in map grant #% increased tribute",
+   "note: ~price # exalted",
+   "overseer tablet",
+   "pack size: +#%",
+   "pack size: +#% (augmented)",
+   "physical damage: #",
+   "physical damage: #%",
+   "physical damage: +#%",
+   "quality: #",
+   "quality: #%",
+   "quality: +#%",
+   "rare monsters in map have a #% surpassing chance to have an additional modifier",
+   "rare monsters: +#%",
+   "rare monsters: +#% (augmented)",
+   "rarity: magic",
+   "rarity: normal",
+   "rarity: rare",
+   "rarity: unique",
+   "reload time: #",
+   "reload time: #%",
+   "reload time: +#%",
+   "requires: #",
+   "requires: #%",
+   "requires: +#%",
+   "rerolling favours at ritual altars in map costs #% reduced tribute",
+   "revived monsters from ritual altars in map have #% increased chance to be magic",
+   "revived monsters from ritual altars in map have #% increased chance to be rare",
+   "revives available: #",
+   "ritual altars in map allow rerolling favours # additional times",
+   "ritual favours in map have #% increased chance to be omens",
+   "ritual tablet",
+   "runic monsters in your maps are duplicated",
+   "runic ward: #",
+   "runic ward: #%",
+   "runic ward: +#%",
+   "season of the hunt",
+   "slaying rare monsters in map pauses the delirium mirror timer for # seconds",
+   "sockets: #",
+   "sockets: #%",
+   "sockets: +#%",
+   "spirit: #",
+   "spirit: #%",
+   "spirit: +#%",
+   "stack size: #",
+   "stack size: #%",
+   "stack size: +#%",
+   "talisman tier: #",
+   "talisman tier: #%",
+   "talisman tier: +#%",
+   "temple tablet",
+   "the first # unearthed runic monsters will be rare monsters in map",
+   "the grand project",
+   "twice corrupted",
+   "unforeseen consequences",
+   "unidentified",
+   "unidentified (tier #)",
+   "unmodifiable",
+   "unstable breaches in map have #% increased chance to contain vruun, marshal of xesht",
+   "unstable breaches in map spawn # additional rare monsters when stabilised",
+   "unstable breaches in map take # additional seconds to collapse after timer is filled",
+   "verisium remnants have +#% chance to add an additional runic modifier in map",
+   "visions of paradise",
+   "waystone (tier #)",
+   "waystone drop chance: +#%",
+   "waystone drop chance: +#% (augmented)",
+   "waystone tier: #",
+   "wombgifts have #% chance to drop one level higher in map",
+   "wraeclast besieged",
+   "{ corruption enhancement (tier: #) }",
+   "{ corruption enhancement }",
+   "{ desecrated (tier: #) }",
+   "{ desecrated prefix modifier \"abyssal\" (tier: #) }",
+   "{ desecrated suffix modifier \"of consumption\" (tier: #) }",
+   "{ desecrated suffix modifier \"of cycling\" (tier: #) }",
+   "{ desecrated suffix modifier \"of deceleration\" (tier: #) }",
+   "{ desecrated suffix modifier \"of grasping\" (tier: #) }",
+   "{ desecrated suffix modifier \"of retribution\" (tier: #) }",
+   "{ desecrated suffix modifier \"of siphoning\" (tier: #) }",
+   "{ desecrated }",
+   "{ enhancement (tier: #) }",
+   "{ enhancement }",
+   "{ fractured (tier: #) }",
+   "{ fractured }",
+   "{ implicit modifier (tier: #) }",
+   "{ implicit modifier }",
+   "{ prefix modifier \"abounding\" (tier: #) }",
+   "{ prefix modifier \"azmeri's\" (tier: #) }",
+   "{ prefix modifier \"bountiful\" (tier: #) }",
+   "{ prefix modifier \"breeding\" (tier: #) }",
+   "{ prefix modifier \"brimming\" (tier: #) }",
+   "{ prefix modifier \"challenger's\" (tier: #) }",
+   "{ prefix modifier \"collector's\" (tier: #) }",
+   "{ prefix modifier \"crystallised\" (tier: #) }",
+   "{ prefix modifier \"destructive\" (tier: #) }",
+   "{ prefix modifier \"elevated\" (tier: #) }",
+   "{ prefix modifier \"exiled\" (tier: #) }",
+   "{ prefix modifier \"fleeting\" (tier: #) }",
+   "{ prefix modifier \"frostbitten\" (tier: #) }",
+   "{ prefix modifier \"impacting\" (tier: #) }",
+   "{ prefix modifier \"infernal\" (tier: #) }",
+   "{ prefix modifier \"painful\" (tier: #) }",
+   "{ prefix modifier \"penetrating\" (tier: #) }",
+   "{ prefix modifier \"precise\" (tier: #) }",
+   "{ prefix modifier \"profane\" (tier: #) }",
+   "{ prefix modifier \"puncturing\" (tier: #) }",
+   "{ prefix modifier \"shattering\" (tier: #) }",
+   "{ prefix modifier \"summoner's\" (tier: #) }",
+   "{ prefix modifier \"teeming\" (tier: #) }",
+   "{ prefix modifier \"thunderous\" (tier: #) }",
+   "{ prefix modifier \"tough\" (tier: #) }",
+   "{ prefix modifier \"treasurer's\" (tier: #) }",
+   "{ prefix modifier \"venomous\" (tier: #) }",
+   "{ prefix modifier (tier: #) }",
+   "{ prefix modifier }",
+   "{ suffix modifier \"flaming\" (tier: #) }",
+   "{ suffix modifier \"of ancient evil\" (tier: #) }",
+   "{ suffix modifier \"of ancient fiends\" (tier: #) }",
+   "{ suffix modifier \"of buffering\" (tier: #) }",
+   "{ suffix modifier \"of champions\" (tier: #) }",
+   "{ suffix modifier \"of compartments\" (tier: #) }",
+   "{ suffix modifier \"of conquering\" (tier: #) }",
+   "{ suffix modifier \"of contest\" (tier: #) }",
+   "{ suffix modifier \"of crystals\" (tier: #) }",
+   "{ suffix modifier \"of dark power\" (tier: #) }",
+   "{ suffix modifier \"of devotion\" (tier: #) }",
+   "{ suffix modifier \"of drought\" (tier: #) }",
+   "{ suffix modifier \"of enduring\" (tier: #) }",
+   "{ suffix modifier \"of enfeebling\" (tier: #) }",
+   "{ suffix modifier \"of erosion\" (tier: #) }",
+   "{ suffix modifier \"of escalation\" (tier: #) }",
+   "{ suffix modifier \"of eternity\" (tier: #) }",
+   "{ suffix modifier \"of evasion\" (tier: #) }",
+   "{ suffix modifier \"of exposure\" (tier: #) }",
+   "{ suffix modifier \"of fatigue\" (tier: #) }",
+   "{ suffix modifier \"of flames\" (tier: #) }",
+   "{ suffix modifier \"of freeze time\" (tier: #) }",
+   "{ suffix modifier \"of hexwarding\" (tier: #) }",
+   "{ suffix modifier \"of hoards\" (tier: #) }",
+   "{ suffix modifier \"of hollows\" (tier: #) }",
+   "{ suffix modifier \"of knowledge\" (tier: #) }",
+   "{ suffix modifier \"of madness\" (tier: #) }",
+   "{ suffix modifier \"of mirrors\" (tier: #) }",
+   "{ suffix modifier \"of obstruction\" (tier: #) }",
+   "{ suffix modifier \"of omens\" (tier: #) }",
+   "{ suffix modifier \"of ossification\" (tier: #) }",
+   "{ suffix modifier \"of overpowering\" (tier: #) }",
+   "{ suffix modifier \"of pathways\" (tier: #) }",
+   "{ suffix modifier \"of persecution\" (tier: #) }",
+   "{ suffix modifier \"of phobia\" (tier: #) }",
+   "{ suffix modifier \"of power\" (tier: #) }",
+   "{ suffix modifier \"of prayers\" (tier: #) }",
+   "{ suffix modifier \"of preservation\" (tier: #) }",
+   "{ suffix modifier \"of remnants\" (tier: #) }",
+   "{ suffix modifier \"of runes\" (tier: #) }",
+   "{ suffix modifier \"of sacrifice\" (tier: #) }",
+   "{ suffix modifier \"of schisms\" (tier: #) }",
+   "{ suffix modifier \"of sentinels\" (tier: #) }",
+   "{ suffix modifier \"of shattering\" (tier: #) }",
+   "{ suffix modifier \"of shocking\" (tier: #) }",
+   "{ suffix modifier \"of shrines\" (tier: #) }",
+   "{ suffix modifier \"of sleet\" (tier: #) }",
+   "{ suffix modifier \"of slowing\" (tier: #) }",
+   "{ suffix modifier \"of smothering\" (tier: #) }",
+   "{ suffix modifier \"of spirits\" (tier: #) }",
+   "{ suffix modifier \"of strongboxes\" (tier: #) }",
+   "{ suffix modifier \"of the antiquarian\" (tier: #) }",
+   "{ suffix modifier \"of the appeal\" (tier: #) }",
+   "{ suffix modifier \"of the cartographer\" (tier: #) }",
+   "{ suffix modifier \"of the commander\" (tier: #) }",
+   "{ suffix modifier \"of the cult\" (tier: #) }",
+   "{ suffix modifier \"of the demolition\" (tier: #) }",
+   "{ suffix modifier \"of the depths\" (tier: #) }",
+   "{ suffix modifier \"of the detonator\" (tier: #) }",
+   "{ suffix modifier \"of the devoted\" (tier: #) }",
+   "{ suffix modifier \"of the dogma\" (tier: #) }",
+   "{ suffix modifier \"of the essence\" (tier: #) }",
+   "{ suffix modifier \"of the exile\" (tier: #) }",
+   "{ suffix modifier \"of the flesh\" (tier: #) }",
+   "{ suffix modifier \"of the flow\" (tier: #) }",
+   "{ suffix modifier \"of the form\" (tier: #) }",
+   "{ suffix modifier \"of the foundling\" (tier: #) }",
+   "{ suffix modifier \"of the hand\" (tier: #) }",
+   "{ suffix modifier \"of the horde\" (tier: #) }",
+   "{ suffix modifier \"of the invasion\" (tier: #) }",
+   "{ suffix modifier \"of the nemesis\" (tier: #) }",
+   "{ suffix modifier \"of the occult\" (tier: #) }",
+   "{ suffix modifier \"of the past\" (tier: #) }",
+   "{ suffix modifier \"of the prism\" (tier: #) }",
+   "{ suffix modifier \"of the simulacrum\" (tier: #) }",
+   "{ suffix modifier \"of the summoning\" (tier: #) }",
+   "{ suffix modifier \"of the unending\" (tier: #) }",
+   "{ suffix modifier \"of the unwavering\" (tier: #) }",
+   "{ suffix modifier \"of treasure\" (tier: #) }",
+   "{ suffix modifier \"of treasures\" (tier: #) }",
+   "{ suffix modifier \"of twins\" (tier: #) }",
+   "{ suffix modifier \"of undertaking\" (tier: #) }",
+   "{ suffix modifier \"of verisium\" (tier: #) }",
+   "{ suffix modifier \"of wisps\" (tier: #) }",
+   "{ suffix modifier \"of worship\" (tier: #) }",
+   "{ suffix modifier \"shocking\" (tier: #) }",
+   "{ suffix modifier \"sleet\" (tier: #) }",
+   "{ suffix modifier (tier: #) }",
+   "{ suffix modifier }",
+   "{ unique modifier \"of envy\" (tier: #) }",
+   "{ unique modifier \"of eternity\" (tier: #) }",
+   "{ unique modifier \"of fissuring\" (tier: #) }",
+   "{ unique modifier \"of relics\" (tier: #) }",
+   "{ unique modifier \"of rupturing\" (tier: #) }",
+   "{ unique modifier \"of the commander\" (tier: #) }",
+   "{ unique modifier \"of the domain\" (tier: #) }",
+   "{ unique modifier \"of the flash\" (tier: #) }",
+   "{ unique modifier \"of the hand\" (tier: #) }",
+   "{ unique modifier \"of the horde\" (tier: #) }",
+   "{ unique modifier \"of the invasion\" (tier: #) }",
+   "{ unique modifier \"of the pursuit\" (tier: #) }",
+   "{ unique modifier \"of the writings\" (tier: #) }",
+   "{ unique modifier \"of verisium\" (tier: #) }",
+   "{ unique modifier \"plundering\" (tier: #) }",
+   "{ unique modifier (tier: #) }",
+   "{ unique modifier }",
+   "— unscalable value"
+  ],
+  "labels": {
+   "packSize": "pack size:",
+   "magicMonsters": "c monsters:",
+   "rareMonsters": "e monsters:",
+   "dropChance": "p chance:",
+   "itemRarity": "m rarity:",
+   "monsterRarity": "r rarity:",
+   "effectiveness": "ess:"
+  },
+  "tier": "e \\(tier ",
+  "rarity": {
+   "normal": ": no",
+   "magic": ": ma",
+   "rare": ": ra",
+   "unique": ": un"
+  },
+  "flags": {
+   "corrupted": "pted",
+   "unidentified": "dent"
+  }
+ },
+ "tablet": {
+  "mods": [
+   {
+    "id": "map_experience_gain_+%",
+    "text": "#% increased experience gain in map",
+    "display": "#% increased Experience gain in Map",
+    "token": "ce g",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_3666934677",
+     "explicit.stat_57434274"
+    ]
+   },
+   {
+    "id": "map_extra_gold_piles_chance_%",
+    "text": "#% increased gold found in map",
+    "display": "#% increased Gold found in Map",
+    "token": "gol",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_1133965702",
+     "explicit.stat_1276056105"
+    ]
+   },
+   {
+    "id": "map_pack_size_+%",
+    "text": "#% increased pack size in map",
+    "display": "#% increased Pack Size in Map",
+    "token": "sed pack size i",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_2017682521"
+    ]
+   },
+   {
+    "id": "map_item_drop_rarity_+%",
+    "text": "#% increased rarity of items found in map",
+    "display": "#% increased Rarity of Items found in Map",
+    "token": "rity of items f",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "desecrated.stat_3917489142",
+     "explicit.stat_2306002879",
+     "explicit.stat_3917489142",
+     "implicit.stat_3917489142"
+    ]
+   },
+   {
+    "id": "map_spawn_extra_torment_spirits,map_map_item_drop_chance_+%",
+    "text": "map contains # additional azmeri spirit\n#% increased quantity of waystones found in map",
+    "display": "Map contains # additional Azmeri Spirit\n#% increased Quantity of Waystones found in Map",
+    "token": "l az",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_2777224821",
+     "explicit.stat_358129101",
+     "explicit.stat_775597083"
+    ],
+    "alsoMatches": [
+     "maps_with_powerful_bosses_additional_spirit_+"
+    ]
+   },
+   {
+    "id": "map_addtional_rare_chest_amount",
+    "text": "map contains # additional rare chests",
+    "display": "Map contains # additional Rare Chests",
+    "token": "e ch",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_231864447"
+    ]
+   },
+   {
+    "id": "map_extra_monoliths,map_map_item_drop_chance_+%",
+    "text": "map contains an additional essence\n#% increased quantity of waystones found in map",
+    "display": "Map contains an additional Essence\n#% increased Quantity of Waystones found in Map",
+    "token": "n additional e",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_2162684861",
+     "explicit.stat_2777224821",
+     "explicit.stat_395808938"
+    ]
+   },
+   {
+    "id": "map_num_extra_stone_circles",
+    "text": "map contains an additional summoning circle",
+    "display": "Map contains an additional Summoning Circle",
+    "token": "l su",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_2839545956"
+    ]
+   },
+   {
+    "id": "map_number_of_magic_packs_+%",
+    "text": "map has #% increased magic monsters",
+    "display": "Map has #% increased Magic Monsters",
+    "token": "s \\d[\\d.()-]*% increased ma",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "desecrated.stat_3873704640",
+     "explicit.stat_3873704640"
+    ]
+   },
+   {
+    "id": "map_number_of_magic_and_rare_packs_+%_and_rare_monster_modifiers_chance_%",
+    "text": "map has #% increased monster rarity",
+    "display": "Map has #% increased Monster Rarity",
+    "token": "d monster r",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_4142653832"
+    ]
+   },
+   {
+    "id": "map_number_of_rare_packs_+%",
+    "text": "map has #% increased number of rare monsters",
+    "display": "Map has #% increased number of Rare Monsters",
+    "token": "f rare m",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "desecrated.stat_3793155082",
+     "explicit.stat_3793155082"
+    ]
+   },
+   {
+    "id": "map_spawn_extra_exiles,map_map_item_drop_chance_+%",
+    "text": "map is inhabited by # additional rogue exile\n#% increased quantity of waystones found in map",
+    "display": "Map is inhabited by # additional Rogue Exile\n#% increased Quantity of Waystones found in Map",
+    "token": "hab",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_2777224821",
+     "explicit.stat_3550168289"
+    ]
+   },
+   {
+    "id": "map_monster_potency_+%",
+    "text": "monsters have #% increased effectiveness",
+    "display": "Monsters have #% increased Effectiveness",
+    "token": "d effecti",
+    "kind": "prefix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_2065500219"
+    ],
+    "alsoMatches": [
+     "map_abyss_monster_potency_+%_per_chasm_closed",
+     "map_breach_rare_monster_potency_+%"
+    ]
+   },
+   {
+    "id": "map_abyss_num_additional_rare_monsters",
+    "text": "# additional rare monsters are spawned from abysses in map",
+    "display": "# additional Rare Monsters are spawned from Abysses in Map",
+    "token": "d from abysses i",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "abyss"
+    ],
+    "trade": [
+     "desecrated.stat_243380454",
+     "explicit.stat_243380454"
+    ]
+   },
+   {
+    "id": "map_incursion_vaal_beacon_extra_packs_+",
+    "text": "# extra pack of monsters around vaal beacons in map",
+    "display": "# extra pack of Monsters around Vaal Beacons in Map",
+    "token": "k o",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_3294218801"
+    ]
+   },
+   {
+    "id": "map_incursion_vaal_beacon_extra_packs_chance_%",
+    "text": "#% chance for an extra packs of monsters around vaal beacons in map",
+    "display": "#% chance for an extra packs of Monsters around Vaal Beacons in Map",
+    "token": "ks o",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_1359775981"
+    ]
+   },
+   {
+    "id": "map_incursion_vaal_beacon_boss_added_to_area_chance_%",
+    "text": "#% chance to add a vaal beacon unique monster to the map",
+    "display": "#% chance to add a Vaal Beacon Unique Monster to the Map",
+    "token": "a v",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_3937291366"
+    ]
+   },
+   {
+    "id": "map_incursion_token_chance_+%",
+    "text": "#% chance to gain an additional crystal from vaal beacons in map",
+    "display": "#% chance to gain an additional Crystal from Vaal Beacons in Map",
+    "token": "o g",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_1940774881"
+    ]
+   },
+   {
+    "id": "map_abyss_monster_abyssal_modifier_chance_+%",
+    "text": "#% increased chance for abyssal monsters in map to have abyssal modifiers",
+    "display": "#% increased chance for Abyssal monsters in Map to have Abyssal Modifiers",
+    "token": "r ab",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "abyss"
+    ],
+    "trade": [
+     "explicit.stat_2789248444"
+    ]
+   },
+   {
+    "id": "map_abyss_ticket_chance_+%",
+    "text": "#% increased chance for desecrated currency from abysses in map",
+    "display": "#% increased chance for Desecrated Currency from Abysses in Map",
+    "token": "ncy",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "abyss"
+    ],
+    "trade": [
+     "explicit.stat_1710200734"
+    ]
+   },
+   {
+    "id": "map_incursion_vaal_beacon_chest_rare_chance_+%",
+    "text": "#% increased chance vaal beacon chests are rare in map",
+    "display": "#% increased chance Vaal Beacon Chests are Rare in Map",
+    "token": "n ch",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_2514439422"
+    ]
+   },
+   {
+    "id": "map_incursion_vaal_beacon_secondary_encounter_chance_+%",
+    "text": "#% increased chance vaal beacons summon additional monsters in map",
+    "display": "#% increased chance Vaal Beacons summon additional Monsters in Map",
+    "token": "ns s",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_632698321"
+    ]
+   },
+   {
+    "id": "map_breach_rare_monster_potency_+%",
+    "text": "#% increased effectiveness of rare breach monsters in map",
+    "display": "#% increased Effectiveness of Rare Breach Monsters in Map",
+    "token": "re b",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach"
+    ],
+    "trade": [
+     "explicit.stat_2895378479"
+    ]
+   },
+   {
+    "id": "map_expedition_explosion_area_of_effect_+%",
+    "text": "#% increased expedition explosive area of effect in map",
+    "display": "#% increased Expedition Explosive Area of Effect in Map",
+    "token": "a o",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_3039133122"
+    ]
+   },
+   {
+    "id": "map_expedition_maximum_placement_distance_+%",
+    "text": "#% increased expedition explosive placement range in map",
+    "display": "#% increased Expedition Explosive Placement Range in Map",
+    "token": "ace",
+    "kind": "suffix",
+    "tags": [],
+    "types": [],
+    "trade": [
+     "explicit.stat_1539368271",
+     "implicit.stat_1539368271"
+    ]
+   },
+   {
+    "id": "map_expedition_number_of_magic_and_rare_packs_+%_and_rare_monster_modifiers_chance_%",
+    "text": "#% increased expedition monster rarity in map",
+    "display": "#% increased Expedition Monster Rarity in Map",
+    "token": "ty i",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_2905096233"
+    ]
+   },
+   {
+    "id": "map_expedition_rare_monsters_+%",
+    "text": "#% increased number of rare expedition monsters in map",
+    "display": "#% increased number of Rare Expedition Monsters in Map",
+    "token": "e exp",
+    "kind": "suffix",
+    "tags": [],
+    "types": [],
+    "trade": [
+     "explicit.stat_2694800111"
+    ]
+   },
+   {
+    "id": "map_incursion_vaal_beacon_pack_size_+%",
+    "text": "#% increased pack size for monsters around vaal beacons in map",
+    "display": "#% increased Pack Size for Monsters around Vaal Beacons in Map",
+    "token": "or m",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_890040946"
+    ]
+   },
+   {
+    "id": "expedition_monsters_logbook_chance_+%",
+    "text": "#% increased quantity of expedition logbooks dropped by runic monsters in map",
+    "display": "#% increased Quantity of Expedition Logbooks dropped by Runic Monsters in Map",
+    "token": "ok",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_1083387327"
+    ]
+   },
+   {
+    "id": "map_breach_hiveblood_quantity_+%",
+    "text": "#% increased quantity of hiveblood found in map",
+    "display": "#% increased Quantity of Hiveblood found in Map",
+    "token": "loo",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach"
+    ],
+    "trade": [
+     "explicit.stat_2778285247"
+    ]
+   },
+   {
+    "id": "map_boss_dropped_item_quantity_+%",
+    "text": "#% increased quantity of items dropped by map bosses",
+    "display": "#% increased Quantity of Items dropped by Map Bosses",
+    "token": "tity of items d",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "overseer"
+    ],
+    "trade": [
+     "explicit.stat_3119172063"
+    ]
+   },
+   {
+    "id": "map_map_boss_bonus_map_drop_chance_+%",
+    "text": "#% increased quantity of waystones dropped by map bosses",
+    "display": "#% increased Quantity of Waystones dropped by Map Bosses",
+    "token": "es d",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "overseer"
+    ],
+    "trade": [
+     "explicit.stat_1457896329"
+    ]
+   },
+   {
+    "id": "map_map_item_drop_chance_+%",
+    "text": "#% increased quantity of waystones found in map",
+    "display": "#% increased Quantity of Waystones found in Map",
+    "token": "es f",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_2777224821"
+    ]
+   },
+   {
+    "id": "map_breach_wombgift_quantity_+%",
+    "text": "#% increased quantity of wombgifts found in map",
+    "display": "#% increased Quantity of Wombgifts found in Map",
+    "token": "f wom",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach"
+    ],
+    "trade": [
+     "explicit.stat_472809816"
+    ]
+   },
+   {
+    "id": "map_boss_item_rarity_+%",
+    "text": "#% increased rarity of items dropped by map bosses",
+    "display": "#% increased Rarity of Items dropped by Map Bosses",
+    "token": "rity of items d",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "overseer"
+    ],
+    "trade": [
+     "explicit.stat_4255069232"
+    ]
+   },
+   {
+    "id": "map_delirium_splinter_stack_size_+%",
+    "text": "#% increased stack size of simulacrum splinters found in map",
+    "display": "#% increased Stack size of Simulacrum Splinters found in Map",
+    "token": "rs found in m",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "delirium"
+    ],
+    "trade": [
+     "explicit.stat_3836551197"
+    ]
+   },
+   {
+    "id": "map_abyss_no_reward_chance_+%",
+    "text": "abyss pits in map are twice as likely to have rewards",
+    "display": "Abyss Pits in Map are twice as likely to have Rewards",
+    "token": "as l",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "abyss"
+    ],
+    "trade": [
+     "desecrated.stat_4256531808",
+     "explicit.stat_4256531808"
+    ]
+   },
+   {
+    "id": "map_abyss_monster_potency_+%_per_chasm_closed",
+    "text": "abyssal monsters have #% increased effectiveness for each closed pit, up to #%",
+    "display": "Abyssal Monsters have #% increased Effectiveness for each closed Pit, up to #%",
+    "token": "t,",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "abyss"
+    ],
+    "trade": [
+     "explicit.stat_664606484"
+    ]
+   },
+   {
+    "id": "map_abyss_monsters_enhanced_per_chasm_closed",
+    "text": "abyssal monsters in map have increased difficulty and reward for each closed pit",
+    "display": "Abyssal Monsters in Map have increased Difficulty and Reward for each closed Pit",
+    "token": "p have i",
+    "kind": "suffix",
+    "tags": [],
+    "types": [],
+    "trade": [
+     "desecrated.stat_360553763",
+     "explicit.stat_360553763"
+    ]
+   },
+   {
+    "id": "map_abyss_depths_chance_+%",
+    "text": "abysses in map have #% increased chance to lead to an abyssal depths",
+    "display": "Abysses in Map have #% increased chance to lead to an Abyssal Depths",
+    "token": "o l",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "abyss"
+    ],
+    "trade": [
+     "explicit.stat_2722831300"
+    ]
+   },
+   {
+    "id": "map_abyss_monster_spawn_amount_+%",
+    "text": "abysses in map spawn #% increased monsters",
+    "display": "Abysses in Map spawn #% increased Monsters",
+    "token": "ses in map s",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "abyss"
+    ],
+    "trade": [
+     "desecrated.stat_944630113",
+     "explicit.stat_944630113"
+    ]
+   },
+   {
+    "id": "map_breach_monster_quantity_+%",
+    "text": "breaches in map have #% increased pack size",
+    "display": "Breaches in Map have #% increased Pack Size",
+    "token": "hes in map h",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach"
+    ],
+    "trade": [
+     "explicit.stat_1210760818"
+    ],
+    "alsoMatches": [
+     "map_chance_for_breaches_to_contain_boss_+%"
+    ]
+   },
+   {
+    "id": "map_ritual_defer_reward_tribute_cost_+%",
+    "text": "deferring favours at ritual altars in map costs #% reduced tribute",
+    "display": "Deferring Favours at Ritual Altars in Map costs #% reduced Tribute",
+    "token": "rri",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "ritual"
+    ],
+    "trade": [
+     "explicit.stat_1345835998"
+    ]
+   },
+   {
+    "id": "map_affliction_encounter_boss_chance_+%",
+    "text": "delirium encounters in map are #% more likely to spawn unique bosses",
+    "display": "Delirium Encounters in Map are #% more likely to spawn Unique Bosses",
+    "token": "cou",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "delirium"
+    ],
+    "trade": [
+     "explicit.stat_3962960008"
+    ]
+   },
+   {
+    "id": "map_affliction_encounter_monster_depth_+%",
+    "text": "delirium fog in map applies #% increased deliriousness to players",
+    "display": "Delirium Fog in Map applies #% increased Deliriousness to Players",
+    "token": "sn",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "delirium"
+    ],
+    "trade": [
+     "explicit.stat_1769611692"
+    ]
+   },
+   {
+    "id": "map_affliction_secondary_wave_acceleration_+%",
+    "text": "delirium fog in map dissipates #% slower",
+    "display": "Delirium Fog in Map dissipates #% slower",
+    "token": "lowe",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "delirium"
+    ],
+    "trade": [
+     "explicit.stat_3350944114"
+    ]
+   },
+   {
+    "id": "map_affliction_secondary_wave_delay_seconds_+",
+    "text": "delirium fog in map lasts # additional seconds before dissipating",
+    "display": "Delirium Fog in Map lasts # additional seconds before dissipating",
+    "token": "bef",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "delirium"
+    ],
+    "trade": [
+     "explicit.stat_1174954559",
+     "explicit.stat_3226351972"
+    ]
+   },
+   {
+    "id": "map_delirium_doodads_+%_final",
+    "text": "delirium fog in map spawns #% increased fracturing mirrors",
+    "display": "Delirium Fog in Map spawns #% increased Fracturing Mirrors",
+    "token": "g mi",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "delirium"
+    ],
+    "trade": [
+     "explicit.stat_551040294"
+    ]
+   },
+   {
+    "id": "map_delirium_special_event_all_chance_+%",
+    "text": "delirium fog in map spawns #% increased mirror shards",
+    "display": "Delirium Fog in Map spawns #% increased Mirror Shards",
+    "token": "hard",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "delirium"
+    ]
+   },
+   {
+    "id": "map_affliction_pack_size_+%",
+    "text": "delirium monsters in map have #% increased pack size",
+    "display": "Delirium Monsters in Map have #% increased Pack Size",
+    "token": "m mon",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "delirium"
+    ],
+    "trade": [
+     "explicit.stat_3465791711"
+    ]
+   },
+   {
+    "id": "map_expedition_num_frozen_bosses_+",
+    "text": "expeditions contain # additional bosses encased in ice in map",
+    "display": "Expeditions contain # Additional Bosses encased in ice in Map",
+    "token": "nca",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_1183698646"
+    ]
+   },
+   {
+    "id": "map_expedition_num_sentinels_+",
+    "text": "expeditions contain # additional verisium sentries in map",
+    "display": "Expeditions contain # Additional Verisium Sentries in Map",
+    "token": "ntr",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_1109460697"
+    ]
+   },
+   {
+    "id": "map_expedition_num_buried_strongboxes_+",
+    "text": "expeditions contain # buried strongboxes in map",
+    "display": "Expeditions contain # buried Strongboxes in Map",
+    "token": "bur",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_181823691"
+    ]
+   },
+   {
+    "id": "map_expedition_num_vaal_relics_+",
+    "text": "expeditions contain # vaal relics in map",
+    "display": "Expeditions contain # Vaal Relics in Map",
+    "token": "cs i",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_2852112245"
+    ]
+   },
+   {
+    "id": "map_expedition_remnants_surpassing_chance_%",
+    "text": "expeditions have +#% surpassing chance to contain an additional verisium remnant",
+    "display": "Expeditions have +#% Surpassing chance to contain an additional Verisium Remnant",
+    "token": "l verisium r",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ]
+   },
+   {
+    "id": "map_expedition_twinned_elites_surpassing_chance_%",
+    "text": "expeditions have +#% surpassing chance to duplicate runic monsters in map",
+    "display": "Expeditions have +#% Surpassing chance to Duplicate Runic Monsters in Map",
+    "token": "e ru",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_779964546"
+    ]
+   },
+   {
+    "id": "map_ritual_deferred_rewards_are_offered_again_+%_sooner",
+    "text": "favours deferred at ritual altars in map reappear #% sooner",
+    "display": "Favours Deferred at Ritual Altars in Map reappear #% sooner",
+    "token": "eap",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "ritual"
+    ],
+    "trade": [
+     "explicit.stat_28208665"
+    ]
+   },
+   {
+    "id": "map_ritual_offered_rewards_from_rerolls_have_permyriad_chance_to_cost_no_tribute",
+    "text": "favours rerolled at ritual altars in map have #% chance to cost no tribute",
+    "display": "Favours Rerolled at Ritual Altars in Map have #% chance to cost no Tribute",
+    "token": "t n",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "ritual"
+    ],
+    "trade": [
+     "explicit.stat_937291386"
+    ]
+   },
+   {
+    "id": "map_boss_experience_+%_final",
+    "text": "map bosses grant #% increased experience",
+    "display": "Map Bosses grant #% increased Experience",
+    "token": "es g",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "overseer"
+    ],
+    "trade": [
+     "explicit.stat_3860150265"
+    ]
+   },
+   {
+    "id": "maps_with_powerful_bosses_additional_spirit_+",
+    "text": "map contains # additional azmeri spirits",
+    "display": "Map contains # additional Azmeri Spirits",
+    "token": "l azmeri spirits",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "overseer"
+    ],
+    "trade": [
+     "explicit.stat_358129101",
+     "explicit.stat_775597083"
+    ]
+   },
+   {
+    "id": "maps_with_powerful_bosses_additional_essence_+",
+    "text": "map contains # additional essences",
+    "display": "Map contains # additional Essences",
+    "token": "l essences",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "overseer"
+    ],
+    "trade": [
+     "explicit.stat_2162684861",
+     "explicit.stat_395808938"
+    ]
+   },
+   {
+    "id": "maps_with_powerful_bosses_additional_shrine_+",
+    "text": "map contains # additional shrines",
+    "display": "Map contains # additional Shrines",
+    "token": "l shrines",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "overseer"
+    ],
+    "trade": [
+     "explicit.stat_1468737867",
+     "explicit.stat_3042527515"
+    ]
+   },
+   {
+    "id": "maps_with_powerful_bosses_additional_strongbox_+",
+    "text": "map contains # additional strongboxes",
+    "display": "Map contains # additional Strongboxes",
+    "token": "l strongboxe",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "overseer"
+    ],
+    "trade": [
+     "explicit.stat_3040603554",
+     "explicit.stat_3240183538"
+    ]
+   },
+   {
+    "id": "map_expedition_elite_marker_count_+%",
+    "text": "map contains #% increased number of runic monster markers",
+    "display": "Map contains #% increased number of Runic Monster Markers",
+    "token": "ker",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_1640965354",
+     "implicit.stat_1640965354"
+    ]
+   },
+   {
+    "id": "map_num_extra_abysses",
+    "text": "map contains an additional abyss",
+    "display": "Map contains an additional Abyss",
+    "token": "n additional a",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "abyss"
+    ],
+    "trade": [
+     "desecrated.stat_3490187949",
+     "explicit.stat_1070816711",
+     "explicit.stat_3490187949"
+    ]
+   },
+   {
+    "id": "map_num_extra_shrines,map_map_item_drop_chance_+%,map_pack_size_+%",
+    "text": "map contains an additional shrine\n#% increased quantity of waystones found in map\n#% reduced pack size in map",
+    "display": "Map contains an additional Shrine\n#% increased Quantity of Waystones found in Map\n#% reduced Pack Size in Map",
+    "token": "n additional sh",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_1468737867",
+     "explicit.stat_2017682521",
+     "explicit.stat_2777224821",
+     "explicit.stat_3042527515"
+    ]
+   },
+   {
+    "id": "map_num_extra_strongboxes,map_map_item_drop_chance_+%,map_pack_size_+%",
+    "text": "map contains an additional strongbox\n#% increased quantity of waystones found in map\n#% reduced pack size in map",
+    "display": "Map contains an additional Strongbox\n#% increased Quantity of Waystones found in Map\n#% reduced Pack Size in Map",
+    "token": "n additional st",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_2017682521",
+     "explicit.stat_2777224821",
+     "explicit.stat_3040603554",
+     "explicit.stat_3240183538"
+    ]
+   },
+   {
+    "id": "map_number_of_additional_mods",
+    "text": "map has # additional random modifiers",
+    "display": "Map has # additional random Modifiers",
+    "token": "ndo",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_588512487"
+    ]
+   },
+   {
+    "id": "map_chance_for_4_additional_abysses_%",
+    "text": "map has #% chance to contain four additional abysses",
+    "display": "Map has #% chance to contain four additional Abysses",
+    "token": "n f",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "abyss"
+    ],
+    "trade": [
+     "explicit.stat_2890355696"
+    ]
+   },
+   {
+    "id": "map_stone_circle_chance_+%",
+    "text": "map has #% increased chance to contain a summoning circle",
+    "display": "Map has #% increased chance to contain a Summoning Circle",
+    "token": "a su",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_267210597"
+    ]
+   },
+   {
+    "id": "map_tormented_spirit_chance_+%",
+    "text": "map has #% increased chance to contain azmeri spirits",
+    "display": "Map has #% increased chance to contain Azmeri Spirits",
+    "token": "n az",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_3815617979"
+    ]
+   },
+   {
+    "id": "map_monolith_chance_+%",
+    "text": "map has #% increased chance to contain essences",
+    "display": "Map has #% increased chance to contain Essences",
+    "token": "in e",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_1825943485"
+    ]
+   },
+   {
+    "id": "map_rogue_exile_chance_+%",
+    "text": "map has #% increased chance to contain rogue exiles",
+    "display": "Map has #% increased chance to contain Rogue Exiles",
+    "token": "iles",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_1352729973"
+    ]
+   },
+   {
+    "id": "map_shrine_chance_+%",
+    "text": "map has #% increased chance to contain shrines",
+    "display": "Map has #% increased chance to contain Shrines",
+    "token": "n sh",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_689816330"
+    ]
+   },
+   {
+    "id": "map_strongbox_chance_+%",
+    "text": "map has #% increased chance to contain strongboxes",
+    "display": "Map has #% increased chance to contain Strongboxes",
+    "token": "in st",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_4279535856"
+    ]
+   },
+   {
+    "id": "map_verisium_stack_size_+%",
+    "text": "monsters from verisium remnants drop #% increased verisium",
+    "display": "Monsters from Verisium Remnants drop #% increased Verisium",
+    "token": "d ve",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_3520418269"
+    ]
+   },
+   {
+    "id": "map_ritual_tribute_+%",
+    "text": "monsters sacrificed at ritual altars in map grant #% increased tribute",
+    "display": "Monsters Sacrificed at Ritual Altars in Map grant #% increased Tribute",
+    "token": "p g",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "ritual"
+    ],
+    "trade": [
+     "explicit.stat_159726667"
+    ]
+   },
+   {
+    "id": "map_rare_monster_additional_modifier_chance_%_with_rollover",
+    "text": "rare monsters in map have a #% surpassing chance to have an additional modifier",
+    "display": "Rare Monsters in Map have a #% Surpassing chance to have an additional Modifier",
+    "token": "p have a",
+    "kind": "suffix",
+    "tags": [],
+    "types": [],
+    "trade": [
+     "explicit.stat_3732878551"
+    ]
+   },
+   {
+    "id": "map_ritual_rewards_reroll_cost_+%_final",
+    "text": "rerolling favours at ritual altars in map costs #% reduced tribute",
+    "display": "Rerolling Favours at Ritual Altars in Map costs #% reduced Tribute",
+    "token": "ling favours a",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "ritual"
+    ],
+    "trade": [
+     "explicit.stat_2282052746"
+    ]
+   },
+   {
+    "id": "map_ritual_magic_monsters_+%",
+    "text": "revived monsters from ritual altars in map have #% increased chance to be magic",
+    "display": "Revived Monsters from Ritual Altars in Map have #% increased chance to be Magic",
+    "token": "be m",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "ritual"
+    ],
+    "trade": [
+     "explicit.stat_1031644647"
+    ]
+   },
+   {
+    "id": "map_ritual_rare_monsters_+%",
+    "text": "revived monsters from ritual altars in map have #% increased chance to be rare",
+    "display": "Revived Monsters from Ritual Altars in Map have #% increased chance to be Rare",
+    "token": "o be r",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "ritual"
+    ],
+    "trade": [
+     "explicit.stat_3979184174"
+    ]
+   },
+   {
+    "id": "map_ritual_additional_reward_rerolls",
+    "text": "ritual altars in map allow rerolling favours # additional times",
+    "display": "Ritual Altars in Map allow rerolling Favours # additional times",
+    "token": "w r",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "ritual"
+    ],
+    "trade": [
+     "explicit.stat_120737942"
+    ]
+   },
+   {
+    "id": "map_ritual_omen_chance_+%",
+    "text": "ritual favours in map have #% increased chance to be omens",
+    "display": "Ritual Favours in Map have #% increased chance to be Omens",
+    "token": "be o",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "ritual"
+    ],
+    "trade": [
+     "explicit.stat_4219853180"
+    ]
+   },
+   {
+    "id": "map_killing_rare_monsters_pauses_delirium_mirror_timer_for_x_seconds",
+    "text": "slaying rare monsters in map pauses the delirium mirror timer for # seconds",
+    "display": "Slaying Rare Monsters in Map pauses the Delirium Mirror Timer for # seconds",
+    "token": "yi",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "delirium"
+    ],
+    "trade": [
+     "explicit.stat_2323782229"
+    ]
+   },
+   {
+    "id": "map_expedition_first_X_unearthed_runic_monsters_are_rare",
+    "text": "the first # unearthed runic monsters will be rare monsters in map",
+    "display": "The first # unearthed Runic Monsters will be Rare Monsters in Map",
+    "token": "hed",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_3963944561"
+    ]
+   },
+   {
+    "id": "map_unique_monster_num_additional_modifiers",
+    "text": "unique monsters have # additional rare modifier",
+    "display": "Unique Monsters have # additional Rare Modifier",
+    "token": "re mod",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach",
+     "expedition",
+     "delirium",
+     "ritual",
+     "irradiated",
+     "overseer",
+     "abyss",
+     "temple"
+    ],
+    "trade": [
+     "explicit.stat_3371085671"
+    ]
+   },
+   {
+    "id": "map_chance_for_breaches_to_contain_boss_+%",
+    "text": "unstable breaches in map have #% increased chance to contain vruun, marshal of xesht",
+    "display": "Unstable Breaches in Map have #% increased chance to contain Vruun, Marshal of Xesht",
+    "token": "n,",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach"
+    ],
+    "trade": [
+     "explicit.stat_2433436306"
+    ]
+   },
+   {
+    "id": "map_unstable_breach_enrage_x_additional_rare_monsters",
+    "text": "unstable breaches in map spawn # additional rare monsters when stabilised",
+    "display": "Unstable Breaches in Map spawn # additional Rare Monsters when Stabilised",
+    "token": "wh",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach"
+    ],
+    "trade": [
+     "explicit.stat_3762913035"
+    ]
+   },
+   {
+    "id": "map_expedition_remnants_pass_2_runic_modifiers_chance_%",
+    "text": "verisium remnants have +#% chance to add an additional runic modifier in map",
+    "display": "Verisium Remnants have +#% chance to add an additional Runic Modifier in Map",
+    "token": "d an",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "expedition"
+    ],
+    "trade": [
+     "explicit.stat_3871299443"
+    ]
+   },
+   {
+    "id": "map_breach_wombgift_additional_item_level_chance_%",
+    "text": "wombgifts have #% chance to drop one level higher in map",
+    "display": "Wombgifts have #% chance to drop one Level higher in Map",
+    "token": "ghe",
+    "kind": "suffix",
+    "tags": [],
+    "types": [
+     "breach"
+    ],
+    "trade": [
+     "explicit.stat_2889272422"
+    ]
+   }
+  ],
+  "extra": [
+   "# additional rare monsters are spawned from abysses",
+   "# use remaining",
+   "# uses remaining",
+   "#% increased effect of expedition remnants in map",
+   "#% increased monster damage",
+   "#% increased quantity of breach splinters dropped by breach monsters in map",
+   "#% increased quantity of expedition artifacts dropped by monsters in map",
+   "#% increased quantity of items found in map",
+   "#% increased stack size of simulacrum splinters found in area",
+   "#% increased tablets found in area",
+   "#% less effect of curses on monsters",
+   "#% more monster life",
+   "+#% monster elemental resistances",
+   "-#% maximum player resistances",
+   "abyss cracks have #% chance to spawn all monsters as at least magic",
+   "abyss pits have #% chance to spawn all monsters as at least magic",
+   "abyss pits in area always have rewards",
+   "abyss tablet",
+   "abyssal monsters grant #% increased experience",
+   "abyssal monsters have increased difficulty and reward for each closed pit",
+   "abysses lead to an abyssal boss",
+   "abysses lead to an abyssal depths",
+   "abysses spawn #% increased monsters",
+   "adds a kalguuran expedition to a map",
+   "adds a mirror of delirium to a map",
+   "adds abysses to a map",
+   "adds an otherworldy breach to a map",
+   "adds irradiated to a map",
+   "adds ritual altars to a map",
+   "adds vaal beacons to a map",
+   "after killing a rare or unique monster",
+   "area contains # additional abysses",
+   "area contains an additional incubator queen",
+   "area has patches of chilled ground",
+   "area has patches of ignited ground",
+   "area has patches of mana siphoning ground",
+   "area has patches of shocked ground",
+   "area is overrun by the abyssal",
+   "area level: #",
+   "armour: #",
+   "armour: #%",
+   "armour: +#%",
+   "attacks per second: #",
+   "attacks per second: #%",
+   "attacks per second: +#%",
+   "block chance: #",
+   "block chance: #%",
+   "block chance: +#%",
+   "breach hives in map have # additional waves of hiveborn monsters",
+   "breach tablet",
+   "breaches in map open and close #% faster",
+   "breaches in map spawn # additional rare monsters",
+   "breaches in map spawn #% increased magic monsters",
+   "can be used in a map device, allowing you to enter a map. waystones can only be used once.",
+   "can be used in a personal map device to add modifiers to a map.",
+   "can only be applied to precursor tower maps",
+   "can reroll favours at ritual altars in your maps twice as many times",
+   "charm slots: #",
+   "charm slots: #%",
+   "charm slots: +#%",
+   "clear skies",
+   "cold damage: #",
+   "cold damage: #%",
+   "cold damage: +#%",
+   "completing the tower makes all nearby maps accessible",
+   "corrupted",
+   "critical hit chance: #",
+   "critical hit chance: #%",
+   "critical hit chance: +#%",
+   "cruel hegemony",
+   "delirium fog in your maps never dissipates",
+   "delirium tablet",
+   "elemental damage: #",
+   "elemental damage: #%",
+   "elemental damage: +#%",
+   "empowers the map boss of a map",
+   "energy shield: #",
+   "energy shield: #%",
+   "energy shield: +#%",
+   "evasion rating: #",
+   "evasion rating: #%",
+   "evasion rating: +#%",
+   "expedition monsters in your maps spawn with half of their life missing",
+   "expedition tablet",
+   "expeditions in map have +# remnants",
+   "favours at ritual altars in area costs #% increased tribute",
+   "fire damage: #",
+   "fire damage: #%",
+   "fire damage: +#%",
+   "forgotten by time",
+   "freedom of faith",
+   "if map was not previously irradiated, completing map adds irradiation instead",
+   "irradiated tablet",
+   "item class: tablet",
+   "item class: waystones",
+   "item level: #",
+   "item rarity: +#%",
+   "item rarity: +#% (augmented)",
+   "level: #",
+   "level: #%",
+   "level: +#%",
+   "lightning damage: #",
+   "lightning damage: #%",
+   "lightning damage: +#%",
+   "magic monsters: +#%",
+   "magic monsters: +#% (augmented)",
+   "map bosses are hunted by azmeri spirits",
+   "map bosses have # additional modifier",
+   "map contains # additional abysses",
+   "map has #% chance to contain an additional breach",
+   "map has #% chance to contain three additional breaches",
+   "map is overrun by the abyssal",
+   "map tier: #",
+   "map tier: #%",
+   "map tier: +#%",
+   "mastered domain",
+   "mirrored",
+   "monster damage penetrates #% elemental resistances",
+   "monster effectiveness: +#%",
+   "monster effectiveness: +#% (augmented)",
+   "monster have #% increased elemental ailment application",
+   "monster pack size: +#%",
+   "monster pack size: +#% (augmented)",
+   "monster rarity: +#%",
+   "monster rarity: +#% (augmented)",
+   "monsters are armoured",
+   "monsters are evasive",
+   "monsters break armour equal to #% of physical damage dealt",
+   "monsters deal #% of damage as extra chaos",
+   "monsters deal #% of damage as extra cold",
+   "monsters deal #% of damage as extra fire",
+   "monsters deal #% of damage as extra lightning",
+   "monsters gain #% of maximum life as extra maximum energy shield",
+   "monsters have #% chance to inflict bleeding on hit",
+   "monsters have #% chance to poison on hit",
+   "monsters have #% increased accuracy rating",
+   "monsters have #% increased ailment threshold",
+   "monsters have #% increased attack, cast and movement speed",
+   "monsters have #% increased critical hit chance",
+   "monsters have #% increased stun buildup",
+   "monsters have #% increased stun threshold",
+   "monsters have +#% critical damage bonus",
+   "monsters inflict # grasping vine on hit",
+   "monsters take #% reduced extra damage from critical hits",
+   "natural rare monsters in area eat the souls of slain monsters in their presence",
+   "natural rare monsters in area have # extra abyssal modifier",
+   "note: ~price # exalted",
+   "overseer tablet",
+   "pack size: +#%",
+   "pack size: +#% (augmented)",
+   "physical damage: #",
+   "physical damage: #%",
+   "physical damage: +#%",
+   "players and their minions deal no damage for # out of every # seconds",
+   "players are marked for death for # seconds",
+   "players are periodically cursed with elemental weakness",
+   "players are periodically cursed with enfeeble",
+   "players are periodically cursed with temporal chains",
+   "players gain #% reduced flask charges",
+   "players have #% less cooldown recovery rate",
+   "players have #% less movement and skill speed for each time they've used a skill recently",
+   "players have #% less recovery rate of life and energy shield",
+   "players in area are #% delirious",
+   "players steal the eaten souls of slain rare monsters in area",
+   "quality: #",
+   "quality: #%",
+   "quality: +#%",
+   "rare monsters have a #% surpassing chance to have an additional modifier",
+   "rare monsters: +#%",
+   "rare monsters: +#% (augmented)",
+   "rarity: magic",
+   "rarity: normal",
+   "rarity: rare",
+   "rarity: unique",
+   "reload time: #",
+   "reload time: #%",
+   "reload time: +#%",
+   "requires: #",
+   "requires: #%",
+   "requires: +#%",
+   "revives available: #",
+   "ritual tablet",
+   "runic monsters in your maps are duplicated",
+   "runic ward: #",
+   "runic ward: #%",
+   "runic ward: +#%",
+   "season of the hunt",
+   "sockets: #",
+   "sockets: #%",
+   "sockets: +#%",
+   "spirit: #",
+   "spirit: #%",
+   "spirit: +#%",
+   "stack size: #",
+   "stack size: #%",
+   "stack size: +#%",
+   "talisman tier: #",
+   "talisman tier: #%",
+   "talisman tier: +#%",
+   "temple tablet",
+   "the grand project",
+   "twice corrupted",
+   "unforeseen consequences",
+   "unidentified",
+   "unidentified (tier #)",
+   "unmodifiable",
+   "unstable breaches in map take # additional seconds to collapse after timer is filled",
+   "visions of paradise",
+   "waystone (tier #)",
+   "waystone drop chance: +#%",
+   "waystone drop chance: +#% (augmented)",
+   "waystone tier: #",
+   "wraeclast besieged",
+   "{ corruption enhancement (tier: #) }",
+   "{ corruption enhancement }",
+   "{ desecrated (tier: #) }",
+   "{ desecrated prefix modifier \"abyssal\" (tier: #) }",
+   "{ desecrated suffix modifier \"of consumption\" (tier: #) }",
+   "{ desecrated suffix modifier \"of cycling\" (tier: #) }",
+   "{ desecrated suffix modifier \"of deceleration\" (tier: #) }",
+   "{ desecrated suffix modifier \"of grasping\" (tier: #) }",
+   "{ desecrated suffix modifier \"of retribution\" (tier: #) }",
+   "{ desecrated suffix modifier \"of siphoning\" (tier: #) }",
+   "{ desecrated }",
+   "{ enhancement (tier: #) }",
+   "{ enhancement }",
+   "{ fractured (tier: #) }",
+   "{ fractured }",
+   "{ implicit modifier (tier: #) }",
+   "{ implicit modifier }",
+   "{ prefix modifier \"abounding\" (tier: #) }",
+   "{ prefix modifier \"azmeri's\" (tier: #) }",
+   "{ prefix modifier \"bountiful\" (tier: #) }",
+   "{ prefix modifier \"breeding\" (tier: #) }",
+   "{ prefix modifier \"brimming\" (tier: #) }",
+   "{ prefix modifier \"challenger's\" (tier: #) }",
+   "{ prefix modifier \"collector's\" (tier: #) }",
+   "{ prefix modifier \"crystallised\" (tier: #) }",
+   "{ prefix modifier \"destructive\" (tier: #) }",
+   "{ prefix modifier \"elevated\" (tier: #) }",
+   "{ prefix modifier \"exiled\" (tier: #) }",
+   "{ prefix modifier \"fleeting\" (tier: #) }",
+   "{ prefix modifier \"frostbitten\" (tier: #) }",
+   "{ prefix modifier \"impacting\" (tier: #) }",
+   "{ prefix modifier \"infernal\" (tier: #) }",
+   "{ prefix modifier \"painful\" (tier: #) }",
+   "{ prefix modifier \"penetrating\" (tier: #) }",
+   "{ prefix modifier \"precise\" (tier: #) }",
+   "{ prefix modifier \"profane\" (tier: #) }",
+   "{ prefix modifier \"puncturing\" (tier: #) }",
+   "{ prefix modifier \"shattering\" (tier: #) }",
+   "{ prefix modifier \"summoner's\" (tier: #) }",
+   "{ prefix modifier \"teeming\" (tier: #) }",
+   "{ prefix modifier \"thunderous\" (tier: #) }",
+   "{ prefix modifier \"tough\" (tier: #) }",
+   "{ prefix modifier \"treasurer's\" (tier: #) }",
+   "{ prefix modifier \"venomous\" (tier: #) }",
+   "{ prefix modifier (tier: #) }",
+   "{ prefix modifier }",
+   "{ suffix modifier \"flaming\" (tier: #) }",
+   "{ suffix modifier \"of ancient evil\" (tier: #) }",
+   "{ suffix modifier \"of ancient fiends\" (tier: #) }",
+   "{ suffix modifier \"of buffering\" (tier: #) }",
+   "{ suffix modifier \"of champions\" (tier: #) }",
+   "{ suffix modifier \"of compartments\" (tier: #) }",
+   "{ suffix modifier \"of conquering\" (tier: #) }",
+   "{ suffix modifier \"of contest\" (tier: #) }",
+   "{ suffix modifier \"of crystals\" (tier: #) }",
+   "{ suffix modifier \"of dark power\" (tier: #) }",
+   "{ suffix modifier \"of devotion\" (tier: #) }",
+   "{ suffix modifier \"of drought\" (tier: #) }",
+   "{ suffix modifier \"of enduring\" (tier: #) }",
+   "{ suffix modifier \"of enfeebling\" (tier: #) }",
+   "{ suffix modifier \"of erosion\" (tier: #) }",
+   "{ suffix modifier \"of escalation\" (tier: #) }",
+   "{ suffix modifier \"of eternity\" (tier: #) }",
+   "{ suffix modifier \"of evasion\" (tier: #) }",
+   "{ suffix modifier \"of exposure\" (tier: #) }",
+   "{ suffix modifier \"of fatigue\" (tier: #) }",
+   "{ suffix modifier \"of flames\" (tier: #) }",
+   "{ suffix modifier \"of freeze time\" (tier: #) }",
+   "{ suffix modifier \"of hexwarding\" (tier: #) }",
+   "{ suffix modifier \"of hoards\" (tier: #) }",
+   "{ suffix modifier \"of hollows\" (tier: #) }",
+   "{ suffix modifier \"of knowledge\" (tier: #) }",
+   "{ suffix modifier \"of madness\" (tier: #) }",
+   "{ suffix modifier \"of mirrors\" (tier: #) }",
+   "{ suffix modifier \"of obstruction\" (tier: #) }",
+   "{ suffix modifier \"of omens\" (tier: #) }",
+   "{ suffix modifier \"of ossification\" (tier: #) }",
+   "{ suffix modifier \"of overpowering\" (tier: #) }",
+   "{ suffix modifier \"of pathways\" (tier: #) }",
+   "{ suffix modifier \"of persecution\" (tier: #) }",
+   "{ suffix modifier \"of phobia\" (tier: #) }",
+   "{ suffix modifier \"of power\" (tier: #) }",
+   "{ suffix modifier \"of prayers\" (tier: #) }",
+   "{ suffix modifier \"of preservation\" (tier: #) }",
+   "{ suffix modifier \"of remnants\" (tier: #) }",
+   "{ suffix modifier \"of runes\" (tier: #) }",
+   "{ suffix modifier \"of sacrifice\" (tier: #) }",
+   "{ suffix modifier \"of schisms\" (tier: #) }",
+   "{ suffix modifier \"of sentinels\" (tier: #) }",
+   "{ suffix modifier \"of shattering\" (tier: #) }",
+   "{ suffix modifier \"of shocking\" (tier: #) }",
+   "{ suffix modifier \"of shrines\" (tier: #) }",
+   "{ suffix modifier \"of sleet\" (tier: #) }",
+   "{ suffix modifier \"of slowing\" (tier: #) }",
+   "{ suffix modifier \"of smothering\" (tier: #) }",
+   "{ suffix modifier \"of spirits\" (tier: #) }",
+   "{ suffix modifier \"of strongboxes\" (tier: #) }",
+   "{ suffix modifier \"of the antiquarian\" (tier: #) }",
+   "{ suffix modifier \"of the appeal\" (tier: #) }",
+   "{ suffix modifier \"of the cartographer\" (tier: #) }",
+   "{ suffix modifier \"of the commander\" (tier: #) }",
+   "{ suffix modifier \"of the cult\" (tier: #) }",
+   "{ suffix modifier \"of the demolition\" (tier: #) }",
+   "{ suffix modifier \"of the depths\" (tier: #) }",
+   "{ suffix modifier \"of the detonator\" (tier: #) }",
+   "{ suffix modifier \"of the devoted\" (tier: #) }",
+   "{ suffix modifier \"of the dogma\" (tier: #) }",
+   "{ suffix modifier \"of the essence\" (tier: #) }",
+   "{ suffix modifier \"of the exile\" (tier: #) }",
+   "{ suffix modifier \"of the flesh\" (tier: #) }",
+   "{ suffix modifier \"of the flow\" (tier: #) }",
+   "{ suffix modifier \"of the form\" (tier: #) }",
+   "{ suffix modifier \"of the foundling\" (tier: #) }",
+   "{ suffix modifier \"of the hand\" (tier: #) }",
+   "{ suffix modifier \"of the horde\" (tier: #) }",
+   "{ suffix modifier \"of the invasion\" (tier: #) }",
+   "{ suffix modifier \"of the nemesis\" (tier: #) }",
+   "{ suffix modifier \"of the occult\" (tier: #) }",
+   "{ suffix modifier \"of the past\" (tier: #) }",
+   "{ suffix modifier \"of the prism\" (tier: #) }",
+   "{ suffix modifier \"of the simulacrum\" (tier: #) }",
+   "{ suffix modifier \"of the summoning\" (tier: #) }",
+   "{ suffix modifier \"of the unending\" (tier: #) }",
+   "{ suffix modifier \"of the unwavering\" (tier: #) }",
+   "{ suffix modifier \"of treasure\" (tier: #) }",
+   "{ suffix modifier \"of treasures\" (tier: #) }",
+   "{ suffix modifier \"of twins\" (tier: #) }",
+   "{ suffix modifier \"of undertaking\" (tier: #) }",
+   "{ suffix modifier \"of verisium\" (tier: #) }",
+   "{ suffix modifier \"of wisps\" (tier: #) }",
+   "{ suffix modifier \"of worship\" (tier: #) }",
+   "{ suffix modifier \"shocking\" (tier: #) }",
+   "{ suffix modifier \"sleet\" (tier: #) }",
+   "{ suffix modifier (tier: #) }",
+   "{ suffix modifier }",
+   "{ unique modifier \"of envy\" (tier: #) }",
+   "{ unique modifier \"of eternity\" (tier: #) }",
+   "{ unique modifier \"of fissuring\" (tier: #) }",
+   "{ unique modifier \"of relics\" (tier: #) }",
+   "{ unique modifier \"of rupturing\" (tier: #) }",
+   "{ unique modifier \"of the commander\" (tier: #) }",
+   "{ unique modifier \"of the domain\" (tier: #) }",
+   "{ unique modifier \"of the flash\" (tier: #) }",
+   "{ unique modifier \"of the hand\" (tier: #) }",
+   "{ unique modifier \"of the horde\" (tier: #) }",
+   "{ unique modifier \"of the invasion\" (tier: #) }",
+   "{ unique modifier \"of the pursuit\" (tier: #) }",
+   "{ unique modifier \"of the writings\" (tier: #) }",
+   "{ unique modifier \"of verisium\" (tier: #) }",
+   "{ unique modifier \"plundering\" (tier: #) }",
+   "{ unique modifier (tier: #) }",
+   "{ unique modifier }",
+   "— unscalable value"
+  ],
+  "types": {
+   "breach": "ch ta",
+   "expedition": "n tab",
+   "delirium": "m tab",
+   "ritual": "al ta",
+   "irradiated": "ted ta",
+   "overseer": "eer t",
+   "abyss": "s tab",
+   "temple": "e tab"
+  },
+  "names": {
+   "abyss": "Abyss Tablet",
+   "breach": "Breach Tablet",
+   "delirium": "Delirium Tablet",
+   "expedition": "Expedition Tablet",
+   "irradiated": "Irradiated Tablet",
+   "temple": "Temple Tablet",
+   "overseer": "Overseer Tablet",
+   "ritual": "Ritual Tablet"
+  },
+  "uses": {
+   "pre": "",
+   "post": " uses"
+  },
+  "rarity": {
+   "normal": ": no",
+   "magic": ": ma",
+   "rare": ": ra",
+   "unique": ": un"
+  },
+  "tradeType": {
+   "abyss": "Abyss Tablet",
+   "breach": "Breach Tablet",
+   "delirium": "Delirium Tablet",
+   "expedition": "Expedition Tablet",
+   "irradiated": "Irradiated Tablet",
+   "temple": "Temple Tablet",
+   "overseer": "Overseer Tablet",
+   "ritual": "Ritual Tablet"
+  }
+ },
+ "vendor": {
+  "props": {
+   "life": {
+    "text": [
+     "+# to maximum Life"
+    ],
+    "pre": "\\+",
+    "posts": [
+     " to maximum l"
+    ]
+   },
+   "mana": {
+    "text": [
+     "+# to maximum Mana"
+    ],
+    "pre": "",
+    "posts": [
+     " to maximum m"
+    ]
+   },
+   "energyShield": {
+    "text": [
+     "+# to maximum Energy Shield"
+    ],
+    "pre": "",
+    "posts": [
+     " to maximum ene"
+    ]
+   },
+   "spirit": {
+    "text": [
+     "+# to Spirit"
+    ],
+    "pre": "",
+    "posts": [
+     " to spi"
+    ]
+   },
+   "resFire": {
+    "text": [
+     "+#% to Fire Resistance"
+    ],
+    "pre": "\\+",
+    "posts": [
+     "% to fire r"
+    ]
+   },
+   "resCold": {
+    "text": [
+     "+#% to Cold Resistance"
+    ],
+    "pre": "\\+",
+    "posts": [
+     "% to cold r"
+    ]
+   },
+   "resLightning": {
+    "text": [
+     "+#% to Lightning Resistance"
+    ],
+    "pre": "\\+",
+    "posts": [
+     "% to lightning r"
+    ]
+   },
+   "resChaos": {
+    "text": [
+     "+#% to Chaos Resistance"
+    ],
+    "pre": "\\+",
+    "posts": [
+     "% to chaos r"
+    ]
+   },
+   "resAll": {
+    "text": [
+     "+#% to all Elemental Resistances"
+    ],
+    "pre": "\\+",
+    "posts": [
+     "% to all e"
+    ]
+   },
+   "gemAll": {
+    "text": [
+     "+# to Level of all Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all sk"
+    ]
+   },
+   "gemSpell": {
+    "text": [
+     "+# to Level of all Spell Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all sp"
+    ]
+   },
+   "gemFire": {
+    "text": [
+     "+# to Level of all Fire Spell Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all fire sp"
+    ]
+   },
+   "gemCold": {
+    "text": [
+     "+# to Level of all Cold Spell Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all cold sp"
+    ]
+   },
+   "gemLightning": {
+    "text": [
+     "+# to Level of all Lightning Spell Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all lightning sp"
+    ]
+   },
+   "gemChaos": {
+    "text": [
+     "+# to Level of all Chaos Spell Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all chaos sp"
+    ]
+   },
+   "gemPhys": {
+    "text": [
+     "+# to Level of all Physical Spell Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all ph"
+    ]
+   },
+   "gemMinion": {
+    "text": [
+     "+# to Level of all Minion Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all mi"
+    ]
+   },
+   "gemMelee": {
+    "text": [
+     "+# to Level of all Melee Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all me"
+    ]
+   },
+   "gemProjectile": {
+    "text": [
+     "+# to Level of all Projectile Skills"
+    ],
+    "pre": "",
+    "posts": [
+     " to level of all pr"
+    ]
+   },
+   "spellDamage": {
+    "text": [
+     "#% increased Spell Damage"
+    ],
+    "pre": "",
+    "posts": [
+     "% increased spell d"
+    ]
+   },
+   "physDamage": {
+    "text": [
+     "#% increased Physical Damage"
+    ],
+    "pre": "",
+    "posts": [
+     "% increased physical d"
+    ]
+   },
+   "addPhys": {
+    "text": [
+     "Adds # to # Physical Damage"
+    ],
+    "token": "ds \\d[\\d.()-]* to \\d[\\d.()-]* p"
+   },
+   "addFire": {
+    "text": [
+     "Adds # to # Fire Damage"
+    ],
+    "token": "ds \\d[\\d.()-]* to \\d[\\d.()-]* fire d"
+   },
+   "addCold": {
+    "text": [
+     "Adds # to # Cold Damage"
+    ],
+    "token": "o \\d[\\d.()-]* cold d"
+   },
+   "addLightning": {
+    "text": [
+     "Adds # to # Lightning Damage"
+    ],
+    "token": "ds \\d[\\d.()-]* to \\d[\\d.()-]* l"
+   },
+   "addChaos": {
+    "text": [
+     "Adds # to # Chaos damage"
+    ],
+    "token": "s \\d[\\d.()-]* to \\d[\\d.()-]* ch"
+   },
+   "addAttackPhys": {
+    "text": [
+     "Adds # to # Physical Damage to Attacks"
+    ],
+    "token": "l damage to attacks"
+   },
+   "addAttackFire": {
+    "text": [
+     "Adds # to # Fire damage to Attacks"
+    ],
+    "token": "e damage to a"
+   },
+   "addAttackCold": {
+    "text": [
+     "Adds # to # Cold damage to Attacks"
+    ],
+    "token": "d damage to a"
+   },
+   "addAttackLightning": {
+    "text": [
+     "Adds # to # Lightning damage to Attacks"
+    ],
+    "token": "\\d[\\d.()-]* l.*o a"
+   },
+   "moveSpeed": {
+    "text": [
+     "#% increased Movement Speed"
+    ],
+    "pre": "",
+    "posts": [
+     "% increased movement sp"
+    ]
+   },
+   "attackSpeed": {
+    "text": [
+     "#% increased Attack Speed"
+    ],
+    "pre": "",
+    "posts": [
+     "% increased attack s"
+    ]
+   },
+   "castSpeed": {
+    "text": [
+     "#% increased Cast Speed"
+    ],
+    "pre": "",
+    "posts": [
+     "% increased ca"
+    ]
+   },
+   "critChance": {
+    "text": [
+     "#% increased Critical Hit Chance",
+     "#% increased Critical Hit Chance for Spells",
+     "#% increased Critical Hit Chance for Attacks"
+    ],
+    "pre": "",
+    "posts": [
+     "% increased critical h"
+    ]
+   },
+   "str": {
+    "text": [
+     "+# to Strength"
+    ],
+    "pre": "\\+",
+    "posts": [
+     " to str"
+    ]
+   },
+   "dex": {
+    "text": [
+     "+# to Dexterity"
+    ],
+    "pre": "",
+    "posts": [
+     " to dex"
+    ]
+   },
+   "int": {
+    "text": [
+     "+# to Intelligence"
+    ],
+    "pre": "",
+    "posts": [
+     " to i"
+    ]
+   },
+   "allAttributes": {
+    "text": [
+     "+# to all Attributes"
+    ],
+    "pre": "\\+",
+    "posts": [
+     " to al"
+    ]
+   },
+   "rarity": {
+    "text": [
+     "#% increased Rarity of Items found"
+    ],
+    "pre": "",
+    "posts": [
+     "% increased rarity of items f"
+    ]
+   }
+  },
+  "classes": {
+   "boots": ": boo",
+   "gloves": ": gl",
+   "helmet": ": he",
+   "bodyArmour": ": bod",
+   "shield": ": sh",
+   "buckler": ": bu",
+   "focus": ": fo",
+   "quiver": ": qui",
+   "ring": ": ri",
+   "amulet": ": am",
+   "belt": ": be",
+   "wand": ": wa",
+   "staff": ": st",
+   "sceptre": ": sc",
+   "quarterstaff": ": qua",
+   "bow": ": bow",
+   "crossbow": ": cr",
+   "spear": ": sp",
+   "mace1h": ": on",
+   "mace2h": ": tw",
+   "flail": ": fl",
+   "lifeFlask": ": li",
+   "manaFlask": "s: m",
+   "charm": ": ch"
+  },
+  "classNames": {
+   "boots": "Boots",
+   "gloves": "Gloves",
+   "helmet": "Helmets",
+   "bodyArmour": "Body Armours",
+   "shield": "Shields",
+   "buckler": "Bucklers",
+   "focus": "Foci",
+   "quiver": "Quivers",
+   "ring": "Rings",
+   "amulet": "Amulets",
+   "belt": "Belts",
+   "wand": "Wands",
+   "staff": "Staves",
+   "sceptre": "Sceptres",
+   "quarterstaff": "Quarterstaves",
+   "bow": "Bows",
+   "crossbow": "Crossbows",
+   "spear": "Spears",
+   "mace1h": "One Hand Maces",
+   "mace2h": "Two Hand Maces",
+   "flail": "Flails",
+   "lifeFlask": "Life Flasks",
+   "manaFlask": "Mana Flasks",
+   "charm": "Charms"
+  },
+  "rarity": {
+   "normal": ": no",
+   "magic": "y: m",
+   "rare": ": ra",
+   "unique": ": un"
+  },
+  "sockets": "ets:",
+  "quality": "lity:"
+ }
+}

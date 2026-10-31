@@ -25,6 +25,8 @@ import { buildTreeChannels, buildTreeEvents, type BuildTreeIpcApi } from './ipc/
 import { buildChannels, buildEvents, type BuildIpcApi } from './ipc/build'
 import { equipChannels, equipEvents, type EquipIpcApi } from './ipc/equip'
 import { lootFilterChannels, lootFilterEvents, type LootFilterIpcApi } from './ipc/lootFilter'
+import { screenChannels, screenEvents, type ScreenIpcApi } from './ipc/screen'
+import { rumoursChannels, rumoursEvents, type RumoursIpcApi } from './ipc/rumours'
 
 /** Каналы и события по доменам — для проверки уникальности в тестах. */
 export const IPC_DOMAINS = {
@@ -46,7 +48,9 @@ export const IPC_DOMAINS = {
   buildTree: { channels: buildTreeChannels, events: buildTreeEvents },
   build: { channels: buildChannels, events: buildEvents },
   equip: { channels: equipChannels, events: equipEvents },
-  lootFilter: { channels: lootFilterChannels, events: lootFilterEvents }
+  lootFilter: { channels: lootFilterChannels, events: lootFilterEvents },
+  screen: { channels: screenChannels, events: screenEvents },
+  rumours: { channels: rumoursChannels, events: rumoursEvents }
 } as const
 
 export const IPC = {
@@ -69,6 +73,8 @@ export const IPC = {
   ...buildChannels,
   ...equipChannels,
   ...lootFilterChannels,
+  ...screenChannels,
+  ...rumoursChannels,
   events: {
     ...campaignEvents,
     ...tradeEvents,
@@ -88,7 +94,9 @@ export const IPC = {
     ...buildTreeEvents,
     ...buildEvents,
     ...equipEvents,
-    ...lootFilterEvents
+    ...lootFilterEvents,
+    ...screenEvents,
+    ...rumoursEvents
   }
 } as const
 
@@ -112,7 +120,9 @@ export interface OverlayApi
     BuildTreeIpcApi,
     BuildIpcApi,
     EquipIpcApi,
-    LootFilterIpcApi {}
+    LootFilterIpcApi,
+    ScreenIpcApi,
+    RumoursIpcApi {}
 
 export type {
   CampaignIpcApi,
@@ -133,5 +143,7 @@ export type {
   BuildTreeIpcApi,
   BuildIpcApi,
   EquipIpcApi,
-  LootFilterIpcApi
+  LootFilterIpcApi,
+  ScreenIpcApi,
+  RumoursIpcApi
 }

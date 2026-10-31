@@ -20,7 +20,8 @@ import { actIdFromGameArea, matchSpeaker, type BossIndex } from './bossMatcher'
 // менеджера сделок PoE1, S8). Подпапки логов — GameDef.logSubdirs (по умолчанию PoE2, как было).
 // NOTE: `: <X> has been slain.` is a PLAYER death (self/party), NOT a boss kill — never parsed.
 
-const GENERATING = /Generating level \d+ area "([^"]+)"/
+// S64: уровень области (N) — для подсказки «эта зона даёт ~N % опыта» (ZoneXpHint); на компас не влияет
+const GENERATING = /Generating level (\d+) area "([^"]+)"/
 const SCENE = /\[SCENE\] Set Source \[(.+?)\]/
 const ACT_TITLE = /^Act \d+$/
 // Real format: `: <Name> (<Class>) is now level <N>` — the class (which may contain
@@ -97,6 +98,8 @@ export interface LogTailerOptions {
 
 interface Parsed {
   areaId?: string
+  /** уровень области из той же строки генерации (S64) */
+  areaLevel?: number
   areaName?: string
   level?: LevelEvent
   /** dialogue speaker (raw, unmatched) — for boss detection */
@@ -133,6 +136,7 @@ export class LogTailer extends EventEmitter {
       logPath: this.logPath,
       found: this.logPath !== null,
       areaId: this.lastZone?.areaId,
+      areaLevel: this.lastZone?.areaLevel,
       areaName: this.lastZone?.areaName,
       level: this.lastLevelValue ?? undefined
     }
@@ -194,9 +198,10 @@ export class LogTailer extends EventEmitter {
     const out: Parsed = {}
     const g = line.match(GENERATING)
     if (g) {
-      let id = g[1]
+      let id = g[2]
       if (id.endsWith('_')) id = id.slice(0, -1)
       out.areaId = id.toLowerCase()
+      out.areaLevel = parseInt(g[1], 10)
     } else {
       const sc = line.match(SCENE)
       if (sc && !ACT_TITLE.test(sc[1]) && sc[1] !== '(unknown)' && sc[1] !== '(null)') {
@@ -234,11 +239,12 @@ export class LogTailer extends EventEmitter {
     this.emit('boss', ev)
   }
 
-  private emitZone(areaId?: string, areaName?: string): void {
+  private emitZone(areaId?: string, areaName?: string, areaLevel?: number): void {
     const key = areaId ?? areaName ?? null
     if (!key || key === this.lastZoneKey) return
     this.lastZoneKey = key
     const ev: ZoneEvent = { areaId, areaName, at: Date.now() }
+    if (areaId && areaLevel !== undefined) ev.areaLevel = areaLevel
     this.lastZone = ev
     this.emit('zone', ev)
   }
@@ -252,19 +258,22 @@ export class LogTailer extends EventEmitter {
   private async scanTail(path: string, size: number): Promise<void> {
     const start = Math.max(0, size - SCAN_BYTES)
     let lastZoneId: string | undefined
+    let lastZoneLevel: number | undefined
     let lastZoneName: string | undefined
     let lastLevel: LevelEvent | undefined
     await this.readRange(path, start, size - 1, (p) => {
       if (p.areaId) {
         lastZoneId = p.areaId
+        lastZoneLevel = p.areaLevel
         lastZoneName = undefined
       } else if (p.areaName) {
         lastZoneName = p.areaName
         lastZoneId = undefined
+        lastZoneLevel = undefined
       }
       if (p.level) lastLevel = p.level
     })
-    if (lastZoneId || lastZoneName) this.emitZone(lastZoneId, lastZoneName)
+    if (lastZoneId || lastZoneName) this.emitZone(lastZoneId, lastZoneName, lastZoneLevel)
     if (lastLevel) this.emitLevel(lastLevel)
   }
 
@@ -285,7 +294,7 @@ export class LogTailer extends EventEmitter {
           from,
           to,
           (p) => {
-            if (p.areaId || p.areaName) this.emitZone(p.areaId, p.areaName)
+            if (p.areaId || p.areaName) this.emitZone(p.areaId, p.areaName, p.areaLevel)
             if (p.level) this.emitLevel(p.level)
             this.handleBoss(p)
           },

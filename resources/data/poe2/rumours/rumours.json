@@ -1,0 +1,690 @@
+{
+  "schema": 1,
+  "patch": "0.5.5.5",
+  "updatedAt": "2026-10-31",
+  "rumours": [
+    {
+      "id": "all-that-glitters",
+      "area": "MapUniqueCastaway",
+      "text": {
+        "en": "All that glitters...",
+        "ru": "Всё что блестит..."
+      },
+      "island": {
+        "en": "Castaway",
+        "ru": "Изгой"
+      },
+      "category": "unique",
+      "bosses": [
+        {
+          "en": "Torrek of the Drowned Fleet",
+          "ru": "Торрек из затонувшей флотилии"
+        }
+      ],
+      "rewards": [
+        {
+          "kind": "gold"
+        },
+        {
+          "kind": "treasure"
+        }
+      ],
+      "risks": [
+        "goldOnly"
+      ],
+      "difficulty": 1,
+      "tier": 2,
+      "note": {
+        "ru": "Золота в разы больше, предметы сразу превращаются в золото, есть закопанный клад. Хорошо, когда копите золото.",
+        "en": "Many times more gold, drops turn into gold, and there is buried treasure. Good when you are saving gold."
+      },
+      "checked": null
+    },
+    {
+      "id": "almost-paradise",
+      "area": "MapUniqueUntaintedParadise",
+      "text": {
+        "en": "Almost paradise.",
+        "ru": "Почти рай."
+      },
+      "island": {
+        "en": "Untainted Paradise",
+        "ru": "Нетронутый рай"
+      },
+      "category": "unique",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "xp"
+        }
+      ],
+      "risks": [
+        "noLoot"
+      ],
+      "difficulty": 1,
+      "tier": 2,
+      "note": {
+        "ru": "Много опыта, но предметы не падают. Брать, если качаете уровень, а не фармите валюту.",
+        "en": "Lots of experience, but no items drop. Take it to level up, not to farm currency."
+      },
+      "checked": null
+    },
+    {
+      "id": "a-good-fellow",
+      "area": "MapUniqueMerchant03_Raft",
+      "text": {
+        "en": "A good fellow...",
+        "ru": "Славный малый..."
+      },
+      "island": {
+        "en": "Moment of Zen",
+        "ru": "Безмятежность"
+      },
+      "category": "unique",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "merchant"
+        }
+      ],
+      "risks": [],
+      "difficulty": 1,
+      "tier": 2,
+      "note": {
+        "ru": "Остров с бродячим торговцем и особыми товарами. Удача зависит от того, что он привезёт; нужна валюта на покупки.",
+        "en": "Island with a travelling merchant selling special wares. Luck depends on his stock; bring currency to buy."
+      },
+      "checked": null
+    },
+    {
+      "id": "reflective-waters",
+      "area": "MapUniqueLake",
+      "text": {
+        "en": "Reflective waters...",
+        "ru": "Отражающие воды..."
+      },
+      "island": {
+        "en": "The Fractured Lake",
+        "ru": "Расколотое озеро"
+      },
+      "category": "unique",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "rares"
+        }
+      ],
+      "risks": [
+        "tough"
+      ],
+      "difficulty": 2,
+      "tier": 2,
+      "note": {
+        "ru": "Редких монстров заметно больше, у них есть зеркальные копии. Много добычи с редких, но и опаснее.",
+        "en": "Far more rare monsters, with mirrored copies. Plenty of loot from rares, but more dangerous too."
+      },
+      "checked": null
+    },
+    {
+      "id": "crazed-chieftain",
+      "area": "MapUberBoss_JadeCitadel",
+      "text": {
+        "en": "Crazed Chieftain...",
+        "ru": "Обезумевший вождь..."
+      },
+      "island": {
+        "en": "The Jade Isles",
+        "ru": "Нефритовые острова"
+      },
+      "category": "boss",
+      "bosses": [
+        {
+          "en": "Manoki, the Chosen",
+          "ru": "Маноки, избранный"
+        },
+        {
+          "en": "Manoki, the Fevered",
+          "ru": "Маноки, лихорадочный"
+        },
+        {
+          "en": "Manoki, the Defiled",
+          "ru": "Маноки, осквернённый"
+        }
+      ],
+      "rewards": [
+        {
+          "item": {
+            "ns": "GEM",
+            "ref": "Rakiata's Flow",
+            "meta": "Metadata/Items/Gem/SupportGemRakiatasFlow",
+            "name": {
+              "en": "Rakiata's Flow",
+              "ru": "Поток Ракиаты"
+            }
+          }
+        }
+      ],
+      "risks": [
+        "boss"
+      ],
+      "difficulty": 3,
+      "tier": 3,
+      "note": {
+        "ru": "Три боя с Маноки подряд и шанс на именной камень поддержки — один из самых дорогих дропов. Для крепких билдов.",
+        "en": "Three Manoki fights in a row and a chance at a named support gem, one of the priciest drops. For sturdy builds."
+      },
+      "checked": null
+    },
+    {
+      "id": "somethin-fishy",
+      "area": "ExpeditionLogBook_Atoll",
+      "text": {
+        "en": "Somethin' fishy...",
+        "ru": "Что-то нечисто..."
+      },
+      "island": {
+        "en": "Barren Atoll",
+        "ru": "Бесплодный риф"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "gold"
+        },
+        {
+          "item": {
+            "ns": "ITEM",
+            "ref": "Pearlescent Amulet",
+            "meta": "Metadata/Items/Amulets/FourAmulet11",
+            "name": {
+              "en": "Pearlescent Amulet",
+              "ru": "Амулет с перламутром"
+            }
+          }
+        }
+      ],
+      "risks": [],
+      "difficulty": 1,
+      "tier": 2,
+      "note": {
+        "ru": "Экспедиция с большим золотом и жемчужными амулетами из раковин. Спокойный остров для новичка.",
+        "en": "Expedition with lots of gold and pearlescent amulets from clams. A calm island for beginners."
+      },
+      "checked": null
+    },
+    {
+      "id": "end-of-the-circle",
+      "area": "ExpeditionSubArea_MedvedBoss",
+      "text": {
+        "en": "End of the circle...",
+        "ru": "Конец круга..."
+      },
+      "island": {
+        "en": "Sprawling Jungle",
+        "ru": "Разросшиеся джунгли"
+      },
+      "category": "boss",
+      "bosses": [
+        {
+          "en": "Medved, the Fallen Seer",
+          "ru": "Медведь, павший провидец"
+        }
+      ],
+      "rewards": [
+        {
+          "item": {
+            "ns": "ITEM",
+            "ref": "Medved's Crest of the Circle",
+            "meta": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique1",
+            "name": {
+              "en": "Medved's Crest of the Circle",
+              "ru": "Знак Круга Медведя"
+            }
+          }
+        }
+      ],
+      "risks": [
+        "boss"
+      ],
+      "difficulty": 3,
+      "tier": 2,
+      "note": {
+        "ru": "Бой с Медведем, смерть не отнимает опыт. Награда — его именные предметы, обычно дешевле, чем у Олрота и Утреда.",
+        "en": "Fight Medved; dying costs no XP. Rewards are his named items, usually cheaper than Olroth's or Uhtred's."
+      },
+      "checked": null
+    },
+    {
+      "id": "the-last-to-fall",
+      "area": "ExpeditionSubArea_VoranaBoss",
+      "text": {
+        "en": "The last to fall...",
+        "ru": "Последняя из павших..."
+      },
+      "island": {
+        "en": "Mournful Cliffside",
+        "ru": "Скорбный утёс"
+      },
+      "category": "boss",
+      "bosses": [
+        {
+          "en": "Vorana, Last to Fall",
+          "ru": "Ворана, Стоящая до конца"
+        }
+      ],
+      "rewards": [
+        {
+          "item": {
+            "ns": "ITEM",
+            "ref": "Vorana's Crest of the Scythe",
+            "meta": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique2",
+            "name": {
+              "en": "Vorana's Crest of the Scythe",
+              "ru": "Знак Косы Вораны"
+            }
+          }
+        }
+      ],
+      "risks": [
+        "boss"
+      ],
+      "difficulty": 3,
+      "tier": 2,
+      "note": {
+        "ru": "Бой с Вораной, смерть не отнимает опыт. Награда — её именные предметы. Брать, если цена её герба выросла.",
+        "en": "Fight Vorana; dying costs no XP. Rewards are her named items. Worth it when her crest's price is up."
+      },
+      "checked": null
+    },
+    {
+      "id": "stardrinker",
+      "area": "ExpeditionSubArea_UhtredBoss",
+      "text": {
+        "en": "Stardrinker...",
+        "ru": "Пьющий звёзды..."
+      },
+      "island": {
+        "en": "Secluded Temple",
+        "ru": "Уединённый храм"
+      },
+      "category": "boss",
+      "bosses": [
+        {
+          "en": "Uhtred, the Stardrinker",
+          "ru": "Утред, Пьющий звёзды"
+        }
+      ],
+      "rewards": [
+        {
+          "item": {
+            "ns": "ITEM",
+            "ref": "Uhtred's Crest of the Chalice",
+            "meta": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique3",
+            "name": {
+              "en": "Uhtred's Crest of the Chalice",
+              "ru": "Знак Чаши Утреда"
+            }
+          }
+        }
+      ],
+      "risks": [
+        "boss"
+      ],
+      "difficulty": 3,
+      "tier": 3,
+      "note": {
+        "ru": "Бой с Утредом, смерть не отнимает опыт. Его именные предметы ценятся высоко. Идти, если билд держит босса.",
+        "en": "Fight Uhtred; dying costs no XP. His named items are valued highly. Go if your build can handle the boss."
+      },
+      "checked": null
+    },
+    {
+      "id": "origin-of-the-fall",
+      "area": "ExpeditionSubArea_OlrothBoss",
+      "text": {
+        "en": "Origin of the fall...",
+        "ru": "Исток падения..."
+      },
+      "island": {
+        "en": "Obscure Island",
+        "ru": "Неясный остров"
+      },
+      "category": "boss",
+      "bosses": [
+        {
+          "en": "Olroth, Origin of the Fall",
+          "ru": "Олрот, Исток падения"
+        }
+      ],
+      "rewards": [
+        {
+          "item": {
+            "ns": "ITEM",
+            "ref": "Olroth's Reliquary Key",
+            "meta": "Metadata/Items/MapFragments/VaultKeyExpedition",
+            "name": {
+              "en": "Olroth's Reliquary Key",
+              "ru": "Ключ от Реликвария Олрота"
+            }
+          }
+        },
+        {
+          "item": {
+            "ns": "ITEM",
+            "ref": "Olroth's Crest of the Sun",
+            "meta": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique4",
+            "name": {
+              "en": "Olroth's Crest of the Sun",
+              "ru": "Знак Солнца Олрота"
+            }
+          }
+        }
+      ],
+      "risks": [
+        "boss"
+      ],
+      "difficulty": 3,
+      "tier": 3,
+      "note": {
+        "ru": "Бой с Олротом, смерть не отнимает опыт. С него ключ к реликварию экспедиции — он дорого продаётся. Нужен крепкий билд.",
+        "en": "Fight Olroth; dying costs no XP. Drops the Expedition reliquary key, which sells well. Needs a sturdy build."
+      },
+      "checked": null
+    },
+    {
+      "id": "nothin-to-drink",
+      "area": "ExpeditionLogBook_Basin",
+      "text": {
+        "en": "Nothin' to drink...",
+        "ru": "Нечего пить..."
+      },
+      "island": {
+        "en": "Stagnant Basin",
+        "ru": "Застойный водоём"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "oils"
+        }
+      ],
+      "risks": [],
+      "difficulty": 1,
+      "tier": 2,
+      "note": {
+        "ru": "Экспедиция, где падает много жидких эмоций для вложения в амулеты. Цена зависит от того, какие выпадут.",
+        "en": "Expedition that drops many liquid emotions for amulet instilling. Value depends on which ones you get."
+      },
+      "checked": null
+    },
+    {
+      "id": "unknown-ruins",
+      "area": "ExpeditionLogBook_Digsite",
+      "text": {
+        "en": "Unknown ruins...",
+        "ru": "Неизвестные руины..."
+      },
+      "island": {
+        "en": "Exhumed Ruins",
+        "ru": "Разрытые руины"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "islands"
+        }
+      ],
+      "risks": [],
+      "difficulty": 2,
+      "tier": 2,
+      "note": {
+        "ru": "Зажгите три идола — откроются новые острова без журнала. Полезно, когда журналов мало.",
+        "en": "Light three idols to reveal new islands without a logbook. Handy when logbooks are scarce."
+      },
+      "checked": null
+    },
+    {
+      "id": "its-dry-at-least",
+      "area": "ExpeditionLogBook_Gully",
+      "text": {
+        "en": "It's dry at least...",
+        "ru": "Хотя бы сухо..."
+      },
+      "island": {
+        "en": "Sloughed Gully",
+        "ru": "Осыпавшийся овраг"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [],
+      "risks": [
+        "tough"
+      ],
+      "difficulty": 2,
+      "tier": 1,
+      "note": {
+        "ru": "Обычная экспедиция с усиленными монстрами и без особой награды. Брать, только если остальные хуже.",
+        "en": "Ordinary expedition with tougher monsters and no special reward. Take it only if the others are worse."
+      },
+      "checked": null
+    },
+    {
+      "id": "fallen-stars",
+      "area": "ExpeditionLogBook_Heath",
+      "text": {
+        "en": "Fallen stars...",
+        "ru": "Упавшие звёзды..."
+      },
+      "island": {
+        "en": "Moor of Fallen Skies",
+        "ru": "Причал Падших небес"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "item": {
+            "ns": "ITEM",
+            "ref": "Perfect Flux",
+            "meta": "Metadata/Items/Currency/CurrencyUpgradeInherentTo20",
+            "name": {
+              "en": "Perfect Flux",
+              "ru": "Совершенный расплав"
+            }
+          }
+        },
+        {
+          "kind": "verisium"
+        }
+      ],
+      "risks": [],
+      "difficulty": 2,
+      "tier": 3,
+      "note": {
+        "ru": "Большая экспедиция, где много остатков веризия и падает самая дорогая валюта островов. Брать почти всегда.",
+        "en": "Grand expedition packed with Verisium remnants and the priciest currency of the islands. Take it almost always."
+      },
+      "checked": null
+    },
+    {
+      "id": "endless-cliffs",
+      "area": "ExpeditionLogBook_Peninsula",
+      "text": {
+        "en": "Endless cliffs...",
+        "ru": "Бескрайние скалы..."
+      },
+      "island": {
+        "en": "Craggy Peninsula",
+        "ru": "Скалистый мыс"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "rarity"
+        },
+        {
+          "kind": "exiles"
+        }
+      ],
+      "risks": [
+        "tough"
+      ],
+      "difficulty": 2,
+      "tier": 2,
+      "note": {
+        "ru": "Выше редкость предметов и бродячие изгнанники. Изгнанники больно бьют — новичку осторожно.",
+        "en": "Higher item rarity and rogue exiles. Exiles hit hard, so beginners should be careful."
+      },
+      "checked": null
+    },
+    {
+      "id": "warm-but-risky",
+      "area": "ExpeditionLogBook_Prairie",
+      "text": {
+        "en": "Warm but risky...",
+        "ru": "Тепло, но опасно..."
+      },
+      "island": {
+        "en": "Grazed Prairie",
+        "ru": "Травянистые прерии"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "xp"
+        }
+      ],
+      "risks": [
+        "tough",
+        "unreachable"
+      ],
+      "difficulty": 2,
+      "tier": 2,
+      "note": {
+        "ru": "Больше опыта и монстры из Запределья. Часть монстров стоит там, куда не дойти, — нужны умения по площади.",
+        "en": "More experience and monsters from Beyond. Some spawn out of reach, so area skills help."
+      },
+      "checked": null
+    },
+    {
+      "id": "bleak-and-awful",
+      "area": "ExpeditionLogBook_Reef",
+      "text": {
+        "en": "Bleak and awful...",
+        "ru": "Мрачна и ужасна..."
+      },
+      "island": {
+        "en": "Bleached Shoals",
+        "ru": "Выбеленная отмель"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "strongboxes"
+        }
+      ],
+      "risks": [
+        "hidden"
+      ],
+      "difficulty": 2,
+      "tier": 2,
+      "note": {
+        "ru": "Много сундуков-хранилищ, но их стража бывает невидимой и неуязвимой. Новичку осторожно.",
+        "en": "Lots of strongboxes, but their guards can be invisible and invulnerable. Beginners, be careful."
+      },
+      "checked": null
+    },
+    {
+      "id": "wild-roaming-free",
+      "area": "ExpeditionLogBook_Tropical",
+      "text": {
+        "en": "Wild roaming free...",
+        "ru": "Дикие бродят на воле..."
+      },
+      "island": {
+        "en": "Lush Isle",
+        "ru": "Зелёный островок"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "xp"
+        },
+        {
+          "kind": "spirits"
+        }
+      ],
+      "risks": [
+        "unreachable"
+      ],
+      "difficulty": 1,
+      "tier": 2,
+      "note": {
+        "ru": "Опыта втрое больше и духи Азмири. Часть монстров вне досягаемости — нужны умения по площади.",
+        "en": "Triple experience and Azmeri spirits. Some monsters are out of reach, so area skills help."
+      },
+      "checked": null
+    },
+    {
+      "id": "cold-as-ice",
+      "area": "ExpeditionLogBook_Tundra",
+      "text": {
+        "en": "Cold as ice...",
+        "ru": "Холодна как лёд..."
+      },
+      "island": {
+        "en": "Frigid Bluffs",
+        "ru": "Холодные скалы"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "expeditionUniques"
+        }
+      ],
+      "risks": [],
+      "difficulty": 2,
+      "tier": 2,
+      "note": {
+        "ru": "Здесь падают старые уникальные предметы экспедиции, которых нет в других местах.",
+        "en": "Old Expedition unique items drop here that you will not find elsewhere."
+      },
+      "checked": null
+    },
+    {
+      "id": "sulphite",
+      "area": "ExpeditionLogBook_Wastes",
+      "text": {
+        "en": "Sulphite!",
+        "ru": "Сульфит!"
+      },
+      "island": {
+        "en": "Scorched Cay",
+        "ru": "Выжженный островок"
+      },
+      "category": "expedition",
+      "bosses": [],
+      "rewards": [
+        {
+          "kind": "rarity"
+        }
+      ],
+      "risks": [],
+      "difficulty": 1,
+      "tier": 2,
+      "note": {
+        "ru": "Повышенная редкость предметов на всём острове. Ровная добыча без особых опасностей.",
+        "en": "Higher item rarity across the island. Steady loot without special dangers."
+      },
+      "checked": null
+    }
+  ]
+}

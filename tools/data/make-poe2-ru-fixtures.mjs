@@ -645,7 +645,9 @@ for (const file of fs
   const ru = translateItem(fs.readFileSync(path.join(enDir, file), 'utf8'), file)
   const target = path.join(ruDir, file)
   const before = fs.existsSync(target) ? fs.readFileSync(target, 'utf8') : null
-  if (before !== ru) {
+  // S67: на Windows рабочая копия фикстур — CRLF (core.autocrlf), сравниваем без учёта переводов строк
+  const lf = (s) => s.split('\r\n').join('\n')
+  if (before === null || lf(before) !== lf(ru)) {
     changed++
     if (CHECK) console.log(`отличается: ru/${file}`)
     else fs.writeFileSync(target, ru)

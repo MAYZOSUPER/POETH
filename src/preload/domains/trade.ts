@@ -13,7 +13,9 @@ export function tradeBridge(): TradeIpcApi {
       poe2MatchUnknown: (lang, lines) => ipcRenderer.invoke(IPC.trade.poe2MatchUnknown, lang, lines),
       copyText: (text) => ipcRenderer.invoke(IPC.trade.copyText, text),
       currencyRate: (league) => ipcRenderer.invoke(IPC.trade.currencyRate, league),
-      poe1Faustus: (args) => ipcRenderer.invoke(IPC.trade.poe1Faustus, args)
+      poe1Faustus: (args) => ipcRenderer.invoke(IPC.trade.poe1Faustus, args),
+      poe2Rate: (league) => ipcRenderer.invoke(IPC.trade.poe2Rate, league),
+      poe2Ange: (args) => ipcRenderer.invoke(IPC.trade.poe2Ange, args)
     }
   }
 }
