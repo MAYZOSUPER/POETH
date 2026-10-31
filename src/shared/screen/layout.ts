@@ -40,31 +40,57 @@ export interface LayoutSet {
   source?: string
 }
 
-/** Разбор файла раскладок; null — не тот формат. Лишние поля игнорируются, кривые ячейки выбрасываются. */
+/**
+ * Пределы файла раскладок: файл приходит и с пакетом данных (userData/data), раздутый или кривой файл не должен
+ * съесть память и время потока. Сейчас у PoE 2 — 13 вкладок, до 82 ячеек.
+ */
+export const LAYOUT_LIMITS = {
+  tabs: 64,
+  slots: 400,
+  id: 64,
+  name: 120,
+  alt: 8,
+  source: 500,
+  /** эталонная высота окна и координаты, точки */
+  height: 10_000,
+  coord: 20_000,
+  size: 2_000
+} as const
+
+const TAB_ID = /^[a-z0-9][a-z0-9-]*$/
+
+/**
+ * Разбор файла раскладок; null — не тот формат или за пределами LAYOUT_LIMITS (вкладок, ячеек больше). Лишние поля
+ * игнорируются, кривые ячейки и имена длиннее предела выбрасываются.
+ */
 export function parseLayoutSet(json: unknown): LayoutSet | null {
   if (!json || typeof json !== 'object') return null
   const j = json as Record<string, unknown>
   if (j.version !== 1 || (j.game !== 'poe1' && j.game !== 'poe2')) return null
   const refHeight = Number(j.refHeight)
-  if (!(refHeight > 100) || !Array.isArray(j.tabs)) return null
-  const num = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v)
+  if (!(refHeight > 100 && refHeight <= LAYOUT_LIMITS.height) || !Array.isArray(j.tabs) || j.tabs.length > LAYOUT_LIMITS.tabs) return null
+  const num = (v: unknown, max: number): v is number => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) <= max
+  const name = (v: unknown): v is string => typeof v === 'string' && v.length > 0 && v.length <= LAYOUT_LIMITS.name
   const tabs: TabLayout[] = []
   for (const t of j.tabs as unknown[]) {
     if (!t || typeof t !== 'object') continue
     const tt = t as Record<string, unknown>
-    if (typeof tt.id !== 'string' || !Array.isArray(tt.slots)) continue
+    if (typeof tt.id !== 'string' || tt.id.length > LAYOUT_LIMITS.id || !TAB_ID.test(tt.id) || !Array.isArray(tt.slots)) continue
+    if (tt.slots.length > LAYOUT_LIMITS.slots) return null
     const slots: LayoutSlot[] = []
     for (const s of tt.slots as unknown[]) {
       const ss = (s ?? {}) as Record<string, unknown>
-      if (!num(ss.x) || !num(ss.y) || !num(ss.w) || !num(ss.h) || ss.w <= 0 || ss.h <= 0) continue
-      const item = typeof ss.item === 'string' && ss.item ? ss.item : null
-      const slot: LayoutSlot = { x: ss.x, y: ss.y, w: ss.w, h: ss.h, item }
-      if (Array.isArray(ss.alt)) slot.alt = ss.alt.filter((a): a is string => typeof a === 'string' && !!a)
+      const { x, y, w, h } = ss
+      if (!num(x, LAYOUT_LIMITS.coord) || !num(y, LAYOUT_LIMITS.coord) || !num(w, LAYOUT_LIMITS.size) || !num(h, LAYOUT_LIMITS.size) || w <= 0 || h <= 0) continue
+      if (ss.item !== null && ss.item !== undefined && !name(ss.item)) continue
+      const slot: LayoutSlot = { x, y, w, h, item: name(ss.item) ? ss.item : null }
+      if (Array.isArray(ss.alt)) slot.alt = ss.alt.filter(name).slice(0, LAYOUT_LIMITS.alt)
       slots.push(slot)
     }
     if (slots.length) tabs.push({ id: tt.id, slots })
   }
-  return tabs.length ? { version: 1, game: j.game, refHeight, tabs, source: typeof j.source === 'string' ? j.source : undefined } : null
+  const source = typeof j.source === 'string' ? j.source.slice(0, LAYOUT_LIMITS.source) : undefined
+  return tabs.length ? { version: 1, game: j.game, refHeight, tabs, source } : null
 }
 
 export interface Pt {

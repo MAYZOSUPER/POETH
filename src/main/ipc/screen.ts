@@ -4,7 +4,7 @@ import { screenChannels } from '@shared/ipc/screen'
 import { HOTKEY_ACTIONS } from '@shared/settings'
 import type { HotkeyAction } from '@shared/types/settings'
 import { onHotkeyAction } from '../hotkeys'
-import { getLastScreenRead, getScreenState, hideScreenLabels, onScreenHotkey } from '../screen/service'
+import { getScreenState, hideScreenLabels, onScreenHotkey } from '../screen/service'
 import type { IpcDomain } from './types'
 
 // Домен «цены поверх окон» (S68): src/main/screen/*. Каналы — только чтение состояния и «спрятать»; снимок экрана —
@@ -16,7 +16,6 @@ const ACTION = 'screenPrices'
 
 function register(): void {
   ipcMain.handle(screenChannels.screen.state, () => getScreenState())
-  ipcMain.handle(screenChannels.screen.last, () => getLastScreenRead())
   ipcMain.handle(screenChannels.screen.hide, () => hideScreenLabels())
 }
 
