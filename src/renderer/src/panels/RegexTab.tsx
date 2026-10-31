@@ -11,6 +11,7 @@ import { MapsPage } from './regex/MapsPage'
 import { VendorPage } from './regex/VendorPage'
 import { ItemsPage } from './regex/ItemsPage'
 import { LibraryPage } from './regex/LibraryPage'
+import { Poe2RegexTab } from './regex/poe2/Poe2RegexTab'
 import './regex/regex.css'
 
 // Вкладка «Regex» компаньона (PoE1, этап S7) по утверждённому макету: подвкладки «Карты»,
@@ -24,7 +25,13 @@ const PAGES: { id: RegexPage; icon: IcoName }[] = [
   { id: 'library', icon: 'book' }
 ]
 
+/** В режиме PoE 2 — своя вкладка (S62): путевые камни, плитки, торговец, библиотека. */
 export function RegexTab() {
+  const game = useAppStore((s) => s.settings?.game ?? 'poe1')
+  return game === 'poe2' ? <Poe2RegexTab /> : <Poe1RegexTab />
+}
+
+function Poe1RegexTab() {
   const t = useT()
   const uiLang = useLang()
   const simple = useSimple()
