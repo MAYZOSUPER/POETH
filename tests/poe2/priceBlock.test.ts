@@ -4,7 +4,7 @@ import { resolve } from 'path'
 import type { FullHour } from '@shared/flip/feed'
 import { angePriceByName, feedIdsByName, poe2Rate, type AngePrice } from '@shared/poe2/pricecheck/ange'
 import { angeView, rateFractions2 } from '@shared/poe2/pricecheck/priceBlock'
-import { translate } from '../../src/renderer/src/i18n'
+import { trade as dict } from '../../src/renderer/src/i18n/dict/trade'
 
 // S61: блок «у Ange» окна цены PoE 2 — числа в единице показа; строки RU и EN.
 
@@ -16,6 +16,22 @@ const byName = feedIdsByName(ids.names)
 const LG = 'Forbidden Rites'
 const rate = poe2Rate(hours, LG)!
 const price = (name: string): AngePrice => angePriceByName(hours, LG, byName, name, rate)!
+
+/** Строка словаря trade с подстановкой {параметров} (как translate, без i18n/index). */
+function tr(lang: 'ru' | 'en', key: string, params: Record<string, string | number> = {}): string {
+  const s = dict[lang][key]
+  if (s === undefined) return key
+  let out = ''
+  let rest = s
+  for (;;) {
+    const i = rest.indexOf('{')
+    const j = i < 0 ? -1 : rest.indexOf('}', i)
+    if (i < 0 || j < 0) return out + rest
+    const name = rest.slice(i + 1, j)
+    out += rest.slice(0, i) + (name in params ? String(params[name]) : rest.slice(i, j + 1))
+    rest = rest.slice(j + 1)
+  }
+}
 
 describe('блок «у Ange»', () => {
   it('обычная валюта — «≈ N ex за штуку», рынки в своих валютах, мелкое — «1 div за N шт.»', () => {
@@ -62,13 +78,13 @@ describe('блок «у Ange»', () => {
 
   it('строки блока есть в RU и EN, в EN нет кириллицы', () => {
     for (const key of ['pc2.s61.rate', 'pc2.s61.ange.title', 'pc2.s61.ange.each', 'pc2.s61.v.sell', 'pc2.s61.why.fair', 'pc2.s61.tab.rate']) {
-      const ru = translate('ru', key, { n: 690, price: '2 ex', hours: '22:00–23:00' })
-      const en = translate('en', key, { n: 690, price: '2 ex', hours: '22:00–23:00' })
+      const ru = tr('ru', key, { n: 690, price: '2 ex', hours: '22:00–23:00' })
+      const en = tr('en', key, { n: 690, price: '2 ex', hours: '22:00–23:00' })
       expect(ru, key).not.toBe(key)
       expect(en, key).not.toBe(key)
       expect(en, key).not.toMatch(/[а-яё]/i)
     }
-    expect(translate('ru', 'pc2.s61.ange.each')).toBe('за штуку · у Ange')
-    expect(translate('en', 'pc2.s61.rate', { n: 690 })).toBe('1 div ≈ 690 ex')
+    expect(tr('ru', 'pc2.s61.ange.each')).toBe('за штуку · у Ange')
+    expect(tr('en', 'pc2.s61.rate', { n: 690 })).toBe('1 div ≈ 690 ex')
   })
 })

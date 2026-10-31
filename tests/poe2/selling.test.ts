@@ -7,13 +7,29 @@ import { parseClipboard } from '@shared/poe2/parser'
 import { angeConfidence, angePriceByName, feedIdsByName, poe2Rate } from '@shared/poe2/pricecheck/ange'
 import { exaltedRates } from '@shared/poe2/pricecheck/currency'
 import { angeSell, poe2SaleNote, sellAdvice2 } from '@shared/poe2/pricecheck/selling'
-import { translate } from '../../src/renderer/src/i18n'
+import { trade as dict } from '../../src/renderer/src/i18n/dict/trade'
 import { readFixture, store } from './helpers'
 
 // S61: «Продаю» в окне цены PoE 2 (как S50 у PoE 1): база — exalted, «не дешевле» — честная цена выкупа.
 // Лоты — в форме ответа /api/trade2/fetch (придуманы; выкуп — listing.fee в золоте, «лично» — whisper).
 
 const RATES = exaltedRates({ exaltedPerDivine: 690, exaltedPerChaos: 71.5 })!
+
+/** Строка словаря trade с подстановкой {параметров} (как translate, без i18n/index). */
+function tr(lang: 'ru' | 'en', key: string, params: Record<string, string | number> = {}): string {
+  const s = dict[lang][key]
+  if (s === undefined) return key
+  let out = ''
+  let rest = s
+  for (;;) {
+    const i = rest.indexOf('{')
+    const j = i < 0 ? -1 : rest.indexOf('}', i)
+    if (i < 0 || j < 0) return out + rest
+    const name = rest.slice(i + 1, j)
+    out += rest.slice(0, i) + (name in params ? String(params[name]) : rest.slice(i, j + 1))
+    rest = rest.slice(j + 1)
+  }
+}
 
 let seq = 0
 function lot(amount: number, currency = 'exalted', buyout = true): Poe1Listing {
@@ -165,8 +181,8 @@ describe('«Продаю» у Ange', () => {
   it('строки «Продаю у Ange» есть в RU и EN, в EN нет кириллицы', () => {
     for (const key of ['pc2.s61.sell.ange.title', 'pc2.s61.sell.ange.titlePer', 'pc2.s61.sell.ange.why', 'pc2.s61.sell.bulk.title', 'pc2.s61.sell.copyExchange']) {
       const p = { price: '2 ex', floor: '1', one: '1 div', n: 3, cur: 'div' }
-      expect(translate('ru', key, p), key).not.toBe(key)
-      expect(translate('en', key, p), key).not.toMatch(/[а-яё]/i)
+      expect(tr('ru', key, p), key).not.toBe(key)
+      expect(tr('en', key, p), key).not.toMatch(/[а-яё]/i)
     }
   })
 })
