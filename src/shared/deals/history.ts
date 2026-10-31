@@ -11,7 +11,13 @@ import type {
   IgnoredItem,
   ReplyTemplates
 } from '../types/deals'
+import type { GameId } from '../games'
 import type { SystemEvent, WhisperEvent } from './whisperParse'
+
+/** Игра сделки: поле game есть только у PoE 2 (S63), старые записи — PoE1. */
+export function dealGame(d: Pick<Deal, 'game'>): GameId {
+  return d.game === 'poe2' ? 'poe2' : 'poe1'
+}
 
 /** 2 — «Показывать исходящие» включено по умолчанию (в файлах версии 1 оно включается один раз). */
 export const DEALS_FILE_VERSION = 2
@@ -52,7 +58,8 @@ export function defaultDealsConfig(): DealsConfig {
     historyLimit: DEFAULT_HISTORY_LIMIT,
     replyLang: 'auto',
     templates: { ru: { ...DEFAULT_TEMPLATES.ru }, en: { ...DEFAULT_TEMPLATES.en } },
-    logPath: null
+    logPath: null,
+    logPathPoe2: null
   }
 }
 
@@ -85,6 +92,7 @@ export function normalizeDealsConfig(raw: unknown): DealsConfig {
   }
   if (raw.replyLang === 'auto' || raw.replyLang === 'ru' || raw.replyLang === 'en') out.replyLang = raw.replyLang
   if (typeof raw.logPath === 'string' && raw.logPath.trim()) out.logPath = raw.logPath
+  if (typeof raw.logPathPoe2 === 'string' && raw.logPathPoe2.trim()) out.logPathPoe2 = raw.logPathPoe2
   const t = isObj(raw.templates) ? raw.templates : {}
   out.templates = { ru: normTemplates(t.ru, def.templates.ru), en: normTemplates(t.en, def.templates.en) }
   return out
@@ -289,14 +297,16 @@ export function removeDeal(data: DealsFileData, id: string): DealsFileData {
 /**
  * Очистить историю. demoOnly — убрать только примеры (и их «проданные» из игнора);
  * при полной очистке игнор проданного сохраняется: сообщения про проданное ещё придут.
+ * game — очистить только сделки этой игры (S63: история другой игры остаётся).
  */
-export function clearDeals(data: DealsFileData, demoOnly = false): DealsFileData {
-  if (!demoOnly) return { ...data, deals: [] }
-  const demoKeys = new Set(data.deals.filter((d) => d.demo).map(ignoreKey))
-  const realKeys = new Set(data.deals.filter((d) => !d.demo).map(ignoreKey))
+export function clearDeals(data: DealsFileData, demoOnly = false, game?: GameId): DealsFileData {
+  const mine = (d: Deal): boolean => !game || dealGame(d) === game
+  if (!demoOnly) return { ...data, deals: data.deals.filter((d) => !mine(d)) }
+  const demoKeys = new Set(data.deals.filter((d) => d.demo && mine(d)).map(ignoreKey))
+  const realKeys = new Set(data.deals.filter((d) => !d.demo || !mine(d)).map(ignoreKey))
   return {
     ...data,
-    deals: data.deals.filter((d) => !d.demo),
+    deals: data.deals.filter((d) => !d.demo || !mine(d)),
     ignored: data.ignored.filter((x) => !demoKeys.has(x.key) || realKeys.has(x.key))
   }
 }
@@ -309,16 +319,20 @@ export function withConfig(data: DealsFileData, config: DealsConfig): DealsFileD
 /**
  * Системное событие → правка истории. Сейчас только «Trade accepted»: последняя приглашённая
  * (или новая) сделка не старше TRADE_ACCEPT_WINDOW_MS становится traded. Возвращает id
- * изменённой сделки.
+ * изменённой сделки. game — журнал какой игры (S63: сделка другой игры не подходит).
  */
 export function applySystemEvent(
   data: DealsFileData,
   ev: SystemEvent,
-  now: number
+  now: number,
+  game?: GameId
 ): { data: DealsFileData; changedId: string | null } {
   if (ev.kind !== 'tradeAccepted') return { data, changedId: null }
   const pick =
-    data.deals.find((d) => d.status === 'invited' && now - (d.updatedAt ?? d.ts) < TRADE_ACCEPT_WINDOW_MS) ?? null
+    data.deals.find(
+      (d) =>
+        d.status === 'invited' && now - (d.updatedAt ?? d.ts) < TRADE_ACCEPT_WINDOW_MS && (!game || dealGame(d) === game)
+    ) ?? null
   if (!pick) return { data, changedId: null }
   return { data: setDealStatus(data, pick.id, 'traded', now), changedId: pick.id }
 }

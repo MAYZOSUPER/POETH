@@ -1,3 +1,4 @@
+import type { LiveHit } from '@shared/types'
 import { getDefaultPoe1DataStore, type Poe1DataStore } from '@shared/poe1/data'
 import { parseItemText, type ParsedItem } from '@shared/poe1/parser'
 
@@ -34,6 +35,17 @@ export async function factsFromText(text: string, store: Poe1DataStore): Promise
   } catch {
     return []
   }
+}
+
+/**
+ * Находка PoE 2 (S63): текста предмета trade2 не отдаёт (item.extended — только hashes), поэтому факты —
+ * из полей лота: уровень предмета и осквернение.
+ */
+export function poe2HitFacts(hit: Pick<LiveHit, 'ilvl' | 'corrupted'>): ItemFact[] {
+  const out: ItemFact[] = []
+  if (hit.ilvl) out.push({ key: 'live.fact.ilvl', params: { n: hit.ilvl } })
+  if (hit.corrupted) out.push({ key: 'live.fact.corrupted' })
+  return out
 }
 
 /** То же с данными приложения (poeth://data/poe1) и кэшем на текст. */

@@ -12,7 +12,7 @@
 | API | `https://<host>/api/trade/<endpoint>` | `https://<host>/api/trade2/<endpoint>` — **без realm** |
 | Сайт (поиск) | `https://<host>/trade/search/<league>/<id>` | `https://<host>/trade2/search/poe2/<league>/<id>` |
 | Сайт (обмен) | `https://<host>/trade/exchange/<league>/<id>` | `https://<host>/trade2/exchange/poe2/<league>/<id>` |
-| Live | `wss://<host>/api/trade/live/<league>/<id>` | ⚠ не используем в v0.1 |
+| Live | `wss://<host>/api/trade/live/<league>/<id>` | `wss://www.pathofexile.com/api/trade2/live/poe2/<league>/<id>` (S63, см. «trade2») |
 
 Лига и id — через `encodeURIComponent`. Все запросы — только из **main** (`net.request` через сетевой стек
 Chromium: проходит Cloudflare, нет CORS, можно ставить `Cookie`/`User-Agent`). Не ставить `Origin/Referer/sec-*`
@@ -143,6 +143,29 @@ UA приложения и cookies partition аккаунта Cloudflare про�
 это и есть «нужен вход». С входом: `{"auth": true}` и `{"new": […]}` — ⚠ проверит пользователь (2–3 дешёвых
 поиска в Standard). Id поиска, который сейчас отдаёт `POST search`, — длинная строка вида `H4sIAAAA…` (~130 символов);
 она же работает в URL сайта и live. Реализация — `src/main/games/poe1/{liveSearch,wsTransport}.ts` + `live/**`.
+
+## trade2 (PoE 2) — проверено 31.10.2026 (S63, анонимно, www, UA приложения)
+
+- **Лимиты** `search` / `fetch` trade2 — те же политики, что у PoE 1: `trade-search-request-limit`
+  (`5:10:60,15:60:300,30:300:1800,600:21600:3600`) и `trade-fetch-request-limit` (`12:4:10,16:12:300,50:300:300,1000:21600:1800`),
+  правило `Ip`. Шлюз S3 сливает лимитеры по имени политики — бюджет у игр общий.
+- **Live:** `wss://www.pathofexile.com/api/trade2/live/poe2/<лига>/<id>`; без входа рукопожатие — **401**, заголовков
+  `x-rate-limit-*` в ответе нет, поэтому предел соединений trade2 неизвестен → в POETH свой предел PoE 2 (`live.json`
+  `options.poe2Max`, по умолчанию 5, 1…20). Бэкоффы — как у PoE 1 (429 → 30 с … 10 мин). С входом не проверено.
+- **fetch** (`/api/trade2/fetch/<id,…>?query=<id поиска>`, без realm): `listing.method: "psapi"`; у лота мгновенного
+  выкупа — `listing.fee` (золото), `account.online: null`, **нет** `whisper`; у личного обмена — `whisper` и
+  `account {name, online, lastCharacterName, language, realm}`. `whisper_token` анонимно не приходит.
+  `item.extended` — **только `hashes`**: текста предмета (`extended.text`) у trade2 нет. Моды — объекты
+  `{description, domain, hash, mods:[{name, tier, level, magnitudes}]}`, в `description` — разметка ссылок
+  `[Ключ|Текст]` / `[Текст]`. `item.rarity` — строка (`Magic`, `Rare`, `Unique`…), `frameType` — как у PoE 1.
+- **Язык whisper'а** — язык аккаунта **продавца** (`account.language`), а не хоста: `en_US` — «Hi, I would like to buy
+  your … listed for … in … (stash tab "…"; position: left N, top M)», `ru_RU` — «Здравствуйте, хочу купить у вас … за …
+  в лиге … (секция "…"; позиция: N столбец, M ряд)» (шаблоны те же, что у PoE 1), бывают `de_DE`, `fr_FR`, `ko_KR`,
+  `zh_TW`. Имя предмета — на языке продавца, лига и валюта (`exalted`) не переводятся.
+- **ru-хост trade2** отвечает JSON (не Cloudflare): `POST search` с английской базой → `400 Unknown item base type` —
+  ждёт русских имён. Поэтому trade2 у POETH — через www (шлюз, live).
+- **Запрос «лот продавца»** для трейд-окна: `status: any` + `type` + `trade_filters.account` + `type_filters.rarity` и
+  `type_filters.ilvl` — API принял (200); `misc_filters.ilvl` тоже не отвергается. Реализация — `live/poe2Lot.ts`.
 
 ## Лиги (`data/leagues`)
 
