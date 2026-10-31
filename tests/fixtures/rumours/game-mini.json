@@ -1,0 +1,24 @@
+{
+  "patch": "0.6.0.1",
+  "column": "_25",
+  "russian": true,
+  "rows": [
+    {
+      "area": "ExpeditionLogBook_Heath",
+      "text": { "en": "Fallen stars...", "ru": "Падшие звёзды..." },
+      "island": { "en": "Moor of Fallen Skies", "ru": "Причал Падших небес" },
+      "category": "expedition",
+      "bosses": []
+    },
+    {
+      "area": "ExpeditionLogBook_NewIsle",
+      "text": { "en": "Brand new isle...", "ru": null },
+      "island": { "en": "New Isle", "ru": null },
+      "category": "expedition",
+      "bosses": []
+    }
+  ],
+  "items": {
+    "Perfect Flux": { "meta": "Metadata/Items/Currency/CurrencyUpgradeInherentTo20", "ru": "Совершенный расплав" }
+  }
+}
