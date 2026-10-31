@@ -148,3 +148,49 @@
   `build: false` (`src/shared/games.ts`, заморожен) — `buildOn` уже его читает.
 - **openExternal** для «Открыть источник» (`PobImportResult.source.pageUrl`) — хосты из таблицы 4 в allowlist
   `src/shared/links.ts` (заморожен), если понадобится.
+
+## 8. PoE 2: импорт PoB2 и «Сохранить в игру» (S66)
+
+> Ядро: `src/shared/pob/poe2.ts` (модель PoB2), `src/shared/pob/links2.ts` (ссылки PoE 2), `src/shared/poe2/build/*`
+> (данные, этапы, игровой `.build`, вложение, библиотека, сводка), main — `src/main/build/poe2/*`, экран —
+> `src/renderer/src/panels/build2/*`. Данные — `tools/build-data/poe2/` (README там). Тесты — `tests/build2/**`,
+> `tests/pob/poe2.test.ts`, `tests/pob/links2.test.ts`; фикстуры — `tests/fixtures/pob2/` (+ три кода PoE 2 из §2).
+> Разбор PoE 1 (§1–§7) не меняется: в PoE 1 код PoB2 по-прежнему «это билд PoE 2».
+
+**Поток.** Вставка → `parsePob2Input` (код; пасты pobb.in, pob.codes, pastebin, rentry; `maxroll.gg/poe2/pob/<id>` →
+`/poe2/api/pob/<id>`; `poe2db.tw/pob/<id>` → `/raw`; планнеры Maxroll/Mobalytics/poe.ninja — «скопируйте код»; ссылки
+PoE 1 — «это билд PoE 1») → `fetchPobCode(url, isPob2FetchUrl)` (allowlist PoE 1 + `poe2db.tw`, всё остальное — как §4)
+→ `importPob2Code` (тот же `decodePobCode` и безопасный XML) → `Pob2Build`.
+
+**Модель PoB2** (`Pob2Build`): класс и восхождение (`ascendancyInternalId` — `Huntress1`, как в игре), `<Spec>` —
+ноды, `<WeaponSet1/2 nodes>` (ноды наборов оружия), `<Overrides><AttributeOverride str/dex/intNodes>` (выбор атрибута у
+нод «+5 к любому атрибуту»), гнёзда; камни и предметы — те же разборщики, что у PoE 1 (`pobXmlParts`). Не берём
+`<Import>`, `<URL>` дерева, `<Calcs>`, посчитанные статы.
+
+**Этапы** (`resolveStages2`): названия читает `guessStage` (§5); уровни актов — из данных игры (`tree.json`: акты
+G1…G4 — 1–15, 16–31, 32–45, 46–53; интерлюдии 54–56; карты — 65); «Interlude»/«Интерлюдии» узнаются; эндгейм рядом с
+«Maps» — с 80. Основная ось — где больше узнанных названий; ничего не узнано — один этап 1–100.
+
+**Игровой `.build`** (`gameBuild.ts`, формат GGG «Build Planner, Version 1 (Experimental)»,
+https://www.pathofexile.com/developer/docs/game): `name`, `link` (только публичная паста), `description`, `ascendancy`,
+`passives` (строковые id таблицы PassiveSkills по hash из выгрузки дерева GGG; без стартовых нод; порядок — по
+этапам, внутри — от старта класса по связям; `weapon_set` 1/2; выбор атрибута — `additional_text`), `skills`
+(неогранённые камни с `support_skills`; атаки оружия, умения предметов и дерева, мета-камни — не пишем, отчёт),
+`inventory_slots` (`Weapon1`, `Offhand1`, `Helm1`, `BodyArmour1`, `Gloves1`, `Boots1`, `Amulet1`, `Ring1/2`, `Belt1`;
+уник — `unique_name` + имя, иначе редкость и база), `level_interval` [с, по] — по этапам. Подсказки RU или EN (выбор
+игрока; имена предметов RU — данные EE2). Автора и личных данных нет. Версия формата — `GAME_BUILD_VERSION`.
+
+**Запись** (`src/main/build/poe2/saveToGame.ts`): только main, по кнопке; первый вызов `build:twoSave` отвечает
+«куда и есть ли файл» (окно показывает путь), второй — с `confirm` и тем же именем файла. Папка —
+`Документы/My Games/Path of Exile 2/BuildPlanner` (`app.getPath('documents')`; для проверок — `POETH_POE2_BUILD_DIR`);
+нет папки игры — не пишем. Имя файла — латиница (`buildFileName`: кириллица транслитом, запрещённые символы и
+имена Windows — вон, ≤ 60). Существующий файл — только по «Заменить» (новый создаётся флагом `wx`, замена —
+временный файл + rename; ссылки и папки не заменяем); «Сохранить копией» — «Название (2)».
+
+**Библиотека** — `userData/builds-poe2.json`: до 10 билдов, хранится код (не модель) и источник; при чтении код снова
+проходит полный разбор.
+
+**IPC** (домен `build`): `build:twoState`, `build:twoImport`, `build:twoOpen`, `build:twoRemove`, `build:twoReload`,
+`build:twoSave` — только в режиме PoE 2 (`buildOn`: `GameFeatures.build` или `POETH_BUILD=1`); каналы PoE 1, дерево
+поверх игры и «Против надетого» в режиме PoE 2 не работают. Вставка, загрузка по ссылке и запись — только
+компаньон (`COMPANION_CHANNELS`, дифф лиду).

@@ -12,8 +12,11 @@ export function buildDevFlag(env: Readonly<Record<string, string | undefined>>):
   return env[BUILD_ENV] === '1'
 }
 
-/** Вкладка «Билд» в игре: включена таблицей игр или флагом разработки (разбор PoB есть только для PoE 1). */
+/**
+ * Вкладка «Билд» в игре: включена таблицей игр или флагом разработки. S66: в PoE 2 — свой облегчённый экран
+ * (импорт PoB2, «Сохранить в игру», «Вложение», panels/build2); каналы PoE 1 в режиме PoE 2 не работают.
+ */
 export function buildOn(def: GameDef, dev: boolean): boolean {
   const released = (def.features as Readonly<Partial<Record<'build', boolean>>>).build === true
-  return released || (dev && def.id === 'poe1')
+  return released || dev
 }

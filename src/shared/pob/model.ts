@@ -568,3 +568,9 @@ export function pobItem(build: PobBuild, id: number | undefined | null): PobItem
   if (!id) return null
   return build.items.find((i) => i.id === id) ?? null
 }
+
+/**
+ * S66: общие части разбора XML для билдов PoB2 (src/shared/pob/poe2.ts) — те же пределы и чистка строк.
+ * Разбор PoE 1 (parsePobXml) от этого не меняется.
+ */
+export const pobXmlParts = { short, opt, int, intOrNull, numberList, parseSkills, parseItems, parseNotes, block }

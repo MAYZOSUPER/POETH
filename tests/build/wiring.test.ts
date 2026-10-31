@@ -66,12 +66,14 @@ describe('пункт рельса «Билд»', () => {
     delete (globalThis as { overlayApi?: unknown }).overlayApi
   })
 
-  it('раскрыт (GameFeatures.build): в «Прокачке» после «Кампании», только PoE 1', () => {
+  it('раскрыт (GameFeatures.build): в «Прокачке» после «Кампании»; в PoE 2 — только с POETH_BUILD=1 (S66)', () => {
     const level = (game: 'poe1' | 'poe2') => sectionsFor(game, false).find((s) => s.id === 'level')?.tabs.map((t) => t.id)
     expect(level('poe1')).toEqual(['campaign', 'build'])
+    expect(level('poe2')).toEqual(['campaign'])
     ;(globalThis as { overlayApi?: unknown }).overlayApi = { build: { devFlag: true } }
     expect(level('poe1')).toEqual(['campaign', 'build'])
-    expect(level('poe2')).toEqual(['campaign'])
+    // S66: экран «Билд» PoE 2 (импорт PoB2, «Сохранить в игру», «Вложение») — в разработке по тому же флагу
+    expect(level('poe2')).toEqual(['campaign', 'build'])
     expect(sectionsFor('poe1', false).find((s) => s.id === 'level')?.tabs[1].icon).toBe('passive')
   })
 })
