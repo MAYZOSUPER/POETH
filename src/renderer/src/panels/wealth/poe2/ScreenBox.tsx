@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Poe2ScreenCardTab, Poe2ScreenLine, Poe2WealthState, UiLang } from '@shared/types'
 import { cardTotal, needsCheck } from '@shared/wealth/poe2'
 import { useT } from '../../../i18n'
@@ -15,6 +16,9 @@ import { QtyInput } from './QtyInput'
 // «Принять» / «Переснять». Без сеанса — как снять и принятые вкладки с давностью (старше суток — серым).
 
 type T = ReturnType<typeof useT>
+
+/** Строк карточки в свёрнутом виде (у «Эссенций» их до сотни). */
+const SHORT_LINES = 10
 
 const LAYOUTS = new Set([
   'orbs',
@@ -48,32 +52,38 @@ function CardLine({ tab, line, lang, rate }: { tab: Poe2ScreenCardTab; line: Poe
       <td>
         <span className="w2-item">
           <ItemIcon icon={view.icon} />
-          {line.alt?.length ? (
-            <select
-              className="ui-select w2-alt"
-              aria-label={t('wealth.p2.screen.altHint')}
-              title={t('wealth.p2.screen.altHint')}
-              value={line.name}
-              onChange={(e) => void edit(tab.id, line.key, { name: e.target.value })}
-            >
-              {[line.name, ...line.alt].map((n) => (
-                <option key={n} value={n}>
-                  {item(n).name}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span className="ui-item ui-item--currency">{view.name}</span>
-          )}
-          {check && (
-            <span className="ui-tag ui-tag--warn" title={t(line.alt?.length ? 'wealth.p2.screen.altHint' : 'wealth.p2.screen.checkHint')}>
-              {t('wealth.p2.screen.check')}
-            </span>
-          )}
+          <span className="w2-item-name">
+            {line.alt?.length ? (
+              <select
+                className="ui-select w2-alt"
+                aria-label={t('wealth.p2.screen.altHint')}
+                title={t('wealth.p2.screen.altHint')}
+                value={line.name}
+                onChange={(e) => void edit(tab.id, line.key, { name: e.target.value })}
+              >
+                {[line.name, ...line.alt].map((n) => (
+                  <option key={n} value={n}>
+                    {item(n).name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span className="ui-item ui-item--currency">{view.name}</span>
+            )}
+            {check && (
+              <span className="ui-tag ui-tag--warn" title={t(line.alt?.length ? 'wealth.p2.screen.altHint' : 'wealth.p2.screen.checkHint')}>
+                {t('wealth.p2.screen.check')}
+              </span>
+            )}
+          </span>
         </span>
       </td>
       <td className="is-num">
-        <QtyInput value={line.qty} label={t('wealth.p2.manual.qty', { name: view.name })} onCommit={(n) => void edit(tab.id, line.key, { qty: n })} />
+        <QtyInput
+          value={line.qty}
+          label={t('wealth.p2.manual.qty', { name: view.name })}
+          onCommit={(n) => void edit(tab.id, line.key, { qty: n })}
+        />
       </td>
       <td className="is-num w2-faint">{line.unit !== undefined ? unitEx(line.unit, lang) : t('wealth.p2.screen.noPrice')}</td>
       <td className="is-num">{value ?? '—'}</td>
@@ -84,14 +94,27 @@ function CardLine({ tab, line, lang, rate }: { tab: Poe2ScreenCardTab; line: Poe
 function CardTab({ tab, lang, rate, busy }: { tab: Poe2ScreenCardTab; lang: UiLang; rate: number | null; busy: boolean }) {
   const t = useT()
   const drop = usePoe2WealthStore((s) => s.screenDrop)
+  const [all, setAll] = useState(false)
   const total = cardTotal(tab)
+  // свёрнуто: самые дорогие строки и все, что надо проверить или уже поправили (порядок строк не меняется)
+  const shown = all ? tab.lines : tab.lines.filter((l, i) => i < SHORT_LINES || needsCheck(l) || l.edited)
   return (
     <div className="w2-cardtab">
       <div className="w2-row">
         <b>{layoutName(t, tab.layout)}</b>
-        <span className="w2-faint">{t('wealth.p2.screen.tabTotal', { v: money(total.ex, rate, lang).main })}</span>
+        <span className="w2-faint">
+          {t('wealth.p2.screen.tabTotal', {
+            v: money(total.ex, rate, lang).main
+          })}
+        </span>
         <span className="ui-label__grow" />
-        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm" disabled={busy} title={t('wealth.p2.screen.retakeHint')} onClick={() => void drop(tab.id)}>
+        <button
+          type="button"
+          className="ui-btn ui-btn--ghost ui-btn--sm"
+          disabled={busy}
+          title={t('wealth.p2.screen.retakeHint')}
+          onClick={() => void drop(tab.id)}
+        >
           <WIco name="refresh" />
           {t('wealth.p2.screen.retake')}
         </button>
@@ -99,16 +122,24 @@ function CardTab({ tab, lang, rate, busy }: { tab: Poe2ScreenCardTab; lang: UiLa
       <div className="w2-table">
         <table className="ui-table">
           <tbody>
-            {tab.lines.map((l) => (
+            {shown.map((l) => (
               <CardLine key={l.key} tab={tab} line={l} lang={lang} rate={rate} />
             ))}
           </tbody>
         </table>
       </div>
+      {tab.lines.length > SHORT_LINES && (
+        <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm w2-more" aria-expanded={all} onClick={() => setAll(!all)}>
+          {all ? t('wealth.p2.screen.less') : t('wealth.p2.screen.all', { n: tab.lines.length })}
+        </button>
+      )}
       {(tab.unknown > 0 || total.uncounted > 0) && (
         <p className="wl-note">
           <WIco name="info" size="sm" />
-          {[tab.unknown ? t('wealth.p2.screen.unknown', { n: tab.unknown }) : '', total.uncounted ? t('wealth.p2.screen.uncounted', { n: total.uncounted }) : '']
+          {[
+            tab.unknown ? t('wealth.p2.screen.unknown', { n: tab.unknown }) : '',
+            total.uncounted ? t('wealth.p2.screen.uncounted', { n: total.uncounted }) : ''
+          ]
             .filter(Boolean)
             .join(' ')}
         </p>
@@ -180,14 +211,24 @@ export function ScreenBox({ s, lang, now, hotkey }: { s: Poe2WealthState; lang: 
               {t('wealth.p2.screen.accepted')} · {tabsCount(t, s.screenTabs.length, lang)}
             </span>
             {s.screenTabs.map((x) => (
-              <div key={x.id} className={`w2-row w2-src${x.stale ? ' is-stale' : ''}`} title={x.stale ? t('wealth.p2.src.stale') : undefined}>
+              <div
+                key={x.id}
+                className={`w2-row w2-src${x.stale ? ' is-stale' : ''}`}
+                title={x.stale ? t('wealth.p2.src.stale') : undefined}
+              >
                 <b>{layoutName(t, x.layout)}</b>
                 <span className="w2-faint">
                   {ago(t, x.at, now)} · {t('wealth.p2.screen.items', { n: x.items })}
                 </span>
                 <span className="ui-label__grow" />
                 <span className="w2-num">{money(x.ex, rate, lang).main}</span>
-                <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm ui-btn--icon" title={t('wealth.p2.screen.remove')} aria-label={t('wealth.p2.screen.remove')} onClick={() => void removeTab(x.id)}>
+                <button
+                  type="button"
+                  className="ui-btn ui-btn--ghost ui-btn--sm ui-btn--icon"
+                  title={t('wealth.p2.screen.remove')}
+                  aria-label={t('wealth.p2.screen.remove')}
+                  onClick={() => void removeTab(x.id)}
+                >
                   ×
                 </button>
               </div>

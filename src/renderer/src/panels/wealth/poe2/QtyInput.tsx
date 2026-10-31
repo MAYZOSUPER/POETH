@@ -4,7 +4,20 @@ import { useState } from 'react'
  * Поле числа (S70): пока игрок печатает — черновик, в main уходит по Enter или уходу с поля; Esc — отмена.
  * Пробелы-разделители разрядов («1 500») допускаются, дробное округляется до целого.
  */
-export function QtyInput({ value, label, onCommit, wide }: { value: number | null; label: string; onCommit: (n: number) => void; wide?: boolean }) {
+export function QtyInput({
+  value,
+  label,
+  onCommit,
+  wide,
+  format
+}: {
+  value: number | null
+  label: string
+  onCommit: (n: number) => void
+  wide?: boolean
+  /** вид числа вне правки (разряды у золота) */
+  format?: (n: number) => string
+}) {
   const [draft, setDraft] = useState<string | null>(null)
   const commit = (): void => {
     if (draft === null) return
@@ -17,8 +30,9 @@ export function QtyInput({ value, label, onCommit, wide }: { value: number | nul
       className={`ui-input ui-input--num w2-qty${wide ? ' w2-qty--wide' : ''}`}
       inputMode="numeric"
       aria-label={label}
-      value={draft ?? (value === null ? '' : String(value))}
+      value={draft ?? (value === null ? '' : format ? format(value) : String(value))}
       placeholder="?"
+      onFocus={() => value !== null && setDraft(String(value))}
       onChange={(e) => setDraft(e.target.value)}
       onBlur={commit}
       onKeyDown={(e) => {

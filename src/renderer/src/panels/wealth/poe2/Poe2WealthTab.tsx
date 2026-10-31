@@ -75,7 +75,10 @@ function Top({ s, t, lang, now, expert }: { s: Poe2WealthState; t: T; lang: UiLa
       <span className="w2-num">{total.at === null ? '—' : money(total.ex, rate, lang).main}</span>
     </div>
   )
-  const screenMeta = s.sources.screen.at === null ? null : `${timeOf(s.sources.screen.at, lang, now - s.sources.screen.at > 20 * 3_600_000)} · ${tabsCount(t, s.sources.screen.tabs, lang)}`
+  const screenMeta =
+    s.sources.screen.at === null
+      ? null
+      : `${timeOf(s.sources.screen.at, lang, now - s.sources.screen.at > 20 * 3_600_000)} · ${tabsCount(t, s.sources.screen.tabs, lang)}`
   return (
     <div className="w-top">
       <div className="w-total">
@@ -92,7 +95,12 @@ function Top({ s, t, lang, now, expert }: { s: Poe2WealthState; t: T; lang: UiLa
         )}
         {(s.total.approx || s.total.unpriced > 0) && (
           <span className="w-wait">
-            {[s.total.approx ? t('wealth.p2.total.approx') : '', s.total.unpriced ? t('wealth.p2.total.unpriced', { n: s.total.unpriced }) : ''].filter(Boolean).join(' · ')}
+            {[
+              s.total.approx ? t('wealth.p2.total.approx') : '',
+              s.total.unpriced ? t('wealth.p2.total.unpriced', { n: s.total.unpriced }) : ''
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </span>
         )}
         <div className="w2-srcs">
@@ -115,12 +123,23 @@ function Top({ s, t, lang, now, expert }: { s: Poe2WealthState; t: T; lang: UiLa
           </span>
         )}
         {rate ? <span className="w-rate">{t('wealth.p2.rate', { n: nf(rate, lang) })}</span> : null}
-        {expert && s.prices.feedHour ? <span className="w-rate">{t('wealth.p2.rate.ange', { t: timeOf(s.prices.feedHour + 3_600_000, lang, false) })}</span> : null}
+        {expert && s.prices.feedHour ? (
+          <span className="w-rate">
+            {t('wealth.p2.rate.ange', {
+              t: timeOf(s.prices.feedHour + 3_600_000, lang, false)
+            })}
+          </span>
+        ) : null}
         {expert && s.prices.ninjaAt ? (
           <span className="w-rate">
             {s.prices.ninjaLeague
-              ? t('wealth.p2.rate.ninjaLeague', { league: s.prices.ninjaLeague, d: timeOf(s.prices.ninjaAt, lang, true) })
-              : t('wealth.p2.rate.ninja', { d: timeOf(s.prices.ninjaAt, lang, true) })}
+              ? t('wealth.p2.rate.ninjaLeague', {
+                  league: s.prices.ninjaLeague,
+                  d: timeOf(s.prices.ninjaAt, lang, true)
+                })
+              : t('wealth.p2.rate.ninja', {
+                  d: timeOf(s.prices.ninjaAt, lang, true)
+                })}
           </span>
         ) : null}
         {s.prices.problem && <span className="w-rate">{t('wealth.p2.rate.problem')}</span>}
@@ -140,15 +159,24 @@ function ManualRow({ r, lang, rate, expert }: { r: Poe2ManualRow; lang: UiLang; 
     <div className="w2-manual">
       <span className="w2-item">
         {r.tag ? <CoinIcon tag={r.tag} lang={lang} /> : <ItemIcon icon={view.icon} />}
-        <span className="ui-item ui-item--currency">{view.name}</span>
-        {r.inScreen > 0 && (
-          <span className="ui-tag" title={t('wealth.p2.manual.inScreenHint')}>
-            {t('wealth.p2.manual.inScreen', { n: nf(r.inScreen, lang) })}
-          </span>
-        )}
+        <span className="w2-item-name">
+          <span className="ui-item ui-item--currency">{view.name}</span>
+          {r.inScreen > 0 && (
+            <span className="ui-tag" title={t('wealth.p2.manual.inScreenHint')}>
+              {t('wealth.p2.manual.inScreen', { n: nf(r.inScreen, lang) })}
+            </span>
+          )}
+        </span>
       </span>
       <span className="w2-steps">
-        <button type="button" className="ui-btn ui-btn--sm ui-btn--icon" disabled={r.qty <= 0} title={t('wealth.p2.manual.dec')} aria-label={t('wealth.p2.manual.dec')} onClick={() => set(r.qty - 1)}>
+        <button
+          type="button"
+          className="ui-btn ui-btn--sm ui-btn--icon"
+          disabled={r.qty <= 0}
+          title={t('wealth.p2.manual.dec')}
+          aria-label={t('wealth.p2.manual.dec')}
+          onClick={() => set(r.qty - 1)}
+        >
           −
         </button>
         <QtyInput value={r.qty} label={t('wealth.p2.manual.qty', { name: view.name })} onCommit={set} />
@@ -163,7 +191,9 @@ function ManualRow({ r, lang, rate, expert }: { r: Poe2ManualRow; lang: UiLang; 
         <span className="w2-num">{r.unit !== undefined && r.qty > 0 ? money(r.unit * r.qty, rate, lang).main : ''}</span>
         {(expert || r.qty > 0) && (
           <span className="w2-faint" title={r.low ? t('wealth.low') : undefined}>
-            {r.unit !== undefined ? t('wealth.p2.manual.each', { v: unitEx(r.unit, lang) }) + (r.low ? ' ~' : '') : t('wealth.p2.manual.noPrice')}
+            {r.unit !== undefined
+              ? t('wealth.p2.manual.each', { v: unitEx(r.unit, lang) }) + (r.low ? ' ~' : '')
+              : t('wealth.p2.manual.noPrice')}
           </span>
         )}
       </span>
@@ -174,13 +204,19 @@ function ManualRow({ r, lang, rate, expert }: { r: Poe2ManualRow; lang: UiLang; 
 function GoldRow({ s, t, lang }: { s: Poe2WealthState; t: T; lang: UiLang }) {
   const setGold = usePoe2WealthStore((st) => st.setGold)
   return (
-    <div className="w2-manual">
+    <div className="w2-manual w2-manual--gold">
       <span className="w2-item">
         <CoinIcon tag="gold" lang={lang} />
         <span>{t('wealth.p2.gold')}</span>
       </span>
       <span className="w2-steps">
-        <QtyInput wide value={s.gold.qty} label={t('wealth.p2.manual.qty', { name: t('wealth.p2.gold') })} onCommit={(n) => void setGold(n)} />
+        <QtyInput
+          wide
+          value={s.gold.qty}
+          format={(n) => nf(n, lang)}
+          label={t('wealth.p2.manual.qty', { name: t('wealth.p2.gold') })}
+          onCommit={(n) => void setGold(n)}
+        />
       </span>
       <span className="w2-value w2-faint">{t('wealth.p2.gold.hint')}</span>
     </div>
@@ -241,23 +277,36 @@ function ValuablesBox({ s, t, lang, now }: { s: Poe2WealthState; t: T; lang: UiL
           const view = item(v.name, v.kind === 'unique' ? 'UNIQUE' : v.kind === 'gem' ? 'GEM' : 'ITEM')
           const base = v.base ? item(v.base).name : null
           return (
-            <div key={v.id} className={`w2-row w2-src${v.stale ? ' is-stale' : ''}`} title={v.stale ? t('wealth.p2.src.stale') : undefined}>
-              <ItemIcon icon={view.icon} />
-              <span className="w2-item-name">
-                <span className={`ui-item${v.kind === 'unique' ? ' ui-item--unique' : v.kind === 'rare' ? ' ui-item--rare' : v.kind === 'gem' ? ' ui-item--gem' : ''}`}>
-                  {v.qty > 1 ? `${v.qty} × ` : ''}
-                  {view.name}
-                </span>
-                <span className="w2-faint">
-                  {[base, t(`wealth.p2.val.src.${v.source}`), ago(t, v.at, now)].filter(Boolean).join(' · ')}
+            <div
+              key={v.id}
+              className={`w2-line w2-src${v.stale ? ' is-stale' : ''}`}
+              title={v.stale ? t('wealth.p2.src.stale') : undefined}
+            >
+              <span className="w2-item">
+                <ItemIcon icon={view.icon} />
+                <span className="w2-item-name">
+                  <span
+                    className={`ui-item${v.kind === 'unique' ? ' ui-item--unique' : v.kind === 'rare' ? ' ui-item--rare' : v.kind === 'gem' ? ' ui-item--gem' : ''}`}
+                  >
+                    {v.qty > 1 ? `${v.qty} × ` : ''}
+                    {view.name}
+                  </span>
+                  <span className="w2-faint">
+                    {[base, t(`wealth.p2.val.src.${v.source}`), ago(t, v.at, now)].filter(Boolean).join(' · ')}
+                  </span>
                 </span>
               </span>
-              <span className="ui-label__grow" />
               <span className="w2-num" title={v.low ? t('wealth.p2.val.low') : undefined}>
                 {money(v.unit * v.qty, rate, lang).main}
                 {v.low ? ' ~' : ''}
               </span>
-              <button type="button" className="ui-btn ui-btn--ghost ui-btn--sm ui-btn--icon" title={t('wealth.p2.val.remove')} aria-label={t('wealth.p2.val.remove')} onClick={() => void remove(v.id)}>
+              <button
+                type="button"
+                className="ui-btn ui-btn--ghost ui-btn--sm ui-btn--icon"
+                title={t('wealth.p2.val.remove')}
+                aria-label={t('wealth.p2.val.remove')}
+                onClick={() => void remove(v.id)}
+              >
                 ×
               </button>
             </div>
@@ -280,15 +329,18 @@ function DiffBox({ s, t, lang }: { s: Poe2WealthState; t: T; lang: UiLang }) {
           {t('wealth.p2.diff')}
         </span>
         <span className="ui-label__grow" />
-        {diff && <span className={`ui-delta ${diff.chaosDelta >= 0 ? 'ui-delta--up' : 'ui-delta--down'}`}>{signedMoney(diff.chaosDelta, s.exPerDivine, lang)}</span>}
+        {diff && (
+          <span className={`ui-delta ${diff.chaosDelta >= 0 ? 'ui-delta--up' : 'ui-delta--down'}`}>
+            {signedMoney(diff.chaosDelta, s.exPerDivine, lang)}
+          </span>
+        )}
       </div>
       <div className="ui-box__body w2-stack">
         {!lines.length && <span className="w2-faint">{t('wealth.p2.diff.none')}</span>}
         {lines.map((l) => (
-          <div key={l.key} className="w2-row">
+          <div key={l.key} className="w2-line">
             <span className="ui-item ui-item--currency">{item(l.name, l.ns === 'UNIQUE' ? 'UNIQUE' : 'ITEM').name}</span>
-            <span className="w2-faint">{l.qtyDelta > 0 ? `+${nf(l.qtyDelta, lang)}` : `−${nf(-l.qtyDelta, lang)}`}</span>
-            <span className="ui-label__grow" />
+            <span className="w2-faint w2-num">{l.qtyDelta > 0 ? `+${nf(l.qtyDelta, lang)}` : `−${nf(-l.qtyDelta, lang)}`}</span>
             <span className={`w2-num ${l.chaosDelta >= 0 ? 'w2-good' : 'w2-bad'}`}>{signedMoney(l.chaosDelta, s.exPerDivine, lang)}</span>
           </div>
         ))}
@@ -314,11 +366,20 @@ function SessionBox({ s, t, lang, now }: { s: Poe2WealthState; t: T; lang: UiLan
           <span>{t('wealth.p2.session.none')}</span>
         ) : (
           <>
-            <span>{t('wealth.p2.session.start', { v: money(ss.startEx, rate, lang).main, t: timeOf(ss.startedAt, lang, now - ss.startedAt > 20 * 3_600_000) })}</span>
+            <span>
+              {t('wealth.p2.session.start', {
+                v: money(ss.startEx, rate, lang).main,
+                t: timeOf(ss.startedAt, lang, now - ss.startedAt > 20 * 3_600_000)
+              })}
+            </span>
             {ss.stoppedAt === undefined && now - ss.startedAt < START_GRACE_MS && (
               <div className="ui-banner ui-banner--info" role="status">
                 <WIco name="info" />
-                <span>{t('wealth.p2.session.startGrace', { t: timeOf(ss.startedAt + START_GRACE_MS, lang, false) })}</span>
+                <span>
+                  {t('wealth.p2.session.startGrace', {
+                    t: timeOf(ss.startedAt + START_GRACE_MS, lang, false)
+                  })}
+                </span>
               </div>
             )}
             {ss.awaitingEnd && (
@@ -330,7 +391,9 @@ function SessionBox({ s, t, lang, now }: { s: Poe2WealthState; t: T; lang: UiLan
             {ss.profitEx !== undefined && (
               <div className="ui-figure">
                 <span className="ui-label">{t('wealth.p2.session.profit')}</span>
-                <span className={`ui-figure__value ${ss.profitEx >= 0 ? 'w2-good' : 'w2-bad'}`}>{signedMoney(ss.profitEx, rate, lang)}</span>
+                <span className={`ui-figure__value ${ss.profitEx >= 0 ? 'w2-good' : 'w2-bad'}`}>
+                  {signedMoney(ss.profitEx, rate, lang)}
+                </span>
                 {ss.low && <span className="w2-faint">{t('wealth.p2.session.low')}</span>}
               </div>
             )}
@@ -344,7 +407,7 @@ function SessionBox({ s, t, lang, now }: { s: Poe2WealthState; t: T; lang: UiLan
 export function Poe2WealthTab() {
   const t = useT()
   const lang = useAppStore((st) => st.settings?.uiLang ?? 'ru') as UiLang
-  const expert = !(useAppStore((st) => st.settings?.ui.simpleMode ?? true))
+  const expert = !useAppStore((st) => st.settings?.ui.simpleMode ?? true)
   const s = usePoe2WealthStore((st) => st.state)
   const init = usePoe2WealthStore((st) => st.init)
   const farm = useFarmStore((st) => st.state)
@@ -381,7 +444,9 @@ export function Poe2WealthTab() {
             <WIco name={icon} />
             {label}
             {id === 'wealth' && !!s.screen?.tabs.length && <span className="ui-count">{s.screen.tabs.length}</span>}
-            {id === 'session' && farm?.session && <span className="ui-count ui-count--live">{clock(sessionMs(farm, now), true).slice(0, -3)}</span>}
+            {id === 'session' && farm?.session && (
+              <span className="ui-count ui-count--live">{clock(sessionMs(farm, now), true).slice(0, -3)}</span>
+            )}
           </button>
         ))}
       </div>
@@ -398,7 +463,14 @@ export function Poe2WealthTab() {
                 <DiffBox s={s} t={t} lang={lang} />
               </div>
             </div>
-            <WealthChart points={s.history} lang={lang} expert={expert} unit="ex" title={t('wealth.p2.chart')} empty={t('wealth.p2.chart.empty')} />
+            <WealthChart
+              points={s.history}
+              lang={lang}
+              expert={expert}
+              unit="ex"
+              title={t('wealth.p2.chart')}
+              empty={t('wealth.p2.chart.empty')}
+            />
           </div>
         ) : (
           <div className="w-pad">
