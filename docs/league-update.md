@@ -88,8 +88,8 @@
       полный `commit`, `tree`), `node tools/pob/prepare.mjs --pin`, затем `node tools/pob/prepare.mjs` (нужен VS Build Tools)
       и `npx vitest run tests/pob/serverLua.test.ts`: selftest зелёный, RU = EN, «наш XML = исходный» ≥ 10. Упало —
       `pobSparse`/`pobKeep` в `prepare.mjs` или `STATS` ↔ `ENGINE_STATS`. release.yml соберёт и проверит движок сам.
-- [ ] PoE 2 (S47): релиз Exiled Exchange 2 под патч → `node tools/data/sync-ee2-data.mjs --sha <коммит EE2>`, пин
-      `EE2_PIN`, `node tools/data/make-poe2-ru-fixtures.mjs --check`, `npx vitest run tests/poe2 -u` — снапшоты глазами.
+- [ ] PoE 2 (S47, S67): релиз Exiled Exchange 2 под патч → `node tools/data/poe2-day.mjs --ee2 <коммит EE2> --version
+      <версия>` (раздел «PoE 2: день 1.0» ниже); снапшоты `npx vitest run tests/poe2 -u` — глазами.
 - [ ] Нужен код (не только данные) — релиз v0.1.1 (тег `v*`, release.yml).
 
 **Неделя 1–2:** следить за issues APT/Sidekick и форумом GGG (изменения сайта трейда), хотфиксы. Мид-лиговые
@@ -98,23 +98,30 @@
 ## Канал обновлений данных (S12, работает)
 
 Игроки получают новые данные **без переустановки**: POETH при запуске и раз в сутки (настройка «Проверять
-обновления») читает манифест, качает только файлы, отличающиеся от встроенных, проверяет размер и sha256 и
-атомарно подменяет надстройку `userData/data/poe1` (любая ошибка — откат, работают встроенные данные; сети
+обновления») читает манифест **своей игры**, качает только файлы, отличающиеся от встроенных, проверяет размер и sha256 и
+атомарно подменяет надстройку `userData/data/<poe1|poe2>` (любая ошибка — откат, работают встроенные данные; сети
 нет — тихо, только лог). Применили — тост «Данные обновлены (<версия>). Перезапустите POETH…».
 
-- **Адрес:** `https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json` (links.DATA_MANIFEST_URL).
-  Ветка `data` публичного репо — orphan, только `manifest.json`, `poe1/…`, README, `.gitattributes` (`* -text`).
+- **Адрес:** `https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json` (links.DATA_MANIFEST_URL) — PoE 1;
+  PoE 2 (S67) — `…/data/manifest-poe2.json` рядом (shared/updates `dataManifestUrl`; читают версии после S67).
+  Ветка `data` публичного репо — orphan: `manifest.json` + `poe1/…`, `manifest-poe2.json` + `poe2/…`, README,
+  `.gitattributes` (`* -text`). Выпуск одной игры не трогает пакет другой (`tools/data/data-channel.mjs`).
   Первый выпуск — `2026.10.27` (= данные v0.1.0, игрокам качать нечего). CDN raw кэширует до ~5 мин.
+- **⚠ Перед выпуском v0.1.0** перевыпустить пакет PoE 1 из main (Run workflow, игра poe1): пакет `2026.10.27` старше
+  main (`regex/maps.{en,ru}.json` изменены S46 30.10), а v0.1.0 подходит под его `minApp 0.1.0` и скачала бы старые
+  regex-карты поверх новых встроенных.
 - **Манифест:** `{version, game, minApp, files: {"en/stats.ndjson": {sha256, size}}}`; `minApp` — версия
   приложения, которая понимает пакет (старее — пакет пропускается).
-- **Публикация — только CI:** `.github/workflows/data.yml` (Actions → «Data» → Run workflow с версией, или тег
-  `data-<версия>`). Из main или тега: `npm run verify:data` → тесты → `tools/data/publish-data.mjs` →
+- **Публикация — только CI:** `.github/workflows/data.yml` (Actions → «Data» → Run workflow с версией и игрой, или тег
+  `data-<версия>` — PoE 1, `data-poe2-<версия>` — PoE 2). Из main или тега: проверка данных (`npm run verify:data` /
+  `sync-ee2-data --verify`) → тесты → [PoE 2: снимок цен poe.ninja] → `tools/data/publish-data.mjs --game <игра>` →
   `tools/data/push-data-branch.mjs` → ждёт, пока публичный адрес отдаст новую версию. `GITHUB_TOKEN`, без секретов.
-  Вручную тем же скриптом — `league-day.mjs --publish local` (если Actions недоступны).
+  Вручную тем же скриптом — `league-day.mjs --publish local` / `poe2-day.mjs --publish local` (если Actions недоступны).
 - **Откат пакета:** перевыпустить прежние данные (workflow из коммита main со старыми `resources/data` и новой
-  версией) — у игроков подменится обратно. У одного игрока — удалить `%APPDATA%/POETH/data/poe1`.
-- **Проверка:** `node tools/data/check-data-channel.mjs [--exe=…]` — настоящий канал + три сценария на
-  локальном сервере (новее встроенного → применён и тост; неверный sha256 → откат; сети нет → тихо).
+  версией) — у игроков подменится обратно. У одного игрока — удалить `%APPDATA%/POETH/data/<poe1|poe2>`.
+- **Проверка:** `node tools/data/check-data-channel.mjs [--exe=…] [--game poe2]` — настоящий канал + три сценария на
+  локальном сервере (новее встроенного → применён и тост; неверный sha256 → откат; сети нет → тихо). Профиль проверки
+  тихий: пустые хоткеи и команды чата, без привязки к окну игры, без заставки и окна компаньона.
 
 ### День лиги: `tools/data/league-day.mjs`
 
@@ -137,3 +144,56 @@ node tools/data/league-day.mjs --sha <коммит APT> --version 3.30.0-1 --pat
 
 - **Само приложение:** `electron-updater` + публичные GitHub Releases (без подписи — предупреждение SmartScreen
   остаётся, обновление работает), тег `v*` → release.yml.
+
+## PoE 2: цены и день 1.0 (S67)
+
+### Цены poe.ninja PoE 2 — в пакете данных
+
+poe.ninja просит десктоп-приложения не звать их API с машин игроков — снимок делает CI, приложение читает его из пакета
+данных PoE 2 (`resources/data/poe2/prices/`, надстройка `userData/data/poe2/prices/`).
+
+- **Что в снимке:** обмен валюты (14 типов poe.ninja: валюта, фрагменты, кости, неогранённые камни и камни линии,
+  эссенции, ядра душ, идолы, руны, знамения, Экспедиция, эмоции, катализаторы, Verisium) и уники (9 типов) для
+  софткор-лиг из `/poe2/api/economy/leagues`. Цены — в divine, курсы exalted и chaos за divine. Без иконок, модов и
+  flavour; лоты дороже 10⁶ divine (выставленные «для вида») — мимо. ~200 КБ на временную лигу.
+- **Кто снимает:** `tools/data/ninja-snapshot-poe2.mjs` в workflow «Data» перед сборкой пакета PoE 2 (ETag прошлого
+  снимка из ветки `data`, пауза 1,5 с, 23 запроса на лигу, UA `POETH-data/1 (+https://github.com/MAYZOSUPER/POETH; …)`).
+  Свежесть = последний выпуск пакета PoE 2. Каждый день — переменная репозитория `POE2_DAILY_DATA = 1` (cron 04:41 UTC).
+  Включать к 1.0 (цены первых дней лиги меняются быстро), но сначала убрать тост «Перезапустите POETH» для выпусков,
+  где поменялись только `prices/` (читатели цен перезапуска не требуют) — иначе тост каждый день.
+- **Формат и чтение:** `src/shared/poe2/prices` — `loadPoe2Prices(read, лига)` (HC → софткор-пара, 'auto'/частная →
+  текущая временная лига), `Poe2PriceTable.byName('Liquid Paranoia' | 'LiquidParanoia' | 'liquid-paranoia')`, цена в
+  divine/exalted/chaos, флаг «мало данных» (уник < 20 лотов, валюта — оборот < 0,25 шт.). Имена английские (refName EE2) —
+  русское имя берите из данных EE2. Renderer: `poeth://data/poe2/prices/…` — после правки `DATA_SUBDIRS` в protocol.ts.
+- **Нет снимка/битый** — `loadPoe2Prices` → `null`, функция работает без цен.
+
+### День 1.0 (11.12.2026): `tools/data/poe2-day.mjs`
+
+```
+node tools/data/poe2-day.mjs --ee2 <коммит EE2> --version 2026.12.11-1 --patch 1.0 [--publish ci|local|none]
+```
+Шаги с остановкой на первой ошибке (продолжить: `--from <шаг>`, один шаг: `--only <шаг>`, план: `--dry-run`):
+1. **ee2** — `sync-ee2-data --sha` (stats/items/client_strings EN+RU, индексы), пин `EE2_PIN` ← полный SHA;
+2. **verify** — sha256 файлов по `resources/data/poe2/data.meta.json`;
+3. **fixtures** — `make-poe2-ru-fixtures --check` (RU-фикстуры из новых данных EE2; отличаются — перегенерировать
+   без `--check` и посмотреть дифф);
+4. **repoe** — генераторы на RePoE PoE 2 и выгрузке дерева GGG, какие уже в main: regex путевых камней и табличек
+   (S62, `--refresh --patch`), «Билд» и вложение (S66, `--refresh`; **до запуска** поднять `REPOE2_COMMIT` и
+   `TREE2_COMMIT` в `tools/build-data/poe2/sources.mjs` на выгрузки 1.0);
+5. **prices** — снимок poe.ninja PoE 2 (лиги 1.0 подхватятся сами; пока poe.ninja не завёл лигу 1.0 — останутся
+   цены прошлых лиг, это нормально: CI переснимет при публикации);
+6. **tests** — typecheck, vitest, test:trade;
+7. **pack** — `publish-data --game poe2 --version` → `dist-data-poe2/`;
+8. **publish** — `ci` (по умолчанию): данные закоммичены и в origin/main → тег `data-poe2-<версия>` → workflow «Data»
+   (снимет свежие цены сам); `local` — сразу в ветку `data`; `none` — не публиковать.
+
+Чек-лист 11.12:
+- [ ] D−1…D0: релиз EE2 под 1.0 (обычно в день патча или через 1–2 дня) → коммит EE2 для `--ee2`; пока его нет —
+      работает фолбэк `/api/trade2/data/stats` (www и ru) и встроенные данные.
+- [ ] RePoE PoE 2 (`repoe-fork.github.io/poe2/`) и `grindinggear/poe2-skilltree-export` обновились под 1.0 → пины в
+      `tools/build-data/poe2/sources.mjs` (и в генераторе regex S62, если он закреплён).
+- [ ] `node tools/data/poe2-day.mjs --ee2 <sha> --version 2026.12.11-1 --patch 1.0 --publish none` в рабочей ветке →
+      коммит «данные PoE 2 1.0» → слить в main → `--from publish`.
+- [ ] После выпуска: `node tools/data/check-data-channel.mjs --game poe2` (настоящий канал = данные сборки), в игре —
+      Ctrl+D на 5 предметах EN и RU, лига trade2 переключилась сама, цены «Слухов»/«Вложения» — новой лиги.
+- [ ] Включить `POE2_DAILY_DATA = 1` на первые недели лиги (после правки тоста — см. выше).

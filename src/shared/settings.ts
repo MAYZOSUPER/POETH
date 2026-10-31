@@ -40,6 +40,10 @@ export const HOTKEY_DEFAULTS: Readonly<Record<HotkeyAction, HotkeyBinding>> = {
   bookRead: { accel: 'Alt+D', scope: 'game' },
   // дерево этапа поверх игры (S38): P открывает дерево пассивок в PoE1 — Alt+P рядом, игрой не занят, пара к Alt+D
   buildTree: { accel: 'Alt+P', scope: 'game' },
+  // цены поверх окон (S68): Alt+F — как у poe2pricer (игроки его знают); F в игре без Alt, у APT такого нет
+  screenPrices: { accel: 'Alt+F', scope: 'game' },
+  // слухи журнала PoE 2 (S65): без клавиши по умолчанию — сочетание выбирает лид после проверки в игре
+  rumours: { accel: '', scope: 'game' },
   toggleCompanion: { accel: 'Control+Shift+O', scope: 'always' },
   toggleLock: { accel: 'Control+Shift+L', scope: 'always' },
   toggleTradeWindow: { accel: 'Control+Shift+T', scope: 'always' },
@@ -185,7 +189,7 @@ function normalizeHotkeys(src: unknown): HotkeyMap {
   return out
 }
 
-const APP_TABS = ['campaign', 'priceCheck', 'live', 'regex', 'deals', 'wealth', 'flip', 'advisor', 'build', 'guide']
+const APP_TABS = ['campaign', 'priceCheck', 'live', 'regex', 'deals', 'wealth', 'flip', 'advisor', 'build', 'guide', 'rumours']
 const UI_LANGS = ['ru', 'en']
 const STASH_GRIDS = ['auto', 'normal', 'quad']
 const GAME_LANG_SOURCES = ['item', 'log']

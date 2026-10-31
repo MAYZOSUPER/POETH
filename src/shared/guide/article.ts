@@ -10,7 +10,7 @@
 //  - ссылки — только https на сайты реестра трейд-окна (S43, @shared/sites) или на сайт GGG;
 //  - RU и EN обязательны оба: статья одна на два языка.
 
-import { SITES, isSiteId, type SiteId } from '../sites'
+import { isSiteId, siteDef, type SiteId } from '../sites'
 
 /** Версия схемы статьи, которую понимает это приложение. Новее — «обновите POETH», статья не показывается. */
 export const GUIDE_SCHEMA = 1
@@ -216,7 +216,8 @@ function day(v: unknown, what: string): string {
 
 /** Хосты сайта ссылки: реестр трейд-окна или GGG. */
 export function siteHosts(site: GuideSite): readonly string[] {
-  return site === 'ggg' ? GGG_HOSTS : (SITES.find((s) => s.id === site)?.hosts ?? [])
+  // S64: сайты обеих игр (у статей PoE 2 — poe2db, poe2.re и др.)
+  return site === 'ggg' ? GGG_HOSTS : isSiteId(site) ? siteDef(site).hosts : []
 }
 
 /** Адрес ссылки: https, хост сайта, без логина и порта. */

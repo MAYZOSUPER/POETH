@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { CapturedItem, NetError } from '@shared/types'
+import type { AngePrice, CapturedItem, NetError, Poe2CurrencyRate } from '@shared/types'
 import { getDefaultPoe2DataStore, type Poe2Data, type Poe2Lang } from '@shared/poe2/data'
 import { parseClipboard, ItemCategory, type ParseErrorCode, type ParsedItem } from '@shared/poe2/parser'
 import {
@@ -10,23 +10,27 @@ import {
   type ListingType,
   type StatFilter
 } from '@shared/poe2/pricecheck'
-import { orderBulkOffers, poe2MarketPrice, poe2Verdict } from '@shared/poe2/pricecheck/verdict'
-import {
-  honestPrice,
-  type HonestPrice,
-  type MarketPrice,
-  type Poe1ExchangeOffer,
-  type Poe1Listing
-} from '@shared/poe1/pricecheck/results'
-import type { Verdict } from '@shared/poe1/pricecheck/verdict'
+import { orderBulkOffers, poe2MarketPrice, poe2Verdict, type MarketPrice2, type Verdict2 } from '@shared/poe2/pricecheck/verdict'
+import { angeConfidence } from '@shared/poe2/pricecheck/ange'
+import { exaltedRates, type ExaltedRates } from '@shared/poe2/pricecheck/currency'
+import { angeUnit, bulkView } from '@shared/poe2/pricecheck/priceBlock'
+import { buildQueryUrl } from '@shared/favorites/tradeUrl'
+import { checkedMods2, hasStrongWarning, poe2Warnings, searchContext2, type PriceWarning, type SearchContext2 } from '@shared/poe2/pricecheck/warnings'
+import { honestPrice, type HonestPrice, type Poe1ExchangeOffer, type Poe1Listing } from '@shared/poe1/pricecheck/results'
+import type { PcSiteOffers } from '../store'
 
 // Окно цены PoE2 (S47) в оверлее — тот же путь, что у PoE1 (../store.ts): предмет от Ctrl+D → данные языка
 // (poeth://data/poe2) → парсер PoE2 (порт EE2) → пресеты фильтров и тело запроса trade2 → поиск через main (тот же
 // шлюз S3, лимиты, кэш 5 мин; канал poe2Search) → «честная цена» (общая с PoE1) и вердикт PoE2 (база — exalted).
 // Валюта и стакаемое — обмен trade2 (poe2Exchange). Фильтры — мутабельные объекты EE2: UI меняет их и увеличивает
-// `rev`. Курса exalted ↔ divine у окна PoE2 пока нет — цены сравниваются в одной валюте (verdict.ts).
+// `rev`.
+// S61: курс exalted ↔ divine ↔ chaos лиги — по фиду обмена GGG (trade.poe2Rate, фоном при открытии); цены лотов в
+// разных валютах сравниваются в exalted, прочие валюты лотов (regal, annul…) — по цене у Ange (trade.poe2Ange). Всё,
+// что меняют у Ange, — цена по фиду без запроса к сайту (как S24 «у Фаустуса»); объявления сайта — по кнопке.
 
 export type Pc2Phase = 'idle' | 'parsing' | 'loading' | 'result' | 'empty' | 'limit' | 'blocked' | 'error'
+
+export type Pc2SiteOffers = PcSiteOffers
 
 export type Pc2Result =
   | {
@@ -39,13 +43,34 @@ export type Pc2Result =
       /** тело поиска, которое приняло API (для «В избранное» и отладки) */
       query: unknown
       honest: HonestPrice
-      /** цена на рынке: середина самых дешёвых честных лотов в валюте самого дешёвого */
-      market?: MarketPrice
-      verdict: Verdict
+      /** цена на рынке: середина самых дешёвых честных лотов (в exalted по курсу или в валюте самого дешёвого) */
+      market?: MarketPrice2
+      verdict: Verdict2
       /** сколько свойств было отмечено в момент поиска */
       checked: number
+      /** S61 (хвост S47): «цена может быть не про ваш предмет» — как S15 у PoE 1 */
+      warnings: PriceWarning[]
+      /** что было включено в момент поиска (для предупреждений) */
+      searched: Searched2
     }
-  | { kind: 'bulk'; total: number; offers: Poe1ExchangeOffer[]; siteUrl: string; cached: boolean; verdict: Verdict }
+  | { kind: 'bulk'; total: number; offers: Poe1ExchangeOffer[]; siteUrl: string; cached: boolean; verdict: Verdict2 }
+  | {
+      /** S61: цена у Ange по фиду обмена GGG — без запроса к сайту */
+      kind: 'ange'
+      ange: AngePrice
+      /** штук в стопке у предмета игрока (1 — не стопка) */
+      stack: number
+      league: string
+      /** тело обмена trade2 — для «Объявления на сайте» */
+      body: unknown
+      /** до загрузки объявлений — страница обмена с этим запросом (?q=), после — поиск сайта */
+      siteUrl: string
+      site: Pc2SiteOffers
+      verdict: Verdict2
+    }
+
+/** Контекст поиска для предупреждений: фильтры мутабельны — берём их на момент поиска. */
+export type Searched2 = SearchContext2 & { at: number; defaultOn?: number }
 
 export interface Pc2League {
   id: string
@@ -70,6 +95,12 @@ interface Pc2State {
   result?: Pc2Result
   dirty: boolean
   rev: number
+  /** S61: курс exalted ↔ divine ↔ chaos лиги (фид обмена GGG); null — данных нет, цены в одной валюте */
+  rate: Poe2CurrencyRate | null
+  /** S61: exalted за 1 шт. прочих валют лотов (regal, annul…) по цене у Ange, лиги `league` */
+  more: ExaltedRates
+  /** S61: сколько свойств отмечено по умолчанию в каждом пресете (для «поиск слишком широкий») */
+  defaultsOn: Record<string, number>
 
   open: (captured: CapturedItem) => Promise<void>
   close: () => void
@@ -80,6 +111,8 @@ interface Pc2State {
   setLeague: (league: string) => void
   /** «Ослабить на 10%»: снизить минимумы (и поднять максимумы) включённых фильтров и искать заново */
   loosen: () => void
+  /** S61: «Объявления на сайте» у цены Ange — один запрос обмена */
+  loadSiteOffers: () => Promise<void>
 }
 
 const dataStore = getDefaultPoe2DataStore()
@@ -113,6 +146,35 @@ function round(v: number, dp: boolean): number {
   return dp ? Math.round(v * 100) / 100 : Math.round(v)
 }
 
+/** Путевой камень (у парсера — категория Map/Waystone с уровнем). */
+export function isWaystone(item: Pick<ParsedItem, 'category' | 'mapTier'>): boolean {
+  return item.mapTier != null && (item.category === ItemCategory.Map || item.category === ItemCategory.Waystone)
+}
+
+/**
+ * S61: «Главное для карты» (спецификация дизайнера, раздел 4) — по этим свойствам ищут путевые камни: размер групп,
+ * редкие монстры, шанс путевого камня, редкость предметов — отмечены сразу (у EE2 — сняты). По одному на trade id.
+ */
+const WAYSTONE_MAIN = new Set(['item.map_pack_size', 'item.map_rare_monsters', 'item.map_drop_chance', 'item.map_item_rarity'])
+
+function checkWaystoneMain(item: ParsedItem, presets: readonly FilterPreset[]): void {
+  if (!isWaystone(item)) return
+  for (const preset of presets) {
+    const seen = new Set<string>()
+    for (const f of preset.stats) {
+      const id = f.tradeId[0]
+      if (f.hidden || !WAYSTONE_MAIN.has(id) || seen.has(id)) continue
+      seen.add(id)
+      f.disabled = false
+    }
+  }
+}
+
+/** Курсы лиги для сравнения цен: exalted, divine, chaos по курсу + прочие валюты по Ange. */
+export function ratesOf(s: Pick<Pc2State, 'rate' | 'more'>): ExaltedRates | undefined {
+  return exaltedRates(s.rate, s.more)
+}
+
 export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
   phase: 'idle',
   item: null,
@@ -127,6 +189,9 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
   searchStatRange: 10,
   dirty: false,
   rev: 0,
+  rate: null,
+  more: {},
+  defaultsOn: {},
 
   open: async (captured) => {
     const my = ++session
@@ -152,6 +217,7 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
     const known = get().league && leagues?.leagues.some((l) => l.id === get().league)
     const league = known ? get().league : (leagues?.effective ?? 'Standard')
     const pc = createPriceCheck(item, data, { league, listingType: get().listingType, searchStatRange: get().searchStatRange })
+    checkWaystoneMain(item, pc.presets)
     set({
       item,
       data,
@@ -160,8 +226,12 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
       simple: settings?.ui.simpleMode ?? true,
       sendWhisper: settings?.priceCheck?.sendWhisper ?? false,
       presets: pc.presets,
-      activePreset: pc.active
+      activePreset: pc.active,
+      defaultsOn: Object.fromEntries(pc.presets.map((p) => [p.id, checkedMods2(p).on])),
+      ...(ratesLeague === league ? {} : { rate: null, more: resetRates(league) })
     })
+    // курс лиги — фоном (первый раз main качает свежие часы фида PoE 2)
+    if (get().rate?.league !== league) loadRate(league, get, set)
 
     // моды, которых нет в данных EE2 (новый патч) → статы trade2; фильтры добавляются выключенными
     if (item.unknownModifiers.length) {
@@ -201,10 +271,34 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
 
     const req = buildRequest(item, data, preset)
     const api = window.overlayApi.trade
-    const res =
-      req.api === 'bulk'
-        ? await api.poe2Exchange({ league: req.league, body: req.body })
-        : await api.poe2Search({ league: req.league, body: req.body })
+    let res
+    if (req.api === 'bulk') {
+      // S61: что меняют у Ange — цена по фиду обмена, к сайту не идём (объявления — по кнопке)
+      const ange = await angeOf(req.league, item.info.refName)
+      if (my !== session) return
+      if (ange) {
+        const prev = get().result
+        const reloadSite = prev?.kind === 'ange' && prev.site.phase !== 'idle'
+        set({
+          phase: 'result',
+          result: {
+            kind: 'ange',
+            ange,
+            stack: item.stackSize?.value ?? 1,
+            league: req.league,
+            body: req.body,
+            siteUrl: exchangeQueryUrl(req.league, req.body),
+            site: { phase: 'idle' },
+            verdict: angeVerdict(ange)
+          }
+        })
+        if (reloadSite) void get().loadSiteOffers()
+        return
+      }
+      res = await api.poe2Exchange({ league: req.league, body: req.body })
+    } else {
+      res = await api.poe2Search({ league: req.league, body: req.body })
+    }
     if (my !== session) return
 
     if (!res.ok) {
@@ -224,37 +318,29 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
     }
 
     if ('offers' in res) {
-      const offers = orderBulkOffers(res.offers)
-      const best = offers[0]
-      const each = best && best.itemAmount > 0 ? { amount: best.exchangeAmount / best.itemAmount, currency: best.currency } : undefined
-      set({
-        phase: offers.length ? 'result' : 'empty',
-        result: {
-          kind: 'bulk',
-          total: res.total,
-          offers,
-          siteUrl: res.siteUrl,
-          cached: res.cached,
-          verdict: poe2Verdict({ kind: 'bulk', total: res.total, each })
-        }
-      })
+      set({ phase: res.offers.length ? 'result' : 'empty', result: analyzeBulk(res, ratesOf(get())) })
       return
     }
-    const honest = honestPrice(res.listings, res.total)
-    set({
-      phase: res.total > 0 ? 'result' : 'empty',
-      result: {
-        kind: 'trade',
-        total: res.total,
-        inexact: res.inexact,
-        listings: res.listings,
-        siteUrl: res.siteUrl,
-        cached: res.cached,
-        query: req.body,
-        honest,
-        market: poe2MarketPrice(res.listings, honest),
-        verdict: poe2Verdict({ kind: 'trade', total: res.total, listings: res.listings, honest, noVendor: noVendor(item) }),
-        checked: checkedCount(preset)
+    const base: TradeBase = {
+      total: res.total,
+      inexact: res.inexact,
+      listings: res.listings,
+      siteUrl: res.siteUrl,
+      cached: res.cached,
+      query: req.body,
+      checked: checkedCount(preset),
+      searched: { ...searchContext2(preset), at: Date.now(), defaultOn: get().defaultsOn[preset.id] }
+    }
+    // валюты лотов кроме exalted/divine/chaos (regal, annul…) — в exalted по Ange; долго — без них, потом пересчёт
+    const tags = [...new Set(res.listings.map((l) => l.price?.currency).filter((c): c is string => !!c))]
+    const ready = ensureRates(req.league, data, tags, get, set)
+    await Promise.race([ready, new Promise((r) => setTimeout(r, RATES_WAIT_MS))])
+    if (my !== session) return
+    set({ phase: res.total > 0 ? 'result' : 'empty', result: analyzeTrade(base, item, ratesOf(get())) })
+    void ready.then((added) => {
+      const { result: r, item: it } = get()
+      if (added && my === session && r?.kind === 'trade' && r.listings === base.listings && it) {
+        set({ result: analyzeTrade(r, it, ratesOf(get())) })
       }
     })
   },
@@ -272,7 +358,8 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
   },
 
   setLeague: (league) => {
-    set({ league })
+    set({ league, rate: null, more: resetRates(league) })
+    loadRate(league, get, set)
     void get().search()
   },
 
@@ -287,5 +374,175 @@ export const usePoe2PriceCheckStore = create<Pc2State>((set, get) => ({
     }
     set((s) => ({ rev: s.rev + 1 }))
     void get().search()
+  },
+
+  loadSiteOffers: async () => {
+    const my = session
+    const r = get().result
+    if (r?.kind !== 'ange' || r.site.phase === 'loading') return
+    const patch = (site: Pc2SiteOffers, siteUrl?: string): void => {
+      const cur = get().result
+      if (my !== session || cur?.kind !== 'ange' || cur.body !== r.body) return
+      set({ result: { ...cur, site, siteUrl: siteUrl ?? cur.siteUrl } })
+    }
+    patch({ phase: 'loading' })
+    const res = await window.overlayApi.trade.poe2Exchange({ league: r.league, body: r.body }).catch(() => null)
+    if (!res) return patch({ phase: 'error' })
+    if (res.ok) {
+      const offers = orderBulkOffers(res.offers, ratesOf(get()))
+      return patch({ phase: 'ok', total: res.total, offers, cached: res.cached }, res.siteUrl)
+    }
+    if (res.error.code === 'rate-limited') {
+      return patch({ phase: 'limit', retryAt: Date.now() + Math.max(1000, res.error.retryAfterMs ?? 10_000) })
+    }
+    patch({ phase: 'error', error: res.error })
   }
 }))
+
+// ---------------------------------------------------------------- S61: курс и цена у Ange
+
+interface TradeBase {
+  total: number
+  inexact: boolean
+  listings: Poe1Listing[]
+  siteUrl: string
+  cached: boolean
+  query: unknown
+  checked: number
+  searched: Searched2
+}
+
+/** Ждём курсы валют лотов не дольше — потом показываем без них и пересчитываем, когда придут. */
+const RATES_WAIT_MS = 1500
+/** валюты с курсом из фида (не спрашиваем у Ange) */
+const RATE_TAGS = new Set(['exalted', 'divine', 'chaos'])
+
+let ratesLeague = ''
+/** теги, о которых уже спрашивали в лиге `ratesLeague` (нет у Ange — тоже не спрашиваем снова) */
+let ratesAsked = new Set<string>()
+
+function resetRates(league: string): ExaltedRates {
+  ratesLeague = league
+  ratesAsked = new Set()
+  return {}
+}
+
+/** Цена предмета у Ange; нет в фиде, нет сети или курса — null (тогда обмен на сайте, как раньше). */
+async function angeOf(league: string, refName: string): Promise<AngePrice | null> {
+  const res = await window.overlayApi.trade.poe2Ange({ league, names: [refName] }).catch(() => null)
+  return res?.ok ? (res.prices[refName] ?? null) : null
+}
+
+/** Страница обмена trade2 с этим запросом (…/trade2/exchange/poe2/<лига>?q={"exchange":…}). */
+function exchangeQueryUrl(league: string, body: unknown): string {
+  const query = (body as { query?: unknown } | null)?.query
+  return buildQueryUrl('www.pathofexile.com', 'poe2', 'exchange', league, JSON.stringify({ exchange: query }))
+}
+
+export function angeVerdict(a: AngePrice): Verdict2 {
+  return poe2Verdict({
+    kind: 'exchange',
+    exalted: a.exalted,
+    confidence: angeConfidence(a),
+    volume: a.main.volume + a.others.reduce((s, m) => s + m.volume, 0),
+    exaltedPerDivine: a.exaltedPerDivine,
+    // плашка — в той же единице, что главная строка «у Ange» (Divine Orb — в exalted)
+    unit: angeUnit(a)
+  })
+}
+
+/**
+ * Курсы валют лотов (кроме exalted/divine/chaos) по цене у Ange: один локальный запрос к main на новые теги.
+ * true — добавились курсы (стоит пересчитать цену).
+ */
+async function ensureRates(
+  league: string,
+  data: Poe2Data,
+  tags: readonly string[],
+  get: () => Pc2State,
+  set: (p: Partial<Pc2State>) => void
+): Promise<boolean> {
+  if (ratesLeague !== league) set({ more: resetRates(league) })
+  const names = new Map<string, string>()
+  // английское имя валюты по trade tag (refName у обоих языков английский)
+  const refs = data.tradeTagToRef()
+  for (const tag of tags) {
+    if (RATE_TAGS.has(tag) || ratesAsked.has(tag)) continue
+    ratesAsked.add(tag)
+    const name = refs.get(tag)
+    if (name) names.set(name, tag)
+  }
+  if (!names.size) return false
+  const asked = ratesAsked
+  const res = await window.overlayApi.trade.poe2Ange({ league, names: [...names.keys()] }).catch(() => null)
+  if (!res?.ok) {
+    // нет сети или курса — спросим снова при следующем поиске
+    for (const tag of names.values()) asked.delete(tag)
+    return false
+  }
+  if (ratesLeague !== league) return false
+  const next: Record<string, number> = { ...get().more }
+  let added = false
+  for (const [name, tag] of names) {
+    const p = res.prices[name]
+    if (p && p.exalted > 0) {
+      next[tag] = p.exalted
+      added = true
+    }
+  }
+  // курс пришёл вместе с ценами — не ждать отдельного ответа
+  if (!get().rate) set({ rate: { league, ...res.rate } })
+  if (added) set({ more: next })
+  return added
+}
+
+function analyzeTrade(base: TradeBase, item: ParsedItem, rates: ExaltedRates | undefined): Pc2Result {
+  const { total, listings, searched } = base
+  const honest = honestPrice(listings, total, rates)
+  const inexact = base.inexact
+  const warnings = poe2Warnings({ item, ...searched, listings, honest, inexact, now: searched.at })
+  const verdict = poe2Verdict({ kind: 'trade', total, listings, honest, noVendor: noVendor(item), rates })
+  // выдача про другой вариант (осквернённость) — заметку цены не предлагаем, просим посмотреть предупреждения
+  const caution = hasStrongWarning(warnings) && (verdict.kind === 'list' || verdict.kind === 'valuable')
+  return {
+    kind: 'trade',
+    ...base,
+    honest,
+    market: poe2MarketPrice(listings, honest, rates),
+    verdict: caution ? { ...verdict, note: undefined, caution: true } : verdict,
+    warnings
+  }
+}
+
+function analyzeBulk(
+  res: { total: number; offers: Poe1ExchangeOffer[]; siteUrl: string; cached: boolean },
+  rates: ExaltedRates | undefined
+): Pc2Result {
+  const offers = orderBulkOffers(res.offers, rates)
+  // цена за штуку — та же, что в сводке «≈ N за штуку» (средняя по лучшим предложениям, bulkView)
+  const each = bulkView(offers, rates)?.each
+  return {
+    kind: 'bulk',
+    total: res.total,
+    offers,
+    siteUrl: res.siteUrl,
+    cached: res.cached,
+    verdict: poe2Verdict({ kind: 'bulk', total: res.total, each, rates })
+  }
+}
+
+/** Курс лиги — фоном; пришёл — пересчитать честную цену и вердикт; устаревший ответ не применяем. */
+function loadRate(league: string, get: () => Pc2State, set: (p: Partial<Pc2State>) => void): void {
+  void window.overlayApi.trade
+    .poe2Rate(league)
+    .then((rate) => {
+      if (get().league !== league || !rate) return
+      const { result, item } = get()
+      set({ rate })
+      const rates = ratesOf(get())
+      if (!result || !item) return
+      if (result.kind === 'trade') set({ result: analyzeTrade(result, item, rates) })
+      else if (result.kind === 'bulk') set({ result: analyzeBulk(result, rates) })
+    })
+    .catch(() => undefined)
+}

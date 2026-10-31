@@ -6,9 +6,10 @@ import type {
   LootFilterState,
   LootFilterStyle
 } from '@shared/types/lootFilter'
-import { LEVELS, STYLES, levelWhen } from '@shared/lootFilter/levels'
+import type { GameId } from '@shared/games'
+import { LEVELS, levelWhen, stylesFor } from '@shared/lootFilter/levels'
 import { installedFileName } from '@shared/lootFilter/rules'
-import { isNewerTag, ladderUrl } from '@shared/lootFilter/source'
+import { isNewerTag } from '@shared/lootFilter/source'
 import { useAppStore } from '../../store/useAppStore'
 import { Select } from '../../components/Select'
 import { useLang, useT } from '../../i18n'
@@ -16,12 +17,30 @@ import { Ico } from '../regex/Ico'
 import { LootFilterGuide } from './LootFilterGuide'
 import './lootfilter.css'
 
-// Раздел настроек «Фильтр лута» (S53, только PoE 1): фильтр NeverSink в один клик — строгость 0–6 с объяснением,
+// Раздел настроек «Фильтр лута» (S53): фильтр NeverSink в один клик — строгость 0–6 с объяснением,
 // стиль, «Установить» / «Обновить», что установлено, как включить в игре. Сеть и запись — в main (lootFilter:*);
 // здесь только выбор игрока. Проверка новой версии — когда раздел впервые показался на экране (раз в сутки,
-// решает main), установка — только по кнопке.
+// решает main), установка — только по кнопке. S64: и в PoE 2 — игра приходит в состоянии (st.game), у PoE 2
+// свои стили и часть подписей (ключи lf.p2.*: путевые камни вместо карт, папка Path of Exile 2).
 
 type Note = { kind: 'ok' | 'err'; text: string } | null
+
+/** Подписи, которые у PoE 2 свои (lf.p2.<ключ>); остальные общие (lf.<ключ>). */
+const P2_KEYS: ReadonlySet<string> = new Set([
+  'lead',
+  'level.2',
+  'level.3',
+  'level.5',
+  'when.maps',
+  'when.late',
+  'tip',
+  'err.no-folder',
+  'folder.notGame'
+])
+
+export function lfKey(key: string, game: GameId): string {
+  return game === 'poe2' && P2_KEYS.has(key) ? `lf.p2.${key}` : `lf.${key}`
+}
 
 function fmtDate(iso: string | undefined, lang: string): string {
   if (!iso) return '—'
@@ -38,7 +57,6 @@ export function LootFilterSection() {
   const t = useT()
   const lang = useLang()
   const simple = useAppStore((s) => s.settings?.ui.simpleMode ?? true)
-  const siteHost = useAppStore((s) => s.settings?.siteHost)
   const api = window.overlayApi.lootFilter
   const [st, setSt] = useState<LootFilterState | null>(null)
   const [working, setWorking] = useState(false)
@@ -54,14 +72,16 @@ export function LootFilterSection() {
 
   // «экран открыт» — раздел впервые попал в видимую область настроек: тогда main может спросить GitHub
   // (раз в сутки решает main). Раздел рисуется, когда состояние пришло, — поэтому ждём `shown`.
+  // Сменили игру при открытых настройках — у другой игры свой релиз: «открыт» считаем заново (S64).
   const shown = !!st?.on
-  const openedRef = useRef(false)
+  const game: GameId = st?.game ?? 'poe1'
+  const openedRef = useRef<GameId | null>(null)
   useEffect(() => {
     const el = rootRef.current
-    if (!shown || !el || openedRef.current) return
+    if (!shown || !el || openedRef.current === game) return
     const opened = (): void => {
-      if (openedRef.current) return
-      openedRef.current = true
+      if (openedRef.current === game) return
+      openedRef.current = game
       void api.screenOpened().then(setSt)
     }
     if (typeof IntersectionObserver === 'undefined') {
@@ -76,7 +96,7 @@ export function LootFilterSection() {
     })
     io.observe(el)
     return () => io.disconnect()
-  }, [api, shown])
+  }, [api, shown, game])
 
   if (!st || !st.on) return null
 
@@ -116,20 +136,21 @@ export function LootFilterSection() {
         } else if (r.confirm) {
           setConfirm({ reason: r.confirm, file: r.file ?? file })
         } else {
-          setNote({ kind: 'err', text: t(`lf.err.${r.error}`) })
+          setNote({ kind: 'err', text: t(lfKey(`err.${r.error}`, game)) })
         }
       })
       .catch(() => setNote({ kind: 'err', text: t('lf.err.network') }))
       .finally(() => setWorking(false))
   }
 
-  const styleOptions = STYLES.map((s) => ({ value: s.id, label: s.id === 'default' ? t('lf.style.default') : s.name }))
+  const styles = stylesFor(game)
+  const styleOptions = styles.map((s) => ({ value: s.id, label: s.id === 'default' ? t('lf.style.default') : s.name }))
   const folder = st.folder
 
   return (
     <div className="block lf" id="set-lootfilter" ref={rootRef}>
       <div className="block-title">{t('lf.title')}</div>
-      <div className="small muted">{t('lf.lead')}</div>
+      <div className="small muted">{t(lfKey('lead', game))}</div>
 
       <div className="lf-label">{t('lf.level')}</div>
       <div className="lf-levels" role="radiogroup" aria-label={t('lf.level')}>
@@ -150,7 +171,7 @@ export function LootFilterSection() {
               <span className="lf-level__main">
                 <span className="lf-level__name">
                   {d.level} · {d.name}
-                  <span className={`ui-tag lf-when lf-when--${levelWhen(d.level)}`}>{t(`lf.when.${levelWhen(d.level)}`)}</span>
+                  <span className={`ui-tag lf-when lf-when--${levelWhen(d.level)}`}>{t(lfKey(`when.${levelWhen(d.level)}`, game))}</span>
                   {inst && (
                     <span className="ui-tag ui-tag--good">
                       <Ico name="check" /> {t('lf.installed')}
@@ -158,7 +179,7 @@ export function LootFilterSection() {
                   )}
                   {!simple && <code className="lf-code">{d.code}</code>}
                 </span>
-                <span className="lf-level__desc small muted">{t(`lf.level.${d.level}`)}</span>
+                <span className="lf-level__desc small muted">{t(lfKey(`level.${d.level}`, game))}</span>
               </span>
             </button>
           )
@@ -167,7 +188,7 @@ export function LootFilterSection() {
       {simple && (
         <div className="ui-hint lf-hint">
           <Ico name="info" />
-          <span>{t('lf.tip')}</span>
+          <span>{t(lfKey('tip', game))}</span>
         </div>
       )}
 
@@ -180,7 +201,7 @@ export function LootFilterSection() {
       {!folder.found && (
         <div className="ui-banner ui-banner--bad small" role="alert">
           <Ico name="warn" />
-          <span>{t('lf.err.no-folder')}</span>
+          <span>{t(lfKey('err.no-folder', game))}</span>
         </div>
       )}
 
@@ -232,7 +253,7 @@ export function LootFilterSection() {
               <span className="muted">
                 {' '}
                 · {t('lf.installed.row', { version: i.tag, date: fmtDate(i.installedAt, lang) })}
-                {!simple && i.style !== 'default' ? ` · ${STYLES.find((s) => s.id === i.style)?.name ?? i.style}` : ''}
+                {!simple && i.style !== 'default' ? ` · ${styles.find((s) => s.id === i.style)?.name ?? i.style}` : ''}
               </span>
               {i.missing ? (
                 <span className="ui-tag ui-tag--bad">{t('lf.tag.missing')}</span>
@@ -257,7 +278,14 @@ export function LootFilterSection() {
         <Ico name={guideOpen ? 'chev-d' : 'chev-r'} />
         {t('lf.guide.title')}
       </button>
-      {guideOpen && <LootFilterGuide t={t} file={file} onLadder={() => window.overlayApi.window.openExternal(ladderUrl(siteHost))} />}
+      {guideOpen && (
+        <LootFilterGuide
+          t={t}
+          file={file}
+          nonAsciiPath={game === 'poe2' && folder.nonAscii ? folder.path : null}
+          onLadder={() => void api.openLink('ladder')}
+        />
+      )}
 
       {!simple && (
         <div className="lf-folder small">
@@ -269,7 +297,7 @@ export function LootFilterSection() {
             {folder.source === 'env' && <span className="muted"> · {t('lf.folder.env')}</span>}
           </div>
           {!folder.found && <div className="danger">{t('lf.folder.missing', { path: folder.path })}</div>}
-          {folder.found && !folder.looksLikeGame && <div className="muted">{t('lf.folder.notGame')}</div>}
+          {folder.found && !folder.looksLikeGame && <div className="muted">{t(lfKey('folder.notGame', game))}</div>}
           <div className="lf-folder__btns">
             <button type="button" className="ui-btn ui-btn--sm" disabled={!folder.found} onClick={() => void api.openFolder()}>
               <Ico name="folder" />

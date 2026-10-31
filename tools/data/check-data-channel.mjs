@@ -11,6 +11,10 @@
 //   npm run package:dir && node tools/data/check-data-channel.mjs --exe=dist-release/win-unpacked/POETH.exe
 //   npm run build && node tools/data/check-data-channel.mjs                     # из исходников
 //   node tools/data/check-data-channel.mjs --skip-live                          # без сети
+//   node tools/data/check-data-channel.mjs --game poe2                          # пакет PoE 2 (S67): manifest-poe2.json,
+//                                                                               # POETH в режиме PoE 2
+// Профиль проверки не мешает игре на этом ПК: хоткеи и команды чата пустые, без привязки к окну игры
+// (POETH_OVERLAY_NO_ATTACH=1), запуск как при автозапуске — без заставки и окна компаньона (страница грузится скрыто).
 
 import { spawn, execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
@@ -21,6 +25,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import readline from 'node:readline'
 import { fileURLToPath } from 'node:url'
+import { manifestName } from './data-channel.mjs'
 
 const require = createRequire(import.meta.url)
 const WebSocket = require('ws')
@@ -30,9 +35,12 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const argv = process.argv.slice(2)
 const EXE = argv.find((a) => a.startsWith('--exe='))?.slice(6)
 const SKIP_LIVE = argv.includes('--skip-live')
-const LIVE_URL = 'https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/manifest.json'
+const GAME = argv.find((a) => a.startsWith('--game='))?.slice(7) ?? (argv.includes('--game') ? argv[argv.indexOf('--game') + 1] : 'poe1')
+if (GAME !== 'poe1' && GAME !== 'poe2') throw new Error(`--game poe1|poe2, а не «${GAME}»`)
+const MANIFEST = manifestName(GAME)
+const LIVE_URL = `https://raw.githubusercontent.com/MAYZOSUPER/POETH/data/${MANIFEST}`
 const WORK = mkdtempSync(path.join(tmpdir(), 'poeth-data-check-'))
-const BUNDLED = path.join(ROOT, 'resources/data/poe1')
+const BUNDLED = path.join(ROOT, 'resources/data', GAME)
 // файл, который меняем в тестовом пакете; отдаётся по poeth://data/<game>/<lang>/<file>
 const PROBE = 'en/client_strings.json'
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -57,13 +65,13 @@ async function waitFor(fn, ms = 20000, step = 250) {
 // ---------------------------------------------------------------------------
 
 function buildData(dir, version) {
-  execFileSync(process.execPath, [path.join(ROOT, 'tools/data/publish-data.mjs'), '--version', version, '--out', dir], { stdio: 'ignore' })
-  const m = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8'))
-  const f = path.join(dir, 'poe1', PROBE)
+  execFileSync(process.execPath, [path.join(ROOT, 'tools/data/publish-data.mjs'), '--game', GAME, '--version', version, '--out', dir], { stdio: 'ignore' })
+  const m = JSON.parse(readFileSync(path.join(dir, MANIFEST), 'utf8'))
+  const f = path.join(dir, GAME, PROBE)
   appendFileSync(f, '\n')
   const buf = readFileSync(f)
   m.files[PROBE] = { sha256: sha(buf), size: buf.length }
-  writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(m, null, 2))
+  writeFileSync(path.join(dir, MANIFEST), JSON.stringify(m, null, 2))
   return buf.length
 }
 const NEW = path.join(WORK, 'data-new')
@@ -98,15 +106,36 @@ async function closedPort() {
 // POETH
 // ---------------------------------------------------------------------------
 
+/** Пустые хоткеи и команды чата (S67): экземпляр проверки не перехватывает клавиши, пока на ПК идёт игра. */
+function silentKeys() {
+  const src = (f) => readFileSync(path.join(ROOT, f), 'utf8')
+  const defaults = src('src/shared/settings.ts')
+  const block = defaults.slice(defaults.indexOf('HOTKEY_DEFAULTS'), defaults.indexOf('HOTKEY_ACTIONS'))
+  const hotkeys = Object.fromEntries([...block.matchAll(/^\s+(\w+): \{ accel: '[^']*', scope: '(\w+)' \}/gm)].map((m) => [m[1], { accel: '', scope: m[2] }]))
+  const chatCommands = [...src('src/shared/chatCommands.ts').matchAll(/\{ id: '(\w+)', text: '([^']*)', hotkey: '[^']*', send: (true|false), enabled: (true|false) \}/g)].map(
+    (m) => ({ id: m[1], text: m[2], hotkey: '', send: m[3] === 'true', enabled: m[4] === 'true' })
+  )
+  if (Object.keys(hotkeys).length < 10 || chatCommands.length < 5) throw new Error('не нашёл хоткеи/команды чата по умолчанию в исходниках')
+  return { hotkeys, chatCommands }
+}
+
 function startPoeth(name, env) {
   const profile = path.join(WORK, `profile-${name}`)
   mkdirSync(profile, { recursive: true })
   writeFileSync(
     path.join(profile, 'settings.json'),
-    JSON.stringify({ schemaVersion: 2, uiLang: 'ru', startup: { firstRunDone: true, minimized: true, withWindows: false }, updates: { check: true } })
+    JSON.stringify({
+      schemaVersion: 2,
+      game: GAME,
+      uiLang: 'ru',
+      ...silentKeys(),
+      startup: { firstRunDone: true, minimized: true, withWindows: false },
+      updates: { check: true }
+    })
   )
   const cdpPort = 9500 + Math.floor(Math.random() * 400)
-  const args = [`--remote-debugging-port=${cdpPort}`]
+  // --autostart: без заставки и без показа компаньона (окно создаётся скрытым — страница для poeth://data есть)
+  const args = [`--remote-debugging-port=${cdpPort}`, '--autostart']
   const p = spawn(EXE ? path.resolve(ROOT, EXE) : electronPath, EXE ? args : [ROOT, ...args], {
     cwd: ROOT,
     env: {
@@ -116,6 +145,8 @@ function startPoeth(name, env) {
       POETH_UPDATE_DELAY_MS: '2500',
       // без тостов Windows: Electron при первом тосте ставит ярлык и COM-ключ на проверяемый exe
       POETH_NO_WINDOWS_TOASTS: '1',
+      // не цепляться к окну игры (на этом ПК может идти игра)
+      POETH_OVERLAY_NO_ATTACH: '1',
       ...env
     },
     stdio: ['ignore', 'pipe', 'pipe']
@@ -150,7 +181,7 @@ async function servedSize(app, rel) {
   if (!page) return null
   const ws = new WebSocket(page.webSocketDebuggerUrl)
   await new Promise((res, rej) => (ws.once('open', res), ws.once('error', rej)))
-  const expression = `fetch('poeth://data/poe1/${rel}').then(r => r.ok ? r.arrayBuffer().then(b => b.byteLength) : -r.status)`
+  const expression = `fetch('poeth://data/${GAME}/${rel}').then(r => r.ok ? r.arrayBuffer().then(b => b.byteLength) : -r.status)`
   const value = await new Promise((resolve) => {
     ws.on('message', (d) => {
       const m = JSON.parse(String(d))
@@ -181,22 +212,26 @@ async function run(name, env, body) {
   }
 }
 
-console.log(`POETH: ${EXE ? path.resolve(ROOT, EXE) : 'из исходников (electron .)'}\n`)
+console.log(`POETH: ${EXE ? path.resolve(ROOT, EXE) : 'из исходников (electron .)'}, игра ${GAME}\n`)
 
 // ---------------- 0) настоящий канал ----------------
-if (!SKIP_LIVE) {
+// PoE 2 до первой публикации: manifest-poe2.json в ветке data ещё нет (404) — шаг пропускается
+const liveRes = SKIP_LIVE ? null : await fetch(LIVE_URL, { headers: { 'Cache-Control': 'no-cache' } }).catch((e) => ({ status: 0, error: e }))
+if (liveRes && liveRes.status === 404 && GAME !== 'poe1') console.log(`· ${LIVE_URL} — 404: пакет ${GAME} ещё не опубликован, шаг «настоящий канал» пропущен\n`)
+if (liveRes && !(liveRes.status === 404 && GAME !== 'poe1')) {
   try {
-    const m = await (await fetch(LIVE_URL, { headers: { 'Cache-Control': 'no-cache' } })).json()
+    if (liveRes.error) throw liveRes.error
+    const m = await liveRes.json()
     const files = Object.entries(m.files ?? {})
-    check('публичный манифест доступен и валиден', m.game === 'poe1' && typeof m.version === 'string' && files.length > 0, `${LIVE_URL} → ${m.game} ${m.version}, ${files.length} файлов`)
+    check('публичный манифест доступен и валиден', m.game === GAME && typeof m.version === 'string' && files.length > 0, `${LIVE_URL} → ${m.game} ${m.version}, ${files.length} файлов`)
     let same = 0
     let fetched = 0
     for (const [rel, f] of files) {
       const local = existsSync(path.join(BUNDLED, rel)) ? sha(readFileSync(path.join(BUNDLED, rel))) : null
       if (local === f.sha256) same++
     }
-    for (const rel of ['regex/maps.en.json', 'en/stats.ndjson']) {
-      const buf = Buffer.from(await (await fetch(new URL(`poe1/${rel}`, LIVE_URL))).arrayBuffer())
+    for (const rel of GAME === 'poe1' ? ['regex/maps.en.json', 'en/stats.ndjson'] : ['prices/index.json', 'en/stats.ndjson']) {
+      const buf = Buffer.from(await (await fetch(new URL(`${GAME}/${rel}`, LIVE_URL))).arrayBuffer())
       if (sha(buf) === m.files[rel]?.sha256 && buf.length === m.files[rel]?.size) fetched++
     }
     check('файлы канала совпадают с манифестом по sha256 и размеру', fetched === 2, `${fetched}/2`)
@@ -204,7 +239,7 @@ if (!SKIP_LIVE) {
 
     await run('live', { POETH_UPDATE_URL: `http://127.0.0.1:${await closedPort()}/` }, async (app) => {
       // дошёл до манифеста, всё совпало со встроенным — ничего не качает, надстройки нет
-      const line = await waitFor(async () => app.text().match(/\[data\] poe1 \S+: up to date/)?.[0], 40000)
+      const line = await waitFor(async () => app.text().match(new RegExp(`\\[data\\] ${GAME} \\S+: up to date`))?.[0], 40000)
       const t = app.text()
       const clean = !/\[data\] (update check failed|manifest skipped|update .* rolled back)/.test(t)
       check('POETH против настоящего канала: данные актуальны, ничего не скачано', !!line && clean && overrideFiles(app).length === 0, line ?? 'нет записи в логе')
@@ -219,11 +254,12 @@ if (!SKIP_LIVE) {
   const srv = startServer(NEW)
   const port = await srv.ready
   await run('newer', { POETH_DATA_MANIFEST_URL: `http://127.0.0.1:${port}/data/manifest.json`, POETH_UPDATE_URL: `http://127.0.0.1:${await closedPort()}/` }, async (app) => {
-    const applied = await waitFor(async () => app.text().match(/\[data\] poe1 9\.9\.9-check: (\d+) files, (\d+) downloaded/), 40000)
+    const applied = await waitFor(async () => app.text().match(new RegExp(`\\[data\\] ${GAME} 9\\.9\\.9-check: (\\d+) files, (\\d+) downloaded`)), 40000)
     check('пакет скачан, проверен и применён', !!applied, applied ? applied[0] : 'нет записи в логе')
-    check('скачан только изменённый файл', srv.reqs.filter((r) => r.startsWith('/data/poe1/')).join(',') === `/data/poe1/${PROBE}`, srv.reqs.join(','))
+    check(`прочитан манифест своей игры (${MANIFEST})`, srv.reqs.includes(`/data/${MANIFEST}`) && !srv.reqs.some((r) => /^\/data\/manifest/.test(r) && r !== `/data/${MANIFEST}`), srv.reqs.filter((r) => r.startsWith('/data/manifest')).join(','))
+    check('скачан только изменённый файл', srv.reqs.filter((r) => r.startsWith(`/data/${GAME}/`)).join(',') === `/data/${GAME}/${PROBE}`, srv.reqs.join(','))
     const files = overrideFiles(app)
-    const want = ['poe1', 'poe1/manifest.json', `poe1/${path.posix.dirname(PROBE)}`, `poe1/${PROBE}`].map((p) => p.split('/').join(path.sep)).sort()
+    const want = [GAME, `${GAME}/manifest.json`, `${GAME}/${path.posix.dirname(PROBE)}`, `${GAME}/${PROBE}`].map((p) => p.split('/').join(path.sep)).sort()
     check('надстройка: manifest.json + изменённый файл', JSON.stringify(files) === JSON.stringify(want), files.join(','))
     const toast = await waitFor(async () => notifyLine(app), 5000)
     check('тост «Данные обновлены»', !!toast, toast ?? 'нет')

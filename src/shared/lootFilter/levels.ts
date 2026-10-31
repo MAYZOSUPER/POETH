@@ -1,7 +1,9 @@
+import type { GameId } from '../games'
 import type { LootFilterLevel, LootFilterStyle } from '../types/lootFilter'
 
 // Уровни строгости и стили фильтра NeverSink (S53). Имена — как в файлах релиза
 // (`NeverSink's filter - 1-REGULAR.filter`, папки `(STYLE) ABYSS/…`). Тексты для игрока — в i18n (lf.level.*).
+// S64: у фильтра PoE 2 те же 7 уровней с теми же кодами (`NeverSink's filter 2 - 1-REGULAR.filter`), стили — свои.
 
 export interface LevelDef {
   level: LootFilterLevel
@@ -63,14 +65,35 @@ export const STYLES: readonly StyleDef[] = [
   { id: 'wow', dir: 'WOW', name: 'WoW' }
 ]
 
-export const DEFAULT_STYLE: LootFilterStyle = 'default'
+/**
+ * Стили фильтра PoE 2 (релиз 0.10.4a, 15.10.2026): Aura, Cobalt, Darkmode, Mythic, Vaal, Zen. CUSTOMSOUNDS не берём —
+ * как и у PoE 1, он ссылается на звуки рядом с файлом (209 строк CustomAlertSound в Regular).
+ */
+export const STYLES_POE2: readonly StyleDef[] = [
+  { id: 'default', dir: null, name: 'Default' },
+  { id: 'aura', dir: 'AURA', name: 'Aura' },
+  { id: 'cobalt', dir: 'COBALT', name: 'Cobalt' },
+  { id: 'darkmode', dir: 'DARKMODE', name: 'Darkmode' },
+  { id: 'mythic', dir: 'MYTHIC', name: 'Mythic' },
+  { id: 'vaal', dir: 'VAAL', name: 'Vaal' },
+  { id: 'zen', dir: 'ZEN', name: 'Zen' }
+]
 
-export function isStyle(v: unknown): v is LootFilterStyle {
-  return typeof v === 'string' && STYLES.some((s) => s.id === v)
+/** Стили фильтра этой игры. */
+export function stylesFor(game: GameId): readonly StyleDef[] {
+  return game === 'poe2' ? STYLES_POE2 : STYLES
 }
 
-export function styleDef(style: LootFilterStyle): StyleDef {
-  return STYLES.find((s) => s.id === style) ?? STYLES[0]
+export const DEFAULT_STYLE: LootFilterStyle = 'default'
+
+/** Стиль есть у фильтра этой игры (без игры — PoE 1, как в S53). */
+export function isStyle(v: unknown, game: GameId = 'poe1'): v is LootFilterStyle {
+  return typeof v === 'string' && stylesFor(game).some((s) => s.id === v)
+}
+
+export function styleDef(style: LootFilterStyle, game: GameId = 'poe1'): StyleDef {
+  const list = stylesFor(game)
+  return list.find((s) => s.id === style) ?? list[0]
 }
 
 /**

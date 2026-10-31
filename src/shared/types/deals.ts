@@ -1,6 +1,8 @@
 // Менеджер входящих/исходящих сделок + подсветка ячейки стэша (этап S8).
 // Чистые типы: разбор строк Client.txt — src/shared/deals/whisperParse.ts, история —
 // src/shared/deals/history.ts, геометрия стэша — src/shared/deals/stashGrid.ts.
+// S63: сделки PoE 2 — те же whisper'ы (шаблоны совпадают), у сделки поле game; main отдаёт в renderer
+// только сделки запущенной игры. Покупки через выкуп (Merchant's Tab) идут без whisper — в журнале их нет.
 
 /** Язык текста сообщения (не клиента игры: RU-клиент получает и EN-whisper'ы с сайта). */
 export type DealLang = 'en' | 'ru'
@@ -87,6 +89,8 @@ export interface Deal {
   demo?: boolean
   /** карточка поверх игры закрыта (✕, «Кик», после «Продано») — сделка остаётся в истории */
   cardHidden?: boolean
+  /** сделка из журнала PoE 2 (у PoE1 поля нет — так и в deals.json до S63) */
+  game?: 'poe2'
 }
 
 /** Шаблоны ответов одного языка. Подстановки: {player} {item} {price} {league}. */
@@ -123,6 +127,8 @@ export interface DealsConfig {
    * Свой, а не Settings.logPath: тот путь — лог PoE2 для кампании.
    */
   logPath: string | null
+  /** Client.txt PoE 2, выбранный вручную во вкладке «Сделки» в режиме PoE 2; null — автопоиск (S63). */
+  logPathPoe2: string | null
 }
 
 export type DealsConfigPatch = Partial<Omit<DealsConfig, 'templates'>> & {

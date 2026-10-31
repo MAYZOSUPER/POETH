@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
-import type { LeaguesState, Poe2SessionNotice } from '@shared/types'
+import type { LeaguesState, Poe2CurrencyRate, Poe2SessionNotice } from '@shared/types'
+import { roundExalted } from '@shared/poe2/pricecheck/currency'
+import { hourRange } from '@shared/poe1/pricecheck/faustus'
 import { useAppStore } from '../store/useAppStore'
 import { useShellStore } from '../store/useShellStore'
-import { useT } from '../i18n'
+import { useLang, useT } from '../i18n'
+import { CoinIcon } from '../components/Currency'
 import { Ico } from './regex/Ico'
 import { useAuthStore } from './account/useAuthStore'
 import { Poe1PriceCheckTab } from './Poe1PriceCheckTab'
@@ -11,6 +14,7 @@ import { Poe1PriceCheckTab } from './Poe1PriceCheckTab'
 // страница S37 (как пользоваться, клавиша, «Сменить клавишу») и своё у PoE 2: лига trade2 и вход в аккаунт.
 // Поля POESESSID больше нет: вход общий для PoE 1 и PoE 2 — официальная страница pathofexile.com (cookies сайта
 // общие для trade и trade2). Старый ключ из компаса main один раз перенёс во вход — об этом баннер.
+// S61: курс у Ange «1 div ≈ N ex» лиги поиска — по фиду обмена GGG (trade.poe2Rate, при открытии вкладки и смене лиги).
 
 const NOTICE_KEYS: Record<Poe2SessionNotice, string> = {
   moved: 'pc2.notice.moved',
@@ -43,6 +47,54 @@ function SessionNotice() {
       <button type="button" className="ui-btn ui-btn--sm" onClick={dismiss}>
         {t('pc2.notice.ok')}
       </button>
+    </div>
+  )
+}
+
+function fmt(v: number, lang: 'ru' | 'en'): string {
+  const s = String(roundExalted(v))
+  return lang === 'ru' ? s.replace('.', ',') : s
+}
+
+/** S61: курс у Ange в лиге поиска: «1 div ≈ N ex · 1 c ≈ M ex» и час данных. */
+function AngeRate({ league }: { league: string | undefined }) {
+  const t = useT()
+  const lang = useLang()
+  const [rate, setRate] = useState<Poe2CurrencyRate | null | 'loading'>('loading')
+  useEffect(() => {
+    if (!league) return
+    let alive = true
+    setRate('loading')
+    void window.overlayApi.trade
+      .poe2Rate(league)
+      .then((r) => alive && setRate(r))
+      .catch(() => alive && setRate(null))
+    return () => {
+      alive = false
+    }
+  }, [league])
+  return (
+    <div className="pct-row" title={t('pc2.s61.tab.rate.title')}>
+      <span className="pct-row__label">{t('pc2.s61.tab.rate')}</span>
+      {rate === 'loading' ? (
+        <span className="pct-note">{t('pc2.s61.tab.rate.loading')}</span>
+      ) : rate ? (
+        <>
+          <span className="pct-account">
+            <CoinIcon tag="divine" lang={lang} />
+            <b>{t('pc2.s61.rate', { n: fmt(rate.exaltedPerDivine, lang) })}</b>
+            {rate.exaltedPerChaos ? (
+              <>
+                <CoinIcon tag="chaos" lang={lang} />
+                <span>1 c ≈ {fmt(rate.exaltedPerChaos, lang)} ex</span>
+              </>
+            ) : null}
+          </span>
+          <span className="pct-note">{t('pc2.s61.tab.rate.src', { hours: hourRange(rate.hour) })}</span>
+        </>
+      ) : (
+        <span className="pct-note">{t('pc2.s61.tab.rate.none')}</span>
+      )}
     </div>
   )
 }
@@ -90,6 +142,7 @@ function LeagueAndAccount() {
           </select>
         </label>
         {leagues?.stale && <p className="pct-note">{t('pc2.tab.league.stale', { league: choice, auto: leagues.auto })}</p>}
+        <AngeRate league={leagues?.effective} />
 
         <div className="pct-row">
           <span className="pct-row__label">{t('pc2.tab.account')}</span>

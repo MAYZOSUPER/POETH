@@ -59,9 +59,9 @@ describe('реестр сайтов', () => {
     expect(SITES.filter((s) => !s.enOnly).map((s) => s.id)).toEqual(['poedb'])
   })
 
-  it('вкладки сайтов — только у PoE 1', () => {
+  it('вкладки сайтов — у PoE 1 и (S64) у PoE 2 со своим списком', () => {
     expect(sitesOn('poe1')).toBe(true)
-    expect(sitesOn('poe2')).toBe(false)
+    expect(sitesOn('poe2')).toBe(true)
   })
 
   it('вкладки: «Трейд» и «Сайты» — не сайты; закладка известна, только если есть', () => {

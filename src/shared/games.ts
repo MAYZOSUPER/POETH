@@ -67,7 +67,8 @@ export const GAMES: Record<GameId, GameDef> = {
     siteRealm: 'poe2',
     logSubdirs: ['Path of Exile 2/logs', 'PathOfExile2/logs'],
     dataDir: 'poe2',
-    features: { campaign: true, priceCheck: true, live: false, regex: false, deals: false, wealth: false, flip: false, leveling: false, advisor: false, build: false }
+    // S62 regex, S63 live и сделки, S66 «Билд» (импорт PoB2, «Сохранить в игру», «Вложение») — включены 01.11
+    features: { campaign: true, priceCheck: true, live: true, regex: true, deals: true, wealth: false, flip: false, leveling: false, advisor: false, build: true }
   }
 }
 
@@ -125,7 +126,7 @@ export function apiUrl(def: GameDef, host: SiteHost, endpoint: string, rest?: st
 /**
  * WebSocket live search.
  * PoE1: wss://<host>/api/trade/live/<league>/<slug>
- * PoE2: wss://<host>/api/trade2/live/poe2/<league>/<slug> — НЕ проверено (live для PoE2 вне v0.1).
+ * PoE2: wss://<host>/api/trade2/live/poe2/<league>/<slug> — S63: без входа рукопожатие 401 (как у PoE1), проверено 31.10.2026.
  */
 export function liveUrl(def: GameDef, host: SiteHost, league: string, slug: string): string {
   const parts = ['api', def.tradeSeg, 'live']

@@ -46,6 +46,8 @@ export function StashPage() {
     cal?.refWidth && cal.refHeight ? { width: cal.refWidth, height: cal.refHeight } : RESOLUTIONS[0]
   )
   const [pos, setPos] = useState<StashPos>({ left: 7, top: 3 })
+  // S63: геометрия тайника снята с PoE 1; в PoE 2 не сверена — точнее всего калибровка по двум углам
+  const poe2 = useAppStore((s) => s.settings?.game) === 'poe2'
   if (!deals || !state) return null
 
   const mode = deals.stashGrid
@@ -56,6 +58,7 @@ export function StashPage() {
       <div className="dl-stack">
         <Box title={t('deals.stash.title')} icon="grid">
           {simple && <Hint text={t('deals.stash.calib.help')} />}
+          {poe2 && <Hint text={t('deals.stash.poe2')} />}
           <label className="dl-field">
             <span className="ui-field__label">{t('deals.stash.grid')}</span>
             <Seg<StashGridMode>

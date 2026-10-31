@@ -5,6 +5,7 @@ import { IPC } from '@shared/ipc'
 import type { GameDef, GameId } from '@shared/games'
 import type {
   DealCardAction,
+  DealsConfig,
   DealLang,
   DealStatus,
   DealsCalibrateResult,
@@ -38,6 +39,8 @@ import type { IpcDomain } from './types'
 // карточки поверх игры (оверлей S1, overlay/deals/) — кнопки и хоткеи верхней карточки дают
 // РОВНО ОДНУ команду в чат через typeInChat; калибровка стэша кликами поверх игры.
 // Никаких автоответов и таймеров: каждая команда — по нажатию игрока.
+// S63: PoE 2 — тот же менеджер на журнале PoE 2 (GameDef.features.deals; флаг ставит лид): история показывает
+// сделки запущенной игры (dealsStore.setGame), у PoE 2 свой выбранный вручную Client.txt (config.logPathPoe2).
 
 let store: DealsStore | null = null
 let blacklist: BlacklistService | null = null
@@ -105,8 +108,8 @@ function start(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// Client.txt PoE1: общий тейлер процесса (services/gameLog.ts, его же читают команды чата).
-// Файл, выбранный во вкладке «Сделки» (deals.json config.logPath), — «свой путь» для игры.
+// Client.txt игры: общий тейлер процесса (services/gameLog.ts, его же читают команды чата).
+// Файл, выбранный во вкладке «Сделки» (deals.json config.logPath — PoE1, logPathPoe2 — PoE2), — «свой путь» игры.
 // ---------------------------------------------------------------------------
 
 let logDef: GameDef | null = null
@@ -116,6 +119,15 @@ let logGame: GameId | null = null
 function logStatus(): DealsLogStatus {
   const st = getGameLogStatus()
   return { connected: st.running && !!st.logPath, logPath: st.logPath, custom: st.custom }
+}
+
+/** Ключ настроек со «своим» Client.txt игры. */
+function logPathKey(game: GameId): 'logPath' | 'logPathPoe2' {
+  return game === 'poe2' ? 'logPathPoe2' : 'logPath'
+}
+
+function logPathOf(config: DealsConfig, game: GameId): string | null {
+  return config[logPathKey(game)]
 }
 
 function stopLog(): void {
@@ -133,7 +145,7 @@ async function reconcileLog(): Promise<void> {
     stopLog()
     return
   }
-  await setGameLogPath(def.id, s.getState().config.logPath)
+  await setGameLogPath(def.id, logPathOf(s.getState().config, def.id))
   if (logOff && logGame === def.id) return
   stopLog()
   logGame = def.id
@@ -149,8 +161,9 @@ async function reconcileLog(): Promise<void> {
 
 async function pickLog(reset: boolean): Promise<DealsLogStatus> {
   const s = getStore()
+  const key = logPathKey(logDef?.id ?? 'poe1')
   if (reset) {
-    await s.setConfig({ logPath: null })
+    await s.setConfig({ [key]: null })
   } else {
     const win = getCompanionWindow()
     const opts = {
@@ -160,7 +173,7 @@ async function pickLog(reset: boolean): Promise<DealsLogStatus> {
     }
     const r = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
     if (r.canceled || r.filePaths.length === 0) return logStatus()
-    await s.setConfig({ logPath: r.filePaths[0] })
+    await s.setConfig({ [key]: r.filePaths[0] })
   }
   await reconcileLog()
   return logStatus()
@@ -266,7 +279,7 @@ function register(): void {
   ipcMain.handle(IPC.deals.clear, (_e, demoOnly: unknown) => getStore().clear(demoOnly === true))
   ipcMain.handle(IPC.deals.setConfig, async (_e, patch: unknown) => {
     // путь к логу меняется только через диалог pickLog
-    const { logPath: _ignored, ...rest } = (patch ?? {}) as DealsConfigPatch
+    const { logPath: _ignored, logPathPoe2: _ignored2, ...rest } = (patch ?? {}) as DealsConfigPatch
     const state = await getStore().setConfig(rest)
     syncBlacklist(state.config.checkBlacklist)
     return state
@@ -313,6 +326,8 @@ function register(): void {
 
 async function setupForGame(def: GameDef): Promise<void> {
   logDef = def
+  // история и карточки — сделки этой игры (у игры без менеджера сделок вкладки нет, но состояние — её)
+  getStore().setGame(def.id)
   if (!def.features.deals) {
     stopLog()
     return

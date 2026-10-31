@@ -1,0 +1,1284 @@
+{
+  "name": "Амазонка — Внезапный удар",
+  "description": "Из Path of Building через POETH. Этапов по уровням: 3.",
+  "ascendancy": "Huntress1",
+  "passives": [
+    "projectiles15",
+    {
+      "id": "dexterity17",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "dexterity16",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "dexterity15",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "dexterity18",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "ranger_huntress_notable2",
+    {
+      "id": "dexterity19",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "flasks20_",
+    {
+      "id": "dexterity20",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "dexterity36",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "dexterity21",
+      "weapon_set": 2,
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "attributes29",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "dexterity38",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "dexterity67_",
+      "weapon_set": 2,
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "accuracy37",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "dexterity34",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "attack51",
+      "level_interval": [
+        32,
+        100
+      ]
+    },
+    {
+      "id": "dexterity68",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 2,
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "accuracy38",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "jewel_slot1960",
+      "level_interval": [
+        32,
+        100
+      ]
+    },
+    {
+      "id": "attack48",
+      "level_interval": [
+        32,
+        100
+      ]
+    },
+    {
+      "id": "dexterity66",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 2,
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "accuracy39",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "dexterity12_",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "attack46",
+      "level_interval": [
+        32,
+        100
+      ]
+    },
+    {
+      "id": "attack7",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "accuracy40",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "dexterity54",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "attack10",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "dexterity55",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "attack11",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "dexterity82_",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "dexterity52",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "movement_speed5",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "dexterity81",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "dexterity51",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "companions67",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "movement_speed4",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "accuracy31",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "attributes9",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "attributes10",
+      "level_interval": [
+        32,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "companions63",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "movement_speed9",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "accuracy10",
+      "level_interval": [
+        32,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "deflect39",
+      "level_interval": [
+        32,
+        100
+      ]
+    },
+    {
+      "id": "AscendancyHuntress1Small7",
+      "level_interval": [
+        32,
+        100
+      ]
+    },
+    {
+      "id": "AscendancyHuntress1Small8",
+      "level_interval": [
+        32,
+        100
+      ]
+    },
+    {
+      "id": "AscendancyHuntress1Small3",
+      "level_interval": [
+        32,
+        100
+      ]
+    },
+    {
+      "id": "AscendancyHuntress1Small1",
+      "level_interval": [
+        32,
+        100
+      ]
+    },
+    {
+      "id": "dexterity80",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "dexterity50",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "companions62__",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "accuracy11",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "deflect38",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "jewel_slot1970",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "jewel_slot1976",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals52",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "evasion24_",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "companions52",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "accuracy20",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "deflect41",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "dexterity75",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "attributes27",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "dexterity48",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "criticals58",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals56",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "evasion27",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "companions68",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "companions58",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "dexterity76",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "daze_3",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "attributes11",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "criticals54_",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals53",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "evasion22",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "companions53",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "companions59",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "attributes8_",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "daze_7",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "daze_4",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "dexterity47",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "criticals59",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "evasion32",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "companions54",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "dexterity77",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "daze_19",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "daze_2",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "dexterity46",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "quarterstaff8",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals87",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals55_",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "strength81",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "attack_speed42",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "dexterity7",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "quarterstaff7",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "quarterstaff9_",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals89",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "dexterity79",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "strength83",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "attack_speed45",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "power_charges5",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "dexterity9",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "intelligence67",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "quarterstaff10",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "quarterstaff18",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals90",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "strength82",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "attributes7",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "armour_and_evasion21",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "attack_speed43",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "power_charges4",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "intelligence25",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "attributes12",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "jewel_slot1975",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "strength84",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "armour_and_evasion22",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "attack_speed35",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 1
+    },
+    {
+      "id": "power_charges6_",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "jewel_slot1961",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "intelligence68",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "strength85",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "evasion38_",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "power_charges8",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "intelligence69",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "jewel_slot1974",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "jewel_slot1979",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "attributes17_",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "strength71",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 2,
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "rage3",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "attributes6",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 2,
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "rage2",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "endurance_charges3",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "rage1",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "endurance_charges2",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "rage6",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "endurance_charges7",
+      "level_interval": [
+        65,
+        100
+      ],
+      "weapon_set": 2
+    },
+    {
+      "id": "AscendancyHuntress1Notable7",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "AscendancyHuntress1Notable8",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "AscendancyHuntress1Notable3",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "AscendancyHuntress1Notable1",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "attack_speed31",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "elemental_attacks2",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals29",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "monkchakra6",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "elemental_attacks3",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "deflect53",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "elemental_attacks9",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals49",
+      "level_interval": [
+        65,
+        100
+      ]
+    },
+    {
+      "id": "criticals28",
+      "level_interval": [
+        65,
+        100
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "Metadata/Items/Gems/SkillGemSigilOfLife",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gems/SupportGemPersistenceTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemTrinity",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemHerbalismTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemBerserk",
+      "level_interval": [
+        65,
+        100
+      ],
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemPrecision",
+        "Metadata/Items/Gems/SupportGemHerbalism"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemIceStrike",
+      "level_interval": [
+        65,
+        100
+      ],
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemCrescendoTwo",
+        "Metadata/Items/Gems/SupportGemConcentratedEffect",
+        "Metadata/Items/Gems/SupportGemCloseCombatTwo",
+        "Metadata/Items/Gems/SupportGemPinpointCritical",
+        "Metadata/Items/Gems/SupportGemPrimalArmamentTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemTempestBell",
+      "level_interval": [
+        65,
+        100
+      ],
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemDelayedGratification",
+        "Metadata/Items/Gems/SupportGemOverabundanceTwo",
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gem/SupportGemDurability",
+        "Metadata/Items/Gems/SupportGemPinpointCritical"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemFlickerStrike",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "<b>{Главное умение билда}",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemMedvedsFelling",
+        "Metadata/Items/Gem/SupportGemRakiatasFlow",
+        "Metadata/Items/Gems/SupportGemPinpointCritical",
+        "Metadata/Items/Gems/SupportGemCloseCombatTwo",
+        "Metadata/Items/Gems/SupportGemMartialTempoTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemAncestralCry",
+      "level_interval": [
+        65,
+        100
+      ],
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemZerphisLegacy",
+        "Metadata/Items/Gems/SupportGemPersistenceTwo",
+        "Metadata/Items/Gems/SupportGemCloseCombatTwo",
+        "Metadata/Items/Gems/SupportGemPrimalArmamentTwo",
+        "Metadata/Items/Gem/SupportGemTwofold"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemWindDancer",
+      "level_interval": [
+        65,
+        100
+      ],
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gems/SupportGemPinpointCritical",
+        "Metadata/Items/Gems/SupportGemHeavySwing",
+        "Metadata/Items/Gems/SupportGemIngenuityTwo",
+        "Metadata/Items/Gems/SupportGemLifeThiefThree"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemChargedStaff",
+      "level_interval": [
+        65,
+        100
+      ],
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemPersistenceTwo",
+        "Metadata/Items/Gems/SupportGemBlindTwo",
+        "Metadata/Items/Gems/SupportGemLightningInfusion",
+        "Metadata/Items/Gem/SupportGemTwofold",
+        "Metadata/Items/Gems/SupportGemConduction"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemWindBlast",
+      "level_interval": [
+        65,
+        100
+      ],
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemAtaluiBloodletting",
+        "Metadata/Items/Gems/SupportGemOverpowerTwo",
+        "Metadata/Items/Gems/SupportGemPinpointCritical",
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gem/SupportGemEnduringImpactTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemHeraldOfThunder",
+      "level_interval": [
+        65,
+        100
+      ],
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemPinpointCritical",
+        "Metadata/Items/Gems/SupportGemElementalFocus",
+        "Metadata/Items/Gems/SupportGemConcentratedEffect",
+        "Metadata/Items/Gems/SupportGemPrimalArmamentTwo",
+        "Metadata/Items/Gems/SupportGemCloseCombatTwo"
+      ]
+    }
+  ],
+  "inventory_slots": [
+    {
+      "inventory_id": "Weapon1",
+      "additional_text": "<yellow>{Редкий: Sinister Quarterstaff}"
+    },
+    {
+      "inventory_id": "Helm1",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "<yellow>{Редкий: Freebooter Cap}"
+    },
+    {
+      "inventory_id": "BodyArmour1",
+      "unique_name": "Reverie",
+      "additional_text": "<unique>{Грёзы}"
+    },
+    {
+      "inventory_id": "Gloves1",
+      "level_interval": [
+        65,
+        100
+      ],
+      "unique_name": "Hateforge",
+      "additional_text": "<unique>{Hateforge}"
+    },
+    {
+      "inventory_id": "Boots1",
+      "level_interval": [
+        65,
+        100
+      ],
+      "unique_name": "Atziri's Step",
+      "additional_text": "<unique>{Atziri's Step}"
+    },
+    {
+      "inventory_id": "Amulet1",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "<yellow>{Редкий: Отсутствующий амулет}"
+    },
+    {
+      "inventory_id": "Ring1",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "<yellow>{Редкий: Prismatic Ring}"
+    },
+    {
+      "inventory_id": "Ring2",
+      "level_interval": [
+        65,
+        100
+      ],
+      "additional_text": "<yellow>{Редкий: Topaz Ring}"
+    },
+    {
+      "inventory_id": "Belt1",
+      "level_interval": [
+        65,
+        100
+      ],
+      "unique_name": "Mageblood",
+      "additional_text": "<unique>{Магическая кровь}"
+    }
+  ]
+}

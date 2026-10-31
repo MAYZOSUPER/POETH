@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "id": "poe2-currency",
+  "rev": 1,
+  "updated": "2026-10-31",
+  "patch": ["0.5"],
+  "title": { "ru": "Валюта PoE 2: exalted и divine, обменник Ange", "en": "PoE 2 currency: Exalted and Divine, Ange's exchange" },
+  "summary": {
+    "ru": "Какие сферы главные, сколько exalted в одной divine, как работает обмен валюты у Ange и чем он отличается от сайта трейда.",
+    "en": "Which orbs matter, how many Exalted are in one Divine, how Ange's currency exchange works and how it differs from the trade site."
+  },
+  "sections": [
+    {
+      "id": "orbs",
+      "title": { "ru": "Главные сферы", "en": "The main orbs" },
+      "blocks": [
+        {
+          "kind": "terms",
+          "items": [
+            {
+              "term": { "ru": "Сфера возвышения", "en": "Exalted Orb" },
+              "def": {
+                "ru": "Основная «монета»: в ней считают цены большинства вещей. В крафте добавляет редкому предмету новое свойство.",
+                "en": "The main \"coin\": most prices are counted in it. In crafting it adds a new modifier to a rare item."
+              }
+            },
+            {
+              "term": { "ru": "Божественная сфера", "en": "Divine Orb" },
+              "def": {
+                "ru": "Дорогая валюта для крупных покупок. За одну дают сотни сфер возвышения, курс меняется каждый час.",
+                "en": "The expensive currency for big purchases. One is worth hundreds of Exalted Orbs, and the rate changes every hour."
+              }
+            },
+            {
+              "term": { "ru": "Сфера хаоса", "en": "Chaos Orb" },
+              "def": {
+                "ru": "Меняет одно случайное свойство редкого предмета на новое. Тоже ходит в торговле, но реже, чем возвышение.",
+                "en": "Replaces one random modifier of a rare item with a new one. It is traded too, but less than Exalted."
+              }
+            },
+            {
+              "term": { "ru": "Сфера превращения, усиления, царей", "en": "Transmutation, Augmentation, Regal" },
+              "def": {
+                "ru": "Простой крафт: обычный предмет → волшебный, ещё одно свойство волшебному, волшебный → редкий. Стоят мало, но полезны с первых часов.",
+                "en": "Basic crafting: normal item → magic, one more modifier on a magic item, magic → rare. Cheap, but useful from the first hours."
+              }
+            },
+            {
+              "term": { "ru": "Золото", "en": "Gold" },
+              "def": {
+                "ru": "Не предмет в тайнике: тратится у торговцев, на заявки обменника и на плату за выкуп лотов с сайта трейда.",
+                "en": "Not an item in your stash: you spend it at vendors, on exchange orders and on the fee for instant buyouts from the trade site."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rate",
+      "title": { "ru": "Курс exalted ↔ divine", "en": "The Exalted ↔ Divine rate" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "Божественная сфера стоит сотни сфер возвышения: 31.10.2026 poe.ninja показывал около 564 exalted за одну divine. Курс живой — в начале лиги и после патчей он скачет сильнее всего.",
+            "en": "A Divine Orb is worth hundreds of Exalted Orbs: on October 31, 2026 poe.ninja showed about 564 Exalted per Divine. The rate is live — it swings most at league start and after patches."
+          }
+        },
+        {
+          "kind": "note",
+          "tone": "tip",
+          "text": {
+            "ru": "Дешёвые вещи оценивайте в exalted, дорогие — в divine. Перед крупной сделкой посмотрите курс, а не берите его по памяти.",
+            "en": "Price cheap items in Exalted and expensive ones in Divine. Before a big deal check the rate instead of going from memory."
+          }
+        },
+        {
+          "kind": "link",
+          "site": "ninja2",
+          "url": "https://poe.ninja/poe2/economy",
+          "label": { "ru": "Курс на poe.ninja", "en": "Rates on poe.ninja" },
+          "text": { "ru": "Откроется во вкладке трейд-окна.", "en": "Opens in a trade window tab." }
+        }
+      ]
+    },
+    {
+      "id": "exchange",
+      "title": { "ru": "Обменник Ange", "en": "Ange's currency exchange" },
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            {
+              "ru": "**Где:** обмен валюты открывается у торговки Ange в 4 акте.",
+              "en": "**Where:** the currency exchange opens with Ange, a merchant you meet in Act 4."
+            },
+            {
+              "ru": "**Как:** вы ставите заявку — что отдаёте, что хотите получить и по какому курсу. Она исполняется, когда находится встречная заявка другого игрока.",
+              "en": "**How:** you place an order — what you give, what you want and at what rate. It fills when another player's matching order appears."
+            },
+            {
+              "ru": "**Цена заявки** — немного золота. Курс, который сейчас идёт, обменник показывает сам: смотрите его перед заявкой.",
+              "en": "**An order costs** a little gold. The exchange itself shows the current rate: look at it before placing an order."
+            },
+            {
+              "ru": "**Нужно быстро** — ставьте курс чуть хуже рынка. Не спешите — ставьте свой и ждите.",
+              "en": "**In a hurry** — set a rate slightly worse than the market. Not in a hurry — set your own and wait."
+            }
+          ]
+        },
+        {
+          "kind": "note",
+          "tone": "warn",
+          "text": {
+            "ru": "Не путайте: обменник — внутри игры, без переписки. «Обмен валюты» на сайте трейда — это объявления игроков, с ними договариваются в чате.",
+            "en": "Don't mix them up: the exchange is inside the game, no chatting. \"Currency exchange\" on the trade site lists player offers, and you arrange those in chat."
+          }
+        }
+      ]
+    },
+    {
+      "id": "trade-site",
+      "title": { "ru": "Сайт трейда и выкуп", "en": "The trade site and instant buyouts" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "Многие лоты на сайте трейда PoE 2 можно выкупить сразу, без переписки с продавцом: покупатель платит за это немного золота. Окно цены POETH (`Ctrl+D`) показывает цены по таким лотам.",
+            "en": "Many listings on the PoE 2 trade site can be bought instantly, without messaging the seller: the buyer pays a little gold for it. The POETH price window (`Ctrl+D`) shows prices from such listings."
+          }
+        },
+        {
+          "kind": "app",
+          "to": "priceCheck",
+          "label": { "ru": "Прайс-чек (Ctrl+D)", "en": "Price check (Ctrl+D)" }
+        }
+      ]
+    }
+  ]
+}

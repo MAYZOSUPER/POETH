@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import type { GameId } from '@shared/games'
 import type { LiveHit, LiveSearchView, UiLang } from '@shared/types'
 import { useT } from '../i18n'
 import { useAppStore } from '../store/useAppStore'
@@ -7,11 +8,17 @@ import { LiveIco, LiveSwitch } from './live/ui'
 import { ago, priceAmount, rarityColor, searchStatus } from './live/format'
 import { useHitName } from './live/names'
 import { Currency } from '../components/Currency'
+import { Select } from '../components/Select'
 import './live/live.css'
 
-// Вкладка Live компаньона (PoE1, S6) по утверждённому макету: общие переключатели и счётчик
+// Вкладка Live компаньона (PoE1 — S6, PoE2 — S63) по утверждённому макету: общие переключатели и счётчик
 // «Активно N из 10», список поисков (статус, вкл/выкл, звук, убрать), последние находки.
-// Поиски добавляются ссылкой с сайта трейда; позже S5 подключит флаг live из избранного.
+// Поиски добавляются ссылкой с сайта трейда; поиски избранного — молнией в трейд-окне (S5).
+// PoE2: ссылки trade2, свой предел поисков (сайт его не сообщает — по умолчанию 5), лоты выкупа —
+// «Открыть в трейд-окне» (покупает игрок на сайте).
+
+/** Варианты предела live-поисков PoE2. */
+const POE2_MAX_OPTIONS = ['1', '2', '3', '5', '8', '10', '15', '20']
 
 function useNow(): number {
   const [now, setNow] = useState(Date.now())
@@ -22,7 +29,7 @@ function useNow(): number {
   return now
 }
 
-function SearchRow({ s, now, masterOn, max }: { s: LiveSearchView; now: number; masterOn: boolean; max: number }) {
+function SearchRow({ s, now, masterOn, max, game }: { s: LiveSearchView; now: number; masterOn: boolean; max: number; game: GameId }) {
   const t = useT()
   const setEnabled = useLiveStore((st) => st.setEnabled)
   const update = useLiveStore((st) => st.update)
@@ -74,7 +81,7 @@ function SearchRow({ s, now, masterOn, max }: { s: LiveSearchView; now: number; 
           className="ui-btn ui-btn--sm ui-btn--ghost ui-btn--icon"
           title={t('live.row.open')}
           aria-label={t('live.row.open')}
-          onClick={() => void window.overlayApi.tradeWindow.open({ url: s.siteUrl, game: 'poe1' })}
+          onClick={() => void window.overlayApi.tradeWindow.open({ url: s.siteUrl, game })}
         >
           <LiveIco name="external" />
         </button>
@@ -105,6 +112,7 @@ function HitRow({ hit, now }: { hit: LiveHit; now: number }) {
   const lang = useAppStore((s) => s.settings?.uiLang ?? 'ru') as UiLang
   // имя как в игре (S31): сайт трейда отдаёт его на своём языке
   const name = useHitName(hit, lang)
+  const poe2 = hit.game === 'poe2'
   const whisper = async (): Promise<void> => {
     const r = await window.overlayApi.live.whisper(hit.key)
     setNote(r === 'ok' ? t('live.toast.done.note') : t(`live.act.err.${r}`))
@@ -122,6 +130,7 @@ function HitRow({ hit, now }: { hit: LiveHit; now: number }) {
         <span className="live-hit-sub">
           {hit.searchTitle}
           {hit.merchant && <span className="ui-tag ui-tag--merchant">{t('live.merchant')}</span>}
+          {poe2 && hit.merchant && hit.fee !== undefined && <span> {t('live.fee', { n: hit.fee.toLocaleString() })}</span>}
         </span>
         {note && <span className="live-hit-note">{note}</span>}
       </td>
@@ -131,9 +140,14 @@ function HitRow({ hit, now }: { hit: LiveHit; now: number }) {
       <td className="live-when">{ago(t, hit.at, now)}</td>
       <td className="live-hit-acts">
         {hit.merchant ? (
-          <button type="button" className="ui-btn ui-btn--sm" title={t('live.act.open.title')} onClick={() => void window.overlayApi.live.openHit(hit.key)}>
+          <button
+            type="button"
+            className="ui-btn ui-btn--sm"
+            title={t(poe2 ? 'live.act.openTrade.title' : 'live.act.open.title')}
+            onClick={() => void window.overlayApi.live.openHit(hit.key)}
+          >
             <LiveIco name="external" />
-            {t('live.act.open')}
+            {t(poe2 ? 'live.act.openTrade' : 'live.act.open')}
           </button>
         ) : (
           <>
@@ -180,6 +194,8 @@ export function LiveTab() {
 
   if (!snap) return <div className="live-tab" />
   const { options, searches, active, max, loggedIn, recent } = snap
+  const game: GameId = snap.game ?? 'poe1'
+  const poe2 = game === 'poe2'
   const needLogin = !loggedIn && options.enabled && searches.some((s) => s.state === 'auth')
   const meterLevel = active >= max ? 'over' : active >= max * 0.8 ? 'warn' : undefined
 
@@ -215,6 +231,21 @@ export function LiveTab() {
           </div>
           <div className="ui-meter__bar" />
         </div>
+        {poe2 && (
+          <span className="live-poe2max">
+            <span className="live-poe2max__row">
+              <span>{t('live.poe2max')}</span>
+              <Select
+                label={t('live.poe2max')}
+                title={t('live.poe2max.help')}
+                value={String(options.poe2Max ?? 5)}
+                options={POE2_MAX_OPTIONS.map((v) => ({ value: v, label: v }))}
+                onChange={(v) => void setOptions({ poe2Max: Number(v) })}
+              />
+            </span>
+            {!simple && <span className="live-poe2max__note">{t('live.poe2max.help')}</span>}
+          </span>
+        )}
       </div>
 
       {needLogin && (
@@ -257,11 +288,11 @@ export function LiveTab() {
             </button>
           </div>
           {addError ? (
-            <span className="ui-field__error">{t(`live.add.err.${addError}`)}</span>
+            <span className="ui-field__error">{t(poe2 && addError === 'bad-url' ? 'live.add.err.bad-url.poe2' : `live.add.err.${addError}`)}</span>
           ) : addedOff ? (
             <span className="ui-field__error">{t('live.add.off', { max })}</span>
           ) : (
-            simple && <span className="ui-field__help">{t('live.add.help')}</span>
+            simple && <span className="ui-field__help">{t(poe2 ? 'live.add.help.poe2' : 'live.add.help')}</span>
           )}
         </div>
       </form>
@@ -269,7 +300,7 @@ export function LiveTab() {
       {searches.length ? (
         <div className="live-box">
           {searches.map((s) => (
-            <SearchRow key={s.id} s={s} now={now} masterOn={options.enabled} max={max} />
+            <SearchRow key={s.id} s={s} now={now} masterOn={options.enabled} max={max} game={game} />
           ))}
         </div>
       ) : (
@@ -282,7 +313,7 @@ export function LiveTab() {
       {simple && (
         <div className="ui-hint live-hint">
           <LiveIco name="help" />
-          <span>{t('live.hint')}</span>
+          <span>{t(poe2 ? 'live.hint.poe2' : 'live.hint')}</span>
         </div>
       )}
 

@@ -1,18 +1,28 @@
 import type { LiveHit, LiveRarity } from '../types/live'
-import type { ItemNamespace, Poe1Data } from '../poe1/data'
 
 // Имя находки live на языке клиента игры (S31). Сайт трейда отдаёт имена на своём языке (siteHost: www — EN,
 // ru — RU); игрок с другим языком клиента видит в игре другое имя. Уник, база, камень, карта судьбы, валюта —
 // переводим по данным APT (RU-данные: name — RU, refName — EN); имя редкого («Doom Coil»), магическое имя с
 // аффиксами и всё, чего нет в данных, — как пришло. Язык строки — по кириллице: сайт и клиент — только EN/RU.
 // Whisper в чат не трогаем: его текст даёт сайт. Чистые функции — годятся и для main, и для других окон.
+// S63: находки PoE 2 (hit.game) переводятся так же по данным EE2 (у Poe2Data тот же поиск по имени) — вызывающий
+// передаёт RU-данные своей игры.
+
+/** Пространства имён предметов, общие для данных PoE1 (APT) и PoE2 (EE2). */
+export type NameNamespace = 'DIVINATION_CARD' | 'CAPTURED_BEAST' | 'UNIQUE' | 'ITEM' | 'GEM'
+
+/** Поиск имён в RU-данных игры: name — RU, refName — EN (Poe1Data и Poe2Data). */
+export interface NameData {
+  itemByTranslated(ns: NameNamespace, name: string): readonly { refName: string }[] | undefined
+  itemByRef(ns: NameNamespace, refName: string): readonly { name: string }[] | undefined
+}
 
 type Lang = 'ru' | 'en'
 
 const CYR = /[А-Яа-яЁё]/
 
 /** Где искать базу (typeLine) по редкости находки. */
-const TYPE_NS: Record<LiveRarity, readonly ItemNamespace[]> = {
+const TYPE_NS: Record<LiveRarity, readonly NameNamespace[]> = {
   normal: ['ITEM'],
   magic: ['ITEM'],
   rare: ['ITEM'],
@@ -23,8 +33,8 @@ const TYPE_NS: Record<LiveRarity, readonly ItemNamespace[]> = {
   other: ['ITEM', 'GEM', 'DIVINATION_CARD', 'CAPTURED_BEAST']
 }
 
-/** Имя на языке клиента игры; ru — RU-данные APT (null — ещё не загружены: как пришло). */
-export function nameInGame(text: string, namespaces: readonly ItemNamespace[], gameLang: Lang, ru: Poe1Data | null): string {
+/** Имя на языке клиента игры; ru — RU-данные игры (null — ещё не загружены: как пришло). */
+export function nameInGame(text: string, namespaces: readonly NameNamespace[], gameLang: Lang, ru: NameData | null): string {
   if (!text || !ru) return text
   const isRu = CYR.test(text)
   if (isRu === (gameLang === 'ru')) return text
@@ -36,7 +46,7 @@ export function nameInGame(text: string, namespaces: readonly ItemNamespace[], g
 }
 
 /** Имя находки (имя уника/редкого + база) на языке клиента игры. */
-export function hitNameIn(hit: LiveHit, gameLang: Lang, ru: Poe1Data | null): string {
+export function hitNameIn(hit: LiveHit, gameLang: Lang, ru: NameData | null): string {
   // имя есть у уника (переводится) и у редкого (случайное — как пришло)
   const name = hit.rarity === 'unique' ? nameInGame(hit.name, ['UNIQUE'], gameLang, ru) : hit.name
   const typeLine = nameInGame(hit.typeLine, TYPE_NS[hit.rarity] ?? TYPE_NS.other, gameLang, ru)

@@ -1,5 +1,8 @@
-// Live search PoE1 (этап S6): поиски, состояния подключения, находки.
+// Live search (этап S6 — PoE1, S63 — PoE2): поиски, состояния подключения, находки.
 // Подключение и cookies живут только в main; в renderer — состояние и находки.
+// Поиски у каждой игры свои (live.json хранит игру поиска); работают поиски запущенной игры.
+
+import type { GameId } from '../games'
 
 export interface LiveSettings {
   /** максимум одновременных live-поисков (по умолчанию 10, допустимо 1..20) */
@@ -57,6 +60,12 @@ export interface LiveOptions {
   sound: boolean
   /** уведомление Windows, когда игра не в фокусе */
   notifyWindows: boolean
+  /**
+   * Предел одновременных live-поисков PoE2 (trade2), 1..20. Сайт без входа заголовков предела соединений
+   * не отдаёт (проверено 31.10.2026: рукопожатие — 401 без x-rate-limit), поэтому безопасное значение —
+   * 5; у PoE1 предел — settings.live.maxSearches. В live.json поле есть всегда (нормализация store.ts).
+   */
+  poe2Max?: number
 }
 
 export type LiveRarity = 'normal' | 'magic' | 'rare' | 'unique' | 'gem' | 'currency' | 'divination' | 'other'
@@ -96,6 +105,8 @@ export interface LiveHit {
   fee?: number
   /** страница поиска на сайте (до S5 — «Открыть лот» в браузере) */
   siteUrl: string
+  /** находка поиска PoE2 (у PoE1 поля нет): имена переводятся по данным PoE2, текста предмета нет */
+  game?: 'poe2'
 }
 
 export interface LiveHitEvent {
@@ -108,11 +119,13 @@ export interface LiveHitEvent {
 }
 
 export interface LiveSnapshot {
+  /** игра, поиски которой показаны (запущенная); нет поля — PoE1 */
+  game?: GameId
   options: LiveOptions
   searches: LiveSearchView[]
   /** включённых поисков (не idle/invalid) */
   active: number
-  /** лимит из settings.live.maxSearches */
+  /** предел поисков игры: PoE1 — settings.live.maxSearches, PoE2 — options.poe2Max */
   max: number
   loggedIn: boolean
   /** последние находки, свежие первыми */
@@ -120,9 +133,9 @@ export interface LiveSnapshot {
 }
 
 export type LiveAddError =
-  /** не ссылка на поиск PoE1 и не id поиска */
+  /** не ссылка на поиск запущенной игры и не id поиска */
   | 'bad-url'
-  /** ссылка на трейд PoE 2 — live для PoE 2 вне v0.1 */
+  /** в режиме PoE1 — ссылка на трейд PoE 2 (live PoE 2 работает в режиме PoE 2) */
   | 'poe2'
   /** bulk-обмен: у сайта нет live для обмена */
   | 'exchange'

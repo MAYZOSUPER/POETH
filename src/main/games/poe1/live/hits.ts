@@ -1,7 +1,12 @@
 // Ответ /api/trade/fetch → находка live (чистый модуль; тесты — tests/live/hits.test.ts).
 // Проверено на живом API (28.10.2026): item.extended.text — base64 текста предмета (\r\n),
 // у лота торговца есть listing.fee (золото) и нет listing.whisper.
+// PoE2 (/api/trade2/fetch, проверено анонимно 31.10.2026, S63): item.extended — только hashes (текста
+// предмета нет); моды — объекты {description, hash, mods} с разметкой «[Ключ|Текст]»; у лота выкупа
+// (Merchant's Tab) — listing.fee в золоте, account.online = null и нет whisper; whisper — на языке
+// аккаунта продавца (account.language), шаблоны EN/RU — те же, что у PoE1.
 
+import type { GameId } from '@shared/games'
 import type { LiveHit, LiveRarity, LiveSellerState } from '@shared/types'
 
 const FRAME: Record<number, LiveRarity> = {
@@ -24,6 +29,8 @@ export interface HitContext {
   league: string
   siteUrl: string
   now: number
+  /** игра поиска; у PoE2 свой формат модов (без поля — как у PoE1) */
+  game?: GameId
 }
 
 function str(v: unknown, max = 300): string | undefined {
@@ -32,6 +39,23 @@ function str(v: unknown, max = 300): string | undefined {
 
 function num(v: unknown): number | undefined {
   return typeof v === 'number' && Number.isFinite(v) ? v : undefined
+}
+
+/** «+25% to [Resistances|Cold Resistance]» → «+25% to Cold Resistance» (разметка ссылок trade2). */
+export function plainModText(s: string): string {
+  return s.replace(/\[([^[\]|]*)\|([^[\]]*)\]/g, '$2').replace(/\[([^[\]|]*)\]/g, '$1')
+}
+
+/** Моды PoE2: объекты {description} (или строки); разметка ссылок — в обычный текст. */
+function poe2Mods(list: unknown): string[] {
+  if (!Array.isArray(list)) return []
+  const out: string[] = []
+  for (const m of list) {
+    const d = typeof m === 'string' ? m : m && typeof m === 'object' ? (m as { description?: unknown }).description : undefined
+    if (typeof d === 'string' && d) out.push(plainModText(d).slice(0, 300))
+    if (out.length >= MAX_MODS) break
+  }
+  return out
 }
 
 /** base64 → текст предмета; мусор → undefined. */
@@ -80,9 +104,12 @@ export function toLiveHit(raw: unknown, ctx: HitContext): LiveHit | null {
   const currency = str(listing.price?.currency, 40)
   const whisper = str(listing.whisper, 500)
   const fee = num(listing.fee)
-  const mods = Array.isArray(item.explicitMods)
-    ? item.explicitMods.filter((m): m is string => typeof m === 'string').slice(0, MAX_MODS)
-    : []
+  const mods =
+    ctx.game === 'poe2'
+      ? poe2Mods(item.explicitMods)
+      : Array.isArray(item.explicitMods)
+        ? item.explicitMods.filter((m): m is string => typeof m === 'string').slice(0, MAX_MODS)
+        : []
   const frame = num(item.frameType)
   const hit: LiveHit = {
     key: `${ctx.searchId}:${itemId}`,
@@ -113,5 +140,6 @@ export function toLiveHit(raw: unknown, ctx: HitContext): LiveHit | null {
     hit.seller = seller(listing.account?.online)
   }
   if (fee !== undefined) hit.fee = fee
+  if (ctx.game === 'poe2') hit.game = 'poe2'
   return hit
 }
