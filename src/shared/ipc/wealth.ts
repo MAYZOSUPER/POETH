@@ -27,23 +27,23 @@ export const wealthChannels = {
     detail: 'wealth:detail',
     diff: 'wealth:diff',
     // S70: «Богатство PoE 2» — ручной ввод, ценные предметы (окно цены), снимок вкладки с экрана
-    poe2State: 'wealth:poe2State',
-    poe2SetManual: 'wealth:poe2SetManual',
-    poe2SetGold: 'wealth:poe2SetGold',
-    poe2AddItem: 'wealth:poe2AddItem',
-    poe2RemoveItem: 'wealth:poe2RemoveItem',
-    poe2RemoveTab: 'wealth:poe2RemoveTab',
-    poe2ScreenEdit: 'wealth:poe2ScreenEdit',
-    poe2ScreenDrop: 'wealth:poe2ScreenDrop',
-    poe2ScreenAccept: 'wealth:poe2ScreenAccept',
-    poe2Diff: 'wealth:poe2Diff'
+    poe2State: 'wealth:twoState',
+    poe2SetManual: 'wealth:twoSetManual',
+    poe2SetGold: 'wealth:twoSetGold',
+    poe2AddItem: 'wealth:twoAddItem',
+    poe2RemoveItem: 'wealth:twoRemoveItem',
+    poe2RemoveTab: 'wealth:twoRemoveTab',
+    poe2ScreenEdit: 'wealth:twoScreenEdit',
+    poe2ScreenDrop: 'wealth:twoScreenDrop',
+    poe2ScreenAccept: 'wealth:twoScreenAccept',
+    poe2Diff: 'wealth:twoDiff'
   }
 } as const
 
 export const wealthEvents = {
   wealthState: 'event:wealth.state',
   /** S70: состояние «Богатства PoE 2» — только окну компаньона */
-  wealthPoe2: 'event:wealth.poe2'
+  wealthPoe2: 'event:wealth.two'
 } as const
 
 export interface WealthIpcApi {
