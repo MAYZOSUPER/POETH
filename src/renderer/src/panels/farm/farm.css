@@ -120,3 +120,215 @@
   align-items: center;
   gap: var(--sp-3) var(--sp-5);
 }
+
+/* ---- PoE 2 (S69) по макету «Сессия фарма PoE 2» (в макете — w2-*): диалоги, строка «начало…», тир, «+ находка» ---- */
+.fm--poe2 {
+  position: relative; /* подложка диалога (.ui-dialog-scrim) — от раздела */
+  min-height: 420px;
+}
+.fm-dialog {
+  width: 460px;
+}
+.fm-good {
+  color: var(--good);
+}
+.fm-bad {
+  color: var(--bad);
+}
+/* варианты диалога: радио-карточки */
+.fm-opts {
+  display: grid;
+  gap: var(--sp-4);
+}
+.fm-opt {
+  display: grid;
+  grid-template-columns: 18px 22px minmax(0, 1fr);
+  gap: 2px var(--sp-5);
+  align-items: start;
+  padding: var(--sp-5) var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  background: var(--inset);
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.fm-opt:hover:not(:disabled) {
+  border-color: var(--border-strong);
+}
+.fm-opt:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.fm-opt:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.fm-opt[aria-checked='true'] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--inset));
+}
+.fm-opt__dot {
+  grid-column: 1;
+  grid-row: 1;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+}
+.fm-opt[aria-checked='true'] .fm-opt__dot {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: inset 0 0 0 3px var(--surface-solid);
+}
+.fm-opt > .ui-ico {
+  grid-column: 2;
+  grid-row: 1;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: var(--accent);
+}
+.fm-opt > b {
+  grid-column: 3;
+  grid-row: 1;
+  font-weight: 600;
+}
+.fm-opt .ui-tag {
+  margin-left: var(--sp-3);
+  vertical-align: 1px;
+}
+.fm-opt__d {
+  grid-column: 3;
+  grid-row: 2;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+/* «начало: снимок 3 вкладок, 18:02 › конец … · вкладки +2,9 div · находки +1,9 div» */
+.fm-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.fm-flow .ui-ico {
+  width: 12px;
+  height: 12px;
+}
+/* метка тира у карты */
+.fm-tier {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 18px;
+  margin-left: var(--sp-3);
+  padding: 0 5px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  color: var(--accent-hi);
+  font: 700 10.5px / 1 var(--font-ui);
+  vertical-align: 1px;
+}
+/* находки в таблице */
+.fm-find {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2) var(--sp-3);
+}
+.fm-find__one {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.fm-find .ui-item {
+  font-size: var(--fs-xs);
+}
+.fm-find b {
+  color: var(--good);
+  white-space: nowrap;
+}
+.fm-find b.fm-faint {
+  color: var(--fg-faint);
+  font-weight: 400;
+}
+.fm-find-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+/* у таблицы забегов PoE 2 — без внутренней прокрутки: меню «+ находка» выходит за её край */
+.fm-tablewrap--pop {
+  max-height: none;
+  overflow: visible;
+}
+/* «+ находка»: кнопка и меню */
+.fm-pop {
+  position: relative;
+  display: inline-flex;
+}
+.fm-pop__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 6;
+  width: 260px;
+  white-space: normal;
+  text-align: left;
+}
+.fm-pop__quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-5) var(--sp-4);
+}
+.fm-pop__note {
+  padding: 0 var(--sp-5) var(--sp-4);
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+}
+.fm-pop__form {
+  display: grid;
+  gap: var(--sp-3);
+  padding: 0 var(--sp-5) var(--sp-4);
+}
+.fm-pop__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.fm-pop__list {
+  display: grid;
+  max-height: 160px;
+  overflow: auto;
+  padding: var(--sp-2) var(--sp-3);
+}
+.fm-pop__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: var(--fs-sm);
+}
+.fm-pop__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fm-pop__item b {
+  color: var(--good);
+  white-space: nowrap;
+}
+/* итог сессии на плитке-герое — цветом прибыли (у героя по умолчанию золото) */
+.ui-stat--hero .ui-stat__value.fm-good {
+  color: var(--good);
+}
+.ui-stat--hero .ui-stat__value.fm-bad {
+  color: var(--bad);
+}

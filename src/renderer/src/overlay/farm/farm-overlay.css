@@ -26,3 +26,15 @@
   cursor: grabbing;
   pointer-events: auto;
 }
+/* PoE 2 (S69): метка тира у карты, как .w2-tier макета */
+.ov-farm__tier {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 18px;
+  padding: 0 5px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  color: var(--accent-hi);
+  font: 700 10.5px / 1 var(--font-ui);
+}
