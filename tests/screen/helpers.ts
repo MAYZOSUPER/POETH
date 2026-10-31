@@ -97,3 +97,37 @@ export function compare(cells: readonly ScreenCell[], truth: Truth): Score {
   }
   return out
 }
+
+export interface FreeTruth {
+  clientHeight: number
+  window: { width: number; height: number }
+  offset: { x: number; y: number }
+  cells: Array<{ item: string; count: number; rect: { x: number; y: number; width: number; height: number } }>
+}
+
+/**
+ * Сверка без номеров ячеек (путь без раскладки): ячейка разметки ↔ найденная, чей центр ближе трети стороны.
+ * k — масштаб снимка относительно разметки, (dx, dy) — где вырез стоит в окне. Предмет верен, если совпал
+ * или входит в alt (уровни с одним рисунком).
+ */
+export function compareFree(cells: readonly ScreenCell[], truth: FreeTruth, k: number, dx: number, dy: number): Score {
+  const out: Score = { total: truth.cells.length, cells: 0, counts: 0, filled: 0, sureWrong: 0, errors: [] }
+  for (const t of truth.cells) {
+    const present = t.count > 0
+    if (present) out.filled++
+    const cx = (t.rect.x + t.rect.width / 2) * k + dx
+    const cy = (t.rect.y + t.rect.height / 2) * k + dy
+    const c = cells.find((c) => Math.hypot(c.rect.x + c.rect.width / 2 - cx, c.rect.y + c.rect.height / 2 - cy) < t.rect.width * k * 0.34)
+    if (!c) {
+      out.errors.push(`${t.item}: не найдена`)
+      continue
+    }
+    // без раскладки предмет пустой ячейки не нужен (цены нет) — сверяется только «пусто»
+    const itemOk = !present || c.item === t.item || !!c.alt?.includes(t.item)
+    if (itemOk && c.present === present) out.cells++
+    else out.errors.push(`${t.item}/${present ? 'есть' : 'пусто'} → ${c.item}/${c.present ? 'есть' : 'пусто'}`)
+    if (present && c.count === t.count) out.counts++
+    else if (present && c.countSure && c.count !== null) out.sureWrong++
+  }
+  return out
+}

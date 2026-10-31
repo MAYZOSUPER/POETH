@@ -1,0 +1,499 @@
+{
+ "about": "Синтетика S68 (tools/screen/make-synthetic.ts): настоящие иконки poe1 с web.poecdn.com в нарисованных ячейках, окно 1920×1080. Не снимок игры.",
+ "clientHeight": 1080,
+ "window": {
+  "width": 1920,
+  "height": 1080
+ },
+ "offset": {
+  "x": 0,
+  "y": 110
+ },
+ "tab": null,
+ "cells": [
+  {
+   "slot": 0,
+   "item": "Ancient Orb",
+   "count": 658,
+   "rect": {
+    "x": 40,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 1,
+   "item": "Armourer's Scrap",
+   "count": 1476,
+   "rect": {
+    "x": 87,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 2,
+   "item": "Awakener's Orb",
+   "count": 1,
+   "rect": {
+    "x": 134,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 3,
+   "item": "Blacksmith's Whetstone",
+   "count": 0,
+   "rect": {
+    "x": 181,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 4,
+   "item": "Blessed Orb",
+   "count": 0,
+   "rect": {
+    "x": 40,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 5,
+   "item": "Chaos Orb",
+   "count": 25,
+   "rect": {
+    "x": 87,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 6,
+   "item": "Chromatic Orb",
+   "count": 1210,
+   "rect": {
+    "x": 134,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 7,
+   "item": "Deafening Essence of Anger",
+   "count": 248,
+   "rect": {
+    "x": 181,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 8,
+   "item": "Deafening Essence of Greed",
+   "count": 0,
+   "rect": {
+    "x": 40,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 9,
+   "item": "Divine Orb",
+   "count": 1,
+   "rect": {
+    "x": 87,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 10,
+   "item": "Enkindling Orb",
+   "count": 0,
+   "rect": {
+    "x": 134,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 11,
+   "item": "Essence of Horror",
+   "count": 4,
+   "rect": {
+    "x": 181,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 12,
+   "item": "Essence of Hysteria",
+   "count": 0,
+   "rect": {
+    "x": 250,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 13,
+   "item": "Essence of Insanity",
+   "count": 533,
+   "rect": {
+    "x": 297,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 14,
+   "item": "Exalted Orb",
+   "count": 601,
+   "rect": {
+    "x": 344,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 15,
+   "item": "Gemcutter's Prism",
+   "count": 0,
+   "rect": {
+    "x": 391,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 16,
+   "item": "Glassblower's Bauble",
+   "count": 0,
+   "rect": {
+    "x": 250,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 17,
+   "item": "Instilling Orb",
+   "count": 80,
+   "rect": {
+    "x": 297,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 18,
+   "item": "Jeweller's Orb",
+   "count": 708,
+   "rect": {
+    "x": 344,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 19,
+   "item": "Mirror of Kalandra",
+   "count": 6,
+   "rect": {
+    "x": 391,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 20,
+   "item": "Muttering Essence of Greed",
+   "count": 0,
+   "rect": {
+    "x": 250,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 21,
+   "item": "Orb of Alchemy",
+   "count": 1612,
+   "rect": {
+    "x": 297,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 22,
+   "item": "Orb of Alteration",
+   "count": 0,
+   "rect": {
+    "x": 344,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 23,
+   "item": "Orb of Annulment",
+   "count": 123,
+   "rect": {
+    "x": 391,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 24,
+   "item": "Orb of Augmentation",
+   "count": 0,
+   "rect": {
+    "x": 460,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 25,
+   "item": "Orb of Binding",
+   "count": 1095,
+   "rect": {
+    "x": 507,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 26,
+   "item": "Orb of Chance",
+   "count": 0,
+   "rect": {
+    "x": 554,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 27,
+   "item": "Orb of Fusing",
+   "count": 1,
+   "rect": {
+    "x": 601,
+    "y": 40,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 28,
+   "item": "Orb of Regret",
+   "count": 0,
+   "rect": {
+    "x": 460,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 29,
+   "item": "Orb of Scouring",
+   "count": 0,
+   "rect": {
+    "x": 507,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 30,
+   "item": "Orb of Transmutation",
+   "count": 176,
+   "rect": {
+    "x": 554,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 31,
+   "item": "Portal Scroll",
+   "count": 113,
+   "rect": {
+    "x": 601,
+    "y": 87,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 32,
+   "item": "Regal Orb",
+   "count": 0,
+   "rect": {
+    "x": 460,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 33,
+   "item": "Sacred Orb",
+   "count": 0,
+   "rect": {
+    "x": 507,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 34,
+   "item": "Screaming Essence of Greed",
+   "count": 0,
+   "rect": {
+    "x": 554,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 35,
+   "item": "Scroll of Wisdom",
+   "count": 1,
+   "rect": {
+    "x": 601,
+    "y": 134,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 36,
+   "item": "Shrieking Essence of Anger",
+   "count": 0,
+   "rect": {
+    "x": 40,
+    "y": 220,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 37,
+   "item": "Shrieking Essence of Greed",
+   "count": 202,
+   "rect": {
+    "x": 87,
+    "y": 220,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 38,
+   "item": "Silver Coin",
+   "count": 0,
+   "rect": {
+    "x": 134,
+    "y": 220,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 39,
+   "item": "Stacked Deck",
+   "count": 663,
+   "rect": {
+    "x": 181,
+    "y": 220,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 40,
+   "item": "Vaal Orb",
+   "count": 30,
+   "rect": {
+    "x": 40,
+    "y": 267,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 41,
+   "item": "Wailing Essence of Greed",
+   "count": 352,
+   "rect": {
+    "x": 87,
+    "y": 267,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 42,
+   "item": "Weeping Essence of Greed",
+   "count": 745,
+   "rect": {
+    "x": 134,
+    "y": 267,
+    "width": 42,
+    "height": 42
+   }
+  },
+  {
+   "slot": 43,
+   "item": "Whispering Essence of Greed",
+   "count": 56,
+   "rect": {
+    "x": 181,
+    "y": 267,
+    "width": 42,
+    "height": 42
+   }
+  }
+ ]
+}

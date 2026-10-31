@@ -228,18 +228,27 @@ export function recognizeStash(inp: StashInput): StashResult {
       } else cells.push(cellFrom(rect, s.item, best?.score ?? null, { slot, ...(s.alt?.length ? { alt: s.alt } : {}) }))
     })
   } else {
-    // 3. без раскладки
+    // 3. без раскладки: у найденного квадрата рамка может быть внешней или внутренней — ближайшие иконки при каждой
+    // доле ячейки, затем лучшая доля и сдвиг для них; из пересекающихся кандидатов остаётся самый похожий
     const ranked = cands.map((b) => {
       const rect = { x: b.x, y: b.y, width: b.size, height: b.size }
-      const hits = nearestIcons(cellPatch(img, iconRect(rect, frac)), inp.icons, 1)
-      return { ...b, hit: hits[0] ?? null }
+      const pool = new Map<IconDesc, number>()
+      for (const f of FRACS)
+        for (const h of nearestIcons(cellPatch(img, iconRect(rect, f)), inp.icons, 2)) pool.set(h.icon, Math.max(pool.get(h.icon) ?? -1, h.score.total))
+      const short = [...pool.entries()].sort((x, y) => y[1] - x[1]).slice(0, 3)
+      let best: { icon: IconDesc; rect: Rect; score: IconScore } | null = null
+      if (short.length && short[0][1] >= FREE_MATCH * 0.7)
+        for (const [icon] of short) {
+          const p = bestPlacement(img, rect, icon, FRACS, SHIFTS)
+          if (!best || p.score.total > best.score.total) best = { icon, ...p }
+        }
+      return { ...b, best }
     })
-    const picked = pickSlots(ranked, (b) => (b.hit && b.hit.score.total >= FREE_MATCH ? b.hit.score.total : 0), 0.3)
+    const picked = pickSlots(ranked, (b) => (b.best && b.best.score.total >= FREE_MATCH ? b.best.score.total : 0), 0.3)
     for (const b of picked) {
       const rect = { x: b.x, y: b.y, width: b.size, height: b.size }
-      const best = bestPlacement(img, rect, b.hit!.icon, FRACS, SHIFTS)
-      const alt = sameArt(b.hit!.icon, inp.icons)
-      cells.push(cellFrom(rect, b.hit!.icon.name, best.score, alt.length ? { alt } : {}))
+      const alt = sameArt(b.best!.icon, inp.icons)
+      cells.push(cellFrom(rect, b.best!.icon.name, b.best!.score, alt.length ? { alt } : {}))
     }
     frac = FRACS[1]
   }
