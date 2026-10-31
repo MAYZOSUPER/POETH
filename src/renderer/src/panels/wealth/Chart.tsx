@@ -6,9 +6,25 @@ import { axisLabel, CH, chartGeo, df, nf, rangePoints, tickLabel, timeOf, type C
 
 // График стоимости тайника по макету «Богатство» v2: одна линия 2 px, сетка в волос, точка и значение
 // на конце, шкала не от нуля. Наведение и стрелки клавиатуры — перекрестие с подсказкой; «Таблица» —
-// те же точки списком. Свой SVG, без библиотек.
+// те же точки списком. Свой SVG, без библиотек. S70: PoE 2 — те же точки в exalted (unit="ex"), заголовок и пустое
+// состояние — свои.
 
-export function WealthChart({ points, lang, expert }: { points: readonly WealthPoint[]; lang: string; expert: boolean }) {
+export function WealthChart({
+  points,
+  lang,
+  expert,
+  unit = 'chaos',
+  title,
+  empty
+}: {
+  points: readonly WealthPoint[]
+  lang: string
+  expert: boolean
+  /** единица точек: PoE 1 — chaos, PoE 2 — exalted */
+  unit?: 'chaos' | 'ex'
+  title?: string
+  empty?: string
+}) {
   const t = useT()
   const [range, setRange] = useState<ChartRange>('24h')
   const [table, setTable] = useState(false)
@@ -52,7 +68,7 @@ export function WealthChart({ points, lang, expert }: { points: readonly WealthP
       <div className="ui-box__head">
         <span className="ui-label">
           <WIco name="chart" size="sm" />
-          {t('wealth.chart')}
+          {title ?? t('wealth.chart')}
         </span>
         <span className="ui-label__grow" />
         {points.length > 1 && (
@@ -84,7 +100,7 @@ export function WealthChart({ points, lang, expert }: { points: readonly WealthP
             viewBox={`0 0 ${CH.w} ${CH.h}`}
             role="img"
             tabIndex={0}
-            aria-label={t('wealth.chart.aria', { from: nf(geo.pts[0].chaos, lang), to: nf(last.chaos, lang) })}
+            aria-label={t(unit === 'ex' ? 'wealth.chart.aria.ex' : 'wealth.chart.aria', { from: nf(geo.pts[0].chaos, lang), to: nf(last.chaos, lang) })}
             onMouseMove={onMove}
             onMouseLeave={() => setHover(null)}
             onKeyDown={onKey}
@@ -124,7 +140,9 @@ export function WealthChart({ points, lang, expert }: { points: readonly WealthP
               className="ui-tip ui-chart__tip"
               style={{ left: Math.max(90, Math.min(svgW - 90, geo.x(hp.at) * k + 4)), top: geo.y(hp.chaos) * k + 6 }}
             >
-              <b>{nf(hp.chaos, lang)} chaos</b> <span>≈ {divOf(hp)} div · {timeOf(hp.at, lang, withDate)}</span>
+              <b>
+                {nf(hp.chaos, lang)} {unit}
+              </b> <span>≈ {divOf(hp)} div · {timeOf(hp.at, lang, withDate)}</span>
             </div>
           )}
           {table && (
@@ -133,7 +151,7 @@ export function WealthChart({ points, lang, expert }: { points: readonly WealthP
                 <thead>
                   <tr>
                     <th>{t('wealth.col.when')}</th>
-                    <th className="is-num">chaos</th>
+                    <th className="is-num">{unit}</th>
                     <th className="is-num">div</th>
                   </tr>
                 </thead>
@@ -153,7 +171,7 @@ export function WealthChart({ points, lang, expert }: { points: readonly WealthP
       ) : (
         <div className="ui-empty">
           <WIco name="chart" size="lg" />
-          <span>{t('wealth.chart.empty')}</span>
+          <span>{empty ?? t('wealth.chart.empty')}</span>
         </div>
       )}
     </div>

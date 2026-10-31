@@ -1,0 +1,40 @@
+/* «Богатство PoE 2» (S70): черновая раскладка на ui-* до макета дизайнера. Раскладка вкладки — w-* из wealth.css,
+   здесь только свои мелочи w2-*. Только токены. */
+
+.w2-stack { display: grid; gap: var(--sp-4); min-width: 0; align-content: start; }
+.w2-row { display: flex; flex-wrap: wrap; gap: var(--sp-3) var(--sp-4); align-items: center; min-width: 0; }
+.w2-faint { color: var(--fg-muted); font-size: var(--fs-sm); }
+.w2-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.w2-good { color: var(--good); }
+.w2-bad { color: var(--bad); }
+.w2-why > span { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+
+/* источники итога: строка — имя, давность, сумма; старше суток — бледно */
+.w2-srcs { display: grid; gap: var(--sp-2); margin-top: var(--sp-3); max-width: 520px; }
+.w2-src { padding: var(--sp-2) 0; border-bottom: 1px solid var(--line); }
+.w2-src:last-child { border-bottom: 0; }
+.w2-src.is-stale { opacity: 0.55; }
+.w2-gold b { display: inline-flex; gap: var(--sp-2); align-items: center; font-weight: 500; }
+
+/* строка предмета: иконка + имя (+ «проверьте» / «в снимке») */
+.w2-item { display: inline-flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-3); align-items: center; min-width: 0; }
+.w2-item-name { display: grid; min-width: 0; }
+.w2-alt { width: auto; max-width: 240px; height: 28px; }
+
+/* ручной ввод: имя | − поле +1 +10 | сумма */
+.w2-manual { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(90px, auto); gap: var(--sp-3) var(--sp-4); align-items: center; }
+.w2-steps { display: inline-flex; gap: var(--sp-2); align-items: center; }
+.w2-qty { width: 76px; height: 28px; }
+.w2-qty--wide { width: 140px; }
+.w2-value { display: grid; justify-items: end; text-align: right; }
+
+/* карточка снимка вкладки */
+.w2-cardtab { display: grid; gap: var(--sp-3); padding: var(--sp-4); border: 1px solid var(--line); border-radius: var(--r-panel); }
+.w2-table { overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
+.w2-table .ui-table td { vertical-align: middle; }
+.w2-check > td:first-child { box-shadow: inset 2px 0 0 var(--warn); }
+
+@container body (max-width: 760px) {
+  .w2-manual { grid-template-columns: minmax(0, 1fr); }
+  .w2-value { justify-items: start; text-align: left; }
+}

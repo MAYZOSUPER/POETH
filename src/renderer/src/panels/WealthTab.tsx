@@ -10,13 +10,20 @@ import { StashView } from './wealth/StashView'
 import { IncomeTile } from './wealth/IncomeTile'
 import { WIco } from './wealth/ui'
 import { clock } from './wealth/format'
+import { Poe2WealthTab } from './wealth/poe2/Poe2WealthTab'
 import './wealth/wealth.css'
 
 // Вкладка «Богатство» компаньона (PoE1) по утверждённому макету «Богатство»: подвкладки «Тайник»
 // (S11a: сумма тайника, график, разбивка, что прибавилось) и «Сессия фарма» (S11b: FarmPanel — карты,
 // время, смерти, забеги; плитка «Доход в час» — IncomeTile S11a по прибыли забегов из снимков тайника).
+// S70: в режиме PoE 2 — «Богатство PoE 2» (wealth/poe2: без API тайника — снимок вкладок, ввод, ценные предметы).
 
 type Sub = 'stash' | 'session'
+
+export function WealthTab() {
+  const game = useAppStore((s) => s.settings?.game)
+  return game === 'poe2' ? <Poe2WealthTab /> : <Poe1WealthTab />
+}
 
 function useNow(): number {
   const [now, setNow] = useState(Date.now())
@@ -27,7 +34,7 @@ function useNow(): number {
   return now
 }
 
-export function WealthTab() {
+function Poe1WealthTab() {
   const t = useT()
   const lang = useAppStore((s) => s.settings?.uiLang ?? 'ru')
   const expert = !(useAppStore((s) => s.settings?.ui.simpleMode ?? true))
