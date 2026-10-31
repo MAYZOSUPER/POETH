@@ -13,6 +13,8 @@ import type { DataManifest } from '@shared/types'
 // удаляется. Любая ошибка до подмены — временная папка удаляется, данные не тронуты;
 // сбой самой подмены — бэкап возвращается на место. В надстройку кладётся manifest.json —
 // какая версия применена.
+// S67: у файла пакета может быть `prev` — прежние версии из истории main. Встроенного файла в `prev` нет —
+// встроенный новее (сборка вышла позже выпуска данных): он остаётся, пакет его не откатывает.
 
 export interface ApplyDeps {
   /** userData/data */
@@ -27,7 +29,16 @@ export interface ApplyDeps {
 }
 
 export type ApplyResult =
-  | { status: 'applied'; changed: number; downloaded: number }
+  | {
+      status: 'applied'
+      /** файлов в надстройке (отличаются от комплекта) */
+      changed: number
+      downloaded: number
+      /** S67: файлов, где встроенный новее пакета — оставлен встроенный */
+      kept: number
+      /** S67: файлы, содержимое которых для игрока изменилось (было в надстройке/комплекте → стало) — для тоста */
+      paths: string[]
+    }
   | { status: 'unchanged' }
   | { status: 'failed'; error: string }
 
@@ -112,15 +123,23 @@ export async function applyDataUpdate(manifest: DataManifest, deps: ApplyDeps): 
   const backup = path.join(root, `.backup-${game}-${stamp}`)
   let changed = 0
   let downloaded = 0
+  let kept = 0
+  const paths: string[] = []
   try {
     await fs.mkdir(staging, { recursive: true })
     for (const [rel, f] of Object.entries(manifest.files)) {
-      if ((await fileSha(path.join(bundledDir, rel))) === f.sha256) continue // такой же, как в комплекте
+      const bundled = await fileSha(path.join(bundledDir, rel))
+      const current = path.join(target, rel)
+      const overlay = await fileSha(current)
+      // встроенный файл новее пакета: его версии нет среди прежних версий файла пакета
+      const keep = bundled !== null && bundled !== f.sha256 && f.prev !== undefined && !f.prev.includes(bundled)
+      if (keep) kept++
+      if ((keep ? bundled : f.sha256) !== (overlay ?? bundled)) paths.push(rel)
+      if (bundled === f.sha256 || keep) continue // такой же, как в комплекте, или комплект новее
       changed++
       const dest = path.join(staging, rel)
       await fs.mkdir(path.dirname(dest), { recursive: true })
-      const current = path.join(target, rel)
-      if ((await fileSha(current)) === f.sha256) {
+      if (overlay === f.sha256) {
         await fs.copyFile(current, dest)
         continue
       }
@@ -129,6 +148,12 @@ export async function applyDataUpdate(manifest: DataManifest, deps: ApplyDeps): 
       if (sha256(buf) !== f.sha256) throw new Error(`sha256 mismatch: ${rel}`)
       await fs.writeFile(dest, buf)
       downloaded++
+    }
+    // файлы прежней надстройки, которых нет в новом пакете: игрок снова видит встроенные
+    for (const rel of Object.keys(applied?.files ?? {})) {
+      if (rel in manifest.files) continue
+      const overlay = await fileSha(path.join(target, rel))
+      if (overlay !== null && overlay !== (await fileSha(path.join(bundledDir, rel)))) paths.push(rel)
     }
     // ничего не отличается от комплекта и надстройки не было — делать нечего
     if (changed === 0 && !(await exists(target))) {
@@ -146,7 +171,7 @@ export async function applyDataUpdate(manifest: DataManifest, deps: ApplyDeps): 
       throw e
     }
     if (hadTarget) await fs.rm(backup, { recursive: true, force: true })
-    return { status: 'applied', changed, downloaded }
+    return { status: 'applied', changed, downloaded, kept, paths }
   } catch (e) {
     await fs.rm(staging, { recursive: true, force: true })
     return { status: 'failed', error: e instanceof Error ? e.message : String(e) }

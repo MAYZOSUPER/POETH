@@ -7,6 +7,8 @@
 //      poeth://data отдаёт новый файл;
 //   2) испорченный файл пакета (неверный sha256) → откат, надстройки нет, poeth://data — встроенные данные;
 //   3) сети нет (закрытый порт) → тихо: без тоста, без надстройки, приложение живо.
+// S67: 1б) пакет старее сборки (встроенного файла нет в `prev`) → встроенный остаётся, ничего не скачано;
+//      1в) PoE 2: изменились только цены (prices/) → применено без тоста, poeth://data/poe2/prices/… — новый файл.
 //
 //   npm run package:dir && node tools/data/check-data-channel.mjs --exe=dist-release/win-unpacked/POETH.exe
 //   npm run build && node tools/data/check-data-channel.mjs                     # из исходников
@@ -61,21 +63,30 @@ async function waitFor(fn, ms = 20000, step = 250) {
 }
 
 // ---------------------------------------------------------------------------
-// пакеты: «новее встроенного» (изменён PROBE) и «испорченный» (тот же, сервер портит PROBE)
+// пакеты: «новее встроенного» (изменён PROBE) и «испорченный» (тот же, сервер портит PROBE);
+// S67: «старее сборки» (PROBE изменён, но встроенного нет в prev) и «только цены» (PoE 2, изменён PRICES_PROBE)
 // ---------------------------------------------------------------------------
 
-function buildData(dir, version) {
+const PRICES_PROBE = 'prices/index.json'
+
+/** Пакет из resources/data с изменённым файлом `probe`: newer — встроенная версия в его `prev` (пакет новее сборки). */
+function buildData(dir, version, { probe = PROBE, newer = true } = {}) {
   execFileSync(process.execPath, [path.join(ROOT, 'tools/data/publish-data.mjs'), '--game', GAME, '--version', version, '--out', dir], { stdio: 'ignore' })
   const m = JSON.parse(readFileSync(path.join(dir, MANIFEST), 'utf8'))
-  const f = path.join(dir, GAME, PROBE)
+  const f = path.join(dir, GAME, probe)
+  const was = m.files[probe]
   appendFileSync(f, '\n')
   const buf = readFileSync(f)
-  m.files[PROBE] = { sha256: sha(buf), size: buf.length }
+  m.files[probe] = { sha256: sha(buf), size: buf.length, prev: newer ? [was.sha256, ...(was.prev ?? [])] : [] }
   writeFileSync(path.join(dir, MANIFEST), JSON.stringify(m, null, 2))
   return buf.length
 }
 const NEW = path.join(WORK, 'data-new')
 const newSize = buildData(NEW, '9.9.9-check')
+const OLDER = path.join(WORK, 'data-older')
+buildData(OLDER, '9.9.9-older', { newer: false })
+const PRICES = path.join(WORK, 'data-prices')
+const pricesSize = GAME === 'poe2' ? buildData(PRICES, '9.9.9-prices', { probe: PRICES_PROBE }) : 0
 const bundledSize = statSync(path.join(BUNDLED, PROBE)).size
 
 function startServer(dataDir, extra = []) {
@@ -269,6 +280,36 @@ if (liveRes && !(liveRes.status === 404 && GAME !== 'poe1')) {
   srv.proc.kill()
 }
 
+// ---------------- 1б) пакет старее сборки → встроенный остаётся ----------------
+{
+  const srv = startServer(OLDER)
+  const port = await srv.ready
+  await run('older', { POETH_DATA_MANIFEST_URL: `http://127.0.0.1:${port}/data/manifest.json`, POETH_UPDATE_URL: `http://127.0.0.1:${await closedPort()}/` }, async (app) => {
+    const line = await waitFor(async () => app.text().match(new RegExp(`\\[data\\] ${GAME} 9\\.9\\.9-older: up to date`))?.[0], 40000)
+    check('пакет старее сборки: встроенный файл не заменён («up to date»)', !!line, line ?? app.text().match(/\[data\].*/g)?.join(' | ') ?? 'нет записи в логе')
+    check('ничего не скачано, надстройки нет, тоста нет', !srv.reqs.some((r) => r.startsWith(`/data/${GAME}/`)) && overrideFiles(app).length === 0 && !notifyLine(app), srv.reqs.join(','))
+    const size = await servedSize(app, PROBE)
+    check('poeth://data отдаёт встроенный файл', size === bundledSize, `${size} байт (встроенный ${bundledSize})`)
+  })
+  srv.proc.kill()
+}
+
+// ---------------- 1в) PoE 2: только цены → без тоста ----------------
+if (GAME === 'poe2') {
+  const srv = startServer(PRICES)
+  const port = await srv.ready
+  await run('prices', { POETH_DATA_MANIFEST_URL: `http://127.0.0.1:${port}/data/manifest.json`, POETH_UPDATE_URL: `http://127.0.0.1:${await closedPort()}/` }, async (app) => {
+    const line = await waitFor(async () => app.text().match(/\[data\] poe2 9\.9\.9-prices: .*/)?.[0], 40000)
+    check('только цены: применено без тоста', !!line && /prices only — no toast/.test(line), line ?? 'нет записи в логе')
+    await sleep(1500)
+    check('тоста «Данные обновлены» нет', !notifyLine(app), notifyLine(app) ?? '')
+    check('скачан только файл цен', srv.reqs.filter((r) => r.startsWith('/data/poe2/')).join(',') === `/data/poe2/${PRICES_PROBE}`, srv.reqs.join(','))
+    const size = await servedSize(app, PRICES_PROBE)
+    check('poeth://data/poe2/prices/… отдаёт новый файл', size === pricesSize, `${size} байт (новый ${pricesSize})`)
+  })
+  srv.proc.kill()
+}
+
 // ---------------- 2) испорченный файл → откат ----------------
 {
   const srv = startServer(NEW, ['--tamper', PROBE])
@@ -299,5 +340,12 @@ if (liveRes && !(liveRes.status === 404 && GAME !== 'poe1')) {
 
 const bad = results.filter((x) => !x).length
 console.log(`\n${results.length - bad}/${results.length} проверок · логи и профили: ${WORK}`)
-if (!bad) rmSync(WORK, { recursive: true, force: true })
+if (!bad) {
+  // закрытый процесс POETH может ещё пару секунд держать файлы профиля (Windows) — повторы, без падения
+  try {
+    rmSync(WORK, { recursive: true, force: true, maxRetries: 10, retryDelay: 500 })
+  } catch (e) {
+    console.warn(`не удалось убрать ${WORK}: ${e.code ?? e.message}`)
+  }
+}
 process.exit(bad ? 1 : 0)
