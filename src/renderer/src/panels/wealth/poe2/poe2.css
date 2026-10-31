@@ -35,7 +35,12 @@
 .w2-x:hover { color: var(--bad); }
 
 /* быстрый ввод: строка валюты со степпером «− · поле · +1 · +10» */
-.w2-man { display: grid; }
+.w2-man { display: grid; container: w2man / inline-size; }
+/* узкий блок (рядом с источниками на 820 px): степпер — второй строкой, имя не сжимается */
+@container w2man (max-width: 460px) {
+  .w2-mrow { grid-template-columns: minmax(0, 1fr) auto; }
+  .w2-mrow .w2-step { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
+}
 .w2-mrow { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px 12px; align-items: center; padding: 7px 12px; border-top: 1px solid var(--border); }
 .w2-mrow:first-child { border-top: 0; }
 .w2-mrow__n { display: inline-flex; align-items: center; gap: 6px; min-width: 0; font-weight: 600; }
