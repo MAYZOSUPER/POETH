@@ -7,11 +7,11 @@ import { isCloudflareChallenge, isPoeHost } from '../../net/guards'
 import { netLog } from '../../net/http'
 import { parseRetryAfterMs } from '../../net/rateLimit'
 
-// Транспорт live search PoE1 за интерфейсом (S6).
+// Транспорт live search за интерфейсом (S6 — PoE1, S63 — и PoE2: тот же сайт, путь /api/trade2/live/poe2/…).
 //  A (основной) — `ws` в main: Cookie — все cookies хоста из partition аккаунта (POESESSID,
 //    cf_clearance), Origin сайта, UA = app.userAgentFallback (тот же, что у окна и API).
 //    Проверено 28.10.2026: Cloudflare пускает рукопожатие из Node TLS, без входа — 401.
-//  B (запасной) — скрытое окно сайта трейда на той же сессии; WebSocket открывается в странице
+//  B (запасной) — скрытое окно сайта трейда (/trade или /trade2) на той же сессии; WebSocket открывается в странице
 //    через executeJavaScript, события приходят через console-message с меткой. Браузерный
 //    WebSocket не показывает HTTP-код отказа (401/404/429 → просто закрытие), поэтому в B
 //    «нужен вход» выводится из статуса входа, а не из ответа. Включается сам, если Cloudflare
@@ -187,8 +187,11 @@ function pageScript(id: string, url: string): string {
 })()`
 }
 
-/** Транспорт B: WebSocket внутри скрытого окна сайта трейда (сессия аккаунта, браузерный TLS). */
-export function createWindowTransport(host: () => string): LiveTransport {
+/**
+ * Транспорт B: WebSocket внутри скрытого окна сайта трейда (сессия аккаунта, браузерный TLS).
+ * pageUrl — страница трейда игры (https://<хост>/trade или /trade2).
+ */
+export function createWindowTransport(pageUrl: () => string): LiveTransport {
   let win: BrowserWindow | null = null
   let ready: Promise<void> | null = null
   const handlers = new Map<string, LiveHandlers>()
@@ -222,7 +225,7 @@ export function createWindowTransport(host: () => string): LiveTransport {
         h.onClose()
       }
     })
-    ready = win.loadURL(`https://${host()}/trade`).then(
+    ready = win.loadURL(pageUrl()).then(
       () => undefined,
       (e: unknown) => {
         netLog('warn', 'live window: load failed', e instanceof Error ? e.message : String(e))
