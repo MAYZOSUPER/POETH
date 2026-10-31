@@ -7,7 +7,6 @@ export function screenBridge(): ScreenIpcApi {
   return {
     screen: {
       state: () => ipcRenderer.invoke(IPC.screen.state),
-      last: () => ipcRenderer.invoke(IPC.screen.last),
       hide: () => ipcRenderer.invoke(IPC.screen.hide)
     },
     onScreenState: (cb) => subscribe(IPC.events.screenState, cb)

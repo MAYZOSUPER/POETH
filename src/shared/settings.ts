@@ -5,6 +5,7 @@
 import { isGameId, isSiteHost } from './games'
 import { PRICE_POPUP_POSITIONS, type PopupPoint } from './types/overlay'
 import { defaultChatCommands, normalizeChatCommands } from './chatCommands'
+import { sameAccelerator } from './accelerators'
 import type {
   GameLangSettings,
   HotkeyAction,
@@ -174,9 +175,15 @@ function normalizePopupPoint(v: unknown): PopupPoint | null {
   return ok(x) && ok(y) ? { x: Math.round(x), y: Math.round(y) } : null
 }
 
-function normalizeHotkeys(src: unknown): HotkeyMap {
+/**
+ * Хоткеи v2. Новое действие (его нет в сохранённых настройках — появилось в обновлении) получает сочетание по
+ * умолчанию, только если оно свободно: не занято другим действием игрока и не командой чата. Иначе — без клавиши
+ * (S68: Alt+F «цен поверх окон» у старого профиля мог быть занят своим сочетанием или командой чата).
+ */
+function normalizeHotkeys(src: unknown, chatKeys: readonly string[] = []): HotkeyMap {
   const out = defaultHotkeys()
   if (!isObj(src)) return out
+  const fresh: HotkeyAction[] = []
   for (const a of HOTKEY_ACTIONS) {
     const v = src[a]
     if (typeof v === 'string') {
@@ -184,7 +191,15 @@ function normalizeHotkeys(src: unknown): HotkeyMap {
     } else if (isObj(v) && typeof v.accel === 'string') {
       const scope: HotkeyScope = v.scope === 'game' || v.scope === 'always' ? v.scope : out[a].scope
       out[a] = { accel: v.accel, scope }
-    }
+    } else fresh.push(a)
+  }
+  for (const a of fresh) {
+    const accel = out[a].accel
+    if (!accel) continue
+    const taken =
+      HOTKEY_ACTIONS.some((b) => b !== a && !fresh.includes(b) && !!out[b].accel && sameAccelerator(out[b].accel, accel)) ||
+      chatKeys.some((k) => !!k && sameAccelerator(k, accel))
+    if (taken) out[a] = { ...out[a], accel: '' }
   }
   return out
 }
@@ -230,7 +245,11 @@ function normalize(src: Obj): Settings {
   s.chatCommands = normalizeChatCommands(src.chatCommands) ?? def.chatCommands
   s.startup = mergeSection(def.startup, src.startup)
   s.updates = mergeSection(def.updates, src.updates)
-  s.hotkeys = normalizeHotkeys(src.hotkeys)
+  // команды чата — раньше хоткеев: их сочетания не отдаём новым действиям
+  s.hotkeys = normalizeHotkeys(
+    src.hotkeys,
+    s.chatCommands.filter((c) => c.enabled).map((c) => c.hotkey)
+  )
   // нет поля (до S26) — 'auto'; перенос старого выбора из вкладки Regex — в main (ipc/gameLang.ts)
   s.gameLang = normalizeGameLang(src.gameLang)
 
