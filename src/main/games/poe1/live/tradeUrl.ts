@@ -5,14 +5,16 @@
 // Ссылка другой игры: в режиме PoE1 — ошибка 'poe2' (переключите игру), в режиме PoE2 — 'bad-url'.
 
 import { getGameDef, isSiteHost, type GameId, type SiteHost } from '@shared/games'
+import { SLUG_MAX } from '@shared/favorites/slug'
 import type { LiveAddError } from '@shared/types'
 
 export type LiveInput =
   | { ok: true; slug: string; league?: string; host?: SiteHost }
   | { ok: false; error: Exclude<LiveAddError, 'duplicate'> }
 
-// короткие коды (kE6YLz5Tw) и длинные id вида H4sIAAAA… (~130 символов), которые сейчас отдаёт поиск
-const SLUG = /^[A-Za-z0-9_-]{3,512}$/
+// короткие коды (kE6YLz5Tw) и длинные id вида H4sIAAAA… — само состояние поиска (gzip + base64url), длина растёт
+// с запросом: окно цены PoE 1 — до ~480, PoE 2 — до ~550 символов по фикстурам. Предел — общий с избранным (S63).
+const SLUG = new RegExp(`^[A-Za-z0-9_-]{3,${SLUG_MAX}}$`)
 
 function decode(s: string): string | null {
   try {

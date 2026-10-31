@@ -19,7 +19,9 @@
 // PoE 2 (S63): шаблоны whisper'ов трейда — те же, что у PoE1. Проверено 31.10.2026 по живым лотам trade2
 // (поле listing.whisper): EN «Hi, I would like to buy your … listed for … in … (stash tab "…"; position: left N,
 // top M)», RU «Здравствуйте, хочу купить у вас … за … в лиге … (секция "…"; позиция: N столбец, M ряд)».
-// Язык whisper'а trade2 — язык аккаунта продавца (account.language), а не хоста. Каналы @From/@To/@От кого/
+// Язык whisper'а trade2 — язык аккаунта продавца (account.language), а не хоста: входящие нашему игроку — на его
+// языке (RU/EN), а исходящее продавцу с другим языком бывает de/fr/ko/zh — эти шаблоны тоже разбираются
+// (TRADE_PATTERNS_POE2, ответы — по-английски); прочие языки сайта — нет. Каналы @From/@To/@От кого/
 // @Кому — те же (client_strings EE2 PoE2, MIT). Системные RU-строки PoE2 («Сделка совершена.», «Сделка
 // отклонена.», «Режим "недоступен"…») — из данных игры (LocalIdentity/poe2-data, backenderrors, без
 // лицензии — только как факт); для PoE1 они не сверены и включаются только в режиме PoE2.
@@ -200,6 +202,39 @@ const TRADE_PATTERNS: TradePattern[] = [
   }
 ]
 
+// PoE 2 (S63): whisper trade2 строится на языке аккаунта ПРОДАВЦА — исходящее сообщение (@To/@Кому) игрока,
+// купившего у продавца с другим языком, бывает немецким, французским, корейским, китайским. Шаблоны — с живых
+// лотов trade2 (listing.whisper, 31.10.2026, по одному-три примера на язык; варианты без цены не встречались).
+// lang здесь — язык ответов карточки: собеседник не говорит ни по-русски, ни по-английски — отвечаем по-английски.
+// Другие языки сайта (es, pt, ja, th…) живьём не видели — не распознаются.
+const TRADE_PATTERNS_POE2: TradePattern[] = [
+  ...TRADE_PATTERNS,
+  // de_DE: «… Position: 4 von links, 22 von oben»
+  {
+    lang: 'en',
+    kind: 'item',
+    re: /^Hi, ich möchte '(?<item>.+)' zum angebotenen Preis von (?<price>.+?) in der (?<league>.+)-Liga kaufen \(Truhenfach "(?<tab>.*)"; Position: (?<left>\d+) von links, (?<top>\d+) von oben\)(?<message>.*)$/
+  },
+  // fr_FR: «… ; 9e en partant de la gauche, 12e en partant du haut» (суффикс у 1 — «1re/1er» — не видели: любой)
+  {
+    lang: 'en',
+    kind: 'item',
+    re: /^Bonjour, je souhaiterais t'acheter (?<item>.+) pour (?<price>.+?) dans la ligue (?<league>.+) \(onglet de réserve "(?<tab>.*)" ; (?<left>\d+)\S* en partant de la gauche, (?<top>\d+)\S* en partant du haut\)(?<message>.*)$/
+  },
+  // ko_KR: цена и лига идут перед предметом
+  {
+    lang: 'en',
+    kind: 'item',
+    re: /^안녕하세요, (?<price>.+?)\(으\)로 올려놓은 (?<league>.+?) 리그의 (?<item>.+)\(을\)를 구매하고 싶습니다 \(보관함 탭 "(?<tab>.*)", 위치: 왼쪽 (?<left>\d+), 상단 (?<top>\d+)\)(?<message>.*)$/
+  },
+  // zh_TW
+  {
+    lang: 'en',
+    kind: 'item',
+    re: /^你好，我想購買 (?<item>.+) 標價 (?<price>.+?) 在 (?<league>.+) \(倉庫頁 "(?<tab>.*)"; 位置: 左 (?<left>\d+), 上 (?<top>\d+)\)(?<message>.*)$/
+  }
+]
+
 // CHAT_WEBTRADE_GEM (APT client_strings en/ru)
 const GEM_RES: RegExp[] = [
   /^level (?<lvl>\d+) (?<qual>\d+)% (?<name>.+)$/,
@@ -216,10 +251,13 @@ export function parsePrice(text: string): DealPrice | undefined {
   return Number.isFinite(amount) ? { amount, currency: m.groups.rest.trim() } : undefined
 }
 
-/** Тело whisper'а → запрос на покупку (или null, если это обычный разговор). */
-export function parseTradeMessage(body: string): TradeRequest | null {
+/**
+ * Тело whisper'а → запрос на покупку (или null, если это обычный разговор). game — чей журнал: у PoE 2 ещё
+ * шаблоны trade2 на языках продавцов (de, fr, ko, zh); у PoE 1 — только EN/RU, как было.
+ */
+export function parseTradeMessage(body: string, game: GameId = 'poe1'): TradeRequest | null {
   const text = body.trim()
-  for (const p of TRADE_PATTERNS) {
+  for (const p of game === 'poe2' ? TRADE_PATTERNS_POE2 : TRADE_PATTERNS) {
     const m = p.re.exec(text)
     if (!m?.groups) continue
     const g = m.groups
@@ -349,7 +387,7 @@ export function parseLogLine(line: string, game: GameId = 'poe1'): LogEvent | nu
       dir: chat.channel === 'whisper.from' ? 'in' : 'out',
       player: chat.player ?? '',
       body: chat.body,
-      trade: parseTradeMessage(chat.body),
+      trade: parseTradeMessage(chat.body, game),
       clientLang: chat.clientLang ?? 'en',
       ts: ll.ts
     }

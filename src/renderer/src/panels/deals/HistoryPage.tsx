@@ -30,6 +30,8 @@ export function HistoryPage() {
   const query = useDealsStore((s) => s.query)
   const setFilter = useDealsStore((s) => s.setFilter)
   const setQuery = useDealsStore((s) => s.setQuery)
+  // S63: у PoE 2 в подсказке — какие языки исходящих узнаём и что выкуп сюда не попадает
+  const poe2 = useAppStore((s) => s.settings?.game) === 'poe2'
   if (!state) return null
 
   const rows = filterDeals(state.deals, filter, query)
@@ -37,7 +39,7 @@ export function HistoryPage() {
 
   return (
     <div className="dl-stack">
-      {simple && <Hint text={t('deals.hint.history')} />}
+      {simple && <Hint text={t(poe2 ? 'deals.hint.history.poe2' : 'deals.hint.history')} />}
       <div className="dl-toolbar">
         {FILTERS.map((f) => (
           <button key={f} type="button" className="ui-chip" aria-pressed={filter === f} onClick={() => setFilter(f)}>

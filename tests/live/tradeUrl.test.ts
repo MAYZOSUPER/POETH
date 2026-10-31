@@ -29,7 +29,9 @@ describe('разбор ссылки на поиск', () => {
   it('длинный id поиска (H4sI…), который сейчас отдаёт API', () => {
     const id = 'H4sIAAAAAAAAA6tWKi5JLCktVrKqVsovKMnMz1OyUsrPy8nMS1Wq1VHKS8xNBQqEJCaV5iQqBCUWJyrpKJVUFoAEgzNzC3JSFYLyk4BKAWolA5lIAAAA'
     expect(parseLiveInput(`https://www.pathofexile.com/trade/search/Standard/${id}`)).toMatchObject({ ok: true, slug: id })
-    expect(parseLiveInput('x'.repeat(513))).toEqual({ ok: false, error: 'bad-url' })
+    // S63: предел — общий с избранным (SLUG_MAX = 4096): запросы окна цены бывают длиннее 512 символов
+    expect(parseLiveInput('x'.repeat(600))).toEqual({ ok: true, slug: 'x'.repeat(600) })
+    expect(parseLiveInput('x'.repeat(4097))).toEqual({ ok: false, error: 'bad-url' })
   })
 
   it('«лига/код» и просто код', () => {
