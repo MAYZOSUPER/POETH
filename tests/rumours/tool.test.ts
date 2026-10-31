@@ -2,6 +2,7 @@ import { execFile } from 'child_process'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
+import { pathToFileURL } from 'url'
 import { promisify } from 'util'
 import { afterAll, describe, expect, it } from 'vitest'
 import { validateRumoursFile } from '@shared/rumours/schema'
@@ -52,6 +53,31 @@ describe('extract --check', () => {
     expect(stdout).toContain('предупреждение: all-that-glitters: нет нашего тира')
     expect(await fail('--check', '--strict', '--file', f)).toContain('ошибка: all-that-glitters: нет нашего тира')
   }, 60_000)
+})
+
+describe('сеть и диск инструмента (без сети)', () => {
+  it('удаляет только свой кэш во временной папке; папку из --cache не трогает никогда', async () => {
+    const { cachePlan } = (await import(pathToFileURL(join(ROOT, 'tools/rumours/extract.mjs')).href)) as {
+      cachePlan: (cache: string | null, keep: boolean, patch: string, tmp?: string) => { dir: string; remove: boolean }
+    }
+    expect(cachePlan(null, false, '0.5.5.5', 'T')).toEqual({ dir: join('T', 'poeth-rumours-cache', '0.5.5.5'), remove: true })
+    expect(cachePlan(null, true, '0.5.5.5', 'T').remove).toBe(false)
+    expect(cachePlan(ROOT, false, '0.5.5.5', 'T')).toEqual({ dir: ROOT, remove: false })
+    expect(cachePlan('.', false, '0.5.5.5', 'T').remove).toBe(false)
+  }, 60_000)
+
+  it('User-Agent — POETH/<версия из package.json>; схема таблиц закреплена по sha256', async () => {
+    const game = (await import(pathToFileURL(join(ROOT, 'tools/rumours/game.mjs')).href)) as {
+      UA: string
+      SCHEMA_PIN: { url: string; commit: string; sha256: string }
+      checkPinnedSchema: (bytes: Uint8Array) => void
+    }
+    const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')) as { version: string }
+    expect(game.UA).toBe(`POETH/${pkg.version} (+https://github.com/MAYZOSUPER/POETH)`)
+    expect(game.SCHEMA_PIN.sha256).toMatch(/^[0-9a-f]{64}$/)
+    expect(game.SCHEMA_PIN.commit).toMatch(/^[0-9a-f]{12}$/)
+    expect(() => game.checkPinnedSchema(Buffer.from('{"version":7}'))).toThrow(/схема таблиц на GitHub обновилась/)
+  })
 })
 
 describe('пересборка из строк игры', () => {

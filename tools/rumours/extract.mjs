@@ -1,6 +1,7 @@
 // «Слухи журнала» PoE 2 (S65): пересобрать resources/data/poe2/rumours/rumours.json из файлов игры и проверить его.
 //
-//   node tools/rumours/extract.mjs [--patch 0.5.5.5] [--dat <node_modules>] [--cache <папка>] [--keep-cache] [--dry]
+//   node tools/rumours/extract.mjs [--patch 0.5.5.5] [--dat <node_modules>] [--cache <папка>] [--keep-cache]
+//        [--schema <schema.min.json>] [--dry]
 //   node tools/rumours/extract.mjs --check [--strict] [--file <rumours.json>]     # проверка (npm test, CI)
 //
 // Пересборка (к патчу или к 1.0 — за минуты):
@@ -8,7 +9,9 @@
 //       npm install --prefix "%TEMP%\poeth-rumours-dat" --no-audit --no-fund pathofexile-dat@16.0.1
 //     (путь к её node_modules — по умолчанию; другой — --dat).
 //  2. Запустить без --check. Номер патча спросим у патч-сервера GGG (или --patch), таблицы скачаем с CDN патчей
-//     во временную папку (~120 МБ, после работы удаляется; --keep-cache — оставить для повтора).
+//     в свою временную папку %TEMP%\poeth-rumours-cache\<патч> (~120 МБ, после работы удаляется; --keep-cache —
+//     оставить для повтора). Папку из --cache инструмент не удаляет никогда: она ваша.
+//     Схема таблиц — закреплённая (SCHEMA_PIN в game.mjs); обновилась на GitHub — отказ, свежую передать --schema.
 //  3. Отчёт покажет новые, пропавшие и изменённые строки. У новых островов нет нашей оценки — дописать руками
 //     (rewards, risks, difficulty, tier, note) и прогнать --check --strict.
 //
@@ -21,12 +24,22 @@
 import { promises as fs } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { EE2_ITEMS, RUMOURS_DATA_FILE, loadEe2ItemKeys, loadRumoursCore } from './core.mjs'
-import { SCHEMA_URL, queryPatchVersion, readGameRumours } from './game.mjs'
+import { queryPatchVersion, readGameRumours } from './game.mjs'
 import { mergeGameRumours, rewardItemNames } from './merge.mjs'
 
 const DAT_VERSION = '16.0.1'
 const DEFAULT_DAT = path.join(os.tmpdir(), 'poeth-rumours-dat', 'node_modules')
+
+/**
+ * Папка кэша бандлов и можно ли её удалить после работы. Удаляем только свою — в %TEMP%\poeth-rumours-cache; папку
+ * из --cache не трогаем (там может быть что угодно, вплоть до репозитория).
+ */
+export function cachePlan(cache, keepCache, patch, tmp = os.tmpdir()) {
+  if (cache) return { dir: cache, remove: false }
+  return { dir: path.join(tmp, 'poeth-rumours-cache', patch), remove: !keepCache }
+}
 
 function fail(msg) {
   console.error(`rumours: ${msg}`)
@@ -34,7 +47,7 @@ function fail(msg) {
 }
 
 function parseArgs(argv) {
-  const out = { check: false, strict: false, dry: false, keepCache: false, file: RUMOURS_DATA_FILE, out: null, patch: null, dat: DEFAULT_DAT, cache: null, schema: SCHEMA_URL, fromGame: null, saveGame: null, today: null, ee2: EE2_ITEMS }
+  const out = { check: false, strict: false, dry: false, keepCache: false, file: RUMOURS_DATA_FILE, out: null, patch: null, dat: DEFAULT_DAT, cache: null, schema: null, fromGame: null, saveGame: null, today: null, ee2: EE2_ITEMS }
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     const val = () => {
@@ -51,7 +64,7 @@ function parseArgs(argv) {
     else if (a === '--patch') out.patch = val()
     else if (a === '--dat') out.dat = path.resolve(val())
     else if (a === '--cache') out.cache = path.resolve(val())
-    else if (a === '--schema') out.schema = val()
+    else if (a === '--schema') out.schema = path.resolve(val())
     else if (a === '--from-game') out.fromGame = path.resolve(val())
     else if (a === '--save-game') out.saveGame = path.resolve(val())
     else if (a === '--today') out.today = val()
@@ -138,7 +151,8 @@ async function main() {
   } else {
     const patch = args.patch ?? (await queryPatchVersion())
     console.log(`патч PoE 2: ${patch}`)
-    cacheDir = args.cache ?? path.join(os.tmpdir(), 'poeth-rumours-cache', patch)
+    const cache = cachePlan(args.cache, args.keepCache, patch)
+    cacheDir = cache.dir
     try {
       game = await readGameRumours({ datModules: args.dat, patch, cacheDir, schema: args.schema, itemNames, log: (m) => console.log(`  ${m}`) })
     } catch (e) {
@@ -147,7 +161,7 @@ async function main() {
       }
       throw e
     } finally {
-      if (!args.keepCache && cacheDir) await fs.rm(cacheDir, { recursive: true, force: true })
+      if (cache.remove) await fs.rm(cacheDir, { recursive: true, force: true })
     }
     console.log(`скачано ${(game.downloaded / 1024 / 1024).toFixed(1)} МБ, строк слухов: ${game.rows.length}${game.russian ? '' : ' (RU-таблиц нет)'}`)
   }
@@ -183,4 +197,7 @@ async function main() {
   }
 }
 
-main().catch((e) => fail(e?.stack ?? String(e)))
+// как модуль (тесты: cachePlan) — без запуска
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
+  main().catch((e) => fail(e?.stack ?? String(e)))
+}
