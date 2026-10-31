@@ -25,6 +25,7 @@ import {
   upsertEntry
 } from '@shared/regex/library'
 import { normalizePoe2State, patchPoe2Prefs, removeProfile, upsertProfile } from '@shared/regex/poe2/profiles'
+import { isPoe2RegexData } from '@shared/regex/poe2/validate'
 import { getRunningGame } from '../gameContext'
 import { readJson, writeJsonAtomic } from './atomicJson'
 import { resourcesDir } from './questDataset'
@@ -209,20 +210,6 @@ export async function deletePoe2Profile(id: string): Promise<Poe2RegexState> {
 
 const poe2DataCache = new Map<RegexLang, Poe2RegexData>()
 
-function isPoe2Data(v: unknown): v is Poe2RegexData {
-  const d = v as Poe2RegexData | null
-  return (
-    !!d &&
-    !!d.meta &&
-    !!d.waystone &&
-    Array.isArray(d.waystone.mods) &&
-    !!d.tablet &&
-    Array.isArray(d.tablet.mods) &&
-    !!d.vendor &&
-    !!d.vendor.props
-  )
-}
-
 /** Как данные карт PoE 1: сначала userData/data (обновление без переустановки), затем bundled resources. */
 export async function loadPoe2Data(lang: RegexLang): Promise<Poe2RegexData | null> {
   const hit = poe2DataCache.get(lang)
@@ -230,7 +217,9 @@ export async function loadPoe2Data(lang: RegexLang): Promise<Poe2RegexData | nul
   const rel = path.join('data', 'poe2', 'regex', `regex.${lang}.json`)
   for (const file of [path.join(app.getPath('userData'), rel), path.join(resourcesDir(), rel)]) {
     const data = await readJson<unknown>(file, null)
-    if (isPoe2Data(data)) {
+    // проверяется всё, что нужно движку (метки, тир, флаги, типы, «использования», классы…, токены — как регулярки):
+    // старый или битый файл в userData/data — откат на встроенный
+    if (isPoe2RegexData(data)) {
       poe2DataCache.set(lang, data)
       return data
     }
