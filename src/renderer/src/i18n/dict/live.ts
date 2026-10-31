@@ -55,7 +55,7 @@ export const live: DomainDict = {
     'live.poe2max.help':
       'Сколько соединений trade2 разрешено, сайт не сообщает. 5 — с запасом; больше — на свой риск: сайт может временно не пускать.',
     'live.recent': 'Последние находки',
-    'live.recent.empty': 'Находок пока нет.',
+    'live.recent.empty': 'Находок пока нет. Новые лоты по включённым поискам появятся здесь и всплывут поверх игры.',
     'live.col.item': 'Предмет',
     'live.col.price': 'Цена',
     'live.col.when': 'Когда',
@@ -153,7 +153,7 @@ export const live: DomainDict = {
     'live.poe2max.help':
       'The site does not say how many trade2 connections it allows. 5 leaves headroom; more is at your own risk — the site may refuse you for a while.',
     'live.recent': 'Recent hits',
-    'live.recent.empty': 'No hits yet.',
+    'live.recent.empty': 'No hits yet. New listings from the searches you turned on show up here and pop up over the game.',
     'live.col.item': 'Item',
     'live.col.price': 'Price',
     'live.col.when': 'When',

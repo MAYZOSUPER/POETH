@@ -22,3 +22,52 @@
   align-items: center;
   gap: var(--sp-2, 8px);
 }
+
+/* Дизайн-проход (01.11): моды одним списком с разделителями, а не рамка на каждую строку */
+.rx-trilist--p2 {
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  background: var(--sunken);
+  overflow: hidden;
+}
+.rx-trilist--p2 > .rx-tri {
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+}
+.rx-trilist--p2 > .rx-tri:first-child {
+  border-top: 0;
+}
+.rx-trilist--p2 > .rx-tri:hover {
+  background: var(--hover);
+}
+.rx-trilist--p2 > .rx-tri[data-state='want'] {
+  background: color-mix(in srgb, var(--good) 6%, transparent);
+}
+.rx-trilist--p2 > .rx-tri[data-state='avoid'] {
+  background: color-mix(in srgb, var(--bad) 6%, transparent);
+}
+.rx-trilist--p2 > .ui-empty {
+  border: 0;
+}
+/* одна колонка (простой режим на 820, узкое окно): настройки и строка поиска с /250 и «Копировать» — над списком модов,
+   без «липкости» (иначе высокий блок наезжает на список) */
+@container body (max-width: 720px) {
+  .rx-two--p2 > .rx-stack:last-child {
+    order: -1;
+  }
+  .rx-two--p2 > .rx-sticky {
+    position: static;
+  }
+}
+
+/* профиль: имя и строка во всю ширину колонки, кнопки ниже (в общей .rx-lib-row первая колонка — 96 px под номер слота) */
+.rx-p2-profile .rx-lib-row {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-3);
+}
+.rx-p2-profile .rx-btns {
+  justify-content: flex-start;
+}

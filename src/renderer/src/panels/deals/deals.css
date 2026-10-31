@@ -365,3 +365,81 @@
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
 }
+
+/* Дизайн-проход (01.11): ниже 760 px вкладки таблица не влезает (статус обрезан, предмет в три строки) — каждая сделка
+   карточкой: время, направление и статус сверху, игрок, предмет с ценой, действия. Колонки — по порядку ячеек. */
+@container body (max-width: 759px) {
+  .dl-tbl,
+  .dl-tbl tbody {
+    display: block;
+  }
+  .dl-tbl thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .dl-tbl tr {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'time dir . status'
+      'who who who who'
+      'item item item price'
+      'acts acts acts acts';
+    align-items: start;
+    gap: var(--sp-2) var(--sp-4);
+    padding: var(--sp-4) var(--sp-5);
+    border-bottom: 1px solid var(--border);
+  }
+  .dl-tbl tr:last-child {
+    border-bottom: 0;
+  }
+  .dl-tbl td {
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  .dl-tbl tbody tr:hover td {
+    background: none;
+  }
+  .dl-tbl tbody tr:hover {
+    background: var(--hover);
+  }
+  .dl-tbl td:nth-child(1) { grid-area: time; }
+  .dl-tbl td:nth-child(2) { grid-area: dir; }
+  .dl-tbl td:nth-child(3) { grid-area: who; }
+  .dl-tbl td:nth-child(4) { grid-area: item; }
+  .dl-tbl td:nth-child(5) { grid-area: price; justify-self: end; text-align: right; }
+  .dl-tbl td:nth-child(6) { grid-area: status; justify-self: end; }
+  .dl-tbl td:nth-child(7) { grid-area: acts; }
+  .dl-who,
+  .dl-item {
+    min-width: 0;
+  }
+  .dl-row--bad td:first-child {
+    box-shadow: none;
+  }
+  .dl-row--bad {
+    box-shadow: inset 3px 0 0 var(--bad);
+  }
+  .dl-acts__in {
+    justify-content: flex-start;
+  }
+}
+
+/* путь к журналу — одной строкой с конца: видно папку и Client.txt, полный путь — в title */
+.dl-field:has(> .dl-path--end) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.dl-path--end {
+  justify-self: stretch;
+  max-width: 100%;
+  display: block;
+  overflow: hidden;
+  direction: rtl;
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

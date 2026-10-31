@@ -402,7 +402,7 @@ export const regex: DomainDict = {
     'regex.poe2.page.vendor': 'Торговец',
     'regex.poe2.page.library': 'Библиотека',
     'regex.poe2.beta':
-      'Режим PoE 2 новый: строки собраны по данным игры 0.5, к выходу 1.0 (11.12) данные обновим. Прежде чем полагаться на строку, проверьте подсветку в тайнике.',
+      'Данные под PoE 2 0.5. К выходу 1.0 (11.12) строки обновим — пока проверьте подсветку в тайнике.',
     'regex.poe2.howto':
       'Скопируйте строку, откройте тайник, нажмите Ctrl+F и вставьте (Ctrl+V) — подсветятся подходящие предметы.',
     'regex.poe2.dataInfo': 'Данные PoE {patch} от {date}, модов: {n}.',
@@ -415,7 +415,7 @@ export const regex: DomainDict = {
     'regex.poe2.noRu.title':
       'В данных игры нет русского текста этого мода — строка не найдёт его в русском клиенте. Появится после обновления данных.',
     'regex.poe2.alsoExtra': 'Уникального фрагмента нет — строка может подсветить и похожие свойства.',
-    'regex.poe2.tag.desecrated': 'Очерн.',
+    'regex.poe2.tag.desecrated': 'очернённое',
     'regex.poe2.tag.desecrated.title': 'Очернённый мод — от костей Бездны',
     'regex.poe2.tag.instilled': 'Вложение',
     'regex.poe2.tag.instilled.title': 'Вложено эмоцией Делириума',
@@ -957,7 +957,7 @@ export const regex: DomainDict = {
     'regex.poe2.page.vendor': 'Vendor',
     'regex.poe2.page.library': 'Library',
     'regex.poe2.beta':
-      'PoE 2 mode is new: strings are built from 0.5 game data, we will update it for 1.0 (Dec 11). Check the highlight in your stash before relying on a string.',
+      'Data for PoE 2 0.5. We update the strings for 1.0 (Dec 11) — until then check the highlight in your stash.',
     'regex.poe2.howto': 'Copy the string, open your stash, press Ctrl+F and paste (Ctrl+V) — matching items light up.',
     'regex.poe2.dataInfo': 'PoE data {patch} from {date}, mods: {n}.',
     'regex.poe2.filter.all': 'All',
@@ -969,7 +969,7 @@ export const regex: DomainDict = {
     'regex.poe2.noRu.title':
       'The game data has no Russian text for this mod — the string will not find it in the Russian client. It will appear after a data update.',
     'regex.poe2.alsoExtra': 'No unique fragment — the string may also highlight similar properties.',
-    'regex.poe2.tag.desecrated': 'Desecr.',
+    'regex.poe2.tag.desecrated': 'desecrated',
     'regex.poe2.tag.desecrated.title': 'Desecrated mod — from Abyssal bones',
     'regex.poe2.tag.instilled': 'Instilled',
     'regex.poe2.tag.instilled.title': 'Instilled with a Delirium emotion',

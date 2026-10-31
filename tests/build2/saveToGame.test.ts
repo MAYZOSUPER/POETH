@@ -2,22 +2,23 @@ import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, symlinkSync,
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { BUILD_DIR_ENV, buildPlannerDir, freeFileName, saveBuildFile } from '../../src/main/build/poe2/saveToGame'
+import { BUILD_DIR_ENV, PLANNER_PARTS, buildPlannerDir, freeFileName, saveBuildFile, type PlannerDir } from '../../src/main/build/poe2/saveToGame'
 import { FILE_NAME_MAX, buildFileName, copyBuildName, isReservedName, nextFreeName } from '@shared/poe2/build/fileName'
 import { serializeGameBuild, toGameBuild, defaultBuildName } from '@shared/poe2/build/gameBuild'
 import { resolveStages2 } from '@shared/poe2/build/stages'
-import type { Build2Dir } from '@shared/types/build2'
 import { gems, pob2, tree } from './helpers'
 
 // «Сохранить билд в игру» (S66): запись `.build` во временную папку — только после подтверждения с показом пути,
 // существующий файл без «Заменить» не трогаем, имя файла — безопасное. Настоящую папку игры тест не трогает.
 
 let root: string
-let dir: Build2Dir
+let dir: PlannerDir
+/** что видит окно: путь от «Документы», без C:\Users\<имя> */
+const VIEW = { parts: [...PLANNER_PARTS], documents: true, game: true }
 
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), 'poeth-s66-'))
-  dir = { path: join(root, 'My Games', 'Path of Exile 2', 'BuildPlanner'), game: true }
+  dir = { path: join(root, 'My Games', 'Path of Exile 2', 'BuildPlanner'), game: true, view: VIEW }
   mkdirSync(join(root, 'My Games', 'Path of Exile 2'), { recursive: true })
 })
 afterEach(() => rmSync(root, { recursive: true, force: true }))
@@ -32,11 +33,13 @@ describe('запись .build с подтверждением', () => {
     const fileName = buildFileName('Амазонка — Внезапный удар')
     expect(fileName).toBe('Amazonka - Vnezapnyy udar.build')
     const ask = await saveBuildFile({ name: 'N', dir, fileName, text: text() })
-    expect(ask).toEqual({ ok: false, error: 'confirm', dir, fileName, name: 'N', exists: false })
+    expect(ask).toEqual({ ok: false, error: 'confirm', dir: VIEW, fileName, name: 'N', exists: false })
+    // полный путь (с именем пользователя Windows) в ответ окну не попадает
+    expect(JSON.stringify(ask)).not.toContain(root.replace(/\\/g, '\\\\'))
     // папку ещё не создали и ничего не записали
     expect(readdirSync(join(root, 'My Games', 'Path of Exile 2'))).toEqual([])
     const done = await saveBuildFile({ name: 'N', dir, fileName, text: text(), confirm: true, confirmedName: fileName })
-    expect(done).toEqual({ ok: true, path: join(dir.path, fileName), fileName, name: 'N', replaced: false })
+    expect(done).toEqual({ ok: true, fileName, name: 'N', replaced: false })
     const saved = JSON.parse(readFileSync(join(dir.path, fileName), 'utf8'))
     expect(saved.name).toBe('Амазонка — Внезапный удар')
     expect(saved.ascendancy).toBe('Huntress1')
@@ -67,8 +70,8 @@ describe('запись .build с подтверждением', () => {
   })
 
   it('папки игры нет — не пишем', async () => {
-    const none: Build2Dir = { path: join(root, 'nope', 'BuildPlanner'), game: false }
-    expect(await saveBuildFile({ name: 'N', dir: none, fileName: 'A.build', text: 'x', confirm: true, confirmedName: 'A.build' })).toEqual({ ok: false, error: 'no-game-dir', dir: none })
+    const none: PlannerDir = { path: join(root, 'nope', 'BuildPlanner'), game: false, view: { ...VIEW, game: false } }
+    expect(await saveBuildFile({ name: 'N', dir: none, fileName: 'A.build', text: 'x', confirm: true, confirmedName: 'A.build' })).toEqual({ ok: false, error: 'no-game-dir', dir: none.view })
   })
 
   it('на месте файла — папка или ссылка: не заменяем', async () => {
@@ -89,13 +92,13 @@ describe('папка игрового планировщика', () => {
   it('Документы/My Games/Path of Exile 2/BuildPlanner; подмена для проверок — POETH_POE2_BUILD_DIR, только не в сборке', () => {
     const docs = join(root, 'Docs')
     const planner = join(docs, 'My Games', 'Path of Exile 2', 'BuildPlanner')
-    expect(buildPlannerDir(docs, {}, () => false)).toEqual({ path: planner, game: false })
+    expect(buildPlannerDir(docs, {}, () => false)).toEqual({ path: planner, game: false, view: { parts: ['My Games', 'Path of Exile 2', 'BuildPlanner'], documents: true, game: false } })
     expect(buildPlannerDir(docs, {}, (p) => p === join(docs, 'My Games', 'Path of Exile 2'))).toMatchObject({ game: true })
     // собранное приложение (app.isPackaged): переменная окружения папку не меняет
-    expect(buildPlannerDir(docs, { [BUILD_DIR_ENV]: join(root, 'tmp') }, () => false)).toEqual({ path: planner, game: false })
+    expect(buildPlannerDir(docs, { [BUILD_DIR_ENV]: join(root, 'tmp') }, () => false)).toMatchObject({ path: planner, game: false })
     expect(buildPlannerDir(docs, { [BUILD_DIR_ENV]: join(root, 'tmp') }, () => false, false).path).toBe(planner)
     // разработка и тесты
-    expect(buildPlannerDir(docs, { [BUILD_DIR_ENV]: join(root, 'tmp') }, () => false, true)).toEqual({ path: join(root, 'tmp'), game: true })
+    expect(buildPlannerDir(docs, { [BUILD_DIR_ENV]: join(root, 'tmp') }, () => false, true)).toEqual({ path: join(root, 'tmp'), game: true, view: { parts: ['tmp'], documents: false, game: true } })
     // относительный путь в переменной не принимаем
     expect(buildPlannerDir(docs, { [BUILD_DIR_ENV]: 'rel/dir' }, () => false, true).path).toBe(planner)
   })
@@ -151,6 +154,6 @@ describe('имя файла', () => {
     writeFileSync(join(dir.path, 'A.build'), 'x')
     writeFileSync(join(dir.path, 'a (2).BUILD'), 'x')
     expect(await freeFileName(dir, 'A.build')).toEqual({ fileName: 'A (3).build', n: 3 })
-    expect(await freeFileName({ path: join(root, 'none'), game: true }, 'A.build')).toEqual({ fileName: 'A.build', n: 1 })
+    expect(await freeFileName({ path: join(root, 'none'), game: true, view: VIEW }, 'A.build')).toEqual({ fileName: 'A.build', n: 1 })
   })
 })

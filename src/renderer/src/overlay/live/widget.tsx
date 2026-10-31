@@ -5,7 +5,7 @@ import { Icon } from '../Icon'
 import { useOverlayT } from '../useOverlayT'
 import type { OverlayWidgetDef } from '../registry'
 import { ago, countdown, priceAmount, rarityColor } from '../../panels/live/format'
-import { useHitName } from '../../panels/live/names'
+import { useHitMods, useHitName } from '../../panels/live/names'
 import { CoinIcon, Currency, CurrencyTipBody, TipAnchor } from '../../components/Currency'
 import { useOverlayStore } from '../../store/useOverlayStore'
 import { itemFacts, poe2HitFacts, type ItemFact } from './itemFacts'
@@ -80,6 +80,8 @@ function Toast({ toast }: { toast: LiveToast }) {
   const lang = useOverlayStore((s) => s.lang)
   // имя как в игре (S31): сайт трейда отдаёт его на своём языке
   const name = useHitName(hit, lang)
+  // моды PoE 2 trade2 отдаёт по-английски — у RU-клиента переводим по статам EE2 (S63)
+  const mods = useHitMods(hit, lang)
   const done = toast.state === 'done'
 
   return (
@@ -117,9 +119,9 @@ function Toast({ toast }: { toast: LiveToast }) {
                   ))}
                 </div>
               )}
-              {hit.mods.length > 0 && (
+              {mods.length > 0 && (
                 <ul className="lv-mods">
-                  {hit.mods.slice(0, MAX_MODS).map((m, i) => (
+                  {mods.slice(0, MAX_MODS).map((m, i) => (
                     <li key={i}>{m}</li>
                   ))}
                 </ul>

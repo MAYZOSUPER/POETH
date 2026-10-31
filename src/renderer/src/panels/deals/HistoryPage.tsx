@@ -181,7 +181,7 @@ function DealRow({ d, expert }: { d: Deal; expert: boolean }) {
       </td>
       <td className="dl-price">
         {d.price ? (
-          <DealPrice d={d} lang={lang} full={false} />
+          <DealPrice d={d} lang={lang} full={!expert} />
         ) : (
           '—'
         )}
@@ -266,7 +266,12 @@ function LogRow() {
   return (
     <div className="dl-field">
       <span className="ui-field__label">{t('deals.log.title')}</span>
-      {log.logPath && <span className="dl-path">{log.logPath}</span>}
+      {log.logPath && (
+        // длинный путь — с конца (…\logs\Client.txt), полностью — в подсказке
+        <span className="dl-path dl-path--end" title={log.logPath}>
+          <bdi>{log.logPath}</bdi>
+        </span>
+      )}
       <div className="dl-row">
         <span className={`ui-tag ${tag.cls}`}>{tag.text}</span>
         <button type="button" className="ui-btn ui-btn--sm" onClick={() => void pickLog()}>
