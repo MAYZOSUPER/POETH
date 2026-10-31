@@ -1,0 +1,406 @@
+{
+  "name": "Следопыт — Ядовитая взрывная стрела",
+  "description": "Из Path of Building через POETH. Этапов по уровням: 1.",
+  "ascendancy": "Ranger3",
+  "passives": [
+    "projectiles15",
+    "projectiles22",
+    "attack_speed3",
+    "attack_speed7",
+    "ranger_huntress_notable2",
+    {
+      "id": "dexterity15",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "dexterity18",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "dexterity19",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "dexterity20",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "dexterity36",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "dexterity21",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "attributes29",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "poison17",
+    {
+      "id": "dexterity67_",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "evasion23_",
+    {
+      "id": "dexterity34",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "quivers2",
+    "poison13",
+    {
+      "id": "dexterity68",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "evasion9",
+    "jewel_slot1960",
+    "evasion17_",
+    "quivers3",
+    "poison14",
+    {
+      "id": "dexterity66",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "evasion39",
+    "evasion31",
+    "quivers4",
+    "poison18",
+    {
+      "id": "dexterity65_",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "evasion4",
+    "evasion18",
+    {
+      "id": "strength87",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "ranger_huntress_notable1",
+    {
+      "id": "dexterity57",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "dexterity64",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "attributes74",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "evasion8",
+    {
+      "id": "attributes43",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "dexterity58",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "evasion10",
+    "ailments23",
+    {
+      "id": "dexterity59",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "evasion7_",
+    "ailments25",
+    "quivers7",
+    "attack_speed19",
+    {
+      "id": "dexterity41",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "dexterity106",
+    "ailments22",
+    "attack_speed21_",
+    {
+      "id": "dexterity42",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    {
+      "id": "attributes22_",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "attributes26",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    "dexterity102",
+    "ailments38",
+    "attack_speed18",
+    "poison33",
+    {
+      "id": "attributes35",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    {
+      "id": "attributes27",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    "dexterity110",
+    "attack_speed34",
+    "poison31",
+    {
+      "id": "attributes75",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    "jewel_slot1976",
+    "evasion26",
+    "evasion16",
+    "poison29",
+    "physical5",
+    "poison24_",
+    {
+      "id": "dexterity48",
+      "additional_text": "Выберите: <b>{Интеллект}"
+    },
+    {
+      "id": "dexterity50",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "evasion33",
+    "evasion32",
+    "physical1",
+    "poison23",
+    "monkchakra16",
+    "poison7",
+    {
+      "id": "attributes10",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "criticals52",
+    "physical2",
+    "poison25",
+    "monkchakra17_",
+    "poison10",
+    "poison2",
+    {
+      "id": "dexterity51",
+      "additional_text": "Выберите: <b>{Сила}"
+    },
+    "azmerianimals53_",
+    "criticals56",
+    "physical32__",
+    "physical30",
+    "poison27",
+    "monkchakra18",
+    "poison12",
+    "poison4",
+    {
+      "id": "dexterity52",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "heralds12_",
+    "azmerianimals51",
+    "criticals53",
+    "poison11",
+    "poison9",
+    {
+      "id": "dexterity55",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "azmerianimals2",
+    "heralds10",
+    "azmerianimals54",
+    "poison16",
+    {
+      "id": "dexterity82_",
+      "additional_text": "Выберите: <b>{Ловкость}"
+    },
+    "azmerianimals3",
+    "heralds13",
+    "heralds20",
+    "heralds11",
+    "movement_speed5",
+    "azmerianimals1",
+    "movement_speed4",
+    "azmerianimals6_",
+    "movement_speed9",
+    "AscendancyRanger3Small4",
+    "AscendancyRanger3Small8",
+    "AscendancyRanger3Small1",
+    "AscendancyRanger3Notable2",
+    "AscendancyRanger3Notable8_Choice_",
+    "AscendancyRanger3Notable4",
+    "AscendancyRanger3Small3",
+    "AscendancyRanger3Notable8_3",
+    "AscendancyRanger3Notable1_"
+  ],
+  "skills": [
+    {
+      "id": "Metadata/Items/Gem/SkillGemVineArrow",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemTacatisIre",
+        "Metadata/Items/Gems/SupportGemEncumbrance",
+        "Metadata/Items/Gems/SupportGemComorbidity",
+        "Metadata/Items/Gems/SupportGemExplosiveGrowth",
+        "Metadata/Items/Gems/SupportGemExplosiveGrowthTwo",
+        "Metadata/Items/Gem/SupportGemAcrimony",
+        "Metadata/Items/Gems/SupportGemCorrosion"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemHeraldOfBlood",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemAdmixture",
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gems/SupportGemLacerateThree",
+        "Metadata/Items/Gems/SupportGemConcentratedEffect",
+        "Metadata/Items/Gems/SupportGemEnvenomThree"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemHeraldOfPlague",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemDemolisherTwo",
+        "Metadata/Items/Gems/SupportGemChaosMastery",
+        "Metadata/Items/Gems/SupportGemClarityTwo",
+        "Metadata/Items/Gems/SupportGemVitality",
+        "Metadata/Items/Gems/SupportGemClarity"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemToxicDomain",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemBurstingPlague",
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gems/SupportGemIngenuityTwo",
+        "Metadata/Items/Gems/SupportGemExplosiveGrowth",
+        "Metadata/Items/Gems/SupportGemExplosiveGrowthTwo",
+        "Metadata/Items/Gems/SupportGemSecondWindThree",
+        "Metadata/Items/Gem/SupportGemRageforgedTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemRavenousSwarm",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemComorbidity",
+        "Metadata/Items/Gems/SupportGemWitheringTouch",
+        "Metadata/Items/Gems/SupportGemRageThree",
+        "Metadata/Items/Gems/SupportGemLacerateFour",
+        "Metadata/Items/Gems/SupportGemDeadlyPoisonTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemToxicGrowth",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemPoisonSpores",
+        "Metadata/Items/Gem/SupportGemLongFuseTwo",
+        "Metadata/Items/Gems/SupportGemConcentratedEffect",
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gems/SupportGemExplosiveGrowthTwo",
+        "Metadata/Items/Gem/SupportGemPrototypeSeventeen"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemThunderstorm",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemEnergyRetention",
+        "Metadata/Items/Gem/SupportGemImpetusTwo",
+        "Metadata/Items/Gems/SupportGemCoursingCurrent"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemPoisonBurstArrow",
+      "additional_text": "<b>{Главное умение билда}",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemArakaalisLust",
+        "Metadata/Items/Gems/SupportGemMartialTempoTwo",
+        "Metadata/Items/Gem/SupportGemIncision",
+        "Metadata/Items/Gems/SupportGemInevitableCriticalTwo",
+        "Metadata/Items/Gems/SupportGemComorbidity",
+        "Metadata/Items/Gems/SupportGemSupercritical",
+        "Metadata/Items/Gem/SupportGemDeliberation"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemGasArrow",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemDomainThree",
+        "Metadata/Items/Gems/SupportGemComorbidity",
+        "Metadata/Items/Gems/SupportGemPersistenceTwo",
+        "Metadata/Items/Gems/SupportGemCorrosion"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemExplodingPoisonToad",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gems/SupportGemConcentratedEffect",
+        "Metadata/Items/Gems/SupportGemEnvenomThree",
+        "Metadata/Items/Gems/SupportGemComorbidity"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gem/SkillGemWindDancer",
+      "support_skills": [
+        "Metadata/Items/Gems/SupportGemMagnifiedEffectTwo",
+        "Metadata/Items/Gems/SupportGemOverpowerThree",
+        "Metadata/Items/Gems/SupportGemEnvenomThree",
+        "Metadata/Items/Gems/SupportGemDeadlyPoisonTwo"
+      ]
+    },
+    {
+      "id": "Metadata/Items/Gems/SkillGemDespair",
+      "support_skills": [
+        "Metadata/Items/Gem/SupportGemDoedresUndoing",
+        "Metadata/Items/Gems/SupportGemHeightenedCurse",
+        "Metadata/Items/Gem/SupportGemRitualisticCurse",
+        "Metadata/Items/Gems/SupportGemInspirationTwo"
+      ]
+    }
+  ],
+  "inventory_slots": [
+    {
+      "inventory_id": "Weapon1",
+      "additional_text": "<yellow>{Редкий: Fanatic Bow}"
+    },
+    {
+      "inventory_id": "Offhand1",
+      "additional_text": "<yellow>{Редкий: Penetrating Quiver}"
+    },
+    {
+      "inventory_id": "Weapon2",
+      "additional_text": "<yellow>{Редкий: Fanatic Bow}"
+    },
+    {
+      "inventory_id": "Offhand2",
+      "unique_name": "Murkshaft",
+      "additional_text": "<unique>{Murkshaft}"
+    },
+    {
+      "inventory_id": "Helm1",
+      "additional_text": "<yellow>{Редкий: Runeforged Deerstalker Hood}"
+    },
+    {
+      "inventory_id": "BodyArmour1",
+      "additional_text": "<yellow>{Редкий: Slipstrike Vest}"
+    },
+    {
+      "inventory_id": "Gloves1",
+      "unique_name": "Hateforge",
+      "additional_text": "<unique>{Hateforge}"
+    },
+    {
+      "inventory_id": "Boots1",
+      "additional_text": "<yellow>{Редкий: Runeforged Dragonscale Boots}"
+    },
+    {
+      "inventory_id": "Amulet1",
+      "additional_text": "<yellow>{Редкий: Solar Amulet}"
+    },
+    {
+      "inventory_id": "Ring1",
+      "additional_text": "<yellow>{Редкий: Ruby Ring}"
+    },
+    {
+      "inventory_id": "Ring2",
+      "additional_text": "<yellow>{Редкий: Unset Ring}"
+    },
+    {
+      "inventory_id": "Belt1",
+      "additional_text": "<yellow>{Редкий: Heavy Belt}"
+    }
+  ]
+}
