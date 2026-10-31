@@ -36,10 +36,19 @@ function RumoursOverlay() {
   useEffect(() => {
     const api = rumoursApi()
     if (!api) return
-    return api.onRumoursOverlay((c) => {
+    const apply = (c: RumoursOverlayCmd): void => {
       setCmd(c)
       if (c.show) void useRumoursStore.getState().init()
-    })
+    }
+    const off = api.onRumoursOverlay(apply)
+    // только dev: стенд снимков открывает короткий вид без клавиши в игре (в сборку не попадает)
+    if (!import.meta.env.DEV) return off
+    const dev = (e: Event): void => apply((e as CustomEvent<RumoursOverlayCmd>).detail)
+    window.addEventListener('poeth-dev:rumours', dev)
+    return () => {
+      off()
+      window.removeEventListener('poeth-dev:rumours', dev)
+    }
   }, [])
   if (!cmd?.show) return null
   return <Panel cmd={cmd} />
