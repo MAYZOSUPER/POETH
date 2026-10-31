@@ -117,27 +117,40 @@ PoE 2 на ПК пользователя автопоиском не нашёл�
 неё через убежище или город с новым seed (экземпляр истёк) не позже 15 мин после выхода. Без открытого забега —
 забег вида «прочее». Башня и остров — свои забеги (карта атласа из устройства карт).
 
+**Прибыль сессии PoE 2 — по макету «Сессия фарма PoE 2» (утверждён 01.11):** «Начать сессию» открывает диалог
+«Чем отметить начало?» — снять вкладки (рекомендуем), ввести валюту или только карты и время; «Завершить» — «Как
+посчитать прибыль?» — снять те же вкладки, ввести валюту или без прибыли (без отметки начала — только «без
+прибыли»). Выбор пишется в сессию (`profitMode`, `profitEnd`) и виден S70 в событиях `session:start` / `session:stop`.
+Снимок и ввод делает «Богатство» (S70) и отдаёт трекеру отметку начала и прибыль. **Итог = прибыль + находки**
+(«вкладки +2,9 div · находки +1,9 div» → «+4,8 div»).
+
 **API для «Богатства PoE 2» (S70) и окна цены** (`main/services/farmSession.ts`, все — с `game`, по умолчанию у
 старых — PoE 1, у новых — PoE 2):
 ```ts
-onFarmEvent(cb, 'poe2'), getFarmState(limit, 'poe2')             // runStart/runEnd/session, состояние PoE 2
-setSessionProfit(sessionId, { ex, exPerDiv?, source: 'snapshot' | 'manual', at? } | null)  // прибыль сессии
-addRunFind({ ref, name?, qty?, valueEx, source?: 'ctrlD' | 'manual', runId? })  // «+ находка» → FarmFindResult
+onFarmEvent(cb, 'poe2'), getFarmState(limit, 'poe2')   // runStart/runEnd/session; session.profitMode | profitEnd
+setSessionStart(sessionId, { source: 'snapshot' | 'manual', at?, tabs? } | null)        // отметка начала
+setSessionProfit(sessionId, { ex, exPerDiv?, source, at?, tabs? } | null)               // прибыль без находок
+addRunFind({ ref, name?, rarity?, qty?, valueEx, source?: 'ctrlD' | 'quick' | 'manual', runId? })  // → FarmFindResult
 removeRunFind(runId, findId)
 ```
-- **Прибыль сессии** считает S70 (снимок вкладок или ввод валюты в начале и в конце, разница в exalted) и отдаёт
-  трекеру: у идущей сессии или после «Стоп» (итог сессии в истории пересчитывается). Трекер хранит и показывает.
+- **S70:** на `session:start` с `profitMode` 'snapshot' | 'manual' — снять или принять ввод и вызвать
+  `setSessionStart`; на `session:stop` с `profitEnd` 'snapshot' | 'manual' — снять конец, посчитать разницу (в exalted,
+  **без находок**) и вызвать `setSessionProfit` (`source`/`at`/`tabs` — отметка конца). 'none' — ничего не делать.
 - **«+ находка»** — `ref` — английское имя или `Metadata/…` (ключ цены), `valueEx` — цена всей находки (за `qty`
-  штук) в exalted или `null`. Без `runId` — открытый забег (в убежище после карты он ещё открыт), иначе последний
-  забег идущей сессии; `noRun` — игрок ещё не заходил в карту. Из renderer — IPC `farm:addFind` (окно цены:
-  `window.overlayApi.farm.addFind({ ..., source: 'ctrlD' })`), удаление — `farm:removeFind`. До 200 находок на забег.
-- В статистике PoE 2: `finds`, `findsEx`, `profitEx`, `exPerHour` (по прибыли сессии, без неё — по находкам).
-- `FarmPanel` для S70: `renderIncome(p)` получает ещё `game: 'poe2'`, `profitEx`, `findsEx`.
+  штук) в exalted или `null`, `rarity` — цвет имени. Без `runId` — открытый забег (в убежище после карты он ещё открыт),
+  иначе последний забег идущей сессии; `noRun` — игрок ещё не заходил в карту. Из renderer — IPC `farm:addFind` (окно
+  цены, кнопка «К забегу»: `window.overlayApi.farm.addFind({ ..., source: 'ctrlD' })`), удаление — `farm:removeFind`.
+  Быстрые кнопки панели — `source: 'quick'` (+1 div по курсу, +5 ex, +10 ex). До 200 находок на забег.
+- В статистике PoE 2: `finds`, `findsEx`, `profitEx` (от S70), `totalEx` (= прибыль + находки), `exPerHour`.
+- IPC `farm:start` / `farm:stop` принимают `{ profitMode }` (у PoE 1 — без параметров).
 
-**UI (черновик до макета «Сессия фарма PoE 2»)** — та же панель по `state.game`: T1–T16, «Доход в час» в ex (div от
-1 div/ч, курс — `exPerDiv` прибыли сессии), колонка «Находки», блок находок забега с ручным вводом, строка прибыли
-сессии; виджет — доход в ex/div. Во вкладку «Богатство» PoE 2 панель ставит S70 (флаг `GAMES.poe2.features.wealth`
-включает лид).
+**UI** (`panels/farm/FarmPanelPoe2.tsx`, общие куски — `parts.tsx`; `FarmPanel` сам переключается по `state.game`):
+без сессии — «почему так», прошлые сессии с прибылью в div; идёт — строка «начало: снимок 3 вкладок, 18:02», плитка
+«Прибыль сессии» («появится в конце · находки пока +1,9 div»), карт в час с ярусами, метка тира у карты, «+ находка» у
+текущей карты (+1 div / +5 ex / +10 ex / своё…); после «Завершить» — итог с разбивкой или «считаем…», пока S70 не
+прислал прибыль. Курс ex→div — как у вкладки «Прайс-чек» PoE 2 (биржа GGG, `leagues.effective`); без курса — в ex.
+Виджет PoE 2: тир у карты и находки за сессию вместо дохода в час. Во вкладку «Богатство» PoE 2 панель ставит S70
+(флаг `GAMES.poe2.features.wealth` включает лид).
 
 ## Код
 | Что | Где |
