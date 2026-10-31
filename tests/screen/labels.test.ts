@@ -40,6 +40,7 @@ describe('подписи', () => {
     expect(l.labels).toHaveLength(2)
     expect(l.unpriced).toBe(1)
     expect(l.uncounted).toBe(0)
+    expect(l.counted).toBe(2)
     expect(l.approx).toBe(false)
   })
 
@@ -49,6 +50,14 @@ describe('подписи', () => {
     expect(l.approx).toBe(true)
     expect(l.uncounted).toBe(1)
     expect(l.labels.find((x) => x.item === 'Divine Orb')?.stack).toBeNull()
+  })
+
+  it('ни одного числа — итога нет (counted 0), подписи цен есть', () => {
+    const l = buildLabels(read([cell(0, 'Chaos Orb', true, null), cell(80, 'Divine Orb', true, null)]), priceOf, { base: 'chaos', divine: 150 })
+    expect(l.counted).toBe(0)
+    expect(l.total).toBe(0)
+    expect(l.labels).toHaveLength(2)
+    expect(l.uncounted).toBe(2)
   })
 
   it('уровни с одним рисунком без раскладки — без цены (какой из уровней, неизвестно)', () => {

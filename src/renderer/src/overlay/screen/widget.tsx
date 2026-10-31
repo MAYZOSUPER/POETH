@@ -56,7 +56,8 @@ function Total({ labels, ms }: { labels: ScreenLabels; ms?: number }) {
   // справа от области ячеек, у её верха; не влезает — над ней
   const right = a.x + a.width + 8
   const style = right + 220 <= window.innerWidth ? { left: right, top: a.y } : { left: a.x, top: Math.max(4, a.y - 64) }
-  const priced = labels.labels.length > 0
+  // итог — только если хоть одно число стопки прочитано (иначе «—», а не «<0,1 c»)
+  const priced = labels.counted > 0
   return (
     <div ref={ref} className="ui-panel scr-total" style={style} role="status" title={say('scr.total.tip')}>
       <div className="scr-total__row">
@@ -74,7 +75,7 @@ function Total({ labels, ms }: { labels: ScreenLabels; ms?: number }) {
           <Icon name="close" />
         </button>
       </div>
-      {!priced && <div className="scr-total__note">{say('scr.noPrices')}</div>}
+      {!labels.labels.length && <div className="scr-total__note">{say('scr.noPrices')}</div>}
       {labels.approx && <div className="scr-total__note">{say('scr.approx')}</div>}
       {(labels.unpriced > 0 || labels.uncounted > 0) && (
         <div className="scr-total__note">

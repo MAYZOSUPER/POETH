@@ -44,7 +44,8 @@ export function decodePng(buf: Uint8Array): Bitmap {
   if (color === 3 && !palette) throw new Error('png: no palette')
   const bpp = Math.max(1, (channels * depth) >> 3)
   const stride = Math.ceil((width * channels * depth) / 8)
-  const raw = inflateSync(Buffer.concat(idat))
+  // предел распаковки — ровно размер картинки: «zip-бомба» в IDAT не раздует память
+  const raw = inflateSync(Buffer.concat(idat), { maxOutputLength: (stride + 1) * height })
   if (raw.length < (stride + 1) * height) throw new Error('png: short data')
   const px = Buffer.alloc(stride * height)
   for (let y = 0; y < height; y++) {

@@ -25,6 +25,7 @@ export function buildLabels(read: ScreenRead, priceOf: PriceOf, o: LabelOptions)
   let total = 0
   let unpriced = 0
   let uncounted = 0
+  let counted = 0
   let approx = false
   for (const c of read.cells) {
     if (!c.present || !c.item) continue
@@ -37,6 +38,7 @@ export function buildLabels(read: ScreenRead, priceOf: PriceOf, o: LabelOptions)
     const stack = c.count !== null ? p.unit * c.count : null
     if (stack !== null) {
       total += stack
+      counted++
       if (!c.countSure) approx = true
     } else uncounted++
     labels.push({ rect: c.rect, unit: p.unit, stack, count: c.count, item: c.item, doubt: !!p.low || c.match < 0.55 })
@@ -47,6 +49,7 @@ export function buildLabels(read: ScreenRead, priceOf: PriceOf, o: LabelOptions)
     divine: o.divine,
     labels,
     total,
+    counted,
     unpriced,
     uncounted,
     approx,
