@@ -6,8 +6,9 @@
 
 import type { OverflowItem, Poe2ModData, Poe2Rarity, TriState } from '../../types/regex'
 import { atLeast } from '../atLeast'
-import { coverMods, getModIndex } from '../cover'
+import { coverMods, getModIndex, type CoverData } from '../cover'
 import type { Term } from '../format'
+import { nameIndex } from './names'
 
 export const POE2_RARITIES: readonly Poe2Rarity[] = ['normal', 'magic', 'rare', 'unique']
 
@@ -20,6 +21,23 @@ export const selectable = (m: Poe2ModData): boolean => !m.tags.includes('noRu')
 interface ModsInput {
   mods: Poe2ModData[]
   extra: string[]
+  /** слова имён редких предметов (данные генератора; в старом файле данных может не быть) */
+  rareWords?: string[]
+}
+
+/**
+ * Данные покрытия PoE 2: общие подстроки без заглавных кириллических букв подсказки, без заголовков чужих модов
+ * (head) и без имён редких предметов. Одна обёртка на объект данных — индекс подстрок строится один раз.
+ */
+const coverData = new WeakMap<ModsInput, CoverData>()
+function poe2Cover(data: ModsInput): CoverData {
+  let d = coverData.get(data)
+  if (!d) {
+    const names = data.rareWords?.length ? nameIndex(data.rareWords) : null
+    d = { mods: data.mods, extra: data.extra, cyrillicCase: true, blocked: names ? (s) => names.hits(s) : undefined }
+    coverData.set(data, d)
+  }
+  return d
 }
 
 export interface ModTermsResult {
@@ -39,7 +57,7 @@ export function modTerms(
   wantMode: 'any' | 'all',
   extraAvoid: string[] = []
 ): ModTermsResult {
-  const index = getModIndex(data)
+  const index = getModIndex(poe2Cover(data))
   const toIdx = (ids: string[]): number[] =>
     [...new Set(ids)]
       .map((id) => index.byId.get(id))
