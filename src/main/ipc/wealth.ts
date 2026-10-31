@@ -16,13 +16,27 @@ import { WealthManager } from '../games/poe1/wealth/manager'
 import { WealthStore } from '../games/poe1/wealth/store'
 import { getDivineTrack, getFeedStore } from '../games/poe1/exchange/feedService'
 import { onFarmEvent, setRunProfit } from '../services/farmSession'
+import { getSettings } from '../services/settingsStore'
 import type { IpcDomain } from './types'
 import { devEnv } from '../devEnv'
 import { isAppPageUrl } from '../security'
+import { HOTKEY_ACTIONS } from '@shared/settings'
+import type { HotkeyAction } from '@shared/types/settings'
+import type { OverlayNotice } from '@shared/types/overlay'
+import { parsePoe2CurrencyList } from '@shared/wealth/poe2'
+import { onHotkeyAction } from '../hotkeys'
+import { readStashFromScreen } from '../screen/service'
+import { sendToOverlay } from '../windows/gameOverlay'
+import { sendToCompanion } from '../windows/companionWindow'
+import { Poe2PriceService } from '../games/poe2/wealth/prices'
+import { Poe2WealthManager, type Poe2Notice } from '../games/poe2/wealth/manager'
+import { Poe2WealthStore } from '../games/poe2/wealth/store'
 
 // Домен «учёт богатства» (main, S11a): стэш через legacy-эндпоинты на сессии аккаунта
 // (только main, cookies в renderer не уходят), цены — фид обмена GGG и poe.watch, снимки —
 // userData/wealth. Звать каналы могут только наши страницы; события — только им.
+// S70 — «Богатство PoE 2» (src/main/games/poe2/wealth): API тайника у PoE 2 нет; ручной ввод, ценные предметы из
+// окна цены и снимок особой вкладки с экрана по клавише игрока (модуль S68, только вызов) → userData/wealth-poe2.
 
 function devServerUrl(): string | undefined {
   return devEnv('ELECTRON_RENDERER_URL')
@@ -153,6 +167,92 @@ export async function getPriceIndex(league: string): Promise<{ index: PriceIndex
   return { index: prices.index(league, { poeWatch }), info: prices.info(league, { poeWatch }) }
 }
 
+// ------------------------------------------------------------------ «Богатство PoE 2» (S70)
+
+/** Действие хоткея «Снимок вкладки в богатство»; строка в HotkeyAction и HOTKEY_DEFAULTS — через лида (S70-frozen.diff). */
+const SCREEN_ACTION = 'wealthScreen'
+
+let poe2: Poe2WealthManager | null = null
+let poe2Def: GameDef | null = null
+
+/** Файл данных PoE 2: надстройка обновлений (userData/data/poe2) главнее встроенного. */
+async function readPoe2Data(rel: string): Promise<string | null> {
+  for (const base of [path.join(app.getPath('userData'), 'data', 'poe2'), path.join(resourcesDir(), 'data', 'poe2')]) {
+    try {
+      return await fs.readFile(path.join(base, rel), 'utf8')
+    } catch {
+      // следующий кандидат
+    }
+  }
+  return null
+}
+
+/** Тосты поверх игры после клавиши снимка (у main нет i18n renderer — строки здесь, как в services/notify.ts). */
+const POE2_TEXT = {
+  ru: {
+    busy: 'Вкладка ещё читается…',
+    read: 'Вкладка прочитана: строк {items}{check}. Вкладок в снимке: {tabs}. Примите в POETH → «Богатство».',
+    check: ', проверьте {n}',
+    'no-game': 'Окно игры не найдено.',
+    'not-found': 'Особая вкладка не найдена — откройте вкладку валюты (или другую особую) и нажмите ещё раз.',
+    'no-icons': 'Не удалось загрузить иконки предметов — при первом снимке нужна сеть.',
+    error: 'Не удалось прочитать вкладку — попробуйте ещё раз.',
+    unsupported: 'Снимок вкладок для этой игры пока не поддерживается.'
+  },
+  en: {
+    busy: 'Still reading the tab…',
+    read: 'Tab read: {items} lines{check}. Tabs in this snapshot: {tabs}. Accept in POETH → Wealth.',
+    check: ', {n} to check',
+    'no-game': 'Game window not found.',
+    'not-found': 'No special stash tab found — open the currency tab (or another special tab) and press again.',
+    'no-icons': 'Could not download item icons — the first snapshot needs the internet.',
+    error: 'Could not read the tab — try again.',
+    unsupported: 'Tab snapshots are not supported for this game yet.'
+  }
+} as const
+
+async function poe2Notify(n: Poe2Notice): Promise<void> {
+  const lang = (await getSettings().catch(() => null))?.uiLang === 'en' ? 'en' : 'ru'
+  const T = POE2_TEXT[lang]
+  let text: string
+  let kind: OverlayNotice['kind'] = 'info'
+  if (n.code === 'busy') text = T.busy
+  else if (n.code === 'read') {
+    text = T.read
+      .replace('{items}', String(n.items))
+      .replace('{check}', n.check ? T.check.replace('{n}', String(n.check)) : '')
+      .replace('{tabs}', String(n.tabs))
+  } else {
+    text = T[n.fail]
+    kind = 'warn'
+  }
+  sendToOverlay(IPC.events.overlayNotice, { key: 'wealth.poe2.screen', text, kind } satisfies OverlayNotice)
+}
+
+function getPoe2(): Poe2WealthManager {
+  if (poe2) return poe2
+  poe2 = new Poe2WealthManager({
+    store: new Poe2WealthStore(path.join(app.getPath('userData'), 'wealth-poe2')),
+    prices: new Poe2PriceService({ feed: getFeedStore('poe2'), read: readPoe2Data, log }),
+    currency: async () => {
+      const s = await readPoe2Data('wealth/currency.json')
+      try {
+        return s ? parsePoe2CurrencyList(JSON.parse(s)) : null
+      } catch {
+        return null
+      }
+    },
+    league: () => getEffectiveLeague().catch(() => null),
+    // снимок экрана — в памяти модуля S68 (не сохраняется и никуда не уходит); сюда приходят имена и числа
+    readScreen: () => (poe2Def ? readStashFromScreen(poe2Def) : Promise.resolve('unsupported' as const)),
+    notify: (n) => void poe2Notify(n),
+    // карточка снимка вкладки и итог — только окну компаньона
+    emit: (s) => sendToCompanion(IPC.events.wealthPoe2, s),
+    log
+  })
+  return poe2
+}
+
 function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
   ipcMain.handle(channel, (e: IpcMainInvokeEvent, ...args: unknown[]) => {
     if (!isTrustedAppUrl(e.senderFrame?.url, devServerUrl())) throw new Error('wealth: untrusted IPC sender')
@@ -172,6 +272,31 @@ function register(): void {
   handle(IPC.wealth.stopFarm, () => m().stopFarm())
   handle(IPC.wealth.detail, (id) => m().detail(id))
   handle(IPC.wealth.diff, (from, to) => m().diff(from, to))
+  // S70: «Богатство PoE 2»
+  handle(IPC.wealth.poe2State, () => getPoe2().stateFresh())
+  handle(IPC.wealth.poe2SetManual, (name, qty) => getPoe2().setManual(name, qty))
+  handle(IPC.wealth.poe2SetGold, (qty) => getPoe2().setGold(qty))
+  handle(IPC.wealth.poe2AddItem, (item) => getPoe2().addValuable(item))
+  handle(IPC.wealth.poe2RemoveItem, (id) => getPoe2().removeValuable(id))
+  handle(IPC.wealth.poe2RemoveTab, (id) => getPoe2().removeScreenTab(id))
+  handle(IPC.wealth.poe2ScreenEdit, (tabId, key, edit) => getPoe2().screenEdit(tabId, key, edit))
+  handle(IPC.wealth.poe2ScreenDrop, (tabId) => getPoe2().screenDrop(tabId))
+  handle(IPC.wealth.poe2ScreenAccept, () => getPoe2().screenAccept())
+  handle(IPC.wealth.poe2Diff, (from, to) => getPoe2().diff(from, to))
+}
+
+async function setupPoe2(def: GameDef): Promise<void> {
+  poe2Def = def
+  const p = getPoe2()
+  unsubs.push(onLeaguesChanged(() => void p.onLeagueChanged()))
+  unsubs.push(onSettingsChange(() => void p.onLeagueChanged()))
+  await p.start()
+  // прибыль сессии фарма: трекер карт PoE 2 (S69) — те же onFarmEvent / setRunProfit, что у PoE 1
+  p.attachFarm({ onFarmEvent, setRunProfit })
+  // одно нажатие — один снимок открытой вкладки; scope 'game' — только когда игра в фокусе; в игру ничего не шлём
+  if ((HOTKEY_ACTIONS as readonly string[]).includes(SCREEN_ACTION)) {
+    onHotkeyAction(SCREEN_ACTION as HotkeyAction, () => void p.screenHotkey(), { keepKeys: true })
+  }
 }
 
 async function setupForGame(def: GameDef): Promise<void> {
@@ -181,8 +306,10 @@ async function setupForGame(def: GameDef): Promise<void> {
   if (def.id !== 'poe1') {
     m.attachFarm(null)
     m.stop()
+    if (def.id === 'poe2') await setupPoe2(def)
     return
   }
+  poe2?.stop()
   unsubs.push(onAuthStatus(() => m.onAuthChanged()))
   unsubs.push(onLeaguesChanged(() => void m.onLeagueChanged()))
   unsubs.push(onSettingsChange(() => void m.onLeagueChanged()))
