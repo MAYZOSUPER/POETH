@@ -185,13 +185,18 @@ function tradePlate(a: SellAdvice, priceText: PriceText, one: string, lang: UiLa
       }
     case 'few':
       return { title: listAt, sub: caution(t('pc1.s50.why.few', { n: a.ladder.count, floor: priceText(a.floor, 'acc') })), tone: 'info', icon: 'coins' }
-    default:
+    default: {
+      // «не дешевле» у PoE 2 — честная цена выкупа: из ≥ 4 лотов вторая по дешевизне, а не самый дешёвый лот
+      const second = !!a.ladder.cheapest && a.floor.amount > a.ladder.cheapest.amount
+      const first = t(second ? 'pc2.s61.sell.why.first' : 'pc1.s50.why.first')
+      const ok = t(second ? 'pc2.s61.sell.why.ok' : 'pc1.s50.why.ok', { floor: priceText(a.floor, 'acc'), price, place: a.place ?? 1 })
       return {
         title: listAt,
-        sub: caution(same || a.place === 1 ? t('pc1.s50.why.first') : t('pc1.s50.why.ok', { floor: priceText(a.floor, 'acc'), price, place: a.place ?? 1 })),
+        sub: caution(same || a.place === 1 ? first : ok),
         tone: a.caution ? 'info' : 'good',
         icon: 'coins'
       }
+    }
   }
 }
 

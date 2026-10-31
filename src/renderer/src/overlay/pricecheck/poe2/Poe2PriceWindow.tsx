@@ -151,6 +151,7 @@ function ItemHead({ item, captured, t }: { item: ParsedItem | null; captured: Ca
   const name = lines[2] && lines[2] !== '--------' ? lines[2] : (item?.info.name ?? '')
   const base = lines[3] && lines[3] !== '--------' ? lines[3] : null
   const sockets = item?.augmentSockets ? item.augmentSockets.current : 0
+  const lang = useOverlayStore((s) => s.lang)
   return (
     <div className="ov-item pc-item">
       <span className="ov-item__name" data-rarity={item ? rarityAttr(item) : undefined} title={name}>
@@ -169,6 +170,8 @@ function ItemHead({ item, captured, t }: { item: ParsedItem | null; captured: Ca
           </span>
         )}
         <span className="ui-tag">{t('pc1.client', { lang: captured.lang.toUpperCase() })}</span>
+        {/* S61: курс у Ange — здесь, а не в шапке: у PoE 2 заголовок длиннее, шапка узкая */}
+        <RateBadge2 lang={lang} t={t} />
       </span>
     </div>
   )
@@ -1218,7 +1221,6 @@ export function Poe2PriceWindow({ captured, onClose }: { captured: CapturedItem;
     <section className={`ui-panel pc${expert ? ' is-expert' : ''}`} data-game="poe2">
       <header className="ui-panel__head" data-drag-handle>
         <span className="ui-panel__title">{t('pc2.title')}</span>
-        <RateBadge2 lang={lang} t={t} />
         {leagues.length > 0 && (
           <Select
             className="pc-league"

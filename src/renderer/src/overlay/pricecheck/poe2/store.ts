@@ -12,7 +12,8 @@ import {
 } from '@shared/poe2/pricecheck'
 import { orderBulkOffers, poe2MarketPrice, poe2Verdict, type MarketPrice2, type Verdict2 } from '@shared/poe2/pricecheck/verdict'
 import { angeConfidence } from '@shared/poe2/pricecheck/ange'
-import { exaltedRates, unitFor2, type ExaltedRates } from '@shared/poe2/pricecheck/currency'
+import { exaltedRates, type ExaltedRates } from '@shared/poe2/pricecheck/currency'
+import { angeUnit } from '@shared/poe2/pricecheck/priceBlock'
 import { buildQueryUrl } from '@shared/favorites/tradeUrl'
 import { honestPrice, type HonestPrice, type Poe1ExchangeOffer, type Poe1Listing } from '@shared/poe1/pricecheck/results'
 import type { PcSiteOffers } from '../store'
@@ -406,8 +407,8 @@ export function angeVerdict(a: AngePrice): Verdict2 {
     confidence: angeConfidence(a),
     volume: a.main.volume + a.others.reduce((s, m) => s + m.volume, 0),
     exaltedPerDivine: a.exaltedPerDivine,
-    // плашка — в той же единице, что главная строка «у Ange»
-    unit: unitFor2(a.exalted, a.exaltedPerDivine)
+    // плашка — в той же единице, что главная строка «у Ange» (Divine Orb — в exalted)
+    unit: angeUnit(a)
   })
 }
 

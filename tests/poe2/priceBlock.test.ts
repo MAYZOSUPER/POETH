@@ -66,7 +66,8 @@ describe('блок «у Ange»', () => {
     expect(angeView(price('Exalted Orb')).kind).toBe('exalted')
     const div = angeView(price('Divine Orb'), 3)
     expect(div.kind).toBe('rate')
-    expect(div.each).toEqual({ amount: 1, currency: 'divine' })
+    // курс: «≈ 689 ex за штуку», а не «1 div за штуку»
+    expect(div.each).toEqual({ amount: Math.round(rate.exaltedPerDivine), currency: 'exalted' })
     expect(div.stack?.currency).toBe('exalted')
     expect(angeView(price('Chaos Orb')).kind).toBe('rate')
   })

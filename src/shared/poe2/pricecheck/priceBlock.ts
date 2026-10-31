@@ -5,7 +5,7 @@
 
 import type { Poe1Price } from '../../poe1/pricecheck/results'
 import { DIVINE_ID, EXALTED_ID, CHAOS_ID, type AngeBase, type AngeMarket, type AngePrice } from './ange'
-import { exaltedIn, roundDivine2, roundExalted, unitFor2 } from './currency'
+import { exaltedIn, roundDivine2, roundExalted, unitFor2, type Poe2Unit } from './currency'
 
 export interface AngeRowView {
   base: AngeBase
@@ -44,13 +44,18 @@ function row(m: AngeMarket): AngeRowView {
   return { base: m.base, each: { amount: inBase(m.base, m.each), currency: m.base }, ...(lo !== hi ? { lo, hi } : {}), volume: m.volume }
 }
 
+/** Единица главной строки: Divine Orb — курс, «1 div ≈ N ex» (в divine это просто «1»); остальное — по уровню цены. */
+export function angeUnit(a: Pick<AngePrice, 'id' | 'exalted' | 'exaltedPerDivine'>, exalted = a.exalted): Poe2Unit {
+  return a.id === DIVINE_ID ? 'exalted' : unitFor2(exalted, a.exaltedPerDivine)
+}
+
 export function angeView(a: AngePrice, stack = 1): AngeView {
   const rate = a.exaltedPerDivine
-  const unit = unitFor2(a.exalted, rate)
+  const unit = angeUnit(a)
   const total = a.exalted * stack
   const kind = a.id === EXALTED_ID ? 'exalted' : a.id === DIVINE_ID || a.id === CHAOS_ID ? 'rate' : 'price'
   // стопка Divine Orb в divine — просто число штук: показываем в exalted
-  const stackUnit = a.id === DIVINE_ID ? 'exalted' : unitFor2(total, rate)
+  const stackUnit = angeUnit(a, total)
   return {
     kind,
     each: exaltedIn(a.exalted, unit, rate),
