@@ -26,16 +26,16 @@ describe('разделы рельса', () => {
     expect(ids('poe1', true)).toEqual(ids('poe1'))
   })
 
-  it('PoE 2: только прайс-чек и компас, пустые «Фарм» и «Помощь» не показываются — и с флагом советника тоже', () => {
+  it('PoE 2: прайс-чек, компас и (S64) «Справочник»; пустой «Фарм» не показывается — и с флагом советника тоже', () => {
     for (const dev of [false, true]) {
-      expect(sectionsFor('poe2', dev).map((s) => s.id)).toEqual(['trade', 'level'])
-      expect(ids('poe2', dev)).toEqual([['priceCheck'], ['campaign']])
+      expect(sectionsFor('poe2', dev).map((s) => s.id)).toEqual(['trade', 'level', 'help'])
+      expect(ids('poe2', dev)).toEqual([['priceCheck'], ['campaign'], ['guide']])
     }
   })
 
   it('tabsFor — вкладки подряд в порядке рельса', () => {
     expect(tabsFor('poe1', false).map((t) => t.id)).toEqual(['priceCheck', 'live', 'deals', 'flip', 'advisor', 'wealth', 'regex', 'campaign', 'build', 'guide'])
-    expect(tabsFor('poe2', true).map((t) => t.id)).toEqual(['priceCheck', 'campaign'])
+    expect(tabsFor('poe2', true).map((t) => t.id)).toEqual(['priceCheck', 'campaign', 'guide'])
   })
 
   it('каждая вкладка ровно в одном разделе, у каждой своя иконка', () => {
