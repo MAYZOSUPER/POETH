@@ -8,8 +8,8 @@
 //       return null
 //     }
 //     const prices = await loadPoe2Prices(read, getEffectiveLeague())   // id лиги trade2 = id лиги poe.ninja
-//   renderer: fetch('poeth://data/poe2/prices/<file>') — после того как лид добавит 'prices' в DATA_SUBDIRS
-//     протокола (src/main/protocol.ts, заморожен; дифф — S67-frozen.diff в заметках лида).
+//   renderer: read = (rel) => fetch(`poeth://data/poe2/${rel}`).then((r) => (r.ok ? r.text() : null))
+//     ('prices' — в DATA_SUBDIRS протокола, src/main/protocol.ts)
 //
 // Снимок меняется только с пакетом данных (CI → ветка data → обновление без переустановки). Выпуск, где поменялись
 // только цены, приходит без тоста «Перезапустите POETH» (shared/updates isQuietDataUpdate) — поэтому перечитывайте
