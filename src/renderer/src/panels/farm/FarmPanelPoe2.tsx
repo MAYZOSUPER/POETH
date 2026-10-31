@@ -252,8 +252,9 @@ function ProfitTile({ s, stats, live, exPerDiv }: { s: FarmSession; stats: FarmS
     </div>
   )
   const findsText = findsEx !== null ? money(findsEx, rateDiv, lang, { signed: true }) : null
-  // прибыль от S70 пришла (или сессия без прибыли, но с находками) — итог числом
-  if (s.profit || (!live && s.profitEnd === 'none' && total !== null) || (!live && !s.profitEnd && !s.profitMode && total !== null)) {
+  const waiting = !live && !s.profit && (s.profitEnd === 'snapshot' || s.profitEnd === 'manual')
+  // итог числом: прибыль от S70 пришла; или сессия завершена без прибыли, но с находками
+  if (s.profit || (!live && !waiting && total !== null)) {
     const v = total ?? 0
     const perHour = stats.durationMs >= 60_000 ? v / (stats.durationMs / HOUR) : null
     return (
@@ -271,9 +272,8 @@ function ProfitTile({ s, stats, live, exPerDiv }: { s: FarmSession; stats: FarmS
     if (s.profitMode === 'none') return empty(t('farm.p2.stat.profit.none'), findsText ? t('farm.p2.stat.findsSoFar', { v: findsText }) : t('farm.p2.stat.noneSub'))
     return empty(t('farm.p2.stat.profit.end'), findsText ? t('farm.p2.stat.atEndFinds', { v: findsText }) : t('farm.p2.stat.atEnd'))
   }
-  // завершена: ждём снимок или ввод конца от «Богатства»
-  if (s.profitEnd === 'snapshot') return empty(t('farm.run.counting'), tKey(t, 'farm.p2.stat.waitSnap', keys.snap))
-  if (s.profitEnd === 'manual') return empty(t('farm.run.counting'), t('farm.p2.stat.waitManual'))
+  // завершена: ждём снимок или ввод конца от «Богатства»; иначе — без прибыли и без находок
+  if (waiting) return empty(t('farm.run.counting'), s.profitEnd === 'snapshot' ? tKey(t, 'farm.p2.stat.waitSnap', keys.snap) : t('farm.p2.stat.waitManual'))
   return empty(t('farm.p2.past.none'), t('farm.p2.stat.noneSub'))
 }
 
@@ -478,7 +478,7 @@ function FindAdd({ run, exPerDiv, expert }: { run: FarmRun; exPerDiv: number | n
                   <span key={f.id} className="fm-pop__item">
                     <span className="fm-pop__name">
                       {f.source === 'quick' ? t('farm.p2.find.quick') : (f.name ?? f.ref)}
-                      {f.qty > 1 && <span className="fm-faint"> ×{f.qty}</span>}
+                      {f.qty > 1 && f.source !== 'quick' && <span className="fm-faint"> ×{f.qty}</span>}
                     </span>
                     <b>{f.valueEx === null ? '—' : money(f.valueEx, exPerDiv, lang, { signed: true, smallInEx: true })}</b>
                     <button
@@ -621,6 +621,8 @@ function IdleView({ state, exPerDiv, onStart }: { state: FarmState; exPerDiv: nu
                 const total = s.stats.totalEx ?? null
                 const tiers = tierRange(state.runs.filter((r) => r.sessionId === s.id))
                 const findsOnly = !s.profit && total !== null
+                // конец сессии ещё снимают или вводят в «Богатстве» — итога нет
+                const waiting = !s.profit && (s.profitEnd === 'snapshot' || s.profitEnd === 'manual')
                 return (
                   <tr key={s.id}>
                     <td className="fm-nowrap">{when(s.startedAt, lang)}</td>
@@ -629,7 +631,9 @@ function IdleView({ state, exPerDiv, onStart }: { state: FarmState; exPerDiv: nu
                       {s.stats.maps}
                       {tiers && ` · ${tiers}`}
                     </td>
-                    {total === null ? (
+                    {waiting ? (
+                      <td className="is-num is-faint">{t('farm.run.counting')}</td>
+                    ) : total === null ? (
                       <td className="is-num is-faint" title={t('farm.p2.past.none.title')}>
                         {t('farm.p2.past.none')}
                       </td>

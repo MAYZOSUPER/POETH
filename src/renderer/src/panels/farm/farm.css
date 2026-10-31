@@ -325,3 +325,10 @@
   color: var(--good);
   white-space: nowrap;
 }
+/* итог сессии на плитке-герое — цветом прибыли (у героя по умолчанию золото) */
+.ui-stat--hero .ui-stat__value.fm-good {
+  color: var(--good);
+}
+.ui-stat--hero .ui-stat__value.fm-bad {
+  color: var(--bad);
+}
