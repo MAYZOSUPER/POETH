@@ -34,7 +34,8 @@ describe('resolveAppLink', () => {
   it('вкладки нет в игре (PoE 2) или в версии — null; неизвестная цель — null', () => {
     const poe2 = tabsFor('poe2', false).map((t) => t.id)
     // regex (S62), live и сделки (S63) в PoE 2 уже есть — нет «Обмена» и «Богатства»
-    expect(resolveAppLink('wealth', poe2, ARTICLES)).toBeNull()
+    // S70: «Богатство» в PoE 2 есть
+    expect(resolveAppLink('wealth', poe2, ARTICLES)).toEqual({ kind: 'tab', tab: 'wealth' })
     expect(resolveAppLink('flip', poe2, ARTICLES)).toBeNull()
     const noAdvisor = POE1.filter((t) => t !== 'advisor' && t !== 'build')
     expect(resolveAppLink('advisor', noAdvisor, ARTICLES)).toBeNull()

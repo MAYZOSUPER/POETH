@@ -74,14 +74,18 @@ export const OVERLAY_CHANNELS: ReadonlySet<string> = new Set([
   ...Object.values(IPC.buildTree),
   ...Object.values(IPC.equip),
   // цены поверх окон (S68): состояние подписей и «спрятать» — только игровой оверлей
-  ...Object.values(IPC.screen)
+  ...Object.values(IPC.screen),
+  // «Богатство PoE 2» (S70): из оверлея — только «Записать в богатство» (панель Alt+F) и «В богатство» (окно цены)
+  IPC.wealth.poe2ScreenRecord,
+  IPC.wealth.poe2AddItem
 ])
 
 /**
  * Только компаньон: вставка кода PoB и загрузка билда по ссылке (недоверенный ввод, сеть по действию игрока; S39);
  * «Играть по этому гайду» и ссылки автора стартера — сеть по кнопке и системный браузер (S59);
  * фильтр лута — сеть GitHub и запись в папку игры по кнопке (S53);
- * «Билд» PoE 2: вставка кода PoB2, загрузка по ссылке и «Сохранить в игру» — запись .build в папку игры (S66).
+ * «Билд» PoE 2: вставка кода PoB2, загрузка по ссылке и «Сохранить в игру» — запись .build в папку игры (S66);
+ * «Богатство PoE 2»: всё богатство — состояние, ввод валюты и золота, ценные предметы, история, карточка снимка (S70).
  */
 export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([
   IPC.build.importPob,
@@ -93,6 +97,16 @@ export const COMPANION_CHANNELS: ReadonlySet<string> = new Set([
   IPC.build.poe2Save,
   // regex PoE 2: «Цена по профилю» — поиск trade2 с сессией аккаунта по кнопке (S62)
   IPC.regex.poe2Price,
+  // «Богатство PoE 2» (S70): читает и меняет богатство только компаньон
+  IPC.wealth.poe2State,
+  IPC.wealth.poe2SetManual,
+  IPC.wealth.poe2SetGold,
+  IPC.wealth.poe2RemoveItem,
+  IPC.wealth.poe2Diff,
+  IPC.wealth.poe2ScreenEdit,
+  IPC.wealth.poe2ScreenDrop,
+  IPC.wealth.poe2ScreenAccept,
+  IPC.wealth.poe2RemoveTab,
   ...Object.values(IPC.lootFilter)
 ])
 
