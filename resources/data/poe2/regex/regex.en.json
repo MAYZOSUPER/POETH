@@ -2925,6 +2925,16 @@
    "abyss": "s tab",
    "temple": "e tab"
   },
+  "names": {
+   "abyss": "Abyss Tablet",
+   "breach": "Breach Tablet",
+   "delirium": "Delirium Tablet",
+   "expedition": "Expedition Tablet",
+   "irradiated": "Irradiated Tablet",
+   "temple": "Temple Tablet",
+   "overseer": "Overseer Tablet",
+   "ritual": "Ritual Tablet"
+  },
   "uses": {
    "pre": "",
    "post": " uses"
@@ -3300,6 +3310,32 @@
    "lifeFlask": ": li",
    "manaFlask": "s: m",
    "charm": ": ch"
+  },
+  "classNames": {
+   "boots": "Boots",
+   "gloves": "Gloves",
+   "helmet": "Helmets",
+   "bodyArmour": "Body Armours",
+   "shield": "Shields",
+   "buckler": "Bucklers",
+   "focus": "Foci",
+   "quiver": "Quivers",
+   "ring": "Rings",
+   "amulet": "Amulets",
+   "belt": "Belts",
+   "wand": "Wands",
+   "staff": "Staves",
+   "sceptre": "Sceptres",
+   "quarterstaff": "Quarterstaves",
+   "bow": "Bows",
+   "crossbow": "Crossbows",
+   "spear": "Spears",
+   "mace1h": "One Hand Maces",
+   "mace2h": "Two Hand Maces",
+   "flail": "Flails",
+   "lifeFlask": "Life Flasks",
+   "manaFlask": "Mana Flasks",
+   "charm": "Charms"
   },
   "rarity": {
    "normal": ": no",

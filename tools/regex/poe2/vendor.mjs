@@ -336,8 +336,10 @@ export function buildVendor(lang, base) {
   }
   const all = corpus
   const classes = {}
+  const classNames = {}
   for (const [key, en] of CLASSES) {
     const name = lang === 'ru' ? ITEM_CLASS_RU[en] : en
+    classNames[key] = name
     const raw = (strings.ITEM_CLASS ?? 'Item Class: ') + name
     const line = normLine(raw)
     classes[key] = pickLabel(key, line, normLine(raw, false), all.filter((l) => l !== line), lang)
@@ -357,6 +359,8 @@ export function buildVendor(lang, base) {
   const section = {
     props,
     classes,
+    // название класса на языке клиента (строка «Item Class: …») — подпись в списке классов
+    classNames,
     rarity,
     /** «Sockets: S S» — метка перед буквами гнёзд; «Quality: +20%» — метка качества */
     sockets: label('SOCKETS', 'S S'),

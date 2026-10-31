@@ -359,7 +359,7 @@ export interface RegexSettings {}
 
 // ---------------------------------------------------------------------------
 // PoE 2 (S62): путевые камни, плитки (в игре «Tablet» / «Плитка»), торговец. Данные строит
-// tools/regex/poe2/build-poe2-regex-data.mjs → resources/data/poe2/regex/regex.{en,ru}.json (IPC regex:poe2Data).
+// tools/regex/poe2/build-poe2-regex-data.mjs → resources/data/poe2/regex/regex.{en,ru}.json (IPC regex:poeTwoData).
 // ---------------------------------------------------------------------------
 
 export type Poe2RegexPage = 'waystone' | 'tablet' | 'vendor' | 'library'
@@ -433,6 +433,8 @@ export interface Poe2TabletData {
   extra: string[]
   /** Тип → фрагмент названия базы («Ritual Tablet» / «Плитка Ритуала»). */
   types: Record<TabletType, string>
+  /** Название базы на языке клиента (данные игры) — подпись типа. */
+  names: Record<TabletType, string>
   /** «10 uses remaining» / «Осталось зарядов - 10»: фрагменты до и после числа. */
   uses: { pre: string; post: string }
   rarity: Record<Poe2Rarity, string>
@@ -524,6 +526,8 @@ export interface Poe2VendorProp {
 export interface Poe2VendorData {
   props: Record<Poe2VendorKey, Poe2VendorProp>
   classes: Record<Poe2ItemClass, string>
+  /** Название класса на языке клиента (строка «Item Class: …») — подпись в списке. */
+  classNames: Record<Poe2ItemClass, string>
   rarity: Record<Poe2Rarity, string>
   /** Метка строки «Sockets: S S» (дальше — буквы гнёзд). */
   sockets: string

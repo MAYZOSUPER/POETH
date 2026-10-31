@@ -33,12 +33,12 @@ export const regexChannels = {
     importLibrary: 'regex:importLibrary',
     copy: 'regex:copy',
     // PoE 2 (S62): данные, настройки страниц и профили, «Цена по профилю»
-    poe2Data: 'regex:poe2Data',
-    poe2State: 'regex:poe2State',
-    poe2SetPrefs: 'regex:poe2SetPrefs',
-    poe2SaveProfile: 'regex:poe2SaveProfile',
-    poe2DeleteProfile: 'regex:poe2DeleteProfile',
-    poe2Price: 'regex:poe2Price'
+    poe2Data: 'regex:poeTwoData',
+    poe2State: 'regex:poeTwoState',
+    poe2SetPrefs: 'regex:poeTwoSetPrefs',
+    poe2SaveProfile: 'regex:poeTwoSaveProfile',
+    poe2DeleteProfile: 'regex:poeTwoDeleteProfile',
+    poe2Price: 'regex:poeTwoPrice'
   }
 } as const
 

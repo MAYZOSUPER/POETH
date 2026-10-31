@@ -11,7 +11,7 @@
 // (как у PoE 1, tools/regex/build-regex-data.mjs; помощники импортируются оттуда).
 //
 // Выход: resources/data/poe2/regex/regex.{en,ru}.json — { meta, waystone, tablet, vendor } (формат —
-// Poe2RegexData в src/shared/types/regex.ts). Main отдаёт по IPC regex:poe2Data (сначала userData/data —
+// Poe2RegexData в src/shared/types/regex.ts). Main отдаёт по IPC regex:poeTwoData (сначала userData/data —
 // обновление без переустановки). Корпус для тестов — tests/regex/poe2/fixtures/corpus.{en,ru}.json.
 //
 // Запуск:
@@ -780,7 +780,7 @@ function buildTablet(lang, ctx) {
     const line = cs(s, 'RARITY') + cs(s, sKey)
     rarity[key] = findLabel(key, [normLine(line)], [normLine(line, false)], all.filter((l) => l !== normLine(line)), { lang, colon: true })
   }
-  return { section: { mods, extra, types, uses, rarity, tradeType: ctx.tabletNames.en }, warn }
+  return { section: { mods, extra, types, names: ctx.tabletNames[lang], uses, rarity, tradeType: ctx.tabletNames.en }, warn }
 }
 
 // ---------------------------------------------------------------------------

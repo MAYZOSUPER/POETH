@@ -1,0 +1,18 @@
+/* Вкладка Regex в режиме PoE 2 (S62): только раскладка на токенах (компоненты — ui-* и классы regex.css). */
+
+.rx-p2-banner {
+  margin-bottom: var(--sp-3, 12px);
+}
+
+.rx-p2-profile .rx-lib-t code {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rx-p2-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2, 8px);
+}
