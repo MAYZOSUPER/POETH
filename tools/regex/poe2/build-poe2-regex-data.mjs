@@ -293,10 +293,31 @@ export function loadEe2() {
 /** Вариант RU-матчера, соответствующий EN-матчеру (по value/negate, иначе по порядку) — как в make-poe2-ru-fixtures. */
 function pickRuMatcher(enMatchers, enMatcher, ruMatchers) {
   const sameKind = (m) => (m.value ?? null) === (enMatcher.value ?? null) && !!m.negate === !!enMatcher.negate
+  // варианты одного стата отличаются «где»: Map / Area / Your Maps / Areas with Powerful Map Bosses — порядок в RU
+  // у EE2 другой («Ваши карты…» первым), поэтому сначала сужаем по «где», потом — по порядку
+  const enList = enMatchers.filter((m) => sameKind(m) && scopeEn(m.string) === scopeEn(enMatcher.string))
+  const ruList = ruMatchers.filter((m) => sameKind(m) && scopeRu(m.string) === scopeEn(enMatcher.string))
+  if (ruList.length) return ruList[Math.max(0, enList.indexOf(enMatcher))] ?? ruList[0]
   if (enMatcher.value != null) return ruMatchers.find(sameKind)
-  const enList = enMatchers.filter(sameKind)
-  const ruList = ruMatchers.filter(sameKind)
-  return ruList[enList.indexOf(enMatcher)] ?? ruList[0]
+  const enAll = enMatchers.filter(sameKind)
+  const ruAll = ruMatchers.filter(sameKind)
+  return ruAll[enAll.indexOf(enMatcher)] ?? ruAll[0]
+}
+
+/** «Где» действует строка мода: карта, область, «ваши карты», области с боссами — EN и RU. */
+function scopeEn(s) {
+  if (/areas with/i.test(s)) return 'boss'
+  if (/your maps/i.test(s)) return 'your'
+  if (/\barea\b/i.test(s)) return 'area'
+  if (/\bmaps?\b/i.test(s)) return 'map'
+  return 'other'
+}
+function scopeRu(s) {
+  if (/боссами/i.test(s)) return 'boss'
+  if (/ваш(и|их) карт/i.test(s)) return 'your'
+  if (/област/i.test(s)) return 'area'
+  if (/карт/i.test(s)) return 'map'
+  return 'other'
 }
 
 /**
