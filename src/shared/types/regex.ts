@@ -414,6 +414,8 @@ export interface Poe2ModData {
   alsoMatches?: string[]
   /** …и столько строк подсказки (в RU EE2 бывает один перевод на два стата). */
   alsoExtra?: number
+  /** Заголовки мода в расширенном тексте («{ prefix modifier "painful" (tier: #) }») построчно: чужой токен их не задевает. */
+  head?: string
 }
 
 export interface Poe2WaystoneData {
@@ -426,6 +428,8 @@ export interface Poe2WaystoneData {
   tier: string
   rarity: Record<Poe2Rarity, string>
   flags: { corrupted: string; unidentified: string }
+  /** Слова имён редких предметов (poe2-data): общие подстроки движка их не задевают. */
+  rareWords?: string[]
 }
 
 export interface Poe2TabletData {
@@ -438,6 +442,7 @@ export interface Poe2TabletData {
   /** «10 uses remaining» / «Осталось зарядов - 10»: фрагменты до и после числа. */
   uses: { pre: string; post: string }
   rarity: Record<Poe2Rarity, string>
+  rareWords?: string[]
 }
 
 /** Свойство «Торговца» PoE 2 (ключ — как на странице: защита, сопротивления, уровни умений, урон, скорость, характеристики). */

@@ -60,14 +60,14 @@ describe('адаптер к «Богатству»', () => {
         null
       )
     )
-    expect(r.tab.items.map((i) => [i.baseType, i.qty])).toEqual([
-      ['Divine Orb', 2],
-      ['Exalted Orb', 10]
-    ])
-    expect(r.skipped).toEqual({ unknown: 1, ambiguous: 1, uncounted: 1 })
-    expect(r.approx).toBe(true)
+    // неуверенное число по умолчанию в снимок не идёт (ошибка бывает в разы)
+    expect(r.tab.items.map((i) => [i.baseType, i.qty])).toEqual([['Divine Orb', 2]])
+    expect(r.skipped).toEqual({ unknown: 1, ambiguous: 1, uncounted: 2 })
+    expect(r.approx).toBe(false)
     expect(r.cells[0].cell.count).toBe(2)
-    expect(screenTabItems(read([cell('Exalted Orb', 10, { countSure: false })]), { sureOnly: true }).skipped.uncounted).toBe(1)
+    const loose = screenTabItems(read([cell('Exalted Orb', 10, { countSure: false })]), { sureOnly: false })
+    expect(loose.tab.items[0].qty).toBe(10)
+    expect(loose.approx).toBe(true)
     expect(screenTabItems(read([cell('Chaos Orb', null)]), { uncounted: 'one' }).tab.items[0].qty).toBe(1)
   })
 

@@ -24,6 +24,11 @@ describe('ссылка на поиск PoE 2', () => {
     })
   })
 
+  it('длинный id запроса окна цены (по фикстурам PoE 2 — до ~550 символов) — принимается', () => {
+    const long = 'H4sI' + 'a'.repeat(600)
+    expect(parseLiveInput(`https://www.pathofexile.com/trade2/search/poe2/Standard/${long}`, 'poe2')).toMatchObject({ ok: true, slug: long })
+  })
+
   it('код и «лига/код» — как у PoE 1', () => {
     expect(parseLiveInput('kE6YLz5Tw', 'poe2')).toEqual({ ok: true, slug: 'kE6YLz5Tw' })
     expect(parseLiveInput('Standard/kE6YLz5Tw', 'poe2')).toEqual({ ok: true, league: 'Standard', slug: 'kE6YLz5Tw' })

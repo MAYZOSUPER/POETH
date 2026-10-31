@@ -1,26 +1,33 @@
 import type { Reward, RewardKind } from '@shared/types'
-import { useLang, formatReward } from '../i18n'
+import type { IconName } from '../overlay/Icon'
+import { useLang, useT, formatReward } from '../i18n'
+import { ShellIcon } from './ShellIcon'
 
-const PERMANENT = new Set<RewardKind>([
-  'passive_point',
-  'skill_point',
-  'weapon_set_point',
-  'spirit',
-  'resistance',
-  'attribute',
-  'life',
-  'mana',
-  'charm_slot'
-])
-const GEM = new Set<RewardKind>(['uncut_gem', 'support_gem', 'skill_gem'])
+// Награда квеста — .ui-reward: цвет всегда вместе со значком и словом (docs/design-system.md).
+const KIND: Partial<Record<RewardKind, [IconName, string]>> = {
+  passive_point: ['passive', 'passive'],
+  skill_point: ['passive', 'passive'],
+  weapon_set_point: ['passive', 'passive'],
+  spirit: ['shield', 'trial'],
+  resistance: ['shield', 'trial'],
+  attribute: ['shield', 'trial'],
+  life: ['shield', 'trial'],
+  mana: ['shield', 'trial'],
+  charm_slot: ['flask', 'flask'],
+  uncut_gem: ['gem', 'gem'],
+  support_gem: ['gem', 'gem'],
+  skill_gem: ['gem', 'gem']
+}
 
 export function RewardBadge({ reward }: { reward: Reward }) {
   const lang = useLang()
-  const cls = PERMANENT.has(reward.kind) ? 'badge perm' : GEM.has(reward.kind) ? 'badge gem' : 'badge other'
+  const t = useT()
+  const [icon, tone] = KIND[reward.kind] ?? ['coins', '']
   return (
-    <span className={cls} title={reward.value}>
+    <span className={`ui-reward${tone ? ` ui-reward--${tone}` : ''}`} title={reward.value}>
+      <ShellIcon name={icon} />
       {formatReward(reward, lang)}
-      {reward.swappable ? ' ⤿' : ''}
+      {reward.swappable && <span className="cp-swap"> · {t('q.swap')}</span>}
     </span>
   )
 }

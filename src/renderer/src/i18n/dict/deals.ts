@@ -101,6 +101,8 @@ export const deals: DomainDict = {
     'deals.demo.clear': 'Убрать примеры',
     'deals.hint.history':
       'Здесь все сделки: <b>входящие</b> — вам пишут купить, <b>исходящие</b> — вы пишете продавцу. «Продано» скрывает повторные сообщения про тот же предмет на сутки.',
+    'deals.hint.history.poe2':
+      'Здесь все сделки PoE 2 по сообщениям в чате: <b>входящие</b> — вам пишут купить, <b>исходящие</b> — вы пишете продавцу. Сайт пишет сообщение на языке продавца: исходящие на русском, английском, немецком, французском, корейском и китайском POETH узнаёт, на других языках — нет. Мгновенный выкуп идёт без сообщений и сюда не попадает.',
     'deals.count': '{n} из {total}',
 
     // карточки и история
@@ -323,6 +325,8 @@ export const deals: DomainDict = {
     'deals.demo.clear': 'Remove examples',
     'deals.hint.history':
       'All your trades: <b>incoming</b> — someone wants to buy, <b>outgoing</b> — you whispered a seller. "Sold" hides repeat messages about the same item for a day.',
+    'deals.hint.history.poe2':
+      'All your PoE 2 trades from chat messages: <b>incoming</b> — someone wants to buy, <b>outgoing</b> — you whispered a seller. The site writes the message in the seller’s language: POETH recognizes outgoing ones in English, Russian, German, French, Korean and Chinese, not in other languages. Instant buyout sends no messages and does not show up here.',
     'deals.count': '{n} of {total}',
 
     'deals.cards.title': 'Trade cards',

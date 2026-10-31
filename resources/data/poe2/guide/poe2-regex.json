@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "id": "poe2-regex",
-  "rev": 1,
-  "updated": "2026-10-31",
+  "rev": 2,
+  "updated": "2026-11-01",
   "patch": ["0.5"],
   "title": { "ru": "Как пользоваться regex в тайнике", "en": "How to use regex in your stash" },
   "summary": {
@@ -86,14 +86,15 @@
     {
       "id": "limits",
       "title": { "ru": "Для опытных: ограничения", "en": "For experienced players: limits" },
+      "rev": 2,
       "expert": true,
       "blocks": [
         {
           "kind": "list",
           "items": [
             {
-              "ru": "**Длина строки ограничена:** в PoE 2 — до 250 символов (в PoE 1 — 50). Генераторы сами укладываются в лимит.",
-              "en": "**The string length is limited:** up to 250 characters in PoE 2 (50 in PoE 1). Generators keep within the limit themselves."
+              "ru": "**Длина строки ограничена:** в PoE 2 — до 250 символов. Генераторы сами укладываются в лимит.",
+              "en": "**The string length is limited:** up to 250 characters in PoE 2. Generators keep within the limit themselves."
             },
             {
               "ru": "**Синтаксис берите из генератора.** В PoE 1 работают `|` («или»), `!` («не») и кавычки для фраз с пробелами; что из этого так же работает в PoE 2, мы ещё проверяем.",

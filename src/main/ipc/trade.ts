@@ -22,7 +22,8 @@ import {
 } from '@shared/poe1/pricecheck/results'
 import { parseTradeDataStats, TradeStatsFallback, type TradeStatEntry } from '@shared/poe1/pricecheck/fallback'
 import { faustusPriceByName, feedIdsByName, lastFeedHour, type FaustusPrice } from '@shared/poe1/pricecheck/faustus'
-import { angePriceByName, poe2Rate, type AngePrice, type Poe2AngeResult, type Poe2CurrencyRate } from '@shared/poe2/pricecheck/ange'
+import { angePriceByName, feedFresh, poe2Rate, type AngePrice, type Poe2AngeResult, type Poe2CurrencyRate } from '@shared/poe2/pricecheck/ange'
+import type { FullHour } from '@shared/flip/feed'
 import type { ExchangeIdNames } from '@shared/wealth/sources'
 import { readJson, writeJsonAtomic } from '../services/atomicJson'
 import { getSettings } from '../services/settingsStore'
@@ -350,10 +351,14 @@ function validLeague(league: unknown): league is string {
 }
 
 /** Часы фида PoE 2 лиги: по запросу (окно цены, вкладка), не чаще раза в 10 минут — FeedStore. */
-async function poe2Hours(league: string) {
+/** Часы фида PoE 2 лиги: по запросу (окно цены, вкладка), не чаще раза в 10 минут — FeedStore; устарели — пусто. */
+async function poe2Hours(league: string): Promise<FullHour[]> {
   const feed = getFeedStore('poe2')
   await feed.refresh(league, POE2_FEED_HOURS)
-  return feed.hours(league, POE2_FEED_HOURS)
+  const hours = feed.hours(league, POE2_FEED_HOURS)
+  if (feedFresh(hours)) return hours
+  console.warn('[trade] фид PoE 2 устарел (нет сети?) — курса и цены у Ange нет')
+  return []
 }
 
 /** Курс exalted за divine (и chaos) лиги PoE 2; в памяти — 10 минут, без данных — повтор через минуту. */
@@ -389,6 +394,7 @@ async function poe2Ange(args: unknown): Promise<Poe2AngeResult> {
     const [byName, rate] = await Promise.all([loadFeedNames('poe2'), poe2CurrencyRate(league)])
     if (!byName || !rate) return { ok: false }
     const hours = getFeedStore('poe2').hours(league, POE2_FEED_HOURS)
+    if (!feedFresh(hours)) return { ok: false }
     const prices: Record<string, AngePrice> = {}
     for (const name of wanted) {
       const p = angePriceByName(hours, league, byName, name, rate)

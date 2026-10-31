@@ -203,14 +203,19 @@ export function dealFromWhisper(ev: WhisperEvent, id: string, now: number): Deal
   return deal
 }
 
-/** Ключ предмета для игнора: имя (+ камень/количество) + вкладка + позиция. */
-export function ignoreKey(d: Pick<Deal, 'item' | 'tab' | 'pos' | 'gem' | 'itemAmount'>): string {
+/**
+ * Ключ предмета для игнора: имя (+ камень/количество) + вкладка + позиция. S63: у сделки PoE 2 — префикс игры,
+ * чтобы «продано» в одной игре не глушило такой же предмет в другой; ключ PoE 1 прежний (старый deals.json).
+ */
+export function ignoreKey(d: Pick<Deal, 'item' | 'tab' | 'pos' | 'gem' | 'itemAmount' | 'game'>): string {
   const gem = d.gem ? `|g${d.gem.level}/${d.gem.quality}` : ''
   const amount = d.itemAmount !== undefined ? `|x${d.itemAmount}` : ''
   const pos = d.pos ? `|${d.pos.left},${d.pos.top}` : ''
-  return `${d.item.toLowerCase()}${gem}${amount}|${(d.tab ?? '').toLowerCase()}${pos}`
+  const game = dealGame(d) === 'poe2' ? 'poe2|' : ''
+  return `${game}${d.item.toLowerCase()}${gem}${amount}|${(d.tab ?? '').toLowerCase()}${pos}`
 }
 
+/** Тот же запрос: игрок, цена, предмет и ячейка — и та же игра (она в ключе предмета). */
 function sameRequest(a: Deal, b: Deal): boolean {
   return a.dir === b.dir && a.player === b.player && a.price === b.price && ignoreKey(a) === ignoreKey(b)
 }
@@ -228,9 +233,15 @@ function sortNewestFirst(deals: Deal[]): Deal[] {
   return [...deals].sort((a, b) => b.ts - a.ts)
 }
 
-/** Оставить `limit` самых новых. */
+/**
+ * Оставить `limit` самых новых (список — свежие первыми). S63: лимит — у каждой игры свой, иначе сделки PoE 2
+ * вытесняли бы историю PoE 1 (и наоборот).
+ */
 export function trimHistory(deals: Deal[], limit: number): Deal[] {
-  return deals.length > limit ? deals.slice(0, limit) : deals
+  if (deals.length <= limit) return deals
+  const seen: Record<GameId, number> = { poe1: 0, poe2: 0 }
+  const kept = deals.filter((d) => ++seen[dealGame(d)] <= limit)
+  return kept.length === deals.length ? deals : kept
 }
 
 export type AddDealResult =

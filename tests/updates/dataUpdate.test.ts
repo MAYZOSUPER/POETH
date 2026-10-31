@@ -57,7 +57,7 @@ describe('applyDataUpdate', () => {
     const files = { 'en/stats.ndjson': 'NEW stats', 'en/items.ndjson': 'items', 'regex/maps.en.json': '{"m":1}' }
     const fetched: string[] = []
     const res = await applyDataUpdate(manifest('3.30.0-1', files), { root, bundledDir, fetchFile: server(files, fetched) })
-    expect(res).toEqual({ status: 'applied', changed: 2, downloaded: 2 })
+    expect(res).toEqual({ status: 'applied', changed: 2, downloaded: 2, kept: 0, paths: ['en/stats.ndjson', 'regex/maps.en.json'] })
     expect(fetched.sort()).toEqual(['en/stats.ndjson', 'regex/maps.en.json'])
     expect(await list(path.join(root, 'poe1'))).toEqual(['en', 'en/stats.ndjson', 'manifest.json', 'regex', 'regex/maps.en.json'])
     expect(await fs.readFile(path.join(root, 'poe1', 'en/stats.ndjson'), 'utf8')).toBe('NEW stats')
@@ -89,7 +89,7 @@ describe('applyDataUpdate', () => {
     const fetched: string[] = []
     const v2 = { 'a.txt': 'A1', 'b.txt': 'B2' }
     const res = await applyDataUpdate(manifest('2', v2), { root, bundledDir, fetchFile: server(v2, fetched) })
-    expect(res).toEqual({ status: 'applied', changed: 2, downloaded: 1 })
+    expect(res).toEqual({ status: 'applied', changed: 2, downloaded: 1, kept: 0, paths: ['b.txt'] })
     expect(fetched).toEqual(['b.txt'])
   })
 
@@ -97,7 +97,7 @@ describe('applyDataUpdate', () => {
     const { root, bundledDir } = await setup({ 'a.txt': 'a' })
     await applyDataUpdate(manifest('1', { 'a.txt': 'A1' }), { root, bundledDir, fetchFile: server({ 'a.txt': 'A1' }) })
     const res = await applyDataUpdate(manifest('2', { 'a.txt': 'a' }), { root, bundledDir, fetchFile: server({}) })
-    expect(res).toEqual({ status: 'applied', changed: 0, downloaded: 0 })
+    expect(res).toEqual({ status: 'applied', changed: 0, downloaded: 0, kept: 0, paths: ['a.txt'] })
     expect(await list(path.join(root, 'poe1'))).toEqual(['manifest.json'])
   })
 

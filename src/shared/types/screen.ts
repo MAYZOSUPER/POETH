@@ -62,7 +62,7 @@ export interface ScreenLabel {
   rect: ScreenRect
   /** цена за штуку в базовой валюте игры (PoE 1 — chaos, PoE 2 — exalted) */
   unit: number | null
-  /** стоимость стопки (unit × count) */
+  /** стоимость стопки (unit × count), только при уверенно прочитанном числе */
   stack: number | null
   count: number | null
   item: string
@@ -83,9 +83,9 @@ export interface ScreenLabels {
   counted: number
   /** ячеек с предметом без цены */
   unpriced: number
-  /** ячеек с предметом, у которых число не прочитано (в итог не вошли) */
+  /** ячеек с ценой, у которых число не прочитано или прочитано неуверенно (в итог не вошли) */
   uncounted: number
-  /** в итоге есть числа, прочитанные неуверенно, — итог приблизительный */
+  /** среди не вошедших есть неуверенно прочитанные числа — настоящий итог может быть больше */
   approx: boolean
   /** куда ставить итог: правый верх области ячеек */
   anchor: ScreenRect
