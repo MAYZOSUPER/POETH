@@ -16,10 +16,15 @@ export interface Build2Recent {
   importedAt: number
 }
 
-/** Папка игрового планировщика (Documents/My Games/Path of Exile 2/BuildPlanner). */
+/**
+ * Папка игрового планировщика для показа: от «Документы» (`documents`) — «My Games / Path of Exile 2 / BuildPlanner».
+ * Полный путь (C:\Users\<имя>\…) знает только main: в окно и на снимки экрана он не попадает.
+ */
 export interface Build2Dir {
-  /** полный путь к папке BuildPlanner */
-  path: string
+  /** части пути после папки «Документы» (или имя папки подмены для проверок, когда documents = false) */
+  parts: string[]
+  /** путь внутри «Документы» пользователя */
+  documents: boolean
   /** папка игры «Path of Exile 2» есть (игра запускалась на этом компьютере) */
   game: boolean
 }
@@ -62,7 +67,7 @@ export type Build2SaveError =
 
 export type Build2SaveResult =
   /** записано */
-  | { ok: true; path: string; fileName: string; name: string; replaced: boolean }
+  | { ok: true; fileName: string; name: string; replaced: boolean }
   /** первый вызов: куда запишем — показать игроку и спросить; name — название в игре (у копии — с «(N)») */
   | { ok: false; error: 'confirm'; dir: Build2Dir; fileName: string; name: string; exists: boolean }
   | { ok: false; error: Build2SaveError; dir?: Build2Dir; fileName?: string }
