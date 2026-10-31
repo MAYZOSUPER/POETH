@@ -1,8 +1,11 @@
+import { Fragment } from 'react'
 import type { Quest } from '@shared/types'
 import { useAppStore } from '../store/useAppStore'
 import { useT, useName } from '../i18n'
 import { QuestRow } from '../components/QuestRow'
+import { ShellIcon } from '../components/ShellIcon'
 
+/** Чек-лист: все квесты акта по зонам (.cp-zgrp — зона строкой-заголовком), «Отметить весь акт». */
 export function QuestChecklistPanel() {
   const t = useT()
   const localName = useName()
@@ -27,67 +30,90 @@ export function QuestChecklistPanel() {
     byZone.set(q.zone, list)
   }
 
+  // название акта в данных — английское («Act 1 — Ogham»); в заголовке — наш «Акт 1» / «Интерлюдия 1»
+  const actLabel =
+    act.kind === 'interlude' ? t('int.title', { n: act.actNumber - 4 }) : t('act.short', { n: act.actNumber })
   const total = act.quests.length
   const doneCount = act.quests.filter((q) => completed[q.id]).length
   const allDone = total > 0 && doneCount === total
 
   return (
-    <section className="panel checklist">
-      <div className="panel-head">
-        <span>{t('cl.head', { act: act.actName })}</span>
-        <span className="head-actions">
-          <button
-            className="btn small"
-            title={t('cl.markAll.title')}
-            onClick={() => void markActQuests(act.id, !allDone)}
-          >
-            {allDone ? t('cl.clearAll') : t('cl.markAll')}
-          </button>
-          <span className="muted">
-            {doneCount}/{total}
-          </span>
+    <section className="ui-box" aria-label={t('cl.head', { act: actLabel })}>
+      <div className="ui-box__head">
+        <span className="ui-label">
+          <ShellIcon name="check" />
+          {t('cl.head', { act: actLabel })}
         </span>
+        <span className="cp-count">
+          {doneCount}/{total}
+        </span>
+        <span className="ui-label__grow" />
+        <button
+          type="button"
+          className="ui-btn ui-btn--ghost ui-btn--sm"
+          title={t('cl.markAll.title')}
+          onClick={() => void markActQuests(act.id, !allDone)}
+        >
+          <ShellIcon name={allDone ? 'close' : 'check'} />
+          {allDone ? t('cl.clearAll') : t('cl.markAll')}
+        </button>
       </div>
-      <ul className="zones">
+      <div className="cp-rows">
         {act.zones.map((zone) => {
           const quests = byZone.get(zone.areaId) ?? []
           const hasLayout = !!zone.layout && !!dataset?.layouts[zone.layout]
           if (quests.length === 0 && !hasLayout) return null
+          const here = detectedZoneAreaId === zone.areaId
+          const zoneDone = quests.filter((q) => completed[q.id]).length
+          const name = localName(zone.name)
           return (
-            <li key={zone.areaId} className="zone-group">
+            <Fragment key={zone.areaId}>
               <div
-                className={`zone-head ${selectedZoneAreaId === zone.areaId ? 'active' : ''} ${
-                  detectedZoneAreaId === zone.areaId ? 'current' : ''
-                }`}
+                className={`cp-zgrp${here ? ' is-cur' : ''}${selectedZoneAreaId === zone.areaId ? ' is-open' : ''}`}
               >
-                <span className="zone-name">
-                  {detectedZoneAreaId === zone.areaId ? '📍 ' : ''}
-                  {localName(zone.name)}
-                  {zone.isTown ? ' 🏠' : ''}
-                </span>
+                <b>{name}</b>
+                {zone.isTown && (
+                  <span title={t('wn.town')}>
+                    <ShellIcon name="home" size="sm" />
+                  </span>
+                )}
+                {here && (
+                  <span className="cp-here">
+                    <span className="ui-dot" />
+                    {t('cl.here')}
+                  </span>
+                )}
+                {quests.length > 0 && (
+                  <span className="cp-count">
+                    {zoneDone}/{quests.length}
+                  </span>
+                )}
                 {hasLayout && (
-                  <button className="map-btn" onClick={() => selectZone(zone.areaId)}>
-                    {t('q.map')}
+                  <button
+                    type="button"
+                    className="ui-btn ui-btn--ghost ui-btn--icon ui-btn--sm"
+                    title={`${t('q.map')}: ${name}`}
+                    aria-label={`${t('q.map')}: ${name}`}
+                    aria-pressed={selectedZoneAreaId === zone.areaId}
+                    onClick={() => selectZone(selectedZoneAreaId === zone.areaId ? null : zone.areaId)}
+                  >
+                    <ShellIcon name="map" />
                   </button>
                 )}
               </div>
-              {quests.length > 0 && (
-                <ul className="quest-list">
-                  {quests.map((q) => (
-                    <QuestRow
-                      key={q.id}
-                      quest={q}
-                      done={!!completed[q.id]}
-                      auto={!!auto[q.id]}
-                      onToggle={(d) => void toggleQuest(q.id, d)}
-                    />
-                  ))}
-                </ul>
-              )}
-            </li>
+              {quests.map((q) => (
+                <QuestRow
+                  key={q.id}
+                  quest={q}
+                  done={!!completed[q.id]}
+                  auto={!!auto[q.id]}
+                  onToggle={(d) => void toggleQuest(q.id, d)}
+                />
+              ))}
+            </Fragment>
           )
         })}
-      </ul>
+      </div>
     </section>
   )
 }

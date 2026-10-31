@@ -27,24 +27,32 @@ import { GuideTab } from './panels/guide/GuideTab'
 import { ViewToggle } from './components/ViewToggle'
 import { Wizard } from './panels/onboarding/Wizard'
 import { AboutPanel } from './panels/onboarding/AboutPanel'
+import './panels/campaign/campaign.css'
 
-/** PoE2 campaign tracker (compass) — settings open inside its left column. */
+/** PoE2 campaign tracker (compass), макет «PoE 2 в POETH v1»: одна прокрутка, справа (или ниже) — схема, награды, восхождение. */
 function CampaignTab({ showSettings }: { showSettings: boolean }) {
   const viewMode = useAppStore((s) => s.viewMode)
+  if (showSettings) {
+    return (
+      <div className="body">
+        <div className="page-scroll">
+          <SettingsPanel />
+        </div>
+      </div>
+    )
+  }
   return (
-    <div className="body">
-      <div className="left">
-        <ProfileBar />
-        <ActTabs />
-        <ZoneBanner />
-        <div className="scroll">
-          {showSettings ? (
-            <SettingsPanel />
-          ) : (
-            <>
-              <ViewToggle />
-              <RewardsSummary />
-              <AscendancyPanel />
+    <div className="body cp-tab">
+      <div className="page-scroll">
+        <div className="cp">
+          <ProfileBar />
+          <ActTabs />
+          <div className="cp-bar">
+            <ViewToggle />
+            <ZoneBanner />
+          </div>
+          <div className="cp-cols">
+            <div className="cp-col">
               {viewMode === 'whatsnext' ? (
                 <WhatsNextPanel />
               ) : (
@@ -53,11 +61,15 @@ function CampaignTab({ showSettings }: { showSettings: boolean }) {
                   <QuestChecklistPanel />
                 </>
               )}
-            </>
-          )}
+            </div>
+            <div className="cp-col">
+              <RightPanel />
+              <RewardsSummary />
+              <AscendancyPanel />
+            </div>
+          </div>
         </div>
       </div>
-      <RightPanel />
     </div>
   )
 }

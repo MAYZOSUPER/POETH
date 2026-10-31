@@ -1,11 +1,13 @@
-import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
-import { useLang, useT } from '../i18n'
+import { useLang, useT, useNameLang } from '../i18n'
+import { Select } from '../components/Select'
+import { ShellIcon } from '../components/ShellIcon'
 
 // Ascendancy tracker: pick your ascendancy (filtered by the profile's class) and
 // tick off completed Trials to count ascendancy points. Trial completion can't be
 // auto-detected (like quests), so these are manual checkboxes.
 
+/** «Восхождение» (.ui-box): класс восхождения и испытания с очками. */
 export function AscendancyPanel() {
   const dataset = useAppStore((s) => s.dataset)
   const progress = useAppStore((s) => s.progress)
@@ -13,10 +15,10 @@ export function AscendancyPanel() {
   const activeProfileId = useAppStore((s) => s.activeProfileId)
   const toggleTrial = useAppStore((s) => s.toggleTrial)
   const setAscendancy = useAppStore((s) => s.setAscendancy)
-  const nameLang = useAppStore((s) => s.settings?.nameLang ?? 'en')
+  const simple = useAppStore((s) => s.settings?.ui.simpleMode ?? true)
+  const nameLang = useNameLang()
   const uiLang = useLang()
   const t = useT()
-  const [open, setOpen] = useState(false)
 
   const asc = dataset?.ascendancy
   if (!asc || asc.trials.length === 0) return null
@@ -34,60 +36,62 @@ export function AscendancyPanel() {
   const total = asc.trials.reduce((s, tr) => s + tr.points, 0)
 
   return (
-    <section className="panel ascendancy">
-      <div className="panel-head clickable" onClick={() => setOpen((o) => !o)}>
-        <span>{t('asc.head', { a: earned, b: total })}</span>
-        <span className="muted">{open ? '▾' : '▸'}</span>
+    <section className="ui-box">
+      <div className="ui-box__head">
+        <span className="ui-label">
+          <ShellIcon name="trial" />
+          {t('asc.title')}
+        </span>
+        <span className="ui-label__grow" />
+        <span className="cp-count">{t('asc.points', { a: earned, b: total })}</span>
       </div>
-      {open && (
-        <div className="asc-body">
-          {!className ? (
-            <div className="small muted asc-hint">{t('asc.pickClass')}</div>
-          ) : options.length === 0 ? (
-            <div className="small muted asc-hint">{t('asc.noData')}</div>
-          ) : (
-            <div className="setting">
-              <label>{t('asc.choose')}</label>
-              <select
-                className="class-select"
-                value={progress?.ascendancyId ?? ''}
-                onChange={(e) => void setAscendancy(e.target.value || null)}
-              >
-                <option value="">{t('asc.none')}</option>
-                {options.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {nm(o.name, o.nameRu)}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <ul className="quest-list trials">
-            {asc.trials.map((tr) => {
-              const done = !!completed[tr.id]
-              const note = nt(tr.note, tr.noteRu)
-              return (
-                <li key={tr.id} className={`quest ${done ? 'done' : ''}`}>
-                  <label className="quest-main">
-                    <input
-                      type="checkbox"
-                      checked={done}
-                      onChange={(e) => void toggleTrial(tr.id, e.target.checked)}
-                    />
-                    <span className="quest-name">{nm(tr.name, tr.nameRu)}</span>
-                    <span className={tr.phase === 'campaign' ? 'type-tag req' : 'type-tag opt'}>
-                      {tr.phase === 'campaign' ? t('asc.campaign') : t('asc.endgame')}
-                    </span>
-                    <span className="asc-pts">+{tr.points}</span>
-                  </label>
-                  {note && <div className="quest-notes">{note}</div>}
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      )}
+      <div className="cp-asc">
+        {!className ? (
+          <p className="cp-asc__hint">{t('asc.pickClass')}</p>
+        ) : options.length === 0 ? (
+          <p className="cp-asc__hint">{t('asc.noData')}</p>
+        ) : (
+          <>
+            <span>{t('asc.choose')}</span>
+            <Select
+              value={progress?.ascendancyId ?? ''}
+              options={[
+                { value: '', label: t('asc.none') },
+                ...options.map((o) => ({ value: o.id, label: nm(o.name, o.nameRu) }))
+              ]}
+              onChange={(v) => void setAscendancy(v || null)}
+              label={t('asc.choose')}
+            />
+          </>
+        )}
+      </div>
+      {asc.trials.map((tr) => {
+        const done = !!completed[tr.id]
+        const note = nt(tr.note, tr.noteRu)
+        const name = nm(tr.name, tr.nameRu)
+        return (
+          <div key={tr.id} className={`cp-trial${done ? ' is-done' : ''}`}>
+            <button
+              type="button"
+              className="ui-check"
+              role="checkbox"
+              aria-checked={done}
+              aria-label={name}
+              onClick={() => void toggleTrial(tr.id, !done)}
+            >
+              <ShellIcon name="check" />
+            </button>
+            <span className="cp-trial__t">
+              <b>{name}</b>
+              <span className={`ui-tag${tr.phase === 'campaign' ? ' ui-tag--warn' : ''}`}>
+                {tr.phase === 'campaign' ? t('asc.campaign') : t('asc.endgame')}
+              </span>
+            </span>
+            <span className="cp-trial__pts">+{tr.points}</span>
+            {simple && note && <span className="cp-trial__note">{note}</span>}
+          </div>
+        )
+      })}
     </section>
   )
 }
