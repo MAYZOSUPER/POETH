@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title data-ru="Гайд по POETH — как пользоваться всеми функциями" data-en="POETH guide — how to use every feature">Гайд по POETH — как пользоваться всеми функциями</title>
-<meta name="description" content="Пошаговый гайд по POETH для новичков: цена предмета по Ctrl+D и цена для продажи, трейд-окно, live search, сделки, обмен валюты, богатство, фильтр лута, regex, гид прокачки, билд и стартеры лиги." data-ru="Пошаговый гайд по POETH для новичков: цена предмета по Ctrl+D и цена для продажи, трейд-окно, live search, сделки, обмен валюты, богатство, фильтр лута, regex, гид прокачки, билд и стартеры лиги." data-en="A step-by-step POETH guide for newcomers: Ctrl+D item prices and selling prices, the trade window, live search, trades, currency exchange, wealth, the loot filter, regex, the leveling guide, builds and league starters.">
+<meta name="description" content="Пошаговый гайд по POETH для новичков: цена предмета по Ctrl+D и цена для продажи, трейд-окно, live search, сделки, обмен валюты, богатство, фильтр лута, regex, гид прокачки, билд и стартеры лиги, режим PoE 2." data-ru="Пошаговый гайд по POETH для новичков: цена предмета по Ctrl+D и цена для продажи, трейд-окно, live search, сделки, обмен валюты, богатство, фильтр лута, regex, гид прокачки, билд и стартеры лиги, режим PoE 2." data-en="A step-by-step POETH guide for newcomers: Ctrl+D item prices and selling prices, the trade window, live search, trades, currency exchange, wealth, the loot filter, regex, the leveling guide, builds and league starters, and PoE 2 mode.">
 <meta name="theme-color" content="#0f0c0a">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="POETH">
@@ -78,6 +78,9 @@
   <symbol id="i-essence" viewBox="0 0 24 24"><path d="M12 3l5 4.5v9L12 21l-5-4.5v-9z"/><path d="M7 7.5l5 3 5-3M12 10.5V21"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
   <symbol id="i-restore" viewBox="0 0 24 24"><rect x="5" y="9" width="10" height="10" rx="1.5"/><path d="M9 9V6.5A1.5 1.5 0 0 1 10.5 5h7A1.5 1.5 0 0 1 19 6.5v7a1.5 1.5 0 0 1-1.5 1.5H15"/></symbol>
+  <symbol id="i-expedition" viewBox="0 0 24 24"><circle cx="10.5" cy="14.5" r="6"/><path d="M14.8 10.2L17 8"/><path d="M19 3.5v2M21.5 6h-2M20.8 4.2l-1.3 1.3"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v4h4"/><path d="M12 8v4.3l3 1.7"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="13" rx="1.5"/><path d="M4 10h16M4 14.3h16M9.5 5.5v13"/></symbol>
 </svg>
 
 <header class="top">
@@ -130,6 +133,19 @@
         <span lang="en">Pictures are interface mockups and screenshots with test data; in-game screenshots will come later. Common problems are answered in the <a href="https://github.com/MAYZOSUPER/POETH/blob/main/docs/FAQ.en.md">FAQ</a>; found a bug — <a href="../bug/">let us know</a>.</span>
       </p>
       <p class="g-new">
+        <b><span lang="ru">Режим PoE 2 — в версиях новее 0.1.0-rc.13:</span><span lang="en">PoE 2 mode — in versions newer than 0.1.0-rc.13:</span></b>
+        <a href="#poe2-price"><span lang="ru">цена и курс у Ange</span><span lang="en">prices and Ange's rate</span></a> ·
+        <a href="#poe2-regex"><span lang="ru">regex путевых камней</span><span lang="en">waystone regex</span></a> ·
+        <a href="#poe2-live"><span lang="ru">live и сделки</span><span lang="en">live and trades</span></a> ·
+        <a href="#poe2-rumours"><span lang="ru">слухи журнала</span><span lang="en">logbook rumours</span></a> ·
+        <a href="#poe2-build"><span lang="ru">билд в игру и вложение</span><span lang="en">build to the game and instilling</span></a> ·
+        <a href="#screen-prices"><span lang="ru">цены поверх окон (Alt+F)</span><span lang="en">prices over windows (Alt+F)</span></a> ·
+        <a href="#poe2-lootfilter"><span lang="ru">фильтр лута</span><span lang="en">loot filter</span></a> ·
+        <a href="#poe2-maps"><span lang="ru">учёт карт</span><span lang="en">map tracking</span></a> ·
+        <a href="#poe2-wealth"><span lang="ru">богатство</span><span lang="en">wealth</span></a> ·
+        <a href="#poe2"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></a>
+      </p>
+      <p class="g-new">
         <b><span lang="ru">Новое в 0.1.0-rc.13:</span><span lang="en">New in 0.1.0-rc.13:</span></b>
         <a href="#starters"><span lang="ru">Стартеры лиги</span><span lang="en">league starters</span></a> ·
         <a href="#selling"><span lang="ru">Покупаю / Продаю</span><span lang="en">Buying / Selling</span></a> ·
@@ -150,7 +166,7 @@
         <a href="#advisor"><span lang="ru">Что фармить</span><span lang="en">What to farm</span></a> ·
         <a href="#flip-items"><span lang="ru">Обмен → Предметы</span><span lang="en">Exchange → Items</span></a> ·
         <a href="#regex-items"><span lang="ru">Regex «Предметы»</span><span lang="en">Regex Items</span></a> ·
-        <a href="#poe2"><span lang="ru">окно цены PoE 2</span><span lang="en">PoE 2 price window</span></a>
+        <a href="#poe2-price"><span lang="ru">окно цены PoE 2</span><span lang="en">PoE 2 price window</span></a>
       </p>
     </div>
   </section>
@@ -197,14 +213,30 @@
           </ul>
         </div>
         <div class="g-toc__group">
-          <p class="g-toc__label"><span lang="ru">Прокачка и PoE 2</span><span lang="en">Levelling and PoE 2</span></p>
+          <p class="g-toc__label"><span lang="ru">Прокачка</span><span lang="en">Levelling</span></p>
           <ul class="g-toc__list">
             <li><a href="#leveling"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg></span><span><b><span lang="ru">Гид прокачки и «Кампания»</span><span lang="en">Leveling guide and Campaign</span></b><small><span lang="ru">Маршрут по актам PoE 1, опыт в зоне, лабиринты</span><span lang="en">PoE 1 act route, zone XP, Labyrinths</span></small></span></a></li>
             <li><a href="#build"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-passive"/></svg></span><span><b><span lang="ru">Билд</span><span lang="en">Build</span></b><small><span lang="ru">Билд из PoB по этапам: камни, связки, вещи</span><span lang="en">A PoB build by stage: gems, links, items</span></small></span></a></li>
             <li><a href="#starters"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg></span><span><b><span lang="ru">Стартеры лиги</span><span lang="en">League starters</span></b><small><span lang="ru">Выбрать билд для начала лиги и играть по нему</span><span lang="en">Pick a build for the league start and play it</span></small></span></a></li>
             <li><a href="#anoints"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-essence"/></svg></span><span><b><span lang="ru">Анойнт амулета</span><span lang="en">Amulet anoint</span></b><small><span lang="ru">Какие три масла нужны и сколько стоят</span><span lang="en">Which three oils you need and what they cost</span></small></span></a></li>
             <li><a href="#tree"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-passive"/></svg></span><span><b><span lang="ru">Дерево поверх игры (Alt+P)</span><span lang="en">Tree over the game (Alt+P)</span></b><small><span lang="ru">Что взять и что снять — прямо на дереве игры</span><span lang="en">What to take and remove — right on the game tree</span></small></span></a></li>
-            <li><a href="#poe2"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-game"/></svg></span><span><b>PoE 2</b><small><span lang="ru">Кампания и окно цены с модами</span><span lang="en">Campaign and a price window with mods</span></small></span></a></li>
+          </ul>
+        </div>
+        <div class="g-toc__group">
+          <p class="g-toc__label">Path of Exile 2 · <span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></p>
+          <ul class="g-toc__list">
+            <li><a href="#poe2"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-game"/></svg></span><span><b><span lang="ru">PoE 2: с чего начать</span><span lang="en">PoE 2: getting started</span></b><small><span lang="ru">Переключатель игры, рельс, вход, кампания</span><span lang="en">Game switch, rail, sign-in, campaign</span></small></span></a></li>
+            <li><a href="#poe2-price"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-ask"/></svg></span><span><b><span lang="ru">Окно цены и курс у Ange</span><span lang="en">Price window and Ange's rate</span></b><small><span lang="ru">Ctrl+D, «Продаю», предмет по-английски</span><span lang="en">Ctrl+D, Selling, item in English</span></small></span></a></li>
+            <li><a href="#poe2-regex"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg></span><span><b><span lang="ru">Regex PoE 2</span><span lang="en">PoE 2 regex</span></b><small><span lang="ru">Путевые камни, плитки, торговец</span><span lang="en">Waystones, tablets, vendor</span></small></span></a></li>
+            <li><a href="#poe2-live"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg></span><span><b><span lang="ru">Live и сделки</span><span lang="en">Live and trades</span></b><small><span lang="ru">Новые лоты trade2 и карточки whisper</span><span lang="en">New trade2 listings and whisper cards</span></small></span></a></li>
+            <li><a href="#poe2-rumours"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-expedition"/></svg></span><span><b><span lang="ru">Слухи журнала</span><span lang="en">Logbook rumours</span></b><small><span lang="ru">Какой слух экспедиции взять и почему</span><span lang="en">Which Expedition rumour to take and why</span></small></span></a></li>
+            <li><a href="#poe2-build"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-passive"/></svg></span><span><b><span lang="ru">Билд PoE 2</span><span lang="en">PoE 2 build</span></b><small><span lang="ru">«Сохранить в игру» и «Вложение»</span><span lang="en">“Save to the game” and Instilling</span></small></span></a></li>
+            <li><a href="#screen-prices"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-table"/></svg></span><span><b><span lang="ru">Цены поверх окон (Alt+F)</span><span lang="en">Prices over windows (Alt+F)</span></b><small><span lang="ru">Цена у ячеек вкладки — PoE 1 и PoE 2</span><span lang="en">Prices on stash tab cells — PoE 1 and PoE 2</span></small></span></a></li>
+            <li><a href="#poe2-lootfilter"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-flask"/></svg></span><span><b><span lang="ru">Фильтр лута PoE 2</span><span lang="en">PoE 2 loot filter</span></b><small><span lang="ru">NeverSink для PoE 2 в один клик</span><span lang="en">NeverSink for PoE 2 in one click</span></small></span></a></li>
+            <li><a href="#poe2-handbook"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg></span><span><b><span lang="ru">Справочник PoE 2</span><span lang="en">PoE 2 in-app Guide</span></b><small><span lang="ru">Пять статей для новичка</span><span lang="en">Five articles for newcomers</span></small></span></a></li>
+            <li><a href="#poe2-maps"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg></span><span><b><span lang="ru">Учёт карт</span><span lang="en">Map tracking</span></b><small><span lang="ru">Тир, время, смерти, «+ находка»</span><span lang="en">Tier, time, deaths, “+ find”</span></small></span></a></li>
+            <li><a href="#poe2-wealth"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-coins"/></svg></span><span><b><span lang="ru">Богатство PoE 2</span><span lang="en">PoE 2 Wealth</span></b><small><span lang="ru">Без API тайника: ввод и снимок вкладки</span><span lang="en">No stash API: input and tab snapshots</span></small></span></a></li>
+            <li><a href="#poe2-soon"><span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-history"/></svg></span><span><b><span lang="ru">Скоро в PoE 2</span><span lang="en">Coming to PoE 2</span></b><small><span lang="ru">Что из PoE 1 появится и когда</span><span lang="en">What from PoE 1 comes, and when</span></small></span></a></li>
           </ul>
         </div>
         <div class="g-toc__group">
@@ -284,8 +316,8 @@
             </div>
           </div>
           <figcaption class="g-win__cap" id="g-win-cap">
-            <span lang="ru">Схема окна POETH для PoE 1: вкладки рельса ведут к разделам этого гайда. В PoE 2 на рельсе только «Прайс-чек» и «Кампания».</span>
-            <span lang="en">Diagram of the POETH window for PoE 1: the rail tabs link to the sections of this guide. In PoE 2 the rail has only Price Check and Campaign.</span>
+            <span lang="ru">Схема окна POETH для PoE 1: вкладки рельса ведут к разделам этого гайда. Рельс PoE 2 — в разделе <a href="#poe2">«PoE 2: с чего начать»</a>.</span>
+            <span lang="en">Diagram of the POETH window for PoE 1: the rail tabs link to the sections of this guide. The PoE 2 rail is described in <a href="#poe2">PoE 2: getting started</a>.</span>
           </figcaption>
         </figure>
       </div>
@@ -305,8 +337,10 @@
               <tr><th><span lang="ru">Гид прокачки: показать или свернуть</span><span lang="en">Leveling guide: show or collapse</span></th><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd></td></tr>
               <tr><th><span lang="ru">Билд: дерево этапа поверх игрового дерева</span><span lang="en">Build: stage tree over the in-game tree</span></th><td><kbd>Alt</kbd>+<kbd>P</kbd></td></tr>
               <tr><th><span lang="ru">Сайты в трейд-окне (последняя вкладка сайта)</span><span lang="en">Sites in the trade window (last site tab)</span></th><td><span lang="ru">не назначена</span><span lang="en">not set</span></td></tr>
-              <tr><th><span lang="ru"><a href="#item-en">Скопировать предмет по-английски</a> (для PoB и Discord)</span><span lang="en"><a href="#item-en">Copy item in English</a> (for PoB and Discord)</span></th><td><span lang="ru">не назначена</span><span lang="en">not set</span></td></tr>
+              <tr><th><span lang="ru"><a href="#item-en">Скопировать предмет по-английски</a> (для PoB и Discord; PoE 1 и PoE 2)</span><span lang="en"><a href="#item-en">Copy item in English</a> (for PoB and Discord; PoE 1 and PoE 2)</span></th><td><span lang="ru">не назначена</span><span lang="en">not set</span></td></tr>
+              <tr><th><span lang="ru"><a href="#screen-prices">Цены поверх окон</a>: цены у ячеек особой вкладки тайника (PoE 1 и PoE 2)</span><span lang="en"><a href="#screen-prices">Prices over windows</a>: prices on special stash tab cells (PoE 1 and PoE 2)</span></th><td><kbd>Alt</kbd>+<kbd>F</kbd></td></tr>
               <tr><th><span lang="ru">PoE 2: шаг кампании назад / вперёд</span><span lang="en">PoE 2: campaign step back / forward</span></th><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd></td></tr>
+              <tr><th><span lang="ru">PoE 2: <a href="#poe2-rumours">«Слухи журнала»</a> — прочитать журнал под курсором</span><span lang="en">PoE 2: <a href="#poe2-rumours">Logbook rumours</a> — read the logbook under the cursor</span></th><td><span lang="ru">не назначена</span><span lang="en">not set</span></td></tr>
             </tbody>
           </table>
           <p class="note g-keys__note">
@@ -329,8 +363,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Наведите курсор на предмет в игре и нажмите <kbd>Ctrl</kbd>+<kbd>D</kbd> — рядом появится окно с ценой и подсказкой, что делать с вещью. Работает с русским и английским клиентом. Как это устроено в PoE 2 — в <a href="#poe2">своём разделе</a>.</span>
-          <span lang="en">Hover an item in the game and press <kbd>Ctrl</kbd>+<kbd>D</kbd> — a window with the price and a hint on what to do with the item opens next to it. Works with the English and Russian clients. For PoE 2, see <a href="#poe2">its own section</a>.</span>
+          <span lang="ru">Наведите курсор на предмет в игре и нажмите <kbd>Ctrl</kbd>+<kbd>D</kbd> — рядом появится окно с ценой и подсказкой, что делать с вещью. Работает с русским и английским клиентом. Как это устроено в PoE 2 — в <a href="#poe2-price">своём разделе</a>.</span>
+          <span lang="en">Hover an item in the game and press <kbd>Ctrl</kbd>+<kbd>D</kbd> — a window with the price and a hint on what to do with the item opens next to it. Works with the English and Russian clients. For PoE 2, see <a href="#poe2-price">its own section</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -513,8 +547,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Path of Building и англоязычные чаты понимают вещь только по-английски. С русским клиентом игры POETH переведёт текст предмета по одной клавише — его можно сразу вставить в PoB или отправить в Discord.</span>
-          <span lang="en">Path of Building and English-speaking chats only understand items in English. With the Russian game client, POETH translates the item text with one key — paste it straight into PoB or send it on Discord.</span>
+          <span lang="ru">Path of Building и англоязычные чаты понимают вещь только по-английски. С русским клиентом игры POETH переведёт текст предмета по одной клавише — его можно сразу вставить в PoB или отправить в Discord. В PoE 2 клавиша та же — см. <a href="#poe2-price">окно цены PoE 2</a>.</span>
+          <span lang="en">Path of Building and English-speaking chats only understand items in English. With the Russian game client, POETH translates the item text with one key — paste it straight into PoB or send it on Discord. In PoE 2 the same key works — see the <a href="#poe2-price">PoE 2 price window</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -809,8 +843,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">В трейд-окне, под вкладкой «Трейд», — полезные сайты по PoE. Они открываются поверх игры: не нужно переключаться в браузер, чтобы посмотреть цену, мод или раскладку лабиринта.</span>
-          <span lang="en">In the trade window, under the Trade tab, are useful PoE sites. They open over the game: no need to switch to a browser to check a price, a mod or today's Labyrinth layout.</span>
+          <span lang="ru">В трейд-окне, под вкладкой «Трейд», — полезные сайты по PoE. Они открываются поверх игры: не нужно переключаться в браузер, чтобы посмотреть цену, мод или раскладку лабиринта. В PoE 2 — свои сайты, см. <a href="#poe2">«PoE 2: с чего начать»</a>.</span>
+          <span lang="en">In the trade window, under the Trade tab, are useful PoE sites. They open over the game: no need to switch to a browser to check a price, a mod or today's Labyrinth layout. PoE 2 has its own sites, see <a href="#poe2">PoE 2: getting started</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -891,8 +925,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">POETH следит за вашими поисками на сайте трейда и сразу сообщает о новых лотах: уведомление поверх игры со звуком, а когда игра свёрнута — уведомление Windows.</span>
-          <span lang="en">POETH watches your trade-site searches and tells you about new listings right away: an alert over the game with a sound, and a Windows notification when the game is minimized.</span>
+          <span lang="ru">POETH следит за вашими поисками на сайте трейда и сразу сообщает о новых лотах: уведомление поверх игры со звуком, а когда игра свёрнута — уведомление Windows. Для PoE 2 — <a href="#poe2-live">свой раздел</a>.</span>
+          <span lang="en">POETH watches your trade-site searches and tells you about new listings right away: an alert over the game with a sound, and a Windows notification when the game is minimized. For PoE 2, see <a href="#poe2-live">its own section</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -967,8 +1001,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Когда вам пишут «хочу купить», поверх игры появляется карточка: кто, что и за сколько покупает, и где предмет лежит в тайнике. Каждая кнопка карточки — ровно одна команда в чат.</span>
-          <span lang="en">When someone whispers to buy from you, a card appears over the game: who is buying what, for how much, and where the item is in your stash. Each card button sends exactly one chat command.</span>
+          <span lang="ru">Когда вам пишут «хочу купить», поверх игры появляется карточка: кто, что и за сколько покупает, и где предмет лежит в тайнике. Каждая кнопка карточки — ровно одна команда в чат. Для PoE 2 — <a href="#poe2-live">свой раздел</a>.</span>
+          <span lang="en">When someone whispers to buy from you, a card appears over the game: who is buying what, for how much, and where the item is in your stash. Each card button sends exactly one chat command. For PoE 2, see <a href="#poe2-live">its own section</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -1315,8 +1349,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Сколько стоит ваш тайник и что прибавилось с прошлого раза. POETH читает выбранные вкладки тайника и оценивает предметы по ценам биржи. Тайник только читается — POETH в нём ничего не меняет.</span>
-          <span lang="en">What your stash is worth and what you gained since last time. POETH reads the stash tabs you pick and values the items by exchange prices. The stash is only read — POETH changes nothing in it.</span>
+          <span lang="ru">Сколько стоит ваш тайник и что прибавилось с прошлого раза. POETH читает выбранные вкладки тайника и оценивает предметы по ценам биржи. Тайник только читается — POETH в нём ничего не меняет. В PoE 2 «Богатство» устроено иначе — см. <a href="#poe2-wealth">«Богатство PoE 2»</a>.</span>
+          <span lang="en">What your stash is worth and what you gained since last time. POETH reads the stash tabs you pick and values the items by exchange prices. The stash is only read — POETH changes nothing in it. In PoE 2 Wealth works differently — see <a href="#poe2-wealth">PoE 2 Wealth</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -1383,8 +1417,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Считает карты, время каждой карты, смерти и карт в час по журналу игры. Если вы вошли в аккаунт, добавляются доход в час и прибыль за карту — по снимкам тайника.</span>
-          <span lang="en">Counts maps, time per map, deaths and maps per hour from the game log. If you are signed in, it adds income per hour and profit per map — from stash snapshots.</span>
+          <span lang="ru">Считает карты, время каждой карты, смерти и карт в час по журналу игры. Если вы вошли в аккаунт, добавляются доход в час и прибыль за карту — по снимкам тайника. Для PoE 2 — <a href="#poe2-maps">учёт карт PoE 2</a>.</span>
+          <span lang="en">Counts maps, time per map, deaths and maps per hour from the game log. If you are signed in, it adds income per hour and profit per map — from stash snapshots. For PoE 2, see <a href="#poe2-maps">PoE 2 map tracking</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -1458,8 +1492,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Строки для поиска в игре (<kbd>Ctrl</kbd>+<kbd>F</kbd>): подсвечивают нужные карты в тайнике и нужные вещи у торговца. Вы выбираете, что ищете, — POETH собирает строку на языке вашей игры. Для поиска предметов в тайнике есть страница <a href="#regex-items">«Предметы»</a>.</span>
-          <span lang="en">Strings for the in-game search (<kbd>Ctrl</kbd>+<kbd>F</kbd>): they highlight the right maps in your stash and the right items at vendors. You pick what you want — POETH builds the string in your game's language. To find items in your stash, use the <a href="#regex-items">Items</a> page.</span>
+          <span lang="ru">Строки для поиска в игре (<kbd>Ctrl</kbd>+<kbd>F</kbd>): подсвечивают нужные карты в тайнике и нужные вещи у торговца. Вы выбираете, что ищете, — POETH собирает строку на языке вашей игры. Для поиска предметов в тайнике есть страница <a href="#regex-items">«Предметы»</a>. Для PoE 2 — <a href="#poe2-regex">путевые камни, плитки и торговец</a>.</span>
+          <span lang="en">Strings for the in-game search (<kbd>Ctrl</kbd>+<kbd>F</kbd>): they highlight the right maps in your stash and the right items at vendors. You pick what you want — POETH builds the string in your game's language. To find items in your stash, use the <a href="#regex-items">Items</a> page. For PoE 2, see <a href="#poe2-regex">waystones, tablets and vendor</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -1593,8 +1627,8 @@
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Фильтр лута прячет мусор на земле и подсвечивает ценное. POETH скачает популярный фильтр NeverSink с его официального GitHub и положит в папку игры. Включить фильтр нужно один раз — в настройках самой игры.</span>
-          <span lang="en">A loot filter hides junk on the ground and highlights valuable drops. POETH downloads the popular NeverSink filter from its official GitHub and puts it into the game folder. You turn the filter on once — in the game's own options.</span>
+          <span lang="ru">Фильтр лута прячет мусор на земле и подсвечивает ценное. POETH скачает популярный фильтр NeverSink с его официального GitHub и положит в папку игры. Включить фильтр нужно один раз — в настройках самой игры. Для PoE 2 — <a href="#poe2-lootfilter">свой фильтр</a>.</span>
+          <span lang="en">A loot filter hides junk on the ground and highlights valuable drops. POETH downloads the popular NeverSink filter from its official GitHub and puts it into the game folder. You turn the filter on once — in the game's own options. For PoE 2, see <a href="#poe2-lootfilter">its own filter</a>.</span>
         </p>
         <div class="g-feat__grid">
           <div>
@@ -2074,66 +2108,79 @@
         <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
       </article>
 
+      <!-- ===== PoE 2 (S61–S70, слито 01.11): вступление и функции режима PoE 2. Старый якорь #poe2 — вступление. ===== -->
       <article class="g-feat" id="poe2" aria-labelledby="h-poe2">
         <div class="g-feat__head">
           <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-game"/></svg></span>
           <div>
-            <h2 id="h-poe2">Path of Exile 2</h2>
-            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span></p>
+            <h2 id="h-poe2"><span lang="ru">Path of Exile 2: с чего начать</span><span lang="en">Path of Exile 2: getting started</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
           </div>
         </div>
         <p class="g-feat__lead">
-          <span lang="ru">Для PoE 2 в POETH два раздела: окно цены по <kbd>Ctrl</kbd>+<kbd>D</kbd> поверх игры — с модами, как в PoE 1, — и трекер кампании. Остальные функции этого гайда пока только для PoE 1.</span>
-          <span lang="en">For PoE 2, POETH has two sections: the <kbd>Ctrl</kbd>+<kbd>D</kbd> price window over the game — with mods, like in PoE 1 — and the campaign tracker. The other features in this guide are PoE 1 only for now.</span>
+          <span lang="ru">POETH работает и с Path of Exile 2. Игра выбирается переключателем в шапке окна; в режиме PoE 2 у POETH свои вкладки, данные и цены — в ex и div, по курсу обменника Ange. Ниже — все функции режима PoE 2 по порядку: что делает, где включить, какая клавиша и чего она не делает.</span>
+          <span lang="en">POETH works with Path of Exile 2 too. You pick the game with the switch in the window header; in PoE 2 mode POETH has its own tabs, data and prices — in ex and div, at the rate of Ange's exchange. Below are all PoE 2 mode features in order: what each does, where to turn it on, which key it uses and what it does not do.</span>
+        </p>
+        <p class="g-note">
+          <span lang="ru"><b>Проверено без игры — PoE 2 1.0 выходит 11.12, данные обновим.</b> Всё в этом разделе проверено на тестовых данных и снимках интерфейса, в самой игре — ещё нет. Если что-то не совпадает с клиентом, <a href="../bug/">сообщите нам</a>. Режим PoE 2 в таком виде — в версиях новее 0.1.0-rc.13.</span>
+          <span lang="en"><b>Tested without the game — PoE 2 1.0 comes out on 11 December; we will update the data.</b> Everything in this section was checked on test data and interface screenshots, not in the game itself yet. If something does not match your client, <a href="../bug/">let us know</a>. PoE 2 mode in this form is in versions newer than 0.1.0-rc.13.</span>
         </p>
         <div class="g-feat__grid">
           <div>
-            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <h3><span lang="ru">Как переключиться</span><span lang="en">How to switch</span></h3>
             <ol class="g-steps">
               <li><div>
-                <span lang="ru">В шапке окна POETH нажмите <b>«PoE 2»</b> и подтвердите «Перезапустить»: приложение перезапустится под выбранную игру.</span>
-                <span lang="en">In the POETH window header click <b>PoE 2</b> and confirm “Restart”: the app restarts for the chosen game.</span>
+                <span lang="ru">В шапке окна POETH нажмите <b>«PoE 2»</b> и подтвердите перезапуск: приложение перезапустится под PoE 2. Назад — «PoE 1» там же.</span>
+                <span lang="en">In the POETH window header click <b>PoE 2</b> and confirm the restart: the app restarts for PoE 2. To go back, click PoE 1 in the same place.</span>
               </div></li>
               <li><div>
-                <span lang="ru"><b>Цена предмета.</b> Наведите курсор на предмет в игре и нажмите <kbd>Ctrl</kbd>+<kbd>D</kbd> — у курсора откроется «Прайс-чек PoE 2»: моды с галочками, вердикт, «Скопировать заметку цены», «Цена на рынке», лоты, «Написать» и «Открыть в трейд-окне». POETH сам копирует расширенный текст предмета (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>) — одно нажатие, одно копирование.</span>
-                <span lang="en"><b>Item price.</b> Hover an item in the game and press <kbd>Ctrl</kbd>+<kbd>D</kbd> — the “PoE 2 price check” opens at the cursor: mods with checkboxes, the verdict, “Copy price note”, “Market price”, listings, Whisper and “Open in trade window”. POETH copies the item's advanced text by itself (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>) — one press, one copy.</span>
+                <span lang="ru">Игра — в режиме «Окно без рамки» или «Окно», как и в PoE 1. Клиент — русский или английский: POETH понимает оба.</span>
+                <span lang="en">Run the game in Windowed Fullscreen or Windowed mode, as with PoE 1. The client can be in English or Russian: POETH understands both.</span>
               </div></li>
               <li><div>
-                <span lang="ru"><b>Вход общий с PoE 1</b> — через официальную страницу GGG, отдельного POESESSID больше нет. Цена работает и без входа; вход нужен сайту трейда в трейд-окне (например, чтобы купить у торговца).</span>
-                <span lang="en"><b>One sign-in for PoE 1 and PoE 2</b> — through the official GGG page; there is no separate POESESSID any more. Prices work without signing in; the trade site in the trade window needs it (for example, to buy from a merchant).</span>
+                <span lang="ru"><b>Рельс PoE 2:</b> «Торговля» — <a href="#poe2-price">Прайс-чек</a>, <a href="#poe2-live">Live и Сделки</a>; «Фарм» — <a href="#poe2-wealth">Богатство</a> (в нём же <a href="#poe2-maps">«Сессия фарма»</a>), <a href="#poe2-regex">Regex</a>, <a href="#poe2-rumours">Слухи журнала</a>; «Прокачка» — «Кампания» и <a href="#poe2-build">Билд</a>; «Помощь» — <a href="#poe2-handbook">Справочник</a> и <a href="#poe2-soon">«Скоро в PoE 2»</a>. <a href="#poe2-lootfilter">Фильтр лута</a> — в настройках.</span>
+                <span lang="en"><b>The PoE 2 rail:</b> Trade — <a href="#poe2-price">Price Check</a>, <a href="#poe2-live">Live and Trades</a>; Farming — <a href="#poe2-wealth">Wealth</a> (with the <a href="#poe2-maps">Farming session</a> inside), <a href="#poe2-regex">Regex</a>, <a href="#poe2-rumours">Logbook rumours</a>; Levelling — Campaign and <a href="#poe2-build">Build</a>; Help — <a href="#poe2-handbook">Guide</a> and <a href="#poe2-soon">Coming to PoE 2</a>. The <a href="#poe2-lootfilter">loot filter</a> is in the settings.</span>
               </div></li>
               <li><div>
-                <span lang="ru"><b>«Кампания»:</b> вкладки актов, вид «Что дальше?» (текущая зона, квесты «Обязательно» и «Необязательно», куда идти дальше) или «Чек-лист». Шаги листаются кнопками ◀ ▶ или <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd>; «🗺 карта» у зоны открывает схему её расположения.</span>
-                <span lang="en"><b>Campaign:</b> act tabs, the “What's Next” view (current zone, required and optional quests, where to go next) or the “Checklist”. Move between steps with ◀ ▶ or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd>; “🗺 map” next to a zone opens its layout.</span>
+                <span lang="ru"><b>Вход общий с PoE 1</b> — через официальную страницу GGG. Он нужен только для live search и чтобы покупать на сайте трейда; цена, regex, билд и богатство работают без входа.</span>
+                <span lang="en"><b>One sign-in for PoE 1 and PoE 2</b> — through the official GGG page. You only need it for live search and to buy on the trade site; prices, regex, builds and wealth work without signing in.</span>
               </div></li>
               <li><div>
-                <span lang="ru">Чтобы текущая зона подсвечивалась сама, включите <b>«Авто»</b> в шапке (по умолчанию выключено) — POETH будет читать журнал игры. В настройках, в блоке «Автоопределение зоны», можно указать <code>Client.txt</code> вручную и включить «Авто-отмечать пройденные квесты».</span>
-                <span lang="en">To highlight the current zone automatically, turn on <b>Auto</b> in the header (off by default) — POETH then reads the game log. In the settings, under “Zone auto-detect”, you can point to <code>Client.txt</code> yourself and turn on “Auto-mark completed quests”.</span>
+                <span lang="ru"><b>Трейд-окно</b> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>) в режиме PoE 2 открывает сайт трейда PoE 2, а на рельсе сайтов — свои сайты: poe.ninja, poe2db, PoE 2 Wiki, Maxroll, Mobalytics, poe2.re, poe2-regex-ru, PoE 2 Scout.</span>
+                <span lang="en">The <b>trade window</b> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>) in PoE 2 mode opens the PoE 2 trade site, and its site rail has PoE 2 sites: poe.ninja, poe2db, PoE 2 Wiki, Maxroll, Mobalytics, poe2.re, poe2-regex-ru, PoE 2 Scout.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Кампания»</b> — акты, вид «Что дальше?» или «Чек-лист»; шаги — кнопками ◀ ▶ или <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd>. Чтобы текущая зона подсвечивалась сама, включите <b>«Авто»</b> в шапке — POETH будет читать журнал игры.</span>
+                <span lang="en"><b>Campaign</b> — acts, the “What's Next” view or the “Checklist”; move between steps with ◀ ▶ or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd>. To highlight the current zone automatically, turn on <b>Auto</b> in the header — POETH then reads the game log.</span>
               </div></li>
             </ol>
           </div>
           <div class="g-side">
             <dl class="g-where">
-              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">переключатель «PoE 1 | PoE 2» в шапке; вкладки «Прайс-чек» и «Кампания»</span><span lang="en">the “PoE 1 | PoE 2” switch in the header; the Price Check and Campaign tabs</span></dd></div>
-              <div><dt><span lang="ru">Клавиши</span><span lang="en">Keys</span></dt><dd><kbd>Ctrl</kbd>+<kbd>D</kbd> · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd></dd></div>
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">переключатель «PoE 1 | PoE 2» в шапке</span><span lang="en">the “PoE 1 | PoE 2” switch in the header</span></dd></div>
+              <div><dt><span lang="ru">Перезапуск</span><span lang="en">Restart</span></dt><dd><span lang="ru">да, при каждой смене игры</span><span lang="en">yes, every time you switch games</span></dd></div>
+              <div><dt><span lang="ru">Клавиши</span><span lang="en">Keys</span></dt><dd><kbd>Ctrl</kbd>+<kbd>D</kbd> · <kbd>Alt</kbd>+<kbd>F</kbd> · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>[</kbd> / <kbd>]</kbd></dd></div>
             </dl>
-            <figure class="shot">
-              <img lang="ru" src="../assets/img/guide/poe2-price-ru.png" width="400" height="842" loading="lazy" alt="Окно «Прайс-чек PoE 2»: моды лука с галочками, вердикт «Выставьте за ~18 Сфер возвышения» и цена на рынке">
-              <img lang="en" src="../assets/img/guide/poe2-price-en.png" width="400" height="842" loading="lazy" alt="PoE 2 price check window: bow mods with checkboxes, a “List it for ~18 Exalted Orbs” verdict and the market price">
-            </figure>
             <div class="faq">
               <details>
                 <summary><span><span lang="ru">Чем PoE 2 отличается от PoE 1?</span><span lang="en">How is PoE 2 different from PoE 1?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
                 <div class="ans">
-                  <p lang="ru">Нет пересчёта exalted ↔ divine: сравниваются лоты в одной валюте. Нет live search, сделок, «Против надетого», ссылок на сайты и трейд-окна на русском (сайт трейда PoE 2 — английский).</p>
-                  <p lang="en">There is no exalted ↔ divine conversion: listings are compared in one currency. There is no live search, trades, Versus equipped, site links, or a Russian trade site (the PoE 2 trade site is in English).</p>
+                  <p lang="ru">Главная валюта — Exalted Orb (ex), дорогая — Divine Orb (div); POETH считает цены в ex и пересчитывает div и chaos по курсу обменника Ange. На сайте трейда почти всё продаётся мгновенным выкупом за комиссию в золоте. У GGG нет API тайника для PoE 2 — поэтому «Богатство» работает иначе, чем в PoE 1.</p>
+                  <p lang="en">The main currency is the Exalted Orb (ex) and the expensive one is the Divine Orb (div); POETH counts prices in ex and converts div and chaos at Ange's exchange rate. On the trade site almost everything sells by instant buyout for a gold fee. GGG has no stash API for PoE 2 — so Wealth works differently than in PoE 1.</p>
+                </div>
+              </details>
+              <details>
+                <summary><span><span lang="ru">Чего в PoE 2 пока нет?</span><span lang="en">What is not in PoE 2 yet?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
+                <div class="ans">
+                  <p lang="ru">«Обмена» (флиппинг), «Что фармить» и новых актов компаса — они после 1.0, список — на странице <a href="#poe2-soon">«Скоро в PoE 2»</a>. «Против надетого», дерево поверх игры (<kbd>Alt</kbd>+<kbd>P</kbd>) и «Стартеры» пока только в PoE 1.</p>
+                  <p lang="en">Exchange flipping, What to farm and the compass's new acts — they come after 1.0, see <a href="#poe2-soon">Coming to PoE 2</a>. Versus equipped, the tree over the game (<kbd>Alt</kbd>+<kbd>P</kbd>) and League starters are PoE 1 only for now.</p>
                 </div>
               </details>
               <details>
                 <summary><span><span lang="ru">Куда делось поле POESESSID?</span><span lang="en">Where did the POESESSID field go?</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev-d"/></svg></summary>
                 <div class="ans">
-                  <p lang="ru">Если вы его вводили, POETH один раз перенёс его во вход в аккаунт — теперь он общий для PoE 1 и PoE 2 — и сообщил об этом плашкой. Войти заново можно кнопкой «Войти» на официальной странице GGG.</p>
-                  <p lang="en">If you had entered one, POETH moved it once into the account sign-in — now shared by PoE 1 and PoE 2 — and told you with a notice. To sign in again, use “Sign in” on the official GGG page.</p>
+                  <p lang="ru">Если вы его вводили, POETH один раз перенёс его во вход в аккаунт — теперь он общий для PoE 1 и PoE 2. Войти заново можно кнопкой «Войти» на официальной странице GGG.</p>
+                  <p lang="en">If you had entered one, POETH moved it once into the account sign-in — now shared by PoE 1 and PoE 2. To sign in again, use “Sign in” on the official GGG page.</p>
                 </div>
               </details>
               <details>
@@ -2144,6 +2191,639 @@
                 </div>
               </details>
             </div>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-price" aria-labelledby="h-poe2-price">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-ask"/></svg></span>
+          <div>
+            <h2 id="h-poe2-price"><span lang="ru">PoE 2: окно цены и курс у Ange</span><span lang="en">PoE 2: price window and Ange's rate</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Наведите курсор на предмет и нажмите <kbd>Ctrl</kbd>+<kbd>D</kbd>. Для валюты POETH покажет, сколько она стоит у Ange — торговца-обменника в игре — по открытым данным GGG. Для вещей — сколько просят за похожие на сайте трейда, и всё в одной валюте.</span>
+          <span lang="en">Hover an item and press <kbd>Ctrl</kbd>+<kbd>D</kbd>. For currency, POETH shows what it costs at Ange — the in-game exchange merchant — from GGG's open data. For gear, what similar items are listed for on the trade site, all in one currency.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">Курсор на предмет в игре → <kbd>Ctrl</kbd>+<kbd>D</kbd>. POETH сам копирует расширенный текст предмета (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>) — одно нажатие, одно копирование. У курсора откроется «Прайс-чек · PoE 2».</span>
+                <span lang="en">Hover the item in the game → <kbd>Ctrl</kbd>+<kbd>D</kbd>. POETH copies the item's advanced text by itself (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>) — one press, one copy. “Price Check · PoE 2” opens at the cursor.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Валюта</b> и всё, что меняют у Ange: блок «Цена у Ange» — «≈ N ex за штуку», сколько стоит ваша стопка, цены за div, chaos и ex, точность и за какой час данные. Объявления сайта свёрнуты под кнопкой: они часто устаревшие.</span>
+                <span lang="en"><b>Currency</b> and anything traded at Ange: the “Price at Ange” block — “≈ N ex each”, what your stack is worth, prices in div, chaos and ex, accuracy and which hour the data is from. Site listings are folded under a button: they are often stale.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Курс.</b> Плашка «1 div ≈ N ex» — в строке предмета; подсказка у любой цены пересчитывает её в ex. Тот же курс — во вкладке «Прайс-чек»: «Курс у Ange: 1 div ≈ N ex · 1 c ≈ M ex».</span>
+                <span lang="en"><b>The rate.</b> The “1 div ≈ N ex” badge sits on the item line; the tooltip on any price converts it to ex. The same rate is on the Price Check tab: “Ange rate: 1 div ≈ N ex · 1 c ≈ M ex”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Вещи.</b> Отметьте важные моды галочками — POETH найдёт похожие на сайте трейда PoE 2. «Выставьте за ~X» — вторая по дешевизне цена среди лотов с мгновенным выкупом, если их 4 и больше: одиночный дешёвый лот бывает приманкой или ошибкой продавца. Лоты в разных валютах сравниваются по курсу. Правило объясняет «Почему такая цена?».</span>
+                <span lang="en"><b>Gear.</b> Tick the mods that matter — POETH finds similar items on the PoE 2 trade site. “List it for ~X” is the second-cheapest instant-buyout price when there are 4 or more such listings: a single cheap listing is often bait or a seller's mistake. Listings in different currencies are compared at the rate. “Why this price?” explains the rule.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Своя вещь.</b> Переключите «Покупаю / Продаю». «Продаю» подскажет «Поставьте ~P, не дешевле N» и кнопку «Скопировать P» — в игре вставьте число в поле цены. Для валюты — «Продайте у Ange: ~P за 1 шт.».</span>
+                <span lang="en"><b>Your own item.</b> Switch Buying / Selling. Selling suggests “Set ~P, not below N” with a “Copy P” button — paste the number into the price field in the game. For currency: “Sell at Ange: ~P each”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Предмет по-английски.</b> В «Настройках» назначьте клавишу «Скопировать предмет по-английски». С русским клиентом текст вещи попадёт в буфер на английском — для PoB 2 и англоязычных чатов; с английским — как обычный <kbd>Ctrl</kbd>+<kbd>C</kbd>, без служебных строк.</span>
+                <span lang="en"><b>Item in English.</b> In the settings, set a key for “Copy item in English”. With the Russian client the item text goes to the clipboard in English — for PoB 2 and English-speaking chats; with the English client it's like a plain <kbd>Ctrl</kbd>+<kbd>C</kbd>, without the extra lines.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Внизу окна: «Открыть в трейд-окне», «В избранное», «Следить (live)» — поиск уйдёт во <a href="#poe2-live">вкладку Live</a>; «В богатство» (<a href="#poe2-wealth">«Богатство PoE 2»</a>) и, во время сессии фарма, «К забегу» (<a href="#poe2-maps">учёт карт</a>).</span>
+                <span lang="en">At the bottom of the window: “Open in trade window”, “Add to favorites”, “Watch (live)” — the search goes to the <a href="#poe2-live">Live tab</a>; “Add to wealth” (<a href="#poe2-wealth">PoE 2 Wealth</a>) and, during a farming session, “To this run” (<a href="#poe2-maps">map tracking</a>).</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Ничего не покупает и не выставляет сам — цену в игре ставите вы.</span><span lang="en">It never buys or lists anything by itself — you set the price in the game.</span></li>
+              <li><span lang="ru">Цена у Ange — по сделкам последнего часа в данных GGG, не по окну обмена в вашей игре: их ещё предстоит сверить. Без свежих данных (старше 3 часов) POETH честно идёт на сайт трейда.</span><span lang="en">The Ange price comes from the last hour of trades in GGG's data, not from the exchange window in your game: those still have to be compared. Without fresh data (older than 3 hours) POETH honestly falls back to the trade site.</span></li>
+              <li><span lang="ru">«По-английски» с русского клиента проверено на тестовых предметах, не в настоящем PoB 2.</span><span lang="en">“In English” from the Russian client was checked on test items, not in the real PoB 2.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">у курсора поверх игры; курс — вкладка «Прайс-чек»</span><span lang="en">at the cursor over the game; the rate — the Price Check tab</span></dd></div>
+              <div><dt><span lang="ru">Клавиши</span><span lang="en">Keys</span></dt><dd><kbd>Ctrl</kbd>+<kbd>D</kbd> · <span lang="ru">«по-английски» — не назначена</span><span lang="en">“in English” — not set</span></dd></div>
+              <div><dt><span lang="ru">Цены</span><span lang="en">Prices</span></dt><dd><span lang="ru">обменник Ange (данные GGG) и сайт трейда PoE 2</span><span lang="en">Ange's exchange (GGG data) and the PoE 2 trade site</span></dd></div>
+            </dl>
+            <div class="g-pair">
+              <figure class="shot">
+                <img lang="ru" src="../assets/img/guide/poe2-ange-ru.png" width="400" height="606" loading="lazy" alt="Окно цены PoE 2 на Сфере отмены: «Продайте у Ange за ~255 Сфер возвышения», цена у Ange за штуку, за стопку и по рынкам div, chaos и ex">
+                <img lang="en" src="../assets/img/guide/poe2-ange-en.png" width="400" height="526" loading="lazy" alt="PoE 2 price window on an Orb of Annulment: “Sell at Ange for ~255 Exalted Orbs”, Ange's price per item, per stack and by the div, chaos and ex markets">
+              </figure>
+              <figure class="shot">
+                <img lang="ru" src="../assets/img/guide/poe2-price-ru.png" width="400" height="842" loading="lazy" alt="Окно цены PoE 2 на редком луке: свойства с галочками, «Выставьте за ~20 Сфер возвышения» и цена на рынке">
+                <img lang="en" src="../assets/img/guide/poe2-price-en.png" width="400" height="842" loading="lazy" alt="PoE 2 price window on a rare bow: properties with checkboxes, “List it for ~20 Exalted Orbs” and the market price">
+              </figure>
+            </div>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-regex" aria-labelledby="h-poe2-regex">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg></span>
+          <div>
+            <h2 id="h-poe2-regex"><span lang="ru">PoE 2: regex — путевые камни, плитки, торговец</span><span lang="en">PoE 2: regex — waystones, tablets, vendor</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Строки для поиска в игре (<kbd>Ctrl</kbd>+<kbd>F</kbd>): подсвечивают нужные путевые камни и плитки в тайнике и нужные вещи у торговца. Вы отмечаете, что нужно, — POETH собирает строку на языке вашего клиента, до 250 символов.</span>
+          <span lang="en">Strings for the in-game search (<kbd>Ctrl</kbd>+<kbd>F</kbd>): they highlight the right waystones and tablets in your stash and the right items at vendors. You mark what you need — POETH builds the string in your client's language, up to 250 characters.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">«Фарм» → «Regex». Вверху — «Язык игры» (поставьте как у клиента) и «Экспертный режим».</span>
+                <span lang="en">Farming → Regex. At the top: “Game language” (set it to your client's) and “Expert mode”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Путевые камни»:</b> клик по моду переключает «неважно» → «хочу» → «не хочу»; опасные моды помечены значком. Ещё — тир T1–T16, пороги свойств (например, размер групп от 20%), редкость, «Неопознано», «Осквернено».</span>
+                <span lang="en"><b>Waystones:</b> a click on a mod cycles “don't care” → “want” → “don't want”; dangerous mods carry a warning icon. There is also tier T1–T16, property thresholds (for example, pack size 20%+), rarity, Unidentified and Corrupted.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Плитки»</b> — тип плитки и сколько использований осталось. <b>«Торговец»</b> — свойства вещей, класс, гнёзда и качество; строку вставляйте в поиск окна торговца.</span>
+                <span lang="en"><b>Tablets</b> — the tablet type and how many uses are left. <b>Vendor</b> — item properties, class, sockets and quality; paste the string into the vendor window's search.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Библиотека»</b> — готовые строки для новичков (начните с «Камни без опасных модов») и пять ваших слотов. «Скопировать» → в игре <kbd>Ctrl</kbd>+<kbd>F</kbd> → вставить. Или назначьте клавиши «Вставить строку поиска 1–5» — POETH сам нажмёт <kbd>Ctrl</kbd>+<kbd>F</kbd> и вставит строку.</span>
+                <span lang="en"><b>Library</b> — ready-made strings for beginners (start with “Waystones without dangerous mods”) and five slots of your own. Copy → in the game <kbd>Ctrl</kbd>+<kbd>F</kbd> → paste. Or set the “Paste search string 1–5” keys — POETH presses <kbd>Ctrl</kbd>+<kbd>F</kbd> and pastes the string by itself.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Профили «что нужно».</b> Сохраните набор со страницы как профиль. Кнопка «Цена» делает один поиск на сайте трейда PoE 2: число лотов, пять самых дешёвых и «вторая цена» — первая бывает приманкой. «Открыть на сайте» — в трейд-окне.</span>
+                <span lang="en"><b>“What I need” profiles.</b> Save a page's set as a profile. The Price button runs one search on the PoE 2 trade site: the number of listings, the five cheapest and the “second price” — the first one is often bait. “Open on the site” — in the trade window.</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Строки собраны по данным игры 0.5 и проверены на тексте подсказок, но не в самой игре. Прежде чем полагаться на строку, посмотрите подсветку в тайнике.</span><span lang="en">The strings are built from game data 0.5 and checked against tooltip text, but not in the game itself. Before you rely on a string, look at what lights up in your stash.</span></li>
+              <li><span lang="ru">Поиск игры не различает похожие тексты: строка может задеть соседний предмет в тайнике. Пара модов без русского текста помечена «нет RU» — их не выбрать.</span><span lang="en">The game's search can't tell similar texts apart: a string may catch a neighbouring item in your stash. A few mods without Russian text are marked “no RU” and can't be picked.</span></li>
+              <li><span lang="ru">«Цена» по профилю не учитывает того, чего нет в фильтрах сайта (например, редкость монстров), — POETH пишет «не учтено». Одно нажатие — один поиск, без повторов.</span><span lang="en">The profile Price can't use what the site has no filter for (monster rarity, for example) — POETH says “not counted”. One press — one search, no retries.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Фарм» → «Regex»</span><span lang="en">Farming → Regex</span></dd></div>
+              <div><dt><span lang="ru">Клавиши</span><span lang="en">Keys</span></dt><dd><span lang="ru">«Вставить строку поиска 1–5» — не назначены</span><span lang="en">“Paste search string 1–5” — not set</span></dd></div>
+              <div><dt><span lang="ru">Язык</span><span lang="en">Language</span></dt><dd><span lang="ru">как у клиента игры</span><span lang="en">your game client's</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/poe2-regex-ru.png" width="630" height="440" loading="lazy" alt="Regex PoE 2, «Библиотека»: готовые строки «Камни без опасных модов», «Камни на добычу», «Опознанные T15–T16» и «Плитки с 10+ использованиями»">
+              <img lang="en" src="../assets/img/guide/poe2-regex-en.png" width="630" height="440" loading="lazy" alt="PoE 2 Regex, Library: ready-made strings “Waystones without dangerous mods”, “Waystones for loot”, “Identified T15–T16” and “Tablets with 10+ uses”">
+            </figure>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-live" aria-labelledby="h-poe2-live">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg></span>
+          <div>
+            <h2 id="h-poe2-live"><span lang="ru">PoE 2: live search и сделки</span><span lang="en">PoE 2: live search and trades</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--info"><span lang="ru">live — нужен вход</span><span lang="en">live — sign-in needed</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Live следит за вашими поисками на сайте трейда PoE 2 и сразу сообщает о новых лотах. «Сделки» показывают карточку поверх игры, когда вам пишут «хочу купить». Всё как в PoE 1 — с поправкой на трейд PoE 2, где почти всё продаётся мгновенным выкупом.</span>
+          <span lang="en">Live watches your searches on the PoE 2 trade site and tells you about new listings right away. Trades shows a card over the game when someone whispers to buy from you. It all works like in PoE 1 — adjusted for PoE 2 trade, where almost everything sells by instant buyout.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">Войдите в аккаунт: live search сайт отдаёт только вошедшим. «Торговля» → «Live» → вставьте ссылку поиска с <code>pathofexile.com/trade2</code> → «Следить». Ссылки PoE 1 здесь не подходят — они работают в режиме PoE 1.</span>
+                <span lang="en">Sign in: the site serves live search to signed-in users only. Trade → Live → paste a search link from <code>pathofexile.com/trade2</code> → Watch. PoE 1 links don't fit here — they work in PoE 1 mode.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Новый лот — уведомление поверх игры со звуком, а когда игра свёрнута — уведомление Windows. Одновременно подключено не больше поисков, чем «Поисков PoE 2 одновременно» (по умолчанию 5): сайт свой предел не сообщает.</span>
+                <span lang="en">A new listing — an alert over the game with a sound, or a Windows notification when the game is minimized. At most “PoE 2 searches at once” are connected (5 by default): the site doesn't tell its limit.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Мгновенный выкуп:</b> тег «Торговец» и комиссия в золоте. «Открыть в трейд-окне» покажет лот на сайте — купить кнопкой на странице вы нажимаете сами. <b>Личный обмен:</b> «Написать» вставит сообщение в чат, Enter — тоже вы. Клавиша «Whisper последней находки (live)» делает то же без мыши.</span>
+                <span lang="en"><b>Instant buyout:</b> a Merchant tag and a gold fee. “Open in trade window” shows the listing on the site — you press the buy button on the page yourself. <b>In-person trade:</b> Whisper pastes the message into chat, and you press Enter. The “Whisper the last live hit” key does the same without the mouse.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Молния у поиска в избранном трейд-окна добавит его в Live с тегом «из избранного»; «Следить (live)» в окне цены — текущий запрос.</span>
+                <span lang="en">The bolt next to a search in the trade window favorites adds it to Live tagged “from favorites”; “Watch (live)” in the price window adds the current query.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Сделки»:</b> когда вам пишут по лоту для личного обмена, поверх игры появляется карточка. «Пригласить», «Обмен», «Продано» — каждая кнопка ровно одна команда в чат (<kbd>Alt</kbd>+<kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd>). POETH читает журнал PoE 2 (<code>Client.txt</code>); если не нашёл его сам — укажите файл в настройках.</span>
+                <span lang="en"><b>Trades:</b> when someone whispers about your in-person listing, a card appears over the game. Invite, Trade, Sold — each button sends exactly one chat command (<kbd>Alt</kbd>+<kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd>). POETH reads the PoE 2 log (<code>Client.txt</code>); if it can't find it, point to the file in the settings.</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Ничего не покупает и не отправляет сам: купить — кнопкой на сайте, сообщение — Enter в игре.</span><span lang="en">It never buys or sends anything by itself: buy with the site's button, send with Enter in the game.</span></li>
+              <li><span lang="ru">Выкуп у торговца идёт без сообщений, поэтому «Сделки» видят только личный обмен.</span><span lang="en">Instant buyouts come without whispers, so Trades only sees in-person trades.</span></li>
+              <li><span lang="ru">Live со входом в PoE 2 ещё не проверяли: если сайт ответит паузой «лимит», уменьшите «Поисков PoE 2 одновременно».</span><span lang="en">Live with a signed-in PoE 2 account hasn't been tested yet: if the site answers with a “rate limit” pause, lower “PoE 2 searches at once”.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Торговля» → «Live» и «Сделки»</span><span lang="en">Trade → Live and Trades</span></dd></div>
+              <div><dt><span lang="ru">Клавиши</span><span lang="en">Keys</span></dt><dd><kbd>Alt</kbd>+<kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd> · <span lang="ru">whisper находки — не назначена</span><span lang="en">whisper the hit — not set</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">вход — для live; журнал игры — для сделок</span><span lang="en">a sign-in for live; the game log for trades</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/poe2-live-ru.png" width="820" height="600" loading="lazy" alt="Вкладка Live в режиме PoE 2: предел «Поисков PoE 2 одновременно», плашка «Нужен вход», находки с тегом «Торговец», комиссией в золоте и кнопками «Открыть в трейд-окне» и «Написать»">
+              <img lang="en" src="../assets/img/guide/poe2-live-en.png" width="820" height="600" loading="lazy" alt="Live tab in PoE 2 mode: the “PoE 2 searches at once” limit, a “Sign-in needed” notice, hits with a Merchant tag, a gold fee and the “Open in trade window” and Whisper buttons">
+            </figure>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-rumours" aria-labelledby="h-poe2-rumours">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-expedition"/></svg></span>
+          <div>
+            <h2 id="h-poe2-rumours"><span lang="ru">PoE 2: слухи журнала</span><span lang="en">PoE 2: logbook rumours</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Журнал экспедиции на атласе показывает три слуха — куда он поведёт. POETH подскажет, какой взять, и объяснит почему: награда и её цена, риск и наша оценка.</span>
+          <span lang="en">An Expedition logbook on the Atlas shows three rumours — where it will take you. POETH tells you which one to take and why: the reward and its price, the risk and our rating.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">«Фарм» → <b>«Слухи журнала»</b>. Откройте журнал в игре — видны три слуха.</span>
+                <span lang="en">Farming → <b>Logbook rumours</b>. Open the logbook in the game — three rumours are shown.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Найдите каждый по первым буквам, как в игре («Упа…»), или по названию острова. Можно выбрать до шести: переложите предмет — игра покажет другие три.</span>
+                <span lang="en">Find each one by its first letters as in the game (“Fal…”) or by the island's name. You can pick up to six: move the item — the game shows three others.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Вверху — <b>«Бери «…»»</b> и почему. Порядок решения: ваш тир → наш тир ●●● → заметно дороже главная награда → безопаснее. У каждого слуха — куда ведёт, награда с ценой (у Ange или по poe.ninja), риск и наша строка.</span>
+                <span lang="en">At the top: <b>“Take “…””</b> and why. The order of the decision: your tier → our tier ●●● → a clearly pricier main reward → safer. Each rumour shows where it leads, the reward with its price (at Ange or from poe.ninja), the risk and our note.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Моя оценка» — свой тир, «Не беру» и заметка. Хранятся только на этом компьютере.</span>
+                <span lang="en">“My rating” — your own tier, “Skip” and a note. They are stored on this computer only.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">По желанию — клавиша «Слухи журнала» (по умолчанию не назначена). Наведите на журнал и нажмите: POETH скопирует текст предмета (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>) и отметит слухи, если найдёт их в тексте. Не над предметом клавиша показывает или прячет короткий вид поверх игры.</span>
+                <span lang="en">Optionally, the “Logbook rumours” key (not set by default). Hover the logbook and press it: POETH copies the item text (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>) and picks the rumours if it finds them in the text. Away from an item, the key shows or hides a short view over the game.</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Есть ли слухи в тексте журнала по <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>, в игре не проверено. Если нет — клавиша честно скажет «В тексте журнала слухов нет», выбирайте вручную.</span><span lang="en">Whether the logbook text from <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd> contains the rumours hasn't been checked in the game. If not, the key says so honestly — pick them by hand.</span></li>
+              <li><span lang="ru">Строки слухов и острова взяты из файлов игры (патч 0.5), а награды и опасности — по данным игры и сторонним описаниям, в игре не сверены: у таких наград стоит «?».</span><span lang="en">Rumour lines and islands come from the game files (patch 0.5), while rewards and dangers come from game data and third-party write-ups and are not confirmed in the game: such rewards carry a “?”.</span></li>
+              <li><span lang="ru">Оценки сообщества не копируем — кнопка «Мнение сообщества» открывает их сайт в браузере.</span><span lang="en">We don't copy community ratings — the “Community opinion” button opens their site in your browser.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Фарм» → «Слухи журнала» (только PoE 2)</span><span lang="en">Farming → Logbook rumours (PoE 2 only)</span></dd></div>
+              <div><dt><span lang="ru">Клавиша</span><span lang="en">Key</span></dt><dd><span lang="ru">«Слухи журнала» — не назначена</span><span lang="en">“Logbook rumours” — not set</span></dd></div>
+              <div><dt><span lang="ru">Данные</span><span lang="en">Data</span></dt><dd><span lang="ru">20 слухов RU и EN из файлов игры</span><span lang="en">20 rumours in EN and RU from the game files</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/poe2-rumours-ru.png" width="630" height="670" loading="lazy" alt="«Слухи журнала»: выбрано 3 из 6, плашка «Бери «Упавшие звёзды…»» с ценой награды и строки слухов с островом, наградой и риском">
+              <img lang="en" src="../assets/img/guide/poe2-rumours-en.png" width="630" height="670" loading="lazy" alt="Logbook rumours: 3 of 6 picked, a “Take “Fallen stars…”” banner with the reward price and rumour rows with the island, reward and risk">
+            </figure>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-build" aria-labelledby="h-poe2-build">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-passive"/></svg></span>
+          <div>
+            <h2 id="h-poe2-build"><span lang="ru">PoE 2: «Билд» — «Сохранить в игру» и «Вложение»</span><span lang="en">PoE 2: Build — “Save to the game” and Instilling</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Вставьте билд из Path of Building 2 — POETH покажет этапы по уровням и по кнопке запишет билд в игровой планировщик PoE 2 (Build Planner) с подсказками на русском или английском. «Вложение» подскажет, какие три жидкие эмоции и в каком порядке дают нужный нотабл.</span>
+          <span lang="en">Paste a Path of Building 2 build — POETH shows its stages by level and, at the press of a button, writes it into the PoE 2 in-game Build Planner with hints in English or Russian. Instilling tells you which three liquid emotions, and in what order, give the notable you want.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">«Прокачка» → «Билд». Вставьте код PoB2 или ссылку pobb.in, pob.codes, maxroll.gg/poe2/pob, poe2db → «Открыть». Код никуда не отправляется; по ссылке — один запрос по вашему нажатию.</span>
+                <span lang="en">Levelling → Build. Paste a PoB2 code or a pobb.in, pob.codes, maxroll.gg/poe2/pob or poe2db link → Open. The code is not sent anywhere; a link means one request, when you press the button.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Этапы по уровням» — камни и новые ключевые ноды каждого этапа. Внизу честно написано, что в файл не попадёт: умения от предметов и дерева, атаки оружия.</span>
+                <span lang="en">“Level stages” — gems and new key nodes for each stage. Underneath it honestly says what won't go into the file: skills from items and the tree, weapon attacks.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Сохранить билд в игру»:</b> название, «Подсказки в файле» — русские или английские → «Сохранить в игру». POETH покажет путь (<code>Документы\My Games\Path of Exile 2\BuildPlanner</code>) и запишет файл только после вашего подтверждения. Файл с таким именем уже есть — «Сохранить копией» или «Заменить».</span>
+                <span lang="en"><b>Save the build to the game:</b> a name, “Hints in the file” — English or Russian → “Save to the game”. POETH shows the path (<code>Documents\My Games\Path of Exile 2\BuildPlanner</code>) and writes the file only after you confirm. If a file with that name exists — “Save as a copy” or “Replace”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">В игре: окно пассивных умений → планировщик билдов (Build Planner) → выберите билд в списке — подсветятся ноды, камни и подсказки для вашего уровня.</span>
+                <span lang="en">In the game: the passive skill window → Build Planner → pick the build in the list — nodes, gems and hints for your level light up.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>«Вложение»:</b> «Нотабл → эмоции» — найдите нотабл по-русски или по-английски, POETH покажет три эмоции по местам (порядок важен) и сколько они стоят у Ange; «Эмоции → нотабл» — наоборот. «У автора на амулете» — вложение из самого билда.</span>
+                <span lang="en"><b>Instilling:</b> “Notable → emotions” — search a notable in English or Russian, POETH shows three emotions by slot (order matters) and what they cost at Ange; “Emotions → notable” works the other way. “On the author's amulet” is the instill from the build itself.</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Примет ли игра файл, в игре ещё не проверено: формат планировщика у GGG помечен как экспериментальный.</span><span lang="en">Whether the game accepts the file hasn't been checked in the game yet: GGG marks the planner format as experimental.</span></li>
+              <li><span lang="ru">Ничего не пишет без подтверждения и не трогает другие файлы в папке. Имя файла пока латиницей — русское название записывается транслитом.</span><span lang="en">It writes nothing without your confirmation and doesn't touch other files in the folder. The file name is in Latin letters for now — a Russian name is transliterated.</span></li>
+              <li><span lang="ru">«Против надетого», дерево поверх игры (<kbd>Alt</kbd>+<kbd>P</kbd>) и «Стартеры» — пока только в PoE 1.</span><span lang="en">Versus equipped, the tree over the game (<kbd>Alt</kbd>+<kbd>P</kbd>) and League starters are PoE 1 only for now.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Прокачка» → «Билд»</span><span lang="en">Levelling → Build</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">код или ссылка Path of Building 2</span><span lang="en">a Path of Building 2 code or link</span></dd></div>
+              <div><dt><span lang="ru">Файл</span><span lang="en">File</span></dt><dd><code>My Games\Path of Exile 2\BuildPlanner</code></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/poe2-build-ru.png" width="820" height="745" loading="lazy" alt="«Билд» в режиме PoE 2: этапы по уровням с камнями, «Сохранить билд в игру» с выбором языка подсказок и «Как выбрать в игре»; на рельсе — все вкладки PoE 2">
+              <img lang="en" src="../assets/img/guide/poe2-build-en.png" width="820" height="695" loading="lazy" alt="Build in PoE 2 mode: level stages with gems, “Save the build to the game” with the hint language and “How to pick it in the game”">
+            </figure>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="screen-prices" aria-labelledby="h-screen-prices">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-table"/></svg></span>
+          <div>
+            <h2 id="h-screen-prices"><span lang="ru">Цены поверх окон (Alt+F)</span><span lang="en">Prices over windows (Alt+F)</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 1</span><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Откройте особую вкладку тайника — валюту, эссенции, руны — и нажмите <kbd>Alt</kbd>+<kbd>F</kbd>: у ячеек появятся цены за штуку, а сбоку — сколько стоит вся вкладка. Работает в PoE 1 и PoE 2.</span>
+          <span lang="en">Open a special stash tab — currency, essences, runes — and press <kbd>Alt</kbd>+<kbd>F</kbd>: prices per item appear on the cells, and next to them, what the whole tab is worth. Works in PoE 1 and PoE 2.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">Откройте в игре особую вкладку тайника и нажмите <kbd>Alt</kbd>+<kbd>F</kbd>. POETH делает один снимок окна игры — только по нажатию, держит его в памяти и ничего не нажимает в игре.</span>
+                <span lang="en">Open a special stash tab in the game and press <kbd>Alt</kbd>+<kbd>F</kbd>. POETH takes one snapshot of the game window — only when you press the key; it keeps it in memory and presses nothing in the game.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">В первый раз POETH подготовит эталоны иконок («Готовлю эталоны иконок: N из M») — нужен интернет, это десятки секунд. Дальше эталоны берутся с диска, и подписи появляются примерно за секунду.</span>
+                <span lang="en">The first time, POETH prepares icon references (“Preparing icon references: N of M”) — this needs internet and takes tens of seconds. After that the references come from disk, and labels appear in about a second.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Цена — полосой по низу ячейки (<code>~</code> — цена под сомнением); справа — «Вкладка ≈ N», «без цены: n», «число не прочитано: n». В итог входят только уверенно прочитанные числа.</span>
+                <span lang="en">The price is a strip along the bottom of the cell (<code>~</code> means the price is uncertain); on the right — “Tab ≈ N”, “no price: n”, “count not read: n”. Only confidently read counts go into the total.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Повторное <kbd>Alt</kbd>+<kbd>F</kbd> прячет подписи; сами они прячутся через 45 секунд. Мышь проходит в игру.</span>
+                <span lang="en">Press <kbd>Alt</kbd>+<kbd>F</kbd> again to hide the labels; they hide by themselves after 45 seconds. The mouse passes through to the game.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">В PoE 2 в панели итога есть «Записать в богатство» — вкладка попадёт в <a href="#poe2-wealth">«Богатство PoE 2»</a>.</span>
+                <span lang="en">In PoE 2 the total panel has “Add to wealth” — the tab goes into <a href="#poe2-wealth">PoE 2 Wealth</a>.</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Снимок экрана не сохраняется на диск и никуда не отправляется.</span><span lang="en">The screenshot is never saved to disk or sent anywhere.</span></li>
+              <li><span lang="ru">Числа в стопках читаются не всегда: неуверенные помечены и в итог не входят.</span><span lang="en">Stack counts are not always readable: uncertain ones are marked and left out of the total.</span></li>
+              <li><span lang="ru">В PoE 2 раскладки особых вкладок (валюта, эссенции, руны, Делириум и др.) уже есть. В PoE 1 раскладок пока нет — POETH узнаёт ячейки по иконкам и часть может пропустить.</span><span lang="en">PoE 2 special tab layouts (currency, essences, runes, Delirium and more) are already in. PoE 1 has no layouts yet — POETH recognizes cells by their icons and may miss some.</span></li>
+              <li><span lang="ru">Проверено на снимках при разных разрешениях и масштабах, в живой игре — ещё нет.</span><span lang="en">Checked on screenshots at different resolutions and scales, not in the live game yet.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">поверх игры, у ячеек тайника</span><span lang="en">over the game, on the stash cells</span></dd></div>
+              <div><dt><span lang="ru">Клавиша</span><span lang="en">Key</span></dt><dd><kbd>Alt</kbd>+<kbd>F</kbd> <span lang="ru">— «Цены поверх окон» в настройках</span><span lang="en">— “Prices over windows” in the settings</span></dd></div>
+              <div><dt><span lang="ru">Цены</span><span lang="en">Prices</span></dt><dd><span lang="ru">PoE 1 — как в «Богатстве»; PoE 2 — у Ange и poe.ninja</span><span lang="en">PoE 1 — as in Wealth; PoE 2 — Ange and poe.ninja</span></dd></div>
+            </dl>
+            <p class="g-note">
+              <span lang="ru">Если раньше на <kbd>Alt</kbd>+<kbd>F</kbd> у вас была своя команда чата, она продолжит работать: POETH не займёт уже занятое сочетание.</span>
+              <span lang="en">If you already had a chat command on <kbd>Alt</kbd>+<kbd>F</kbd>, it keeps working: POETH does not take a key combination that is already in use.</span>
+            </p>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-lootfilter" aria-labelledby="h-poe2-lootfilter">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-flask"/></svg></span>
+          <div>
+            <h2 id="h-poe2-lootfilter"><span lang="ru">PoE 2: фильтр лута</span><span lang="en">PoE 2: loot filter</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Тот же NeverSink, что для <a href="#lootfilter">PoE 1</a>, только версия для PoE 2: мусор скрыт, валюта и ценное видны. POETH скачает официальный релиз с GitHub и положит один файл в папку PoE 2.</span>
+          <span lang="en">The same NeverSink as for <a href="#lootfilter">PoE 1</a>, in its PoE 2 version: junk is hidden, currency and valuables are shown. POETH downloads the official release from GitHub and puts one file into the PoE 2 folder.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">В режиме PoE 2: шестерёнка → <b>«Фильтр лута»</b>.</span>
+                <span lang="en">In PoE 2 mode: the gear → <b>Loot filter</b>.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Строгость 0–6. Не уверены — Regular; на путевых камнях — Semi-Strict, позже — Strict. Стиль (Default, Aura, Cobalt, Darkmode, Mythic, Vaal, Zen) меняет только вид подписей, не то, что видно.</span>
+                <span lang="en">Strictness 0–6. Not sure — Regular; on waystones — Semi-Strict, later Strict. The style (Default, Aura, Cobalt, Darkmode, Mythic, Vaal, Zen) only changes how drops look, not what is shown.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Установить» → файл <code>POETH-NeverSink-&lt;уровень&gt;.filter</code> в <code>Документы\My Games\Path of Exile 2</code>. Ваши другие фильтры в папке не трогаются.</span>
+                <span lang="en">Install → the file <code>POETH-NeverSink-&lt;level&gt;.filter</code> in <code>Documents\My Games\Path of Exile 2</code>. Your other filters in the folder are not touched.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">В игре: <kbd>Esc</kbd> → «Настройки» → вкладка «Игра» → «Фильтр предметов» → выберите файл POETH. Подробная схема — в «Как включить в игре».</span>
+                <span lang="en">In the game: <kbd>Esc</kbd> → Options → the Game tab → Item Filter → pick the POETH file. A step-by-step diagram is under “How to turn it on in the game”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Проверять новую версию раз в сутки» — POETH напомнит один раз, обновляет только кнопка.</span>
+                <span lang="en">“Check for a new version once a day” — POETH reminds you once; only the button updates.</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Не меняет фильтр: файл ровно как в релизе NeverSink. Свой фильтр под себя — на FilterBlade.</span><span lang="en">It doesn't change the filter: the file is exactly as in NeverSink's release. For a filter of your own, use FilterBlade.</span></li>
+              <li><span lang="ru">Путь в меню PoE 2 и то, видит ли игра файл при кириллице в пути к «Документам», ещё не сверены. Если файла нет в списке — подпишитесь на фильтр через ладдер фильтров на сайте игры.</span><span lang="en">The PoE 2 menu path, and whether the game sees the file when the Documents path has Cyrillic letters, are not confirmed yet. If the file isn't in the list, follow the filter through the filter ladder on the game's site.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Настройки» → «Фильтр лута» (в режиме PoE 2)</span><span lang="en">Settings → Loot filter (in PoE 2 mode)</span></dd></div>
+              <div><dt><span lang="ru">Файл</span><span lang="en">File</span></dt><dd><code>My Games\Path of Exile 2</code></dd></div>
+              <div><dt><span lang="ru">Источник</span><span lang="en">Source</span></dt><dd><span lang="ru">NeverSink, лицензия MIT</span><span lang="en">NeverSink, MIT license</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/poe2-lootfilter-ru.png" width="622" height="612" loading="lazy" alt="Раздел «Фильтр лута» в режиме PoE 2: строгость 0–6 с подсказками про путевые камни, стиль и кнопка «Переустановить»">
+              <img lang="en" src="../assets/img/guide/poe2-lootfilter-en.png" width="622" height="612" loading="lazy" alt="Loot filter section in PoE 2 mode: strictness 0–6 with waystone hints, the style and the Reinstall button">
+            </figure>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-handbook" aria-labelledby="h-poe2-handbook">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg></span>
+          <div>
+            <h2 id="h-poe2-handbook"><span lang="ru">PoE 2: «Справочник»</span><span lang="en">PoE 2: in-app Guide</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Пять коротких статей о PoE 2 для новичка прямо в POETH — своими словами, на русском и английском. Как и в <a href="#handbook">PoE 1</a>, статьи обновляются с данными, без переустановки.</span>
+          <span lang="en">Five short PoE 2 articles for newcomers right inside POETH — in our own words, in English and Russian. As in <a href="#handbook">PoE 1</a>, articles update with the data, without reinstalling.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">В режиме PoE 2: «Помощь» → <b>«Справочник»</b> — у PoE 2 свои статьи.</span>
+                <span lang="en">In PoE 2 mode: Help → <b>Guide</b> — PoE 2 has its own articles.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Статьи: «Старт 1.0: первые часы», «Валюта PoE 2: exalted и divine, обменник Ange», «Путевые камни и плитки — что это», «Как пользоваться regex в тайнике», «Фильтр лута в PoE 2».</span>
+                <span lang="en">Articles: “1.0 launch: the first hours”, “PoE 2 currency: Exalted and Divine, Ange's exchange”, “Waystones and tablets: what they are”, “How to use regex in your stash”, “Loot filters in PoE 2”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Кнопки в тексте ведут во вкладки POETH — «Кампания», «Прайс-чек», «Настройки»; ссылки на сайты открываются во вкладках трейд-окна.</span>
+                <span lang="en">Buttons in the text lead to POETH tabs — Campaign, Price Check, Settings; site links open in trade window tabs.</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Раздела про 1.0 пока нет: он появится после показа 7 ноября, к выходу 11 декабря статьи перепроверим.</span><span lang="en">There's no 1.0 section yet: it comes after the 7 November reveal, and we'll recheck the articles for the 11 December launch.</span></li>
+              <li><span lang="ru">Названия в русском клиенте (Ange, «Плитка …») ещё не сверены с игрой.</span><span lang="en">Names in the Russian client (Ange, “Плитка …”) are not confirmed against the game yet.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Помощь» → «Справочник» внизу рельса</span><span lang="en">Help → Guide at the bottom of the rail</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">режим PoE 2</span><span lang="en">PoE 2 mode</span></dd></div>
+            </dl>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-maps" aria-labelledby="h-poe2-maps">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg></span>
+          <div>
+            <h2 id="h-poe2-maps"><span lang="ru">PoE 2: учёт карт</span><span lang="en">PoE 2: map tracking</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">POETH читает журнал игры и сам считает карты: тир T1–T16, время в карте, смерти, карт в час. Ценный дроп отмечаете вы — кнопкой «+ находка» или из окна цены. Прибыль сессии — по снимку вкладок или вашему вводу валюты.</span>
+          <span lang="en">POETH reads the game log and counts maps by itself: tier T1–T16, time in the map, deaths, maps per hour. You mark valuable drops — with the “+ find” button or from the price window. Session profit comes from tab snapshots or the currency you type in.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">«Фарм» → «Богатство» → «Сессия фарма» → <b>«Начать сессию»</b>.</span>
+                <span lang="en">Farming → Wealth → Farming session → <b>Start session</b>.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Чем отметить начало?» — «Снять вкладки» (рекомендуем: <kbd>Alt</kbd>+<kbd>F</kbd> на каждой вкладке с валютой), «Ввести валюту» или «Только карты и время».</span>
+                <span lang="en">“How to mark the start?” — “Snap tabs” (recommended: <kbd>Alt</kbd>+<kbd>F</kbd> on each currency tab), “Enter currency” or “Maps and time only”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Идите в карты. Таймер карты идёт с входа в карту до убежища. Смерть — тот же забег, смертей +1; Бездны и пещеры острова Экспедиции входят в забег карты.</span>
+                <span lang="en">Run your maps. The map timer runs from entering the map until the hideout. A death keeps the same run, deaths +1; Abyss depths and Expedition island caves are part of the map's run.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«+ находка» у текущей карты: +1 div, +5 ex, +10 ex или «своё…». Точнее — <kbd>Ctrl</kbd>+<kbd>D</kbd> на предмете → «К забегу».</span>
+                <span lang="en">“+ find” on the current map: +1 div, +5 ex, +10 ex or “other…”. More precise: <kbd>Ctrl</kbd>+<kbd>D</kbd> on the item → “To this run”.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Завершить» → «Как посчитать прибыль?» — снять те же вкладки, ввести валюту или «Без прибыли». Прибыль — разница начала и конца; находки уже в ней и дважды не считаются.</span>
+                <span lang="en">Finish → “How to count the profit?” — snap the same tabs, enter currency or “No profit”. Profit is the difference between start and end; finds are already in it and are not counted twice.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«Виджет поверх игры» — карта, тир, время, число карт и находки прямо в игре.</span>
+                <span lang="en">“Widget over the game” — the map, tier, time, map count and finds right in the game.</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Тайник сам не читает — у GGG нет API тайника для PoE 2. Без отметки начала прибыль не посчитать: сессия запишется с картами, временем и находками.</span><span lang="en">It doesn't read your stash by itself — GGG has no stash API for PoE 2. Without a start mark there's no profit: the session is saved with maps, time and finds.</span></li>
+              <li><span lang="ru">Журнал настоящего клиента PoE 2 мы ещё не читали — правила взяты из данных игры. Что считается отдельным забегом (башни, острова), сверим в игре.</span><span lang="en">We haven't read a real PoE 2 client log yet — the rules come from game data. What counts as a separate run (towers, islands) will be confirmed in the game.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Фарм» → «Богатство» → «Сессия фарма»</span><span lang="en">Farming → Wealth → Farming session</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">журнал игры <code>Client.txt</code> PoE 2</span><span lang="en">the PoE 2 game log <code>Client.txt</code></span></dd></div>
+              <div><dt><span lang="ru">Клавиши</span><span lang="en">Keys</span></dt><dd><kbd>Alt</kbd>+<kbd>F</kbd> <span lang="ru">— снимок</span><span lang="en">— snapshot</span> · <kbd>Ctrl</kbd>+<kbd>D</kbd> <span lang="ru">→ «К забегу»</span><span lang="en">→ “To this run”</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/poe2-maps-ru.png" width="820" height="530" loading="lazy" alt="«Сессия фарма» PoE 2: идёт сессия, прибыль появится в конце, карт в час, среднее время, смерти и забеги с тиром T2–T16 и находками">
+              <img lang="en" src="../assets/img/guide/poe2-maps-en.png" width="820" height="530" loading="lazy" alt="PoE 2 Farming session: a session in progress, profit at the end, maps per hour, average time, deaths and runs with tiers T2–T16 and finds">
+            </figure>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-wealth" aria-labelledby="h-poe2-wealth">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-coins"/></svg></span>
+          <div>
+            <h2 id="h-poe2-wealth"><span lang="ru">PoE 2: «Богатство»</span><span lang="en">PoE 2: Wealth</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span><span class="tag tag--good"><span lang="ru">без входа</span><span lang="en">no sign-in</span></span><span class="tag"><span lang="ru">проверено без игры</span><span lang="en">tested without the game</span></span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Сколько у вас всего в div и ex. Честно: у GGG нет API тайника для PoE 2, поэтому POETH не может прочитать тайник сам, как в <a href="#wealth">PoE 1</a>. Итог складывается из того, что вы покажете: снимков вкладок, быстрого ввода валюты и ценных предметов из окна цены.</span>
+          <span lang="en">How much you have in div and ex. To be honest: GGG has no stash API for PoE 2, so POETH can't read your stash by itself as in <a href="#wealth">PoE 1</a>. The total adds up what you show it: tab snapshots, quick currency input and valuable items from the price window.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Как пользоваться</span><span lang="en">How to use it</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">«Фарм» → «Богатство» → «Тайник». Пока пусто — три способа; их можно смешивать, каждый предмет считается один раз (берётся то, что новее).</span>
+                <span lang="en">Farming → Wealth → Stash. While empty it shows three ways; you can mix them, and each item is counted once (the newer value wins).</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Быстрый ввод валюты:</b> div, ex, chaos и ходовая валюта — «−», число, «+1», «+10»; «Добавить валюту» ищет по-русски и по-английски. Сохраняется само. Золото — отдельной строкой: на бирже его не меняют на валюту, поэтому в div оно не входит.</span>
+                <span lang="en"><b>Quick currency input:</b> div, ex, chaos and common currency — “−”, a number, “+1”, “+10”; “Add currency” searches in English and Russian. It saves by itself. Gold has its own row: the exchange doesn't trade it for currency, so it's not part of the div total.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Снимок вкладки:</b> откройте вкладку валюты (или эссенций, рун, фрагментов), нажмите <kbd>Alt</kbd>+<kbd>F</kbd>, затем «Записать в богатство». В POETH появится карточка — фокус остаётся в игре. Неуверенные числа помечены «проверьте: N?» — поправьте или нажмите «верно», затем «Принять».</span>
+                <span lang="en"><b>Tab snapshot:</b> open a currency tab (or essences, runes, fragments), press <kbd>Alt</kbd>+<kbd>F</kbd>, then “Add to wealth”. A card appears in POETH — the focus stays in the game. Uncertain counts are marked “check: N?” — fix them or confirm, then Accept.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru"><b>Ценный предмет:</b> <kbd>Ctrl</kbd>+<kbd>D</kbd> → «В богатство» — запишется с ценой окна. Валюту и стопки так не добавить: их считают ввод и снимок, чтобы не было двойного счёта.</span>
+                <span lang="en"><b>A valuable item:</b> <kbd>Ctrl</kbd>+<kbd>D</kbd> → “Add to wealth” — it's saved with the window's price. Currency and stacks can't be added this way: input and snapshots count them, so nothing is counted twice.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Вверху — «Всего ≈ N div · M ex по курсу биржи», что изменилось со вчерашнего дня, «Из чего итог» и график. Данные старше суток — серые, кнопка «Переснять устаревшую».</span>
+                <span lang="en">At the top: “Total ≈ N div · M ex at the exchange rate”, the change since yesterday, “What the total is made of” and a chart. Data older than a day is grey, with a “Retake outdated” button.</span>
+              </div></li>
+            </ol>
+            <h3><span lang="ru">Чего не делает</span><span lang="en">What it does not do</span></h3>
+            <ul class="g-list">
+              <li><span lang="ru">Не читает тайник сам и не ходит на сайт за вашим тайником — у GGG для PoE 2 такого API нет, обходных путей мы не делаем.</span><span lang="en">It doesn't read your stash by itself or fetch it from the site — GGG has no such API for PoE 2, and we don't build workarounds.</span></li>
+              <li><span lang="ru">Снимок экрана не хранится — только числа, которые вы приняли. Записать можно только вкладку тайника, не окно наград Ритуала или торговца.</span><span lang="en">The screenshot isn't kept — only the numbers you accepted. Only a stash tab can be recorded, not the Ritual rewards or a vendor window.</span></li>
+              <li><span lang="ru">Итог примерный: цены — по рынку лиги, числа в стопках читаются не всегда, а неуверенные без вашей проверки в итог не входят.</span><span lang="en">The total is approximate: prices follow the league market, stack counts aren't always readable, and uncertain ones stay out until you check them.</span></li>
+            </ul>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Фарм» → «Богатство» → «Тайник»</span><span lang="en">Farming → Wealth → Stash</span></dd></div>
+              <div><dt><span lang="ru">Клавиши</span><span lang="en">Keys</span></dt><dd><kbd>Alt</kbd>+<kbd>F</kbd> <span lang="ru">— снимок вкладки</span><span lang="en">— tab snapshot</span> · <kbd>Ctrl</kbd>+<kbd>D</kbd> <span lang="ru">→ «В богатство»</span><span lang="en">→ “Add to wealth”</span></dd></div>
+              <div><dt><span lang="ru">Цены</span><span lang="en">Prices</span></dt><dd><span lang="ru">у Ange (данные GGG), чего там нет — poe.ninja</span><span lang="en">Ange (GGG data), otherwise poe.ninja</span></dd></div>
+              <div><dt><span lang="ru">Хранится</span><span lang="en">Stored</span></dt><dd><span lang="ru">только на этом компьютере</span><span lang="en">on this computer only</span></dd></div>
+            </dl>
+            <figure class="shot">
+              <img lang="ru" src="../assets/img/guide/poe2-wealth-ru.png" width="820" height="520" loading="lazy" alt="«Богатство» PoE 2: всего ≈ 104 div, плашка «Почему так» про API тайника, «Из чего итог» — снимок вкладок, вручную, ценные предметы — и быстрый ввод валюты">
+              <img lang="en" src="../assets/img/guide/poe2-wealth-en.png" width="820" height="520" loading="lazy" alt="PoE 2 Wealth: total ≈ 104 div, a “Why it works this way” note about the stash API, “What the total is made of” — tab snapshots, typed in, valuable items — and quick currency input">
+            </figure>
+          </div>
+        </div>
+        <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
+      </article>
+
+      <article class="g-feat" id="poe2-soon" aria-labelledby="h-poe2-soon">
+        <div class="g-feat__head">
+          <span class="g-ico"><svg class="ico" aria-hidden="true"><use href="#i-history"/></svg></span>
+          <div>
+            <h2 id="h-poe2-soon"><span lang="ru">Скоро в PoE 2</span><span lang="en">Coming to PoE 2</span></h2>
+            <p class="g-feat__tags"><span class="tag">PoE 2</span></p>
+          </div>
+        </div>
+        <p class="g-feat__lead">
+          <span lang="ru">Страница в приложении: чего из POETH для PoE 1 ещё нет в режиме PoE 2 и когда будет. Список обновляется вместе с приложением — там он свежее, чем в этом гайде.</span>
+          <span lang="en">A page in the app: what POETH has for PoE 1 but not yet for PoE 2, and when it comes. The list updates with the app — there it is fresher than in this guide.</span>
+        </p>
+        <div class="g-feat__grid">
+          <div>
+            <h3><span lang="ru">Что там сейчас</span><span lang="en">What's there now</span></h3>
+            <ol class="g-steps">
+              <li><div>
+                <span lang="ru">«Помощь» → <b>«Скоро в PoE 2»</b> — пункт есть только в режиме PoE 2.</span>
+                <span lang="en">Help → <b>Coming to PoE 2</b> — the item is shown in PoE 2 mode only.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">«После 1.0 (11.12)»: «Обмен» — выгодные пары валют у обменника; «Что фармить» — стратегии под атлас PoE 2; «Компас: новые акты» — данные появятся с выходом 1.0.</span>
+                <span lang="en">“After 1.0 (11 Dec)”: Exchange flipping — profitable currency pairs at the exchange; What to farm — strategies for the PoE 2 atlas; Compass: new acts — the data arrives with 1.0.</span>
+              </div></li>
+              <li><div>
+                <span lang="ru">Кнопка «Переключиться на PoE 1» — POETH перезапустится в режиме PoE 1.</span>
+                <span lang="en">The “Switch to PoE 1” button — POETH restarts in PoE 1 mode.</span>
+              </div></li>
+            </ol>
+          </div>
+          <div class="g-side">
+            <dl class="g-where">
+              <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Помощь» → «Скоро в PoE 2»</span><span lang="en">Help → Coming to PoE 2</span></dd></div>
+            </dl>
           </div>
         </div>
         <a class="g-back" href="#contents"><span lang="ru">↑ К оглавлению</span><span lang="en">↑ Back to contents</span></a>
@@ -2190,7 +2870,7 @@
           <div class="g-side">
             <dl class="g-where">
               <div><dt><span lang="ru">Где</span><span lang="en">Where</span></dt><dd><span lang="ru">«Помощь» → «Справочник» внизу рельса</span><span lang="en">Help → Guide at the bottom of the rail</span></dd></div>
-              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">PoE 1</span><span lang="en">PoE 1</span></dd></div>
+              <div><dt><span lang="ru">Что нужно</span><span lang="en">Needs</span></dt><dd><span lang="ru">PoE 1; у PoE 2 — <a href="#poe2-handbook">свои статьи</a></span><span lang="en">PoE 1; PoE 2 has <a href="#poe2-handbook">its own articles</a></span></dd></div>
             </dl>
             <p class="g-note">
               <span lang="ru">Тексты статей — POETH, своими словами. Этот гайд на сайте — про кнопки приложения, а «Справочник» — про саму игру.</span>
