@@ -6,10 +6,10 @@ export function farmBridge(): FarmIpcApi {
   return {
     farm: {
       state: () => ipcRenderer.invoke(IPC.farm.state),
-      start: () => ipcRenderer.invoke(IPC.farm.start),
+      start: (opts) => ipcRenderer.invoke(IPC.farm.start, opts),
       pause: () => ipcRenderer.invoke(IPC.farm.pause),
       resume: () => ipcRenderer.invoke(IPC.farm.resume),
-      stop: () => ipcRenderer.invoke(IPC.farm.stop),
+      stop: (opts) => ipcRenderer.invoke(IPC.farm.stop, opts),
       setConfig: (patch) => ipcRenderer.invoke(IPC.farm.setConfig, patch),
       removeRun: (id) => ipcRenderer.invoke(IPC.farm.removeRun, id),
       clear: () => ipcRenderer.invoke(IPC.farm.clear),

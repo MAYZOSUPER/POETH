@@ -2,8 +2,8 @@ import { app, ipcMain } from 'electron'
 import path from 'path'
 import { IPC } from '@shared/ipc'
 import type { GameDef, GameId } from '@shared/games'
-import type { FarmConfigPatch, FarmLogStatus, FarmState } from '@shared/types/farm'
-import { cleanWidgetPos } from '@shared/farm/tracker'
+import type { FarmConfigPatch, FarmLogStatus, FarmProfitMode, FarmStartOptions, FarmState } from '@shared/types/farm'
+import { cleanProfitMode, cleanWidgetPos } from '@shared/farm/tracker'
 import { getRunningGame } from '../gameContext'
 import { getFarmService, type FarmSessionService } from '../services/farmSession'
 import { loadPoe2FarmRules } from '../services/farmData'
@@ -85,6 +85,7 @@ async function startLog(def: GameDef): Promise<void> {
   await farm.prime(() => (file ? readLogTail(file) : Promise.resolve([])))
 }
 
+const profitModeArg = (v: unknown): FarmProfitMode | undefined => cleanProfitMode((v as FarmStartOptions | null)?.profitMode)
 const idArg = (v: unknown): string | null => (typeof v === 'string' && v.length > 0 && v.length <= MAX_ID_LEN ? v : null)
 
 function register(): void {
@@ -109,10 +110,11 @@ function register(): void {
     await farm.load()
     return farm.state()
   })
-  ipcMain.handle(IPC.farm.start, async () => (await svc()).start())
+  // PoE 2: выбор из диалогов начала и конца — { profitMode }; у PoE 1 — без параметров
+  ipcMain.handle(IPC.farm.start, async (_e, opts: unknown) => (await svc()).start(undefined, profitModeArg(opts)))
   ipcMain.handle(IPC.farm.pause, async () => (await svc()).pause())
   ipcMain.handle(IPC.farm.resume, async () => (await svc()).resume())
-  ipcMain.handle(IPC.farm.stop, async () => (await svc()).stop())
+  ipcMain.handle(IPC.farm.stop, async (_e, opts: unknown) => (await svc()).stop(profitModeArg(opts)))
   ipcMain.handle(IPC.farm.setConfig, async (_e, patch: unknown) => {
     const p = (patch ?? {}) as FarmConfigPatch
     const clean: FarmConfigPatch = {}

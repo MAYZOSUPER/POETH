@@ -26,6 +26,8 @@ import type {
   FarmFindResult,
   FarmLocation,
   FarmProfit,
+  FarmProfitMark,
+  FarmProfitMode,
   FarmRun,
   FarmSession,
   FarmSessionProfit,
@@ -103,9 +105,12 @@ function copyRun(r: FarmRun): FarmRun {
   if (r.finds) c.finds = r.finds.map((f) => ({ ...f }))
   return c
 }
-/** Копия сессии наружу: прибыль сессии — тоже копия. */
+/** Копия сессии наружу: прибыль и отметка начала — тоже копии. */
 function copySession<T extends FarmSession>(s: T): T {
-  return s.profit ? { ...s, profit: { ...s.profit } } : { ...s }
+  const c = { ...s }
+  if (s.profit) c.profit = { ...s.profit }
+  if (s.profitStart) c.profitStart = { ...s.profitStart }
+  return c
 }
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v)
@@ -138,7 +143,7 @@ export function cleanFindInput(v: unknown): { ref: string; name?: string; qty: n
     ...(name && name !== ref ? { name } : {}),
     qty,
     valueEx,
-    source: x.source === 'ctrlD' ? 'ctrlD' : 'manual',
+    source: x.source === 'ctrlD' || x.source === 'quick' ? x.source : 'manual',
     ...(typeof x.runId === 'string' && x.runId ? { runId: x.runId } : {})
   }
 }
@@ -150,6 +155,23 @@ function cleanFind(v: unknown): FarmFind | null {
   return { id: x.id, ref: f.ref, ...(f.name ? { name: f.name } : {}), qty: f.qty, valueEx: f.valueEx, at: x.at, source: f.source }
 }
 
+/** Режим прибыли PoE 2 из диалога; иначе undefined. */
+export function cleanProfitMode(v: unknown): FarmProfitMode | undefined {
+  return v === 'snapshot' || v === 'manual' || v === 'none' ? v : undefined
+}
+
+/** Отметка начала или конца от «Богатства» (S70): at по умолчанию — `now`; tabs — целое 1…100. */
+export function cleanProfitMark(v: unknown, now = 0): FarmProfitMark | null {
+  const p = v as Partial<FarmProfitMark> | null
+  if (!p || typeof p !== 'object') return null
+  const tabs = p.tabs
+  return {
+    source: p.source === 'snapshot' ? 'snapshot' : 'manual',
+    at: finite(p.at) ? p.at : now,
+    ...(finite(tabs) && Number.isInteger(tabs) && tabs >= 1 && tabs <= 100 ? { tabs } : {})
+  }
+}
+
 /** Прибыль сессии от «Богатства» (S70): ex обязателен; at по умолчанию — `now`. Иначе null. */
 export function cleanSessionProfit(v: unknown, now = 0): FarmSessionProfit | null {
   const p = v as Partial<FarmSessionProfit> | null
@@ -157,8 +179,7 @@ export function cleanSessionProfit(v: unknown, now = 0): FarmSessionProfit | nul
   return {
     ex: p.ex,
     ...(finite(p.exPerDiv) && p.exPerDiv > 0 ? { exPerDiv: p.exPerDiv } : {}),
-    source: p.source === 'snapshot' ? 'snapshot' : 'manual',
-    at: finite(p.at) ? p.at : now
+    ...(cleanProfitMark(p, now) as FarmProfitMark)
   }
 }
 
@@ -168,17 +189,32 @@ function findsValue(finds: FarmFind[]): number | null {
   return priced.length ? priced.reduce((a, f) => a + (f.valueEx as number), 0) : null
 }
 
-/** Поля PoE 2 в статистике: доход в час — по прибыли сессии, без неё — по находкам. */
+/** Поля PoE 2 в статистике: итог = прибыль сессии от «Богатства» + находки, в час — он же. */
 function exStats(finds: FarmFind[], profit: FarmSessionProfit | undefined, durationMs: number): Partial<FarmStats> {
   const findsEx = findsValue(finds)
   const profitEx = profit ? profit.ex : null
-  const base = profitEx ?? findsEx
+  const totalEx = profitEx === null && findsEx === null ? null : (profitEx ?? 0) + (findsEx ?? 0)
   return {
     finds: finds.length,
     findsEx,
     profitEx,
-    exPerHour: base !== null && durationMs >= MIN_RATE_MS ? base / (durationMs / HOUR) : null
+    totalEx,
+    exPerHour: totalEx !== null && durationMs >= MIN_RATE_MS ? totalEx / (durationMs / HOUR) : null
   }
+}
+
+/** Поля PoE 2 сессии из farm.json (битые — отброшены). */
+function cleanSessionExtras(s: Partial<FarmSession>): Partial<FarmSession> {
+  const out: Partial<FarmSession> = {}
+  const mode = cleanProfitMode(s.profitMode)
+  if (mode) out.profitMode = mode
+  const end = cleanProfitMode(s.profitEnd)
+  if (end) out.profitEnd = end
+  const start = s.profitStart ? cleanProfitMark(s.profitStart) : null
+  if (start) out.profitStart = start
+  const profit = cleanSessionProfit(s.profit)
+  if (profit) out.profit = profit
+  return out
 }
 
 /** Прибыль от S11a: chaos обязателен, runs ≥ 1 (по умолчанию 1); прочее — если корректно. */
@@ -252,18 +288,18 @@ export function normalizeFarmData(raw: unknown): FarmTrackerData {
     }
     const strategy = cleanStrategy(s.strategy)
     if (strategy) d.session.strategy = strategy
-    const profit = cleanSessionProfit(s.profit)
-    if (profit) d.session.profit = profit
+    Object.assign(d.session, cleanSessionExtras(s))
   }
   if (Array.isArray(x.sessions)) {
     d.sessions = x.sessions
       .filter((v) => v && typeof v.id === 'string' && Number.isFinite(v.endedAt) && v.stats)
       .slice(0, FARM_SESSIONS_LIMIT)
-      .map((v) => {
-        if (v.profit === undefined) return v
-        const { profit: raw, ...rest } = v
-        const profit = cleanSessionProfit(raw)
-        return profit ? { ...rest, profit } : rest
+      .map((v): FarmSessionSummary => {
+        // у PoE 1 полей PoE 2 нет — запись как была
+        if (v.profit === undefined && v.profitMode === undefined && v.profitStart === undefined && v.profitEnd === undefined) return v
+        const { profit: _p, profitMode: _m, profitStart: _s, profitEnd: _e, ...rest } = v
+        void [_p, _m, _s, _e]
+        return { ...rest, ...cleanSessionExtras(v), endedAt: v.endedAt }
       })
   }
   if (x.config) d.config = { overlayWidget: x.config.overlayWidget === true, widgetPos: cleanWidgetPos(x.config.widgetPos) }
@@ -429,14 +465,19 @@ export class FarmTracker {
   // Сессия: Начать / Пауза / Продолжить / Стоп
   // ---------------------------------------------------------------------------
 
-  /** `strategy` — метка стратегии советника (S16), необязательна. */
-  startSession(ts: number, strategy?: string): FarmEvent[] {
+  /**
+   * `strategy` — метка стратегии советника (S16), необязательна; `profitMode` — PoE 2: чем отметить начало
+   * (диалог «Чем отметить начало?»), S70 видит его в событии session:start.
+   */
+  startSession(ts: number, strategy?: string, profitMode?: FarmProfitMode): FarmEvent[] {
     const d = this.d
     if (d.session) return []
     const out: FarmEvent[] = []
     const session: FarmSession = { id: `s${ts.toString(36)}`, startedAt: ts, endedAt: null, pausedAt: null, pausedMs: 0 }
     const tag = cleanStrategy(strategy)
     if (tag) session.strategy = tag
+    const mode = cleanProfitMode(profitMode)
+    if (mode) session.profitMode = mode
     if (d.current && !d.current.sessionId) {
       // начали посреди карты — карта идёт в сессию; в убежище с открытым прошлым забегом — он
       // закрывается до начала сессии (его время и прибыль к сессии не относятся)
@@ -444,7 +485,7 @@ export class FarmTracker {
       else out.push(this.finishRun(d.lastExit ?? ts, ts))
     }
     d.session = session
-    out.push({ type: 'session', state: 'start', session: { ...session }, at: ts })
+    out.push({ type: 'session', state: 'start', session: copySession(session), at: ts })
     return out
   }
 
@@ -457,7 +498,7 @@ export class FarmTracker {
       d.enteredAt = null
     }
     s.pausedAt = Math.max(ts, s.startedAt)
-    return [{ type: 'session', state: 'pause', session: { ...s }, at: ts }]
+    return [{ type: 'session', state: 'pause', session: copySession(s), at: ts }]
   }
 
   resumeSession(ts: number): FarmEvent[] {
@@ -466,14 +507,17 @@ export class FarmTracker {
     s.pausedMs += span(s.pausedAt, ts)
     s.pausedAt = null
     if (this.d.inside && this.d.current) this.d.enteredAt = ts
-    return [{ type: 'session', state: 'resume', session: { ...s }, at: ts }]
+    return [{ type: 'session', state: 'resume', session: copySession(s), at: ts }]
   }
 
-  stopSession(ts: number): FarmEvent[] {
+  /** `profitMode` — PoE 2: как посчитать прибыль (диалог «Как посчитать прибыль?»), S70 видит его в session:stop. */
+  stopSession(ts: number, profitMode?: FarmProfitMode): FarmEvent[] {
     const d = this.d
     const s = d.session
     if (!s) return []
     const out: FarmEvent[] = []
+    const end = cleanProfitMode(profitMode)
+    if (end) s.profitEnd = end
     if (s.pausedAt !== null) {
       s.pausedMs += span(s.pausedAt, ts)
       s.pausedAt = null
@@ -486,6 +530,20 @@ export class FarmTracker {
     d.session = null
     out.push({ type: 'session', state: 'stop', session: copySession(s), at: ts })
     return out
+  }
+
+  /**
+   * Отметка начала от «Богатства» (S70): снимок N вкладок или ввод валюты — у идущей сессии (или у
+   * завершённой, если пришла поздно). null — убрать. false — сессии нет.
+   */
+  setSessionStart(sessionId: string, mark: FarmProfitMark | null, ts: number): boolean {
+    const d = this.d
+    const target = d.session?.id === sessionId ? d.session : d.sessions.find((s) => s.id === sessionId)
+    if (!target) return false
+    const clean = mark ? cleanProfitMark(mark, ts) : null
+    if (clean) target.profitStart = clean
+    else delete target.profitStart
+    return true
   }
 
   /**

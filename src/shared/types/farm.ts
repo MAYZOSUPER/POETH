@@ -84,8 +84,8 @@ export interface FarmFind {
   valueEx: number | null
   /** когда добавлена (мс) */
   at: number
-  /** откуда: окно цены по Ctrl+D или ручной ввод */
-  source: 'ctrlD' | 'manual'
+  /** откуда: окно цены по Ctrl+D, быстрые кнопки «+1 div / +5 ex / +10 ex» или ручной ввод «своё…» */
+  source: 'ctrlD' | 'quick' | 'manual'
 }
 
 /** Что присылают окно цены и ручной ввод: забег — текущий, если `runId` не указан. */
@@ -108,19 +108,37 @@ export type FarmFindResult =
   | { ok: false; reason: 'noRun' | 'invalid' | 'full' }
 
 /**
- * Прибыль сессии PoE 2 — считает «Богатство» (S70): снимок вкладок или ввод валюты в начале и в
- * конце сессии, разница по ценам. Трекер только хранит и показывает.
+ * PoE 2: чем считать прибыль сессии — выбор игрока в диалогах «Чем отметить начало?» и «Как посчитать
+ * прибыль?»: снять вкладки (S68), ввести валюту или без прибыли (только карты, время и находки).
  */
-export interface FarmSessionProfit {
+export type FarmProfitMode = 'snapshot' | 'manual' | 'none'
+
+/** PoE 2: отметка начала сессии от «Богатства» (S70) — снимок вкладок или ввод валюты. */
+export interface FarmProfitMark {
+  source: 'snapshot' | 'manual'
+  /** когда снято или введено (мс) */
+  at: number
+  /** снимок: сколько вкладок */
+  tabs?: number
+}
+
+/**
+ * Прибыль сессии PoE 2 — считает «Богатство» (S70): разница снимков вкладок или ввода валюты в начале и
+ * в конце сессии, по ценам. Находки забегов сюда не входят: итог сессии = прибыль + находки (так в макете
+ * «вкладки +2,9 div · находки +1,9 div»). Трекер только хранит и показывает; source/at/tabs — отметка конца.
+ */
+export interface FarmSessionProfit extends FarmProfitMark {
   /** в exalted; может быть < 0 */
   ex: number
   /** курс: exalted за 1 divine на момент расчёта (показать в div) */
   exPerDiv?: number
-  /** снимок вкладок (S68) или ручной ввод */
-  source: 'snapshot' | 'manual'
-  /** когда посчитана (мс) */
-  at: number
 }
+
+/** Кнопки сессии PoE 2: выбор из диалогов начала и конца (у PoE 1 — без параметров). */
+export interface FarmStartOptions {
+  profitMode?: FarmProfitMode
+}
+export type FarmStopOptions = FarmStartOptions
 
 export interface FarmSession {
   id: string
@@ -133,6 +151,12 @@ export interface FarmSession {
   pausedMs: number
   /** метка стратегии советника «что фармить» (S16) — id из strategies.json */
   strategy?: string
+  /** PoE 2: чем отметить начало (диалог «Чем отметить начало?»); S70 видит в событии session:start */
+  profitMode?: FarmProfitMode
+  /** PoE 2: отметка начала от «Богатства» (S70) — setSessionStart */
+  profitStart?: FarmProfitMark
+  /** PoE 2: как посчитать прибыль в конце (диалог «Как посчитать прибыль?»); S70 видит в событии session:stop */
+  profitEnd?: FarmProfitMode
   /** PoE 2: прибыль сессии от «Богатства» (S70) — setSessionProfit */
   profit?: FarmSessionProfit
 }
@@ -163,9 +187,11 @@ export interface FarmStats {
   finds?: number
   /** Σ цен находок в exalted; null — ни одной с ценой */
   findsEx?: number | null
-  /** прибыль сессии от «Богатства» (S70) в exalted; null — не посчитана */
+  /** прибыль сессии от «Богатства» (S70) в exalted — без находок; null — не посчитана */
   profitEx?: number | null
-  /** доход в час в exalted: по прибыли сессии, без неё — по находкам; null — нечего считать или сессия короче минуты */
+  /** итог сессии в exalted: прибыль + находки; null — ни того, ни другого */
+  totalEx?: number | null
+  /** итог в час в exalted; null — нечего считать или сессия короче минуты */
   exPerHour?: number | null
 }
 

@@ -1,5 +1,13 @@
 import { create } from 'zustand'
-import type { FarmConfigPatch, FarmFindInput, FarmFindResult, FarmLogStatus, FarmState } from '@shared/types/farm'
+import type {
+  FarmConfigPatch,
+  FarmFindInput,
+  FarmFindResult,
+  FarmLogStatus,
+  FarmStartOptions,
+  FarmState,
+  FarmStopOptions
+} from '@shared/types/farm'
 
 // Трекер карт и сессия фарма (S11b; PoE 2 — S69) в окне — компаньон (панель «Карты») и оверлей (виджет).
 // Состояние — из main (farm:state + событие farmChanged) для запущенной игры; кнопки сессии — в main.
@@ -12,10 +20,12 @@ interface FarmStore {
   busy: boolean
 
   init: () => Promise<() => void>
-  start: () => Promise<void>
+  /** PoE 2 — с выбором из диалога «Чем отметить начало?» */
+  start: (opts?: FarmStartOptions) => Promise<void>
   pause: () => Promise<void>
   resume: () => Promise<void>
-  stop: () => Promise<void>
+  /** PoE 2 — с выбором из диалога «Как посчитать прибыль?» */
+  stop: (opts?: FarmStopOptions) => Promise<void>
   setConfig: (patch: FarmConfigPatch) => Promise<void>
   removeRun: (id: string) => Promise<void>
   clear: () => Promise<void>
@@ -69,10 +79,10 @@ export const useFarmStore = create<FarmStore>((set, get) => {
         }
       }
     },
-    start: () => run(() => api().farm.start()),
+    start: (opts) => run(() => api().farm.start(opts)),
     pause: () => run(() => api().farm.pause()),
     resume: () => run(() => api().farm.resume()),
-    stop: () => run(() => api().farm.stop()),
+    stop: (opts) => run(() => api().farm.stop(opts)),
     setConfig: (patch) => run(() => api().farm.setConfig(patch)),
     removeRun: (id) => run(() => api().farm.removeRun(id)),
     clear: () => run(() => api().farm.clear()),

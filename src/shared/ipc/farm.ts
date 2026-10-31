@@ -6,7 +6,15 @@
 // события 'event:<домен>.<имя>'. Новые ключи не должны совпадать с другими доменами
 // (проверяет tests/ipc.test.ts).
 
-import type { FarmConfigPatch, FarmFindInput, FarmFindResult, FarmLogStatus, FarmState } from '../types/farm'
+import type {
+  FarmConfigPatch,
+  FarmFindInput,
+  FarmFindResult,
+  FarmLogStatus,
+  FarmStartOptions,
+  FarmState,
+  FarmStopOptions
+} from '../types/farm'
 
 export const farmChannels = {
   farm: {
@@ -34,13 +42,13 @@ export const farmEvents = {
 export interface FarmIpcApi {
   farm: {
     state(): Promise<FarmState>
-    /** «Начать» сессию фарма */
-    start(): Promise<FarmState>
+    /** «Начать» сессию фарма; PoE 2 — с выбором «Чем отметить начало?» */
+    start(opts?: FarmStartOptions): Promise<FarmState>
     pause(): Promise<FarmState>
     /** «Продолжить» после паузы */
     resume(): Promise<FarmState>
-    /** «Стоп»: закрыть открытый забег и сессию */
-    stop(): Promise<FarmState>
+    /** «Стоп»: закрыть открытый забег и сессию; PoE 2 — с выбором «Как посчитать прибыль?» */
+    stop(opts?: FarmStopOptions): Promise<FarmState>
     setConfig(patch: FarmConfigPatch): Promise<FarmState>
     removeRun(id: string): Promise<FarmState>
     /** очистить историю забегов и сессий */

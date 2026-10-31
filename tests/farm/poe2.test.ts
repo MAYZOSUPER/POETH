@@ -283,7 +283,7 @@ describe('«+ находка» и прибыль сессии (API для окн
     expect(tr.snapshot(0).current?.finds).toHaveLength(FARM_FINDS_LIMIT - 1)
   })
 
-  it('прибыль сессии от S70: у идущей и после «Стоп»; доход в час — по ней, без неё — по находкам', () => {
+  it('прибыль сессии от S70: у идущей и после «Стоп»; итог = прибыль + находки (макет: вкладки + находки)', () => {
     const tr = new FarmTracker(undefined, RULES)
     tr.startSession(at('21:00:00'))
     tr.ingestLines([zone('21:01:00', 'MapBluff', 79, 101)], 0)
@@ -293,21 +293,45 @@ describe('«+ находка» и прибыль сессии (API для окн
     expect(tr.setSessionProfit(sid, { ex: 300, exPerDiv: 560, source: 'manual', at: at('21:30:00') }, 0)).toBe(true)
     let st = tr.snapshot(at('21:30:00'))
     expect(st.session?.profit).toEqual({ ex: 300, exPerDiv: 560, source: 'manual', at: at('21:30:00') })
-    expect(st.stats).toMatchObject({ findsEx: 560, profitEx: 300 })
-    expect(st.stats?.exPerHour).toBeCloseTo(300 * 2, 6)
+    expect(st.stats).toMatchObject({ findsEx: 560, profitEx: 300, totalEx: 860 })
+    expect(st.stats?.exPerHour).toBeCloseTo(860 * 2, 6)
 
-    tr.stopSession(at('21:30:00'))
+    tr.stopSession(at('21:30:00'), 'snapshot')
     // итог приходит после «Стоп» (снимок в конце) — пересчёт итога сессии
-    expect(tr.setSessionProfit(sid, { ex: 1120, source: 'snapshot', at: 0 } as never, at('21:31:00'))).toBe(true)
+    expect(tr.setSessionProfit(sid, { ex: 1120, source: 'snapshot', tabs: 3, at: 0 } as never, at('21:31:00'))).toBe(true)
     st = tr.snapshot(at('21:31:00'))
-    expect(st.sessions[0].profit).toMatchObject({ ex: 1120, source: 'snapshot' })
-    expect(st.sessions[0].stats).toMatchObject({ profitEx: 1120, findsEx: 560 })
-    expect(st.sessions[0].stats.exPerHour).toBeCloseTo(1120 * 2, 6)
-    // убрать — доход снова по находкам
+    expect(st.sessions[0]).toMatchObject({ profitEnd: 'snapshot', profit: { ex: 1120, source: 'snapshot', tabs: 3, at: 0 } })
+    expect(st.sessions[0].stats).toMatchObject({ profitEx: 1120, findsEx: 560, totalEx: 1680 })
+    expect(st.sessions[0].stats.exPerHour).toBeCloseTo(1680 * 2, 6)
+    // убрать — итог — только находки
     expect(tr.setSessionProfit(sid, null, 0)).toBe(true)
     st = tr.snapshot(at('21:31:00'))
     expect(st.sessions[0].profit).toBeUndefined()
-    expect(st.sessions[0].stats.exPerHour).toBeCloseTo(560 * 2, 6)
+    expect(st.sessions[0].stats).toMatchObject({ profitEx: null, totalEx: 560 })
+  })
+
+  it('диалоги: «Чем отметить начало» и «Как посчитать прибыль» — в сессии и событиях для S70; отметка начала', () => {
+    const tr = new FarmTracker(undefined, RULES)
+    const start = tr.startSession(at('21:00:00'), undefined, 'snapshot')
+    expect(start[0]).toMatchObject({ type: 'session', state: 'start', session: { profitMode: 'snapshot' } })
+    const sid = tr.snapshot(0).session?.id as string
+    expect(tr.setSessionStart('nope', { source: 'snapshot', at: 1 }, 0)).toBe(false)
+    expect(tr.setSessionStart(sid, { source: 'snapshot', tabs: 3 } as never, at('21:00:30'))).toBe(true)
+    expect(tr.snapshot(0).session?.profitStart).toEqual({ source: 'snapshot', at: at('21:00:30'), tabs: 3 })
+    // снаружи — копия: правка события не трогает трекер
+    const ev = tr.pauseSession(at('21:05:00'))[0] as Extract<FarmEvent, { type: 'session' }>
+    ;(ev.session.profitStart as { tabs: number }).tabs = 99
+    expect(tr.snapshot(0).session?.profitStart?.tabs).toBe(3)
+    const stop = tr.stopSession(at('21:30:00'), 'manual')
+    expect(stop.at(-1)).toMatchObject({ state: 'stop', session: { profitMode: 'snapshot', profitEnd: 'manual' } })
+    // неизвестный режим — не пишется; без режима (PoE 1) — полей нет
+    const tr2 = new FarmTracker(undefined, RULES)
+    tr2.startSession(1, undefined, 'wat' as never)
+    expect(tr2.snapshot(1).session?.profitMode).toBeUndefined()
+    const sess = tr.snapshot(0).sessions[0]
+    const back = new FarmTracker(normalizeFarmData(JSON.parse(JSON.stringify(tr.toData(5)))), RULES).snapshot(5).sessions[0]
+    expect(back).toMatchObject({ profitMode: 'snapshot', profitEnd: 'manual', profitStart: { tabs: 3 } })
+    expect(back.stats).toEqual(sess.stats)
   })
 
   it('farm.json: находки и прибыль сессии переживают перезапуск; битое — отброшено', () => {

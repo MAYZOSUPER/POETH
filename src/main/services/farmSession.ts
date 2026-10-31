@@ -7,6 +7,8 @@ import type {
   FarmEvent,
   FarmFindResult,
   FarmProfit,
+  FarmProfitMark,
+  FarmProfitMode,
   FarmSessionProfit,
   FarmState
 } from '@shared/types/farm'
@@ -134,9 +136,10 @@ export class FarmSessionService extends EventEmitter {
   // ---------------------------------------------------------------------------
 
   /** `strategy` — метка стратегии советника «что фармить» (S16). */
-  async start(strategy?: string): Promise<FarmState> {
+  /** `profitMode` — PoE 2: выбор из диалога «Чем отметить начало?». */
+  async start(strategy?: string, profitMode?: FarmProfitMode): Promise<FarmState> {
     await this.load()
-    this.dispatch(this.tracker.startSession(this.now(), strategy))
+    this.dispatch(this.tracker.startSession(this.now(), strategy, profitMode))
     return this.state()
   }
 
@@ -160,9 +163,10 @@ export class FarmSessionService extends EventEmitter {
     return this.state()
   }
 
-  async stop(): Promise<FarmState> {
+  /** `profitMode` — PoE 2: выбор из диалога «Как посчитать прибыль?». */
+  async stop(profitMode?: FarmProfitMode): Promise<FarmState> {
     await this.load()
-    this.dispatch(this.tracker.stopSession(this.now()))
+    this.dispatch(this.tracker.stopSession(this.now(), profitMode))
     return this.state()
   }
 
@@ -203,6 +207,14 @@ export class FarmSessionService extends EventEmitter {
   }
 
   /** Прибыль сессии от «Богатства» (S70); null — убрать. false — сессии нет. */
+  /** Отметка начала от «Богатства» (S70); null — убрать. false — сессии нет. */
+  async setSessionStart(sessionId: string, mark: FarmProfitMark | null): Promise<boolean> {
+    await this.load()
+    const ok = this.tracker.setSessionStart(sessionId, mark, this.now())
+    if (ok) this.changed()
+    return ok
+  }
+
   async setSessionProfit(sessionId: string, profit: FarmSessionProfit | null): Promise<boolean> {
     await this.load()
     const ok = this.tracker.setSessionProfit(sessionId, profit, this.now())
@@ -357,8 +369,17 @@ export function removeRunFind(runId: string, findId: string, game: GameId = 'poe
 }
 
 /**
- * Прибыль сессии PoE 2 от «Богатства» (S70): снимок или ввод в начале и в конце, разница — в exalted.
- * Можно у идущей сессии (промежуточная) и у завершённой (итог после «Стоп»). null — убрать.
+ * Отметка начала сессии PoE 2 от «Богатства» (S70): `{ source: 'snapshot' | 'manual', at?, tabs? }` — снимок N вкладок
+ * или ввод валюты. Когда: после session:start с `session.profitMode` 'snapshot' | 'manual'. null — убрать.
+ */
+export function setSessionStart(sessionId: string, mark: FarmProfitMark | null, game: GameId = 'poe2'): Promise<boolean> {
+  return getFarmService(game).setSessionStart(sessionId, mark)
+}
+
+/**
+ * Прибыль сессии PoE 2 от «Богатства» (S70): разница снимков или ввода в начале и в конце, в exalted, без находок
+ * (итог = прибыль + находки считает трекер). `{ ex, exPerDiv?, source, at?, tabs? }` — source/at/tabs — отметка
+ * конца. Обычно — после session:stop с `session.profitEnd` 'snapshot' | 'manual'; можно и у идущей. null — убрать.
  */
 export function setSessionProfit(sessionId: string, profit: FarmSessionProfit | null, game: GameId = 'poe2'): Promise<boolean> {
   return getFarmService(game).setSessionProfit(sessionId, profit)
