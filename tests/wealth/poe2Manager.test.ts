@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import type { ScreenCell, ScreenFail, ScreenRead } from '@shared/types/screen'
+import type { ScreenCell, ScreenRead } from '@shared/types/screen'
 import type { Poe2Sources, Poe2WealthState, WealthSnapshot, WealthSummary } from '@shared/types/wealth'
 import { dedupeHistory, emptyLink, sanitizeLink, type Poe2SessionLink } from '../../src/main/games/poe2/wealth/store'
-import { COALESCE_MS, END_GRACE_MS, Poe2WealthManager, START_GRACE_MS, type Poe2Notice } from '../../src/main/games/poe2/wealth/manager'
+import { COALESCE_MS, dayDelta, END_GRACE_MS, Poe2WealthManager, START_GRACE_MS } from '../../src/main/games/poe2/wealth/manager'
 import type { Poe2PriceView } from '../../src/main/games/poe2/wealth/prices'
 import type { FarmEventLike, FarmRunProfit } from '../../src/main/games/poe1/wealth/manager'
 
@@ -73,22 +73,18 @@ const read = (cells: ScreenCell[], tab = 'orbs'): ScreenRead => ({
   ms: { find: 0, match: 0, ocr: 0, total: 0 }
 })
 
-function setup(o: { screen?: Array<ScreenRead | ScreenFail> } = {}) {
+function setup() {
   let t = 1_793_000_000_000
   let league: string | null = 'Forbidden Rites'
   const store = new MemStore()
   const states: Poe2WealthState[] = []
-  const notices: Poe2Notice[] = []
   const profits: Array<[string, FarmRunProfit | null]> = []
   let farmCb: ((e: FarmEventLike) => void) | null = null
-  const screens = [...(o.screen ?? [])]
   const m = new Poe2WealthManager({
     store,
     prices: { view: () => VIEW, refresh: async () => VIEW },
     currency: async () => ({ main: [{ name: 'Divine Orb', tag: 'divine' }, { name: 'Exalted Orb', tag: 'exalted' }, { name: 'Chaos Orb', tag: 'chaos' }], common: [{ name: 'Regal Orb', tag: 'regal' }] }),
     league: async () => league,
-    readScreen: async () => screens.shift() ?? 'not-found',
-    notify: (n) => notices.push(n),
     emit: (s) => states.push(s),
     now: () => t,
     debounceMs: 60_000
@@ -108,7 +104,6 @@ function setup(o: { screen?: Array<ScreenRead | ScreenFail> } = {}) {
     m,
     store,
     states,
-    notices,
     profits,
     farm,
     tick: (ms: number) => (t += ms),
@@ -187,55 +182,48 @@ describe('ценные предметы', () => {
   })
 })
 
-describe('снимок вкладки по клавише', () => {
-  it('две вкладки за сеанс → карточка, правка, «Принять» → один снимок', async () => {
+describe('снимок вкладки из панели Alt+F', () => {
+  it('две вкладки → карточки; неуверенное число — только после правки или «верно»; «Принять» по вкладке', async () => {
     const orbs = read([cell('Divine Orb', 10, 14), cell('Exalted Orb', 300, 24, { countSure: false }), cell(null, 2, 3)])
-    const ess = read([cell('Regal Orb', null, 5)], 'essence')
-    const { m, store, notices } = setup({ screen: [orbs, ess] })
+    const ess = read([cell('Regal Orb', null, 5), cell('Chaos Orb', 4, 6, { countSure: false })], 'essence')
+    const { m, store } = setup()
     await m.start()
-    await m.screenHotkey()
-    expect(notices.at(-1)).toEqual({ code: 'read', items: 2, check: 1, tabs: 1 })
-    await m.screenHotkey()
+    expect(m.screenRecord(null)).toBe(false)
+    expect(m.screenRecord({ ...orbs, game: 'poe1' })).toBe(false)
+    expect(m.screenRecord(orbs)).toBe(true)
+    expect(m.screenRecord(ess)).toBe(true)
     let st = m.state()
+    expect(st.screenOpenAt).toBeGreaterThan(0)
     expect(st.screen?.tabs.map((t) => t.layout)).toEqual(['orbs', 'essence'])
     expect(st.screen?.tabs[0].unknown).toBe(1)
-    // поправить число Exalted и прочитать Regal
-    m.screenEdit('screen:poe2:stash:orbs', 's24', { qty: 320 })
+    // «Принять» вкладку «Валюта» без проверки Exalted — в снимок только div
+    st = await m.screenAccept('screen:poe2:stash:orbs')
+    expect(st.screen?.tabs.map((t) => t.layout)).toEqual(['essence'])
+    expect(st.sources.screen).toMatchObject({ tabs: 1, ex: 6000 })
+    // вторая вкладка: Regal поправили, Chaos — «верно» (то же число)
     m.screenEdit('screen:poe2:stash:essence', 's5', { qty: 40 })
-    expect(store.history).toHaveLength(0)
+    m.screenEdit('screen:poe2:stash:essence', 's6', { qty: 4 })
     st = await m.screenAccept()
     expect(st.screen).toBeNull()
-    expect(st.sources.screen).toMatchObject({ tabs: 2, ex: 10 * 600 + 320 + 40 * 2.5 })
-    expect(store.history).toHaveLength(1)
-    expect(store.history[0].chaos).toBe(10 * 600 + 320 + 100)
-    expect(st.screenTabs.map((t) => t.layout)).toEqual(['orbs', 'essence'])
+    expect(st.sources.screen).toMatchObject({ tabs: 2, ex: 6000 + 40 * 2.5 + 4 * 70 })
+    // две вкладки подряд — одна точка истории (правится тот же снимок)
+    expect(dedupeHistory(store.history)).toHaveLength(1)
   })
 
-  it('не вышло — карточка показывает причину, сеанс не теряется; «Переснять» и отмена', async () => {
-    const orbs = read([cell('Divine Orb', 10, 14)])
-    const { m, notices } = setup({ screen: [orbs, 'not-found'] })
-    await m.start()
-    await m.screenHotkey()
-    await m.screenHotkey()
-    expect(notices.at(-1)).toEqual({ code: 'fail', fail: 'not-found' })
-    expect(m.state().screen).toMatchObject({ fail: 'not-found', tabs: [{ layout: 'orbs' }] })
-    expect(m.screenDrop('screen:poe2:stash:orbs').screen).toBeNull()
-  })
-
-  it('без клавиши в фокусе игры чтения нет: readScreen зовётся только из screenHotkey', async () => {
-    let calls = 0
+  it('«Переснять» убирает вкладку из сеанса, отмена — весь сеанс', async () => {
     const { m } = setup()
-    ;(m as unknown as { deps: { readScreen: () => Promise<ScreenFail> } }).deps.readScreen = async () => {
-      calls++
-      return 'no-game'
-    }
     await m.start()
-    await m.setManual('Divine Orb', 1)
-    await m.idle()
-    m.state()
-    expect(calls).toBe(0)
-    await m.screenHotkey()
-    expect(calls).toBe(1)
+    m.screenRecord(read([cell('Divine Orb', 10, 14)]))
+    m.screenRecord(read([cell('Regal Orb', 3, 5)], 'essence'))
+    expect(m.screenDrop('screen:poe2:stash:orbs').screen?.tabs.length).toBe(1)
+    expect(m.screenDrop().screen).toBeNull()
+  })
+
+  it('изменение за сутки — по истории', () => {
+    const p = (h: number, chaos: number) => ({ at: h * 3_600_000, chaos, divineRate: 600 })
+    expect(dayDelta([p(0, 100)])).toEqual({})
+    // сутки назад от последней точки — 6 ч: 100 + (400 − 100) × 6/30 = 160 → +240
+    expect(dayDelta([p(0, 100), p(30, 400)]).delta).toEqual({ ex: 240, fromAt: 6 * 3_600_000 })
   })
 })
 

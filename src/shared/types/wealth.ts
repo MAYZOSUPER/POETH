@@ -321,6 +321,11 @@ export interface Poe2Sources {
   /** ручной ввод: английское имя → штук */
   manual: Record<string, number>
   manualAt: number | null
+  /**
+   * когда правили строку (имя → мс): предмет считается один раз — из ручного ввода или из принятой вкладки,
+   * что новее (макет «Богатство PoE 2»)
+   */
+  manualTimes: Record<string, number>
   /** золото — только вручную, в итог в exalted не входит (цены у золота нет) */
   gold: number
   goldAt: number | null
@@ -338,8 +343,9 @@ export interface Poe2ScreenLine {
   alt?: string[]
   /** число в стопке; null — не прочитано */
   qty: number | null
-  /** число прочитано уверенно или поправлено игроком */
+  /** число прочитано уверенно */
   sure: boolean
+  /** число поправлено или подтверждено игроком («верно») — неуверенное без этого в снимок не идёт */
   edited?: boolean
   /** exalted за штуку */
   unit?: number
@@ -398,8 +404,12 @@ export interface Poe2ManualRow {
   unit?: number
   source?: PriceSourceId
   low?: boolean
-  /** столько штук уже есть в принятых вкладках снимка (подсказка «не вводите дважды») */
+  /** столько штук есть в принятых вкладках снимка */
   inScreen: number
+  /** когда правили строку */
+  at?: number
+  /** строку перекрывает более новая вкладка снимка — в итог она не входит («учтено в снимке …») */
+  covered?: { layout: string | null; at: number }
 }
 
 export interface Poe2ScreenTabView {
@@ -460,6 +470,10 @@ export interface Poe2WealthState {
   screenTabs: Poe2ScreenTabView[]
   /** карточка «сеанса снимка»; null — сеанса нет */
   screen: Poe2ScreenSession | null
+  /** когда игрок последний раз нажал «Записать в богатство» в панели Alt+F — компаньон открывает карточку */
+  screenOpenAt?: number
+  /** изменение итога за сутки (или с первой записи), exalted */
+  delta?: { ex: number; fromAt: number }
   history: WealthPoint[]
   latest: WealthSummary | null
   session: Poe2WealthSession | null

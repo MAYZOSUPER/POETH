@@ -24,7 +24,8 @@ export function wealthBridge(): WealthIpcApi {
       poe2RemoveTab: (id) => ipcRenderer.invoke(IPC.wealth.poe2RemoveTab, id),
       poe2ScreenEdit: (tabId, key, edit) => ipcRenderer.invoke(IPC.wealth.poe2ScreenEdit, tabId, key, edit),
       poe2ScreenDrop: (tabId) => ipcRenderer.invoke(IPC.wealth.poe2ScreenDrop, tabId),
-      poe2ScreenAccept: () => ipcRenderer.invoke(IPC.wealth.poe2ScreenAccept),
+      poe2ScreenAccept: (tabId) => ipcRenderer.invoke(IPC.wealth.poe2ScreenAccept, tabId),
+      poe2ScreenRecord: () => ipcRenderer.invoke(IPC.wealth.poe2ScreenRecord),
       poe2Diff: (fromId, toId) => ipcRenderer.invoke(IPC.wealth.poe2Diff, fromId, toId)
     },
     onWealthState: (cb) => subscribe(IPC.events.wealthState, cb),

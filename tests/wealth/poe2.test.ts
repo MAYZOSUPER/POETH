@@ -167,7 +167,15 @@ describe('снимок вкладки: карточка и сеанс', () => {
       ['Chaos Orb', null, true],
       ['Exalted Orb', 40, true]
     ])
-    expect(cardTotal(tab)).toEqual({ ex: 1240, counted: 2, unpriced: 0, uncounted: 1, check: 2 })
+    // неуверенное число в итог карточки (и в снимок) не идёт, пока игрок не поправил или не нажал «верно»
+    expect(cardTotal(tab)).toEqual({ ex: 1200, counted: 1, unpriced: 0, uncounted: 1, check: 1 })
+    const ok = editCardLine(tab, 's24', { qty: 40 }, priceOf)
+    expect(cardTotal(ok)).toMatchObject({ ex: 1240, counted: 2, check: 0 })
+    expect(acceptSession(emptySources(), { startedAt: T0, tabs: [tab] }, T0).screen[0].items.map((i) => i.name)).toEqual(['Divine Orb'])
+    expect(acceptSession(emptySources(), { startedAt: T0, tabs: [ok] }, T0).screen[0].items.map((i) => [i.name, i.qty])).toEqual([
+      ['Divine Orb', 2],
+      ['Exalted Orb', 40]
+    ])
     const free = screenCardTab(read([cell('Greater Exalted Orb', 3, { alt: ['Exalted Orb', 'Perfect Exalted Orb'] })], null), priceOf)
     expect(free.lines[0].alt).toEqual(['Exalted Orb', 'Perfect Exalted Orb'])
     expect(needsCheck(free.lines[0])).toBe(true)
@@ -224,9 +232,11 @@ describe('один снимок из трёх источников', () => {
     const exLine = session.tabs[0].lines.find((l) => l.name === 'Exalted Orb')!
     expect(needsCheck(exLine)).toBe(true)
     session = { ...session, tabs: [editCardLine(session.tabs[0], exLine.key, { qty: 2000 }, priceOf)] }
-    let s = acceptSession(emptySources(), session, T0)
-    s = setManual(s, 'Divine Orb', 3, T0)
-    s = setManual(s, 'Chaos Orb', 10, T0)
+    // вкладка принята после ручного ввода div — предмет считается один раз: берём новее (вкладку)
+    let s = setManual(emptySources(), 'Divine Orb', 3, T0 - 1000)
+    s = acceptSession(s, session, T0)
+    // chaos ввели после вкладки — из вкладки chaos не берётся
+    s = setManual(s, 'Chaos Orb', 10, T0 + 1)
     s = setGold(s, 50_000, T0)
     s = addValuable(s, cleanValuableInput({ name: 'Headhunter', base: 'Leather Belt', kind: 'unique', unit: 9000, source: 'trade' })!, 'v1', T0)
 
@@ -234,14 +244,14 @@ describe('один снимок из трёх источников', () => {
     expect(a.summary.base).toBe('exalted')
     expect(a.summary.divineRate).toBe(600)
     const divine = a.lines.find((l) => l.name === 'Divine Orb')!
-    // 958 со снимка + 3 вручную — одна строка
-    expect(divine.qty).toBe(958 + 3)
-    expect(divine.total).toBe((958 + 3) * 600)
+    // 958 со снимка, ручные 3 перекрыты более новой вкладкой
+    expect(divine.qty).toBe(958)
+    expect(divine.total).toBe(958 * 600)
     const hh = a.lines.find((l) => l.key === 'VALUABLE|v1')!
     expect(hh).toMatchObject({ name: 'Headhunter', ns: 'UNIQUE', unit: 9000, source: 'pricecheck' })
 
     const totals = poe2Totals(s, a, T0 + 60_000)
-    expect(totals.manual.ex).toBe(3 * 600 + 10 * 70)
+    expect(totals.manual.ex).toBe(10 * 70)
     expect(totals.valuables).toMatchObject({ ex: 9000, count: 1, stale: false })
     expect(totals.screen.tabs).toBe(1)
     expect(totals.screen.ex).toBe(a.summary.tabs.find((t) => t.id.startsWith('screen:'))!.chaos)
@@ -250,7 +260,19 @@ describe('один снимок из трёх источников', () => {
     expect(poe2Totals(s, a, T0 + STALE_MS + 1).screen.stale).toBe(true)
 
     const rows = manualRows({ main: [{ name: 'Divine Orb', tag: 'divine' }], common: [{ name: 'Regal Orb' }] }, s, index)
-    expect(rows.find((x) => x.name === 'Divine Orb')).toMatchObject({ qty: 3, unit: 600, source: 'ange', inScreen: 958, group: 'main' })
+    expect(rows.find((x) => x.name === 'Divine Orb')).toMatchObject({
+      qty: 3,
+      unit: 600,
+      source: 'ange',
+      inScreen: 958,
+      group: 'main',
+      covered: { layout: 'orbs', at: T0 }
+    })
+    // ввод новее вкладки — div из ввода, из вкладки div не берётся
+    const later = setManual(s, 'Divine Orb', 5, T0 + 1)
+    const b = snap(later, 'b')
+    expect(b.lines.find((l) => l.name === 'Divine Orb')!.qty).toBe(5)
+    expect(manualRows({ main: [{ name: 'Divine Orb' }], common: [] }, later, index)[0].covered).toBeUndefined()
     expect(rows.find((x) => x.name === 'Chaos Orb')).toMatchObject({ qty: 10, group: 'extra' })
     expect(rows.find((x) => x.name === 'Regal Orb')).toMatchObject({ qty: 0, inScreen: 137 })
   }, 30_000)

@@ -36,6 +36,7 @@ export const wealthChannels = {
     poe2ScreenEdit: 'wealth:twoScreenEdit',
     poe2ScreenDrop: 'wealth:twoScreenDrop',
     poe2ScreenAccept: 'wealth:twoScreenAccept',
+    poe2ScreenRecord: 'wealth:twoScreenRecord',
     poe2Diff: 'wealth:twoDiff'
   }
 } as const
@@ -82,8 +83,13 @@ export interface WealthIpcApi {
     poe2ScreenEdit(tabId: string, key: string, edit: Poe2ScreenEdit): Promise<Poe2WealthState>
     /** «Переснять» вкладку (tabId) или отменить весь сеанс снимка (без аргумента) */
     poe2ScreenDrop(tabId?: string): Promise<Poe2WealthState>
-    /** «Принять»: вкладки сеанса → источник «Снимок вкладок» → снимок богатства */
-    poe2ScreenAccept(): Promise<Poe2WealthState>
+    /** «Принять» вкладку (tabId) или все вкладки сеанса → источник «Снимок вкладок» → снимок богатства */
+    poe2ScreenAccept(tabId?: string): Promise<Poe2WealthState>
+    /**
+     * Оверлей, панель Alt+F (S68): «Записать в богатство» — последний результат распознавания → карточка в компаньоне
+     * (окно компаньона показывается). ok: false — читать нечего (подписи устарели или вкладка не PoE 2).
+     */
+    poe2ScreenRecord(): Promise<{ ok: boolean }>
     /** «что изменилось»: по умолчанию прошлый снимок → последний; fromId 'session' — от начала сессии */
     poe2Diff(fromId?: string, toId?: string): Promise<WealthDiff | null>
   }

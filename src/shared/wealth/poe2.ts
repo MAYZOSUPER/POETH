@@ -94,7 +94,7 @@ export function parsePoe2CurrencyList(json: unknown): Poe2CurrencyList | null {
 // ------------------------------------------------------------------ источники
 
 export function emptySources(): Poe2Sources {
-  return { manual: {}, manualAt: null, gold: 0, goldAt: null, valuables: [], screen: [] }
+  return { manual: {}, manualAt: null, manualTimes: {}, gold: 0, goldAt: null, valuables: [], screen: [] }
 }
 
 const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null)
@@ -163,6 +163,12 @@ export function sanitizeSources(raw: unknown): Poe2Sources {
     }
   }
   s.manualAt = time(r.manualAt)
+  const times = r.manualTimes && typeof r.manualTimes === 'object' ? (r.manualTimes as Record<string, unknown>) : {}
+  // у строки без своего времени (файл до S70-ревизии) — время последней правки ввода
+  for (const name of Object.keys(s.manual)) {
+    const at = time(times[name]) ?? s.manualAt
+    if (at) s.manualTimes[name] = at
+  }
   s.gold = cleanQty(r.gold, MAX_GOLD)
   s.goldAt = time(r.goldAt)
   for (const v of Array.isArray(r.valuables) ? r.valuables : []) {
@@ -181,11 +187,17 @@ export function setManual(s: Poe2Sources, name: string, qty: unknown, at: number
   const n = cleanName(name)
   if (!n) return s
   const manual = { ...s.manual }
+  const manualTimes = { ...s.manualTimes }
   const q = cleanQty(qty)
   if ((manual[n] ?? 0) === q) return s
-  if (q > 0) manual[n] = q
-  else delete manual[n]
-  return { ...s, manual, manualAt: at }
+  if (q > 0) {
+    manual[n] = q
+    manualTimes[n] = at
+  } else {
+    delete manual[n]
+    delete manualTimes[n]
+  }
+  return { ...s, manual, manualTimes, manualAt: at }
 }
 
 export function setGold(s: Poe2Sources, qty: unknown, at: number): Poe2Sources {
@@ -266,16 +278,34 @@ export function valuableItem(v: Poe2Valuable): StashItem {
   return item
 }
 
-/** Источники → «вкладки» снимка: ручной ввод, ценные предметы, принятые вкладки экрана. */
+/** Самая новая принятая вкладка, где есть предмет name (вкладка + время). */
+export function newestScreenTab(s: Poe2Sources, name: string): Poe2ScreenTab | null {
+  let best: Poe2ScreenTab | null = null
+  for (const t of s.screen) if (t.items.some((i) => i.name === name && i.qty > 0) && (!best || t.at > best.at)) best = t
+  return best
+}
+
+/**
+ * Каждый предмет — один раз (макет «Богатство PoE 2»): есть и в ручном вводе, и во вкладке снимка — берём, что
+ * новее. true — строку ручного ввода перекрывает вкладка (та не старше правки строки).
+ */
+export function manualCovered(s: Poe2Sources, name: string): boolean {
+  const tab = newestScreenTab(s, name)
+  return !!tab && tab.at >= (s.manualTimes[name] ?? s.manualAt ?? 0)
+}
+
+/** Источники → «вкладки» снимка: ручной ввод, ценные предметы, принятые вкладки экрана (предмет — один раз). */
 export function poe2Tabs(s: Poe2Sources): TabItems[] {
   const tabs: TabItems[] = []
+  const covered = new Set(Object.keys(s.manual).filter((n) => manualCovered(s, n)))
   const manual = Object.entries(s.manual)
-    .filter(([, q]) => q > 0)
+    .filter(([name, q]) => q > 0 && !covered.has(name))
     .map(([name, q]) => stackItem(name, q))
   if (manual.length) tabs.push({ id: MANUAL_TAB, name: 'manual', items: manual })
   if (s.valuables.length) tabs.push({ id: VALUABLES_TAB, name: 'valuables', items: s.valuables.map(valuableItem) })
   for (const t of s.screen) {
-    const items = t.items.filter((i) => i.qty > 0).map((i) => stackItem(i.name, i.qty))
+    // ручной ввод новее вкладки — этот предмет берём из ввода
+    const items = t.items.filter((i) => i.qty > 0 && !(s.manual[i.name] && !covered.has(i.name))).map((i) => stackItem(i.name, i.qty))
     if (items.length) tabs.push({ id: t.id, name: t.layout ?? 'screen', items })
   }
   return tabs
@@ -363,11 +393,9 @@ export function editCardLine(tab: Poe2ScreenCardTab, key: string, edit: Poe2Scre
     ...tab,
     lines: tab.lines.map((l) => {
       if (l.key !== key) return l
+      // правка или «верно» (то же число) — игрок проверил строку; sure остаётся «как прочитано»
       let next: Poe2ScreenLine = { ...l, edited: true }
-      if (edit.qty !== undefined) {
-        next.qty = cleanQty(edit.qty)
-        next.sure = true
-      }
+      if (edit.qty !== undefined) next.qty = cleanQty(edit.qty)
       if (edit.name !== undefined && edit.name !== l.name && (l.alt ?? []).includes(edit.name)) {
         next.alt = [l.name, ...(l.alt ?? []).filter((n) => n !== edit.name)]
         next.name = edit.name
@@ -379,7 +407,7 @@ export function editCardLine(tab: Poe2ScreenCardTab, key: string, edit: Poe2Scre
 }
 
 export interface CardTotal {
-  /** exalted по строкам с ценой и числом */
+  /** exalted по строкам, которые войдут в снимок (с ценой) */
   ex: number
   /** строк в итоге */
   counted: number
@@ -387,16 +415,20 @@ export interface CardTotal {
   unpriced: number
   /** строк без числа (в итог не войдут) */
   uncounted: number
-  /** строк «проверьте» */
+  /** строк «проверьте» — без правки или «верно» в снимок не войдут */
   check: number
 }
 
+/** Итог карточки: только строки, которые войдут в снимок богатства (неуверенные — после правки или «верно»). */
 export function cardTotal(tab: Poe2ScreenCardTab): CardTotal {
   const t: CardTotal = { ex: 0, counted: 0, unpriced: 0, uncounted: 0, check: 0 }
   for (const l of tab.lines) {
-    if (needsCheck(l)) t.check++
     if (l.qty === null) {
       t.uncounted++
+      continue
+    }
+    if (needsCheck(l)) {
+      t.check++
       continue
     }
     if (!l.qty) continue
@@ -427,19 +459,20 @@ export function dropFromSession(session: Poe2ScreenSession | null, tabId?: strin
 
 /**
  * «Принять»: вкладки сеанса — в источник «Снимок вкладок» (та же вкладка — заменяет принятую раньше, остальные
- * остаются со своим временем). Строки без числа не входят.
+ * остаются со своим временем). Строки без числа и неуверенные без правки или «верно» не входят; вкладка, где не
+ * осталось ни одной строки, прежнюю принятую не заменяет. tabId — принять одну вкладку сеанса.
  */
-export function acceptSession(s: Poe2Sources, session: Poe2ScreenSession, at: number): Poe2Sources {
-  const accepted: Poe2ScreenTab[] = session.tabs.map((t) => {
-    const byName = new Map<string, { qty: number; sure: boolean }>()
+export function acceptSession(s: Poe2Sources, session: Poe2ScreenSession, at: number, tabId?: string): Poe2Sources {
+  const accepted: Poe2ScreenTab[] = []
+  for (const t of session.tabs) {
+    if (tabId !== undefined && t.id !== tabId) continue
+    const byName = new Map<string, number>()
     for (const l of t.lines) {
-      if (!l.qty) continue
-      const prev = byName.get(l.name)
-      const sure = l.sure || !!l.edited
-      byName.set(l.name, prev ? { qty: prev.qty + l.qty, sure: prev.sure && sure } : { qty: l.qty, sure })
+      if (!l.qty || needsCheck(l)) continue
+      byName.set(l.name, (byName.get(l.name) ?? 0) + l.qty)
     }
-    return { id: t.id, layout: t.layout, at, items: [...byName].map(([name, v]) => ({ name, qty: Math.min(MAX_QTY, v.qty), sure: v.sure })) }
-  })
+    if (byName.size) accepted.push({ id: t.id, layout: t.layout, at, items: [...byName].map(([name, qty]) => ({ name, qty: Math.min(MAX_QTY, qty), sure: true })) })
+  }
   const ids = new Set(accepted.map((t) => t.id))
   const screen = [...s.screen.filter((t) => !ids.has(t.id)), ...accepted].slice(-MAX_SCREEN_TABS)
   return { ...s, screen }
@@ -499,6 +532,12 @@ export function manualRows(list: Poe2CurrencyList, s: Poe2Sources, index: PriceI
   const row = (ref: Poe2CurrencyRef, group: Poe2ManualRow['group']): Poe2ManualRow => {
     const r: Poe2ManualRow = { name: ref.name, group, qty: s.manual[ref.name] ?? 0, inScreen: inScreen.get(ref.name) ?? 0 }
     if (ref.tag) r.tag = ref.tag
+    const at = s.manualTimes[ref.name]
+    if (at) r.at = at
+    if (r.qty > 0 && manualCovered(s, ref.name)) {
+      const tab = newestScreenTab(s, ref.name)!
+      r.covered = { layout: tab.layout, at: tab.at }
+    }
     const p = index.get('stackable', ref.name)[0]
     if (p) {
       r.unit = round2(p.chaos)

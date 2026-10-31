@@ -17,7 +17,6 @@
 
 import type {
   Poe2ScreenEdit,
-  Poe2ScreenFail,
   Poe2ScreenSession,
   Poe2Sources,
   Poe2WealthState,
@@ -26,15 +25,14 @@ import type {
   WealthSnapshot,
   WealthSummary
 } from '@shared/types/wealth'
-import type { ScreenFail, ScreenRead } from '@shared/types/screen'
-import { chartPoints } from '@shared/wealth/farm'
+import type { ScreenRead } from '@shared/types/screen'
+import { chartPoints, netWorthAt } from '@shared/wealth/farm'
 import { diffSnapshots, qtyProfit } from '@shared/wealth/snapshot'
 import {
   acceptSession,
   addToSession,
   addValuable,
   buildPoe2Snapshot,
-  cardTotal,
   cleanValuableInput,
   dropFromSession,
   editCardLine,
@@ -64,12 +62,6 @@ export const END_GRACE_MS = 2 * 3_600_000
 const PRICES_TTL_MS = 10 * 60_000
 const KEEP_DETAILED = 20
 
-/** Сообщение поверх игры после нажатия клавиши «Снимок вкладки в богатство» (тексты — в ipc/wealth.ts). */
-export type Poe2Notice =
-  | { code: 'busy' }
-  | { code: 'read'; items: number; check: number; tabs: number }
-  | { code: 'fail'; fail: Poe2ScreenFail }
-
 export interface Poe2WealthDeps {
   store: Pick<
     Poe2WealthStore,
@@ -80,9 +72,6 @@ export interface Poe2WealthDeps {
   currency: () => Promise<Poe2CurrencyList | null>
   /** действующая лига PoE 2 */
   league: () => Promise<string | null>
-  /** снимок и распознавание открытой вкладки (S68 readStashFromScreen) — только по клавише игрока */
-  readScreen?: () => Promise<ScreenRead | ScreenFail>
-  notify?: (n: Poe2Notice) => void
   emit: (s: Poe2WealthState) => void
   now?: () => number
   log?: (msg: string) => void
@@ -91,6 +80,17 @@ export interface Poe2WealthDeps {
 }
 
 export type Poe2AddResult = { ok: true; id: string } | { ok: false }
+
+const DAY_MS = 24 * 3_600_000
+
+/** Изменение итога за сутки (истории меньше суток — с первой записи; меньше часа — не показываем). */
+export function dayDelta(points: readonly WealthPoint[]): { delta?: { ex: number; fromAt: number } } {
+  const last = points.at(-1)
+  if (!last || points.length < 2 || last.at - points[0].at < 3_600_000) return {}
+  const fromAt = Math.max(last.at - DAY_MS, points[0].at)
+  const base = netWorthAt(points, fromAt)
+  return base === null ? {} : { delta: { ex: Math.round((last.chaos - base) * 100) / 100, fromAt } }
+}
 
 const FALLBACK_LIST: Poe2CurrencyList = {
   main: [{ name: 'Divine Orb', tag: 'divine' }, { name: 'Exalted Orb', tag: 'exalted' }, { name: 'Chaos Orb', tag: 'chaos' }],
@@ -106,6 +106,7 @@ export class Poe2WealthManager {
   private supported = false
   private loaded = false
   private screen: Poe2ScreenSession | null = null
+  private screenOpenAt: number | undefined
   private live: { key: string; snap: WealthSnapshot } | null = null
   private version = 0
   /** снимки, сделанные по вводу подряд (их можно править следующим вводом) */
@@ -272,37 +273,19 @@ export class Poe2WealthManager {
 
   // ------------------------------------------------------------------ снимок вкладки (S68)
 
-  /** Клавиша «Снимок вкладки в богатство»: одно нажатие — один снимок открытой вкладки → карточка в компаньоне. */
-  async screenHotkey(): Promise<void> {
-    if (!this.supported || !this.deps.readScreen) return
-    if (this.screen?.busy) {
-      this.deps.notify?.({ code: 'busy' })
-      return
-    }
-    this.screen = { ...(this.screen ?? { startedAt: this.now(), tabs: [] }), busy: true }
-    delete this.screen.fail
-    this.emit()
-    let r: ScreenRead | ScreenFail
-    try {
-      r = await this.deps.readScreen()
-    } catch {
-      r = 'error'
-    }
-    const cur = this.screen ?? { startedAt: this.now(), tabs: [] }
-    if (typeof r === 'string') {
-      const next: Poe2ScreenSession = { startedAt: cur.startedAt, tabs: cur.tabs, fail: r }
-      this.screen = next
-      this.deps.notify?.({ code: 'fail', fail: r })
-    } else {
-      const league = this.league
-      const priceOf = league ? this.deps.prices.view(league).priceOf : () => null
-      const tab = screenCardTab(r, priceOf)
-      this.screen = addToSession({ startedAt: cur.startedAt, tabs: cur.tabs }, tab, this.now())
-      const t = cardTotal(tab)
-      this.deps.notify?.({ code: 'read', items: tab.lines.length, check: t.check, tabs: this.screen.tabs.length })
-    }
+  /**
+   * «Записать в богатство» в панели Alt+F (S68): результат распознавания открытой вкладки → карточка в компаньоне.
+   * Снимок экрана остаётся в памяти S68 — сюда приходят только имена, числа и ячейки. false — читать нечего.
+   */
+  screenRecord(read: ScreenRead | null): boolean {
+    if (!this.supported || !read || read.game !== 'poe2' || !read.cells.length) return false
+    const league = this.league
+    const priceOf = league ? this.deps.prices.view(league).priceOf : () => null
+    this.screen = addToSession(this.screen, screenCardTab(read, priceOf), this.now())
+    this.screenOpenAt = this.now()
     this.emit()
     void this.refreshPrices()
+    return true
   }
 
   screenEdit(tabId: unknown, key: unknown, edit: unknown): Poe2WealthState {
@@ -326,14 +309,18 @@ export class Poe2WealthManager {
     return this.state()
   }
 
-  /** «Принять»: вкладки сеанса → источник «Снимок вкладок» → снимок богатства. */
-  screenAccept(): Promise<Poe2WealthState> {
+  /**
+   * «Принять» вкладку (tabId) или все вкладки сеанса → источник «Снимок вкладок» → снимок богатства сразу. Несколько
+   * вкладок, принятых подряд (в пределах COALESCE_MS), правят один снимок — как ввод подряд.
+   */
+  screenAccept(tabId?: unknown): Promise<Poe2WealthState> {
     return this.serial(async () => {
       const s = this.screen
-      if (!s || s.busy || !s.tabs.length || !this.league) return this.state()
-      await this.setSources(acceptSession(this.sources(), s, this.now()))
-      this.screen = null
-      await this.record('hard')
+      if (!s || !s.tabs.length || !this.league) return this.state()
+      const id = typeof tabId === 'string' ? tabId : undefined
+      await this.setSources(acceptSession(this.sources(), s, this.now(), id))
+      this.screen = id === undefined ? null : dropFromSession(s, id)
+      await this.record('soft')
       return this.state()
     })
   }
@@ -559,6 +546,8 @@ export class Poe2WealthManager {
       valuables: s.valuables.map((v) => ({ ...v, stale: now - v.at > STALE_MS })),
       screenTabs: totals?.screenTabs ?? [],
       screen: this.screen,
+      ...(this.screenOpenAt ? { screenOpenAt: this.screenOpenAt } : {}),
+      ...dayDelta(points),
       history: chartPoints(points, now),
       latest: summaries.at(-1) ?? null,
       session,
