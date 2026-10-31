@@ -43,3 +43,4 @@ export {
   type ProfileTradeQuery
 } from './profiles'
 export { POE2_PRESETS, poe2PresetText, scaryWaystoneIds, type Poe2Preset } from './presets'
+export { PRICE_FETCH, profilePrice, type Poe2PriceRequest, type Poe2PriceTransport } from './price'

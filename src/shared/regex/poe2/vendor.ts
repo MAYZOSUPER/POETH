@@ -146,6 +146,37 @@ export function selectedPoe2Props(data: Poe2VendorData, q: Poe2VendorQuery): Poe
   return POE2_VENDOR_KEYS.filter((k) => (q.mods[k] ?? 0) > 0 && !data.props[k].noRu)
 }
 
+/**
+ * «Любое из»: пороги с одинаковым началом и числом — одной группой хвостов, как у «Торговца» PoE 1 (joinPosts):
+ * сопротивления 20 / 20 / 20 → \+(…)(\(.+\))?% to (fire|cold|lightning) r.
+ */
+function anyBody(data: Poe2VendorData, q: Poe2VendorQuery, keys: Poe2VendorKey[]): string {
+  const groups = new Map<string, { pre: string; n: number; posts: string[] }>()
+  const out: string[] = []
+  for (const k of keys) {
+    const p = data.props[k]
+    const n = Math.max(1, q.mods[k] ?? 0)
+    if (p.token !== undefined) {
+      out.push(p.token)
+      continue
+    }
+    const key = `${p.pre ?? ''}\n${n}`
+    const g = groups.get(key)
+    if (g) g.posts.push(...(p.posts ?? []))
+    else {
+      const ng = { pre: p.pre ?? '', n, posts: [...(p.posts ?? [])] }
+      groups.set(key, ng)
+      out.push(key)
+    }
+  }
+  return out
+    .map((x) => {
+      const g = groups.get(x)
+      return g ? modThreshold(g.pre, g.posts, g.n, joinPosts) : x
+    })
+    .join('|')
+}
+
 export function buildPoe2VendorRegex(data: Poe2VendorData, q: Poe2VendorQuery): RegexBuildResult {
   const terms: Term[] = []
   const items: OverflowItem[] = []
@@ -154,7 +185,7 @@ export function buildPoe2VendorRegex(data: Poe2VendorData, q: Poe2VendorQuery): 
   if (q.mode === 'all') {
     for (const p of parts) terms.push({ negate: false, body: p.body })
   } else if (parts.length) {
-    terms.push({ negate: false, body: parts.map((p) => p.body).join('|') })
+    terms.push({ negate: false, body: anyBody(data, q, keys) })
   }
   for (const p of parts) items.push({ kind: 'option', key: `mod.${p.k}`, saves: p.body.length + 1 })
 
