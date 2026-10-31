@@ -11,6 +11,7 @@ import {
   searchInstill,
   type InstillData
 } from '@shared/poe2/build/instill'
+import { isPricesStale } from '@shared/poe2/prices'
 import type { GameLang } from '@shared/types/settings'
 import { useT } from '../../i18n'
 import { BIco } from '../build/ui'
@@ -18,7 +19,8 @@ import { useEmotionPrices, useInstillData, type EmotionPrices } from './useInsti
 
 // «Вложение» PoE 2 (S66), как «Анойнт» PoE 1 (S54): вложение с амулета автора и поиск «нотабл ↔ эмоции». Порядок
 // эмоций в рецепте важен — места 1 → 2 → 3. Имена нотаблов и эмоций — на языке клиента игры (данные EE2); тексты
-// свойств — только английские (RU-текстов в открытых данных нет). Цены — у Ange (S61), пока их нет — без суммы.
+// свойств — только английские (RU-текстов в открытых данных нет). Цены — обмен у Ange (S61), для эмоций без сделок
+// у Ange — снимок poe.ninja (S67); нет цены хотя бы у одной эмоции — без суммы; в подвале — откуда цены.
 
 type Mode = 'note' | 'em'
 const HITS_SIMPLE = 5
@@ -27,25 +29,51 @@ const CANDIDATES = 6
 
 type T = ReturnType<typeof useT>
 
-function Recipe({ data, hash, lang, prices, t }: { data: InstillData; hash: number; lang: GameLang; prices: EmotionPrices | null; t: T }) {
+function Recipe({ data, hash, lang, prices, expert, t }: { data: InstillData; hash: number; lang: GameLang; prices: EmotionPrices | null; expert: boolean; t: T }) {
   const em = instillEmotions(data, hash) ?? []
   const cost = instillCost(em, prices?.byName)
   const view = cost.total !== null ? instillCostView(cost.total, prices?.exaltedPerDivine) : null
+  const low = em.some((e) => prices?.each.get(e.en)?.low)
   return (
     <span className="b2-recipe">
-      {em.map((e, i) => (
-        <span key={i} className="b2-em">
-          <span className="b2-em__n">{i + 1}</span>
-          {emotionName(e, lang)}
-        </span>
-      ))}
+      {em.map((e, i) => {
+        const p = cost.each[i]
+        const one = expert && p !== null ? instillCostView(p, prices?.exaltedPerDivine) : null
+        return (
+          <span key={i} className="b2-em">
+            <span className="b2-em__n">{i + 1}</span>
+            {emotionName(e, lang)}
+            {one && <span className="b2-muted">{t('build2.in.each', { n: one.n, unit: t(`build2.unit.${one.unit}`) })}</span>}
+          </span>
+        )
+      })}
       {view ? (
         <b className="b2-cost">{t('build2.in.total', { n: view.n, unit: t(`build2.unit.${view.unit}`) })}</b>
       ) : (
         prices && <span className="b2-muted">{t('build2.in.noPrice')}</span>
       )}
+      {view && low && (
+        <span className="ui-tag ui-tag--warn b2-low" title={t('build2.in.low.tip')}>
+          {t('build2.in.low')}
+        </span>
+      )}
     </span>
   )
+}
+
+/** Подвал «откуда цены»: обмен у Ange (час фида) и/или снимок poe.ninja (дата, лига, «старше недели»). */
+function priceSource(prices: EmotionPrices | null, loading: boolean, lang: GameLang, t: T): string {
+  if (!prices) return loading ? t('build2.in.price.wait') : t('build2.in.price.none')
+  const loc = lang === 'ru' ? 'ru-RU' : 'en-GB'
+  const time = prices.ange ? new Date(prices.ange.hour).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' }) : ''
+  let ninja = ''
+  if (prices.ninja) {
+    const date = new Date(prices.ninja.at).toLocaleDateString(loc, { day: '2-digit', month: '2-digit' })
+    ninja = prices.ninja.match === 'exact' ? t('build2.in.ninja', { date }) : t('build2.in.ninja.league', { date, league: prices.ninja.league })
+    if (isPricesStale(prices.ninja.at)) ninja = t('build2.in.ninja.stale', { ninja })
+  }
+  if (prices.ange && prices.ninja) return t('build2.in.price.both', { time, ninja })
+  return prices.ange ? t('build2.in.price.ange', { time }) : t('build2.in.price.ninja', { ninja })
 }
 
 function Row({ data, hash, lang, prices, expert, onPick }: { data: InstillData; hash: number; lang: GameLang; prices: EmotionPrices | null; expert: boolean; onPick?: () => void }) {
@@ -63,7 +91,7 @@ function Row({ data, hash, lang, prices, expert, onPick }: { data: InstillData; 
           </button>
         )}
       </div>
-      <Recipe data={data} hash={hash} lang={lang} prices={prices} t={t} />
+      <Recipe data={data} hash={hash} lang={lang} prices={prices} expert={expert} t={t} />
       {expert && n.stats.length > 0 && (
         <div className="b2-stats" title={t('build2.in.stats')}>
           {n.stats.map((s, i) => (
@@ -83,7 +111,7 @@ export function InstillBox({ author, gameLang, expert }: { author: { hash: numbe
   const [query, setQuery] = useState('')
   const [slots, setSlots] = useState<(number | null)[]>([null, null, null])
   const show = !!author?.hash || query.trim() !== '' || slots.some((s) => s !== null)
-  const { prices } = useEmotionPrices(data, show)
+  const { prices, loading } = useEmotionPrices(data, show)
   const limit = expert ? HITS_EXPERT : HITS_SIMPLE
 
   const hits = useMemo(() => (data ? searchInstill(data, query, gameLang, limit + 1) : []), [data, query, gameLang, limit])
@@ -237,7 +265,11 @@ export function InstillBox({ author, gameLang, expert }: { author: { hash: numbe
               )}
             </>
           )}
-          <p className="b2-muted b2-foot">{prices ? t('build2.in.price') : t('build2.in.price.none')}</p>
+          {show && (
+            <p className="b2-muted b2-foot">
+              <BIco name="info" size="sm" /> {priceSource(prices, loading, gameLang, t)}
+            </p>
+          )}
         </>
       )}
     </section>
