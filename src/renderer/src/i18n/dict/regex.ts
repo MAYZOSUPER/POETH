@@ -537,6 +537,7 @@ export const regex: DomainDict = {
     'regex.poe2.prop.allAttributes': 'Все характеристики',
     'regex.poe2.prop.rarity': 'Редкость предметов',
     'regex.poe2.atLeastN': '{label} ≥',
+    'regex.poe2.lib.freeSlot': 'Свободный слот. Сохраните строку с вкладки «Путевые камни», «Плитки» или «Торговец».',
     'regex.poe2.vendor.tip': 'Свойства — «любое из» или «все сразу»; класс и редкость — обязательные условия.',
     'regex.poe2.vendor.hidden': 'Ещё выбрано (видно в экспертном режиме): {list}',
     'regex.poe2.vendor.hint':
@@ -1088,6 +1089,7 @@ export const regex: DomainDict = {
     'regex.poe2.prop.allAttributes': 'All attributes',
     'regex.poe2.prop.rarity': 'Item rarity',
     'regex.poe2.atLeastN': '{label} ≥',
+    'regex.poe2.lib.freeSlot': 'Free slot. Save a string from the Waystones, Tablets or Vendor tab.',
     'regex.poe2.vendor.tip': 'Properties — “any of” or “all at once”; class and rarity are required conditions.',
     'regex.poe2.vendor.hidden': 'Also selected (shown in expert mode): {list}',
     'regex.poe2.vendor.hint': 'While levelling, look for boots with movement speed, resistances and weapons with “+ to Level of skills”.',

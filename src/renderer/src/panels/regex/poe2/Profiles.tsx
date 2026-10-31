@@ -115,42 +115,45 @@ function ProfileRow({
   const r = profileRegex(data, profile)
   const query = profileTradeQuery(data, profile)
   return (
-    <div className="rx-lib-row rx-p2-profile">
-      <span className="rx-lib-t">
-        <b>{profile.name}</b>
-        <code title={r.text}>{r.text || '—'}</code>
-        {!r.ok && <span className="ui-field__error">{t('regex.overflow.short')}</span>}
-        {price?.result && <PriceLine result={price.result} skipped={query.skipped.length} />}
-      </span>
-      <span className="rx-btns">
-        <CopyButton text={r.ok ? r.text : ''} small />
-        <button
-          type="button"
-          className="ui-btn ui-btn--sm"
-          onClick={onApply}
-          title={t('regex.poe2.profiles.applyTitle')}
-        >
-          {t('regex.poe2.profiles.apply')}
-        </button>
-        <button
-          type="button"
-          className="ui-btn ui-btn--sm"
-          disabled={price?.pending}
-          title={t('regex.poe2.price.title')}
-          onClick={() => void runPrice(profile.id, query.body)}
-        >
-          <Ico name="coins" />
-          {price?.pending ? t('regex.poe2.price.pending') : t('regex.poe2.price.do')}
-        </button>
-        <button
-          type="button"
-          className="ui-btn ui-btn--sm ui-btn--ghost"
-          onClick={onDelete}
-          title={t('regex.poe2.profiles.delete')}
-        >
-          <Ico name="cross" />
-        </button>
-      </span>
+    <div className="rx-p2-profile">
+      <div className="rx-lib-row">
+        <span className="rx-lib-t">
+          <b>{profile.name}</b>
+          <code title={r.text}>{r.text || '—'}</code>
+          {!r.ok && <span className="ui-field__error">{t('regex.overflow.short')}</span>}
+        </span>
+        <span className="rx-btns">
+          <CopyButton text={r.ok ? r.text : ''} small />
+          <button
+            type="button"
+            className="ui-btn ui-btn--sm"
+            onClick={onApply}
+            title={t('regex.poe2.profiles.applyTitle')}
+          >
+            {t('regex.poe2.profiles.apply')}
+          </button>
+          <button
+            type="button"
+            className="ui-btn ui-btn--sm"
+            disabled={price?.pending}
+            title={t('regex.poe2.price.title')}
+            onClick={() => void runPrice(profile.id, query.body)}
+          >
+            <Ico name="coins" />
+            {price?.pending ? t('regex.poe2.price.pending') : t('regex.poe2.price.do')}
+          </button>
+          <button
+            type="button"
+            className="ui-btn ui-btn--sm ui-btn--ghost"
+            onClick={onDelete}
+            title={t('regex.poe2.profiles.delete')}
+          >
+            <Ico name="cross" />
+          </button>
+        </span>
+      </div>
+      {/* цена — отдельной строкой под профилем, на всю ширину */}
+      {price?.result && <PriceLine result={price.result} skipped={query.skipped.length} />}
     </div>
   )
 }
@@ -174,7 +177,8 @@ function PriceLine({ result, skipped }: { result: Poe2PriceResult; skipped: numb
         {result.total === 0
           ? t('regex.poe2.price.none')
           : t('regex.poe2.price.found', {
-              n: result.total,
+              // trade2 считает до 10 000 лотов
+              n: result.total >= 10000 ? '10 000+' : result.total,
               list: prices.slice(0, 5).join(' · ') || '—'
             })}
       </span>

@@ -174,7 +174,7 @@ export function LibraryPage({ presets: given }: { presets?: LibraryPreset[] } = 
           ) : (
             <div key={slot} className="rx-lib-row">
               <SlotKeys slot={slot} keys={keysOf(slot)} />
-              <span className="rx-lib-t is-empty">{t(loose.length ? 'regex.lib.freeSlotPick' : 'regex.lib.freeSlot')}</span>
+              <span className="rx-lib-t is-empty">{t(loose.length ? 'regex.lib.freeSlotPick' : given ? 'regex.poe2.lib.freeSlot' : 'regex.lib.freeSlot')}</span>
               <span />
             </div>
           )

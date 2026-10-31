@@ -4,6 +4,11 @@
   margin-bottom: var(--sp-3, 12px);
 }
 
+.rx-p2-profile {
+  display: grid;
+  gap: var(--sp-1, 4px);
+}
+
 .rx-p2-profile .rx-lib-t code {
   white-space: nowrap;
   overflow: hidden;
@@ -12,6 +17,7 @@
 
 .rx-p2-price {
   display: flex;
+  padding: 0 var(--sp-3, 12px) var(--sp-2, 8px);
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-2, 8px);
