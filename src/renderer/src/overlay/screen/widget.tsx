@@ -84,8 +84,35 @@ function Total({ labels, ms }: { labels: ScreenLabels; ms?: number }) {
             .join(' · ')}
         </div>
       )}
+      {labels.game === 'poe2' && labels.window === 'stash' && <RecordWealth />}
       {ms !== undefined && <div className="scr-total__ms">{say('scr.ms', { ms: Math.round(ms) })}</div>}
     </div>
+  )
+}
+
+/**
+ * «Богатство PoE 2» (S70): «Записать в богатство» — результат этого снимка уходит карточкой в компаньон (там
+ * «Принять / Переснять»). Снимок экрана не передаётся: main берёт последний результат распознавания S68.
+ */
+function RecordWealth() {
+  const lang = useOverlayStore((s) => s.lang)
+  // строки — словарь «Богатства» (dict/wealth.ts), общий translate
+  const tw = (key: string): string => translate(lang, key)
+  const [st, setSt] = useState<'idle' | 'busy' | 'done' | 'fail'>('idle')
+  const wealth = (window.overlayApi as Partial<typeof window.overlayApi>).wealth
+  if (!wealth?.poe2ScreenRecord) return null
+  const record = async (): Promise<void> => {
+    setSt('busy')
+    const r = await wealth.poe2ScreenRecord().catch(() => ({ ok: false }))
+    setSt(r.ok ? 'done' : 'fail')
+  }
+  if (st === 'done' || st === 'fail')
+    return <div className={`scr-total__note scr-wealth${st === 'done' ? ' is-done' : ''}`}>{tw(st === 'done' ? 'wealth.p2.rec.done' : 'wealth.p2.rec.fail')}</div>
+  return (
+    <button type="button" className="ui-btn ui-btn--primary ui-btn--sm scr-wealth" disabled={st === 'busy'} onClick={() => void record()}>
+      <Icon name="coins" />
+      {tw('wealth.p2.rec')}
+    </button>
   )
 }
 

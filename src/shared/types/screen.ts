@@ -72,6 +72,8 @@ export interface ScreenLabel {
 
 export interface ScreenLabels {
   game: 'poe1' | 'poe2'
+  /** какое окно прочитано (S70: «Записать в богатство» — только у вкладки тайника) */
+  window?: ScreenWindow
   /** базовая валюта: 'chaos' | 'exalted' */
   base: 'chaos' | 'exalted'
   /** base за divine; null — курса нет */
