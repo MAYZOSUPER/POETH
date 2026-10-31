@@ -13,6 +13,8 @@ export function farmBridge(): FarmIpcApi {
       setConfig: (patch) => ipcRenderer.invoke(IPC.farm.setConfig, patch),
       removeRun: (id) => ipcRenderer.invoke(IPC.farm.removeRun, id),
       clear: () => ipcRenderer.invoke(IPC.farm.clear),
+      addFind: (input) => ipcRenderer.invoke(IPC.farm.addFind, input),
+      removeFind: (runId, findId) => ipcRenderer.invoke(IPC.farm.removeFind, runId, findId),
       simulate: (lines) => ipcRenderer.invoke(IPC.farm.simulate, lines),
       logStatus: () => ipcRenderer.invoke(IPC.farm.logStatus)
     },

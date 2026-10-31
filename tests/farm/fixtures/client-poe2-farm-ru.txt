@@ -1,0 +1,62 @@
+2026/11/01 20:59:50 100000062 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(unknown)]
+2026/11/01 21:00:00 100000063 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:00:00 100000064 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:00:00 100000065 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Убежище на вырубке]
+2026/11/01 21:00:30 100000066 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Atlas]
+2026/11/01 21:01:00 100000067 2caa22d2 [DEBUG Client 4380] Generating level 79 area "MapBluff" with seed 101
+2026/11/01 21:01:00 100000068 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:01:00 100000069 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Утёс]
+2026/11/01 21:02:00 100000070 2caa22d2 [INFO Client 4380] @От кого Тестпокупатель: Здравствуйте, хочу купить у вас Тестгерой был повержен. за 5 exalted
+2026/11/01 21:03:00 100000071 2caa22d2 [INFO Client 4380] : Тестгерой был повержен.
+2026/11/01 21:03:05 100000072 2caa22d2 [DEBUG Client 4380] Generating level 79 area "MapBluff" with seed 101
+2026/11/01 21:03:05 100000073 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:03:05 100000074 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Утёс]
+2026/11/01 21:05:00 100000075 2caa22d2 [DEBUG Client 4380] Generating level 79 area "Abyss_Depths2" with seed 555
+2026/11/01 21:05:00 100000076 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:05:00 100000077 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Глубины Бездны]
+2026/11/01 21:07:00 100000078 2caa22d2 [DEBUG Client 4380] Generating level 79 area "MapBluff" with seed 101
+2026/11/01 21:07:00 100000079 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:07:00 100000080 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Утёс]
+2026/11/01 21:08:00 100000081 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:08:00 100000082 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:08:00 100000083 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Убежище на вырубке]
+2026/11/01 21:08:30 100000084 2caa22d2 [DEBUG Client 4380] Generating level 79 area "MapBluff" with seed 101
+2026/11/01 21:08:30 100000085 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:08:30 100000086 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Утёс]
+2026/11/01 21:10:00 100000087 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:10:00 100000088 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:10:00 100000089 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Убежище на вырубке]
+2026/11/01 21:10:20 100000090 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Atlas]
+2026/11/01 21:11:00 100000091 2caa22d2 [DEBUG Client 4380] Generating level 80 area "MapPrecursorTowerDesert" with seed 202
+2026/11/01 21:11:00 100000092 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:11:00 100000093 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Башня Предтеч]
+2026/11/01 21:15:00 100000094 2caa22d2 [INFO Client 4380] : Тестгерой покончил с собой
+2026/11/01 21:15:05 100000095 2caa22d2 [DEBUG Client 4380] Generating level 80 area "MapPrecursorTowerDesert" with seed 202
+2026/11/01 21:15:05 100000096 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:15:05 100000097 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Башня Предтеч]
+2026/11/01 21:18:00 100000098 2caa22d2 [DEBUG Client 4380] Generating level 65 area "G_Endgame_Town" with seed 1
+2026/11/01 21:18:00 100000099 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:18:00 100000100 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Убежище в зиккурате]
+2026/11/01 21:19:00 100000101 2caa22d2 [DEBUG Client 4380] Generating level 75 area "ExpeditionLogBook_Tundra" with seed 303
+2026/11/01 21:19:00 100000102 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:19:00 100000103 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Холодные скалы]
+2026/11/01 21:21:00 100000104 2caa22d2 [DEBUG Client 4380] Generating level 75 area "ExpeditionSubArea_Cavern" with seed 304
+2026/11/01 21:21:00 100000105 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:21:00 100000106 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Логово контрабандистов]
+2026/11/01 21:23:00 100000107 2caa22d2 [DEBUG Client 4380] Generating level 75 area "ExpeditionLogBook_Tundra" with seed 303
+2026/11/01 21:23:00 100000108 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:23:00 100000109 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Холодные скалы]
+2026/11/01 21:25:00 100000110 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:25:00 100000111 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:25:00 100000112 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Убежище на вырубке]
+2026/11/01 21:26:00 100000113 2caa22d2 [DEBUG Client 4380] Generating level 68 area "MapHideoutFarmlands_Claimable" with seed 404
+2026/11/01 21:26:00 100000114 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:26:00 100000115 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Убежище на полях]
+2026/11/01 21:27:00 100000116 2caa22d2 [INFO Client 4380] : Тестсоюзник присоединился.
+2026/11/01 21:28:00 100000117 2caa22d2 [INFO Client 4380] : Тестсоюзник был повержен.
+2026/11/01 21:30:00 100000118 2caa22d2 [DEBUG Client 4380] Generating level 65 area "HideoutFelled" with seed 1
+2026/11/01 21:30:00 100000119 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:30:00 100000120 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Убежище на вырубке]
+2026/11/01 21:31:00 100000121 2caa22d2 [DEBUG Client 4380] Generating level 66 area "MapBluff" with seed 505
+2026/11/01 21:31:00 100000122 2caa22d2 [INFO Client 4380] [SCENE] Set Source [(null)]
+2026/11/01 21:31:00 100000123 2caa22d2 [INFO Client 4380] [SCENE] Set Source [Утёс]
