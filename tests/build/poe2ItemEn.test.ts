@@ -145,10 +145,22 @@ describe('PoE 2: RU → EN, текст', () => {
 })
 
 describe('PoE 2: EN-клиент, ошибки, классы', () => {
-  it.each(NAMES)('%s: EN-текст — как есть', (name) => {
+  it.each(NAMES)('%s: EN-текст — без строк { … } и роллов, те же моды и их виды; обычный Ctrl+C — как есть', (name) => {
     const raw = readFixture('en', name)
-    const r = poe2ItemEnCopy(raw, 'en', null, null)
-    expect(r).toEqual({ ok: true, mode: 'as-is', text: raw, untranslated: [] })
+    const r = poe2ItemEnCopy(raw, 'en', null, en)
+    if (!r.ok) throw new Error(r.reason)
+    expect(r.untranslated).toEqual([])
+    expect(r.text).not.toMatch(/^\{/m)
+    expect(r.text).not.toMatch(/\d\([+-]?\d+(?:\.\d+)?-[+-]?\d+(?:\.\d+)?\)/)
+    expect(modRefs(parse(r.text))).toEqual(modRefs(parse(raw)))
+    const plain = !/^\{/m.test(raw) && !/\d\([+-]?\d+(?:\.\d+)?-[+-]?\d+(?:\.\d+)?\)/.test(raw)
+    if (plain) expect(r).toEqual({ ok: true, mode: 'as-is', text: raw, untranslated: [] })
+    else expect(r.mode).toBe('translated')
+  })
+
+  it('EN без EN-данных — строки { … } просто убираются', () => {
+    const r = poe2ItemEnCopy(readFixture('en', 'ee2-ring-implicit'), 'en', null, null)
+    expect(r.ok && r.text).not.toMatch(/^\{/m)
   })
 
   it('нет данных, не предмет — честная ошибка', () => {
