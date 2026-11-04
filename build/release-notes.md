@@ -1,30 +1,28 @@
 <!-- Описание релиза (S10b): тело релиза на GitHub и releaseNotes в latest.yml. Перед тегом — версия в строке
      «**POETH v…**» (CI сверяет её с тегом) и списки «что нового»: один пункт — одна строка. Окно «Вышло
      обновление» показывает раздел на языке интерфейса (до 1200 символов). -->
-**POETH v0.1.0-rc.13**
+**POETH v0.1.0-rc.14**
 
 ## Что нового
 
 - Это демо-версия для знакомства: могут быть ошибки. Полноценный релиз v0.1.0 — 11 ноября, установленная версия обновится до него сама.
-- Windows больше не спрашивает про брандмауэр, когда открываете трейд-окно: POETH не открывает портов на приём.
-- «Стартеры» во вкладке «Билд»: выберите стартовый билд лиги и играйте по нему. Список 3.30 придёт после анонса лиги, без переустановки.
-- Окно цены Ctrl+D: режим «Покупаю / Продаю»; клавиша «Скопировать предмет по-английски» — для PoB и Discord.
-- Гид прокачки: «зона слишком лёгкая / опасно» по опыту и напоминание пройти лабиринт.
-- Фильтр лута NeverSink в один клик, анойнты амулета во вкладке «Билд», «Справочник» с советами для новичка.
-- Трейд-окно в стиле POETH: своя шапка, рельс сайтов с названиями. «Сообщить об ошибке» — в «О программе» и в трее.
+- PoE 2: окно цены с курсом у Ange и «Продаю», regex путевых камней, табличек и торговца, live и сделки.
+- PoE 2: «Слухи журнала» — какой слух взять и почему; «Билд» — сохранить билд PoB 2 в игровой планировщик и «Вложение».
+- PoE 2: «Богатство» без API тайника (ввод, Ctrl+D, снимок вкладки) и учёт карт. Компас в новом дизайне, «Скоро в PoE 2».
+- Цены поверх окон: Alt+F над особой вкладкой тайника — цена у каждой ячейки и итог (PoE 1 и PoE 2).
+- PoE 2 проверен без игры, данные обновим к выходу 1.0 (11 декабря). Как пользоваться — гайд, раздел PoE 2.
 
-**Как установить:** скачайте `POETH-Setup-0.1.0-rc.13.exe` ниже и запустите — [пошагово](https://github.com/MAYZOSUPER/POETH#как-установить). Без установки — `POETH-Portable-0.1.0-rc.13.exe`: она сама не обновляется, релиз 11 ноября скачайте вручную. Как пользоваться — [гайд по функциям](https://mayzosuper.github.io/POETH/guide/).
+**Как установить:** скачайте `POETH-Setup-0.1.0-rc.14.exe` ниже и запустите — [пошагово](https://github.com/MAYZOSUPER/POETH#как-установить). Без установки — `POETH-Portable-0.1.0-rc.14.exe`: она сама не обновляется, релиз 11 ноября скачайте вручную. Как пользоваться — [гайд по функциям](https://mayzosuper.github.io/POETH/guide/).
 
 ## What's new
 
 - This is a demo version to try POETH out: expect some bugs. The full v0.1.0 release is on November 11, and the installed version updates to it by itself.
-- Windows no longer asks about the firewall when you open the trade window: POETH opens no listening ports.
-- League starters in the Build tab: pick a starter build and play it with guidance. The 3.30 list arrives after the league reveal, no reinstall needed.
-- Ctrl+D price window: “Buying / Selling” mode; a “Copy item in English” hotkey — for PoB and Discord.
-- Leveling guide: “zone too easy / dangerous” by experience and a reminder to run the Labyrinth.
-- One-click NeverSink loot filter, amulet anoints in the Build tab, a Guidebook with tips for new players.
-- Trade window in POETH style: its own title bar, a site rail with names. “Report a bug” in About and the tray menu.
+- PoE 2: price window with the Ange rate and “Selling”, regex for waystones, tablets and vendors, live search and trades.
+- PoE 2: “Logbook rumours” — which rumour to take and why; “Build” — save a PoB 2 build to the in-game planner, and “Instill”.
+- PoE 2: “Wealth” without a stash API (manual input, Ctrl+D, tab snapshot) and map tracking. New-look campaign compass, “Coming to PoE 2”.
+- Prices over windows: Alt+F over a special stash tab shows a price at every slot and a total (PoE 1 and PoE 2).
+- PoE 2 is tested without the game; data will be updated for 1.0 (December 11). How to use it — the guide, PoE 2 section.
 
-**How to install:** download `POETH-Setup-0.1.0-rc.13.exe` below and run it — [step by step](https://github.com/MAYZOSUPER/POETH/blob/main/README.en.md#how-to-install). No install — `POETH-Portable-0.1.0-rc.13.exe`: it does not update itself, download the November 11 release manually. How to use it — [feature guide](https://mayzosuper.github.io/POETH/guide/?lang=en).
+**How to install:** download `POETH-Setup-0.1.0-rc.14.exe` below and run it — [step by step](https://github.com/MAYZOSUPER/POETH/blob/main/README.en.md#how-to-install). No install — `POETH-Portable-0.1.0-rc.14.exe`: it does not update itself, download the November 11 release manually. How to use it — [feature guide](https://mayzosuper.github.io/POETH/guide/?lang=en).
 
 POETH is a fan-made tool, not affiliated with or endorsed by Grinding Gear Games.
