@@ -1,7 +1,7 @@
 <!-- Описание релиза (S10b): тело релиза на GitHub и releaseNotes в latest.yml. Перед тегом — версия в строке
      «**POETH v…**» (CI сверяет её с тегом) и списки «что нового»: один пункт — одна строка. Окно «Вышло
      обновление» показывает раздел на языке интерфейса (до 1200 символов). -->
-**POETH v0.1.0-rc.14**
+**POETH v0.1.0-rc.15**
 
 ## Что нового
 
@@ -12,7 +12,7 @@
 - Цены поверх окон: Alt+F над особой вкладкой тайника — цена у каждой ячейки и итог (PoE 1 и PoE 2).
 - PoE 2 проверен без игры, данные обновим к выходу 1.0 (11 декабря). Как пользоваться — гайд, раздел PoE 2.
 
-**Как установить:** скачайте `POETH-Setup-0.1.0-rc.14.exe` ниже и запустите — [пошагово](https://github.com/MAYZOSUPER/POETH#как-установить). Без установки — `POETH-Portable-0.1.0-rc.14.exe`: она сама не обновляется, релиз 11 ноября скачайте вручную. Как пользоваться — [гайд по функциям](https://mayzosuper.github.io/POETH/guide/).
+**Как установить:** скачайте `POETH-Setup-0.1.0-rc.15.exe` ниже и запустите — [пошагово](https://github.com/MAYZOSUPER/POETH#как-установить). Без установки — `POETH-Portable-0.1.0-rc.15.exe`: она сама не обновляется, релиз 11 ноября скачайте вручную. Как пользоваться — [гайд по функциям](https://mayzosuper.github.io/POETH/guide/).
 
 ## What's new
 
@@ -23,6 +23,6 @@
 - Prices over windows: Alt+F over a special stash tab shows a price at every slot and a total (PoE 1 and PoE 2).
 - PoE 2 is tested without the game; data will be updated for 1.0 (December 11). How to use it — the guide, PoE 2 section.
 
-**How to install:** download `POETH-Setup-0.1.0-rc.14.exe` below and run it — [step by step](https://github.com/MAYZOSUPER/POETH/blob/main/README.en.md#how-to-install). No install — `POETH-Portable-0.1.0-rc.14.exe`: it does not update itself, download the November 11 release manually. How to use it — [feature guide](https://mayzosuper.github.io/POETH/guide/?lang=en).
+**How to install:** download `POETH-Setup-0.1.0-rc.15.exe` below and run it — [step by step](https://github.com/MAYZOSUPER/POETH/blob/main/README.en.md#how-to-install). No install — `POETH-Portable-0.1.0-rc.15.exe`: it does not update itself, download the November 11 release manually. How to use it — [feature guide](https://mayzosuper.github.io/POETH/guide/?lang=en).
 
 POETH is a fan-made tool, not affiliated with or endorsed by Grinding Gear Games.
