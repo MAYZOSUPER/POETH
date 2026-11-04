@@ -20,7 +20,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 40
     steps:
+      # полная история: тесты канала данных (S67) берут прошлый выпуск `prev` из git
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
