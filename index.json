@@ -1,0 +1,31 @@
+{
+ "v": 1,
+ "source": "poe.ninja",
+ "at": 1794041394449,
+ "leagues": [
+  {
+   "league": "Allflame",
+   "file": "poe1/Allflame.json",
+   "at": 1794041394449,
+   "lines": 1952
+  },
+  {
+   "league": "Hardcore Allflame",
+   "file": "poe1/Hardcore_20Allflame.json",
+   "at": 1794041394449,
+   "lines": 663
+  },
+  {
+   "league": "Standard",
+   "file": "poe1/Standard.json",
+   "at": 1794041394449,
+   "lines": 2246
+  },
+  {
+   "league": "Hardcore",
+   "file": "poe1/Hardcore.json",
+   "at": 1794041394449,
+   "lines": 356
+  }
+ ]
+}
