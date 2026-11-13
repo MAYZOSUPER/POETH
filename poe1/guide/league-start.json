@@ -1,0 +1,373 @@
+{
+  "schema": 1,
+  "id": "league-start",
+  "rev": 1,
+  "updated": "2026-10-30",
+  "patch": ["3.29", "3.30"],
+  "title": { "ru": "Старт лиги: первые дни", "en": "League start: the first days" },
+  "summary": {
+    "ru": "План на первые три дня новой лиги: кампания, атлас, первые деньги. Что продавать в первые часы и чего не делать.",
+    "en": "A plan for the first three days of a new league: the campaign, the Atlas, your first money. What to sell early and what not to do."
+  },
+  "sections": [
+    {
+      "id": "why",
+      "title": { "ru": "Почему первые дни особенные", "en": "Why the first days are special" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "В новой лиге все начинают с нуля: пустой тайник, новый персонаж, рынок только складывается. Простые вещи, которые через месяц никому не нужны, в первые дни нужны всем, а предложения мало — поэтому они дорогие.",
+            "en": "In a new league everyone starts from scratch: an empty stash, a new character, a market that is only just forming. Simple items nobody wants a month later are needed by everyone in the first days, and there are few of them — so they are expensive."
+          }
+        },
+        {
+          "kind": "note",
+          "tone": "tip",
+          "text": {
+            "ru": "Главное в первые дни — **не продавать дёшево** и **не тратить валюту впустую**. Цены меняются каждый час, поэтому проверяйте их при каждой продаже, а не по памяти.",
+            "en": "The key in the first days: **don't sell cheap** and **don't waste currency**. Prices change every hour, so check them every time you sell instead of going from memory."
+          }
+        }
+      ]
+    },
+    {
+      "id": "day-1",
+      "title": { "ru": "День 1: кампания", "en": "Day 1: the campaign" },
+      "blocks": [
+        {
+          "kind": "list",
+          "ordered": true,
+          "items": [
+            {
+              "ru": "**Пройдите 10 актов кампании.** Не задерживайтесь у каждого сундука и в каждом углу: на старте важнее уровень и выход в карты.",
+              "en": "**Finish the 10 acts of the campaign.** Don't stop at every chest and corner: early on, levels and getting to maps matter more."
+            },
+            {
+              "ru": "**Берите квесты с очками пассивных умений.** Их легко пропустить, а без них персонажу не хватает силы.",
+              "en": "**Do the quests that give passive skill points.** They are easy to miss, and your character is weaker without them."
+            },
+            {
+              "ru": "**Проходите Лабиринт**, когда соберёте испытания: первый — около 33 уровня, следующие — около 55 и 68. Лабиринт даёт очки Восхождения, без них билд заметно слабее.",
+              "en": "**Run the Labyrinth** once you have the trials: the first one around level 33, the next ones around 55 and 68. It grants Ascendancy points; without them your build is noticeably weaker."
+            },
+            {
+              "ru": "**Следите за сопротивлениями.** После 5 и 10 актов они снижаются на 30% (всего −60%). Цель к концу кампании — 75% к огню, холоду и молнии.",
+              "en": "**Watch your resistances.** After acts 5 and 10 they drop by 30% (−60% in total). Aim for 75% fire, cold and lightning by the end of the campaign."
+            },
+            {
+              "ru": "**Подбирайте валюту и жёлтые вещи** с хорошими свойствами — их можно продать. Белые и синие вещи из кампании почти ничего не стоят.",
+              "en": "**Pick up currency and yellow (rare) items** with good modifiers — you can sell them. White and blue items from the campaign are worth almost nothing."
+            }
+          ]
+        },
+        {
+          "kind": "note",
+          "tone": "warn",
+          "text": {
+            "ru": "Сопротивления — главная причина смертей после 5 акта. Перед боссом акта загляните в окно персонажа (клавиша `C`).",
+            "en": "Resistances are the top cause of deaths after Act 5. Before an act boss, check your character sheet (`C` key)."
+          }
+        },
+        {
+          "kind": "app",
+          "to": "campaign",
+          "label": { "ru": "Кампания: гид прокачки", "en": "Campaign: levelling guide" },
+          "text": {
+            "ru": "Маршрут по актам поверх игры: куда идти, квесты с пассивками, испытания Лабиринта.",
+            "en": "An act-by-act route on top of the game: where to go, passive point quests, Labyrinth trials."
+          }
+        },
+        {
+          "kind": "app",
+          "to": "regex/vendor",
+          "label": { "ru": "Regex → Торговец", "en": "Regex → Vendor" },
+          "text": {
+            "ru": "Готовая строка «Старт лиги: ботинки со скоростью»: торговец подсветит ботинки с 10%+ скорости передвижения.",
+            "en": "The ready-made “League start: boots with speed” string makes the vendor highlight boots with 10%+ movement speed."
+          }
+        },
+        {
+          "kind": "link",
+          "site": "poelab",
+          "label": { "ru": "poelab: раскладка Лабиринта", "en": "poelab: Labyrinth layouts" },
+          "text": {
+            "ru": "Схема Лабиринта на сегодня — во вкладке трейд-окна.",
+            "en": "Today's Labyrinth layout — in a trade window tab."
+          }
+        }
+      ]
+    },
+    {
+      "id": "first-hours",
+      "title": { "ru": "Что продавать в первые часы", "en": "What to sell in the first hours" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "Быстрее всего уходят вещи, которые нужны каждому для кампании и первых карт:",
+            "en": "The fastest sellers are items everyone needs for the campaign and the first maps:"
+          }
+        },
+        {
+          "kind": "list",
+          "items": [
+            {
+              "ru": "**Жёлтые вещи со здоровьем и сопротивлениями** — кольца, амулеты, пояса, перчатки, шлемы. Чем больше здоровья и сопротивлений сразу, тем дороже.",
+              "en": "**Rares with life and resistances** — rings, amulets, belts, gloves, helmets. The more life and resistances together, the higher the price."
+            },
+            {
+              "ru": "**Ботинки со скоростью передвижения** — особенно вместе со здоровьем и сопротивлениями.",
+              "en": "**Boots with movement speed** — especially combined with life and resistances."
+            },
+            {
+              "ru": "**Белые базы с высоким уровнем предмета** (ilvl 84 и выше) — их покупают те, кто крафтит. Бывает, что белая база дороже готовой вещи из неё.",
+              "en": "**White bases with a high item level** (ilvl 84+) — crafters buy them. Sometimes a white base is worth more than a finished item made from it."
+            },
+            {
+              "ru": "**Валюту** — пачкой через обмен валюты у Фаустуса, без переписки с игроками.",
+              "en": "**Currency** — in bulk at Faustus' Currency Exchange, without whispering players."
+            }
+          ]
+        },
+        {
+          "kind": "note",
+          "tone": "tip",
+          "text": {
+            "ru": "Перед продажей наведите курсор на вещь и нажмите `Ctrl+D`: POETH покажет, за сколько похожие вещи выставлены прямо сейчас.",
+            "en": "Before selling, hover the item and press `Ctrl+D`: POETH shows what similar items are listed for right now."
+          }
+        },
+        {
+          "kind": "text",
+          "text": {
+            "ru": "Дешёвые крафты тоже приносят деньги, пока предложения мало: например, сущность на хорошую базу. Но считайте: через несколько дней таких вещей станет много, и цена упадёт.",
+            "en": "Cheap crafts also make money while supply is low — for example, an essence on a good base. But do the math: in a few days there will be plenty of such items and the price will drop."
+          }
+        }
+      ]
+    },
+    {
+      "id": "craft-math",
+      "expert": true,
+      "title": { "ru": "Для опытных: крафт на продажу в цифрах", "en": "For experienced players: crafting to sell, in numbers" },
+      "blocks": [
+        {
+          "kind": "text",
+          "text": {
+            "ru": "Как меняется картина за лигу — по расчёту POETH на ценах 13-й недели лиги 3.29 (30.10.2026) и весах модов 3.29:",
+            "en": "How the picture changes over a league — POETH's calculation with week-13 prices of league 3.29 (Oct 30, 2026) and 3.29 mod weights:"
+          }
+        },
+        {
+          "kind": "list",
+          "items": [
+            {
+              "ru": "Ботинки «здоровье + скорость 25% + сопротивления 70+» сущностями: в среднем около 430 хаосов вложений, а на рынке такие стоили 3–5 хаосов при 10 000+ лотах.",
+              "en": "Boots with “life + 25% movement speed + 70+ resistances” via essences: about 430 chaos invested on average, while such boots were listed at 3–5 chaos with 10,000+ listings."
+            },
+            {
+              "ru": "Перчатки «здоровье 70+ и сопротивления 70+» хаос-спамом: шанс около 1 из 170 за попытку.",
+              "en": "Gloves with “70+ life and 70+ resistances” by chaos spam: about a 1 in 170 chance per attempt."
+            },
+            {
+              "ru": "Белые базы ilvl 84 (кольца, кластерные самоцветы) при этом стоили дороже готовых вещей из них.",
+              "en": "Meanwhile, white ilvl 84 bases (rings, cluster jewels) were worth more than finished items made from them."
+            }
+          ]
+        },
+        {
+          "kind": "note",
+          "tone": "warn",
+          "text": {
+            "ru": "В начале лиги всё наоборот: готовые вещи нужны всем, а предложения мало. Тот же крафт может окупаться — но судите по живым ценам, а не по этим цифрам. Проверьте цену готовой вещи до того, как покупать материалы.",
+            "en": "At league start it's the other way round: finished items are wanted by everyone and supply is low. The same craft may pay off — but judge by live prices, not these numbers. Check the price of the finished item before you buy materials."
+          }
+        }
+      ]
+    },
+    {
+      "id": "day-2",
+      "title": { "ru": "День 2: атлас и первые карты", "en": "Day 2: the Atlas and first maps" },
+      "blocks": [
+        {
+          "kind": "list",
+          "ordered": true,
+          "items": [
+            {
+              "ru": "**Начните с карт низкого уровня.** Карты открывают в устройстве карт в убежище. Не прыгайте сразу в сложные: сначала добейте сопротивления и запас здоровья.",
+              "en": "**Start with low-tier maps.** Maps are opened in the Map Device in your hideout. Don't jump into hard ones right away: cap your resistances and build up life first."
+            },
+            {
+              "ru": "**Проходите карты, а не покупайте их.** Карты падают в картах: если закрывать их ровно, свои будут всегда.",
+              "en": "**Run maps instead of buying them.** Maps drop in maps: clear them steadily and you will always have your own."
+            },
+            {
+              "ru": "**Вкладывайте очки атласа в одну-две механики** (клавиша `G`). Очки дают за пройденные карты; механика, усиленная с нескольких сторон, окупается быстрее, чем всё понемногу.",
+              "en": "**Put Atlas points into one or two mechanics** (`G` key). You get points for completed maps; a mechanic boosted from several sides pays off faster than a little of everything."
+            }
+          ]
+        },
+        {
+          "kind": "app",
+          "to": "advisor",
+          "label": { "ru": "Что фармить", "en": "What to farm" },
+          "text": {
+            "ru": "Стратегии фарма с доходом в час и тем, что нужно на атласе.",
+            "en": "Farming strategies with income per hour and what they need on the Atlas."
+          }
+        }
+      ]
+    },
+    {
+      "id": "day-3",
+      "title": { "ru": "День 3: деньги — в персонажа", "en": "Day 3: put the money into your character" },
+      "blocks": [
+        {
+          "kind": "list",
+          "ordered": true,
+          "items": [
+            {
+              "ru": "**Сначала — выживаемость.** Доведите сопротивления до 75% и поднимите здоровье: дешёвые жёлтые вещи с рынка дают больше, чем дорогой урон.",
+              "en": "**Survival first.** Cap your resistances at 75% and raise your life: cheap rares from the market give more than expensive damage."
+            },
+            {
+              "ru": "**Потом — то, на чём держится билд**: ключевой уникальный предмет или камень из вашего гайда.",
+              "en": "**Then — what your build relies on**: the key unique item or gem from your guide."
+            },
+            {
+              "ru": "**Продолжайте продавать добычу с карт.** Рынок ещё молодой, и простые вещи покупают.",
+              "en": "**Keep selling loot from maps.** The market is still young, and simple items still sell."
+            }
+          ]
+        },
+        {
+          "kind": "app",
+          "to": "build",
+          "label": { "ru": "Билд", "en": "Build" },
+          "text": {
+            "ru": "Вставьте код PoB из гайда — POETH покажет билд с названиями из вашего клиента игры.",
+            "en": "Paste the PoB code from your guide — POETH shows the build with the names from your game client."
+          }
+        }
+      ]
+    },
+    {
+      "id": "dont",
+      "title": { "ru": "Чего не делать", "en": "What not to do" },
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            {
+              "ru": "**Не продавайте валюту за бесценок.** Курс в первые дни меняется быстро — перед обменом посмотрите текущий во вкладке «Обмен» или нажмите `Ctrl+D` на стопке.",
+              "en": "**Don't sell currency for pennies.** Rates move fast in the first days — before trading, check the current one in the Exchange tab or press `Ctrl+D` on the stack."
+            },
+            {
+              "ru": "**Не отдавайте торговцу то, что не проверили.** Жёлтая вещь с удачными свойствами на рынке может стоить намного больше, чем даст торговец.",
+              "en": "**Don't vendor what you haven't checked.** A rare with lucky modifiers can be worth far more on the market than a vendor pays."
+            },
+            {
+              "ru": "**Не тратьте валюту на «лотерею»:** хаос-спам по жёлтым вещам, порча хороших вещей Сферой ваал, покупка дорогих неопознанных вещей. На старте каждая сфера полезнее как деньги.",
+              "en": "**Don't spend currency on a “lottery”:** chaos-spamming rares, corrupting good items with a Vaal Orb, buying expensive unidentified items. Early on, every orb is worth more as money."
+            },
+            {
+              "ru": "**Не покупайте самый дешёвый лот вслепую.** Подозрительно дешёвый лот часто приманка: продавец не отвечает или «передумал». Цена лотов с мгновенным выкупом ближе к настоящей.",
+              "en": "**Don't blindly buy the cheapest listing.** A suspiciously cheap listing is often bait: the seller doesn't reply or “changed their mind”. Instant-buyout prices are closer to the real price."
+            },
+            {
+              "ru": "**Сверяйте сделку в окне обмена:** название и количество. Похожая валюта и осколки вместо целых сфер — частый обман.",
+              "en": "**Check the trade window:** the name and the amount. Look-alike currency and shards instead of whole orbs are a common scam."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "poeth",
+      "title": { "ru": "Как помогает POETH", "en": "How POETH helps" },
+      "blocks": [
+        {
+          "kind": "app",
+          "to": "priceCheck",
+          "label": { "ru": "Прайс-чек (Ctrl+D)", "en": "Price Check (Ctrl+D)" },
+          "text": {
+            "ru": "Цена вещи под курсором: похожие лоты и итог. Для своей вещи — режим «Продаю»: какую цену поставить в мерчант-вкладку.",
+            "en": "The price of the item under your cursor: similar listings and a verdict. For your own item — Selling mode: what price to set in your merchant tab."
+          }
+        },
+        {
+          "kind": "app",
+          "to": "regex",
+          "label": { "ru": "Regex", "en": "Regex" },
+          "text": {
+            "ru": "Строки поиска для тайника, торговца и карт: нужные вещи подсвечиваются одной вставкой в поиск (`Ctrl+F`).",
+            "en": "Search strings for your stash, vendors and maps: the items you need light up after one paste into search (`Ctrl+F`)."
+          }
+        },
+        {
+          "kind": "app",
+          "to": "campaign",
+          "label": { "ru": "Кампания", "en": "Campaign" },
+          "text": {
+            "ru": "Гид прокачки поверх игры: маршрут по актам, квесты с пассивками, испытания Лабиринта.",
+            "en": "A levelling guide on top of the game: the route by act, passive point quests, Labyrinth trials."
+          }
+        },
+        {
+          "kind": "app",
+          "to": "deals",
+          "label": { "ru": "Сделки", "en": "Trades" },
+          "text": {
+            "ru": "Кто хочет купить у вас: входящие предложения в одном месте.",
+            "en": "Who wants to buy from you: incoming offers in one place."
+          }
+        },
+        {
+          "kind": "app",
+          "to": "flip",
+          "label": { "ru": "Обмен", "en": "Exchange" },
+          "text": {
+            "ru": "Курс валюты у Фаустуса — чтобы не менять за бесценок.",
+            "en": "Currency rates at Faustus — so you don't trade for pennies."
+          }
+        },
+        {
+          "kind": "link",
+          "site": "ggg",
+          "url": {
+            "ru": "https://ru.pathofexile.com/item-filter/ladder/follower",
+            "en": "https://www.pathofexile.com/item-filter/ladder/follower"
+          },
+          "label": { "ru": "Фильтры лута на сайте GGG", "en": "Item filters on the GGG site" },
+          "text": {
+            "ru": "Без фильтра ценные вещи теряются среди мусора. Подпишитесь на популярный фильтр (например, NeverSink) и выберите его в настройках игры.",
+            "en": "Without a filter, valuable drops get lost in the clutter. Follow a popular filter (NeverSink, for example) and pick it in the game options."
+          }
+        }
+      ]
+    },
+    {
+      "id": "new-330",
+      "title": { "ru": "Что нового в 3.30", "en": "What's new in 3.30" },
+      "blocks": [
+        {
+          "kind": "pending",
+          "text": {
+            "ru": "Появится после патчноутов. Лига 3.30 стартует 13 ноября; раздел дополним, когда выйдут официальные патчноуты, — переустанавливать POETH не придётся.",
+            "en": "Coming after the patch notes. League 3.30 starts on November 13; we'll fill in this section once the official patch notes are out — no need to reinstall POETH."
+          }
+        },
+        {
+          "kind": "link",
+          "site": "ggg",
+          "url": {
+            "ru": "https://ru.pathofexile.com/forum/view-forum/patch-notes",
+            "en": "https://www.pathofexile.com/forum/view-forum/patch-notes"
+          },
+          "label": { "ru": "Патчноуты на сайте GGG", "en": "Patch notes on the GGG site" }
+        }
+      ]
+    }
+  ]
+}

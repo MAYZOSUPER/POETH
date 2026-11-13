@@ -1,87 +1,218 @@
 {
-  "version": "2026.10.27",
+  "version": "2026.11.13",
   "game": "poe1",
-  "minApp": "0.1.0",
+  "minApp": "0.1.0-rc.15",
   "files": {
+    "advisor/strategies.json": {
+      "sha256": "68584132181a43c0ffb77d90c90f5c6e2d266c5685a5814ada4e9d13f3dad927",
+      "size": 20378,
+      "prev": [
+        "01c519df72d05afe579cd437e8eb1c962f76f9a7449b1c6f2b08639c895f1052",
+        "cc06d761167c95bcd4213ecad273c7132baa504ac23ba79f4faa3c201815a7f1"
+      ]
+    },
+    "build/anoints.json": {
+      "sha256": "01239fbbddd5a44c19b8a198eda3a71e6273f45854e130d335b11b3ff3c33d30",
+      "size": 8947,
+      "prev": []
+    },
+    "build/gems.json": {
+      "sha256": "277c10f382d5c7ab6d623daa0ddbab1df18474a0102c9884c6ad7283d0e5ae3d",
+      "size": 174170,
+      "prev": []
+    },
+    "build/timeless-LICENSE.txt": {
+      "sha256": "358fdf17f8a1319528f31b772b8cbdc282415b5817d2a12b0c384c690b49fd64",
+      "size": 1321,
+      "prev": []
+    },
+    "build/timeless-br.bin": {
+      "sha256": "9ddb51309544931d549e8c6704747a429e0d42521f83ca168154d4a60f6fe2e6",
+      "size": 1277817,
+      "prev": []
+    },
+    "build/timeless-eh.bin": {
+      "sha256": "7bcc5db8fd530fb97385b04b1aaadbf4324032e53d5ec96848c1754d61ac1655",
+      "size": 1557949,
+      "prev": []
+    },
+    "build/timeless-ht.bin": {
+      "sha256": "c6b2bb6343cde0694940d7655cdfdd6dec9887e68847c8627d8af62f8d68c824",
+      "size": 1313334,
+      "prev": []
+    },
+    "build/timeless-lp.bin": {
+      "sha256": "33e5ec81193432177e2847472ae916bd12a92edf2e980a9e3a9bc37d6c2e04ab",
+      "size": 1362881,
+      "prev": []
+    },
+    "build/timeless-mf.bin": {
+      "sha256": "8bdca2aa6366a141951627c12387023dc1e9ccb82ca88ea9b7f66a611ba363ef",
+      "size": 543926,
+      "prev": []
+    },
+    "build/timeless.json": {
+      "sha256": "f56e1c6d8b793b730d48e1a33d7528ca8ab27ba99ebb6433b4c16c7754bf2726",
+      "size": 66274,
+      "prev": [
+        "b35ad1b866f81d88793c76aeccf86fcd3d79d118de0a60ee21a472d87dac3259"
+      ]
+    },
+    "build/tree.json": {
+      "sha256": "d7e8b2dd33bade5b08d2c6349d897d685e520072175620703381823be2f3c117",
+      "size": 781806,
+      "prev": []
+    },
     "data.meta.json": {
       "sha256": "d64de0e388612e55a69f856ed612dc3a90cfec96b651ddf7f6c4130825685209",
-      "size": 1798
+      "size": 1798,
+      "prev": []
     },
     "en/client_strings.js": {
       "sha256": "1ff5328903621b324bcc34824e31e2e76195a2c2f5669ac04741c97725ea7d84",
-      "size": 6556
+      "size": 6556,
+      "prev": []
     },
     "en/client_strings.json": {
       "sha256": "28417e2a00ee64ebde1b12b01849862768ece19cfef977b08692fe008510b52b",
-      "size": 7734
+      "size": 7734,
+      "prev": []
     },
     "en/items-name.index.bin": {
       "sha256": "d984736d54871ffafdeec18fcb082c3a74efcafeec1cc5924a3e5ea4ad90d0de",
-      "size": 39696
+      "size": 39696,
+      "prev": []
     },
     "en/items-ref.index.bin": {
       "sha256": "d984736d54871ffafdeec18fcb082c3a74efcafeec1cc5924a3e5ea4ad90d0de",
-      "size": 39696
+      "size": 39696,
+      "prev": []
     },
     "en/items.ndjson": {
       "sha256": "af8391e58698dacbd393361eea12e304d1abed83f50453dac4e5804de8775c6f",
-      "size": 1459983
+      "size": 1459983,
+      "prev": []
     },
     "en/stats-matcher.index.bin": {
       "sha256": "acb226f77b9f806a7691ee6caa574deb2b83354efd2bc4acc9b8915b05d8e91a",
-      "size": 103664
+      "size": 103664,
+      "prev": []
     },
     "en/stats-ref.index.bin": {
       "sha256": "68a30646e44d110520c3a9698aed8140de955f8970d168cd06c782a2c3008dbd",
-      "size": 74224
+      "size": 74224,
+      "prev": []
     },
     "en/stats.ndjson": {
       "sha256": "16fe7b84549d5570a734ef441e4722d589a6d17ecd3f834ecf867736855af719",
-      "size": 2565295
+      "size": 2565295,
+      "prev": []
+    },
+    "flip/gold-fees.json": {
+      "sha256": "0d3126ff8ac3c8e723c6d956b62d189f8f017ee2b1a13cba5338bcb2a47abc25",
+      "size": 29403,
+      "prev": []
+    },
+    "guide/glossary-basics.json": {
+      "sha256": "bf87f6c3aaf92c0a28915e704e2994d7090cfc7476bbd0de8178c96689fe51f3",
+      "size": 7231,
+      "prev": []
+    },
+    "guide/index.json": {
+      "sha256": "e3622aa79a7b5afd4af17bd6e8759e7198083cca745f72d24efef5cb46a716f8",
+      "size": 69,
+      "prev": []
+    },
+    "guide/league-start.json": {
+      "sha256": "335f6cf1b7d6be96e653f174e5311923e0303f198d553093ad83f96770e702da",
+      "size": 23563,
+      "prev": []
+    },
+    "leveling/leveling.json": {
+      "sha256": "fa4f2a93c6c902cd65092da1f5a80f081747fd07b55d64f6958153ad922ae76b",
+      "size": 334186,
+      "prev": [
+        "a5d14867c6584c40f55c52a105e0d7a4647525b4edc65955c3df99f3e8705241"
+      ]
+    },
+    "regex/items.en.json": {
+      "sha256": "7864c6219ff65420f86eac75aa53f626ea658e46c3631d0341b6ab59c39cd28a",
+      "size": 601974,
+      "prev": [
+        "437c03e1a7dbe6380ea0c53f977e0e1c9f7495bf6e2e50f14611287bcb243b18"
+      ]
+    },
+    "regex/items.ru.json": {
+      "sha256": "08f434b220c2864d9574387ef544009ecc7a7cbe24088bda021b79935a4570e8",
+      "size": 738742,
+      "prev": [
+        "f68c97b9c9a3bb6f53d7dd67435736f9165fa9bf761f7936dd5ae55bf56a2661"
+      ]
     },
     "regex/maps.en.json": {
-      "sha256": "91966c354d0914a532e82da37949e1de2111e48bfada4f3e8eabda271c2e876b",
-      "size": 60447
+      "sha256": "194dbc64d6540b2275191c51dd2aebce21138dc148ab5bc55f51b965469cf35b",
+      "size": 58538,
+      "prev": []
     },
     "regex/maps.ru.json": {
-      "sha256": "aab0132fd32a86aa5b13fa86a3121657336975ba2322b2957e27fe08b09bc888",
-      "size": 100396
+      "sha256": "348081eab5bed2b5e113395a03f098122bad1754e8e00561d9f766e9f6ea6c97",
+      "size": 98488,
+      "prev": []
     },
     "ru/client_strings.js": {
       "sha256": "8438004553931607aa5697d5fddc7888f56a655b6133a48096e4f25dac2637d0",
-      "size": 9638
+      "size": 9638,
+      "prev": []
     },
     "ru/client_strings.json": {
       "sha256": "cb82cf8ad30f85802b348b8234dae7717ea490622b1563251cad92bbf4a71e1a",
-      "size": 10831
+      "size": 10831,
+      "prev": []
     },
     "ru/items-name.index.bin": {
       "sha256": "0c019dc548cb122a2ab203a6ff97d9cc82517a0e36ea722d02d1ef8a576aef6e",
-      "size": 39696
+      "size": 39696,
+      "prev": []
     },
     "ru/items-ref.index.bin": {
       "sha256": "23e34461e4619734f0752e879c8cc54cc3c0d505aa67b361f3227d1a7e598fb2",
-      "size": 39696
+      "size": 39696,
+      "prev": []
     },
     "ru/items.ndjson": {
       "sha256": "bca66968b116c1206603e49fff8b50f32b8d5c0529e8b8bae348c94ce9f67d58",
-      "size": 1545175
+      "size": 1545175,
+      "prev": []
     },
     "ru/stats-matcher.index.bin": {
       "sha256": "659f89405dfdf8ec183a8cc4173b25dacd0d647b212ca93b7b611bb292ce2fb0",
-      "size": 103640
+      "size": 103640,
+      "prev": []
     },
     "ru/stats-ref.index.bin": {
       "sha256": "1cc31bde8d10cc915eec8fcc5571aad432eb652b8b8ecb862ff8ceca2d84e6f7",
-      "size": 74224
+      "size": 74224,
+      "prev": []
     },
     "ru/stats.ndjson": {
       "sha256": "ba205f58915f8a2e60faf5826372d5806a3cdb4ada6266faeb99f5ae8e732d3f",
-      "size": 3358321
+      "size": 3358321,
+      "prev": []
+    },
+    "starters/3.30.json": {
+      "sha256": "f84291ee5c91d7aa14f17e743c79df19fb06863c1d06cd013d05867db8592aa6",
+      "size": 85,
+      "prev": []
+    },
+    "starters/index.json": {
+      "sha256": "acb4eb82c8c8745fe16854a1a64fac37f75a9398cbfee475594e7fa7edaac6ea",
+      "size": 62,
+      "prev": []
     },
     "wealth/exchange-ids.json": {
       "sha256": "1e84e7f8cb14049a2ee03b0fd2f9ef56b83f696d2a057193683aa86bab4481ef",
-      "size": 111711
+      "size": 111711,
+      "prev": []
     }
   }
 }

@@ -1,0 +1,546 @@
+{
+  "schema": 1,
+  "patch": "3.29",
+  "updatedAt": "2026-10-28",
+  "draft": true,
+  "defaults": {
+    "minutesPerMap": 5
+  },
+  "glossary": {
+    "map-device": {
+      "term": {
+        "ru": "Устройство карт",
+        "en": "Map Device"
+      },
+      "tip": {
+        "ru": "Устройство в убежище: кладёте карту и скарабеи, открываете порталы в карту.",
+        "en": "The device in your hideout: put a map and scarabs in, it opens portals into the map."
+      }
+    },
+    "scarab": {
+      "term": {
+        "ru": "Скарабей",
+        "en": "Scarab"
+      },
+      "tip": {
+        "ru": "Кладётся в устройство карт вместе с картой и добавляет в неё механику (больше сущностей, сундуков…). Расходуется.",
+        "en": "Goes into the Map Device with the map and adds a mechanic to it (more essences, strongboxes…). Consumed on use."
+      }
+    },
+    "atlas": {
+      "term": {
+        "ru": "Атлас",
+        "en": "Atlas"
+      },
+      "tip": {
+        "ru": "Дерево пассивов атласа (клавиша G): очки за пройденные карты усиливают выбранные механики.",
+        "en": "The Atlas passive tree (G key): points from completed maps boost the mechanics you pick."
+      }
+    },
+    "own-map": {
+      "term": {
+        "ru": "Своя карта",
+        "en": "Your own map"
+      },
+      "tip": {
+        "ru": "Карты падают в картах: если закрывать их быстро, покупать карты не нужно.",
+        "en": "Maps drop in maps: if you clear them steadily, you don't need to buy maps."
+      }
+    },
+    "exchange": {
+      "term": {
+        "ru": "Обмен валюты",
+        "en": "Currency Exchange"
+      },
+      "tip": {
+        "ru": "Окно обмена у Фаустуса: продаёте добычу пачкой за chaos или divine без переписки с игроками.",
+        "en": "Faustus' exchange window: sell loot in bulk for chaos or divine without whispering players."
+      }
+    },
+    "essence": {
+      "term": {
+        "ru": "Сущность",
+        "en": "Essence"
+      },
+      "tip": {
+        "ru": "Кристалл с монстром внутри: убейте монстра — получите сущность. Сущности нужны для крафта и хорошо продаются.",
+        "en": "A crystal with a monster inside: kill it to get the essence. Essences are used in crafting and sell well."
+      }
+    },
+    "strongbox": {
+      "term": {
+        "ru": "Сундук",
+        "en": "Strongbox"
+      },
+      "tip": {
+        "ru": "Сундук в карте: при открытии вызывает монстров, внутри — валюта и предметы.",
+        "en": "A box in the map: opening it summons monsters, inside are currency and items."
+      }
+    },
+    "expedition": {
+      "term": {
+        "ru": "Экспедиция",
+        "en": "Expedition"
+      },
+      "tip": {
+        "ru": "Механика с взрывчаткой: ставите заряды, взрыв открывает сундуки и монстров, за них дают артефакты.",
+        "en": "A mechanic with explosives: you place charges, the blast opens chests and monsters that give artifacts."
+      }
+    }
+  },
+  "strategies": [
+    {
+      "id": "essence-basic",
+      "name": {
+        "ru": "Сущности",
+        "en": "Essences"
+      },
+      "summary": {
+        "ru": "Обычные карты со скарабеем сущностей — сущности продаются пачкой на обмене валюты.",
+        "en": "Regular maps with an Essence Scarab — essences sell in bulk on the Currency Exchange."
+      },
+      "why": {
+        "ru": "Сущности нужны крафтерам всю лигу, поэтому их покупают всегда. Вход почти бесплатный: своя карта и один дешёвый скарабей. Отдельный билд не нужен — хватит обычного урона.",
+        "en": "Crafters need essences all league long, so they always sell. Entry is almost free: your own map and one cheap scarab. No special build — normal damage is enough."
+      },
+      "difficulty": 1,
+      "build": {
+        "damage": 2,
+        "survival": 1,
+        "speed": 1,
+        "note": {
+          "ru": "Монстр из кристалла сильнее обычного редкого — нужен урон, чтобы убить его без долгой беготни.",
+          "en": "The monster from the crystal is tougher than a normal rare — you need enough damage to kill it quickly."
+        }
+      },
+      "tags": [
+        "essence",
+        "maps"
+      ],
+      "terms": [
+        "essence",
+        "scarab",
+        "map-device",
+        "atlas",
+        "own-map",
+        "exchange"
+      ],
+      "minutesPerMap": 5,
+      "inputs": [
+        {
+          "item": {
+            "kind": "map",
+            "label": {
+              "ru": "Карта T14–16",
+              "en": "Map T14–16"
+            }
+          },
+          "qty": 1,
+          "own": true,
+          "note": {
+            "ru": "своя, с прошлых карт",
+            "en": "your own, from earlier maps"
+          }
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Essence Scarab"
+          },
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Deafening Essence of Greed"
+          },
+          "qty": 0.3
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Deafening Essence of Contempt"
+          },
+          "qty": 0.3
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Deafening Essence of Hatred"
+          },
+          "qty": 0.3
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Deafening Essence of Wrath"
+          },
+          "qty": 0.3
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Shrieking Essence of Greed"
+          },
+          "qty": 0.6
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "label": {
+              "ru": "Прочие сущности",
+              "en": "Other essences"
+            }
+          },
+          "qty": 3,
+          "note": {
+            "ru": "много видов, цены разные",
+            "en": "many kinds, prices vary"
+          }
+        }
+      ],
+      "source": {
+        "kind": "official",
+        "author": "POETH",
+        "date": "2026-10",
+        "note": {
+          "ru": "Черновик POETH: грубая оценка по опыту прошлых лиг, не замер. Сверьте со своим трекером карт.",
+          "en": "POETH draft: rough estimate from past leagues, not a measurement. Check it against your own map tracker."
+        }
+      },
+      "atlas": [
+        {
+          "ru": "Ветка сущностей на атласе: больше сущностей в карте и выше их уровень.",
+          "en": "The Essence branch of the Atlas tree: more essences per map and higher tiers."
+        }
+      ],
+      "steps": [
+        {
+          "ru": "В убежище положите в устройство карт свою карту T14–16 и скарабея сущностей.",
+          "en": "In your hideout, put your T14–16 map and an Essence Scarab into the Map Device."
+        },
+        {
+          "ru": "В карте ищите кристаллы с монстрами — они видны на мини-карте значком сущности.",
+          "en": "In the map, look for crystals with monsters — they show on the minimap with an essence icon."
+        },
+        {
+          "ru": "Нажмите на кристалл, убейте освободившегося монстра и подберите сущности.",
+          "en": "Click the crystal, kill the released monster and pick up the essences."
+        },
+        {
+          "ru": "Добейте карту, вернитесь в убежище, сложите сущности в тайник.",
+          "en": "Finish the map, return to the hideout, put the essences in your stash."
+        },
+        {
+          "ru": "Раз в несколько карт продавайте сущности пачкой на обмене валюты у Фаустуса.",
+          "en": "Every few maps, sell the essences in bulk on Faustus' Currency Exchange."
+        }
+      ],
+      "warnings": [
+        {
+          "ru": "Монстр из кристалла получает силу сущности — не стойте в его эффектах, если урон пока небольшой.",
+          "en": "The crystal monster gains the essence's power — don't stand in its effects while your damage is still low."
+        }
+      ]
+    },
+    {
+      "id": "strongbox-ambush",
+      "name": {
+        "ru": "Сундуки",
+        "en": "Strongboxes"
+      },
+      "summary": {
+        "ru": "Скарабей засады добавляет сундуки — внутри валюта, которую сразу видно в добыче.",
+        "en": "The Ambush Scarab adds strongboxes — they hold currency you see right away."
+      },
+      "why": {
+        "ru": "Сундуки дают готовую валюту: её не надо продавать, она сразу идёт на билд. Вход — один дешёвый скарабей, механика простая: открыл, отбился, забрал.",
+        "en": "Strongboxes give ready currency: no need to sell it, it goes straight into your build. Entry is one cheap scarab, and the mechanic is simple: open, fight, loot."
+      },
+      "difficulty": 1,
+      "build": {
+        "damage": 1,
+        "survival": 2,
+        "speed": 1,
+        "note": {
+          "ru": "Сундук вызывает пачки монстров вокруг вас — нужна живучесть, чтобы пережить волну.",
+          "en": "A strongbox summons packs around you — you need enough survivability to outlast the wave."
+        }
+      },
+      "tags": [
+        "strongbox",
+        "maps"
+      ],
+      "terms": [
+        "strongbox",
+        "scarab",
+        "map-device",
+        "atlas",
+        "own-map"
+      ],
+      "minutesPerMap": 5,
+      "inputs": [
+        {
+          "item": {
+            "kind": "map",
+            "label": {
+              "ru": "Карта T14–16",
+              "en": "Map T14–16"
+            }
+          },
+          "qty": 1,
+          "own": true,
+          "note": {
+            "ru": "своя, с прошлых карт",
+            "en": "your own, from earlier maps"
+          }
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Ambush Scarab"
+          },
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Chaos Orb"
+          },
+          "qty": 2
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Orb of Alchemy"
+          },
+          "qty": 2
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Orb of Scouring"
+          },
+          "qty": 1
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Divine Orb"
+          },
+          "qty": 0.02
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "label": {
+              "ru": "Прочие предметы из сундуков",
+              "en": "Other strongbox loot"
+            }
+          },
+          "qty": 1,
+          "note": {
+            "ru": "карты, камни, редкие предметы",
+            "en": "maps, gems, rare items"
+          }
+        }
+      ],
+      "source": {
+        "kind": "official",
+        "author": "POETH",
+        "date": "2026-10",
+        "note": {
+          "ru": "Черновик POETH: грубая оценка по опыту прошлых лиг, не замер. Сверьте со своим трекером карт.",
+          "en": "POETH draft: rough estimate from past leagues, not a measurement. Check it against your own map tracker."
+        }
+      },
+      "atlas": [
+        {
+          "ru": "Ветка сундуков на атласе: больше сундуков и чаще редкие виды.",
+          "en": "The Strongbox branch of the Atlas tree: more strongboxes and rarer kinds more often."
+        }
+      ],
+      "steps": [
+        {
+          "ru": "Положите в устройство карт свою карту T14–16 и скарабея засады.",
+          "en": "Put your T14–16 map and an Ambush Scarab into the Map Device."
+        },
+        {
+          "ru": "Перед открытием сундука восстановите здоровье и встаньте так, чтобы можно было отойти.",
+          "en": "Before opening a strongbox, top up your life and stand where you can step back."
+        },
+        {
+          "ru": "Откройте сундук, убейте вызванных монстров, заберите добычу.",
+          "en": "Open the box, kill the summoned monsters, take the loot."
+        },
+        {
+          "ru": "Валюту сразу используйте или копите на билд — продавать её не нужно.",
+          "en": "Use the currency right away or save it for your build — no need to sell it."
+        }
+      ],
+      "warnings": [
+        {
+          "ru": "Некоторые сундуки взрываются или ставят ловушки — открывайте с полным здоровьем.",
+          "en": "Some strongboxes explode or fire traps — open them at full life."
+        }
+      ]
+    },
+    {
+      "id": "expedition-artifacts",
+      "name": {
+        "ru": "Экспедиция",
+        "en": "Expedition"
+      },
+      "summary": {
+        "ru": "Взрывайте экспедицию в каждой карте, артефакты продавайте пачкой.",
+        "en": "Blow up an Expedition in every map and sell the artifacts in bulk."
+      },
+      "why": {
+        "ru": "Артефакты экспедиции падают сотнями и всегда нужны игрокам для торговцев экспедиции. Механика спокойная: вы сами выбираете, что взрывать, и можете обходить опасные свойства.",
+        "en": "Expedition artifacts drop by the hundred and players always need them for the Expedition vendors. The mechanic is calm: you choose what to blow up and can avoid dangerous modifiers."
+      },
+      "difficulty": 2,
+      "build": {
+        "damage": 2,
+        "survival": 2,
+        "speed": 1,
+        "note": {
+          "ru": "Из взрыва выходят сильные монстры сразу пачкой — нужны и урон, и живучесть.",
+          "en": "The blast releases strong monsters all at once — you need both damage and survivability."
+        }
+      },
+      "tags": [
+        "expedition",
+        "maps"
+      ],
+      "terms": [
+        "expedition",
+        "scarab",
+        "map-device",
+        "atlas",
+        "own-map",
+        "exchange"
+      ],
+      "minutesPerMap": 6,
+      "inputs": [
+        {
+          "item": {
+            "kind": "map",
+            "label": {
+              "ru": "Карта T14–16",
+              "en": "Map T14–16"
+            }
+          },
+          "qty": 1,
+          "own": true,
+          "note": {
+            "ru": "своя, с прошлых карт",
+            "en": "your own, from earlier maps"
+          }
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Expedition Scarab"
+          },
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Exotic Coinage"
+          },
+          "qty": 1
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Astragali"
+          },
+          "qty": 30
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Scrap Metal"
+          },
+          "qty": 30
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "ref": "Burial Medallion"
+          },
+          "qty": 3,
+          "note": {
+            "ru": "дороже, попадаются реже",
+            "en": "pricier, drop less often"
+          }
+        },
+        {
+          "item": {
+            "kind": "stackable",
+            "label": {
+              "ru": "Журнал экспедиции",
+              "en": "Expedition Logbook"
+            }
+          },
+          "qty": 0.3,
+          "note": {
+            "ru": "цена зависит от уровня и свойств",
+            "en": "price depends on level and modifiers"
+          }
+        }
+      ],
+      "source": {
+        "kind": "official",
+        "author": "POETH",
+        "date": "2026-10",
+        "note": {
+          "ru": "Черновик POETH: грубая оценка по опыту прошлых лиг, не замер. Сверьте со своим трекером карт.",
+          "en": "POETH draft: rough estimate from past leagues, not a measurement. Check it against your own map tracker."
+        }
+      },
+      "atlas": [
+        {
+          "ru": "Ветка экспедиции на атласе: больше зарядов и дальше взрыв.",
+          "en": "The Expedition branch of the Atlas tree: more charges and a longer blast radius."
+        }
+      ],
+      "steps": [
+        {
+          "ru": "Положите в устройство карт свою карту T14–16 и скарабея экспедиции.",
+          "en": "Put your T14–16 map and an Expedition Scarab into the Map Device."
+        },
+        {
+          "ru": "Найдите в карте детонатор экспедиции и прочитайте свойства камней вокруг.",
+          "en": "Find the Expedition detonator in the map and read the modifiers around it."
+        },
+        {
+          "ru": "Расставьте заряды цепочкой через сундуки и метки, обходя опасные свойства, и взорвите.",
+          "en": "Chain the charges through chests and markers, avoiding dangerous modifiers, then detonate."
+        },
+        {
+          "ru": "Убейте монстров, откройте сундуки, соберите артефакты (они складываются в тайник валюты).",
+          "en": "Kill the monsters, open the chests, collect the artifacts (they stack in your currency stash)."
+        },
+        {
+          "ru": "Продавайте артефакты пачкой на обмене валюты у Фаустуса.",
+          "en": "Sell artifacts in bulk on Faustus' Currency Exchange."
+        }
+      ],
+      "warnings": [
+        {
+          "ru": "Не задевайте взрывом свойства вроде «враги отражают урон» или «нельзя восстанавливать здоровье», если билд слабый.",
+          "en": "Don't blast modifiers like \"enemies reflect damage\" or \"cannot recover life\" if your build is weak."
+        }
+      ]
+    }
+  ]
+}
