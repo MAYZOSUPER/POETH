@@ -1,0 +1,31 @@
+{
+ "v": 1,
+ "source": "poe.ninja",
+ "at": 1795259341775,
+ "leagues": [
+  {
+   "league": "Covens",
+   "file": "poe1/Covens.json",
+   "at": 1795259341775,
+   "lines": 2195
+  },
+  {
+   "league": "Hardcore Covens",
+   "file": "poe1/Hardcore_20Covens.json",
+   "at": 1795259341775,
+   "lines": 1470
+  },
+  {
+   "league": "Standard",
+   "file": "poe1/Standard.json",
+   "at": 1795259341775,
+   "lines": 2536
+  },
+  {
+   "league": "Hardcore",
+   "file": "poe1/Hardcore.json",
+   "at": 1795259341775,
+   "lines": 1319
+  }
+ ]
+}
